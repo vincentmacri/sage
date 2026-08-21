@@ -6,7 +6,7 @@ AUTHORS:
 - Reimundo Heluani (2020-08-21): Initial implementation.
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2020 Reimundo Heluani <heluani@potuz.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.graded_modules import GradedModulesCategory
@@ -29,8 +29,8 @@ class LambdaBracketAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         sage: LieConformalAlgebras(QQbar).WithBasis()                                   # needs sage.rings.number_field
         Category of Lie conformal algebras with basis over Algebraic Field
     """
-    class ElementMethods:
 
+    class ElementMethods:
         def index(self):
             """
             The index of this basis element.
@@ -53,8 +53,9 @@ class LambdaBracketAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             if self.is_zero():
                 return None
             if not self.is_monomial():
-                raise ValueError("index can only be computed for "
-                                 "monomials, got {}".format(self))
+                raise ValueError(
+                    "index can only be computed for monomials, got {}".format(self)
+                )
 
             return next(iter(self.monomial_coefficients()))
 
@@ -76,6 +77,7 @@ class LambdaBracketAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             sage: C1 is C2
             True
         """
+
         class Graded(GradedModulesCategory):
             """
             The category of H-graded finitely generated lambda bracket
@@ -88,8 +90,8 @@ class LambdaBracketAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 Category of H-graded finitely generated Lie conformal algebras
                  with basis over Algebraic Field
             """
-            class ParentMethods:
 
+            class ParentMethods:
                 def degree_on_basis(self, m):
                     r"""
                     Return the degree of the basis element indexed by ``m``

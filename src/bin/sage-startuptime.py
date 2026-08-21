@@ -23,8 +23,9 @@ import warnings
 
 # Ignore collections.abc warnings, there are a lot of them but they are
 # harmless. These warnings are also disabled in src/sage/all.py.
-warnings.filterwarnings('ignore', category=DeprecationWarning,
-                        message='.*collections[.]abc.*')
+warnings.filterwarnings(
+    'ignore', category=DeprecationWarning, message='.*collections[.]abc.*'
+)
 
 cmdline_args = sys.argv[2:]
 have_cmdline_args = bool(cmdline_args)
@@ -65,10 +66,12 @@ def new_import(name, globals={}, locals={}, fromlist=[], level=DEFAULT_LEVEL):
         data['cumulative_time'] += elapsed_time
         data['time'] += module_time
         return module
-    data = {'cumulative_time': elapsed_time,
-            'time': module_time,
-            'import_names': set([name]),
-            'parents': [parent]}
+    data = {
+        'cumulative_time': elapsed_time,
+        'time': module_time,
+        'import_names': set([name]),
+        'parents': [parent],
+    }
     all_modules[module] = data
     return module
 
@@ -77,17 +80,18 @@ old_import = __builtins__.__import__
 __builtins__.__import__ = new_import
 gc.disable()
 from sage.all import *
+
 gc.enable()
 __builtins__.__import__ = old_import
 
 for data in all_modules.values():
-    data['parents'] = set(index_to_parent.get(i, None)
-                          for i in data['parents'])
+    data['parents'] = set(index_to_parent.get(i, None) for i in data['parents'])
 
 
-module_by_speed = sorted(((data['time'], module, data)
-                          for module, data in all_modules.items()),
-                         key=lambda x: x[0])
+module_by_speed = sorted(
+    ((data['time'], module, data) for module, data in all_modules.items()),
+    key=lambda x: x[0],
+)
 
 
 def print_separator():
@@ -99,15 +103,25 @@ def print_headline(line):
 
 
 width = 10
-fmt_header = '{0:>' + str(width) + '} {1:>' + str(width) + '} {2:>' + str(width) + '}  {3}'
-fmt_number = '{0:>' + str(width) + '.3f} {1:>' + str(width) + '.3f} {2:>' + str(width) + '}  {3}'
+fmt_header = (
+    '{0:>' + str(width) + '} {1:>' + str(width) + '} {2:>' + str(width) + '}  {3}'
+)
+fmt_number = (
+    '{0:>' + str(width) + '.3f} {1:>' + str(width) + '.3f} {2:>' + str(width) + '}  {3}'
+)
 
 
 def print_table(module_list, limit):
     print(fmt_header.format('exclude/ms', 'include/ms', '#parents', 'module name'))
     for t, module, data in module_list[-limit:]:
-        print(fmt_number.format(1000 * t, 1000 * data['cumulative_time'],
-                                len(data['parents']), module.__name__))
+        print(
+            fmt_number.format(
+                1000 * t,
+                1000 * data['cumulative_time'],
+                len(data['parents']),
+                module.__name__,
+            )
+        )
 
 
 def guess_module_name(src):
@@ -115,8 +129,10 @@ def guess_module_name(src):
     src, ext = os.path.splitext(src)
     while src and src != '/':
         head, tail = os.path.split(os.path.abspath(src))
-        if (tail == 'src' or any(os.path.exists(os.path.join(head, tail, f))
-                                 for f in ('setup.py', 'pyproject.toml'))):
+        if tail == 'src' or any(
+            os.path.exists(os.path.join(head, tail, f))
+            for f in ('setup.py', 'pyproject.toml')
+        ):
             return '.'.join(module)
         module.insert(0, tail)
         src = head
@@ -126,24 +142,46 @@ def guess_module_name(src):
 if not have_cmdline_args:
     print('== Slowest module imports (excluding / including children) ==')
     print_table(module_by_speed, 50)
-    print('Total time (sum over exclusive time): {:.3f}ms'.format(1000 * sum(data[0] for data in module_by_speed)))
-    print('Use sage -startuptime <module_name|file_name>... to get more details about specific modules.')
+    print(
+        'Total time (sum over exclusive time): {:.3f}ms'.format(
+            1000 * sum(data[0] for data in module_by_speed)
+        )
+    )
+    print(
+        'Use sage -startuptime <module_name|file_name>... to get more details about specific modules.'
+    )
 else:
     for module_arg in cmdline_args:
         matching_modules = [m for m in all_modules if m.__name__ == module_arg]
         if not matching_modules:
-            if '/' in module_arg or any(module_arg.endswith(ext) for ext in ('.py', '.pyx')) or os.path.isdir(module_arg):
+            if (
+                '/' in module_arg
+                or any(module_arg.endswith(ext) for ext in ('.py', '.pyx'))
+                or os.path.isdir(module_arg)
+            ):
                 file_name = module_arg
                 module_arg = guess_module_name(file_name)
                 if not module_arg:
-                    print('Warning: "' + file_name + '" does not appear to be a Python module source file or package directory.')
+                    print(
+                        'Warning: "'
+                        + file_name
+                        + '" does not appear to be a Python module source file or package directory.'
+                    )
                     continue
                 else:
-                    matching_modules = [m for m in all_modules if m.__name__.startswith(module_arg)]
+                    matching_modules = [
+                        m for m in all_modules if m.__name__.startswith(module_arg)
+                    ]
             else:
-                matching_modules = [m for m in all_modules if m.__name__.endswith(module_arg)]
+                matching_modules = [
+                    m for m in all_modules if m.__name__.endswith(module_arg)
+                ]
         if not matching_modules:
-            print('Warning: No modules loaded at startup correspond to {}'.format(module_arg))
+            print(
+                'Warning: No modules loaded at startup correspond to {}'.format(
+                    module_arg
+                )
+            )
         for module_name in matching_modules:
             parents = all_modules[module_name]['parents']
             print()
@@ -151,8 +189,12 @@ else:
             print_headline('Slowest modules importing {0}'.format(module_name.__name__))
             print_table([m for m in module_by_speed if m[1] in parents], 10)
             print()
-            print_headline('Slowest modules imported by {0}'.format(module_name.__name__))
-            print_table([m for m in module_by_speed if module_name in m[2]['parents']], 10)
+            print_headline(
+                'Slowest modules imported by {0}'.format(module_name.__name__)
+            )
+            print_table(
+                [m for m in module_by_speed if module_name in m[2]['parents']], 10
+            )
             print()
             data = all_modules[module_name]
             print_headline('module ' + module_name.__name__)

@@ -114,7 +114,9 @@ class TallListFormatter:
         s = [parens[0]]
         for split_repr in split_reprs:
             width = max(len(x) for x in split_repr)
-            if current_column + width > self.MAX_COLUMN and not (width > self.MAX_COLUMN):
+            if current_column + width > self.MAX_COLUMN and not (
+                width > self.MAX_COLUMN
+            ):
                 s.extend(self._tall_list_row(running_lines))
                 running_lines = [[]]
                 current_column = 0

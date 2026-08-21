@@ -149,6 +149,7 @@ class MiniAES(SageObject):
             True
         """
         from sage.crypto.sbox import SBox
+
         self._key_size = 16  # the number of bits in a secret key
         B = BinaryStrings()
         K = FiniteField(self._key_size, "x")
@@ -157,107 +158,119 @@ class MiniAES(SageObject):
         # the S-box for decryption
         self._sboxD = SBox(14, 3, 4, 8, 1, 12, 10, 15, 7, 13, 9, 6, 11, 2, 0, 5)
         # nibble to finite field element
-        self._bin_to_GF = { B("0000"): K("0"),
-                            B("0001"): K("1"),
-                            B("0010"): K("x"),
-                            B("0011"): K("x + 1"),
-                            B("0100"): K("x^2"),
-                            B("0101"): K("x^2 + 1"),
-                            B("0110"): K("x^2 + x"),
-                            B("0111"): K("x^2 + x + 1"),
-                            B("1000"): K("x^3"),
-                            B("1001"): K("x^3 + 1"),
-                            B("1010"): K("x^3 + x"),
-                            B("1011"): K("x^3 + x + 1"),
-                            B("1100"): K("x^3 + x^2"),
-                            B("1101"): K("x^3 + x^2 + 1"),
-                            B("1110"): K("x^3 + x^2 + x"),
-                            B("1111"): K("x^3 + x^2 + x+ 1") }
+        self._bin_to_GF = {
+            B("0000"): K("0"),
+            B("0001"): K("1"),
+            B("0010"): K("x"),
+            B("0011"): K("x + 1"),
+            B("0100"): K("x^2"),
+            B("0101"): K("x^2 + 1"),
+            B("0110"): K("x^2 + x"),
+            B("0111"): K("x^2 + x + 1"),
+            B("1000"): K("x^3"),
+            B("1001"): K("x^3 + 1"),
+            B("1010"): K("x^3 + x"),
+            B("1011"): K("x^3 + x + 1"),
+            B("1100"): K("x^3 + x^2"),
+            B("1101"): K("x^3 + x^2 + 1"),
+            B("1110"): K("x^3 + x^2 + x"),
+            B("1111"): K("x^3 + x^2 + x+ 1"),
+        }
         # nibble to integer
-        self._bin_to_int = { B("0000"): Integer(0),
-                             B("0001"): Integer(1),
-                             B("0010"): Integer(2),
-                             B("0011"): Integer(3),
-                             B("0100"): Integer(4),
-                             B("0101"): Integer(5),
-                             B("0110"): Integer(6),
-                             B("0111"): Integer(7),
-                             B("1000"): Integer(8),
-                             B("1001"): Integer(9),
-                             B("1010"): Integer(10),
-                             B("1011"): Integer(11),
-                             B("1100"): Integer(12),
-                             B("1101"): Integer(13),
-                             B("1110"): Integer(14),
-                             B("1111"): Integer(15) }
+        self._bin_to_int = {
+            B("0000"): Integer(0),
+            B("0001"): Integer(1),
+            B("0010"): Integer(2),
+            B("0011"): Integer(3),
+            B("0100"): Integer(4),
+            B("0101"): Integer(5),
+            B("0110"): Integer(6),
+            B("0111"): Integer(7),
+            B("1000"): Integer(8),
+            B("1001"): Integer(9),
+            B("1010"): Integer(10),
+            B("1011"): Integer(11),
+            B("1100"): Integer(12),
+            B("1101"): Integer(13),
+            B("1110"): Integer(14),
+            B("1111"): Integer(15),
+        }
         # finite field element to nibble
-        self._GF_to_bin = { K("0"):                B("0000"),
-                            K("1"):                B("0001"),
-                            K("x"):                B("0010"),
-                            K("x + 1"):            B("0011"),
-                            K("x^2"):              B("0100"),
-                            K("x^2 + 1"):          B("0101"),
-                            K("x^2 + x"):          B("0110"),
-                            K("x^2 + x + 1"):      B("0111"),
-                            K("x^3"):              B("1000"),
-                            K("x^3 + 1"):          B("1001"),
-                            K("x^3 + x"):          B("1010"),
-                            K("x^3 + x + 1"):      B("1011"),
-                            K("x^3 + x^2"):        B("1100"),
-                            K("x^3 + x^2 + 1"):    B("1101"),
-                            K("x^3 + x^2 + x"):    B("1110"),
-                            K("x^3 + x^2 + x+ 1"): B("1111") }
+        self._GF_to_bin = {
+            K("0"): B("0000"),
+            K("1"): B("0001"),
+            K("x"): B("0010"),
+            K("x + 1"): B("0011"),
+            K("x^2"): B("0100"),
+            K("x^2 + 1"): B("0101"),
+            K("x^2 + x"): B("0110"),
+            K("x^2 + x + 1"): B("0111"),
+            K("x^3"): B("1000"),
+            K("x^3 + 1"): B("1001"),
+            K("x^3 + x"): B("1010"),
+            K("x^3 + x + 1"): B("1011"),
+            K("x^3 + x^2"): B("1100"),
+            K("x^3 + x^2 + 1"): B("1101"),
+            K("x^3 + x^2 + x"): B("1110"),
+            K("x^3 + x^2 + x+ 1"): B("1111"),
+        }
         # finite field element to integer
-        self._GF_to_int = { K("0"):                Integer(0),
-                            K("1"):                Integer(1),
-                            K("x"):                Integer(2),
-                            K("x + 1"):            Integer(3),
-                            K("x^2"):              Integer(4),
-                            K("x^2 + 1"):          Integer(5),
-                            K("x^2 + x"):          Integer(6),
-                            K("x^2 + x + 1"):      Integer(7),
-                            K("x^3"):              Integer(8),
-                            K("x^3 + 1"):          Integer(9),
-                            K("x^3 + x"):          Integer(10),
-                            K("x^3 + x + 1"):      Integer(11),
-                            K("x^3 + x^2"):        Integer(12),
-                            K("x^3 + x^2 + 1"):    Integer(13),
-                            K("x^3 + x^2 + x"):    Integer(14),
-                            K("x^3 + x^2 + x+ 1"): Integer(15) }
+        self._GF_to_int = {
+            K("0"): Integer(0),
+            K("1"): Integer(1),
+            K("x"): Integer(2),
+            K("x + 1"): Integer(3),
+            K("x^2"): Integer(4),
+            K("x^2 + 1"): Integer(5),
+            K("x^2 + x"): Integer(6),
+            K("x^2 + x + 1"): Integer(7),
+            K("x^3"): Integer(8),
+            K("x^3 + 1"): Integer(9),
+            K("x^3 + x"): Integer(10),
+            K("x^3 + x + 1"): Integer(11),
+            K("x^3 + x^2"): Integer(12),
+            K("x^3 + x^2 + 1"): Integer(13),
+            K("x^3 + x^2 + x"): Integer(14),
+            K("x^3 + x^2 + x+ 1"): Integer(15),
+        }
         # integer to nibble
-        self._int_to_bin = { Integer(0):  B("0000"),
-                             Integer(1):  B("0001"),
-                             Integer(2):  B("0010"),
-                             Integer(3):  B("0011"),
-                             Integer(4):  B("0100"),
-                             Integer(5):  B("0101"),
-                             Integer(6):  B("0110"),
-                             Integer(7):  B("0111"),
-                             Integer(8):  B("1000"),
-                             Integer(9):  B("1001"),
-                             Integer(10): B("1010"),
-                             Integer(11): B("1011"),
-                             Integer(12): B("1100"),
-                             Integer(13): B("1101"),
-                             Integer(14): B("1110"),
-                             Integer(15): B("1111") }
+        self._int_to_bin = {
+            Integer(0): B("0000"),
+            Integer(1): B("0001"),
+            Integer(2): B("0010"),
+            Integer(3): B("0011"),
+            Integer(4): B("0100"),
+            Integer(5): B("0101"),
+            Integer(6): B("0110"),
+            Integer(7): B("0111"),
+            Integer(8): B("1000"),
+            Integer(9): B("1001"),
+            Integer(10): B("1010"),
+            Integer(11): B("1011"),
+            Integer(12): B("1100"),
+            Integer(13): B("1101"),
+            Integer(14): B("1110"),
+            Integer(15): B("1111"),
+        }
         # integer to finite field element
-        self._int_to_GF = { Integer(0):  K("0"),
-                            Integer(1):  K("1"),
-                            Integer(2):  K("x"),
-                            Integer(3):  K("x + 1"),
-                            Integer(4):  K("x^2"),
-                            Integer(5):  K("x^2 + 1"),
-                            Integer(6):  K("x^2 + x"),
-                            Integer(7):  K("x^2 + x + 1"),
-                            Integer(8):  K("x^3"),
-                            Integer(9):  K("x^3 + 1"),
-                            Integer(10): K("x^3 + x"),
-                            Integer(11): K("x^3 + x + 1"),
-                            Integer(12): K("x^3 + x^2"),
-                            Integer(13): K("x^3 + x^2 + 1"),
-                            Integer(14): K("x^3 + x^2 + x"),
-                            Integer(15): K("x^3 + x^2 + x+ 1") }
+        self._int_to_GF = {
+            Integer(0): K("0"),
+            Integer(1): K("1"),
+            Integer(2): K("x"),
+            Integer(3): K("x + 1"),
+            Integer(4): K("x^2"),
+            Integer(5): K("x^2 + 1"),
+            Integer(6): K("x^2 + x"),
+            Integer(7): K("x^2 + x + 1"),
+            Integer(8): K("x^3"),
+            Integer(9): K("x^3 + 1"),
+            Integer(10): K("x^3 + x"),
+            Integer(11): K("x^3 + x + 1"),
+            Integer(12): K("x^3 + x^2"),
+            Integer(13): K("x^3 + x^2 + 1"),
+            Integer(14): K("x^3 + x^2 + x"),
+            Integer(15): K("x^3 + x^2 + x+ 1"),
+        }
 
     def __call__(self, B, key, algorithm='encrypt'):
         r"""
@@ -349,10 +362,15 @@ class MiniAES(SageObject):
             ValueError: algorithm must be either 'encrypt' or 'decrypt'
         """
         from sage.rings.finite_rings.integer_mod import Mod
+
         if not isinstance(B, StringMonoidElement):
-            raise TypeError("input B must be a non-empty binary string with number of bits a multiple of 16")
+            raise TypeError(
+                "input B must be a non-empty binary string with number of bits a multiple of 16"
+            )
         if (len(B) == 0) or (Mod(len(B), self._key_size).lift() != 0):
-            raise ValueError("the number of bits in the binary string B must be positive and a multiple of 16")
+            raise ValueError(
+                "the number of bits in the binary string B must be positive and a multiple of 16"
+            )
         if not isinstance(key, StringMonoidElement):
             raise TypeError("secret key must be a 16-bit binary string")
         if len(key) != self._key_size:
@@ -366,7 +384,7 @@ class MiniAES(SageObject):
             # encrypt each 16-bit block in succession
             for i in range(N):
                 # here 16 is the number of bits per encryption block
-                block = B[i*16 : (i+1)*16]
+                block = B[i * 16 : (i + 1) * 16]
                 matB = MS(self.binary_to_GF(block))
                 matK = MS(self.binary_to_GF(key))
                 e = self.encrypt(matB, matK)
@@ -377,7 +395,7 @@ class MiniAES(SageObject):
             # decrypt each 16-bit block in succession
             for i in range(N):
                 # here 16 is the number of bits per encryption block
-                block = B[i*16 : (i+1)*16]
+                block = B[i * 16 : (i + 1) * 16]
                 matB = MS(self.binary_to_GF(block))
                 matK = MS(self.binary_to_GF(key))
                 e = self.decrypt(matB, matK)
@@ -400,9 +418,11 @@ class MiniAES(SageObject):
             sage: m == loads(dumps(m))
             True
         """
-        return ( (self._key_size == other._key_size) and
-                 (self._sboxE == other._sboxE) and
-                 (self._sboxD == other._sboxD) )
+        return (
+            (self._key_size == other._key_size)
+            and (self._sboxE == other._sboxE)
+            and (self._sboxD == other._sboxD)
+        )
 
     def __repr__(self):
         r"""
@@ -529,14 +549,16 @@ class MiniAES(SageObject):
             ...
             TypeError: round key must be a 2 x 2 matrix over GF(16)
         """
-        if not isinstance(block, Matrix_dense) or \
-                not (block.base_ring().order() == 16 and block.base_ring().is_field()):
+        if not isinstance(block, Matrix_dense) or not (
+            block.base_ring().order() == 16 and block.base_ring().is_field()
+        ):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
         if not (block.nrows() == block.ncols() == 2):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
 
-        if not isinstance(rkey, Matrix_dense) or \
-                not (rkey.base_ring().order() == 16 and rkey.base_ring().is_field()):
+        if not isinstance(rkey, Matrix_dense) or not (
+            rkey.base_ring().order() == 16 and rkey.base_ring().is_field()
+        ):
             raise TypeError("round key must be a 2 x 2 matrix over GF(16)")
         if not (rkey.nrows() == rkey.ncols() == 2):
             raise TypeError("round key must be a 2 x 2 matrix over GF(16)")
@@ -698,13 +720,15 @@ class MiniAES(SageObject):
             ...
             TypeError: secret key must be a 2 x 2 matrix over GF(16)
         """
-        if not isinstance(C, Matrix_dense) or \
-                not (C.base_ring().order() == 16 and C.base_ring().is_field()):
+        if not isinstance(C, Matrix_dense) or not (
+            C.base_ring().order() == 16 and C.base_ring().is_field()
+        ):
             raise TypeError("ciphertext block must be a 2 x 2 matrix over GF(16)")
         if not (C.nrows() == C.ncols() == 2):
             raise TypeError("ciphertext block must be a 2 x 2 matrix over GF(16)")
-        if not isinstance(key, Matrix_dense) or \
-                not (key.base_ring().order() == 16 and key.base_ring().is_field()):
+        if not isinstance(key, Matrix_dense) or not (
+            key.base_ring().order() == 16 and key.base_ring().is_field()
+        ):
             raise TypeError("secret key must be a 2 x 2 matrix over GF(16)")
         if not (key.nrows() == key.ncols() == 2):
             raise TypeError("secret key must be a 2 x 2 matrix over GF(16)")
@@ -856,13 +880,15 @@ class MiniAES(SageObject):
             ...
             TypeError: secret key must be a 2 x 2 matrix over GF(16)
         """
-        if not isinstance(P, Matrix_dense) or \
-                not (P.base_ring().order() == 16 and P.base_ring().is_field()):
+        if not isinstance(P, Matrix_dense) or not (
+            P.base_ring().order() == 16 and P.base_ring().is_field()
+        ):
             raise TypeError("plaintext block must be a 2 x 2 matrix over GF(16)")
         if not (P.nrows() == P.ncols() == 2):
             raise TypeError("plaintext block must be a 2 x 2 matrix over GF(16)")
-        if not isinstance(key, Matrix_dense) or \
-                not (key.base_ring().order() == 16 and key.base_ring().is_field()):
+        if not isinstance(key, Matrix_dense) or not (
+            key.base_ring().order() == 16 and key.base_ring().is_field()
+        ):
             raise TypeError("secret key must be a 2 x 2 matrix over GF(16)")
         if not (key.nrows() == key.ncols() == 2):
             raise TypeError("secret key must be a 2 x 2 matrix over GF(16)")
@@ -1010,16 +1036,16 @@ class MiniAES(SageObject):
             ...
             TypeError: input block must be a 2 x 2 matrix over GF(16)
         """
-        if not isinstance(block, Matrix_dense) or \
-                not (block.base_ring().order() == 16 and block.base_ring().is_field()):
+        if not isinstance(block, Matrix_dense) or not (
+            block.base_ring().order() == 16 and block.base_ring().is_field()
+        ):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
         if not (block.nrows() == block.ncols() == 2):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
 
         K = FiniteField(self._key_size, "x")
         MS = MatrixSpace(K, 2, 2)
-        M = MS( [ [K("x + 1"), K("x")],
-                  [K("x"), K("x + 1")] ] )
+        M = MS([[K("x + 1"), K("x")], [K("x"), K("x + 1")]])
         return M * block
 
     def nibble_sub(self, block, algorithm='encrypt'):
@@ -1199,8 +1225,9 @@ class MiniAES(SageObject):
             ...
             ValueError: the algorithm for nibble-sub must be either 'encrypt' or 'decrypt'
         """
-        if not isinstance(block, Matrix_dense) or \
-                not (block.base_ring().order() == 16 and block.base_ring().is_field()):
+        if not isinstance(block, Matrix_dense) or not (
+            block.base_ring().order() == 16 and block.base_ring().is_field()
+        ):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
         if not (block.nrows() == block.ncols() == 2):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
@@ -1208,7 +1235,11 @@ class MiniAES(SageObject):
         MS = MatrixSpace(FiniteField(self._key_size, "x"), 2, 2)
         # get the integer representation of each GF(2^4) element
         # in the input matrix block
-        lst = [self._GF_to_int[block[i][j]] for i in range(block.nrows()) for j in range(block.ncols())]
+        lst = [
+            self._GF_to_int[block[i][j]]
+            for i in range(block.nrows())
+            for j in range(block.ncols())
+        ]
         if algorithm == "encrypt":
             # Now run each resulting integer through the S-box for
             # encryption. Then convert the result output by the S-box
@@ -1219,7 +1250,9 @@ class MiniAES(SageObject):
             # decryption. Then convert the result output by the S-box
             # to an element of GF(2^4).
             return MS([self._int_to_GF[self._sboxD[e]] for e in lst])
-        raise ValueError("the algorithm for nibble-sub must be either 'encrypt' or 'decrypt'")
+        raise ValueError(
+            "the algorithm for nibble-sub must be either 'encrypt' or 'decrypt'"
+        )
 
     def random_key(self):
         r"""
@@ -1339,8 +1372,9 @@ class MiniAES(SageObject):
             ...
             TypeError: secret key must be a 2 x 2 matrix over GF(16)
         """
-        if not isinstance(key, Matrix_dense) or \
-                not (key.base_ring().order() == 16 and key.base_ring().is_field()):
+        if not isinstance(key, Matrix_dense) or not (
+            key.base_ring().order() == 16 and key.base_ring().is_field()
+        ):
             raise TypeError("secret key must be a 2 x 2 matrix over GF(16)")
         if not (key.nrows() == key.ncols() == 2):
             raise TypeError("secret key must be a 2 x 2 matrix over GF(16)")
@@ -1357,7 +1391,7 @@ class MiniAES(SageObject):
             w5 = key[1][0] + w4
             w6 = key[0][1] + w5
             w7 = key[1][1] + w6
-            return MS([ [w4, w6], [w5, w7] ])
+            return MS([[w4, w6], [w5, w7]])
         # round 2
         if n == 2:
             round_constant_2 = K("x")
@@ -1366,7 +1400,7 @@ class MiniAES(SageObject):
             w9 = key1[1][0] + w8
             w10 = key1[0][1] + w9
             w11 = key1[1][1] + w10
-            return MS([ [w8, w10], [w9, w11] ])
+            return MS([[w8, w10], [w9, w11]])
         # unsupported round number
         if (n < 0) or (n > 2):
             raise ValueError("Mini-AES only defines two rounds")
@@ -1487,15 +1521,15 @@ class MiniAES(SageObject):
             ...
             TypeError: input block must be a 2 x 2 matrix over GF(16)
         """
-        if not isinstance(block, Matrix_dense) or \
-                not (block.base_ring().order() == 16 and block.base_ring().is_field()):
+        if not isinstance(block, Matrix_dense) or not (
+            block.base_ring().order() == 16 and block.base_ring().is_field()
+        ):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
         if not (block.nrows() == block.ncols() == 2):
             raise TypeError("input block must be a 2 x 2 matrix over GF(16)")
 
         MS = MatrixSpace(FiniteField(self._key_size, "x"), 2, 2)
-        mat = MS([ [block[0][0], block[0][1]],
-                   [block[1][1], block[1][0]] ] )
+        mat = MS([[block[0][0], block[0][1]], [block[1][1], block[1][0]]])
         return mat
 
     ### conversion functions to convert between different data formats
@@ -1635,18 +1669,27 @@ class MiniAES(SageObject):
         # G is a list of elements over GF(16)
         if isinstance(G, list):
             if len(G) == 0:
-                raise ValueError("input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)")
+                raise ValueError(
+                    "input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)"
+                )
             S = "".join(str(self._GF_to_bin[g]) for g in G)
             return B(S)
         # G is a matrix over GF(16)
         if isinstance(G, Matrix_dense):
             if G.base_ring() is not K:
-                raise TypeError("input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)")
-            S = "".join(str(self._GF_to_bin[G[i][j]])
-                        for i in range(G.nrows()) for j in range(G.ncols()))
+                raise TypeError(
+                    "input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)"
+                )
+            S = "".join(
+                str(self._GF_to_bin[G[i][j]])
+                for i in range(G.nrows())
+                for j in range(G.ncols())
+            )
             return B(S)
         # the type of G doesn't match the supported types
-        raise TypeError("input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)")
+        raise TypeError(
+            "input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)"
+        )
 
     def GF_to_integer(self, G):
         r"""
@@ -1765,15 +1808,25 @@ class MiniAES(SageObject):
         # G is a list of elements over GF(16)
         if isinstance(G, list):
             if len(G) == 0:
-                raise ValueError("input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)")
+                raise ValueError(
+                    "input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)"
+                )
             return [self._GF_to_int[g] for g in G]
         # G is a matrix over GF(16)
         if isinstance(G, Matrix_dense):
             if G.base_ring() is not K:
-                raise TypeError("input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)")
-            return [self._GF_to_int[G[i][j]] for i in range(G.nrows()) for j in range(G.ncols())]
+                raise TypeError(
+                    "input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)"
+                )
+            return [
+                self._GF_to_int[G[i][j]]
+                for i in range(G.nrows())
+                for j in range(G.ncols())
+            ]
         # the type of G doesn't match the supported types
-        raise TypeError("input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)")
+        raise TypeError(
+            "input G must be an element of GF(16), a list of elements of GF(16), or a matrix over GF(16)"
+        )
 
     def binary_to_GF(self, B):
         r"""
@@ -1851,16 +1904,21 @@ class MiniAES(SageObject):
             ValueError: the number of bits in the binary string B must be positive and a multiple of 4
         """
         from sage.rings.finite_rings.integer_mod import Mod
+
         bin = BinaryStrings()
         b = bin(B)
         # an empty string
         if len(b) == 0:
-            raise ValueError("the number of bits in the binary string B must be positive and a multiple of 4")
+            raise ValueError(
+                "the number of bits in the binary string B must be positive and a multiple of 4"
+            )
         # a string with number of bits that is a multiple of 4
         if Mod(len(b), 4).lift() == 0:
             M = len(b) // 4  # the number of nibbles
-            return [self._bin_to_GF[b[i*4 : (i+1)*4]] for i in range(M)]
-        raise ValueError("the number of bits in the binary string B must be positive and a multiple of 4")
+            return [self._bin_to_GF[b[i * 4 : (i + 1) * 4]] for i in range(M)]
+        raise ValueError(
+            "the number of bits in the binary string B must be positive and a multiple of 4"
+        )
 
     def binary_to_integer(self, B):
         r"""
@@ -1918,16 +1976,21 @@ class MiniAES(SageObject):
             ValueError: the number of bits in the binary string B must be positive and a multiple of 4
         """
         from sage.rings.finite_rings.integer_mod import Mod
+
         bin = BinaryStrings()
         b = bin(B)
         # an empty string
         if len(b) == 0:
-            raise ValueError("the number of bits in the binary string B must be positive and a multiple of 4")
+            raise ValueError(
+                "the number of bits in the binary string B must be positive and a multiple of 4"
+            )
         # a string with number of bits that is a multiple of 4
         if Mod(len(b), 4).lift() == 0:
             M = len(b) // 4  # the number of nibbles
-            return [self._bin_to_int[b[i*4 : (i+1)*4]] for i in range(M)]
-        raise ValueError("the number of bits in the binary string B must be positive and a multiple of 4")
+            return [self._bin_to_int[b[i * 4 : (i + 1) * 4]] for i in range(M)]
+        raise ValueError(
+            "the number of bits in the binary string B must be positive and a multiple of 4"
+        )
 
     def integer_to_binary(self, N):
         r"""
@@ -2025,7 +2088,9 @@ class MiniAES(SageObject):
         """
         if isinstance(N, list):
             if len(N) == 0:
-                raise ValueError("N must be an integer 0 <= N <= 15 or a list of such integers")
+                raise ValueError(
+                    "N must be an integer 0 <= N <= 15 or a list of such integers"
+                )
             bin = BinaryStrings()
             # Here, we assume that each element of the list is an integer n
             # such that 0 <= n <= 15. An error will be raised if otherwise.
@@ -2151,7 +2216,9 @@ class MiniAES(SageObject):
         """
         if isinstance(N, list):
             if len(N) == 0:
-                raise ValueError("N must be an integer 0 <= N <= 15 or a list of such integers")
+                raise ValueError(
+                    "N must be an integer 0 <= N <= 15 or a list of such integers"
+                )
             # Here, we assume that each element of the list is an integer n
             # such that 0 <= n <= 15. An error will be raised if otherwise.
             return [self._int_to_GF[n] for n in N]

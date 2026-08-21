@@ -50,7 +50,7 @@ To import these names into the global namespace, use::
 
     sage: from sage.coding.decoders_catalog import *
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 David Joyner <wdjoyner@gmail.com>
 #                     2015 David Lucas <david.lucas@inria.fr>
 #
@@ -58,30 +58,45 @@ To import these names into the global namespace, use::
 #  version 2 or later (at your preference).
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.lazy_import import lazy_import
 
 lazy_import('sage.coding.bch_code', 'BCHUnderlyingGRSDecoder')
 lazy_import('sage.coding.cyclic_code', 'CyclicCodeSurroundingBCHDecoder')
 lazy_import('sage.coding.extended_code', 'ExtendedCodeOriginalCodeDecoder')
-lazy_import('sage.coding.grs_code', ['GRSBerlekampWelchDecoder',
-                                     'GRSErrorErasureDecoder',
-                                     'GRSGaoDecoder',
-                                     'GRSKeyEquationSyndromeDecoder'])
+lazy_import(
+    'sage.coding.grs_code',
+    [
+        'GRSBerlekampWelchDecoder',
+        'GRSErrorErasureDecoder',
+        'GRSGaoDecoder',
+        'GRSKeyEquationSyndromeDecoder',
+    ],
+)
 
 from .guruswami_sudan.gs_decoder import GRSGuruswamiSudanDecoder
-lazy_import('sage.coding.linear_code', ['LinearCodeNearestNeighborDecoder',
-                                        'LinearCodeSyndromeDecoder',
-                                        'LinearCodeInformationSetDecoder'])
+
+lazy_import(
+    'sage.coding.linear_code',
+    [
+        'LinearCodeNearestNeighborDecoder',
+        'LinearCodeSyndromeDecoder',
+        'LinearCodeInformationSetDecoder',
+    ],
+)
 
 lazy_import('sage.coding.punctured_code', 'PuncturedCodeOriginalCodeDecoder')
 lazy_import('sage.coding.subfield_subcode', 'SubfieldSubcodeOriginalCodeDecoder')
 lazy_import('sage.coding.information_set_decoder', 'LinearCodeInformationSetDecoder')
-lazy_import('sage.coding.linear_rank_metric', 'LinearRankMetricCodeNearestNeighborDecoder')
+lazy_import(
+    'sage.coding.linear_rank_metric', 'LinearRankMetricCodeNearestNeighborDecoder'
+)
 lazy_import('sage.coding.gabidulin_code', 'GabidulinGaoDecoder')
 
-lazy_import('sage.coding.ag_code_decoders', ['EvaluationAGCodeUniqueDecoder',
-                                             'DifferentialAGCodeUniqueDecoder'])
+lazy_import(
+    'sage.coding.ag_code_decoders',
+    ['EvaluationAGCodeUniqueDecoder', 'DifferentialAGCodeUniqueDecoder'],
+)
 
 del lazy_import

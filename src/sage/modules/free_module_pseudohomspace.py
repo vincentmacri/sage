@@ -52,6 +52,7 @@ class FreeModulePseudoHomspace(UniqueRepresentation, HomsetWithBase):
         sage: h(e)
         (z3, 2*z3^2 + 3*z3 + 3)
     """
+
     Element = FreeModulePseudoMorphism
 
     @staticmethod
@@ -81,7 +82,9 @@ class FreeModulePseudoHomspace(UniqueRepresentation, HomsetWithBase):
         """
         ring = domain.base_ring()
         if codomain.base_ring() is not ring:
-            raise ValueError("the domain and the codomain must be defined over the same ring")
+            raise ValueError(
+                "the domain and the codomain must be defined over the same ring"
+            )
         if isinstance(twist, OrePolynomialRing):
             ore = twist
             if ore.base_ring() is not ring:
@@ -197,7 +200,11 @@ class FreeModulePseudoHomspace(UniqueRepresentation, HomsetWithBase):
         twist = self._ore._repr_twist()
         if self.domain() is self.codomain():
             return "Set of Pseudoendomorphisms (%s) of %s" % (twist, self.domain())
-        return "Set of Pseudomorphism (%s) from %s to %s" % (twist, self.domain(), self.codomain())
+        return "Set of Pseudomorphism (%s) from %s to %s" % (
+            twist,
+            self.domain(),
+            self.codomain(),
+        )
 
     def ore_ring(self, var='x'):
         r"""

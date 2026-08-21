@@ -40,8 +40,14 @@ def number_of_cores():
 
     try:  # Solaris fix
         from subprocess import Popen, PIPE
-        p = Popen(['sysctl', '-n', 'hw.ncpu'],
-                  stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
+
+        p = Popen(
+            ['sysctl', '-n', 'hw.ncpu'],
+            stdin=PIPE,
+            stdout=PIPE,
+            stderr=PIPE,
+            close_fds=True,
+        )
         n = int(p.stdout.read().strip())
         if n > 0:
             return n

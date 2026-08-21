@@ -16,6 +16,7 @@ with the help of Dan Bump, Ben Brubaker, Bogdan Ion, Dan Orr, Arun Ram, Siddhart
 Special thanks go to Bogdan Ion and Mark Shimozono for their patient explanations and hand computations
 to check the code.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Nicolas M. Thiery <nthiery at users.sf.net>
 #                          Anne Schilling <anne at math.ucdavis.edu>
@@ -27,7 +28,9 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer_ring import ZZ
 from sage.combinat.free_module import CombinatorialFreeModule
-from sage.combinat.root_system.hecke_algebra_representation import CherednikOperatorsEigenvectors
+from sage.combinat.root_system.hecke_algebra_representation import (
+    CherednikOperatorsEigenvectors,
+)
 
 
 class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
@@ -1295,14 +1298,18 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
             The family of the Macdonald polynomials of type ['B', 2, 1] with parameters q, q1, q2
         """
         from sage.combinat.root_system.cartan_type import CartanType
+
         K = None
-        #if KL in Algebras:
-        if isinstance(KL, CombinatorialFreeModule): # temporary work around C3 issue ...
+        # if KL in Algebras:
+        if isinstance(
+            KL, CombinatorialFreeModule
+        ):  # temporary work around C3 issue ...
             K = KL.base_ring()
         else:
             if q == 'q':
                 from sage.rings.rational_field import QQ
-                K = QQ['q','q1','q2'].fraction_field()
+
+                K = QQ['q', 'q1', 'q2'].fraction_field()
             else:
                 K = q.parent()
             KL = CartanType(KL).root_system().ambient_space().algebra(K)
@@ -1349,7 +1356,9 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
         self._q2 = q2
         assert self.L_prime().classical() is self.L().classical()
         T = KL.twisted_demazure_lusztig_operators(q1, q2, convention='dominant')
-        T_Y = KL.demazure_lusztig_operators_on_classical(q, q1, q2, convention='dominant')
+        T_Y = KL.demazure_lusztig_operators_on_classical(
+            q, q1, q2, convention='dominant'
+        )
         CherednikOperatorsEigenvectors.__init__(self, T, T_Y, normalized=normalized)
 
     def _repr_(self):
@@ -1359,7 +1368,10 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
             sage: NonSymmetricMacdonaldPolynomials(["B", 2, 1])
             The family of the Macdonald polynomials of type ['B', 2, 1] with parameters q, q1, q2
         """
-        return "The family of the Macdonald polynomials of type %s with parameters %s, %s, %s" % (self.cartan_type(),self._q, self._q1, self._q2)
+        return (
+            "The family of the Macdonald polynomials of type %s with parameters %s, %s, %s"
+            % (self.cartan_type(), self._q, self._q1, self._q2)
+        )
 
     # This is redundant with the cartan_type method of
     # CherednikOperatorsEigenvectors, but we need it very early in the
@@ -1403,9 +1415,12 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
         """
         from sage.combinat.root_system.weight_space import WeightSpace
         from sage.combinat.root_system.type_affine import AmbientSpace
+
         L = self.L()
-        other_affine_root_system = self.cartan_type().classical().dual().affine().root_system()
-        if isinstance(L, WeightSpace): # TODO: make a nicer test
+        other_affine_root_system = (
+            self.cartan_type().classical().dual().affine().root_system()
+        )
+        if isinstance(L, WeightSpace):  # TODO: make a nicer test
             return other_affine_root_system.coweight_space(L.base_ring(), extended=True)
         assert isinstance(L, AmbientSpace)
         return other_affine_root_system.coambient_space(L.base_ring())
@@ -1523,11 +1538,13 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
             sage: _.parent()
             Coroot lattice of the Root system of type ['C', 2, 1]
         """
-        #assert self.cartan_type().is_untwisted_affine()
+        # assert self.cartan_type().is_untwisted_affine()
         Qcheck = self._T_Y.Y().keys()
         Q = Qcheck.cartan_type().other_affinization().root_system().root_lattice()
         assert Q.classical() is Qcheck.classical()
-        return Q.module_morphism(Qcheck.simple_roots_tilde().__getitem__, codomain=Qcheck)
+        return Q.module_morphism(
+            Qcheck.simple_roots_tilde().__getitem__, codomain=Qcheck
+        )
 
     def Y(self):
         r"""
@@ -1549,6 +1566,7 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
             Root lattice of the Root system of type ['B', 3]
         """
         from sage.sets.family import Family
+
         Y = self._T_Y.Y()
         ct = self.cartan_type()
         # TODO: improve test
@@ -1686,7 +1704,10 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
         """
         muaff = self._L.embed_at_level(mu, 0)
         if not all(muaff.scalar(coroot) in ZZ for coroot in self._L.simple_coroots()):
-            raise ValueError("%s does not lift to a level 0 element of the affine weight lattice" % muaff)
+            raise ValueError(
+                "%s does not lift to a level 0 element of the affine weight lattice"
+                % muaff
+            )
         return super().__getitem__(mu)
 
     @cached_method
@@ -1823,20 +1844,22 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
         I0 = L0.index_set()
         assert L0.is_parent_of(mu)
         # Should we view mu as a translation, and ask for its alcove walk?
-        muaff = self.affine_lift(mu) # embeds mu at level 1 in L_prime
-        w = reversed(mu.reduced_word(I0, positive=False)) # the reduced word for w_\mu, Prop. 6.9 of [Haiman06]_
+        muaff = self.affine_lift(mu)  # embeds mu at level 1 in L_prime
+        w = reversed(
+            mu.reduced_word(I0, positive=False)
+        )  # the reduced word for w_\mu, Prop. 6.9 of [Haiman06]_
         # mu should be scaled to make sure it implements a translation
-        #w = reversed(L.reduced_word_of_translation(L(mu)))
-        #x = L.embed_at_level(L0.rho(),1)
-        #x = L.rho() / L.rho().level()
+        # w = reversed(L.reduced_word_of_translation(L(mu)))
+        # x = L.embed_at_level(L0.rho(),1)
+        # x = L.rho() / L.rho().level()
         x = self.rho_prime()
-        l = self.L_prime().coroot_lattice()(l) # there might need to be a `nu` here
+        l = self.L_prime().coroot_lattice()(l)  # there might need to be a `nu` here
         for i in w:
             x = x.simple_reflection(i)
-        q1,q2 = self.hecke_parameters(1) # TODO: clean up
-        t = -q2/q1  # TODO: generalize for any eigenvalue
+        q1, q2 = self.hecke_parameters(1)  # TODO: clean up
+        t = -q2 / q1  # TODO: generalize for any eigenvalue
         # In type BC, maybe this should be q^...*a[0]
-        return self._q**(-muaff.scalar(l)) * t**(-x.scalar(l))
+        return self._q ** (-muaff.scalar(l)) * t ** (-x.scalar(l))
 
     def seed(self, mu):
         r"""
@@ -1944,8 +1967,14 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
             + ((2*q^4*v^12+2*q^3*v^12-2*q^4*v^10-2*q^3*v^10+q^2*v^8-q^3*v^6+q*v^8-2*q^2*v^6+q^3*v^4-q*v^6+q^2*v^4-2*q*v^2-2*v^2+2*q+2)/(q^4*v^12-q^3*v^10-q*v^2+1))*B[(0, 1, -1)]
             + B[(0, 2, -2)]
         """
-        if self.cartan_type().classical() != mu.parent().cartan_type() or not mu.is_dominant():
-            raise ValueError("%s must be a dominant weight for the classical subrootsystem of %s" % (mu, self.cartan_type()))
+        if (
+            self.cartan_type().classical() != mu.parent().cartan_type()
+            or not mu.is_dominant()
+        ):
+            raise ValueError(
+                "%s must be a dominant weight for the classical subrootsystem of %s"
+                % (mu, self.cartan_type())
+            )
         v = self._q1
         KL0 = self.KL0()
         s = KL0.zero()
@@ -1956,7 +1985,7 @@ class NonSymmetricMacdonaldPolynomials(CherednikOperatorsEigenvectors):
         for c in mu._orbit_iter():
             i = c.first_descent()
             if i is None:
-                Torbit[c] = self[mu] # the nonsymmetric Macdonald polynomial of mu
+                Torbit[c] = self[mu]  # the nonsymmetric Macdonald polynomial of mu
             else:
                 Torbit[c] = v * self._T.Tw([i])(Torbit[c.simple_reflection(i)])
             s = s + Torbit[c]

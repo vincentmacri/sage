@@ -69,6 +69,7 @@ WORKING_CENTER_MAX_TRIES = 1000
 # Generic implementation of Ore polynomial rings
 #################################################
 
+
 class OrePolynomialRing(UniqueRepresentation, Parent):
     r"""
     Construct and return the globally unique Ore polynomial ring with the
@@ -273,11 +274,14 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         - Sparse Ore Polynomial Ring
         - Multivariate Ore Polynomial Ring
     """
+
     Element = None
     _fraction_field_class = None
 
     @staticmethod
-    def __classcall_private__(cls, base_ring, twist=None, names=None, sparse=False, polcast=True):
+    def __classcall_private__(
+        cls, base_ring, twist=None, names=None, sparse=False, polcast=True
+    ):
         r"""
         Construct the Ore polynomial ring associated to the given parameters.
 
@@ -337,18 +341,22 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         if twist is None:
             morphism = derivation = None
         elif isinstance(twist, Morphism):
-            if (twist.domain() is not base_ring
-             or twist.codomain() is not base_ring):
-                raise TypeError("the twisting morphism must be an endomorphism of base_ring (=%s)" % base_ring)
+            if twist.domain() is not base_ring or twist.codomain() is not base_ring:
+                raise TypeError(
+                    "the twisting morphism must be an endomorphism of base_ring (=%s)"
+                    % base_ring
+                )
             if twist.is_identity():
                 morphism = None
             else:
                 morphism = twist
             derivation = None
         elif isinstance(twist, RingDerivation):
-            if (twist.domain() is not base_ring
-             or twist.codomain() is not base_ring):
-                raise TypeError("the twisting derivation must be an endomorphism of base_ring (=%s)" % base_ring)
+            if twist.domain() is not base_ring or twist.codomain() is not base_ring:
+                raise TypeError(
+                    "the twisting derivation must be an endomorphism of base_ring (=%s)"
+                    % base_ring
+                )
             morphism = twist.parent().twisting_morphism()
             if twist:
                 derivation = twist
@@ -363,7 +371,9 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         try:
             names = normalize_names(1, names)[0]
         except IndexError:
-            raise NotImplementedError("multivariate Ore polynomials rings not supported")
+            raise NotImplementedError(
+                "multivariate Ore polynomials rings not supported"
+            )
 
         # If `polcast` is ``True`` and there is no twisting morphism and no
         # twisting derivation we return a classical polynomial ring
@@ -375,6 +385,7 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
             raise NotImplementedError("sparse Ore polynomial rings are not implemented")
 
         from sage.rings.polynomial import skew_polynomial_ring
+
         constructors = []
         if derivation is None:
             if base_ring in _Fields:
@@ -382,9 +393,13 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
                     order = morphism.order()
                     if order is not Infinity:
                         if base_ring.is_finite():
-                            constructors.append(skew_polynomial_ring.SkewPolynomialRing_finite_field)
+                            constructors.append(
+                                skew_polynomial_ring.SkewPolynomialRing_finite_field
+                            )
                         else:
-                            constructors.append(skew_polynomial_ring.SkewPolynomialRing_finite_order)
+                            constructors.append(
+                                skew_polynomial_ring.SkewPolynomialRing_finite_order
+                            )
                 except (AttributeError, NotImplementedError):
                     pass
             constructors.append(skew_polynomial_ring.SkewPolynomialRing)
@@ -430,9 +445,13 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         """
         if self.Element is None:
             import sage.rings.polynomial.ore_polynomial_element
-            self.Element = sage.rings.polynomial.ore_polynomial_element.OrePolynomial_generic_dense
+
+            self.Element = (
+                sage.rings.polynomial.ore_polynomial_element.OrePolynomial_generic_dense
+            )
         if self._fraction_field_class is None:
             from sage.rings.polynomial.ore_function_field import OreFunctionField
+
             self._fraction_field_class = OreFunctionField
         self.__is_sparse = sparse
         self._morphism = morphism
@@ -443,8 +462,7 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         else:
             cat = Algebras(base_ring)
         category = cat.or_subcategory(category)
-        Parent.__init__(self, base_ring, names=name,
-                        normalize=True, category=category)
+        Parent.__init__(self, base_ring, names=name, normalize=True, category=category)
 
     def __reduce__(self):
         r"""
@@ -464,7 +482,12 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
             twist = self._morphism
         else:
             twist = self._derivation
-        return OrePolynomialRing, (self.base_ring(), twist, self.variable_names(), self.__is_sparse)
+        return OrePolynomialRing, (
+            self.base_ring(),
+            twist,
+            self.variable_names(),
+            self.__is_sparse,
+        )
 
     def _element_constructor_(self, a=None, check=True, construct=False, **kwds):
         r"""
@@ -513,6 +536,7 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
                 if a.is_zero():
                     return P.zero()
                 return C(self, [a], check=check, construct=construct)
+
             if P is self:
                 return a
             if P is self.base_ring():
@@ -526,8 +550,11 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         if isinstance(a, str):
             try:
                 from sage.misc.parser import LookupNameMaker, Parser
+
                 R = self.base_ring()
-                p = Parser(Integer, R, LookupNameMaker({self.variable_name(): self.gen()}, R))
+                p = Parser(
+                    Integer, R, LookupNameMaker({self.variable_name(): self.gen()}, R)
+                )
                 return self(p.parse(a))
             except NameError:
                 raise TypeError("unable to coerce string")
@@ -666,6 +693,7 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
 
         """
         from sage.misc.latex import latex
+
         s = ""
         if self._morphism is not None:
             s += latex(self._morphism)
@@ -692,7 +720,11 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
             sage: T
             Ore Polynomial Ring in d over Univariate Polynomial Ring in t over Rational Field twisted by d/dt
         """
-        s = "Ore Polynomial Ring in %s over %s %s" % (self.variable_name(), self.base_ring(), self._repr_twist())
+        s = "Ore Polynomial Ring in %s over %s %s" % (
+            self.variable_name(),
+            self.base_ring(),
+            self._repr_twist(),
+        )
         if self.is_sparse():
             s = "Sparse " + s
         return s
@@ -716,6 +748,7 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
             \Bold{Q}[t]\left[\delta ; \frac{d}{dt} \right]
         """
         from sage.misc.latex import latex
+
         s = "%s\\left[%s" % (latex(self.base_ring()), self.latex_variable_names()[0])
         twist = self._latex_twist()
         if twist != "":
@@ -746,8 +779,9 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
             twist = self._morphism
         else:
             twist = self._derivation
-        return OrePolynomialRing(self.base_ring(), twist, names=var,
-                                 sparse=self.__is_sparse, polcast=False)
+        return OrePolynomialRing(
+            self.base_ring(), twist, names=var, sparse=self.__is_sparse, polcast=False
+        )
 
     change_var = change_variable_name
 
@@ -843,12 +877,16 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         """
         if self._morphism is not None:
             try:
-                return self._morphism ** n
+                return self._morphism**n
             except TypeError as e:
                 if n < 0:
-                    raise NotImplementedError("inversion of the twisting morphism %s" % self._morphism)
+                    raise NotImplementedError(
+                        "inversion of the twisting morphism %s" % self._morphism
+                    )
                 else:
-                    raise ValueError("Unexpected error in iterating the twisting morphism: %s", e)
+                    raise ValueError(
+                        "Unexpected error in iterating the twisting morphism: %s", e
+                    )
 
     def twisting_derivation(self):
         r"""
@@ -1093,9 +1131,13 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         R = self.base_ring()
         if isinstance(degree, (list, tuple)):
             if len(degree) != 2:
-                raise ValueError("degree argument must be an integer or a tuple of 2 integers (min_degree, max_degree)")
+                raise ValueError(
+                    "degree argument must be an integer or a tuple of 2 integers (min_degree, max_degree)"
+                )
             if degree[0] > degree[1]:
-                raise ValueError("first degree argument must be less or equal to the second")
+                raise ValueError(
+                    "first degree argument must be less or equal to the second"
+                )
             degree = list(degree)
         else:
             degree = [degree, degree]
@@ -1146,9 +1188,13 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         """
         if isinstance(degree, (list, tuple)):
             if len(degree) != 2:
-                raise ValueError("degree argument must be an integer or a tuple of 2 integers (min_degree, max_degree)")
+                raise ValueError(
+                    "degree argument must be an integer or a tuple of 2 integers (min_degree, max_degree)"
+                )
             if degree[0] > degree[1]:
-                raise ValueError("minimum degree must be less or equal than maximum degree")
+                raise ValueError(
+                    "minimum degree must be less or equal than maximum degree"
+                )
             degree = randint(*degree)
         while True:
             irred = self.random_element((degree, degree), monic=monic)
@@ -1282,6 +1328,7 @@ class OrePolynomialRing(UniqueRepresentation, Parent):
         """
         from sage.matrix.special import companion_matrix
         from sage.modules.ore_module import OreModule, OreAction
+
         coeffs = self(P).right_monic().list()
         f = companion_matrix(coeffs, format='bottom')
         M = OreModule(f, self, names=names)

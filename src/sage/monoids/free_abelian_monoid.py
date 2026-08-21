@@ -96,6 +96,7 @@ class FreeAbelianMonoidFactory(UniqueFactory):
         sage: loads(dumps(F)) is F
         True
     """
+
     def create_key(self, n, names):
         n = int(n)
         names = normalize_names(n, names)
@@ -105,7 +106,9 @@ class FreeAbelianMonoidFactory(UniqueFactory):
         return FreeAbelianMonoid_class(*key)
 
 
-FreeAbelianMonoid_factory = FreeAbelianMonoidFactory("sage.monoids.free_abelian_monoid.FreeAbelianMonoid_factory")
+FreeAbelianMonoid_factory = FreeAbelianMonoidFactory(
+    "sage.monoids.free_abelian_monoid.FreeAbelianMonoid_factory"
+)
 
 
 def FreeAbelianMonoid(index_set=None, names=None, **kwds):
@@ -149,6 +152,7 @@ def FreeAbelianMonoid(index_set=None, names=None, **kwds):
         if names is not None:
             names = normalize_names(len(names), names)
         from sage.monoids.indexed_free_monoid import IndexedFreeAbelianMonoid
+
         return IndexedFreeAbelianMonoid(index_set, names=names, **kwds)
 
     if names is None:
@@ -160,6 +164,7 @@ class FreeAbelianMonoid_class(Parent):
     """
     Free abelian monoid on `n` generators.
     """
+
     Element = FreeAbelianMonoidElement
 
     def __init__(self, n, names) -> None:
@@ -241,7 +246,7 @@ class FreeAbelianMonoid_class(Parent):
         """
         n = self.__ngens
         if i < 0 or not i < n:
-            raise IndexError(f"argument i (= {i}) must be between 0 and {n-1}")
+            raise IndexError(f"argument i (= {i}) must be between 0 and {n - 1}")
         x = [0 for j in range(n)]
         x[int(i)] = 1
         return self.element_class(self, x)
@@ -283,6 +288,8 @@ class FreeAbelianMonoid_class(Parent):
         """
         if self.__ngens == 0:
             from sage.rings.integer_ring import ZZ
+
             return ZZ.one()
         from sage.rings.infinity import infinity
+
         return infinity

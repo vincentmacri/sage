@@ -357,6 +357,7 @@ AUTHORS:
 
 - William Stein (2007-07-16): added arithmetic with symbolic equations
 """
+
 import operator
 from itertools import product
 
@@ -510,7 +511,11 @@ def check_relation_maxima(relation):
     if isinstance(relation, bool):
         return relation
 
-    from sage.interfaces.maxima_lib import test_max_equal, test_max_notequal, test_max_relation
+    from sage.interfaces.maxima_lib import (
+        test_max_equal,
+        test_max_notequal,
+        test_max_relation,
+    )
 
     if relation.operator() == operator.eq:  # operator is equality
         try:
@@ -580,6 +585,7 @@ def check_relation_maxima_neq_as_not_eq(relation):
     # This ensures bool(x != y) == not bool(x == y) for semantic consistency.
     if relation.operator() == operator.ne:
         from sage.interfaces.maxima_lib import test_max_equal
+
         return test_max_equal(relation.lhs(), relation.rhs()) is not True
 
     # For all other relations, delegate to check_relation_maxima
@@ -612,6 +618,7 @@ def string_to_list_of_solutions(s):
     from sage.calculus.calculus import symbolic_expression_from_maxima_string
     from sage.categories.objects import Objects
     from sage.structure.sequence import Sequence
+
     v = symbolic_expression_from_maxima_string(s, equals_sub=True)
     return Sequence(v, universe=Objects(), cr_str=True)
 
@@ -681,6 +688,7 @@ def _normalize_to_relational(f):
     if isinstance(f, (list, tuple)):
         return [_normalize_to_relational(g) for g in f]
     from sage.symbolic.expression import Expression
+
     if isinstance(f, bool) or (isinstance(f, Expression) and f.is_relational()):
         return f
     return f == 0
@@ -716,6 +724,7 @@ def _normalize_to_nonrelational(f):
     if isinstance(f, bool):
         return 0 if f else 1
     from sage.symbolic.expression import Expression
+
     if isinstance(f, Expression) and f.is_relational():
         assert f.operator() == operator.eq
         return f.lhs() - f.rhs()
@@ -741,10 +750,15 @@ def _normalize_to_list_expressions(f) -> list:
         TypeError: must be a symbolic expression or a list of symbolic expressions
     """
     from sage.symbolic.expression import Expression
+
     if isinstance(f, (Expression, bool)):
         f = [f]
-    if not isinstance(f, (list, tuple)) or not all(isinstance(s, (Expression, bool)) for s in f):
-        raise TypeError("must be a symbolic expression or a list of symbolic expressions")
+    if not isinstance(f, (list, tuple)) or not all(
+        isinstance(s, (Expression, bool)) for s in f
+    ):
+        raise TypeError(
+            "must be a symbolic expression or a list of symbolic expressions"
+        )
     return f
 
 
@@ -753,8 +767,16 @@ def _normalize_to_list_expressions(f) -> list:
 ###########
 
 
-def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=None,
-          solution_dict=False, algorithm=None, domain=None):
+def solve(
+    f,
+    *args,
+    explicit_solutions=None,
+    multiplicities=None,
+    to_poly_solve=None,
+    solution_dict=False,
+    algorithm=None,
+    domain=None,
+):
     r"""
     Algebraically solve an equation or system of equations (over the
     complex numbers) for given variables. Inequalities and systems
@@ -1246,6 +1268,7 @@ def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=
         [[x == 1, y == 2]]
     """
     from sage.structure.element import Expression
+
     f = _normalize_to_list_expressions(f)
 
     # Normalize x to list of variables
@@ -1281,16 +1304,27 @@ def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=
     if not x:
         if multiplicities:
             from sage.rings.integer_ring import ZZ
+
             return [[]], [ZZ.one()]
         return [[]]
 
     if len(f) == 1:
-        return _solve_expression(f[0], x, explicit_solutions, multiplicities, to_poly_solve, solution_dict, algorithm, domain)
+        return _solve_expression(
+            f[0],
+            x,
+            explicit_solutions,
+            multiplicities,
+            to_poly_solve,
+            solution_dict,
+            algorithm,
+            domain,
+        )
 
     if algorithm == 'sympy':
         from sympy import solve as ssolve
 
         from sage.interfaces.sympy import sympy_set_to_list
+
         sympy_f = [s._sympy_() for s in f]
         sympy_vars = tuple([v._sympy_() for v in x])
         ret = ssolve(sympy_f, sympy_vars, dict=True)
@@ -1302,19 +1336,15 @@ def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=
                 l = []
                 for d in ret:
                     r = {}
-                    for (v, ex) in d.items():
+                    for v, ex in d.items():
                         r[v._sage_()] = ex._sage_()
                     l.append(r)
                 return l
-            return [[v._sage_() == ex._sage_()
-                     for v, ex in d.items()]
-                    for d in ret]
+            return [[v._sage_() == ex._sage_() for v, ex in d.items()] for d in ret]
         if isinstance(ret, list):
             if solution_dict:
-                return [{v._sage_(): ex._sage_()
-                         for v, ex in d.items()} for d in ret]
-            return [[v._sage_() == ex._sage_()
-                     for v, ex in d.items()] for d in ret]
+                return [{v._sage_(): ex._sage_() for v, ex in d.items()} for d in ret]
+            return [[v._sage_() == ex._sage_() for v, ex in d.items()] for d in ret]
         # it is not clear how this branch could be reached
         # because dict=True is passed above, however
         # it is kept just in case
@@ -1324,6 +1354,7 @@ def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=
         return _giac_solver(f, x, solution_dict)
 
     from sage.calculus.calculus import maxima
+
     m = maxima(f)
 
     try:
@@ -1333,7 +1364,9 @@ def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=
             s = m.to_poly_solve(x)
         except TypeError as mess:  # if that gives an error, raise an error.
             if "Error executing code in Maxima" in str(mess):
-                raise ValueError(f"sage is unable to determine whether the system {f} can be solved for {x}")
+                raise ValueError(
+                    f"sage is unable to determine whether the system {f} can be solved for {x}"
+                )
             else:
                 raise
 
@@ -1356,8 +1389,9 @@ def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=
         if not sol_list:  # fixes IndexError on empty solution list (#8553)
             return []
         if isinstance(sol_list[0], list):
-            sol_dict = [{eq.left(): eq.right() for eq in solution}
-                        for solution in sol_list]
+            sol_dict = [
+                {eq.left(): eq.right() for eq in solution} for solution in sol_list
+            ]
         else:
             sol_dict = [{eq.left(): eq.right()} for eq in sol_list]
 
@@ -1365,8 +1399,16 @@ def solve(f, *args, explicit_solutions=None, multiplicities=None, to_poly_solve=
     return sol_list
 
 
-def _solve_expression(f, x, explicit_solutions, multiplicities,
-                      to_poly_solve, solution_dict, algorithm, domain):
+def _solve_expression(
+    f,
+    x,
+    explicit_solutions,
+    multiplicities,
+    to_poly_solve,
+    solution_dict,
+    algorithm,
+    domain,
+):
     """
     Solve an expression ``f``. For more information, see :func:`solve`.
 
@@ -1469,6 +1511,7 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
                 from sympy import S, solveset
 
                 from sage.interfaces.sympy import sympy_set_to_list
+
                 if isinstance(x, Expression) and x.is_symbol():
                     sympy_vars = (x._sympy_(),)
                 else:
@@ -1484,9 +1527,11 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
             try:
                 return solve_ineq([f])  # trying solve_ineq_fourier
             except Exception:
-                raise NotImplementedError("solving only implemented for equalities and few special inequalities, see solve_ineq")
+                raise NotImplementedError(
+                    "solving only implemented for equalities and few special inequalities, see solve_ineq"
+                )
     else:
-        f = (f == 0)
+        f = f == 0
 
     if multiplicities and to_poly_solve:
         raise NotImplementedError("to_poly_solve does not return multiplicities")
@@ -1495,10 +1540,15 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
 
     def has_integer_assumption(v) -> bool:
         from sage.symbolic.assumptions import GenericDeclaration, assumptions
+
         alist = assumptions()
-        return any(isinstance(a, GenericDeclaration) and a.has(v) and
-                   a._assumption in ['even', 'odd', 'integer', 'integervalued']
-                   for a in alist)
+        return any(
+            isinstance(a, GenericDeclaration)
+            and a.has(v)
+            and a._assumption in ['even', 'odd', 'integer', 'integervalued']
+            for a in alist
+        )
+
     if f.variables() and all(has_integer_assumption(var) for var in f.variables()):
         return f.solve_diophantine(x, solution_dict=solution_dict)
 
@@ -1506,6 +1556,7 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
         from sympy import S, solveset
 
         from sage.interfaces.sympy import sympy_set_to_list
+
         if isinstance(x, Expression) and x.is_symbol():
             sympy_vars = (x._sympy_(),)
         else:
@@ -1526,7 +1577,9 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
     m = f._maxima_()
     P = m.parent()
     if explicit_solutions:
-        P.eval('solveexplicit: true')  # switches Maxima to looking for only explicit solutions
+        P.eval(
+            'solveexplicit: true'
+        )  # switches Maxima to looking for only explicit solutions
     try:
         if to_poly_solve != 'force':
             s = m.solve(x).str()
@@ -1551,10 +1604,14 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
 
     X = string_to_list_of_solutions(s)  # our initial list of solutions
 
-    if multiplicities:  # to_poly_solve does not return multiplicities, so in this case we end here
+    if (
+        multiplicities
+    ):  # to_poly_solve does not return multiplicities, so in this case we end here
         if len(X) == 0:
             return X, []
-        ret_multiplicities = [int(e) for e in str(P.get('multiplicities'))[1:-1].split(',')]
+        ret_multiplicities = [
+            int(e) for e in str(P.get('multiplicities'))[1:-1].split(',')
+        ]
 
     ########################################################
     # Maxima's to_poly_solver package converts difficult   #
@@ -1574,21 +1631,26 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
             ignore_exceptions = False
         X = []
         for eq in solutions_so_far:
-            if eq.lhs().is_symbol() and (eq.lhs() == x) and (x not in eq.rhs().variables()):
+            if (
+                eq.lhs().is_symbol()
+                and (eq.lhs() == x)
+                and (x not in eq.rhs().variables())
+            ):
                 X.append(eq)
                 continue
             try:
                 m = eq._maxima_()
                 s = m.to_poly_solve(x, options='algexact:true')
                 T = string_to_list_of_solutions(repr(s))
-                X.extend(u for t in T
-                         if (u := _to_poly_solve_unwrap_solution(t)) is not None)
+                X.extend(
+                    u for t in T if (u := _to_poly_solve_unwrap_solution(t)) is not None
+                )
             except TypeError as mess:
                 if ignore_exceptions:
                     continue
-                elif "Error executing code in Maxima" in str(mess) or \
-                     "unable to make sense of Maxima expression" in \
-                     str(mess):
+                elif "Error executing code in Maxima" in str(
+                    mess
+                ) or "unable to make sense of Maxima expression" in str(mess):
                     if not explicit_solutions:
                         X.append(eq)  # we keep this implicit solution
                 else:
@@ -1596,6 +1658,7 @@ def _solve_expression(f, x, explicit_solutions, multiplicities,
 
     # make sure all the assumptions are satisfied
     from sage.symbolic.assumptions import assumptions
+
     to_check = assumptions()
     if to_check:
         for ix, soln in reversed(list(enumerate(X))):
@@ -1648,6 +1711,7 @@ def _giac_solver(f, x, solution_dict=False):
         [[2, 5], [5, 2]]
     """
     from sage.libs.giac.giac import libgiac
+
     f = _normalize_to_list_expressions(_normalize_to_nonrelational(f))
     giac_f = libgiac(f)
     if isinstance(x, tuple):
@@ -1892,8 +1956,9 @@ def _solve_mod_prime_power(eqns, p, m, vars):
         else:
             shifts = product(*[range(p) for _ in range(len(vars))])
             pairs = product(shifts, ans)
-            possibles = (tuple(vector(t) + vector(shift) * (mrunning // p))
-                         for shift, t in pairs)
+            possibles = (
+                tuple(vector(t) + vector(shift) * (mrunning // p)) for shift, t in pairs
+            )
         ans = [t for t in possibles if all(e(*t) == 0 for e in eqns_mod)]
         if not ans:
             return ans
@@ -1938,12 +2003,18 @@ def solve_ineq_univar(ineq):
     """
     ineqvar = ineq.variables()
     if len(ineqvar) != 1:
-        raise NotImplementedError("The command solve_ineq_univar accepts univariate inequalities only. Your variables are " + ineqvar)
+        raise NotImplementedError(
+            "The command solve_ineq_univar accepts univariate inequalities only. Your variables are "
+            + ineqvar
+        )
     ineq0 = ineq._maxima_()
-    ineq0.parent().eval("if solve_rat_ineq_loaded#true then (solve_rat_ineq_loaded:true,load(\"solve_rat_ineq.mac\")) ")
+    ineq0.parent().eval(
+        "if solve_rat_ineq_loaded#true then (solve_rat_ineq_loaded:true,load(\"solve_rat_ineq.mac\")) "
+    )
     sol = ineq0.solve_rat_ineq().sage()
     if repr(sol) == "all":
         from sage.rings.infinity import Infinity
+
         sol = [ineqvar[0] < Infinity]
     return sol
 
@@ -2004,20 +2075,25 @@ def solve_ineq_fourier(ineq, vars=None):
     """
     if vars is None:
         setvars = set()
-        for i in (ineq):
+        for i in ineq:
             setvars = setvars.union(set(i.variables()))
             vars = list(setvars)
     ineq0 = [i._maxima_() for i in ineq]
-    ineq0[0].parent().eval("if fourier_elim_loaded#true then (fourier_elim_loaded:true,load(\"fourier_elim\"))")
+    ineq0[0].parent().eval(
+        "if fourier_elim_loaded#true then (fourier_elim_loaded:true,load(\"fourier_elim\"))"
+    )
     sol = ineq0[0].parent().fourier_elim(ineq0, vars)
-    ineq0[0].parent().eval("or_to_list(x):=\
+    ineq0[0].parent().eval(
+        "or_to_list(x):=\
         if not atom(x) and op(x)=\"or\" then args(x) \
-        else [x]")
+        else [x]"
+    )
     sol = sol.or_to_list().sage()
     if repr(sol) == "[emptyset]":
         sol = []
     if repr(sol) == "[universalset]":
         from sage.rings.infinity import Infinity
+
         sol = [[i < Infinity for i in vars]]
     return sol
 

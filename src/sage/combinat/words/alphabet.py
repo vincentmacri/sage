@@ -52,7 +52,8 @@ set_of_letters = {
     'octal': "01234567",
     'decimal': "0123456789",
     'hexadecimal': "0123456789abcdef",
-    'radix64': "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"}
+    'radix64': "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+}
 
 
 def build_alphabet(data=None, names=None, name=None):
@@ -209,14 +210,18 @@ def build_alphabet(data=None, names=None, name=None):
         raise ValueError("name cannot be specified with any other argument")
 
     # Swap arguments if we need to try and make sure we have "good" user input
-    if isinstance(names, (int, Integer)) or names == Infinity \
-            or (data is None and names is not None):
+    if (
+        isinstance(names, (int, Integer))
+        or names == Infinity
+        or (data is None and names is not None)
+    ):
         data, names = names, data
 
     # data is an integer
     if isinstance(data, (int, Integer)):
         if names is None:
             from sage.sets.integer_range import IntegerRange
+
             return IntegerRange(Integer(data))
         if isinstance(names, str):
             return TotallyOrderedFiniteSet([names + '%d' % i for i in range(data)])
@@ -243,6 +248,7 @@ def build_alphabet(data=None, names=None, name=None):
             raise TypeError("name must be a string")
         if name == "positive integers" or name == "PP":
             from sage.sets.positive_integers import PositiveIntegers
+
             return PositiveIntegers()
         if name == "natural numbers" or name == "NN":
             return NonNegativeIntegers()
@@ -258,6 +264,7 @@ def build_alphabet(data=None, names=None, name=None):
     # Alphabet(**nothing**)
     if data is None:  # name is also None
         from sage.sets.pythonclass import Set_PythonType
+
         return Set_PythonType(object)
 
     raise ValueError("unable to construct an alphabet from the given parameters")

@@ -117,8 +117,9 @@ smart_quotes = no""")
     old_sys_path = list(sys.path)  # Sphinx modifies sys.path
     # Sphinx constructor: Sphinx(srcdir, confdir, outdir, doctreedir,
     # buildername, confoverrides, status, warning, freshenv).
-    sphinx_app = Sphinx(srcdir, confdir, outdir, doctreedir, format,
-                        confoverrides, None, None, True)
+    sphinx_app = Sphinx(
+        srcdir, confdir, outdir, doctreedir, format, confoverrides, None, None, True
+    )
     sphinx_app.build(None, [rst_name])
     sys.path = old_sys_path
 
@@ -136,13 +137,21 @@ smart_quotes = no""")
         #    "/media/...path.../blah.png"
         # to
         #    "/doc/static/reference/media/...path.../blah.png"
-        output = re.sub(r"""src=['"](/?\.\.)*/?media/([^"']*)['"]""",
-                        'src="/doc/static/reference/media/\\2"',
-                        output)
+        output = re.sub(
+            r"""src=['"](/?\.\.)*/?media/([^"']*)['"]""",
+            'src="/doc/static/reference/media/\\2"',
+            output,
+        )
         # Remove spurious \(, \), \[, \].
-        output = output.replace(r'\(', '').replace(r'\)', '').replace(r'\[', '').replace(r'\]', '')
+        output = (
+            output.replace(r'\(', '')
+            .replace(r'\)', '')
+            .replace(r'\[', '')
+            .replace(r'\]', '')
+        )
     else:
         from warnings import warn
+
         warn("Sphinx did not produce any output", Warning)
         if format == 'html':
             output = '<pre class="introspection">%s</pre>' % docstring

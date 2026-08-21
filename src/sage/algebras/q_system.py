@@ -7,7 +7,7 @@ AUTHORS:
 - Travis Scrimshaw (2017-12-08): Added twisted Q-systems
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013,2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 import itertools
 from sage.misc.cachefunc import cached_method
@@ -124,6 +124,7 @@ class QSystem(CombinatorialFreeModule):
     - [HKOTY1999]_
     - [KNS2011]_
     """
+
     @staticmethod
     def __classcall__(cls, base_ring, cartan_type, level=None, twisted=False):
         """
@@ -146,7 +147,11 @@ class QSystem(CombinatorialFreeModule):
         cartan_type = CartanType(cartan_type)
         if not is_tamely_laced(cartan_type):
             raise ValueError("the Cartan type is not tamely-laced")
-        if twisted and not cartan_type.is_affine() and not cartan_type.is_untwisted_affine():
+        if (
+            twisted
+            and not cartan_type.is_affine()
+            and not cartan_type.is_untwisted_affine()
+        ):
             raise ValueError("the Cartan type must be of twisted type")
         return super().__classcall__(cls, base_ring, cartan_type, level, twisted)
 
@@ -172,12 +177,13 @@ class QSystem(CombinatorialFreeModule):
             self._cm = cartan_type.classical().cartan_matrix()
         else:
             self._cm = cartan_type.cartan_matrix()
-        self._Irev = {ind: pos for pos,ind in enumerate(self._cm.index_set())}
-        self._poly = PolynomialRing(ZZ, ['q'+str(i) for i in self._cm.index_set()])
+        self._Irev = {ind: pos for pos, ind in enumerate(self._cm.index_set())}
+        self._poly = PolynomialRing(ZZ, ['q' + str(i) for i in self._cm.index_set()])
 
         category = Algebras(base_ring).Commutative().WithBasis()
-        CombinatorialFreeModule.__init__(self, base_ring, basis,
-                                         prefix='Q', category=category)
+        CombinatorialFreeModule.__init__(
+            self, base_ring, basis, prefix='Q', category=category
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -197,7 +203,9 @@ class QSystem(CombinatorialFreeModule):
             res = ''
         if self._twisted:
             res += "Twisted "
-        return "{}Q-system of type {} over {}".format(res, self._cartan_type, self.base_ring())
+        return "{}Q-system of type {} over {}".format(
+            res, self._cartan_type, self.base_ring()
+        )
 
     def _repr_term(self, t) -> str:
         """
@@ -218,6 +226,7 @@ class QSystem(CombinatorialFreeModule):
             if x[1] > 1:
                 ret += '^{}'.format(x[1])
             return ret
+
         return '*'.join(repr_gen(x) for x in t._sorted_items())
 
     def _latex_term(self, t) -> str:
@@ -240,6 +249,7 @@ class QSystem(CombinatorialFreeModule):
             if x[1] > 1:
                 ret = '\\bigl(' + ret + '\\bigr)^{{{}}}'.format(x[1])
             return ret
+
         return ' '.join(repr_gen(x) for x in t._sorted_items())
 
     def _ascii_art_term(self, t):
@@ -255,6 +265,7 @@ class QSystem(CombinatorialFreeModule):
             1 + 2*Q1   + (Q1  ) *(Q1  ) *(Q1  )  + 3*Q1
         """
         from sage.typeset.ascii_art import AsciiArt
+
         if t == self.one_basis():
             return AsciiArt(["1"])
         ret = AsciiArt("")
@@ -265,12 +276,13 @@ class QSystem(CombinatorialFreeModule):
             else:
                 first = False
             a, m = k
-            var = AsciiArt([" ({})".format(a),
-                            "Q{}".format(m)],
-                           baseline=0)
+            var = AsciiArt([" ({})".format(a), "Q{}".format(m)], baseline=0)
             if exp > 1:
-                var = (AsciiArt(['(', '('], baseline=0) + var
-                       + AsciiArt([')', ')'], baseline=0))
+                var = (
+                    AsciiArt(['(', '('], baseline=0)
+                    + var
+                    + AsciiArt([')', ')'], baseline=0)
+                )
                 var = AsciiArt([" " * len(var) + str(exp)], baseline=-1) * var
             ret += var
         return ret
@@ -285,17 +297,28 @@ class QSystem(CombinatorialFreeModule):
             sage: unicode_art(Q.an_element())
             1 + 2*Q₁⁽¹⁾ + (Q₁⁽¹⁾)²(Q₁⁽²⁾)²(Q₁⁽³⁾)³ + 3*Q₁⁽²⁾
         """
-        from sage.typeset.unicode_art import UnicodeArt, unicode_subscript, unicode_superscript
+        from sage.typeset.unicode_art import (
+            UnicodeArt,
+            unicode_subscript,
+            unicode_superscript,
+        )
+
         if t == self.one_basis():
             return UnicodeArt(["1"])
 
         ret = UnicodeArt("")
         for k, exp in t._sorted_items():
-            a,m = k
-            var = UnicodeArt(["Q" + unicode_subscript(m) + '⁽' + unicode_superscript(a) + '⁾'], baseline=0)
+            a, m = k
+            var = UnicodeArt(
+                ["Q" + unicode_subscript(m) + '⁽' + unicode_superscript(a) + '⁾'],
+                baseline=0,
+            )
             if exp > 1:
-                var = (UnicodeArt(['('], baseline=0) + var
-                       + UnicodeArt([')' + unicode_superscript(exp)], baseline=0))
+                var = (
+                    UnicodeArt(['('], baseline=0)
+                    + var
+                    + UnicodeArt([')' + unicode_superscript(exp)], baseline=0)
+                )
             ret += var
         return ret
 
@@ -445,12 +468,12 @@ class QSystem(CombinatorialFreeModule):
             if m == t[a] * self._level:
                 return self.one()
         if m == 1:
-            return self.monomial(self._indices.gen((a,1)))
-        #if self._cartan_type.type() == 'A' and self._level is None:
+            return self.monomial(self._indices.gen((a, 1)))
+        # if self._cartan_type.type() == 'A' and self._level is None:
         #    return self._jacobi_trudy(a, m)
         I = self._cm.index_set()
         p = self._Q_poly(a, m)
-        return p.subs({g: self.Q(I[i], 1) for i,g in enumerate(self._poly.gens())})
+        return p.subs({g: self.Q(I[i], 1) for i, g in enumerate(self._poly.gens())})
 
     @cached_method
     def _Q_poly(self, a, m):
@@ -526,28 +549,31 @@ class QSystem(CombinatorialFreeModule):
             return self._poly.gen(self._Irev[a])
 
         cm = self._cm
-        m -= 1 # So we don't have to do it everywhere
+        m -= 1  # So we don't have to do it everywhere
 
         cur = self._Q_poly(a, m) ** 2
         if self._twisted:
-            ret = prod(self._Q_poly(b, m) ** -cm[self._Irev[b],self._Irev[a]]
-                       for b in self._cm.dynkin_diagram().neighbors(a))
+            ret = prod(
+                self._Q_poly(b, m) ** -cm[self._Irev[b], self._Irev[a]]
+                for b in self._cm.dynkin_diagram().neighbors(a)
+            )
         else:
             ret = self._poly.one()
             i = self._Irev[a]
             for b in self._cm.dynkin_diagram().neighbors(a):
                 j = self._Irev[b]
-                for k in range(-cm[i,j]):
-                    ret *= self._Q_poly(b, (m * cm[j,i] - k) // cm[i,j])
+                for k in range(-cm[i, j]):
+                    ret *= self._Q_poly(b, (m * cm[j, i] - k) // cm[i, j])
         cur -= ret
         if m > 1:
-            cur //= self._Q_poly(a, m-1)
+            cur //= self._Q_poly(a, m - 1)
         return cur
 
     class Element(CombinatorialFreeModule.Element):
         """
         An element of a Q-system.
         """
+
         def _mul_(self, x):
             """
             Return the product of ``self`` and ``x``.
@@ -561,9 +587,9 @@ class QSystem(CombinatorialFreeModule):
                 -Q^(1)[1]^2*Q^(2)[1]*Q^(4)[1] + Q^(1)[1]^2*Q^(3)[1]^2
                  + Q^(2)[1]^2*Q^(4)[1] - Q^(2)[1]*Q^(3)[1]^2
             """
-            return self.parent().sum_of_terms((tl*tr, cl*cr)
-                                              for tl, cl in self
-                                              for tr, cr in x)
+            return self.parent().sum_of_terms(
+                (tl * tr, cl * cr) for tl, cl in self for tr, cr in x
+            )
 
 
 def is_tamely_laced(ct) -> bool:
@@ -597,11 +623,12 @@ def is_tamely_laced(ct) -> bool:
         return True
 
     if ct.is_affine():
-        return not (ct is CartanType(['A',1,1]) or
-                    (ct.type() == 'BC' or ct.dual().type() == 'BC'))
+        return not (
+            ct is CartanType(['A', 1, 1])
+            or (ct.type() == 'BC' or ct.dual().type() == 'BC')
+        )
 
     cm = ct.cartan_matrix()
     d = cm.symmetrizer()
     I = ct.index_set()
-    return all(-cm[j,i] == 1 and d[i] == 1
-               for i in I for j in I if cm[i,j] < -1)
+    return all(-cm[j, i] == 1 and d[i] == 1 for i in I for j in I if cm[i, j] < -1)

@@ -126,13 +126,18 @@ def validate_mwrank_input(s):
     """
     if isinstance(s, (list, tuple)):
         from sage.rings.integer_ring import ZZ
+
         if len(s) != 5:
-            raise ValueError("%s is not valid input to mwrank (should have 5 entries)" % s)
+            raise ValueError(
+                "%s is not valid input to mwrank (should have 5 entries)" % s
+            )
         try:
             ai = [ZZ(a) for a in s]
             return str(ai)
         except (TypeError, ValueError):
-            raise ValueError("%s is not valid input to mwrank (entries should be integers)" % s)
+            raise ValueError(
+                "%s is not valid input to mwrank (entries should be integers)" % s
+            )
 
     if isinstance(s, str):
         if AINVS_PLAIN_RE.match(s):
@@ -148,6 +153,7 @@ class Mwrank_class(Expect):
     """
     Interface to the Mwrank interpreter.
     """
+
     def __init__(self, options='', server=None, server_tmpdir=None):
         """
         INPUT:
@@ -186,14 +192,16 @@ class Mwrank_class(Expect):
             sage: from sage.interfaces.mwrank import Mwrank_class
             sage: TestSuite(Mwrank_class).run()
         """
-        Expect.__init__(self,
-                        name='mwrank',
-                        prompt='Enter curve: ',
-                        command="mwrank %s" % options,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        restart_on_ctrlc=True,
-                        verbose_start=False)
+        Expect.__init__(
+            self,
+            name='mwrank',
+            prompt='Enter curve: ',
+            command="mwrank %s" % options,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            restart_on_ctrlc=True,
+            verbose_start=False,
+        )
 
     def __getattr__(self, attrname):
         """
@@ -360,6 +368,9 @@ def mwrank_console():
         Program mwrank: ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%mwrank magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%mwrank magics instead.'
+        )
     os.system('mwrank')

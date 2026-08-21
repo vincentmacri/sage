@@ -1,6 +1,7 @@
 r"""
 Example of a set with grading
 """
+
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.categories.sets_with_grading import SetsWithGrading
@@ -24,14 +25,16 @@ class NonNegativeIntegers(UniqueRepresentation, Parent):
         sage: E.graded_component(100)
         {100}
     """
+
     def __init__(self):
         r"""
         TESTS::
 
             sage: TestSuite(SetsWithGrading().example()).run()
         """
-        Parent.__init__(self, category=SetsWithGrading().Infinite(),
-                        facade=IntegerRing())
+        Parent.__init__(
+            self, category=SetsWithGrading().Infinite(), facade=IntegerRing()
+        )
 
     def an_element(self):
         r"""
@@ -92,6 +95,7 @@ class NonNegativeIntegers(UniqueRepresentation, Parent):
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         from sage.rings.integer import Integer
+
         R = PolynomialRing(IntegerRing(), var)
         z = R.gen()
         return Integer(1) / (Integer(1) - z)

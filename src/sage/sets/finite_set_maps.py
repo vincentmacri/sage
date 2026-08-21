@@ -28,8 +28,11 @@ from sage.categories.enumerated_sets import EnumeratedSets
 from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
 from sage.sets.integer_range import IntegerRange
 from sage.sets.finite_set_map_cy import (
-    FiniteSetMap_MN, FiniteSetMap_Set,
-    FiniteSetEndoMap_N, FiniteSetEndoMap_Set)
+    FiniteSetMap_MN,
+    FiniteSetMap_Set,
+    FiniteSetEndoMap_N,
+    FiniteSetEndoMap_Set,
+)
 from sage.misc.cachefunc import cached_method
 
 # TODO: finite set maps should be morphisms in the category of finite sets
@@ -155,6 +158,7 @@ class FiniteSetMaps(UniqueRepresentation, Parent):
         sage: TestSuite(FiniteSetMaps([1, 2], [])).run()
         sage: TestSuite(FiniteSetMaps([], [1, 2])).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, domain, codomain=None, action='left', category=None):
         """
@@ -200,7 +204,7 @@ class FiniteSetMaps(UniqueRepresentation, Parent):
             sage: FiniteSetMaps(4, 3).cardinality()
             81
         """
-        return self.codomain().cardinality()**self.domain().cardinality()
+        return self.codomain().cardinality() ** self.domain().cardinality()
 
 
 class FiniteSetMaps_MN(FiniteSetMaps):
@@ -230,8 +234,9 @@ class FiniteSetMaps_MN(FiniteSetMaps):
             <class 'sage.sets.finite_set_maps.FiniteSetMaps_MN_with_category'>
             sage: TestSuite(M).run()
         """
-        Parent.__init__(self,
-                        category=EnumeratedSets().Finite().or_subcategory(category))
+        Parent.__init__(
+            self, category=EnumeratedSets().Finite().or_subcategory(category)
+        )
         self._m = Integer(m)
         self._n = Integer(n)
 
@@ -377,6 +382,7 @@ class FiniteSetMaps_Set(FiniteSetMaps_MN):
       constructed. It must be a sub-category of
       ``EnumeratedSets().Finite()`` which is the default value.
     """
+
     def __init__(self, domain, codomain, category=None):
         """
         EXAMPLES::
@@ -405,14 +411,15 @@ class FiniteSetMaps_Set(FiniteSetMaps_MN):
             Category of finite enumerated sets
             sage: TestSuite(M).run()
         """
-        FiniteSetMaps_MN.__init__(self, domain.cardinality(),
-                                  codomain.cardinality(),
-                                  category=category)
+        FiniteSetMaps_MN.__init__(
+            self, domain.cardinality(), codomain.cardinality(), category=category
+        )
 
         self._domain = domain
         self._codomain = codomain
 
         from sage.combinat import ranker
+
         ldomain = domain.list()
         lcodomain = codomain.list()
         self._unrank_domain = ranker.unrank_from_list(ldomain)
@@ -554,6 +561,7 @@ class FiniteSetEndoMaps_Set(FiniteSetMaps_Set, FiniteSetEndoMaps_N):
       constructed. It must be a sub-category of ``Monoids().Finite()``
       and ``EnumeratedSets().Finite()`` which is the default value.
     """
+
     def __init__(self, domain, action, category=None):
         """
         TESTS::
@@ -566,14 +574,15 @@ class FiniteSetEndoMaps_Set(FiniteSetMaps_Set, FiniteSetEndoMaps_N):
             sage: TestSuite(M).run()
         """
         category = (EnumeratedSets() & Monoids().Finite()).or_subcategory(category)
-        FiniteSetMaps_MN.__init__(self, domain.cardinality(),
-                                  domain.cardinality(),
-                                  category=category)
+        FiniteSetMaps_MN.__init__(
+            self, domain.cardinality(), domain.cardinality(), category=category
+        )
 
         self._domain = domain
         self._codomain = domain
 
         from sage.combinat import ranker
+
         ldomain = domain.list()
         self._unrank_domain = ranker.unrank_from_list(ldomain)
         self._rank_domain = ranker.rank_from_list(ldomain)

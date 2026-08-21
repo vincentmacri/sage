@@ -59,7 +59,6 @@ from sage.env import SAGE_ECMBIN
 
 
 class ECM(SageObject):
-
     def __init__(self, B1=10, B2=None, **kwds):
         r"""
         Create an interface to the GMP-ECM elliptic curve method
@@ -261,18 +260,20 @@ class ECM(SageObject):
 
     # Recommended settings from
     # http://www.mersennewiki.org/index.php/Elliptic_Curve_Method
-    _recommended_B1_list = {15: 2000,
-                            20: 11000,
-                            25: 50000,
-                            30: 250000,
-                            35: 1000000,
-                            40: 3000000,
-                            45: 11000000,
-                            50: 44000000,
-                            55: 110000000,
-                            60: 260000000,
-                            65: 850000000,
-                            70: 2900000000}
+    _recommended_B1_list = {
+        15: 2000,
+        20: 11000,
+        25: 50000,
+        30: 250000,
+        35: 1000000,
+        40: 3000000,
+        45: 11000000,
+        50: 44000000,
+        55: 110000000,
+        60: 260000000,
+        65: 850000000,
+        70: 2900000000,
+    }
 
     def _B1_table_value(self, factor_digits, min_val=15, max_val=70):
         """
@@ -318,15 +319,18 @@ class ECM(SageObject):
         return self._recommended_B1_list[self._B1_table_value(factor_digits)]
 
     _parse_status_re = re.compile(
-        r'Using B1=(\d+), B2=(\d+), polynomial ([^,]+), sigma=(\d+)')
+        r'Using B1=(\d+), B2=(\d+), polynomial ([^,]+), sigma=(\d+)'
+    )
 
     _found_input_re = re.compile('Found input number N')
 
     _found_factor_re = re.compile(
-        r'Found (?P<primality>.*) factor of [\s]*(?P<digits>\d+) digits: (?P<factor>\d+)')
+        r'Found (?P<primality>.*) factor of [\s]*(?P<digits>\d+) digits: (?P<factor>\d+)'
+    )
 
     _found_cofactor_re = re.compile(
-        r'(?P<primality>.*) cofactor (?P<cofactor>\d+) has [\s]*(?P<digits>\d+) digits')
+        r'(?P<primality>.*) cofactor (?P<cofactor>\d+) has [\s]*(?P<digits>\d+) digits'
+    )
 
     def _parse_output(self, n, out):
         r"""
@@ -391,8 +395,12 @@ class ECM(SageObject):
             m = self._parse_status_re.match(line)
             if m is not None:
                 group = m.groups()
-                self._last_params = {'B1': group[0], 'B2': group[1],
-                                     'poly': group[2], 'sigma': group[3]}
+                self._last_params = {
+                    'B1': group[0],
+                    'B2': group[1],
+                    'poly': group[2],
+                    'sigma': group[3],
+                }
                 continue
             m = self._found_input_re.match(line)
             if m is not None:
@@ -620,8 +628,8 @@ class ECM(SageObject):
             True
         """
         n = self._validate(n)
-        factors = [n]       # factors that need to be factorized further
-        probable_prime_factors = []   # output prime factors
+        factors = [n]  # factors that need to be factorized further
+        probable_prime_factors = []  # output prime factors
         while factors:
             n = factors.pop()
 
@@ -756,7 +764,7 @@ class ECM(SageObject):
             return
 
         out_lines = iter(out.splitlines())
-        while next(out_lines)[:len(title_curves)] != title_curves:
+        while next(out_lines)[: len(title_curves)] != title_curves:
             pass
         header_curves = next(out_lines)
         curve_count_table = next(out_lines)
@@ -768,7 +776,17 @@ class ECM(SageObject):
 
         assert header_curves == header_time
         assert header_curves.split() == [
-            '35', '40', '45', '50', '55', '60', '65', '70', '75', '80']
+            '35',
+            '40',
+            '45',
+            '50',
+            '55',
+            '60',
+            '65',
+            '70',
+            '75',
+            '80',
+        ]
         h_min = 35
         h_max = 80
         offset = (self._B1_table_value(factor_digits, h_min, h_max) - h_min) // 5

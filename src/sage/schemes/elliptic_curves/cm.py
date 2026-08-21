@@ -115,10 +115,12 @@ def hilbert_class_polynomial(D, algorithm=None):
 
     if algorithm == "arb":
         import sage.libs.arb.arith
+
         return sage.libs.arb.arith.hilbert_class_polynomial(D)
 
     if algorithm == "magma":
         from sage.interfaces.magma import magma
+
         magma.eval("R<x> := PolynomialRing(IntegerRing())")
         f = str(magma.eval("HilbertClassPolynomial(%s)" % D))
         return IntegerRing()['x'](f)
@@ -153,11 +155,11 @@ def hilbert_class_polynomial(D, algorithm=None):
     #
     # independently of j", where k_2 \approx 10.163.
 
-    h = len(rqf) # class number
-    c1 = 3.05682737291380 # log(2*10.63)
-    c2 = sum([1/RR(qf[0]) for qf in rqf], RR(0))
+    h = len(rqf)  # class number
+    c1 = 3.05682737291380  # log(2*10.63)
+    c2 = sum([1 / RR(qf[0]) for qf in rqf], RR(0))
     prec = c2 * RR(3.142) * RR(D).abs().sqrt() + h * c1  # bound on log
-    prec = prec * 1.45   # bound on log_2 (1/log(2) = 1.44..)
+    prec = prec * 1.45  # bound on log_2 (1/log(2) = 1.44..)
     prec = 10 + prec.ceil()  # allow for rounding error
 
     # set appropriate precision for further computing
@@ -169,7 +171,7 @@ def hilbert_class_polynomial(D, algorithm=None):
     for qf in rqf:
         a, b, c = list(qf)
         tau = (b + Dsqrt) / (a << 1)
-        pol *= (t - elliptic_j(tau))
+        pol *= t - elliptic_j(tau)
 
     coeffs = [cof.real().round() for cof in pol.coefficients(sparse=False)]
     return IntegerRing()['x'](coeffs)
@@ -252,11 +254,10 @@ def is_HCP(f, check_monic_irreducible=True):
     from sage.rings.finite_rings.finite_field_constructor import GF
 
     h = f.degree()
-    h2list = [d for d in h.divisors()
-              if (d-h) % 2 == 0 and d.prime_to_m_part(2) == 1]
-    pmin = 33 * (h**2 * (RR(h+2).log().log()+2)**2).ceil()
+    h2list = [d for d in h.divisors() if (d - h) % 2 == 0 and d.prime_to_m_part(2) == 1]
+    pmin = 33 * (h**2 * (RR(h + 2).log().log() + 2) ** 2).ceil()
     # Guarantees 4*p > |D| for fundamental D under GRH
-    p = pmin-1
+    p = pmin - 1
     n = 0
     from sage.arith.misc import next_prime
     from sage.schemes.elliptic_curves.constructor import EllipticCurve
@@ -330,6 +331,7 @@ def OrderClassNumber(D0, h0, f):
     ps = f.prime_divisors()
     from sage.misc.misc_c import prod
     from sage.arith.misc import kronecker as kronecker_symbol
+
     n = (f // prod(ps)) * prod(p - kronecker_symbol(D0, p) for p in ps)
     if D0 == -3:
         # assert h0 == 1 and n % 3 == 0
@@ -439,20 +441,24 @@ def cm_j_invariants_and_orders(K, proof=None):
          (-3, 6, 31710790944000*a^2 + 39953093016000*a + 50337742902000)]
     """
     if K == QQ:
-        return [(ZZ(d), ZZ(f), ZZ(j)) for d, f, j in [
-            (-3, 3, -12288000),
-            (-3, 2, 54000),
-            (-3, 1, 0),
-            (-4, 2, 287496),
-            (-4, 1, 1728),
-            (-7, 2, 16581375),
-            (-7, 1, -3375),
-            (-8, 1, 8000),
-            (-11, 1, -32768),
-            (-19, 1, -884736),
-            (-43, 1, -884736000),
-            (-67, 1, -147197952000),
-            (-163, 1, -262537412640768000)]]
+        return [
+            (ZZ(d), ZZ(f), ZZ(j))
+            for d, f, j in [
+                (-3, 3, -12288000),
+                (-3, 2, 54000),
+                (-3, 1, 0),
+                (-4, 2, 287496),
+                (-4, 1, 1728),
+                (-7, 2, 16581375),
+                (-7, 1, -3375),
+                (-8, 1, 8000),
+                (-11, 1, -32768),
+                (-19, 1, -884736),
+                (-43, 1, -884736000),
+                (-67, 1, -147197952000),
+                (-163, 1, -262537412640768000),
+            ]
+        ]
 
     # Get the list of CM orders that could possibly have Hilbert class
     # polynomial F(x) with a root in K.  If F(x) has a root alpha in K,
@@ -460,10 +466,13 @@ def cm_j_invariants_and_orders(K, proof=None):
     # F(x) divides [K:QQ].
     n = K.absolute_degree()
     T = discriminants_with_bounded_class_number(n, proof=proof)
-    dlist = sorted(sum((Dflist for h,Dflist in T.items() if h.divides(n)), []))
+    dlist = sorted(sum((Dflist for h, Dflist in T.items() if h.divides(n)), []))
 
-    return [(D, f, j) for D, f in dlist
-            for j in hilbert_class_polynomial(D*f*f).roots(K, multiplicities=False)]
+    return [
+        (D, f, j)
+        for D, f in dlist
+        for j in hilbert_class_polynomial(D * f * f).roots(K, multiplicities=False)
+    ]
 
 
 @cached_function
@@ -523,6 +532,7 @@ def cm_orders(h, proof=None):
     # be stored in hDf_dict), and return just those with class number h.
     return discriminants_with_bounded_class_number(h, proof=proof)[h]
 
+
 # Table from Mark Watkins paper "Class numbers of imaginary quadratic fields".
 
 # WAS extracted this by cutting/pasting from the pdf, and running this program:
@@ -539,33 +549,108 @@ def cm_orders(h, proof=None):
 # fields.  These are all *unconditional* (not dependent on GRH).
 
 
-watkins_table = {1: (163, 9), 2: (427, 18), 3: (907, 16), 4: (1555, 54), 5: (2683, 25),
-                 6: (3763, 51), 7: (5923, 31), 8: (6307, 131), 9: (10627, 34), 10:
-                 (13843, 87), 11: (15667, 41), 12: (17803, 206), 13: (20563, 37), 14:
-                 (30067, 95), 15: (34483, 68), 16: (31243, 322), 17: (37123, 45), 18:
-                 (48427, 150), 19: (38707, 47), 20: (58507, 350), 21: (61483, 85), 22:
-                 (85507, 139), 23: (90787, 68), 24: (111763, 511), 25: (93307, 95), 26:
-                 (103027, 190), 27: (103387, 93), 28: (126043, 457), 29: (166147, 83),
-                 30: (134467, 255), 31: (133387, 73), 32: (164803, 708), 33: (222643, 101),
-                 34: (189883, 219), 35: (210907, 103), 36: (217627, 668), 37:
-                 (158923, 85), 38: (289963, 237), 39: (253507, 115), 40: (260947, 912),
-                 41: (296587, 109), 42: (280267, 339), 43: (300787, 106), 44: (319867, 691),
-                 45: (308323, 154), 46: (462883, 268), 47: (375523, 107), 48:
-                 (335203, 1365), 49: (393187, 132), 50: (389467, 345), 51: (546067, 159),
-                 52: (439147, 770), 53: (425107, 114), 54: (532123, 427), 55: (452083,163),
-                 56: (494323, 1205), 57: (615883, 179), 58: (586987, 291),
-                 59:(474307, 128), 60: (662803, 1302), 61: (606643, 132), 62: (647707, 323),
-                 63: (991027, 216), 64: (693067, 1672), 65: (703123, 164), 66: (958483, 530),
-                 67: (652723, 120), 68: (819163, 976), 69: (888427, 209), 70:(811507, 560),
-                 71: (909547, 150), 72: (947923, 1930), 73: (886867, 119),
-                 74: (951043, 407), 75: (916507, 237), 76: (1086187, 1075), 77: (1242763, 216),
-                 78: (1004347, 561), 79: (1333963, 175), 80: (1165483, 2277), 81: (1030723, 228),
-                 82: (1446547, 402), 83: (1074907, 150), 84: (1225387,1715),
-                 85: (1285747, 221), 86: (1534723, 472), 87: (1261747, 222),
-                 88:(1265587, 1905), 89: (1429387, 192), 90: (1548523, 801),
-                 91: (1391083,214), 92: (1452067, 1248), 93: (1475203, 262), 94: (1587763, 509),
-                 95:(1659067, 241), 96: (1684027, 3283), 97: (1842523, 185), 98: (2383747,580),
-                 99: (1480627, 289), 100: (1856563, 1736)}
+watkins_table = {
+    1: (163, 9),
+    2: (427, 18),
+    3: (907, 16),
+    4: (1555, 54),
+    5: (2683, 25),
+    6: (3763, 51),
+    7: (5923, 31),
+    8: (6307, 131),
+    9: (10627, 34),
+    10: (13843, 87),
+    11: (15667, 41),
+    12: (17803, 206),
+    13: (20563, 37),
+    14: (30067, 95),
+    15: (34483, 68),
+    16: (31243, 322),
+    17: (37123, 45),
+    18: (48427, 150),
+    19: (38707, 47),
+    20: (58507, 350),
+    21: (61483, 85),
+    22: (85507, 139),
+    23: (90787, 68),
+    24: (111763, 511),
+    25: (93307, 95),
+    26: (103027, 190),
+    27: (103387, 93),
+    28: (126043, 457),
+    29: (166147, 83),
+    30: (134467, 255),
+    31: (133387, 73),
+    32: (164803, 708),
+    33: (222643, 101),
+    34: (189883, 219),
+    35: (210907, 103),
+    36: (217627, 668),
+    37: (158923, 85),
+    38: (289963, 237),
+    39: (253507, 115),
+    40: (260947, 912),
+    41: (296587, 109),
+    42: (280267, 339),
+    43: (300787, 106),
+    44: (319867, 691),
+    45: (308323, 154),
+    46: (462883, 268),
+    47: (375523, 107),
+    48: (335203, 1365),
+    49: (393187, 132),
+    50: (389467, 345),
+    51: (546067, 159),
+    52: (439147, 770),
+    53: (425107, 114),
+    54: (532123, 427),
+    55: (452083, 163),
+    56: (494323, 1205),
+    57: (615883, 179),
+    58: (586987, 291),
+    59: (474307, 128),
+    60: (662803, 1302),
+    61: (606643, 132),
+    62: (647707, 323),
+    63: (991027, 216),
+    64: (693067, 1672),
+    65: (703123, 164),
+    66: (958483, 530),
+    67: (652723, 120),
+    68: (819163, 976),
+    69: (888427, 209),
+    70: (811507, 560),
+    71: (909547, 150),
+    72: (947923, 1930),
+    73: (886867, 119),
+    74: (951043, 407),
+    75: (916507, 237),
+    76: (1086187, 1075),
+    77: (1242763, 216),
+    78: (1004347, 561),
+    79: (1333963, 175),
+    80: (1165483, 2277),
+    81: (1030723, 228),
+    82: (1446547, 402),
+    83: (1074907, 150),
+    84: (1225387, 1715),
+    85: (1285747, 221),
+    86: (1534723, 472),
+    87: (1261747, 222),
+    88: (1265587, 1905),
+    89: (1429387, 192),
+    90: (1548523, 801),
+    91: (1391083, 214),
+    92: (1452067, 1248),
+    93: (1475203, 262),
+    94: (1587763, 509),
+    95: (1659067, 241),
+    96: (1684027, 3283),
+    97: (1842523, 185),
+    98: (2383747, 580),
+    99: (1480627, 289),
+    100: (1856563, 1736),
+}
 
 # Table from Janis Klaise [Klaise2012]_
 
@@ -584,26 +669,108 @@ watkins_table = {1: (163, 9), 2: (427, 18), 3: (907, 16), 4: (1555, 54), 5: (268
 # order with class number h, and n is the number of such orders.
 # These are all *unconditional* (not dependent on GRH).
 
-klaise_table = {1: (163, 13), 2: (427, 29), 3: (907, 25), 4: (1555, 84), 5: (2683, 29), 6: (4075, 101),
-                7: (5923, 38), 8: (7987, 208), 9: (10627, 55), 10: (13843, 123), 11: (15667, 46),
-                12: (19723, 379), 13: (20563, 43), 14: (30067, 134), 15: (34483, 95), 16: (35275, 531),
-                17: (37123, 50), 18: (48427, 291), 19: (38707, 59), 20: (58843, 502), 21: (61483, 118),
-                22: (85507, 184), 23: (90787, 78), 24: (111763, 1042), 25: (93307, 101), 26: (103027, 227),
-                27: (103387, 136), 28: (126043, 623), 29: (166147, 94), 30: (137083, 473), 31: (133387, 83),
-                32: (164803, 1231), 33: (222643, 158), 34: (189883, 262), 35: (210907, 111), 36: (217627, 1306),
-                37: (158923, 96), 38: (289963, 284), 39: (253507, 162), 40: (274003, 1418), 41: (296587, 125),
-                42: (301387, 596), 43: (300787, 123), 44: (319867, 911), 45: (308323, 231), 46: (462883, 330),
-                47: (375523, 117), 48: (335203, 2895), 49: (393187, 146), 50: (389467, 445), 51: (546067, 217),
-                52: (457867, 1006), 53: (425107, 130), 54: (532123, 812), 55: (452083, 177), 56: (494323, 1812),
-                57: (615883, 237), 58: (586987, 361), 59: (474307, 144), 60: (662803, 2361), 61: (606643, 149),
-                62: (647707, 386), 63: (991027, 311), 64: (693067, 2919), 65: (703123, 192), 66: (958483, 861),
-                67: (652723, 145), 68: (819163, 1228), 69: (888427, 292), 70: (821683, 704), 71: (909547, 176),
-                72: (947923, 4059), 73: (886867, 137), 74: (951043, 474), 75: (916507, 353), 76: (1086187, 1384),
-                77: (1242763, 236), 78: (1004347, 925), 79: (1333963, 200), 80: (1165483, 3856), 81: (1030723, 339),
-                82: (1446547, 487), 83: (1074907, 174), 84: (1225387, 2998), 85: (1285747, 246), 86: (1534723, 555),
-                87: (1261747, 313), 88: (1265587, 2771), 89: (1429387, 206), 90: (1548523, 1516), 91: (1391083, 249),
-                92: (1452067, 1591), 93: (1475203, 354), 94: (1587763, 600), 95: (1659067, 273), 96: (1684027, 7276),
-                97: (1842523, 208), 98: (2383747, 710), 99: (1480627, 396), 100: (1856563, 2311)}
+klaise_table = {
+    1: (163, 13),
+    2: (427, 29),
+    3: (907, 25),
+    4: (1555, 84),
+    5: (2683, 29),
+    6: (4075, 101),
+    7: (5923, 38),
+    8: (7987, 208),
+    9: (10627, 55),
+    10: (13843, 123),
+    11: (15667, 46),
+    12: (19723, 379),
+    13: (20563, 43),
+    14: (30067, 134),
+    15: (34483, 95),
+    16: (35275, 531),
+    17: (37123, 50),
+    18: (48427, 291),
+    19: (38707, 59),
+    20: (58843, 502),
+    21: (61483, 118),
+    22: (85507, 184),
+    23: (90787, 78),
+    24: (111763, 1042),
+    25: (93307, 101),
+    26: (103027, 227),
+    27: (103387, 136),
+    28: (126043, 623),
+    29: (166147, 94),
+    30: (137083, 473),
+    31: (133387, 83),
+    32: (164803, 1231),
+    33: (222643, 158),
+    34: (189883, 262),
+    35: (210907, 111),
+    36: (217627, 1306),
+    37: (158923, 96),
+    38: (289963, 284),
+    39: (253507, 162),
+    40: (274003, 1418),
+    41: (296587, 125),
+    42: (301387, 596),
+    43: (300787, 123),
+    44: (319867, 911),
+    45: (308323, 231),
+    46: (462883, 330),
+    47: (375523, 117),
+    48: (335203, 2895),
+    49: (393187, 146),
+    50: (389467, 445),
+    51: (546067, 217),
+    52: (457867, 1006),
+    53: (425107, 130),
+    54: (532123, 812),
+    55: (452083, 177),
+    56: (494323, 1812),
+    57: (615883, 237),
+    58: (586987, 361),
+    59: (474307, 144),
+    60: (662803, 2361),
+    61: (606643, 149),
+    62: (647707, 386),
+    63: (991027, 311),
+    64: (693067, 2919),
+    65: (703123, 192),
+    66: (958483, 861),
+    67: (652723, 145),
+    68: (819163, 1228),
+    69: (888427, 292),
+    70: (821683, 704),
+    71: (909547, 176),
+    72: (947923, 4059),
+    73: (886867, 137),
+    74: (951043, 474),
+    75: (916507, 353),
+    76: (1086187, 1384),
+    77: (1242763, 236),
+    78: (1004347, 925),
+    79: (1333963, 200),
+    80: (1165483, 3856),
+    81: (1030723, 339),
+    82: (1446547, 487),
+    83: (1074907, 174),
+    84: (1225387, 2998),
+    85: (1285747, 246),
+    86: (1534723, 555),
+    87: (1261747, 313),
+    88: (1265587, 2771),
+    89: (1429387, 206),
+    90: (1548523, 1516),
+    91: (1391083, 249),
+    92: (1452067, 1591),
+    93: (1475203, 354),
+    94: (1587763, 600),
+    95: (1659067, 273),
+    96: (1684027, 7276),
+    97: (1842523, 208),
+    98: (2383747, 710),
+    99: (1480627, 396),
+    100: (1856563, 2311),
+}
 
 
 def largest_fundamental_disc_with_class_number(h):
@@ -651,7 +818,9 @@ def largest_fundamental_disc_with_class_number(h):
         B, c = watkins_table[h]
         return (Integer(B), Integer(c))
     except KeyError:
-        raise NotImplementedError("largest fundamental discriminant not available for class number %s" % h)
+        raise NotImplementedError(
+            "largest fundamental discriminant not available for class number %s" % h
+        )
 
 
 def largest_disc_with_class_number(h):
@@ -713,7 +882,10 @@ def largest_disc_with_class_number(h):
         B, c = klaise_table[h]
         return (Integer(B), Integer(c))
     except KeyError:
-        raise NotImplementedError("largest discriminant not available for class number %s" % h)
+        raise NotImplementedError(
+            "largest discriminant not available for class number %s" % h
+        )
+
 
 # This dict has class numbers h as keys, the value at h is a complete
 # list of pairs (D0,f) such that D=D0*f**2 has class number h.  We
@@ -721,9 +893,26 @@ def largest_disc_with_class_number(h):
 # discriminants_with_bounded_class_number().
 
 
-hDf_dict = {ZZ(1): [(ZZ(D), ZZ(h)) for D,h in
-                    [(-3, 1), (-3, 2), (-3, 3), (-4, 1), (-4, 2), (-7, 1), (-7, 2),
-                     (-8, 1), (-11, 1), (-19, 1), (-43, 1), (-67, 1), (-163, 1)]]}
+hDf_dict = {
+    ZZ(1): [
+        (ZZ(D), ZZ(h))
+        for D, h in [
+            (-3, 1),
+            (-3, 2),
+            (-3, 3),
+            (-4, 1),
+            (-4, 2),
+            (-7, 1),
+            (-7, 2),
+            (-8, 1),
+            (-11, 1),
+            (-19, 1),
+            (-43, 1),
+            (-67, 1),
+            (-163, 1),
+        ]
+    ]
+}
 
 
 def discriminants_with_bounded_class_number(hmax, B=None, proof=None):
@@ -782,24 +971,25 @@ def discriminants_with_bounded_class_number(hmax, B=None, proof=None):
 
     # Easy case where we have already computed and cached the relevant values
     if hDf_dict and hmax <= max(hDf_dict):
-        T = {h:Dflist for h,Dflist in hDf_dict.items() if h <= hmax}
+        T = {h: Dflist for h, Dflist in hDf_dict.items() if h <= hmax}
         if B:
             for h in T:
-                T[h] = [Df for Df in T[h] if Df[0].abs()*Df[1]**2 <= B]
+                T[h] = [Df for Df in T[h] if Df[0].abs() * Df[1] ** 2 <= B]
         return T
 
     # imports that are needed only for this function
     from sage.arith.srange import xsrange
     from sage.structure.proof.proof import get_flag
+
     proof = get_flag(proof, 'number_field')
 
     if B is None:
         if hmax <= 100:
             # Determine how far we have to go by applying Watkins + Klaise's results.
-            v = [largest_disc_with_class_number(h) for h in range(1, hmax+1)]
-            B = max([b for b,_ in v])
-            #print("Testing all discriminants up to {}".format(B))
-            count = [0] + [cnt for _,cnt in v]
+            v = [largest_disc_with_class_number(h) for h in range(1, hmax + 1)]
+            B = max([b for b, _ in v])
+            # print("Testing all discriminants up to {}".format(B))
+            count = [0] + [cnt for _, cnt in v]
         else:
             raise ValueError("if hmax>100 you must specify a discriminant bound B")
     else:
@@ -830,41 +1020,42 @@ def discriminants_with_bounded_class_number(hmax, B=None, proof=None):
     # update it with fundamental ones.
 
     from collections import defaultdict
+
     T = defaultdict(set)
     h_dict = {}
     for h, Dflist in hDf_dict.items():
-        for D0,f in Dflist:
-            h_dict[D0*f**2] = h
+        for D0, f in Dflist:
+            h_dict[D0 * f**2] = h
         if not count:
-            Dflist = [Df for Df in Dflist if Df[0].abs()*Df[1]**2 <= B]
+            Dflist = [Df for Df in Dflist if Df[0].abs() * Df[1] ** 2 <= B]
         T[h] = set(Dflist)
 
     # We do not need to certify the class number from :pari:`qfbclassno` for discriminants under 2*10^10
-    if B < 2*10**10:
+    if B < 2 * 10**10:
         proof = False
 
-    for D in xsrange(-3, -B-1, -1):
+    for D in xsrange(-3, -B - 1, -1):
         if not D.is_discriminant():
             continue
         D0 = D.squarefree_part()
         if D0 % 4 != 1:
             D0 *= 4
-        f = (D//D0).isqrt()
+        f = (D // D0).isqrt()
 
         # Now D0 is the fundamental discriminant and f the conductor
 
         if D in h_dict:
             h = h_dict[D]
         else:
-            if f == 1: # D itself is fundamental
+            if f == 1:  # D itself is fundamental
                 h = D.class_number(proof)
                 h_dict[D] = h
             else:
-                h = OrderClassNumber(D0,h_dict[D0],f)
+                h = OrderClassNumber(D0, h_dict[D0], f)
 
         # If the class number of this order is within the range, then store (D0,f)
         if h <= hmax:
-            T[h].add((D0,f))
+            T[h].add((D0, f))
 
     # sort each list of (D,f) pairs by (|D|,f)
 
@@ -877,7 +1068,9 @@ def discriminants_with_bounded_class_number(hmax, B=None, proof=None):
         # 1. Check that we found the right number of discriminants
         for h in T:
             if len(T[h]) != count[h]:
-                raise RuntimeError("number of discriminants inconsistent with Watkins's table")
+                raise RuntimeError(
+                    "number of discriminants inconsistent with Watkins's table"
+                )
         # 2. Update the global dict
         hDf_dict.update(dict(T))
 
@@ -966,13 +1159,15 @@ def is_cm_j_invariant(j, algorithm='CremonaSutherland', method=None):
 
     # First we check that j is an algebraic number:
     if not isinstance(j, NumberFieldElement_base) and j not in QQ:
-        raise NotImplementedError("is_cm_j_invariant() is only implemented for number field elements")
+        raise NotImplementedError(
+            "is_cm_j_invariant() is only implemented for number field elements"
+        )
 
     # for j in ZZ we have a lookup-table:
 
     if j in ZZ:
         j = ZZ(j)
-        table = {jj: (d,f) for d,f,jj in cm_j_invariants_and_orders(QQ)}
+        table = {jj: (d, f) for d, f, jj in cm_j_invariants_and_orders(QQ)}
         if j in table:
             return True, table[j]
         return False, None
@@ -985,7 +1180,7 @@ def is_cm_j_invariant(j, algorithm='CremonaSutherland', method=None):
     # Next we find its minimal polynomial of j:
 
     if j.parent().absolute_degree() == 2:
-        jpol = j.absolute_minpoly() # no algorithm parameter
+        jpol = j.absolute_minpoly()  # no algorithm parameter
     else:
         jpol = j.absolute_minpoly(algorithm='pari')
 
@@ -1010,10 +1205,12 @@ def is_cm_j_invariant(j, algorithm='CremonaSutherland', method=None):
     h = jpol.degree()
     if algorithm in ['exhaustive', 'old']:
         if h > 100:
-            raise NotImplementedError("CM data only available for class numbers up to 100")
-        for d,f in cm_orders(h):
-            if jpol == hilbert_class_polynomial(d*f**2):
-                return (True, (d,f))
+            raise NotImplementedError(
+                "CM data only available for class numbers up to 100"
+            )
+        for d, f in cm_orders(h):
+            if jpol == hilbert_class_polynomial(d * f**2):
+                return (True, (d, f))
         return (False, None)
 
     if algorithm not in ['reduction', 'new']:
@@ -1035,10 +1232,11 @@ def is_cm_j_invariant(j, algorithm='CremonaSutherland', method=None):
     # integral model:
 
     from sage.schemes.elliptic_curves.constructor import EllipticCurve
+
     E = EllipticCurve(j=j).integral_model()
     D = E.discriminant()
     prime_bound = 1000  # test primes of degree 1 up to this norm
-    max_primes = 20     # test at most this many primes
+    max_primes = 20  # test at most this many primes
     num_prime = 0
     cmd = 0
     cmf = 0
@@ -1059,28 +1257,30 @@ def is_cm_j_invariant(j, algorithm='CremonaSutherland', method=None):
 
     for P in K.primes_of_degree_one_iter(prime_bound):
         if num_prime > max_primes:
-            if cmd: # we have a candidate CM field already
+            if cmd:  # we have a candidate CM field already
                 break
-            else:   # we need to try more primes
+            else:  # we need to try more primes
                 max_primes *= 2
-        if D.valuation(P) > 0: # skip bad primes
+        if D.valuation(P) > 0:  # skip bad primes
             continue
         aP = E.reduction(P).trace_of_frobenius()
-        if aP == 0: # skip supersingular primes
+        if aP == 0:  # skip supersingular primes
             continue
         num_prime += 1
-        DP = aP**2 - 4*P.norm()
+        DP = aP**2 - 4 * P.norm()
         dP = DP.squarefree_part()
-        fP = ZZ(DP//dP).isqrt()
-        if cmd == 0:      # first one, so store d and f
+        fP = ZZ(DP // dP).isqrt()
+        if cmd == 0:  # first one, so store d and f
             cmd = dP
             cmf = fP
-        elif cmd != dP: # inconsistent with previous
+        elif cmd != dP:  # inconsistent with previous
             return (False, None)
-        else:           # consistent d, so update f
+        else:  # consistent d, so update f
             cmf = cmf.gcd(fP)
 
-    if cmd == 0: # no conclusion, we found no degree 1 primes, revert to default algorithm
+    if (
+        cmd == 0
+    ):  # no conclusion, we found no degree 1 primes, revert to default algorithm
         return is_cm_j_invariant(j)
 
     # it looks like cm by disc cmd * f**2 where f divides cmf
@@ -1092,9 +1292,9 @@ def is_cm_j_invariant(j, algorithm='CremonaSutherland', method=None):
     # Now we must check if h(cmd*f**2)==h for f|cmf; if so we check
     # whether j is a root of the associated Hilbert class polynomial.
     h0 = cmd.class_number()
-    for f in cmf.divisors(): # only positive divisors
-        if h != OrderClassNumber(cmd,h0,f):
+    for f in cmf.divisors():  # only positive divisors
+        if h != OrderClassNumber(cmd, h0, f):
             continue
-        if jpol == hilbert_class_polynomial(cmd*f**2):
+        if jpol == hilbert_class_polynomial(cmd * f**2):
             return (True, (cmd, f))
     return (False, None)

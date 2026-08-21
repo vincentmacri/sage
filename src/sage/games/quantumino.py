@@ -177,6 +177,7 @@ REFERENCES:
 
 from sage.structure.sage_object import SageObject
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.all", "Graphics")
 lazy_import("sage.plot.plot3d.platonic", "cube")
 lazy_import("sage.plot.plot3d.shapes2", "text3d")
@@ -187,23 +188,59 @@ from sage.combinat.tiling import Polyomino, TilingSolver
 # Example:  The family games america: Quantumino
 ################################################
 pentaminos = []
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (1,2,0), (1,1,1)], color='deeppink'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,0,1), (2,0,0), (2,1,0)], color='deeppink'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (1,2,0), (0,0,1)], color='green'))
-pentaminos.append(Polyomino([(0,0,0), (0,1,0), (0,2,0), (1,0,0), (1,0,1)], color='green'))
-pentaminos.append(Polyomino([(0,1,0), (1,0,1), (1,1,0), (1,1,1), (1,2,0)], color='red'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (1,0,1), (2,0,1)], color='red'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (1,2,0), (1,2,1)], color='orange'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (0,1,0), (0,2,0), (0,2,1)], color='orange'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (0,1,0), (1,1,0), (0,0,1)], color='yellow'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (1,1,1), (0,0,1)], color='yellow'))
-pentaminos.append(Polyomino([(0,0,0), (0,1,0), (1,1,0), (0,2,0), (1,1,1)], color='midnightblue'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (1,0,1), (1,2,0)], color='darkblue'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (1,1,1), (2,1,1)], color='blue'))
-pentaminos.append(Polyomino([(0,0,0), (0,1,0), (1,1,0), (1,1,1), (1,2,1)], color='blue'))
-pentaminos.append(Polyomino([(0,0,0), (1,0,0), (1,1,0), (2,1,0), (2,1,1)], color='purple'))
-pentaminos.append(Polyomino([(0,0,0), (0,1,0), (1,1,0), (1,2,0), (1,2,1)], color='purple'))
-pentaminos.append(Polyomino([(0,1,0), (1,0,0), (1,1,0), (1,1,1), (1,2,0)], color='gray'))
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 2, 0), (1, 1, 1)], color='deeppink')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 0, 1), (2, 0, 0), (2, 1, 0)], color='deeppink')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 2, 0), (0, 0, 1)], color='green')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (0, 1, 0), (0, 2, 0), (1, 0, 0), (1, 0, 1)], color='green')
+)
+pentaminos.append(
+    Polyomino([(0, 1, 0), (1, 0, 1), (1, 1, 0), (1, 1, 1), (1, 2, 0)], color='red')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 0, 1), (2, 0, 1)], color='red')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 2, 0), (1, 2, 1)], color='orange')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 2, 0), (0, 2, 1)], color='orange')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0), (0, 0, 1)], color='yellow')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 1, 1), (0, 0, 1)], color='yellow')
+)
+pentaminos.append(
+    Polyomino(
+        [(0, 0, 0), (0, 1, 0), (1, 1, 0), (0, 2, 0), (1, 1, 1)], color='midnightblue'
+    )
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 0, 1), (1, 2, 0)], color='darkblue')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (1, 1, 1), (2, 1, 1)], color='blue')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (0, 1, 0), (1, 1, 0), (1, 1, 1), (1, 2, 1)], color='blue')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (1, 0, 0), (1, 1, 0), (2, 1, 0), (2, 1, 1)], color='purple')
+)
+pentaminos.append(
+    Polyomino([(0, 0, 0), (0, 1, 0), (1, 1, 0), (1, 2, 0), (1, 2, 1)], color='purple')
+)
+pentaminos.append(
+    Polyomino([(0, 1, 0), (1, 0, 0), (1, 1, 0), (1, 1, 1), (1, 2, 0)], color='gray')
+)
 
 
 def show_pentaminos(box=(5, 8, 2)):
@@ -234,7 +271,7 @@ def show_pentaminos(box=(5, 8, 2)):
         q = p + (x, y, 0)
         G += q.show3d()
         G += text3d(str(i), (x, y, 2))
-    G += cube(color='gray',opacity=0.5).scale(box).translate((17, 6, 0))
+    G += cube(color='gray', opacity=0.5).scale(box).translate((17, 6, 0))
 
     # hack to set the aspect ratio to 1
     a, b = G.bounding_box()
@@ -242,6 +279,7 @@ def show_pentaminos(box=(5, 8, 2)):
     G.frame_aspect_ratio(tuple(b - a))
 
     return G
+
 
 ##############################
 # Class QuantuminoState
@@ -281,6 +319,7 @@ class QuantuminoState(SageObject):
         Quantumino state where the following pentamino is put aside :
         Polyomino: [(0, 0, 0), (0, 1, 0), (0, 2, 0), (1, 0, 0), (1, 0, 1)], Color: green
     """
+
     def __init__(self, pentos, aside, box=(5, 8, 2)):
         r"""
         EXAMPLES::
@@ -292,7 +331,9 @@ class QuantuminoState(SageObject):
             Quantumino state where the following pentamino is put aside :
             Polyomino: [(0, 0, 0), (1, 0, 0), (1, 0, 1), (1, 1, 0), (2, 0, 1)], Color: red
         """
-        assert all(isinstance(p, Polyomino) for p in pentos), "pentos must be an iterable of Polyomino"
+        assert all(isinstance(p, Polyomino) for p in pentos), (
+            "pentos must be an iterable of Polyomino"
+        )
         assert isinstance(aside, Polyomino), "aside must be a Polyomino"
         self._pentos = pentos
         self._aside = aside
@@ -309,7 +350,10 @@ class QuantuminoState(SageObject):
             Quantumino state where the following pentamino is put aside :
             Polyomino: [(0, 0, 0), (1, 0, 0), (1, 0, 1), (1, 1, 0), (2, 0, 1)], Color: red
         """
-        return "Quantumino state where the following pentamino is put aside :\n%s" % self._aside
+        return (
+            "Quantumino state where the following pentamino is put aside :\n%s"
+            % self._aside
+        )
 
     def __iter__(self):
         r"""
@@ -370,21 +414,22 @@ class QuantuminoState(SageObject):
         G = Graphics()
         for p in self:
             G += p.show3d(size=size)
-        aside_pento = self._aside.canonical() + (2,-4,0)
+        aside_pento = self._aside.canonical() + (2, -4, 0)
         G += aside_pento.show3d(size=size)
 
         # the box to fill
-        half_box = tuple(a/2 for a in self._box)
-        b = cube(color='gray',opacity=0.2).scale(self._box).translate(half_box)
-        b = b.translate((0, -.5, -.5))
+        half_box = tuple(a / 2 for a in self._box)
+        b = cube(color='gray', opacity=0.2).scale(self._box).translate(half_box)
+        b = b.translate((0, -0.5, -0.5))
         G += b
 
         # hack to set the aspect ratio to 1
-        a,b = G.bounding_box()
-        a,b = map(vector, (a,b))
-        G.frame_aspect_ratio(tuple(b-a))
+        a, b = G.bounding_box()
+        a, b = map(vector, (a, b))
+        G.frame_aspect_ratio(tuple(b - a))
 
         return G
+
 
 ##############################
 # Class QuantuminoSolver
@@ -412,6 +457,7 @@ class QuantuminoSolver(SageObject):
         Quantumino solver for the box (5, 4, 4)
         Aside pentamino number: 12
     """
+
     def __init__(self, aside, box=(5, 8, 2)):
         r"""
         Constructor.
@@ -439,7 +485,7 @@ class QuantuminoSolver(SageObject):
             Quantumino solver for the box (5, 8, 2)
             Aside pentamino number: 0
         """
-        s = "Quantumino solver for the box %s\n" % (self._box, )
+        s = "Quantumino solver for the box %s\n" % (self._box,)
         s += "Aside pentamino number: %s" % self._aside
         return s
 
@@ -467,7 +513,7 @@ class QuantuminoSolver(SageObject):
             Reflection allowed: False
             Reusing pieces allowed: False
         """
-        pieces = pentaminos[:self._aside] + pentaminos[self._aside+1:]
+        pieces = pentaminos[: self._aside] + pentaminos[self._aside + 1 :]
         return TilingSolver(pieces, box=self._box)
 
     def solve(self, partial=None):

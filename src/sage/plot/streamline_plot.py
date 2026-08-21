@@ -2,6 +2,7 @@
 """
 Streamline plots
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
@@ -27,6 +28,7 @@ class StreamlinePlot(GraphicPrimitive):
     """
     Primitive class that initializes the StreamlinePlot graphics type
     """
+
     def __init__(self, xpos_array, ypos_array, xvec_array, yvec_array, options):
         """
         Create the graphics primitive StreamlinePlot. This sets options
@@ -80,6 +82,7 @@ class StreamlinePlot(GraphicPrimitive):
             10.0
         """
         from sage.plot.plot import minmax_data
+
         return minmax_data(self.xpos_array, self.ypos_array, dict=True)
 
     def _allowed_options(self):
@@ -94,11 +97,13 @@ class StreamlinePlot(GraphicPrimitive):
             sage: d['density']
             'Controls the closeness of streamlines'
         """
-        return {'plot_points': 'How many points to use for plotting precision',
-                'color': 'The color of the arrows',
-                'density': 'Controls the closeness of streamlines',
-                'start_points': 'Coordinates of starting points for the streamlines',
-                'zorder': 'The layer level in which to draw'}
+        return {
+            'plot_points': 'How many points to use for plotting precision',
+            'color': 'The color of the arrows',
+            'density': 'Controls the closeness of streamlines',
+            'start_points': 'Coordinates of starting points for the streamlines',
+            'zorder': 'The layer level in which to draw',
+        }
 
     def _repr_(self):
         """
@@ -128,7 +133,8 @@ class StreamlinePlot(GraphicPrimitive):
             20
         """
         return "StreamlinePlot defined by a {} x {} vector grid".format(
-               self._options['plot_points'], self._options['plot_points'])
+            self._options['plot_points'], self._options['plot_points']
+        )
 
     def _render_on_subplot(self, subplot):
         """
@@ -140,12 +146,16 @@ class StreamlinePlot(GraphicPrimitive):
         options = self.options()
         streamplot_options = options.copy()
         streamplot_options.pop('plot_points')
-        subplot.streamplot(self.xpos_array, self.ypos_array,
-                       self.xvec_array, self.yvec_array,
-                       **streamplot_options)
+        subplot.streamplot(
+            self.xpos_array,
+            self.ypos_array,
+            self.xvec_array,
+            self.yvec_array,
+            **streamplot_options,
+        )
 
 
-@options(plot_points=20, density=1., frame=True)
+@options(plot_points=20, density=1.0, frame=True)
 def streamline_plot(f_g, xrange, yrange, **options):
     r"""
     Return a streamline plot in a vector field.
@@ -274,20 +284,22 @@ def streamline_plot(f_g, xrange, yrange, **options):
     """
     # Parse the function input
     if isinstance(f_g, (list, tuple)):
-        (f,g) = f_g
+        (f, g) = f_g
     else:
         from sage.misc.functional import sqrt
         from sage.misc.sageinspect import is_function_or_cython_function
+
         if is_function_or_cython_function(f_g):
-            f = lambda x,y: 1 / sqrt(f_g(x, y)**2 + 1)
-            g = lambda x,y: f_g(x, y) * f(x, y)
+            f = lambda x, y: 1 / sqrt(f_g(x, y) ** 2 + 1)
+            g = lambda x, y: f_g(x, y) * f(x, y)
         else:
             f = 1 / sqrt(f_g**2 + 1)
             g = f_g * f
 
     from sage.plot.graphics import Graphics
     from sage.plot.misc import setup_for_eval_on_grid
-    z, ranges = setup_for_eval_on_grid([f,g], [xrange,yrange], options['plot_points'])
+
+    z, ranges = setup_for_eval_on_grid([f, g], [xrange, yrange], options['plot_points'])
     f, g = z
 
     # The density values must be floats
@@ -308,6 +320,7 @@ def streamline_plot(f_g, xrange, yrange, **options):
         yvec_array.append(yvec_row)
 
     import numpy
+
     xpos_array = numpy.array(xpos_array, dtype=float)
     ypos_array = numpy.array(ypos_array, dtype=float)
     xvec_array = numpy.ma.masked_invalid(numpy.array(xvec_array, dtype=float))
@@ -322,6 +335,7 @@ def streamline_plot(f_g, xrange, yrange, **options):
 
     g = Graphics()
     g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
-    g.add_primitive(StreamlinePlot(xpos_array, ypos_array,
-                                   xvec_array, yvec_array, options))
+    g.add_primitive(
+        StreamlinePlot(xpos_array, ypos_array, xvec_array, yvec_array, options)
+    )
     return g

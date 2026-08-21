@@ -6,7 +6,7 @@ AUTHORS:
 - Reimundo Heluani (2019-10-05): Initial implementation.
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2019 Reimundo Heluani <heluani@potuz.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.graded_modules import GradedModulesCategory
 from sage.misc.cachefunc import cached_method

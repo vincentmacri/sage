@@ -201,6 +201,7 @@ class AdditiveAbelianGroupElement(FGP_Element):
 # since we want to inherit things like __hash__ from there rather than the
 # hyper-generic implementation for abstract abelian groups.
 
+
 class AdditiveAbelianGroup_class(FGP_Module_class):
     r"""
     An additive abelian group, implemented using the `\ZZ`-module machinery.
@@ -284,6 +285,7 @@ class AdditiveAbelianGroup_class(FGP_Module_class):
             'Z + Z/2 + Z/3'
         """
         from sage.rings.infinity import Infinity as oo
+
         invs = [j.additive_order() for j in self.gens()]
         if not invs:
             return "Trivial group"
@@ -406,6 +408,7 @@ class AdditiveAbelianGroup_fixed_gens(AdditiveAbelianGroup_class):
     A variant which fixes a set of generators, which need not be in Smith form
     (or indeed independent).
     """
+
     def __init__(self, cover, rels, gens):
         r"""
         Standard initialisation function.
@@ -469,5 +472,6 @@ class AdditiveAbelianGroup_fixed_gens(AdditiveAbelianGroup_class):
         if not self.is_finite():
             raise TypeError('Additive Abelian group must be finite')
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         s = 'Image(IsomorphismPermGroup(AbelianGroup(%s)))' % (list(self.invariants()),)
         return PermutationGroup(gap_group=s)

@@ -10,7 +10,7 @@ AUTHORS:
 
 - David Lucas (2015-06-29): abstract class version
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 David Joyner <wdjoyner@gmail.com>
 #                     2015 David Lucas <david.lucas@inria.fr>
 #
@@ -18,7 +18,7 @@ AUTHORS:
 #  version 2 or later (at your preference).
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.structure.sage_object import SageObject
@@ -368,4 +368,5 @@ class DecodingError(Exception):
     r"""
     Special exception class to indicate an error during decoding.
     """
+
     pass

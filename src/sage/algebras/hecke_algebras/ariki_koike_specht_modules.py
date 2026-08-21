@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2023-12-28): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2023 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.misc_c import prod
 from sage.misc.latex import latex
@@ -109,6 +109,7 @@ class SpechtModule(CombinatorialFreeModule):
     - [Mathas2002]_
     - [Mathas2004]_
     """
+
     @staticmethod
     def __classcall_private__(cls, AK, la):
         """
@@ -210,22 +211,23 @@ class SpechtModule(CombinatorialFreeModule):
 
         AKelts = self._AK.some_elements()
         for b in tester.some_elements():
-            t0 = self.linear_combination((apply_T0_power(b, exp), c)
-                                         for exp, c in enumerate(T0_poly))
+            t0 = self.linear_combination(
+                (apply_T0_power(b, exp), c) for exp, c in enumerate(T0_poly)
+            )
             tester.assertEqual(t0, self.zero())
 
             tester.assertEqual(b.T([0, 1, 0, 1]), b.T([1, 0, 1, 0]))
-            tester.assertEqual(b.T(1).T(1), (q-1)*b.T(1) + q*b)
+            tester.assertEqual(b.T(1).T(1), (q - 1) * b.T(1) + q * b)
             for i in range(2, n):
-                tester.assertEqual(b.T(i).T(i), (q-1)*b.T(i) + q*b)
+                tester.assertEqual(b.T(i).T(i), (q - 1) * b.T(i) + q * b)
                 tester.assertEqual(b.T(i).T(0), b.T(0).T(i))
                 if i < n - 1:
-                    tester.assertEqual(b.T([i, i+1, i]), b.T([i+1, i, i+1]))
-                    for j in range(i+2, n):
+                    tester.assertEqual(b.T([i, i + 1, i]), b.T([i + 1, i, i + 1]))
+                    for j in range(i + 2, n):
                         tester.assertEqual(b.T([i, j]), b.T([j, i]))
 
-            for (x, y) in some_tuples(AKelts, 2, tester._max_runs):
-                tester.assertEqual(b*(x*y), (b*x)*y)
+            for x, y in some_tuples(AKelts, 2, tester._max_runs):
+                tester.assertEqual(b * (x * y), (b * x) * y)
 
     def _L_on_basis(self, i, t):
         """
@@ -252,7 +254,7 @@ class SpechtModule(CombinatorialFreeModule):
         c = t.cells_containing(i)[0]
         if len(c) == 2:  # it is of level 1 and a regular tableau
             c = (0,) + c
-        res = self._q**(c[2]-c[1]) * self._u[c[0]]
+        res = self._q ** (c[2] - c[1]) * self._u[c[0]]
         R = self.base_ring()
         return self.element_class(self, {t: R(res)})
 
@@ -288,7 +290,7 @@ class SpechtModule(CombinatorialFreeModule):
             return self._L_on_basis(1, t)
 
         ct = t.cells_containing(i)[0]
-        cs = t.cells_containing(i+1)[0]
+        cs = t.cells_containing(i + 1)[0]
         if len(ct) == 2:  # it is of level 1 and a regular tableau
             ct = (0,) + ct
             cs = (0,) + cs
@@ -304,7 +306,7 @@ class SpechtModule(CombinatorialFreeModule):
         assert s.parent() is t.parent()
 
         def res(cell):
-            return self._q**(cell[2]-cell[1]) * self._u[cell[0]]
+            return self._q ** (cell[2] - cell[1]) * self._u[cell[0]]
 
         # Note that the residue of i in t is given by the cell c
         #   and of i in s corresponds to cell cp because the
@@ -376,12 +378,20 @@ class SpechtModule(CombinatorialFreeModule):
                 return None
             scalar = P._AK(scalar)
             if scalar.parent() is P._AK.LT():
-                return P.linear_combination((self.L(sum(([i]*val for i, val in enumerate(m[0], start=1)), [])).T(m[1].reduced_word()), c)
-                                            for m, c in scalar)
+                return P.linear_combination(
+                    (
+                        self.L(
+                            sum(([i] * val for i, val in enumerate(m[0], start=1)), [])
+                        ).T(m[1].reduced_word()),
+                        c,
+                    )
+                    for m, c in scalar
+                )
             if scalar.parent() is P._AK.T():
                 AKT = P._AK.T()
-                return P.linear_combination((self.T(AKT._basis_to_word(m)), c)
-                                            for m, c in scalar)
+                return P.linear_combination(
+                    (self.T(AKT._basis_to_word(m)), c) for m, c in scalar
+                )
             return self * P._AK.LT()(scalar)
 
         def L(self, i):

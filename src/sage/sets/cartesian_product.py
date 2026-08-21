@@ -26,6 +26,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.element_wrapper import ElementWrapperCheckWrappedClass
 
 from sage.categories.rings import Rings
+
 _Rings = Rings()
 
 
@@ -51,6 +52,7 @@ class CartesianProduct(UniqueRepresentation, Parent):
 
     .. automethod:: CartesianProduct._cartesian_product_of_elements
     """
+
     def __init__(self, sets, category, flatten=False):
         r"""
         INPUT:
@@ -129,8 +131,7 @@ class CartesianProduct(UniqueRepresentation, Parent):
         x = tuple(x)
 
         if len(x) != len(self._sets):
-            raise ValueError(
-                "{} should be of length {}".format(x, len(self._sets)))
+            raise ValueError("{} should be of length {}".format(x, len(self._sets)))
         x = tuple(c(xx) for c, xx in zip(self._sets, x))
         return self.element_class(self, x)
 
@@ -169,8 +170,9 @@ class CartesianProduct(UniqueRepresentation, Parent):
                 return True
         elif not isinstance(x, tuple):
             return False
-        return (len(x) == len(self._sets)
-                and all(elt in self._sets[i] for i, elt in enumerate(x)))
+        return len(x) == len(self._sets) and all(
+            elt in self._sets[i] for i, elt in enumerate(x)
+        )
 
     def cartesian_factors(self):
         """
@@ -203,6 +205,7 @@ class CartesianProduct(UniqueRepresentation, Parent):
             {0, ..., 99}
         """
         from sage.sets.integer_range import IntegerRange
+
         return IntegerRange(len(self._sets))
 
     @cached_method
@@ -285,6 +288,7 @@ class CartesianProduct(UniqueRepresentation, Parent):
              (Integer Ring, Rational Field))
         """
         from sage.categories.cartesian_product import CartesianProductFunctor
+
         return CartesianProductFunctor(self.category()), self.cartesian_factors()
 
     def _coerce_map_from_(self, S):
@@ -313,7 +317,6 @@ class CartesianProduct(UniqueRepresentation, Parent):
     random_element = Sets.CartesianProducts.ParentMethods.random_element
 
     class Element(ElementWrapperCheckWrappedClass):
-
         wrapped_class = tuple
 
         def cartesian_projection(self, i):

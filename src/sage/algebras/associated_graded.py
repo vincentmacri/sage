@@ -163,6 +163,7 @@ class AssociatedGradedAlgebra(CombinatorialFreeModule):
 
     - :wikipedia:`Filtered_algebra#Associated_graded_algebra`
     """
+
     def __init__(self, A, category=None):
         """
         Initialize ``self``.
@@ -189,8 +190,9 @@ class AssociatedGradedAlgebra(CombinatorialFreeModule):
         except AttributeError:
             opts = {'prefix': 'Abar'}
 
-        CombinatorialFreeModule.__init__(self, base_ring, A.basis().keys(),
-                                         category=category, **opts)
+        CombinatorialFreeModule.__init__(
+            self, base_ring, A.basis().keys(), category=category, **opts
+        )
 
         # Setup the conversion back
         phi = self.module_morphism(diagonal=lambda x: base_one, codomain=A)
@@ -209,6 +211,7 @@ class AssociatedGradedAlgebra(CombinatorialFreeModule):
              with cross product over Rational Field
         """
         from sage.categories.algebras_with_basis import AlgebrasWithBasis
+
         if self in AlgebrasWithBasis:
             return "Graded Algebra of {}".format(self._A)
         return "Graded Module of {}".format(self._A)
@@ -224,6 +227,7 @@ class AssociatedGradedAlgebra(CombinatorialFreeModule):
             \operatorname{gr} ...
         """
         from sage.misc.latex import latex
+
         return "\\operatorname{gr} " + latex(self._A)
 
     def _element_constructor_(self, x):
@@ -339,6 +343,6 @@ class AssociatedGradedAlgebra(CombinatorialFreeModule):
         """
         ret = self._A.product_on_basis(x, y)
         deg = self._A.degree_on_basis(x) + self._A.degree_on_basis(y)
-        return self.sum_of_terms([(i,c) for i,c in ret
-                                     if self._A.degree_on_basis(i) == deg],
-                                 distinct=True)
+        return self.sum_of_terms(
+            [(i, c) for i, c in ret if self._A.degree_on_basis(i) == deg], distinct=True
+        )

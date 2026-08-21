@@ -66,6 +66,7 @@ List representatives for Gamma_0(N) - equivalence classes of cusps::
      Cusp [1: 3] of Number Field in a with defining polynomial x^2 + 5,
     ...]
 """
+
 # ****************************************************************************
 #       Copyright (C) 2009, Maite Aranes <M.T.Aranes@warwick.ac.uk>
 #
@@ -159,6 +160,7 @@ class NFCuspsSpace(UniqueRepresentation, Parent):
         sage: kCusps = NFCusps(k); kCusps
         Set of all cusps of Number Field in a with defining polynomial x^2 + 5
     """
+
     def __init__(self, number_field):
         """
         See ``NFCusps`` for full documentation.
@@ -313,6 +315,7 @@ class NFCuspsSpace(UniqueRepresentation, Parent):
         """
         return self.__number_field
 
+
 # *************************************************************************
 #        NFCusp class                                                     *
 # *************************************************************************
@@ -420,6 +423,7 @@ class NFCusp(Element):
         ...
         ValueError: Cannot coerce cusps from one field to another
     """
+
     def __init__(self, number_field, a, b=None, parent=None, lreps=None):
         """
         Constructor of number field cusps. See ``NFCusp`` for full
@@ -466,8 +470,11 @@ class NFCusp(Element):
                 self.__b = R.one()
             elif isinstance(a, (tuple, list)):
                 if len(a) != 2:
-                    raise TypeError("unable to convert %r to a cusp \
-                                      of the number field" % a)
+                    raise TypeError(
+                        "unable to convert %r to a cusp \
+                                      of the number field"
+                        % a
+                    )
                 if a[1].is_zero():
                     self.__a = R.one()
                     self.__b = R.zero()
@@ -488,28 +495,36 @@ class NFCusp(Element):
                         self.__b = R(r.denominator())
                         self.__a = R(r * self.__b)
                     except (ValueError, TypeError):
-                        raise TypeError(f"unable to convert {a} to a cusp "
-                                        "of the number field")
+                        raise TypeError(
+                            f"unable to convert {a} to a cusp of the number field"
+                        )
             else:
                 try:
                     r = number_field(a)
                     self.__b = R(r.denominator())
                     self.__a = R(r * self.__b)
                 except (ValueError, TypeError):
-                    raise TypeError("unable to convert %r to a cusp "
-                                    "of the number field" % a)
+                    raise TypeError(
+                        "unable to convert %r to a cusp of the number field" % a
+                    )
         else:  # 'b' is given
             if isinstance(b, InfinityElement):
-                if isinstance(a, InfinityElement) or (isinstance(a, NFCusp) and a.is_infinity()):
-                    raise TypeError("unable to convert (%r, %r) "
-                                    "to a cusp of the number field" % (a, b))
+                if isinstance(a, InfinityElement) or (
+                    isinstance(a, NFCusp) and a.is_infinity()
+                ):
+                    raise TypeError(
+                        "unable to convert (%r, %r) "
+                        "to a cusp of the number field" % (a, b)
+                    )
                 self.__a = R.zero()
                 self.__b = R.one()
                 return
             if not b:
                 if not a:
-                    raise TypeError("unable to convert (%r, %r) "
-                                    "to a cusp of the number field" % (a, b))
+                    raise TypeError(
+                        "unable to convert (%r, %r) "
+                        "to a cusp of the number field" % (a, b)
+                    )
                 self.__a = R.one()
                 self.__b = R.zero()
                 return
@@ -537,15 +552,21 @@ class NFCusp(Element):
                     r = R(a) / b
                 elif isinstance(a, (tuple, list)):
                     if len(a) != 2:
-                        raise TypeError("unable to convert (%r, %r) \
-                                          to a cusp of the number field" % (a, b))
+                        raise TypeError(
+                            "unable to convert (%r, %r) \
+                                          to a cusp of the number field"
+                            % (a, b)
+                        )
                     r = R(a[0]) / (R(a[1]) * b)
                 else:
                     try:
                         r = number_field(a) / b
                     except (ValueError, TypeError):
-                        raise TypeError("unable to convert (%r, %r) \
-                                          to a cusp of the number field" % (a, b))
+                        raise TypeError(
+                            "unable to convert (%r, %r) \
+                                          to a cusp of the number field"
+                            % (a, b)
+                        )
                 self.__b = R(r.denominator())
                 self.__a = R(r * self.__b)
         if lreps is not None:
@@ -579,8 +600,11 @@ class NFCusp(Element):
         """
         if self.__b.is_zero():
             return "Cusp Infinity of %s" % self.parent().number_field()
-        return "Cusp [%s: %s] of %s" % (self.__a, self.__b,
-                                        self.parent().number_field())
+        return "Cusp [%s: %s] of %s" % (
+            self.__a,
+            self.__b,
+            self.parent().number_field(),
+        )
 
     def number_field(self):
         """
@@ -666,8 +690,7 @@ class NFCusp(Element):
             -1/3*a + 1/3
         """
         if self.__b.is_zero():
-            raise TypeError("%s is not an element of %s" % (self,
-                                                            self.number_field()))
+            raise TypeError("%s is not an element of %s" % (self, self.number_field()))
         k = self.number_field()
         return k(self.__a / self.__b)
 
@@ -713,8 +736,7 @@ class NFCusp(Element):
         """
         if self.__b.is_zero():
             return "\\infty"
-        return "\\[%s: %s\\]" % (self.__a._latex_(),
-                                 self.__b._latex_())
+        return "\\[%s: %s\\]" % (self.__a._latex_(), self.__b._latex_())
 
     def _richcmp_(self, other, op):
         """
@@ -753,8 +775,9 @@ class NFCusp(Element):
             return rich_to_bool(op, 1)
         if other.__b.is_zero():
             return rich_to_bool(op, -1)
-        return richcmp(self._number_field_element_(),
-                       other._number_field_element_(), op)
+        return richcmp(
+            self._number_field_element_(), other._number_field_element_(), op
+        )
 
     def __neg__(self):
         """
@@ -797,8 +820,9 @@ class NFCusp(Element):
             Cusp [a: 1] of Number Field in a with defining polynomial x^2 + 23
         """
         k = self.number_field()
-        return NFCusp(k, g[0] * self.__a + g[1] * self.__b,
-                      g[2] * self.__a + g[3] * self.__b)
+        return NFCusp(
+            k, g[0] * self.__a + g[1] * self.__b, g[2] * self.__a + g[3] * self.__b
+        )
 
     def ideal(self):
         """
@@ -886,7 +910,7 @@ class NFCusp(Element):
         a2 = self.__b
 
         g = (A * B).gens_reduced()[0]
-        Ainv = A**(-1)
+        Ainv = A ** (-1)
         A1 = a1 * Ainv
         A2 = a2 * Ainv
         r = A1.element_1_mod(A2)
@@ -894,8 +918,9 @@ class NFCusp(Element):
         b2 = (r / a1) * g
         return [a1, b1, a2, b2]
 
-    def is_Gamma0_equivalent(self, other, N,
-                             Transformation=False) -> bool | tuple[bool, Any]:
+    def is_Gamma0_equivalent(
+        self, other, N, Transformation=False
+    ) -> bool | tuple[bool, Any]:
         r"""
         Check if cusps ``self`` and ``other`` are `\Gamma_0(N)`- equivalent.
 
@@ -988,6 +1013,7 @@ class NFCusp(Element):
                     AuxCoeff[3] = u
                     AuxCoeff[1] = w
                 from sage.matrix.constructor import Matrix
+
                 Maux = Matrix(k, 2, AuxCoeff)
                 M1inv = Matrix(k, 2, M1).inverse()
                 Mtrans = Matrix(k, 2, M2) * Maux * M1inv
@@ -996,6 +1022,7 @@ class NFCusp(Element):
         if not Transformation:
             return False
         return False, 0
+
 
 # *************************************************************************
 #  Global functions:
@@ -1068,11 +1095,11 @@ def Gamma0_NFCusps(N):
 
         # for every divisor of N we have to find cusps
         from sage.arith.misc import divisors
+
         for d in divisors(N):
             # find delta prime coprime to B in inverse class of d*A
             # by searching in our list of auxiliary prime ideals
-            Lds = [P for P in Laux
-                   if (P * d * A).is_principal() and P.is_coprime(B)]
+            Lds = [P for P in Laux if (P * d * A).is_principal() and P.is_coprime(B)]
             deltap = Lds[0]
             a = (deltap * d * A).gens_reduced()[0]
             I = d + N / d
@@ -1131,9 +1158,9 @@ def number_of_Gamma0_NFCusps(N):
     k = N.number_field()
     # The number of Gamma0(N)-sub-orbits for each Gamma-orbit:
     from sage.arith.misc import divisors
+
     Ugens = [k(u) for u in k.unit_group().gens()]
-    s = sum([len((d + N / d).invertible_residues_mod(Ugens))
-             for d in divisors(N)])
+    s = sum([len((d + N / d).invertible_residues_mod(Ugens)) for d in divisors(N)])
     # There are h Gamma-orbits, with h class number of underlying number field.
     return s * k.class_number()
 
@@ -1188,7 +1215,7 @@ def NFCusps_ideal_reps_for_levelN(N, nlists=1):
     for I in G.list():
         check = 0
         if not I.is_principal():
-            Iinv = I.ideal()**(-1)
+            Iinv = I.ideal() ** (-1)
             while check < nlists:
                 J = next(it)
                 if (J * Iinv).is_principal() and J.is_coprime(N):

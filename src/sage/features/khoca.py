@@ -1,6 +1,7 @@
 r"""
 Check for Khoca
 """
+
 from . import PythonModule
 
 
@@ -16,6 +17,7 @@ class Khoca(PythonModule):
         sage: Khoca().is_present()                     # optional - khoca
         FeatureTestResult('khoca', True)
     """
+
     def __init__(self):
         r"""
         TESTS::

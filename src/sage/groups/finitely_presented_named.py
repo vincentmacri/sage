@@ -100,7 +100,7 @@ def CyclicPresentation(n) -> FinitelyPresentedGroup:
     if n < 1:
         raise ValueError('finitely presented group order must be positive')
     F = FreeGroup('a')
-    rls = F([1])**n,
+    rls = (F([1]) ** n,)
     return FinitelyPresentedGroup(F, rls)
 
 
@@ -187,22 +187,28 @@ def FinitelyGeneratedAbelianPresentation(int_list):
         True
     """
     from sage.groups.free_group import _lexi_gen
+
     check_ls = [Integer(x) for x in int_list if Integer(x) >= 0]
     if len(check_ls) != len(int_list):
         raise ValueError('input list must contain nonnegative entries')
 
     col_sp = diagonal_matrix(int_list).column_space()
-    invariants = FGP_Module(ZZ**(len(int_list)), col_sp).invariants()
+    invariants = FGP_Module(ZZ ** (len(int_list)), col_sp).invariants()
     name_gen = _lexi_gen()
     F = FreeGroup([next(name_gen) for i in invariants])
-    ret_rls = [F([i + 1])**invariants[i] for i in range(len(invariants))
-               if invariants[i] != 0]
+    ret_rls = [
+        F([i + 1]) ** invariants[i]
+        for i in range(len(invariants))
+        if invariants[i] != 0
+    ]
 
     # Build commutator relations
-    gen_pairs = [[F.gen(i), F.gen(j)] for i in range(F.ngens() - 1)
-                 for j in range(i + 1, F.ngens())]
-    ret_rls = ret_rls + [x[0]**(-1) * x[1]**(-1) * x[0] * x[1]
-                         for x in gen_pairs]
+    gen_pairs = [
+        [F.gen(i), F.gen(j)]
+        for i in range(F.ngens() - 1)
+        for j in range(i + 1, F.ngens())
+    ]
+    ret_rls = ret_rls + [x[0] ** (-1) * x[1] ** (-1) * x[0] * x[1] for x in gen_pairs]
     return FinitelyPresentedGroup(F, tuple(ret_rls))
 
 
@@ -274,11 +280,12 @@ def FinitelyGeneratedHeisenbergPresentation(n=1, p=0) -> FinitelyPresentedGroup:
 
     F = FreeGroup(str_generators)
     x = F.gens()[0:n]  # list of generators x1, x2, ..., xn
-    y = F.gens()[n:2 * n]  # list of generators x1, x2, ..., xn
+    y = F.gens()[n : 2 * n]  # list of generators x1, x2, ..., xn
     z = F.gen(n * 2)
 
     def commutator(a, b):
         return a * b * a**-1 * b**-1
+
     # First set of relations: [xi, yi] = z
     r1 = [commutator(x[i], y[i]) * z**-1 for i in range(n)]
     # Second set of relations: [z, xi] = 1
@@ -290,6 +297,7 @@ def FinitelyGeneratedHeisenbergPresentation(n=1, p=0) -> FinitelyPresentedGroup:
     rls = r1 + r2 + r3 + r4
 
     from sage.sets.primes import Primes
+
     if p not in Primes() and p != 0:
         raise ValueError("p must be 0 or a prime number")
     if p > 0:
@@ -329,7 +337,7 @@ def DihedralPresentation(n) -> FinitelyPresentedGroup:
     if n < 1:
         raise ValueError('finitely presented group order must be positive')
     F = FreeGroup(['a', 'b'])
-    rls = F([1])**n, F([2])**2, (F([1]) * F([2]))**2
+    rls = F([1]) ** n, F([2]) ** 2, (F([1]) * F([2])) ** 2
     return FinitelyPresentedGroup(F, rls)
 
 
@@ -380,7 +388,7 @@ def DiCyclicPresentation(n) -> FinitelyPresentedGroup:
         raise ValueError('input integer must be greater than 1')
 
     F = FreeGroup(['a', 'b'])
-    rls = F([1])**(2 * n), F([2, 2]) * F([-1])**n, F([-2, 1, 2, 1])
+    rls = F([1]) ** (2 * n), F([2, 2]) * F([-1]) ** n, F([-2, 1, 2, 1])
     return FinitelyPresentedGroup(F, rls)
 
 
@@ -426,12 +434,18 @@ def SymmetricPresentation(n) -> FinitelyPresentedGroup:
         return FinitelyPresentedGroup(FreeGroup(()), ())
 
     perm_rep = SymmetricGroup(n)
-    GAP_fp_rep = libgap.Image(libgap.IsomorphismFpGroupByGenerators(perm_rep, perm_rep.gens()))
+    GAP_fp_rep = libgap.Image(
+        libgap.IsomorphismFpGroupByGenerators(perm_rep, perm_rep.gens())
+    )
     image_gens = GAP_fp_rep.FreeGeneratorsOfFpGroup()
     name_itr = _lexi_gen()  # Python generator object for variable names
     F = FreeGroup([next(name_itr) for x in perm_rep.gens()])
-    ret_rls = tuple([F(rel_word.TietzeWordAbstractWord(image_gens).sage())
-                     for rel_word in GAP_fp_rep.RelatorsOfFpGroup()])
+    ret_rls = tuple(
+        [
+            F(rel_word.TietzeWordAbstractWord(image_gens).sage())
+            for rel_word in GAP_fp_rep.RelatorsOfFpGroup()
+        ]
+    )
     return FinitelyPresentedGroup(F, ret_rls)
 
 
@@ -457,7 +471,7 @@ def QuaternionPresentation() -> FinitelyPresentedGroup:
         True
     """
     F = FreeGroup(['a', 'b'])
-    rls = F([1])**4, F([2, 2, -1, -1]), F([1, 2, 1, -2])
+    rls = F([1]) ** 4, F([2, 2, -1, -1]), F([1, 2, 1, -2])
     return FinitelyPresentedGroup(F, rls)
 
 
@@ -503,12 +517,18 @@ def AlternatingPresentation(n) -> FinitelyPresentedGroup:
         return FinitelyPresentedGroup(FreeGroup(()), ())
 
     perm_rep = AlternatingGroup(n)
-    GAP_fp_rep = libgap.Image(libgap.IsomorphismFpGroupByGenerators(perm_rep, perm_rep.gens()))
+    GAP_fp_rep = libgap.Image(
+        libgap.IsomorphismFpGroupByGenerators(perm_rep, perm_rep.gens())
+    )
     image_gens = GAP_fp_rep.FreeGeneratorsOfFpGroup()
     name_itr = _lexi_gen()  # Python generator object for variable names
     F = FreeGroup([next(name_itr) for x in perm_rep.gens()])
-    ret_rls = tuple([F(rel_word.TietzeWordAbstractWord(image_gens).sage())
-                     for rel_word in GAP_fp_rep.RelatorsOfFpGroup()])
+    ret_rls = tuple(
+        [
+            F(rel_word.TietzeWordAbstractWord(image_gens).sage())
+            for rel_word in GAP_fp_rep.RelatorsOfFpGroup()
+        ]
+    )
     return FinitelyPresentedGroup(F, ret_rls)
 
 
@@ -524,7 +544,7 @@ def KleinFourPresentation() -> FinitelyPresentedGroup:
         Finitely presented group < a, b | a^2, b^2, a^-1*b^-1*a*b >
     """
     F = FreeGroup(['a', 'b'])
-    rls = F([1])**2, F([2])**2, F([-1]) * F([-2]) * F([1]) * F([2])
+    rls = F([1]) ** 2, F([2]) ** 2, F([-1]) * F([-2]) * F([1]) * F([2])
     return FinitelyPresentedGroup(F, rls)
 
 
@@ -576,6 +596,7 @@ def CactusPresentation(n) -> FinitelyPresentedGroup:
          s12^2, s13^2, s23^2, s13*s12*s13^-1*s23^-1, s13*s23*s13^-1*s12^-1 >
     """
     from sage.groups.cactus_group import CactusGroup
+
     G = CactusGroup(n)
     F = FreeGroup(G.variable_names())
     gens = F.gens()

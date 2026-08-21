@@ -15,7 +15,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # *****************************************************************************
 
-
 from typing import Optional, Union
 
 from sage.manifolds.differentiable.diff_form import DiffForm

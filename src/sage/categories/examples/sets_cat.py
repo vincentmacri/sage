@@ -81,6 +81,7 @@ class PrimeNumbers(UniqueRepresentation, Parent):
         running ._test_pickling() . . . pass
         running ._test_some_elements() . . . pass
     """
+
     def __init__(self):
         """
         TESTS::
@@ -166,6 +167,7 @@ class PrimeNumbers_Abstract(UniqueRepresentation, Parent):
         sage: P = Sets().example("inherits")
         sage: P = Sets().example("wrapper")
     """
+
     def __init__(self) -> None:
         """
         TESTS::
@@ -301,7 +303,7 @@ class PrimeNumbers_Abstract(UniqueRepresentation, Parent):
             return self.parent().next(self)
 
 
-#*************************************************************************#
+# *************************************************************************#
 class PrimeNumbers_Inherits(PrimeNumbers_Abstract):
     """
     An example of parent in the category of sets: the set of prime numbers.
@@ -401,8 +403,12 @@ class PrimeNumbers_Inherits(PrimeNumbers_Abstract):
             sage: 12 in P
             False
         """
-        return (isinstance(p, self.element_class) and p.parent() is self
-                or isinstance(p, Integer) and p.is_prime())
+        return (
+            isinstance(p, self.element_class)
+            and p.parent() is self
+            or isinstance(p, Integer)
+            and p.is_prime()
+        )
 
     def _from_integer_(self, p):
         """
@@ -434,7 +440,7 @@ class PrimeNumbers_Inherits(PrimeNumbers_Abstract):
             IntegerWrapper.__init__(self, parent, p)
 
 
-#*************************************************************************#
+# *************************************************************************#
 class PrimeNumbers_Wrapper(PrimeNumbers_Abstract):
     """
     An example of parent in the category of sets: the set of prime numbers.
@@ -480,6 +486,7 @@ class PrimeNumbers_Wrapper(PrimeNumbers_Abstract):
 
         sage: TestSuite(P).run()
     """
+
     def __init__(self):
         """
         TESTS::
@@ -497,6 +504,7 @@ class PrimeNumbers_Wrapper(PrimeNumbers_Abstract):
         Parent.__init__(self, category=Sets())
         from sage.rings.integer_ring import IntegerRing
         from sage.categories.homset import Hom
+
         self.mor = Hom(self, IntegerRing())(lambda z: z.value)
         self._populate_coercion_lists_(embedding=self.mor)
 
@@ -519,8 +527,12 @@ class PrimeNumbers_Wrapper(PrimeNumbers_Abstract):
             sage: 12 in P
             False
         """
-        return (isinstance(p, self.element_class) and p.parent() == self or
-                isinstance(p, Integer) and p.is_prime())
+        return (
+            isinstance(p, self.element_class)
+            and p.parent() == self
+            or isinstance(p, Integer)
+            and p.is_prime()
+        )
 
     def _from_integer_(self, e):
         """
@@ -540,7 +552,7 @@ class PrimeNumbers_Wrapper(PrimeNumbers_Abstract):
 
     from sage.structure.element_wrapper import ElementWrapper
 
-    class Element (ElementWrapper, PrimeNumbers_Abstract.Element):
+    class Element(ElementWrapper, PrimeNumbers_Abstract.Element):
         def _integer_(self, IntRing):
             """
             Convert to an integer.
@@ -555,7 +567,7 @@ class PrimeNumbers_Wrapper(PrimeNumbers_Abstract):
             return IntRing(self.value)
 
 
-#*************************************************************************#
+# *************************************************************************#
 class PrimeNumbers_Facade(PrimeNumbers_Abstract):
     r"""
     An example of parent in the category of sets: the set of prime numbers.

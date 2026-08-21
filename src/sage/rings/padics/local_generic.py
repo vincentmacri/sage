@@ -22,7 +22,10 @@ AUTHORS:
 
 from copy import copy
 
-from sage.categories.complete_discrete_valuation import CompleteDiscreteValuationRings, CompleteDiscreteValuationFields
+from sage.categories.complete_discrete_valuation import (
+    CompleteDiscreteValuationRings,
+    CompleteDiscreteValuationFields,
+)
 from sage.structure.category_object import check_default_category
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -74,8 +77,9 @@ class LocalGeneric(Parent):
         category = category.Metric().Complete().Infinite()
         if default_category is not None:
             category = check_default_category(default_category, category)
-        Parent.__init__(self, base=base, names=(names,),
-                        normalize=False, category=category)
+        Parent.__init__(
+            self, base=base, names=(names,), normalize=False, category=category
+        )
 
     def is_capped_relative(self) -> bool:
         r"""
@@ -404,11 +408,16 @@ class LocalGeneric(Parent):
                 kwds[atr[6:]] = kwds.pop(atr)
 
         def get_unramified_modulus(q, res_name):
-            from sage.rings.finite_rings.finite_field_constructor import FiniteField as GF
+            from sage.rings.finite_rings.finite_field_constructor import (
+                FiniteField as GF,
+            )
+
             return GF(q, res_name).modulus().change_ring(ZZ)
+
         n = None
         q = None
         from .padic_base_generic import pAdicBaseGeneric
+
         if 'q' in kwds and isinstance(self.base_ring(), pAdicBaseGeneric):
             q = kwds.pop('q')
             if not isinstance(q, Integer):
@@ -427,6 +436,7 @@ class LocalGeneric(Parent):
             cur_mode = self._printer._print_mode()
             cur_show_prec = self._printer._show_prec()
             from .factory import _canonicalize_show_prec
+
             if cur_show_prec == _canonicalize_show_prec(cur_type, cur_mode):
                 kwds['show_prec'] = _canonicalize_show_prec(new_type, kwds['mode'])
             else:
@@ -435,9 +445,15 @@ class LocalGeneric(Parent):
         curpstr = str(self.prime())
         functor_dict = getattr(functor, "extras", getattr(functor, "kwds", None))
         # If we are switching to 'digits', or changing p, need to ensure a large enough alphabet.
-        if 'alphabet' not in kwds and (kwds.get('mode') == 'digits' or
-           (functor_dict['print_mode'].get('mode') == 'digits' and p > getattr(functor, "p", p))):
+        if 'alphabet' not in kwds and (
+            kwds.get('mode') == 'digits'
+            or (
+                functor_dict['print_mode'].get('mode') == 'digits'
+                and p > getattr(functor, "p", p)
+            )
+        ):
             from .padic_printing import _printer_defaults
+
             kwds['alphabet'] = _printer_defaults.alphabet()[:p]
         # For fraction fields of fixed-mod rings, we need to explicitly set show_prec = False
         if 'field' in kwds and 'type' not in kwds:
@@ -445,7 +461,9 @@ class LocalGeneric(Parent):
                 kwds['type'] = 'capped-rel'
             elif self._prec_type() == 'fixed-mod':
                 kwds['type'] = 'floating-point'
-                kwds['show_prec'] = False  # This can be removed once printing of fixed mod elements is changed.
+                kwds['show_prec'] = (
+                    False  # This can be removed once printing of fixed mod elements is changed.
+                )
 
         # There are two kinds of functors possible:
         # CompletionFunctor and AlgebraicExtensionFunctor
@@ -454,7 +472,10 @@ class LocalGeneric(Parent):
             functor.extras = copy(functor.extras)
             functor.extras['print_mode'] = copy(functor.extras['print_mode'])
             if 'type' in kwds and kwds['type'] not in functor._dvr_types:
-                raise ValueError("completion type must be one of %s" % (", ".join(functor._dvr_types[1:])))
+                raise ValueError(
+                    "completion type must be one of %s"
+                    % (", ".join(functor._dvr_types[1:]))
+                )
             if 'field' in kwds:
                 field = kwds.pop('field')
                 if field:
@@ -482,7 +503,10 @@ class LocalGeneric(Parent):
             # Labels for lattice precision
             if 'label' in kwds:
                 functor.extras['label'] = kwds.pop('label')
-            elif 'label' in functor.extras and functor.type not in ['lattice-cap', 'lattice-float']:
+            elif 'label' in functor.extras and functor.type not in [
+                'lattice-cap',
+                'lattice-float',
+            ]:
                 del functor.extras['label']
             for atr in ('ram_name', 'var_name'):
                 if atr in kwds:
@@ -491,17 +515,37 @@ class LocalGeneric(Parent):
                     functor.extras['print_mode'][atr] = str(p)
             if 'check' in kwds:
                 functor.extras['check'] = kwds.pop('check')
-            for atr in ('mode', 'pos', 'unram_name', 'max_ram_terms', 'max_unram_terms', 'max_terse_terms', 'sep', 'alphabet', 'show_prec'):
+            for atr in (
+                'mode',
+                'pos',
+                'unram_name',
+                'max_ram_terms',
+                'max_unram_terms',
+                'max_terse_terms',
+                'sep',
+                'alphabet',
+                'show_prec',
+            ):
                 if atr in kwds:
                     functor.extras['print_mode'][atr] = kwds.pop(atr)
             if kwds:
-                raise ValueError("Extra arguments received: %s" % (", ".join(kwds.keys())))
+                raise ValueError(
+                    "Extra arguments received: %s" % (", ".join(kwds.keys()))
+                )
             if q is not None:
                 # Create an unramified extension
                 base = functor(ring)
                 from .factory import ExtensionFactory
+
                 modulus = modulus.change_ring(base)
-                return ExtensionFactory(base=base, premodulus=modulus, names=names, res_name=res_name, unram=True, implementation=implementation)
+                return ExtensionFactory(
+                    base=base,
+                    premodulus=modulus,
+                    names=names,
+                    res_name=res_name,
+                    unram=True,
+                    implementation=implementation,
+                )
         else:
             functor.kwds = copy(functor.kwds)
             functor.kwds['print_mode'] = copy(functor.kwds['print_mode'])
@@ -513,6 +557,7 @@ class LocalGeneric(Parent):
                     kwds['prec'] = baseprec
                 functor.precs = [prec]
             from sage.rings.padics.padic_base_generic import pAdicBaseGeneric
+
             if 'names' in kwds:
                 functor.names = [kwds.pop('names')]
             modulus = None
@@ -523,7 +568,9 @@ class LocalGeneric(Parent):
             elif q is not None:
                 if self.relative_e() == 1:
                     # If q is specified, replace the modulus with one from q.
-                    modulus = get_unramified_modulus(q, functor.kwds.get('res_name', functor.names[0] + '0'))
+                    modulus = get_unramified_modulus(
+                        q, functor.kwds.get('res_name', functor.names[0] + '0')
+                    )
                 elif self.relative_f() != 1:
                     raise ValueError("Cannot change q in mixed extensions")
             for atr in ('var_name', 'res_name', 'unram_name', 'ram_name'):
@@ -531,7 +578,16 @@ class LocalGeneric(Parent):
                     functor.kwds[atr] = kwds.pop(atr)
             if 'check' in kwds:
                 functor.kwds['check'] = kwds['check']
-            for atr in ('mode', 'pos', 'max_ram_terms', 'max_unram_terms', 'max_terse_terms', 'sep', 'alphabet', 'show_prec'):
+            for atr in (
+                'mode',
+                'pos',
+                'max_ram_terms',
+                'max_unram_terms',
+                'max_terse_terms',
+                'sep',
+                'alphabet',
+                'show_prec',
+            ):
                 if atr in kwds:
                     functor.kwds['print_mode'][atr] = kwds[atr]
             if 'base' in kwds:
@@ -647,8 +703,10 @@ class LocalGeneric(Parent):
             Univariate Polynomial Ring in x over Integer Ring
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         if exact:
             from sage.rings.integer_ring import ZZ
+
             return PolynomialRing(ZZ, var).gen()
         return PolynomialRing(self, var).gen()
 
@@ -748,7 +806,9 @@ class LocalGeneric(Parent):
         """
         if self.base_ring().absolute_degree() == 1:
             return self.absolute_degree()
-        raise NotImplementedError("For a relative p-adic ring or field you must use relative_degree or absolute_degree as appropriate")
+        raise NotImplementedError(
+            "For a relative p-adic ring or field you must use relative_degree or absolute_degree as appropriate"
+        )
 
     def absolute_e(self):
         r"""
@@ -840,7 +900,9 @@ class LocalGeneric(Parent):
         """
         if self.base_ring().absolute_degree() == 1:
             return self.absolute_e()
-        raise NotImplementedError("For a relative p-adic ring or field you must use relative_e or absolute_e as appropriate")
+        raise NotImplementedError(
+            "For a relative p-adic ring or field you must use relative_e or absolute_e as appropriate"
+        )
 
     def ramification_index(self):
         r"""
@@ -953,7 +1015,9 @@ class LocalGeneric(Parent):
         """
         if self.base_ring().absolute_degree() == 1:
             return self.absolute_f()
-        raise NotImplementedError("For a relative p-adic ring or field you must use relative_f or absolute_f as appropriate")
+        raise NotImplementedError(
+            "For a relative p-adic ring or field you must use relative_f or absolute_f as appropriate"
+        )
 
     def inertia_degree(self):
         r"""
@@ -1010,11 +1074,11 @@ class LocalGeneric(Parent):
         """
         return self.inertia_subring()
 
-#    def get_extension(self):
-#        r"""
-#        Return the trivial extension of self.
-#        """
-#        raise NotImplementedError
+    #    def get_extension(self):
+    #        r"""
+    #        Return the trivial extension of self.
+    #        """
+    #        raise NotImplementedError
 
     def uniformiser(self):
         r"""
@@ -1073,8 +1137,9 @@ class LocalGeneric(Parent):
         for x in tester.some_elements():
             tester.assertEqual(x.add_bigoh(x.precision_absolute()), x)
             from sage.rings.infinity import infinity
+
             tester.assertEqual(x.add_bigoh(infinity), x)
-            tester.assertEqual(x.add_bigoh(x.precision_absolute()+1), x)
+            tester.assertEqual(x.add_bigoh(x.precision_absolute() + 1), x)
 
             y = x.add_bigoh(0)
             tester.assertIs(y.parent(), self)
@@ -1084,7 +1149,7 @@ class LocalGeneric(Parent):
             elif self.is_capped_relative() or self.is_lattice_prec():
                 tester.assertLessEqual(y.precision_absolute(), 0)
             elif self.is_fixed_mod() or self.is_floating_point():
-                tester.assertGreaterEqual((x-y).valuation(), 0)
+                tester.assertGreaterEqual((x - y).valuation(), 0)
 
             # if absprec < 0, then the result is in the fraction field (see #13591)
             y = x.add_bigoh(-1)
@@ -1093,8 +1158,11 @@ class LocalGeneric(Parent):
                 tester.assertLessEqual(y.precision_absolute(), -1)
 
             # make sure that we handle very large values correctly
-            if self._prec_type() not in ['lattice-float', 'relaxed']:  # no cap in these models
-                absprec = Integer(2)**1000
+            if self._prec_type() not in [
+                'lattice-float',
+                'relaxed',
+            ]:  # no cap in these models
+                absprec = Integer(2) ** 1000
                 tester.assertEqual(x.add_bigoh(absprec), x)
 
     def _test_residue(self, **options):
@@ -1107,12 +1175,15 @@ class LocalGeneric(Parent):
             sage: R._test_residue()
         """
         tester = self._tester(**options)
-        tester.assertEqual(self.residue_field().characteristic(), self.residue_characteristic())
+        tester.assertEqual(
+            self.residue_field().characteristic(), self.residue_characteristic()
+        )
 
         for x in tester.some_elements():
             errors = []
             if x.precision_absolute() <= 0:
                 from .precision_error import PrecisionError
+
                 errors.append(PrecisionError)
             if x.valuation() < 0:
                 errors.append(ValueError)
@@ -1122,9 +1193,11 @@ class LocalGeneric(Parent):
                 continue
             y = x.residue()
             # residue() is in `Z/pZ` which is not identical to the residue field `F_p`
-            tester.assertEqual(y.parent().cardinality(), self.residue_field().cardinality())
+            tester.assertEqual(
+                y.parent().cardinality(), self.residue_field().cardinality()
+            )
             z = self(y)
-            tester.assertGreater((x-z).valuation(), 0)
+            tester.assertGreater((x - z).valuation(), 0)
 
         for x in self.residue_field().some_elements():
             y = self(x)
@@ -1179,12 +1252,12 @@ class LocalGeneric(Parent):
             for j in range(m):
                 M[i, j] <<= s
         for j in range(m):
-            prec = min(M[i,j].precision_absolute() for i in range(n))
+            prec = min(M[i, j].precision_absolute() for i in range(n))
             if prec is Infinity or prec == cap:
                 continue
             shift_cols[j] = s = cap - prec
             for i in range(n):
-                M[i,j] <<= s
+                M[i, j] <<= s
         return shift_rows, shift_cols
 
     def _matrix_smith_form(self, M, transformation, integral, exact):
@@ -1298,6 +1371,7 @@ class LocalGeneric(Parent):
         from sage.rings.infinity import infinity
         from .precision_error import PrecisionError
         from copy import copy
+
         n = M.nrows()
         m = M.ncols()
         if m > n:
@@ -1305,7 +1379,9 @@ class LocalGeneric(Parent):
             if transformation:
                 d, u, v = self._matrix_smith_form(M.transpose(), True, integral, exact)
                 return d.transpose(), v.transpose(), u.transpose()
-            return self._matrix_smith_form(M.transpose(), False, integral, exact).transpose()
+            return self._matrix_smith_form(
+                M.transpose(), False, integral, exact
+            ).transpose()
         smith = M.parent()(0)
         S = copy(M)
         Z = self.integer_ring()
@@ -1325,8 +1401,8 @@ class LocalGeneric(Parent):
         else:
             raise NotImplementedError("Smith normal form over this subring")
         ## the difference between ball_prec and inexact_ring is just for lattice precision.
-        ball_prec = R._prec_type() in ['capped-rel','capped-abs']
-        inexact_ring = R._prec_type() not in ['fixed-mod','floating-point']
+        ball_prec = R._prec_type() in ['capped-rel', 'capped-abs']
+        inexact_ring = R._prec_type() not in ['fixed-mod', 'floating-point']
 
         if not integral:
             shift_rows, shift_cols = self._matrix_flatten_precision(S)
@@ -1334,14 +1410,15 @@ class LocalGeneric(Parent):
         precS = min(x.precision_absolute() for x in S.list())
         if transformation:
             from sage.matrix.special import identity_matrix
-            left = identity_matrix(R,n)
-            right = identity_matrix(R,m)
 
-        if ball_prec and precS is infinity: # capped-rel and M = 0 exactly
+            left = identity_matrix(R, n)
+            right = identity_matrix(R, m)
+
+        if ball_prec and precS is infinity:  # capped-rel and M = 0 exactly
             return (smith, left, right) if transformation else smith
 
         val = -infinity
-        for piv in range(m): # m <= n
+        for piv in range(m):  # m <= n
             curval = infinity
             pivi = pivj = piv
             # allzero tracks whether every possible pivot is zero.
@@ -1354,12 +1431,12 @@ class LocalGeneric(Parent):
             # deduce the exact smith form even with some elementary divisors zero:
             # if the bottom right block consists entirely of exact zeros.
             allexact = True
-            for i in range(piv,n):
-                for j in range(piv,m):
-                    Sij = S[i,j]
+            for i in range(piv, n):
+                for j in range(piv, m):
+                    Sij = S[i, j]
                     v = Sij.valuation()
                     allzero = allzero and Sij.is_zero()
-                    if exact: # we only care in this case
+                    if exact:  # we only care in this case
                         allexact = allexact and Sij.precision_absolute() is infinity
                     if v < curval:
                         pivi = i
@@ -1374,54 +1451,69 @@ class LocalGeneric(Parent):
 
             if inexact_ring and not allzero and val >= precS:
                 if ball_prec:
-                    raise PrecisionError("not enough precision to compute Smith normal form")
-                precS = min([ S[i,j].precision_absolute() for i in range(piv,n) for j in range(piv,m) ])
+                    raise PrecisionError(
+                        "not enough precision to compute Smith normal form"
+                    )
+                precS = min(
+                    [
+                        S[i, j].precision_absolute()
+                        for i in range(piv, n)
+                        for j in range(piv, m)
+                    ]
+                )
                 if val >= precS:
-                    raise PrecisionError("not enough precision to compute Smith normal form")
+                    raise PrecisionError(
+                        "not enough precision to compute Smith normal form"
+                    )
 
             if allzero:
                 if exact:
                     if allexact:
                         # We need to finish checking allexact since we broke out of the loop early
-                        for i in range(i,n):
-                            for j in range(piv,m):
-                                allexact = allexact and S[i,j].precision_absolute() is infinity
+                        for i in range(i, n):
+                            for j in range(piv, m):
+                                allexact = (
+                                    allexact
+                                    and S[i, j].precision_absolute() is infinity
+                                )
                                 if not allexact:
                                     break
                             else:
                                 continue
                             break
                     if not allexact:
-                        raise PrecisionError("some elementary divisors indistinguishable from zero (try exact=False)")
+                        raise PrecisionError(
+                            "some elementary divisors indistinguishable from zero (try exact=False)"
+                        )
                 break
 
             # We swap the lowest valuation pivot into position
-            S.swap_rows(pivi,piv)
-            S.swap_columns(pivj,piv)
+            S.swap_rows(pivi, piv)
+            S.swap_columns(pivj, piv)
             if transformation:
-                left.swap_rows(pivi,piv)
-                right.swap_columns(pivj,piv)
+                left.swap_rows(pivi, piv)
+                right.swap_columns(pivj, piv)
 
             # ... and clear out this row and column.  Note that we
             # will deal with precision later, thus the call to lift_to_precision
-            smith[piv,piv] = self(1) << val
-            inv = (S[piv,piv] >> val).inverse_of_unit()
+            smith[piv, piv] = self(1) << val
+            inv = (S[piv, piv] >> val).inverse_of_unit()
             if ball_prec:
                 inv = inv.lift_to_precision()
-            for i in range(piv+1,n):
-                scalar = -inv * Z(S[i,piv] >> val)
+            for i in range(piv + 1, n):
+                scalar = -inv * Z(S[i, piv] >> val)
                 if ball_prec:
                     scalar = scalar.lift_to_precision()
-                S.add_multiple_of_row(i,piv,scalar,piv+1)
+                S.add_multiple_of_row(i, piv, scalar, piv + 1)
                 if transformation:
-                    left.add_multiple_of_row(i,piv,scalar)
+                    left.add_multiple_of_row(i, piv, scalar)
             if transformation:
-                left.rescale_row(piv,inv)
-                for j in range(piv+1,m):
-                    scalar = -inv * Z(S[piv,j] >> val)
+                left.rescale_row(piv, inv)
+                for j in range(piv + 1, m):
+                    scalar = -inv * Z(S[piv, j] >> val)
                     if ball_prec:
                         scalar = scalar.lift_to_precision()
-                    right.add_multiple_of_column(j,piv,scalar)
+                    right.add_multiple_of_column(j, piv, scalar)
         else:
             # We use piv as an upper bound on a range below, and need to set it correctly
             # in the case that we didn't break out of the loop
@@ -1432,32 +1524,34 @@ class LocalGeneric(Parent):
         # with valuation at least precS
         if ball_prec and exact and transformation:
             for j in range(n):
-                delta = min(left[i,j].valuation() - smith[i,i].valuation() for i in range(piv))
+                delta = min(
+                    left[i, j].valuation() - smith[i, i].valuation() for i in range(piv)
+                )
                 if delta is not infinity:
                     for i in range(n):
-                        left[i,j] = left[i,j].add_bigoh(precS + delta)
+                        left[i, j] = left[i, j].add_bigoh(precS + delta)
         ## Otherwise, we update the precision on smith
         if ball_prec and not exact:
             smith = smith.apply_map(lambda x: x.add_bigoh(precS))
         ## We now have to adjust the elementary divisors (and precision) in the non-integral case
         if not integral:
             for i in range(piv):
-                v = smith[i,i].valuation()
+                v = smith[i, i].valuation()
                 if transformation:
                     for j in range(n):
-                        left[i,j] >>= v
+                        left[i, j] >>= v
                 if exact:
-                    smith[i,i] = self(1)
+                    smith[i, i] = self(1)
                 else:
                     for j in range(m):
-                        smith[i,j] >>= v
+                        smith[i, j] >>= v
             if transformation:
                 for i in range(n):
                     for j in range(n):
-                        left[i,j] <<= shift_rows[j]
+                        left[i, j] <<= shift_rows[j]
                 for i in range(m):
                     for j in range(m):
-                        right[i,j] <<= shift_cols[i]
+                        right[i, j] <<= shift_cols[i]
         if transformation:
             return smith, left, right
         return smith
@@ -1471,24 +1565,36 @@ class LocalGeneric(Parent):
             sage: ZpCA(5, 15)._test_matrix_smith()                                      # needs sage.geometry.polyhedron
         """
         tester = self._tester(**options)
-        tester.assertEqual(self.residue_field().characteristic(), self.residue_characteristic())
+        tester.assertEqual(
+            self.residue_field().characteristic(), self.residue_characteristic()
+        )
 
         from itertools import chain
         from sage.matrix.matrix_space import MatrixSpace
         from .precision_error import PrecisionError
-        matrices = chain(*[MatrixSpace(self, n, m).some_elements() for n in (1,3,7) for m in (1,4,7)])
+
+        matrices = chain(
+            *[
+                MatrixSpace(self, n, m).some_elements()
+                for n in (1, 3, 7)
+                for m in (1, 4, 7)
+            ]
+        )
         for M in tester.some_elements(matrices):
             bases = [self]
             if self is not self.integer_ring():
                 bases.append(self.integer_ring())
             for base in bases:
                 try:
-                    S,U,V = M.smith_form(integral=base)
+                    S, U, V = M.smith_form(integral=base)
                 except PrecisionError:
                     continue
 
-                if self.is_exact() or self._prec_type() not in ['fixed-mod','floating-point']:
-                    tester.assertEqual(U*M*V, S)
+                if self.is_exact() or self._prec_type() not in [
+                    'fixed-mod',
+                    'floating-point',
+                ]:
+                    tester.assertEqual(U * M * V, S)
 
                 tester.assertEqual(U.nrows(), U.ncols())
                 tester.assertEqual(U.base_ring(), base)
@@ -1500,7 +1606,7 @@ class LocalGeneric(Parent):
                     if not d.is_zero():
                         tester.assertTrue(d.unit_part().is_one())
 
-                for (d,dd) in zip(S.diagonal(), S.diagonal()[1:]):
+                for d, dd in zip(S.diagonal(), S.diagonal()[1:]):
                     tester.assertTrue(d.divides(dd))
 
     def _matrix_determinant(self, M):
@@ -1577,10 +1683,10 @@ class LocalGeneric(Parent):
 
         # For 2x2 matrices, we use the formula
         if n == 2:
-            return M[0,0]*M[1,1] - M[0,1]*M[1,0]
+            return M[0, 0] * M[1, 1] - M[0, 1] * M[1, 0]
 
         R = M.base_ring()
-        track_precision = R._prec_type() in ['capped-rel','capped-abs']
+        track_precision = R._prec_type() in ['capped-rel', 'capped-abs']
 
         S = copy(M)
         shift_rows, shift_cols = self._matrix_flatten_precision(S)
@@ -1593,9 +1699,9 @@ class LocalGeneric(Parent):
         for piv in range(n):
             pivi = pivj = piv
             curval = S[pivi, pivj].valuation()
-            for i in range(piv,n):
-                for j in range(piv,n):
-                    v = S[i,j].valuation()
+            for i in range(piv, n):
+                for j in range(piv, n):
+                    v = S[i, j].valuation()
                     if v < curval:
                         pivi = i
                         pivj = j
@@ -1606,26 +1712,26 @@ class LocalGeneric(Parent):
                     continue
                 break
             val = curval
-            if S[pivi,pivj] == 0:
+            if S[pivi, pivj] == 0:
                 if track_precision:
-                    return R(0, valdet + (n-piv)*val - shift)
+                    return R(0, valdet + (n - piv) * val - shift)
                 return R(0)
 
             valdet += val
-            S.swap_rows(pivi,piv)
+            S.swap_rows(pivi, piv)
             if pivi > piv:
                 sign = -sign
-            S.swap_columns(pivj,piv)
+            S.swap_columns(pivj, piv)
             if pivj > piv:
                 sign = -sign
 
-            det *= S[piv,piv]
-            inv = ~(S[piv,piv] >> val)
-            for i in range(piv+1,n):
-                scalar = -inv * (S[i,piv] >> val)
+            det *= S[piv, piv]
+            inv = ~(S[piv, piv] >> val)
+            for i in range(piv + 1, n):
+                scalar = -inv * (S[i, piv] >> val)
                 if track_precision:
                     scalar = scalar.lift_to_precision()
-                S.add_multiple_of_row(i,piv,scalar)
+                S.add_multiple_of_row(i, piv, scalar)
 
         if track_precision:
             relprec = +Infinity
@@ -1633,14 +1739,14 @@ class LocalGeneric(Parent):
             for i in range(n):
                 prec = Infinity
                 for j in range(n):
-                    prec = min(prec, S[i,j].precision_absolute())
-                prec -= S[i,i].valuation()
+                    prec = min(prec, S[i, j].precision_absolute())
+                prec -= S[i, i].valuation()
                 relprec = min(prec, relprec)
                 if prec < 0:
                     relprec_neg += prec
             if relprec_neg < 0:
                 relprec = relprec_neg
-            det = (sign*det).add_bigoh(valdet+relprec)
+            det = (sign * det).add_bigoh(valdet + relprec)
         else:
-            det = sign*det
+            det = sign * det
         return det >> shift

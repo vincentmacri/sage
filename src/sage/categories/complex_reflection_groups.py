@@ -1,7 +1,7 @@
 r"""
 Complex reflection groups
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2011-2015 Christian Stump <christian.stump at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -9,12 +9,14 @@ Complex reflection groups
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import LazyImport
 from sage.categories.category_singleton import Category_singleton
-from sage.categories.complex_reflection_or_generalized_coxeter_groups import ComplexReflectionOrGeneralizedCoxeterGroups
+from sage.categories.complex_reflection_or_generalized_coxeter_groups import (
+    ComplexReflectionOrGeneralizedCoxeterGroups,
+)
 
 
 class ComplexReflectionGroups(Category_singleton):
@@ -120,10 +122,10 @@ class ComplexReflectionGroups(Category_singleton):
             5-colored permutations of size 3
         """
         from sage.combinat.colored_permutations import ColoredPermutations
+
         return ColoredPermutations(5, 3)
 
     class ParentMethods:
-
         @cached_method
         def rank(self):
             r"""
@@ -140,5 +142,8 @@ class ComplexReflectionGroups(Category_singleton):
                 3
             """
 
-    Finite = LazyImport('sage.categories.finite_complex_reflection_groups',
-                        'FiniteComplexReflectionGroups', as_name='Finite')
+    Finite = LazyImport(
+        'sage.categories.finite_complex_reflection_groups',
+        'FiniteComplexReflectionGroups',
+        as_name='Finite',
+    )

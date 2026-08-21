@@ -11,6 +11,7 @@ AUTHORS:
 
 - Frédéric Chapoton (2018) interface
 """
+
 # ****************************************************************************
 #       Copyright (C) 2018 Frédéric Chapoton <chapoton@unistra.fr>
 #
@@ -88,8 +89,18 @@ class lfun_generic:
         sage: L.taylor_series(2, k=5)
         1.64493406684823 - 0.937548254315844*z + 0.994640117149451*z^2 - 1.00002430047384*z^3 + 1.00006193307...*z^4 + O(z^5)
     """
-    def __init__(self, conductor, gammaV, weight, eps, poles=[],
-                 residues='automatic', *args, **kwds) -> None:
+
+    def __init__(
+        self,
+        conductor,
+        gammaV,
+        weight,
+        eps,
+        poles=[],
+        residues='automatic',
+        *args,
+        **kwds,
+    ) -> None:
         """
         Initialisation of a :pari:`lfun` from motivic data.
 
@@ -112,8 +123,9 @@ class lfun_generic:
         self.poles = poles
         self.residues = residues
 
-        if (isinstance(self.poles, (list, tuple)) and
-                isinstance(self.residues, (list, tuple))):
+        if isinstance(self.poles, (list, tuple)) and isinstance(
+            self.residues, (list, tuple)
+        ):
             if len(self.poles) != len(self.residues):
                 raise ValueError("poles and residues do not match")
 
@@ -155,8 +167,9 @@ class lfun_generic:
         """
         # empty placeholder
         # just storing the parameters, not the coefficients
-        self._L = pari.lfuncreate([[], [], self.gammaV, self.weight,
-                                   self.conductor, self.eps])
+        self._L = pari.lfuncreate(
+            [[], [], self.gammaV, self.weight, self.conductor, self.eps]
+        )
 
     def init_coeffs(self, v, w=1):
         """
@@ -215,15 +228,19 @@ class lfun_generic:
         # otherwise w must be a list of coefficients
         pw = pari(w)
         if pw.type() not in ('t_INT', 't_CLOSURE', 't_VEC'):
-            raise TypeError("w (dual coefficients) must be a list or a function or the special value 0 or 1")
+            raise TypeError(
+                "w (dual coefficients) must be a list or a function or the special value 0 or 1"
+            )
 
         if isinstance(self.poles, (tuple, list)) and not self.poles:
-            self._L = pari.lfuncreate([pv, pw, self.gammaV, self.weight,
-                                       self.conductor, self.eps])
+            self._L = pari.lfuncreate(
+                [pv, pw, self.gammaV, self.weight, self.conductor, self.eps]
+            )
         elif self.poles == 0:
             # trying automatic pole reconstruction
-            self._L = pari.lfuncreate([pv, pw, self.gammaV, self.weight,
-                                       self.conductor, self.eps, 0])
+            self._L = pari.lfuncreate(
+                [pv, pw, self.gammaV, self.weight, self.conductor, self.eps, 0]
+            )
         elif isinstance(self.residues, (list, tuple)):
             # pari expects pairs (pole, polar part as power series),
             # not residues
@@ -234,16 +251,23 @@ class lfun_generic:
             # but we do not yet allow this
             x = pari("x")
             residues = (pari.Ser([r], "x", 1) / x for r in self.residues)
-            poles = tuple(pari.Col([b, Pb])
-                          for b, Pb in zip(self.poles, residues))
-            self._L = pari.lfuncreate([pv, pw, self.gammaV, self.weight,
-                                       self.conductor, self.eps,
-                                       poles])
+            poles = tuple(pari.Col([b, Pb]) for b, Pb in zip(self.poles, residues))
+            self._L = pari.lfuncreate(
+                [pv, pw, self.gammaV, self.weight, self.conductor, self.eps, poles]
+            )
         else:
             # assuming a single pole, given as a complex scalar
-            self._L = pari.lfuncreate([pv, pw, self.gammaV, self.weight,
-                                       self.conductor, self.eps,
-                                       self.poles[0]])
+            self._L = pari.lfuncreate(
+                [
+                    pv,
+                    pw,
+                    self.gammaV,
+                    self.weight,
+                    self.conductor,
+                    self.eps,
+                    self.poles[0],
+                ]
+            )
 
     def __pari__(self):
         """
@@ -419,6 +443,7 @@ def lfun_eta_quotient(scalings, exponents):
         ValueError: arguments should have the same length
     """
     from sage.matrix.constructor import matrix
+
     N = len(scalings)
     if N != len(exponents):
         raise ValueError('arguments should have the same length')
@@ -553,7 +578,10 @@ def lfun_genus2(C):
         ...
         ValueError: curve must be hyperelliptic of genus 2
     """
-    from sage.schemes.hyperelliptic_curves.hyperelliptic_g2 import HyperellipticCurve_g2 as hyp_g2
+    from sage.schemes.hyperelliptic_curves.hyperelliptic_g2 import (
+        HyperellipticCurve_g2 as hyp_g2,
+    )
+
     if not isinstance(C, hyp_g2):
         raise ValueError('curve must be hyperelliptic of genus 2')
     P, Q = C.hyperelliptic_polynomials()
@@ -633,6 +661,7 @@ class LFunction(SageObject):
         sage: L.taylor_series(1, 3)
         0.0374412812685155 + 0.0709221123619322*z + 0.0380744761270520*z^2 + O(z^3)
     """
+
     def __init__(self, lfun, prec=None, max_im=1) -> None:
         """
         Initialization of the `L`-function from a PARI `L`-function.
@@ -691,8 +720,10 @@ class LFunction(SageObject):
             sage: L = LFunction(lfun_number_field(QQ)); L
             L-series of conductor 1 and weight 1
         """
-        return "L-series of conductor %s and weight %s" % (self._conductor,
-                                                           self._weight)
+        return "L-series of conductor %s and weight %s" % (
+            self._conductor,
+            self._weight,
+        )
 
     @property
     def conductor(self):
@@ -992,8 +1023,8 @@ class LFunction(SageObject):
             16.0000000000000
         """
         if not self._max_im:
-            quality = pari.lfuncheckfeq(self._L, 335/339)
+            quality = pari.lfuncheckfeq(self._L, 335 / 339)
         else:
             # check by pari at 335/339 + I/7
             quality = pari.lfuncheckfeq(self._L)
-        return self._RR(2)**quality
+        return self._RR(2) ** quality

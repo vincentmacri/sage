@@ -25,7 +25,9 @@ from sage.misc.latex import latex
 from sage.misc.sage_eval import sage_eval
 from sage.structure.sage_object import SageObject
 
-macro_regex = re.compile(r'\\newcommand{(?P<name>\\[a-zA-Z]+)}(\[.+\])?{(?P<definition>.+)}')
+macro_regex = re.compile(
+    r'\\newcommand{(?P<name>\\[a-zA-Z]+)}(\[.+\])?{(?P<definition>.+)}'
+)
 
 
 class HtmlFragment(str, SageObject):
@@ -104,15 +106,15 @@ def math_parse(s):
         if i == -1:
             # No dollar signs -- definitely done.
             return HtmlFragment(t + s)
-        if i > 0 and s[i-1] == '\\':
+        if i > 0 and s[i - 1] == '\\':
             # A dollar sign with a backslash right before it, so this is a
             # normal dollar sign. If processEscapes is enabled in MathJax, "\$"
             # will do the job. But as we do not assume that, we use the span
             # tag safely.
-            t += s[:i-1] + '<span>$</span>'
-            s = s[i+1:]
+            t += s[: i - 1] + '<span>$</span>'
+            s = s[i + 1 :]
             continue
-        elif i+1 < len(s) and s[i+1] == '$':
+        elif i + 1 < len(s) and s[i + 1] == '$':
             # Found a math environment. Double dollar sign so display mode.
             disp = True
         else:
@@ -122,27 +124,27 @@ def math_parse(s):
         # Now find the matching $ sign and form the html string.
 
         if disp:
-            j = s[i+2:].find('$$')
+            j = s[i + 2 :].find('$$')
             if j == -1:
                 j = len(s)
                 s += '$$'
             else:
                 j += i + 2
-            txt = s[i+2:j]
+            txt = s[i + 2 : j]
         else:
-            j = s[i+2:].find('$')
+            j = s[i + 2 :].find('$')
             if j == -1:
                 j = len(s)
                 s += '$'
             else:
                 j += i + 2
-            txt = s[i+1:j]
+            txt = s[i + 1 : j]
 
         if disp:
             t += s[:i] + r'\[{0}\]'.format(' '.join(txt.splitlines()))
         else:
             t += s[:i] + r'\({0}\)'.format(' '.join(txt.splitlines()))
-        s = s[j+1:]
+        s = s[j + 1 :]
         if disp:
             s = s[1:]
     return HtmlFragment(t)
@@ -158,6 +160,7 @@ class MathJaxExpr:
         sage: MathJaxExpr("a^{2}") + MathJaxExpr("x^{-1}")
         a^{2}x^{-1}
     """
+
     def __init__(self, y):
         """
         Initialize a MathJax expression.
@@ -315,7 +318,7 @@ class MathJax:
         parts = x.split(prefix)
         for i, part in enumerate(parts):
             if i == 0:
-                continue    # Nothing to do with the head part
+                continue  # Nothing to do with the head part
             n = 1
             escaped = False
             for closing, c in enumerate(part):
@@ -332,7 +335,7 @@ class MathJax:
                     break
             # part should end in "}}", so omit the last two characters
             # from y
-            y = part[:closing-1]
+            y = part[: closing - 1]
             for delimiter in r"""|"'`#%&,.:;?!@_~^+-/\=<>()[]{}0123456789E""":
                 if delimiter not in y:
                     break
@@ -362,7 +365,7 @@ class MathJax:
                         subparts.append(r"\texttt{\%s}" % piece)
                     else:
                         subparts.append(wrapper % piece)
-            subparts.append(part[closing + 1:])
+            subparts.append(part[closing + 1 :])
             parts[i] = "".join(subparts)
 
         from sage.misc.latex_macros import sage_latex_macros
@@ -395,12 +398,13 @@ class MathJax:
         elif mode == 'plain':
             return mathjax_string
         else:
-            raise ValueError("mode must be either 'display', 'inline', 'display_left' or 'plain'")
+            raise ValueError(
+                "mode must be either 'display', 'inline', 'display_left' or 'plain'"
+            )
         return MathJaxExpr(html.format(mathjax_string))
 
 
 class HTMLFragmentFactory(SageObject):
-
     def _repr_(self):
         """
         Return string representation.
@@ -473,6 +477,7 @@ class HTMLFragmentFactory(SageObject):
             pass
 
         from sage.repl.rich_output.display_manager import get_display_manager
+
         dm = get_display_manager()
         if dm.preferences.align_latex == 'center':
             mode = 'display'
@@ -513,6 +518,7 @@ class HTMLFragmentFactory(SageObject):
         """
         if locals is None:
             from sage.repl.user_globals import get_globals
+
             locals = get_globals()
         s = str(s)
         s = math_parse(s)
@@ -526,8 +532,8 @@ class HTMLFragmentFactory(SageObject):
             if j == -1:
                 t += s
                 break
-            t += s[:i] + r'\({}\)'.format(latex(sage_eval(s[6+i:j], locals=locals)))
-            s = s[j+7:]
+            t += s[:i] + r'\({}\)'.format(latex(sage_eval(s[6 + i : j], locals=locals)))
+            s = s[j + 7 :]
         return HtmlFragment(t)
 
     def iframe(self, url, height=400, width=800):
@@ -571,8 +577,11 @@ class HTMLFragmentFactory(SageObject):
             url = 'file://{0}'.format(url)
         elif '://' not in url:
             url = 'http://{0}'.format(url)
-        return HtmlFragment('<iframe height="{0}" width="{1}" src="{2}"></iframe>'
-                            .format(height, width, url))
+        return HtmlFragment(
+            '<iframe height="{0}" width="{1}" src="{2}"></iframe>'.format(
+                height, width, url
+            )
+        )
 
 
 html = HTMLFragmentFactory()
@@ -604,5 +613,6 @@ def pretty_print_default(enable=True):
         'foo'
     """
     from sage.repl.rich_output import get_display_manager
+
     dm = get_display_manager()
     dm.preferences.text = 'latex' if enable else None

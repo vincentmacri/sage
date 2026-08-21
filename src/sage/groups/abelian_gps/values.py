@@ -79,7 +79,9 @@ from sage.groups.abelian_gps.abelian_group import AbelianGroup_class, _normalize
 from sage.groups.abelian_gps.abelian_group_element import AbelianGroupElement
 
 
-def AbelianGroupWithValues(values, n, gens_orders=None, names='f', check=False, values_group=None):
+def AbelianGroupWithValues(
+    values, n, gens_orders=None, names='f', check=False, values_group=None
+):
     r"""
     Construct an Abelian group with values associated to the generators.
 
@@ -139,14 +141,16 @@ def AbelianGroupWithValues(values, n, gens_orders=None, names='f', check=False, 
         -1
     """
     if check:
-        raise NotImplementedError('checking that the values are a homomorphism is not implemented')
+        raise NotImplementedError(
+            'checking that the values are a homomorphism is not implemented'
+        )
     gens_orders, names = _normalize(n, gens_orders, names)
     if values_group is None:
         from sage.structure.sequence import Sequence
+
         values_group = Sequence(values).universe()
     values = tuple(values_group(val) for val in values)
-    return AbelianGroupWithValues_class(gens_orders, names,
-                                        values, values_group)
+    return AbelianGroupWithValues_class(gens_orders, names, values, values_group)
 
 
 class AbelianGroupWithValuesEmbedding(Morphism):
@@ -191,6 +195,7 @@ class AbelianGroupWithValuesEmbedding(Morphism):
         """
         assert domain.values_group() is codomain
         from sage.categories.homset import Hom
+
         Morphism.__init__(self, Hom(domain, codomain))
 
     def _call_(self, x):
@@ -323,7 +328,7 @@ class AbelianGroupWithValuesElement(AbelianGroupElement):
         """
         m = Integer(n)
         if n != m:
-            raise TypeError('argument n (= '+str(n)+') must be an integer.')
+            raise TypeError('argument n (= ' + str(n) + ') must be an integer.')
         pow_self = AbelianGroupElement.__pow__(self, m)
         pow_self._value = pow(self.value(), m)
         return pow_self
@@ -374,6 +379,7 @@ class AbelianGroupWithValues_class(AbelianGroup_class):
         sage: G.<a,b> = AbelianGroupWithValues([2,-1], [0,4])
         sage: TestSuite(G).run()
     """
+
     Element = AbelianGroupWithValuesElement
 
     def __init__(self, generator_orders, names, values, values_group):

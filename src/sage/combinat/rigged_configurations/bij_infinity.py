@@ -28,17 +28,29 @@ REFERENCES:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+from sage.combinat.rigged_configurations.rigged_configurations import (
+    RiggedConfigurations,
+)
 
-from sage.combinat.rigged_configurations.bij_type_B import (KRTToRCBijectionTypeB,
-                                                            RCToKRTBijectionTypeB)
-from sage.combinat.rigged_configurations.bij_type_D import (KRTToRCBijectionTypeD,
-                                                            RCToKRTBijectionTypeD)
-from sage.combinat.rigged_configurations.bij_type_A import (KRTToRCBijectionTypeA,
-                                                            RCToKRTBijectionTypeA)
-from sage.combinat.rigged_configurations.bij_type_C import (KRTToRCBijectionTypeC,
-                                                            RCToKRTBijectionTypeC)
-from sage.combinat.rigged_configurations.tensor_product_kr_tableaux import TensorProductOfKirillovReshetikhinTableaux
+from sage.combinat.rigged_configurations.bij_type_B import (
+    KRTToRCBijectionTypeB,
+    RCToKRTBijectionTypeB,
+)
+from sage.combinat.rigged_configurations.bij_type_D import (
+    KRTToRCBijectionTypeD,
+    RCToKRTBijectionTypeD,
+)
+from sage.combinat.rigged_configurations.bij_type_A import (
+    KRTToRCBijectionTypeA,
+    RCToKRTBijectionTypeA,
+)
+from sage.combinat.rigged_configurations.bij_type_C import (
+    KRTToRCBijectionTypeC,
+    RCToKRTBijectionTypeC,
+)
+from sage.combinat.rigged_configurations.tensor_product_kr_tableaux import (
+    TensorProductOfKirillovReshetikhinTableaux,
+)
 from sage.combinat.crystals.letters import CrystalOfLetters
 from sage.categories.morphism import Morphism
 from sage.categories.homset import Hom
@@ -101,7 +113,9 @@ class FromTableauIsomorphism(Morphism):
         conj = x.to_tableau().conjugate()
         ct = self.domain().cartan_type()
         act = ct.affine()
-        TP = TensorProductOfKirillovReshetikhinTableaux(act, [[r,1] for r in conj.shape()])
+        TP = TensorProductOfKirillovReshetikhinTableaux(
+            act, [[r, 1] for r in conj.shape()]
+        )
         elt = TP(pathlist=[reversed(row) for row in conj])
 
         if ct.type() == 'A':
@@ -113,7 +127,9 @@ class FromTableauIsomorphism(Morphism):
         elif ct.type() == 'D':
             bij = MLTToRCBijectionTypeD(elt)
         else:
-            raise NotImplementedError("bijection of type {} not yet implemented".format(ct))
+            raise NotImplementedError(
+                "bijection of type {} not yet implemented".format(ct)
+            )
         return self.codomain()(bij.run())
 
 
@@ -170,19 +186,19 @@ class FromRCIsomorphism(Morphism):
             sage: (~phi)(y) == x
             True
         """
-        lam = [sum(nu)+1 for nu in x]
+        lam = [sum(nu) + 1 for nu in x]
         ct = self.domain().cartan_type()
         I = ct.index_set()
         if ct.type() == 'D':
             lam[-2] = max(lam[-2], lam[-1])
             lam.pop()
-            l = sum([[[r+1, 1]]*v for r, v in enumerate(lam[:-1])], [])
+            l = sum([[[r + 1, 1]] * v for r, v in enumerate(lam[:-1])], [])
             n = len(I)
-            l = l + sum([[[n,1], [n-1,1]] for k in range(lam[-1])], [])
+            l = l + sum([[[n, 1], [n - 1, 1]] for k in range(lam[-1])], [])
         else:
             if ct.type() == 'B':
                 lam[-1] *= 2
-            l = sum([[[r, 1]]*lam[i] for i, r in enumerate(I)], [])
+            l = sum([[[r, 1]] * lam[i] for i, r in enumerate(I)], [])
 
         RC = RiggedConfigurations(ct.affine(), reversed(l))
         elt = RC(x)
@@ -195,7 +211,9 @@ class FromRCIsomorphism(Morphism):
         elif ct.type() == 'D':
             bij = RCToMLTBijectionTypeD(elt)
         else:
-            raise NotImplementedError("bijection of type {} not yet implemented".format(ct))
+            raise NotImplementedError(
+                "bijection of type {} not yet implemented".format(ct)
+            )
         y = bij.run()
 
         # Now make the result marginally large
@@ -229,24 +247,24 @@ class MLTToRCBijectionTypeB(KRTToRCBijectionTypeB):
         """
         for cur_crystal in reversed(self.tp_krt):
             cur_column = list(cur_crystal)
-            self.cur_path.insert(0, []) # Prepend an empty list
+            self.cur_path.insert(0, [])  # Prepend an empty list
             self.cur_dims.insert(0, [0, 1])
 
             for letter in reversed(cur_column):
                 self.cur_dims[0][0] += 1
 
-                val = letter.value # Convert from a CrystalOfLetter to an Integer
+                val = letter.value  # Convert from a CrystalOfLetter to an Integer
 
                 # Build the next state
-                self.cur_path[0].insert(0, [letter]) # Prepend the value
+                self.cur_path[0].insert(0, [letter])  # Prepend the value
                 if self.cur_dims[0][0] == self.n:
                     # Spinor case, we go from \Lambda_{n-1} -> 2\Lambda_n
-                    self.cur_dims.insert(1, [self.n,1])
+                    self.cur_dims.insert(1, [self.n, 1])
                     self.cur_path.insert(1, self.cur_path[0])
 
                 self.next_state(val)
 
-        self.ret_rig_con.set_immutable() # Return it to immutable
+        self.ret_rig_con.set_immutable()  # Return it to immutable
         return self.ret_rig_con
 
 
@@ -279,13 +297,13 @@ class RCToMLTBijectionTypeB(RCToKRTBijectionTypeB):
                 self.cur_dims.pop(1)
 
             while dim[0] > 0:
-                dim[0] -= 1 # This takes care of the indexing
+                dim[0] -= 1  # This takes care of the indexing
                 b = self.next_state(dim[0])
 
                 # Make sure we have a crystal letter
-                ret_crystal_path[-1].append(letters(b)) # Append the rank
+                ret_crystal_path[-1].append(letters(b))  # Append the rank
 
-            self.cur_dims.pop(0) # Pop off the leading column
+            self.cur_dims.pop(0)  # Pop off the leading column
 
         return ret_crystal_path
 
@@ -308,25 +326,25 @@ class MLTToRCBijectionTypeD(KRTToRCBijectionTypeD):
         for cur_crystal in reversed(self.tp_krt):
             # Iterate through the columns
             cur_column = list(cur_crystal)
-            self.cur_path.insert(0, []) # Prepend an empty list
+            self.cur_path.insert(0, [])  # Prepend an empty list
 
             self.cur_dims.insert(0, [0, 1])
 
             for letter in reversed(cur_column):
                 self.cur_dims[0][0] += 1
 
-                val = letter.value # Convert from a CrystalOfLetter to an Integer
+                val = letter.value  # Convert from a CrystalOfLetter to an Integer
 
                 # Build the next state
-                self.cur_path[0].insert(0, [letter]) # Prepend the value
+                self.cur_path[0].insert(0, [letter])  # Prepend the value
                 self.next_state(val)
 
                 if self.cur_dims[0][0] == self.n - 1:
                     # Spinor case, we go from \Lambda_{n-2} -> \Lambda_{n-1} + \Lambda_n
-                    self.cur_dims.insert(1, [self.n,1])
+                    self.cur_dims.insert(1, [self.n, 1])
                     self.cur_path.insert(1, self.cur_path[0] + [None])
 
-        self.ret_rig_con.set_immutable() # Return it to immutable
+        self.ret_rig_con.set_immutable()  # Return it to immutable
         return self.ret_rig_con
 
 
@@ -358,12 +376,12 @@ class RCToMLTBijectionTypeD(RCToKRTBijectionTypeD):
                 self.cur_dims.pop(1)
 
             while dim[0] > 0:
-                dim[0] -= 1 # This takes care of the indexing
+                dim[0] -= 1  # This takes care of the indexing
                 b = self.next_state(dim[0])
 
                 # Make sure we have a crystal letter
-                ret_crystal_path[-1].append(letters(b)) # Append the rank
+                ret_crystal_path[-1].append(letters(b))  # Append the rank
 
-            self.cur_dims.pop(0) # Pop off the leading column
+            self.cur_dims.pop(0)  # Pop off the leading column
 
         return ret_crystal_path

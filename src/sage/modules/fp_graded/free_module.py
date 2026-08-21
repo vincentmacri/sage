@@ -353,8 +353,10 @@ class FreeGradedModule(CombinatorialFreeModule):
         sage: M.gens()
         (x, y, z)
     """
-    def __classcall__(cls, algebra, generator_degrees, category=None,
-                      names=None, prefix=None, **kwds):
+
+    def __classcall__(
+        cls, algebra, generator_degrees, category=None, names=None, prefix=None, **kwds
+    ):
         """
         Normalize input to ensure a unique representation.
 
@@ -371,9 +373,15 @@ class FreeGradedModule(CombinatorialFreeModule):
             raise ValueError('the ground ring of the algebra must be a PID')
 
         generator_degrees = tuple(generator_degrees)
-        category = GradedModules(algebra).WithBasis().FiniteDimensional().or_subcategory(category)
+        category = (
+            GradedModules(algebra)
+            .WithBasis()
+            .FiniteDimensional()
+            .or_subcategory(category)
+        )
         if names is not None:
             from sage.structure.category_object import normalize_names
+
             names = normalize_names(-1, names)
             if len(generator_degrees) > 1:
                 if len(names) == 1:
@@ -384,10 +392,15 @@ class FreeGradedModule(CombinatorialFreeModule):
                 raise ValueError("the names do not correspond to the generators")
         if prefix is None:
             prefix = 'g'
-        return super().__classcall__(cls, algebra=algebra,
-                                     generator_degrees=generator_degrees,
-                                     category=category, names=names,
-                                     prefix=prefix, **kwds)
+        return super().__classcall__(
+            cls,
+            algebra=algebra,
+            generator_degrees=generator_degrees,
+            category=category,
+            names=names,
+            prefix=prefix,
+            **kwds,
+        )
 
     def __init__(self, algebra, generator_degrees, category, names=None, **kwds):
         r"""
@@ -422,11 +435,9 @@ class FreeGradedModule(CombinatorialFreeModule):
         kwds['iterate_key'] = True
 
         # Call the base class constructor.
-        CombinatorialFreeModule.__init__(self, algebra,
-                                         basis_keys=keys,
-                                         category=category,
-                                         names=names,
-                                         **kwds)
+        CombinatorialFreeModule.__init__(
+            self, algebra, basis_keys=keys, category=category, names=names, **kwds
+        )
 
     Element = FreeGradedModuleElement
 
@@ -460,8 +471,9 @@ class FreeGradedModule(CombinatorialFreeModule):
             True
         """
         # We use the base class to avoid the category mixed one
-        return type(self).__base__(algebra, self.generator_degrees(),
-                                   prefix=self.prefix(), names=self._names)
+        return type(self).__base__(
+            algebra, self.generator_degrees(), prefix=self.prefix(), names=self._names
+        )
 
     def _repr_(self):
         r"""
@@ -476,10 +488,11 @@ class FreeGradedModule(CombinatorialFreeModule):
             Free graded left module on 3 generators over
              mod 2 Steenrod algebra, milnor basis
         """
-        return ("Free graded left module on %s generator%s over %s"
-                % (len(self._generator_degrees),
-                   "" if len(self._generator_degrees) == 1 else "s",
-                   self.base_ring()))
+        return "Free graded left module on %s generator%s over %s" % (
+            len(self._generator_degrees),
+            "" if len(self._generator_degrees) == 1 else "s",
+            self.base_ring(),
+        )
 
     def generator_degrees(self):
         r"""
@@ -581,8 +594,10 @@ class FreeGradedModule(CombinatorialFreeModule):
             return self.zero()
 
         A = self.base_ring()
-        return self._from_dict({b: A(c) for (c, b) in zip(coefficients, self._indices) if c},
-                               remove_zeros=False)
+        return self._from_dict(
+            {b: A(c) for (c, b) in zip(coefficients, self._indices) if c},
+            remove_zeros=False,
+        )
 
     def an_element(self, n=None):
         r"""
@@ -672,9 +687,13 @@ class FreeGradedModule(CombinatorialFreeModule):
              Sq(1,1)*m4,
              Sq(4)*m4)
         """
-        return tuple([self.term(self._indices[i], coeff)
-                      for i in range(len(self._generator_degrees))
-                      for coeff in self._basis_coeffs(n, i)])
+        return tuple(
+            [
+                self.term(self._indices[i], coeff)
+                for i in range(len(self._generator_degrees))
+                for coeff in self._basis_coeffs(n, i)
+            ]
+        )
 
     def _basis_coeffs(self, d, i):
         r"""
@@ -757,8 +776,10 @@ class FreeGradedModule(CombinatorialFreeModule):
         """
         D = self.vector_presentation(n).dimension()
         if len(coordinates) != D:
-            raise ValueError('the given coordinate vector has incorrect length (%d); '
-                             'it should have length %d' % (len(coordinates), D))
+            raise ValueError(
+                'the given coordinate vector has incorrect length (%d); '
+                'it should have length %d' % (len(coordinates), D)
+            )
 
         # Performance testing using this real life example:
         #
@@ -780,8 +801,9 @@ class FreeGradedModule(CombinatorialFreeModule):
         j = 0
         for i, key in enumerate(self._indices):
             B = self._basis_coeffs(n, i)
-            coeff = A.linear_combination((b, coordinates[j + ind])
-                                         for ind, b in enumerate(B))
+            coeff = A.linear_combination(
+                (b, coordinates[j + ind]) for ind, b in enumerate(B)
+            )
             if coeff:
                 ret[key] = coeff
             j += len(B)
@@ -842,8 +864,10 @@ class FreeGradedModule(CombinatorialFreeModule):
             4
         """
         m = len(self._generator_degrees)
-        return FreeModule(self.base_ring().base_ring(), sum(len(self._basis_coeffs(n, i))
-                                                            for i in range(m)))
+        return FreeModule(
+            self.base_ring().base_ring(),
+            sum(len(self._basis_coeffs(n, i)) for i in range(m)),
+        )
 
     __getitem__ = vector_presentation
 
@@ -866,9 +890,11 @@ class FreeGradedModule(CombinatorialFreeModule):
         try:
             return self.gens()[index]
         except IndexError:
-            raise ValueError('the parent module has generators in the index '
-                             'range [0, %s]; generator %s does not exist' %
-                             (len(self.generator_degrees()) - 1, index))
+            raise ValueError(
+                'the parent module has generators in the index '
+                'range [0, %s]; generator %s does not exist'
+                % (len(self.generator_degrees()) - 1, index)
+            )
 
     gen = generator
 
@@ -911,6 +937,7 @@ class FreeGradedModule(CombinatorialFreeModule):
             Set of Morphisms from Free graded left module on 2 generators ...
         """
         from .free_homspace import FreeGradedModuleHomspace
+
         return FreeGradedModuleHomspace(self, Y, category)
 
     def suspension(self, t):
@@ -937,8 +964,7 @@ class FreeGradedModule(CombinatorialFreeModule):
             (-4, -2, 0)
         """
         degs = tuple(g + t for g in self.generator_degrees())
-        return FreeGradedModule(algebra=self.base_ring(),
-                                generator_degrees=degs)
+        return FreeGradedModule(algebra=self.base_ring(), generator_degrees=degs)
 
     def has_relations(self) -> bool:
         r"""

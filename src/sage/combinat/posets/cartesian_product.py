@@ -106,6 +106,7 @@ class CartesianProductPoset(CartesianProduct):
 
         from sage.categories.category import Category
         from sage.categories.posets import Posets
+
         if not isinstance(category, tuple):
             category = (category,)
         category = Category.join(category + (Posets(),))
@@ -197,8 +198,7 @@ class CartesianProductPoset(CartesianProduct):
             sage: R(((0, 1), 0)) <= R(((1, 0), 0))
             False
         """
-        for l, r, S in \
-                zip(left.value, right.value, self.cartesian_factors()):
+        for l, r, S in zip(left.value, right.value, self.cartesian_factors()):
             if l == r:
                 continue
             if S.le(l, r):
@@ -252,8 +252,8 @@ class CartesianProductPoset(CartesianProduct):
         """
         return all(
             S.le(l, r)
-            for l, r, S in
-            zip(left.value, right.value, self.cartesian_factors()))
+            for l, r, S in zip(left.value, right.value, self.cartesian_factors())
+        )
 
     def le_native(self, left, right):
         r"""
@@ -297,7 +297,6 @@ class CartesianProductPoset(CartesianProduct):
         return left.value <= right.value
 
     class Element(CartesianProduct.Element):
-
         def _le_(self, other):
             r"""
             Return if this element is less or equal to ``other``.
@@ -382,11 +381,13 @@ class CartesianProductPoset(CartesianProduct):
                 True
             """
             from sage.structure.element import have_same_parent
+
             if have_same_parent(self, other):
                 return self._le_(other)
 
             from sage.structure.element import get_coercion_model
             import operator
+
             try:
                 return get_coercion_model().bin_op(self, other, operator.le)
             except TypeError:

@@ -1,6 +1,7 @@
 """
 Load Python, Sage, Cython, Fortran and Magma files in Sage
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 William Stein <wstein@gmail.com>
 #
@@ -67,8 +68,10 @@ def load_cython(name):
       module.
     """
     from sage.misc.cython import cython
+
     mod, dir = cython(str(name), compile_message=True, use_cache=True)
     import sys
+
     sys.path.append(dir)
     return f'from {mod} import *'
 
@@ -239,18 +242,22 @@ def load(filename, globals, attach=False):
         # rest of this functions operate on filename as a str
         filename = bytes_to_str(filename, FS_ENCODING, 'surrogateescape')
 
-    if isinstance(filename, str) and filename.lower().startswith(('http://', 'https://')):
+    if isinstance(filename, str) and filename.lower().startswith(
+        ('http://', 'https://')
+    ):
         if attach:
             # But see https://en.wikipedia.org/wiki/HTTP_ETag for how
             # we will do this.
             # https://diveintopython3.net/http-web-services.html#etags
             raise NotImplementedError("you cannot attach a URL")
         from sage.misc.remote_file import get_remote_file
+
         filename = get_remote_file(filename, verbose=False)
 
     filename = Path(filename).expanduser()
 
     from sage.repl.attach import load_attach_path
+
     for path in load_attach_path():
         fpath = (path / filename).expanduser()
         if fpath.is_file():
@@ -268,6 +275,7 @@ def load(filename, globals, attach=False):
     elif ext == '.sage':
         from sage.repl.attach import load_attach_mode
         from sage.repl.preparse import preparse_file_named, preparse_file
+
         load_debug_mode, attach_debug_mode = load_attach_mode()
         if (attach and attach_debug_mode) or ((not attach) and load_debug_mode):
             # Preparse to a file to enable tracebacks with
@@ -292,6 +300,7 @@ def load(filename, globals, attach=False):
         exec(load_cython(fpath), globals)
     elif ext in ['.f', '.f90']:
         from sage.misc.inline_fortran import fortran
+
         with fpath.open() as f:
             fortran(f.read(), globals)
     elif ext == '.m':
@@ -300,9 +309,12 @@ def load(filename, globals, attach=False):
         # further.
         s = globals['magma'].load(fpath)
         i = s.find('\n')
-        print(s[i + 1:])
+        print(s[i + 1 :])
     else:
-        raise ValueError('unknown file extension %r for load or attach (supported extensions: .py, .pyx, .sage, .spyx, .f, .f90, .m)' % ext)
+        raise ValueError(
+            'unknown file extension %r for load or attach (supported extensions: .py, .pyx, .sage, .spyx, .f, .f90, .m)'
+            % ext
+        )
 
 
 def load_wrap(filename, attach=False):
@@ -332,7 +344,6 @@ def load_wrap(filename, attach=False):
     if isinstance(filename, Path):
         filename = str(filename)
     # Note: In Python 3, b64encode only accepts bytes, and returns bytes.
-    b64 = base64.b64encode(str_to_bytes(filename, FS_ENCODING,
-                                        "surrogateescape"))
+    b64 = base64.b64encode(str_to_bytes(filename, FS_ENCODING, "surrogateescape"))
     txt = 'sage.repl.load.load(sage.repl.load.base64.b64decode("{}"),globals(),{})'
     return txt.format(bytes_to_str(b64, 'ascii'), attach)

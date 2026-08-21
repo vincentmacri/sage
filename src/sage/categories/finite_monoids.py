@@ -1,6 +1,7 @@
 r"""
 Finite monoids
 """
+
 # ****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #
@@ -35,8 +36,8 @@ class FiniteMonoids(CategoryWithAxiom):
         sage: M.one()
         10
     """
-    class ParentMethods:
 
+    class ParentMethods:
         def nerve(self):
             r"""
             The nerve (classifying space) of this monoid.
@@ -164,6 +165,7 @@ class FiniteMonoids(CategoryWithAxiom):
                  3: Vector space of dimension 1 over Finite Field of size 5}
             """
             from sage.topology.simplicial_set_examples import Nerve
+
             return Nerve(self)
 
         def rhodes_radical_congruence(self, base_ring=None):
@@ -208,6 +210,7 @@ class FiniteMonoids(CategoryWithAxiom):
             - [Rho69]_
             """
             from sage.rings.rational_field import QQ
+
             if base_ring is None:
                 base_ring = QQ
             kS = self.algebra(base_ring)

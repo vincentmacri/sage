@@ -13,6 +13,7 @@ codewords `c(x) \in F[x]` satisfy `c(\alpha^{a}) = 0`, for all integers `a` in
 the arithmetic sequence `b, b + \ell, b + 2 \times \ell, \dots, b + (\delta -
 2) \times \ell`.
 """
+
 # *****************************************************************************
 #       Copyright (C) 2016 David Lucas <david.lucas@inria.fr>
 #                     2017 Julien Lavauzelle <julien.lavauzelle@inria.fr>
@@ -105,8 +106,16 @@ class BCHCode(CyclicCode):
         1
     """
 
-    def __init__(self, base_field, length, designed_distance,
-                 primitive_root=None, offset=1, jump_size=1, b=0):
+    def __init__(
+        self,
+        base_field,
+        length,
+        designed_distance,
+        primitive_root=None,
+        offset=1,
+        jump_size=1,
+        b=0,
+    ):
         """
         TESTS:
 
@@ -126,15 +135,17 @@ class BCHCode(CyclicCode):
 
         q = base_field.cardinality()
         s = Zmod(length)(q).multiplicative_order()
-        if gcd(jump_size, q ** s - 1) != 1:
-            raise ValueError("jump_size must be coprime with the order of "
-                             "the multiplicative group of the splitting field")
+        if gcd(jump_size, q**s - 1) != 1:
+            raise ValueError(
+                "jump_size must be coprime with the order of "
+                "the multiplicative group of the splitting field"
+            )
 
-        D = [(offset + jump_size * i) % length
-             for i in range(designed_distance - 1)]
+        D = [(offset + jump_size * i) % length for i in range(designed_distance - 1)]
 
-        super().__init__(field=base_field, length=length,
-                         D=D, primitive_root=primitive_root)
+        super().__init__(
+            field=base_field, length=length, D=D, primitive_root=primitive_root
+        )
         self._default_decoder_name = "UnderlyingGRS"
         self._jump_size = jump_size
         self._offset = offset
@@ -153,11 +164,13 @@ class BCHCode(CyclicCode):
             sage: C1 == C2
             True
         """
-        return (isinstance(other, BCHCode) and
-                self.length() == other.length() and
-                self.jump_size() == other.jump_size() and
-                self.offset() == other.offset() and
-                self.primitive_root() == other.primitive_root())
+        return (
+            isinstance(other, BCHCode)
+            and self.length() == other.length()
+            and self.jump_size() == other.jump_size()
+            and self.offset() == other.offset()
+            and self.primitive_root() == other.primitive_root()
+        )
 
     def _repr_(self):
         r"""
@@ -169,9 +182,12 @@ class BCHCode(CyclicCode):
             sage: C
             [15, 5] BCH Code over GF(2) with designed distance 7
         """
-        return ("[%s, %s] BCH Code over GF(%s) with designed distance %d"
-                % (self.length(), self.dimension(),
-                   self.base_field().cardinality(), self.designed_distance()))
+        return "[%s, %s] BCH Code over GF(%s) with designed distance %d" % (
+            self.length(),
+            self.dimension(),
+            self.base_field().cardinality(),
+            self.designed_distance(),
+        )
 
     def _latex_(self):
         r"""
@@ -183,9 +199,15 @@ class BCHCode(CyclicCode):
             sage: latex(C)
             [15, 5] \textnormal{ BCH Code over } \Bold{F}_{2} \textnormal{ with designed distance } 7
         """
-        return ("[%s, %s] \\textnormal{ BCH Code over } %s \\textnormal{ with designed distance } %s"
-                % (self.length(), self.dimension(),
-                self.base_field()._latex_(), self.designed_distance()))
+        return (
+            "[%s, %s] \\textnormal{ BCH Code over } %s \\textnormal{ with designed distance } %s"
+            % (
+                self.length(),
+                self.dimension(),
+                self.base_field()._latex_(),
+                self.designed_distance(),
+            )
+        )
 
     def jump_size(self):
         r"""
@@ -245,13 +267,16 @@ class BCHCode(CyclicCode):
         grs_dim = n - designed_distance + 1
 
         alpha = self.primitive_root()
-        alpha_l = alpha ** l
-        alpha_b = alpha ** b
-        evals = [alpha_l ** i for i in range(n)]
-        pcm = [alpha_b ** i for i in range(n)]
+        alpha_l = alpha**l
+        alpha_b = alpha**b
+        evals = [alpha_l**i for i in range(n)]
+        pcm = [alpha_b**i for i in range(n)]
 
-        multipliers_product = [1/prod([evals[i] - evals[h] for h in range(n) if h != i]) for i in range(n)]
-        column_multipliers = [multipliers_product[i]/pcm[i] for i in range(n)]
+        multipliers_product = [
+            1 / prod([evals[i] - evals[h] for h in range(n) if h != i])
+            for i in range(n)
+        ]
+        column_multipliers = [multipliers_product[i] / pcm[i] for i in range(n)]
 
         return GeneralizedReedSolomonCode(evals, grs_dim, column_multipliers)
 
@@ -311,8 +336,10 @@ class BCHUnderlyingGRSDecoder(Decoder):
             sage: latex(D)
             \textnormal{Decoder through the underlying GRS code of } [15, 11] \textnormal{ BCH Code over } \Bold{F}_{2^{2}} \textnormal{ with designed distance } 3
         """
-        return ("\\textnormal{Decoder through the underlying GRS code of } %s"
-                % self.code()._latex_())
+        return (
+            "\\textnormal{Decoder through the underlying GRS code of } %s"
+            % self.code()._latex_()
+        )
 
     def grs_code(self):
         r"""

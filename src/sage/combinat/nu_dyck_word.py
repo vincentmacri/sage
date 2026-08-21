@@ -13,6 +13,7 @@ AUTHORS:
 
 - Aram Dermenjian (2020-09-26)
 """
+
 # ****************************************************************************
 #       Copyright (C) 2020 Aram Dermenjian <aram.dermenjian@gmail.com>,
 #
@@ -212,6 +213,7 @@ class NuDyckWord(CombinatorialElement):
         | . . .
         sage: update_ndw_symbols(1,0)
     """
+
     @staticmethod
     def __classcall_private__(cls, dw=None, nu=None, **kwargs):
         """
@@ -227,6 +229,7 @@ class NuDyckWord(CombinatorialElement):
         # if dw is none, then we might have a normal Dyck word
         if dw is None:
             from sage.combinat.dyck_word import DyckWord
+
             return DyckWord(dw, kwargs)
 
         if isinstance(dw, NuDyckWord):
@@ -609,7 +612,9 @@ class NuDyckWord(CombinatorialElement):
                 labels = [" "] * height
             else:
                 if len(labelling) != height:
-                    raise ValueError(f"the given labelling has the wrong length: {height} needed")
+                    raise ValueError(
+                        f"the given labelling has the wrong length: {height} needed"
+                    )
                 labels = [str(label) for label in labelling]
                 max_length = max(len(label) for label in labels)
                 labels = [lbl.rjust(max_length + 1) for lbl in labels]
@@ -667,6 +672,7 @@ class NuDyckWord(CombinatorialElement):
             ______| . . . . . . .
         """
         from sage.typeset.ascii_art import AsciiArt
+
         rep = self.parent().options.ascii_art
         if rep == "pretty_output":
             ret = self._repr_lattice()
@@ -830,7 +836,7 @@ class NuDyckWord(CombinatorialElement):
         # Add points if wanted
         if latex_options['show_points']:
             pt_color = latex_options['points_color']
-            radius = 0.15 + .03 * latex_options['line width']
+            radius = 0.15 + 0.03 * latex_options['line width']
             for v in self.points():
                 res += "  \\draw[line width=2,"
                 res += f"color={pt_color},fill={pt_color}]"
@@ -849,8 +855,7 @@ class NuDyckWord(CombinatorialElement):
 
         # setup Path
         res += "  \\draw[rounded corners=1, color={}, line width={}]".format(
-            latex_options['color'],
-            str(latex_options['line width'])
+            latex_options['color'], str(latex_options['line width'])
         )
         for k, p in enumerate(self._path.points()):
             if k == 0:
@@ -872,6 +877,7 @@ class NuDyckWord(CombinatorialElement):
             Graphics object consisting of 1 graphics primitive
         """
         from sage.plot.plot import list_plot
+
         return list_plot(list(self.points()), plotjoined=True, **kwds)
 
     def path(self):
@@ -1033,8 +1039,9 @@ class NuDyckWord(CombinatorialElement):
         """
         # Grab furthest east point at each height of nu
         nu_points = list(self._nu.points())
-        nu_easts = [max(i for i, j in nu_points if j == k)
-                    for k in range(self._nu.height() + 1)]
+        nu_easts = [
+            max(i for i, j in nu_points if j == k) for k in range(self._nu.height() + 1)
+        ]
 
         points = list(self._path.points())
         return [nu_easts[j] - i for i, j in points]
@@ -1116,7 +1123,7 @@ class NuDyckWord(CombinatorialElement):
                 other_index = i
                 break
         ndw = self._list
-        d = ndw[0:mutation_index - 1]
+        d = ndw[0 : mutation_index - 1]
         e = ndw[mutation_index:other_index]
         f = ndw[other_index:]
         return NuDyckWord(d + e + [ndw_close_symbol] + f, self._nu)
@@ -1201,48 +1208,72 @@ class NuDyckWords(Parent):
               - latex_show_points:       False
               - latex_tikz_scale:        1
         """
+
         NAME = 'NuDyckWords'
         module = 'sage.combinat.nu_dyck_path'
-        display = {'default': "list",
-                   'description': 'Specifies how nu Dyck words should be printed',
-                   'values': {'list': 'displayed as a list',
-                              'lattice': 'displayed on the lattice defined by ``diagram_style``'},
-                   'case_sensitive': False}
-        ascii_art = {'default': "pretty_output",
-                     'description': 'Specifies how the ascii art of nu Dyck words should be printed',
-                     'values': {'pretty_output': "Using pretty printing"},
-                     'alias': {'pretty_print': "pretty_output"},
-                     'case_sensitive': False}
-        diagram_style = {'default': "grid",
-                         'values': {
-                             'grid': 'printing as paths on a grid using N and E steps'},
-                         'alias': {'N-E': 'grid'},
-                         'case_sensitive': False}
-        latex_tikz_scale = {'default': 1,
-                            'description': 'The default value for the tikz scale when latexed',
-                            'checker': lambda x: True}  # More trouble than it's worth to check
-        latex_line_width_scalar = {'default': 2,
-                                   'description': 'The default value for the line width as a '
-                                   'multiple of the tikz scale when latexed',
-                                   'checker': lambda x: True}  # More trouble than it's worth to check
-        latex_color = {'default': "black",
-                       'description': 'The default value for the color when latexed',
-                       'checker': lambda x: isinstance(x, str)}
-        latex_show_points = {'default': False,
-                             'description': 'The default value for showing points',
-                             'checker': lambda x: isinstance(x, bool)}
-        latex_points_color = {'default': 'black',
-                              'description': 'The default value for path color.',
-                              'checker': lambda x: isinstance(x, str)}
-        latex_show_grid = {'default': True,
-                           'description': 'The default value for showing grid',
-                           'checker': lambda x: isinstance(x, bool)}
-        latex_show_nu = {'default': True,
-                         'description': 'The default value for showing nu',
-                         'checker': lambda x: isinstance(x, bool)}
-        latex_nu_options = {'default': 'rounded corners=1, color=red, line width=1',
-                            'description': 'The default value for options for nu path',
-                            'checker': lambda x: isinstance(x, str)}
+        display = {
+            'default': "list",
+            'description': 'Specifies how nu Dyck words should be printed',
+            'values': {
+                'list': 'displayed as a list',
+                'lattice': 'displayed on the lattice defined by ``diagram_style``',
+            },
+            'case_sensitive': False,
+        }
+        ascii_art = {
+            'default': "pretty_output",
+            'description': 'Specifies how the ascii art of nu Dyck words should be printed',
+            'values': {'pretty_output': "Using pretty printing"},
+            'alias': {'pretty_print': "pretty_output"},
+            'case_sensitive': False,
+        }
+        diagram_style = {
+            'default': "grid",
+            'values': {'grid': 'printing as paths on a grid using N and E steps'},
+            'alias': {'N-E': 'grid'},
+            'case_sensitive': False,
+        }
+        latex_tikz_scale = {
+            'default': 1,
+            'description': 'The default value for the tikz scale when latexed',
+            'checker': lambda x: True,
+        }  # More trouble than it's worth to check
+        latex_line_width_scalar = {
+            'default': 2,
+            'description': 'The default value for the line width as a '
+            'multiple of the tikz scale when latexed',
+            'checker': lambda x: True,
+        }  # More trouble than it's worth to check
+        latex_color = {
+            'default': "black",
+            'description': 'The default value for the color when latexed',
+            'checker': lambda x: isinstance(x, str),
+        }
+        latex_show_points = {
+            'default': False,
+            'description': 'The default value for showing points',
+            'checker': lambda x: isinstance(x, bool),
+        }
+        latex_points_color = {
+            'default': 'black',
+            'description': 'The default value for path color.',
+            'checker': lambda x: isinstance(x, str),
+        }
+        latex_show_grid = {
+            'default': True,
+            'description': 'The default value for showing grid',
+            'checker': lambda x: isinstance(x, bool),
+        }
+        latex_show_nu = {
+            'default': True,
+            'description': 'The default value for showing nu',
+            'checker': lambda x: isinstance(x, bool),
+        }
+        latex_nu_options = {
+            'default': 'rounded corners=1, color=red, line width=1',
+            'description': 'The default value for options for nu path',
+            'checker': lambda x: isinstance(x, str),
+        }
 
     def _element_constructor_(self, word):
         """
@@ -1359,17 +1390,19 @@ class NuDyckWords(Parent):
              [1, 1, 0, 1, 0, 0],
              [1, 1, 1, 0, 0, 0]]
         """
+
         # Define successor function for recursion
         def transpose_close_open(N):
             for k, v in enumerate(N._list):
                 if k > 0 and v == ndw_open_symbol:
                     w = N._list[k - 1]
                     if w == ndw_close_symbol:
-                        new = N._list[:k - 1] + [v, w] + N._list[k + 1:]
+                        new = N._list[: k - 1] + [v, w] + N._list[k + 1 :]
                         yield self.element_class(self, new)
 
-        RES = RecursivelyEnumeratedSet([self.element_class(self, self._nu)],
-                                       transpose_close_open)
+        RES = RecursivelyEnumeratedSet(
+            [self.element_class(self, self._nu)], transpose_close_open
+        )
         return RES.breadth_first_search_iterator()
 
     def cardinality(self):

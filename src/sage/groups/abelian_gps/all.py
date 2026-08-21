@@ -18,9 +18,9 @@ all.py -- export of abelian groups to Sage
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
-#from dual_abelian_group import DualAbelianGroup
+# from dual_abelian_group import DualAbelianGroup
 from sage.groups.abelian_gps.abelian_group import AbelianGroup, word_problem
 from sage.groups.abelian_gps.values import AbelianGroupWithValues
 

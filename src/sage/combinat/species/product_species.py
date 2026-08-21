@@ -1,6 +1,7 @@
 """
 Product species
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
@@ -75,10 +76,13 @@ class ProductSpeciesStructure(GenericSpeciesStructure):
         left_labels = new_subset.label_subset()
         right_labels = new_subset.complement().label_subset()
 
-        return self.__class__(self.parent(), self._labels,
-                              new_subset,
-                              left.change_labels(left_labels),
-                              right.change_labels(right_labels))
+        return self.__class__(
+            self.parent(),
+            self._labels,
+            new_subset,
+            left.change_labels(left_labels),
+            right.change_labels(right_labels),
+        )
 
     def canonical_label(self):
         """
@@ -115,10 +119,13 @@ class ProductSpeciesStructure(GenericSpeciesStructure):
         left_labels = new_subset.label_subset()
         right_labels = new_subset.complement().label_subset()
 
-        return self.__class__(self.parent(), self._labels,
-                              new_subset,
-                              left.canonical_label().change_labels(left_labels),
-                              right.canonical_label().change_labels(right_labels))
+        return self.__class__(
+            self.parent(),
+            self._labels,
+            new_subset,
+            left.canonical_label().change_labels(left_labels),
+            right.canonical_label().change_labels(right_labels),
+        )
 
     def change_labels(self, labels):
         """
@@ -146,10 +153,13 @@ class ProductSpeciesStructure(GenericSpeciesStructure):
         new_subset = self._subset.change_labels(labels)
         left_labels = new_subset.label_subset()
         right_labels = new_subset.complement().label_subset()
-        return self.__class__(self.parent(), labels,
-                              new_subset,
-                              left.change_labels(left_labels),
-                              right.change_labels(right_labels))
+        return self.__class__(
+            self.parent(),
+            labels,
+            new_subset,
+            left.change_labels(left_labels),
+            right.change_labels(right_labels),
+        )
 
     def automorphism_group(self):
         """
@@ -311,14 +321,19 @@ class ProductSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: list(F._times_gen(F._default_structure_class, 'structures',[1,2]))
             [{}*{1, 2}, {1}*{2}, {2}*{1}, {1, 2}*{}]
         """
+
         def c(F, n):
             return F.generating_series().coefficient(n)
+
         S = SubsetSpecies()
 
         for u in getattr(S, attr)(labels):
             vl = u.complement().label_subset()
             ul = u.label_subset()
-            if c(self.left_factor(), len(ul)) == 0 or c(self.right_factor(), len(vl)) == 0:
+            if (
+                c(self.left_factor(), len(ul)) == 0
+                or c(self.right_factor(), len(vl)) == 0
+            ):
                 continue
             for x in getattr(self.left_factor(), attr)(ul):
                 for y in getattr(self.right_factor(), attr)(vl):
@@ -333,8 +348,9 @@ class ProductSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: F.generating_series()[0:5]
             [1, 2, 3, 4, 5]
         """
-        res = (self.left_factor().generating_series(base_ring) *
-               self.right_factor().generating_series(base_ring))
+        res = self.left_factor().generating_series(
+            base_ring
+        ) * self.right_factor().generating_series(base_ring)
         if self.is_weighted():
             res = self._weight * res
         return res
@@ -348,8 +364,9 @@ class ProductSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: F.isotype_generating_series()[0:5]                                    # needs sage.libs.flint
             [1, 2, 5, 10, 20]
         """
-        res = (self.left_factor().isotype_generating_series(base_ring) *
-               self.right_factor().isotype_generating_series(base_ring))
+        res = self.left_factor().isotype_generating_series(
+            base_ring
+        ) * self.right_factor().isotype_generating_series(base_ring)
         if self.is_weighted():
             res = self._weight * res
         return res
@@ -367,8 +384,9 @@ class ProductSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
              4*p[1, 1, 1] + 4*p[2, 1] + 2*p[3],
              5*p[1, 1, 1, 1] + 6*p[2, 1, 1] + 3*p[2, 2] + 4*p[3, 1] + 2*p[4]]
         """
-        res = (self.left_factor().cycle_index_series(base_ring) *
-               self.right_factor().cycle_index_series(base_ring))
+        res = self.left_factor().cycle_index_series(
+            base_ring
+        ) * self.right_factor().cycle_index_series(base_ring)
         if self.is_weighted():
             res = self._weight * res
         return res
@@ -400,9 +418,13 @@ class ProductSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: C.weight_ring()
             Univariate Polynomial Ring in t over Rational Field
         """
-        return self._common_parent([self.left_factor().weight_ring(),
-                                    self.right_factor().weight_ring(),
-                                    self._weight.parent()])
+        return self._common_parent(
+            [
+                self.left_factor().weight_ring(),
+                self.right_factor().weight_ring(),
+                self._weight.parent(),
+            ]
+        )
 
     def _equation(self, var_mapping):
         """
@@ -418,6 +440,7 @@ class ProductSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [node0 + (-z^2)]
         """
         from sage.misc.misc_c import prod
+
         return prod(var_mapping[operand] for operand in self._state_info)
 
 

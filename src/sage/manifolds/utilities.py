@@ -121,6 +121,7 @@ class SimplifySqrtReal(ExpressionTreeWalker):
         :func:`simplify_sqrt_real` for more examples with
         :class:`SimplifySqrtReal` at work.
     """
+
     def arithmetic(self, ex, operator):
         r"""
         This is the only method of the base class
@@ -164,7 +165,7 @@ class SimplifySqrtReal(ExpressionTreeWalker):
         if operator is _pow:
             operands = ex.operands()
             power = operands[1]
-            one_half = Rational((1,2))
+            one_half = Rational((1, 2))
             minus_one_half = -one_half
             if (power == one_half) or (power == minus_one_half):
                 # This is a square root or the inverse of a square root
@@ -189,10 +190,12 @@ class SimplifySqrtReal(ExpressionTreeWalker):
                 else:
                     ex = sqrt(argum)
                 simpl = SR(ex._maxima_().radcan())
-                if (not simpl.match(sqrt_pattern) and
-                    not simpl.match(inv_sqrt_pattern) and
-                    not simpl.match(sqrt_ratio_pattern1) and
-                    not simpl.match(sqrt_ratio_pattern2)):
+                if (
+                    not simpl.match(sqrt_pattern)
+                    and not simpl.match(inv_sqrt_pattern)
+                    and not simpl.match(sqrt_ratio_pattern1)
+                    and not simpl.match(sqrt_ratio_pattern2)
+                ):
                     # radcan transformed substantially the expression,
                     # possibly getting rid of some sqrt; in order to ensure a
                     # positive result, the absolute value of radcan's output
@@ -200,7 +203,7 @@ class SimplifySqrtReal(ExpressionTreeWalker):
                     # assumptions regarding signs of subexpression of simpl:
                     simpl = abs(simpl).simplify()
                 if power == minus_one_half:
-                    simpl = SR(1)/simpl
+                    simpl = SR(1) / simpl
                 return simpl
         # If operator is not a square root, we default to ExpressionTreeWalker:
         return super().arithmetic(ex, operator)
@@ -264,6 +267,7 @@ class SimplifyAbsTrig(ExpressionTreeWalker):
         :func:`simplify_abs_trig` for more examples with
         :class:`SimplifyAbsTrig` at work.
     """
+
     def composition(self, ex, operator):
         r"""
         This is the only method of the base class
@@ -322,7 +326,7 @@ class SimplifyAbsTrig(ExpressionTreeWalker):
                 # Simplifications for values of x in the range [-pi, 2*pi]:
                 if x >= 0 and x <= pi:
                     ex = sin(x)
-                elif (x > pi and x <= 2*pi) or (x >= -pi and x < 0):
+                elif (x > pi and x <= 2 * pi) or (x >= -pi and x < 0):
                     ex = -sin(x)
                 return ex
             if argum.operator() is cos:
@@ -332,9 +336,9 @@ class SimplifyAbsTrig(ExpressionTreeWalker):
                 if x.has(abs_symbolic(sin(w0))) or x.has(abs_symbolic(cos(w0))):
                     x = self(x)  # treatment of nested abs(sin_or_cos(...))
                 # Simplifications for values of x in the range [-pi, 2*pi]:
-                if (x >= -pi/2 and x <= pi/2) or (x >= 3*pi/2 and x <= 2*pi):
+                if (x >= -pi / 2 and x <= pi / 2) or (x >= 3 * pi / 2 and x <= 2 * pi):
                     ex = cos(x)
-                elif (x > pi/2 and x <= 3*pi/2) or (x >= -pi and x < -pi/2):
+                elif (x > pi / 2 and x <= 3 * pi / 2) or (x >= -pi and x < -pi / 2):
                     ex = -cos(x)
                 return ex
         # If no pattern is found, we default to ExpressionTreeWalker:
@@ -405,8 +409,8 @@ def simplify_sqrt_real(expr):
         sage: forget()  # for doctests below
     """
     w0 = SR.wild()
-    one_half = Rational((1,2))
-    if expr.has(w0**one_half) or expr.has(w0**(-one_half)):
+    one_half = Rational((1, 2))
+    if expr.has(w0**one_half) or expr.has(w0 ** (-one_half)):
         return SimplifySqrtReal(expr)()
     return expr
 
@@ -806,7 +810,8 @@ def simplify_chain_real_sympy(expr):
     expr = expr.simplify()
     return expr
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class ExpressionNice(Expression):
@@ -903,6 +908,7 @@ class ExpressionNice(Expression):
         sage: latex(ExpressionNice(fun))
         f\left(x, y\right) \left(\frac{\partial\,f}{\partial y}\right)^{2}
     """
+
     def __init__(self, ex):
         r"""
         Initialize ``self``.
@@ -919,6 +925,7 @@ class ExpressionNice(Expression):
             d(f)/dx
         """
         from sage.symbolic.ring import SR
+
         self._parent = SR
         Expression.__init__(self, SR, x=ex)
 
@@ -973,8 +980,10 @@ class ExpressionNice(Expression):
                     strv[i] = "(" + sv + ")"
 
             # dictionary to group multiple occurrences of differentiation: d/dxdx -> d/dx^2 etc.
-            occ = {i: strv[i] + "^" + str(D) if (D := diffargs.count(i)) > 1
-                   else strv[i] for i in diffargs}
+            occ = {
+                i: strv[i] + "^" + str(D) if (D := diffargs.count(i)) > 1 else strv[i]
+                for i in diffargs
+            }
 
             res = f"d{numargs}({funcname})/d" + "d".join(occ.values())
 
@@ -993,6 +1002,7 @@ class ExpressionNice(Expression):
         import re
 
         from sage.manifolds.manifold import TopologicalManifold
+
         if TopologicalManifold.options.omit_function_arguments:
             list_f = []
             _list_functions(self, list_f)
@@ -1075,12 +1085,24 @@ class ExpressionNice(Expression):
                     latv[i] = r"\left(" + latv[i] + r"\right)"
 
             # dictionary to group multiple occurrences of differentiation: d/dxdx -> d/dx^2 etc.
-            occ = {i: (latv[i] + "^" + latex(diffargs.count(i))
-                       if diffargs.count(i) > 1 else latv[i])
-                   for i in diffargs}
+            occ = {
+                i: (
+                    latv[i] + "^" + latex(diffargs.count(i))
+                    if diffargs.count(i) > 1
+                    else latv[i]
+                )
+                for i in diffargs
+            }
 
-            res = r"\frac{\partial" + numargs + r"\," + funcname + \
-                  r"}{\partial " + r"\partial ".join(i for i in occ.values()) + "}"
+            res = (
+                r"\frac{\partial"
+                + numargs
+                + r"\,"
+                + funcname
+                + r"}{\partial "
+                + r"\partial ".join(i for i in occ.values())
+                + "}"
+            )
 
             # representation of the operator
             s = self._parent._latex_element_(m[0])
@@ -1095,6 +1117,7 @@ class ExpressionNice(Expression):
             d = d.replace(o, res)
 
         from sage.manifolds.manifold import TopologicalManifold
+
         if TopologicalManifold.options.omit_function_arguments:
             list_f = []
             _list_functions(self, list_f)
@@ -1160,8 +1183,9 @@ def _list_derivatives(ex, list_d, exponent=0):
             if function == latex_function:
                 latex_function = latex_variable_name(str(op.function()))
 
-            list_d.append((ex, function, latex_function, parameter_set,
-                           operands, exponent))
+            list_d.append(
+                (ex, function, latex_function, parameter_set, operands, exponent)
+            )
 
         for operand in operands:
             _list_derivatives(operand, list_d, exponent)
@@ -1218,7 +1242,7 @@ def _list_functions(ex, list_f):
             repr_args = repr(ex.arguments())
             # remove comma in case of singleton
             if len(ex.arguments()) == 1:
-                repr_args = repr_args.replace(",","")
+                repr_args = repr_args.replace(",", "")
 
             latex_args = latex(ex.arguments())
 
@@ -1227,7 +1251,8 @@ def _list_functions(ex, list_f):
         for operand in operands:
             _list_functions(operand, list_f)
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 def set_axes_labels(graph, xlabel, ylabel, zlabel, **kwds):
@@ -1263,6 +1288,7 @@ def set_axes_labels(graph, xlabel, ylabel, zlabel, **kwds):
          Graphics3d Object, Graphics3d Object]
     """
     from sage.plot.plot3d.shapes2 import text3d
+
     xmin, ymin, zmin = graph.bounding_box()[0]
     xmax, ymax, zmax = graph.bounding_box()[1]
     dx = xmax - xmin

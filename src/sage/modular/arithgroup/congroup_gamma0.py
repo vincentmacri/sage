@@ -48,8 +48,10 @@ def Gamma0_constructor(N):
         Congruence Subgroup Gamma0(T^4 + 2*T + 3)
     """
     from sage.modular.arithgroup.all import SL2Z
+
     if isinstance(N, Polynomial):
         from sage.modular.drinfeld_modform.congroup_gamma0 import Gamma0_drinfeld
+
         return Gamma0_drinfeld(N)
     if N == 1:
         return SL2Z
@@ -101,6 +103,7 @@ class Gamma0_class(GammaH_class):
          Modular Symbols space of dimension 18 for Gamma_0(100)
           of weight 2 with sign 1 over Rational Field
     """
+
     def __init__(self, level) -> None:
         r"""
         The congruence subgroup `\Gamma_0(N)`.
@@ -311,9 +314,10 @@ class Gamma0_class(GammaH_class):
             ]
         """
         from .all import SL2Z
+
         N = self.level()
-        if N == 1: # P1List isn't very happy working modulo 1
-            yield SL2Z([1,0,0,1])
+        if N == 1:  # P1List isn't very happy working modulo 1
+            yield SL2Z([1, 0, 0, 1])
         else:
             for z in P1List(N):
                 yield SL2Z(lift_to_sl2z(z[0], z[1], N))
@@ -358,7 +362,7 @@ class Gamma0_class(GammaH_class):
         if self.level() == 1:
             # we return a fixed set of generators for SL2Z, for historical
             # reasons, which aren't the ones the Farey symbol code gives
-            return [ self([0,-1,1,0]), self([1,1,0,1]) ]
+            return [self([0, -1, 1, 0]), self([1, 1, 0, 1])]
 
         if algorithm == "farey":
             return self.farey_symbol().generators()
@@ -367,13 +371,17 @@ class Gamma0_class(GammaH_class):
             from sage.modular.modsym.p1list import P1List
 
             from .congroup import generators_helper
+
             level = self.level()
-            if level == 1: # P1List isn't very happy working mod 1
-                return [ self([0,-1,1,0]), self([1,1,0,1]) ]
+            if level == 1:  # P1List isn't very happy working mod 1
+                return [self([0, -1, 1, 0]), self([1, 1, 0, 1])]
             gen_list = generators_helper(P1List(level), level)
             return [self(g, check=False) for g in gen_list]
 
-        raise ValueError("Unknown algorithm '%s' (should be either 'farey' or 'todd-coxeter')" % algorithm)
+        raise ValueError(
+            "Unknown algorithm '%s' (should be either 'farey' or 'todd-coxeter')"
+            % algorithm
+        )
 
     def gamma_h_subgroups(self):
         r"""
@@ -397,6 +405,7 @@ class Gamma0_class(GammaH_class):
              Congruence Subgroup Gamma1(12)]
         """
         from .all import GammaH
+
         N = self.level()
         R = IntegerModRing(N)
         return [GammaH(N, H) for H in R.multiplicative_subgroups()]
@@ -429,7 +438,7 @@ class Gamma0_class(GammaH_class):
             TypeError: matrix [ 1  0]
             [23  1] is not an element of Congruence Subgroup Gamma0(12)
         """
-        return (c % self.level() == 0)
+        return c % self.level() == 0
 
     def _find_cusps(self):
         r"""
@@ -457,20 +466,20 @@ class Gamma0_class(GammaH_class):
         s = []
 
         for d in divisors(N):
-            w = gcd(d, N//d)
+            w = gcd(d, N // d)
             if w == 1:
                 if d == 1:
-                    s.append(Cusp(1,0))
+                    s.append(Cusp(1, 0))
                 elif d == N:
-                    s.append(Cusp(0,1))
+                    s.append(Cusp(0, 1))
                 else:
-                    s.append(Cusp(1,d))
+                    s.append(Cusp(1, d))
             else:
                 for a in range(1, w):
                     if gcd(a, w) == 1:
-                        while gcd(a, d//w) != 1:
+                        while gcd(a, d // w) != 1:
                             a += w
-                        s.append(Cusp(a,d))
+                        s.append(Cusp(a, d))
         return sorted(s)
 
     def ncusps(self):
@@ -512,7 +521,7 @@ class Gamma0_class(GammaH_class):
         n = self.level()
         if n % 4 == 0:
             return ZZ(0)
-        return prod([ 1 + kronecker_symbol(-4, p) for p, _ in n.factor()])
+        return prod([1 + kronecker_symbol(-4, p) for p, _ in n.factor()])
 
     def nu3(self):
         r"""
@@ -537,9 +546,9 @@ class Gamma0_class(GammaH_class):
             8
         """
         n = self.level()
-        if (n % 9 == 0):
+        if n % 9 == 0:
             return ZZ(0)
-        return prod([ 1 + kronecker_symbol(-3, p) for p, _ in n.factor()])
+        return prod([1 + kronecker_symbol(-3, p) for p, _ in n.factor()])
 
     def index(self):
         r"""
@@ -558,7 +567,7 @@ class Gamma0_class(GammaH_class):
             sage: Gamma0(32041).index()
             32220
         """
-        return prod([p**e + p**(e-1) for (p,e) in self.level().factor()])
+        return prod([p**e + p ** (e - 1) for (p, e) in self.level().factor()])
 
     def dimension_new_cusp_forms(self, k=2, p=0):
         r"""
@@ -601,8 +610,9 @@ class Gamma0_class(GammaH_class):
         k = ZZ(k)
 
         if not (p == 0 or N % p):
-            return (self.dimension_cusp_forms(k) -
-                    2 * self.restrict(N // p).dimension_new_cusp_forms(k))
+            return self.dimension_cusp_forms(k) - 2 * self.restrict(
+                N // p
+            ).dimension_new_cusp_forms(k)
 
         if k < 2 or k % 2:
             return ZZ.zero()
@@ -612,10 +622,10 @@ class Gamma0_class(GammaH_class):
         def s0(q, a):
             # function s_0^#
             if a == 1:
-                return 1 - 1/q
+                return 1 - 1 / q
             if a == 2:
-                return 1 - 1/q - 1/q**2
-            return (1 - 1/q) * (1 - 1/q**2)
+                return 1 - 1 / q - 1 / q**2
+            return (1 - 1 / q) * (1 - 1 / q**2)
 
         def vinf(q, a):
             # function v_oo^#
@@ -623,7 +633,7 @@ class Gamma0_class(GammaH_class):
                 return 0
             if a == 2:
                 return q - 2
-            return q**(a/2 - 2) * (q - 1)**2
+            return q ** (a / 2 - 2) * (q - 1) ** 2
 
         def v2(q, a):
             # function v_2^#
@@ -663,8 +673,8 @@ class Gamma0_class(GammaH_class):
 
         res = (k - 1) / 12 * N * prod(s0(q, a) for q, a in factors)
         res -= prod(vinf(q, a) for q, a in factors) / ZZ(2)
-        res += ((1 - k)/4 + k//4) * prod(v2(q, a) for q, a in factors)
-        res += ((1 - k)/3 + k//3) * prod(v3(q, a) for q, a in factors)
+        res += ((1 - k) / 4 + k // 4) * prod(v2(q, a) for q, a in factors)
+        res += ((1 - k) / 3 + k // 3) * prod(v3(q, a) for q, a in factors)
         if k == 2:
             res += moebius(N)
         return res

@@ -33,7 +33,9 @@ from sage.misc.misc_c import prod
 from sage.rings.infinity import infinity
 
 
-class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgebra_multiplicative):
+class SymmetricFunctionAlgebra_homogeneous(
+    multiplicative.SymmetricFunctionAlgebra_multiplicative
+):
     def __init__(self, Sym):
         """
         A class of methods specific to the homogeneous basis of
@@ -52,7 +54,9 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
             sage: TestSuite(h).run(skip=['_test_associativity', '_test_distributivity', '_test_prod'])
             sage: TestSuite(h).run(elements = [h[1,1]+h[2], h[1]+2*h[1,1]])
         """
-        classical.SymmetricFunctionAlgebra_classical.__init__(self, Sym, "homogeneous", 'h')
+        classical.SymmetricFunctionAlgebra_classical.__init__(
+            self, Sym, "homogeneous", 'h'
+        )
 
     def _dual_basis_default(self):
         r"""
@@ -120,10 +124,12 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
             sage: h.coproduct_on_generators(0)
             h[] # h[]
         """
+
         def P(i):
             return Partition([i]) if i else Partition([])
+
         T = self.tensor_square()
-        return T.sum_of_monomials( (P(j), P(i-j)) for j in range(i+1) )
+        return T.sum_of_monomials((P(j), P(i - j)) for j in range(i + 1))
 
     def _magma_init_(self, magma):
         """
@@ -236,7 +242,7 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
                 sage: (3*h([])).expand(0)
                 3
             """
-            if n == 0:   # Symmetrica crashes otherwise...
+            if n == 0:  # Symmetrica crashes otherwise...
                 return self.counit()
             condition = lambda part: False
             return self._expand(condition, n, alphabet)
@@ -316,21 +322,33 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q is None:
                 q = get_variable(self.base_ring(), 'q')
 
             if q == 1:
                 if n == infinity:
-                    raise ValueError("the stable principal specialization at q=1 is not defined")
-                f = lambda partition: prod(binomial(n+part-1, part) for part in partition)
+                    raise ValueError(
+                        "the stable principal specialization at q=1 is not defined"
+                    )
+                f = lambda partition: prod(
+                    binomial(n + part - 1, part) for part in partition
+                )
             elif n == infinity:
-                f = lambda partition: prod(1/prod((1-q**i) for i in range(1, part+1)) for part in partition)
+                f = lambda partition: prod(
+                    1 / prod((1 - q**i) for i in range(1, part + 1))
+                    for part in partition
+                )
             else:
-                f = lambda partition: prod(q_binomial(n+part-1, part, q=q) for part in partition)
+                f = lambda partition: prod(
+                    q_binomial(n + part - 1, part, q=q) for part in partition
+                )
 
             return self.parent()._apply_module_morphism(self, f, q.parent())
 
@@ -421,9 +439,12 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q == 1:
                 if t is None:
@@ -435,7 +456,7 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
                     for part in partition:
                         n += part
                         m *= factorial(part)
-                    return t**n/m
+                    return t**n / m
 
                 return self.parent()._apply_module_morphism(self, f, t.parent())
 
@@ -453,7 +474,7 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
                 for part in partition:
                     n += part
                     m *= q_factorial(part, q=q)
-                return t**n/m
+                return t**n / m
 
             return self.parent()._apply_module_morphism(self, f, t.parent())
 
@@ -461,6 +482,8 @@ class SymmetricFunctionAlgebra_homogeneous(multiplicative.SymmetricFunctionAlgeb
 # Backward compatibility for unpickling
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.combinat.sf.homogeneous',
-                           'SymmetricFunctionAlgebraElement_homogeneous',
-                           SymmetricFunctionAlgebra_homogeneous.Element)
+register_unpickle_override(
+    'sage.combinat.sf.homogeneous',
+    'SymmetricFunctionAlgebraElement_homogeneous',
+    SymmetricFunctionAlgebra_homogeneous.Element,
+)

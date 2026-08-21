@@ -80,10 +80,12 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
             self._exponents = tuple(ZZ.zero() for i in range(n))
         else:
             if len(exponents) != n:
-                raise IndexError('argument length (= %s) must be %s'
-                                 % (len(exponents), n))
-            self._exponents = tuple(ZZ(e % o if o else e) for e, o in
-                                    zip(exponents, parent.gens_orders()))
+                raise IndexError(
+                    'argument length (= %s) must be %s' % (len(exponents), n)
+                )
+            self._exponents = tuple(
+                ZZ(e % o if o else e) for e, o in zip(exponents, parent.gens_orders())
+            )
 
     def __hash__(self):
         r"""
@@ -130,8 +132,9 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
         """
         from sage.misc.misc_c import prod
         from sage.libs.gap.libgap import libgap
+
         G = libgap(self.parent())
-        return prod(g**i for g,i in zip(G.GeneratorsOfGroup(), self._exponents))
+        return prod(g**i for g, i in zip(G.GeneratorsOfGroup(), self._exponents))
 
     def list(self):
         """
@@ -237,7 +240,9 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
         M = self.parent()
         order = M.gens_orders()
         L = self.exponents()
-        N = LCM([order[i]/GCD(order[i],L[i]) for i in range(len(order)) if L[i] != 0])
+        N = LCM(
+            [order[i] / GCD(order[i], L[i]) for i in range(len(order)) if L[i] != 0]
+        )
         if N == 0:
             return infinity
         return ZZ(N)
@@ -258,8 +263,7 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
         """
         G = left.parent()
         assert G is right.parent()
-        exponents = [x - y for x, y in
-                     zip(left._exponents, right._exponents)]
+        exponents = [x - y for x, y in zip(left._exponents, right._exponents)]
         return G.element_class(G, exponents)
 
     def _mul_(left, right):
@@ -276,8 +280,7 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
         """
         G = left.parent()
         assert G is right.parent()
-        exponents = [x + y for x, y in
-                     zip(left._exponents, right._exponents)]
+        exponents = [x + y for x, y in zip(left._exponents, right._exponents)]
         return G.element_class(G, exponents)
 
     def __pow__(self, n):
@@ -292,7 +295,7 @@ class AbelianGroupElementBase(MultiplicativeGroupElement):
         """
         m = Integer(n)
         if n != m:
-            raise TypeError('argument n (= '+str(n)+') must be an integer.')
+            raise TypeError('argument n (= ' + str(n) + ') must be an integer.')
         G = self.parent()
         exponents = [m * e for e in self._exponents]
         return G.element_class(G, exponents)

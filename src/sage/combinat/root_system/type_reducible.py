@@ -11,7 +11,13 @@ Root system data for reducible Cartan types
 # ****************************************************************************
 
 from sage.misc.cachefunc import cached_method
-from sage.combinat.root_system.cartan_type import CartanType_abstract, CartanType_simple, CartanType_finite, CartanType_simply_laced, CartanType_crystallographic
+from sage.combinat.root_system.cartan_type import (
+    CartanType_abstract,
+    CartanType_simple,
+    CartanType_finite,
+    CartanType_simply_laced,
+    CartanType_crystallographic,
+)
 from sage.matrix.constructor import block_diagonal_matrix
 from sage.sets.family import Family
 from . import ambient_space
@@ -116,24 +122,31 @@ class CartanType(SageObject, CartanType_abstract):
         """
         self._types = types
         self.affine = False
-        indices = (None,) + tuple((i, j)
-                                  for i in range(len(types))
-                                  for j in types[i].index_set())
+        indices = (None,) + tuple(
+            (i, j) for i in range(len(types)) for j in types[i].index_set()
+        )
         self._indices = indices
-        self._index_relabelling = {indices[i]: i
-                                   for i in range(1, len(indices))}
+        self._index_relabelling = {indices[i]: i for i in range(1, len(indices))}
 
         self._spaces = [t.root_system().ambient_space() for t in types]
         if all(l is not None for l in self._spaces):
-            self._shifts = [sum(l.dimension() for l in self._spaces[:k])
-                            for k in range(len(types)+1)]
+            self._shifts = [
+                sum(l.dimension() for l in self._spaces[:k])
+                for k in range(len(types) + 1)
+            ]
 
         self.tools = root_system.type_reducible
         # a direct product of finite Cartan types is again finite;
         # idem for simply laced and crystallographic.
-        super_classes = tuple(cls
-                              for cls in (CartanType_finite, CartanType_simply_laced, CartanType_crystallographic)
-                              if all(isinstance(t, cls) for t in types))
+        super_classes = tuple(
+            cls
+            for cls in (
+                CartanType_finite,
+                CartanType_simply_laced,
+                CartanType_crystallographic,
+            )
+            if all(isinstance(t, cls) for t in types)
+        )
         self._add_abstract_superclass(super_classes)
 
     def _repr_(self, compact=True):  # We should make a consistent choice here
@@ -245,7 +258,7 @@ class CartanType(SageObject, CartanType_abstract):
             sage: CartanType("A2","A1").index_set()
             (1, 2, 3)
         """
-        return tuple(range(1, self.rank()+1))
+        return tuple(range(1, self.rank() + 1))
 
     def cartan_matrix(self, subdivide=True):
         """
@@ -272,8 +285,14 @@ class CartanType(SageObject, CartanType_abstract):
             True
         """
         from sage.combinat.root_system.cartan_matrix import CartanMatrix
-        return CartanMatrix(block_diagonal_matrix([t.cartan_matrix() for t in self._types], subdivide=subdivide),
-                            cartan_type=self, index_set=self.index_set())
+
+        return CartanMatrix(
+            block_diagonal_matrix(
+                [t.cartan_matrix() for t in self._types], subdivide=subdivide
+            ),
+            cartan_type=self,
+            index_set=self.index_set(),
+        )
 
     def dynkin_diagram(self):
         """
@@ -301,11 +320,12 @@ class CartanType(SageObject, CartanType_abstract):
             F4xA2
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         relabelling = self._index_relabelling
         g = DynkinDiagram_class(self)
         for i in range(len(self._types)):
             for [e1, e2, l] in self._types[i].dynkin_diagram().edges(sort=True):
-                g.add_edge(relabelling[i,e1], relabelling[i,e2], label=l)
+                g.add_edge(relabelling[i, e1], relabelling[i, e2], label=l)
         return g
 
     def _latex_dynkin_diagram(self, label=None, node=None, node_dist=2):
@@ -337,9 +357,12 @@ class CartanType(SageObject, CartanType_abstract):
         types = self.component_types()
         relabelling = self._index_relabelling
         ret = "{\n"
-        ret += "\\pgftransformyshift{-3 cm}\n".join(types[i]._latex_dynkin_diagram(
-                    lambda x: label(relabelling[i,x]), node, node_dist=node_dist)
-                    for i in range(len(types)))
+        ret += "\\pgftransformyshift{-3 cm}\n".join(
+            types[i]._latex_dynkin_diagram(
+                lambda x: label(relabelling[i, x]), node, node_dist=node_dist
+            )
+            for i in range(len(types))
+        )
         ret += "}"
         return ret
 
@@ -373,8 +396,10 @@ class CartanType(SageObject, CartanType_abstract):
             label = lambda i: i
         types = self.component_types()
         relabelling = self._index_relabelling
-        return "\n".join(types[i].ascii_art(lambda x: label(relabelling[i,x]), node)
-                         for i in range(len(types)))
+        return "\n".join(
+            types[i].ascii_art(lambda x: label(relabelling[i, x]), node)
+            for i in range(len(types))
+        )
 
     @cached_method
     def is_finite(self):
@@ -450,12 +475,13 @@ class CartanType(SageObject, CartanType_abstract):
             [(2, 3, 3), (3, 4, 5)]
         """
         from sage.graphs.graph import Graph
+
         relabelling = self._index_relabelling
         g = Graph(multiedges=False)
         g.add_vertices(self.index_set())
-        for i,t in enumerate(self._types):
+        for i, t in enumerate(self._types):
             for [e1, e2, l] in t.coxeter_diagram().edges(sort=True):
-                g.add_edge(relabelling[i,e1], relabelling[i,e2], label=l)
+                g.add_edge(relabelling[i, e1], relabelling[i, e2], label=l)
         return g
 
 
@@ -569,8 +595,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         res = []
         for i, ambient_sp in enumerate(self.ambient_spaces()):
-            res.extend(self.inject_weights(i, v)
-                       for v in ambient_sp.positive_roots())
+            res.extend(self.inject_weights(i, v) for v in ambient_sp.positive_roots())
         return res
 
     def negative_roots(self) -> list:
@@ -582,8 +607,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         ret = []
         for i, ambient_sp in enumerate(self.ambient_spaces()):
-            ret.extend(self.inject_weights(i, v)
-                       for v in ambient_sp.negative_roots())
+            ret.extend(self.inject_weights(i, v) for v in ambient_sp.negative_roots())
         return ret
 
     def fundamental_weights(self):
@@ -595,8 +619,9 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         fw = []
         for i, ambient_sp in enumerate(self.ambient_spaces()):
-            fw.extend(self.inject_weights(i, v)
-                      for v in ambient_sp.fundamental_weights())
+            fw.extend(
+                self.inject_weights(i, v) for v in ambient_sp.fundamental_weights()
+            )
         return Family({i: fw[i - 1] for i in range(1, len(fw) + 1)})
 
 

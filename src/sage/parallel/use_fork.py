@@ -12,7 +12,6 @@ Parallel iterator built using the ``fork()`` system call
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 import sys
 import traceback
 from shutil import rmtree
@@ -48,6 +47,7 @@ class WorkerData:
         sage: W.starttime  # random
         1499330252.463206
     """
+
     def __init__(self, input_value, starttime=None, failure=""):
         r"""
         See the class documentation for description of the inputs.
@@ -89,7 +89,10 @@ class p_iter_fork:
         sage: X.verbose
         False
     """
-    def __init__(self, ncpus, timeout=0, verbose=False, reset_interfaces=True, reseed_rng=False):
+
+    def __init__(
+        self, ncpus, timeout=0, verbose=False, reset_interfaces=True, reseed_rng=False
+    ):
         """
         Create a ``fork()``-based parallel iterator.
 
@@ -216,6 +219,7 @@ class p_iter_fork:
         import signal
         from sage.misc.persist import loads
         from sage.misc.temporary_file import tmp_dir
+
         dir = tmp_dir()
         timeout = self.timeout
 
@@ -225,13 +229,15 @@ class p_iter_fork:
             seeds = [getrandbits(512) for _ in range(len(inputs))]
             vs = list(zip(inputs, seeds))
         else:
-            vs = list(zip(inputs, [None]*len(inputs)))
+            vs = list(zip(inputs, [None] * len(inputs)))
         workers = {}
         try:
             while vs or workers:
                 # Spawn up to n subprocesses
                 while vs and len(workers) < n:
-                    v0, seed0 = vs.pop(0)  # Input value and seed for the next subprocess
+                    v0, seed0 = vs.pop(
+                        0
+                    )  # Input value and seed for the next subprocess
                     with ContainChildren():
                         pid = os.fork()
                         # The way fork works is that pid returns the
@@ -262,7 +268,9 @@ class p_iter_fork:
                             if T - W.starttime > timeout:
                                 if self.verbose:
                                     print(
-                                        "Killing subprocess %s with input %s which took too long" % (pid, W.input))
+                                        "Killing subprocess %s with input %s which took too long"
+                                        % (pid, W.input)
+                                    )
                                 os.kill(pid, signal.SIGKILL)
                                 W.failure = " (timed out)"
                     except KeyError:
@@ -281,7 +289,10 @@ class p_iter_fork:
                             try:
                                 should_raise, answer = loads(data, compress=False)
                             except Exception as E:
-                                should_raise, answer = False, "INVALID DATA {}".format(E)
+                                should_raise, answer = (
+                                    False,
+                                    "INVALID DATA {}".format(E),
+                                )
 
                         out = os.path.join(dir, '%s.out' % pid)
                         try:
@@ -293,7 +304,9 @@ class p_iter_fork:
 
                         if should_raise:
                             exc, tb_str = answer
-                            raise exc from RuntimeError(f"forked subprocess raised:\n{tb_str}")
+                            raise exc from RuntimeError(
+                                f"forked subprocess raised:\n{tb_str}"
+                            )
 
                         yield (W.input, answer)
         finally:
@@ -350,6 +363,7 @@ class p_iter_fork:
         """
         import os
         import sys
+
         try:
             from importlib import reload
         except ImportError:
@@ -365,6 +379,7 @@ class p_iter_fork:
         # pid has changed (forcing a reload of
         # misc).
         import sage.misc.misc
+
         reload(sage.misc.misc)
 
         # The pexpect interfaces (and objects defined in them) are
@@ -393,6 +408,26 @@ class p_iter_fork:
             save(value, sobj, compress=False)
         except BaseException:
             if value[0]:
-                save((True, (RuntimeError('cannot pickle exception object'), traceback.format_exc())), sobj, compress=False)
+                save(
+                    (
+                        True,
+                        (
+                            RuntimeError('cannot pickle exception object'),
+                            traceback.format_exc(),
+                        ),
+                    ),
+                    sobj,
+                    compress=False,
+                )
             else:
-                save((True, (RuntimeError('cannot pickle return value'), traceback.format_exc())), sobj, compress=False)
+                save(
+                    (
+                        True,
+                        (
+                            RuntimeError('cannot pickle return value'),
+                            traceback.format_exc(),
+                        ),
+                    ),
+                    sobj,
+                    compress=False,
+                )

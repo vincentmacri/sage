@@ -231,7 +231,9 @@ class KeyConvertingDict(dict[KT, VT]):
     @overload
     def setdefault(self, key: Any, default: TDefault) -> VT | TDefault: ...
 
-    def setdefault(self, key: Any, default: VT | TDefault | None = None) -> VT | TDefault | None:
+    def setdefault(
+        self, key: Any, default: VT | TDefault | None = None
+    ) -> VT | TDefault | None:
         r"""
         Create a given mapping unless there already exists a mapping
         for that key.

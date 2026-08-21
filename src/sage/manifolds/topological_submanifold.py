@@ -175,9 +175,20 @@ class TopologicalSubmanifold(TopologicalManifold):
 
         :mod:`~sage.manifolds.manifold`
     """
-    def __init__(self, n, name, field, structure, ambient=None,
-                 base_manifold=None, latex_name=None, start_index=0,
-                 category=None, unique_tag=None):
+
+    def __init__(
+        self,
+        n,
+        name,
+        field,
+        structure,
+        ambient=None,
+        base_manifold=None,
+        latex_name=None,
+        start_index=0,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a submanifold of a topological manifold.
 
@@ -189,13 +200,18 @@ class TopologicalSubmanifold(TopologicalManifold):
             2-dimensional topological submanifold N immersed in the
              3-dimensional topological manifold M
         """
-        TopologicalManifold.__init__(self, n, name, field, structure,
-                                     base_manifold=base_manifold,
-                                     latex_name=latex_name,
-                                     start_index=start_index,
-                                     category=category)
-        if not (ambient is None
-                or isinstance(ambient, TopologicalManifold)):
+        TopologicalManifold.__init__(
+            self,
+            n,
+            name,
+            field,
+            structure,
+            base_manifold=base_manifold,
+            latex_name=latex_name,
+            start_index=start_index,
+            category=category,
+        )
+        if not (ambient is None or isinstance(ambient, TopologicalManifold)):
             raise TypeError("ambient must be a manifold")
         self._init_immersion(ambient=ambient)
 
@@ -226,8 +242,10 @@ class TopologicalSubmanifold(TopologicalManifold):
             self._ambient = ambient
             self._codim = ambient._dim - self._dim
             if self._codim < 0:
-                raise ValueError("the submanifold must be of smaller "
-                                 + "dimension than its ambient manifold")
+                raise ValueError(
+                    "the submanifold must be of smaller "
+                    + "dimension than its ambient manifold"
+                )
         self._immersed = False
         self._embedded = False
         self._adapted_charts = None
@@ -259,9 +277,11 @@ class TopologicalSubmanifold(TopologicalManifold):
             return super(TopologicalManifold, self).__repr__()
         if self._embedded:
             return "{}-dimensional {} submanifold {} embedded in the {}".format(
-                self._dim, self._structure.name, self._name, self._ambient)
+                self._dim, self._structure.name, self._name, self._ambient
+            )
         return "{}-dimensional {} submanifold {} immersed in the {}".format(
-                self._dim, self._structure.name, self._name, self._ambient)
+            self._dim, self._structure.name, self._name, self._ambient
+        )
 
     def open_subset(self, name, latex_name=None, coord_def={}, supersets=None):
         r"""
@@ -319,11 +339,16 @@ class TopologicalSubmanifold(TopologicalManifold):
              2-dimensional topological submanifold N embedded in the
               3-dimensional topological manifold M
         """
-        resu = TopologicalSubmanifold(self._dim, name, self._field,
-                                      self._structure, self._ambient,
-                                      base_manifold=self._manifold,
-                                      latex_name=latex_name,
-                                      start_index=self._sindex)
+        resu = TopologicalSubmanifold(
+            self._dim,
+            name,
+            self._field,
+            self._structure,
+            self._ambient,
+            base_manifold=self._manifold,
+            latex_name=latex_name,
+            start_index=self._sindex,
+        )
         if supersets is None:
             supersets = [self]
         for superset in supersets:
@@ -370,13 +395,13 @@ class TopologicalSubmanifold(TopologicalManifold):
         super()._init_open_subset(resu, coord_def=coord_def)
         ## Extras for Submanifold
         if self._immersed:
-            resu.set_immersion(self._immersion.restrict(resu),
-                               var=self._var, t_inverse=self._t_inverse)
+            resu.set_immersion(
+                self._immersion.restrict(resu), var=self._var, t_inverse=self._t_inverse
+            )
         if self._embedded:
             resu.declare_embedding()
 
-    def set_immersion(self, phi, inverse=None, var=None,
-                      t_inverse=None):
+    def set_immersion(self, phi, inverse=None, var=None, t_inverse=None):
         r"""
         Register the immersion of the immersed submanifold.
 
@@ -433,8 +458,9 @@ class TopologicalSubmanifold(TopologicalManifold):
         if not isinstance(phi, ContinuousMap):
             raise TypeError("the argument phi must be a continuous map")
         if phi.domain() is not self or phi.codomain() is not self._ambient:
-            raise ValueError("{} is not a map from {} to {}".format(phi, self,
-                                                                self._ambient))
+            raise ValueError(
+                "{} is not a map from {} to {}".format(phi, self, self._ambient)
+            )
         self._immersion = phi
 
         if inverse is not None:
@@ -449,8 +475,7 @@ class TopologicalSubmanifold(TopologicalManifold):
                         raise TypeError()
             except TypeError:
                 if not isinstance(var, Expression):
-                    raise TypeError("var must be a variable "
-                                    "or list of variables")
+                    raise TypeError("var must be a variable or list of variables")
 
             if isinstance(var, Expression):
                 self._var = [var]
@@ -499,13 +524,13 @@ class TopologicalSubmanifold(TopologicalManifold):
             True
         """
         if not self._immersed:
-            raise ValueError("please declare an embedding using set_immersion "
-                             "before calling declare_embedding()")
+            raise ValueError(
+                "please declare an embedding using set_immersion "
+                "before calling declare_embedding()"
+            )
         self._embedded = True
 
-    def set_embedding(
-        self, phi: ContinuousMap, inverse=None, var=None, t_inverse=None
-    ):
+    def set_embedding(self, phi: ContinuousMap, inverse=None, var=None, t_inverse=None):
         r"""
         Register the embedding of an embedded submanifold.
 
@@ -639,8 +664,10 @@ class TopologicalSubmanifold(TopologicalManifold):
             raise ValueError("an embedding is required")
 
         if self._dim_foliation + self._dim != self._ambient._dim:
-            raise ValueError("a foliation of dimension dim(M) - dim(N) is "
-                             "needed to find an adapted chart")
+            raise ValueError(
+                "a foliation of dimension dim(M) - dim(N) is "
+                "needed to find an adapted chart"
+            )
         res = []
         self._subs = []
 
@@ -654,15 +681,30 @@ class TopologicalSubmanifold(TopologicalManifold):
 
         # All possible expressions for the immersion
         chart_pairs = list(self._immersion._coord_expression.keys())
-        for (chart1, chart2) in chart_pairs:
-            name = " ".join(chart1[i]._repr_() + postscript + ":{"
-                             + chart1[i]._latex_() + "}" + latex_postscript
-                             for i in self.irange()) + " " \
-                   + " ".join(v._repr_() + postscript + ":{" + v._latex_()
-                              + "}" + latex_postscript for v in self._var)
+        for chart1, chart2 in chart_pairs:
+            name = (
+                " ".join(
+                    chart1[i]._repr_()
+                    + postscript
+                    + ":{"
+                    + chart1[i]._latex_()
+                    + "}"
+                    + latex_postscript
+                    for i in self.irange()
+                )
+                + " "
+                + " ".join(
+                    v._repr_()
+                    + postscript
+                    + ":{"
+                    + v._latex_()
+                    + "}"
+                    + latex_postscript
+                    for v in self._var
+                )
+            )
             chart = chart2.domain().chart(name)
             if chart not in res:
-
                 # Construct restrictions on coordinates:
                 subs = {chart1[:][i]: chart[:][i] for i in range(self._dim)}
                 # NB: chart1[:][i] is used instead of chart1[i] to allow for
@@ -677,28 +719,31 @@ class TopologicalSubmanifold(TopologicalManifold):
 
                 self._subs.append(subs)
                 res.append(chart)
-                self._immersion.add_expr(chart1, chart,
-                                         list(chart1[:]) + self._var)
-                self._immersion_inv.add_expr(chart, chart1,
-                                             chart[:][0:self._dim])
+                self._immersion.add_expr(chart1, chart, list(chart1[:]) + self._var)
+                self._immersion_inv.add_expr(chart, chart1, chart[:][0 : self._dim])
                 for i in range(len(self._var)):
                     self._t_inverse[self._var[i]].add_expr(
-                        chart[:][self._dim:][i], chart=chart)
+                        chart[:][self._dim :][i], chart=chart
+                    )
 
-        for (chartNV, chartMV) in self._immersion._coord_expression:
-            for (chartNU, chartMU) in self._immersion._coord_expression:
-                if chartMU is not chartMV and\
-                        (chartMU, chartMV) not in self._ambient._coord_changes:
-                    if (chartNU, chartNV) in self._coord_changes or \
-                            chartNU is chartNV:
+        for chartNV, chartMV in self._immersion._coord_expression:
+            for chartNU, chartMU in self._immersion._coord_expression:
+                if (
+                    chartMU is not chartMV
+                    and (chartMU, chartMV) not in self._ambient._coord_changes
+                ):
+                    if (chartNU, chartNV) in self._coord_changes or chartNU is chartNV:
                         _f = self._immersion.coord_functions(chartNV, chartMV)
-                        _g = self._coord_changes[(chartNU, chartNV)]._transf \
-                            if chartNU is not chartNV else lambda *x: x
-                        _h = self._immersion_inv.coord_functions(chartMU,
-                                                                 chartNU)
+                        _g = (
+                            self._coord_changes[(chartNU, chartNV)]._transf
+                            if chartNU is not chartNV
+                            else lambda *x: x
+                        )
+                        _h = self._immersion_inv.coord_functions(chartMU, chartNU)
                         expr = list(_f(*_g(*_h(*chartMU[:]))))
-                        substitutions = {v: self._t_inverse[v].expr(chartMU)
-                                         for v in self._var}
+                        substitutions = {
+                            v: self._t_inverse[v].expr(chartMU) for v in self._var
+                        }
                         for i in range(len(expr)):
                             expr[i] = expr[i].subs(substitutions)
 

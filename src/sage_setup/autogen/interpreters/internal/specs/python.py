@@ -51,11 +51,16 @@ class MemoryChunkPythonArguments(MemoryChunk):
             sage: mc.init_class_members()
             "        count = args['args']\n        self._n_args = count\n"
         """
-        return je(ri(8,
-            """
+        return je(
+            ri(
+                8,
+                """
             count = args['{{ myself.name }}']
             self._n_args = count
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
     def setup_args(self):
         r"""
@@ -123,10 +128,15 @@ class MemoryChunkPyConstant(MemoryChunk):
             sage: mc.declare_class_members()
             '    cdef object _domain\n'
         """
-        return je(ri(4,
-            """
+        return je(
+            ri(
+                4,
+                """
             cdef object _{{ myself.name }}
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
     def init_class_members(self):
         r"""
@@ -142,10 +152,15 @@ class MemoryChunkPyConstant(MemoryChunk):
             sage: mc.init_class_members()
             "        self._domain = args['domain']\n"
         """
-        return je(ri(8,
-            """
+        return je(
+            ri(
+                8,
+                """
             self._{{ myself.name }} = args['{{ myself.name }}']
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
     def declare_parameter(self):
         r"""
@@ -232,33 +247,39 @@ class PythonInterpreter(StackInterpreter):
         # StackInterpreter.__init__ gave us a MemoryChunkArguments.
         # Override with MemoryChunkPythonArguments.
         self.mc_args = MemoryChunkPythonArguments('args', ty_python)
-        self.chunks = [self.mc_args, self.mc_constants, self.mc_stack,
-                       self.mc_code]
-        self.c_header = ri(0,
+        self.chunks = [self.mc_args, self.mc_constants, self.mc_stack, self.mc_code]
+        self.c_header = ri(
+            0,
             """
             #define CHECK(x) (x != NULL)
-            """)
+            """,
+        )
 
-        self.pyx_header = ri(0,
+        self.pyx_header = ri(
+            0,
             """\
             from cpython.number cimport PyNumber_TrueDivide
-            """)
+            """,
+        )
 
-        pg = params_gen(A=self.mc_args, C=self.mc_constants, D=self.mc_code,
-                        S=self.mc_stack)
+        pg = params_gen(
+            A=self.mc_args, C=self.mc_constants, D=self.mc_code, S=self.mc_stack
+        )
         self.pg = pg
 
         instrs = [
-            InstrSpec('load_arg', pg('A[D]', 'S'),
-                      code='o0 = i0; Py_INCREF(o0);'),
-            InstrSpec('load_const', pg('C[D]', 'S'),
-                      code='o0 = i0; Py_INCREF(o0);'),
-            InstrSpec('return', pg('S', ''),
-                      code='return i0;',
-                      handles_own_decref=True),
-            InstrSpec('py_call', pg('C[D]S@D', 'S'),
-                      handles_own_decref=True,
-                      code=ri(0, """
+            InstrSpec('load_arg', pg('A[D]', 'S'), code='o0 = i0; Py_INCREF(o0);'),
+            InstrSpec('load_const', pg('C[D]', 'S'), code='o0 = i0; Py_INCREF(o0);'),
+            InstrSpec(
+                'return', pg('S', ''), code='return i0;', handles_own_decref=True
+            ),
+            InstrSpec(
+                'py_call',
+                pg('C[D]S@D', 'S'),
+                handles_own_decref=True,
+                code=ri(
+                    0,
+                    """
                            PyObject *py_args = PyTuple_New(n_i1);
                            if (py_args == NULL) goto error;
                            int i;
@@ -269,7 +290,9 @@ class PythonInterpreter(StackInterpreter):
                            }
                            o0 = PyObject_CallObject(i0, py_args);
                            Py_DECREF(py_args);
-                           """))
+                           """,
+                ),
+            ),
         ]
 
         binops = [
@@ -277,18 +300,26 @@ class PythonInterpreter(StackInterpreter):
             ('sub', 'PyNumber_Subtract'),
             ('mul', 'PyNumber_Multiply'),
             ('div', 'PyNumber_TrueDivide'),
-            ('floordiv', 'PyNumber_FloorDivide')
+            ('floordiv', 'PyNumber_FloorDivide'),
         ]
 
-        for (name, op) in binops:
+        for name, op in binops:
             instrs.append(instr_funcall_2args(name, pg('SS', 'S'), op))
-        instrs.append(InstrSpec('pow', pg('SS', 'S'),
-                                code='o0 = PyNumber_Power(i0, i1, Py_None);'))
-        instrs.append(InstrSpec('ipow', pg('SC[D]', 'S'),
-                                code='o0 = PyNumber_Power(i0, i1, Py_None);'))
-        for (name, op) in [('neg', 'PyNumber_Negative'),
-                           ('invert', 'PyNumber_Invert'),
-                           ('abs', 'PyNumber_Absolute')]:
+        instrs.append(
+            InstrSpec(
+                'pow', pg('SS', 'S'), code='o0 = PyNumber_Power(i0, i1, Py_None);'
+            )
+        )
+        instrs.append(
+            InstrSpec(
+                'ipow', pg('SC[D]', 'S'), code='o0 = PyNumber_Power(i0, i1, Py_None);'
+            )
+        )
+        for name, op in [
+            ('neg', 'PyNumber_Negative'),
+            ('invert', 'PyNumber_Invert'),
+            ('abs', 'PyNumber_Absolute'),
+        ]:
             instrs.append(instr_unary(name, pg('S', 'S'), '%s(i0)' % op))
         self.instr_descs = instrs
         self._set_opcodes()

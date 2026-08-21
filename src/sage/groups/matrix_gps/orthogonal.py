@@ -96,8 +96,10 @@ from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.misc.latex import latex
 from sage.misc.cachefunc import cached_method
 from sage.groups.matrix_gps.named_group import (
-    normalize_args_vectorspace, normalize_args_invariant_form,
-    NamedMatrixGroup_generic)
+    normalize_args_vectorspace,
+    normalize_args_invariant_form,
+    NamedMatrixGroup_generic,
+)
 
 
 def normalize_args_e(degree, ring, e):
@@ -144,6 +146,7 @@ def normalize_args_e(degree, ring, e):
 # Orthogonal Group: common Code for both GO and SO
 ###############################################################################
 
+
 def _OG(n, R, special, e=0, var='a', invariant_form=None):
     r"""
     This function is commonly used by the functions GO and SO to avoid
@@ -177,7 +180,9 @@ def _OG(n, R, special, e=0, var='a', invariant_form=None):
 
     if invariant_form is not None:
         if isinstance(ring, FiniteField):
-            raise NotImplementedError("invariant_form for finite groups is fixed by GAP")
+            raise NotImplementedError(
+                "invariant_form for finite groups is fixed by GAP"
+            )
 
     if e == 0:
         if invariant_form is not None:
@@ -189,23 +194,32 @@ def _OG(n, R, special, e=0, var='a', invariant_form=None):
                 if invariant_form.is_positive_definite():
                     inserted_text = "with respect to positive definite symmetric form"
                 else:
-                    inserted_text = "with respect to non positive definite symmetric form"
+                    inserted_text = (
+                        "with respect to non positive definite symmetric form"
+                    )
             except ValueError:
                 inserted_text = "with respect to symmetric form"
 
             name = '{0} Orthogonal Group of degree {1} over {2} {3}\n{4}'.format(
-                prefix, degree, ring, inserted_text, invariant_form)
+                prefix, degree, ring, inserted_text, invariant_form
+            )
             ltx = r'\text{{{0}O}}_{{{1}}}({2})\text{{ {3} }}{4}'.format(
-                ltx_prefix, degree, latex(ring), inserted_text,
-                latex(invariant_form))
+                ltx_prefix, degree, latex(ring), inserted_text, latex(invariant_form)
+            )
         else:
-            name = '{0} Orthogonal Group of degree {1} over {2}'.format(prefix, degree, ring)
+            name = '{0} Orthogonal Group of degree {1} over {2}'.format(
+                prefix, degree, ring
+            )
             ltx = r'\text{{{0}O}}_{{{1}}}({2})'.format(ltx_prefix, degree, latex(ring))
     else:
-        name = '{0} Orthogonal Group of degree {1} and form parameter {2} over {3}'.format(prefix, degree, e, ring)
-        ltx = r'\text{{{0}O}}_{{{1}}}({2}, {3})'.format(ltx_prefix, degree,
-                                                        latex(ring),
-                                                        '+' if e == 1 else '-')
+        name = (
+            '{0} Orthogonal Group of degree {1} and form parameter {2} over {3}'.format(
+                prefix, degree, e, ring
+            )
+        )
+        ltx = r'\text{{{0}O}}_{{{1}}}({2}, {3})'.format(
+            ltx_prefix, degree, latex(ring), '+' if e == 1 else '-'
+        )
 
     if isinstance(ring, FiniteField):
         try:
@@ -216,12 +230,15 @@ def _OG(n, R, special, e=0, var='a', invariant_form=None):
             cmd = '{0}O({1}, {2}, {3})'.format(ltx_prefix, e, degree, ring.order())
             return OrthogonalMatrixGroup_gap(degree, ring, False, name, ltx, cmd)
 
-    return OrthogonalMatrixGroup_generic(degree, ring, False, name, ltx, invariant_form=invariant_form)
+    return OrthogonalMatrixGroup_generic(
+        degree, ring, False, name, ltx, invariant_form=invariant_form
+    )
 
 
 ########################################################################
 # General Orthogonal Group
 ########################################################################
+
 
 def GO(n, R, e=0, var='a', invariant_form=None):
     r"""
@@ -335,6 +352,7 @@ def GO(n, R, e=0, var='a', invariant_form=None):
 # Special Orthogonal Group
 ########################################################################
 
+
 def SO(n, R, e=None, var='a', invariant_form=None):
     r"""
     Return the special orthogonal group.
@@ -443,6 +461,7 @@ def SO(n, R, e=None, var='a', invariant_form=None):
 # Orthogonal Group class
 ########################################################################
 
+
 class OrthogonalMatrixGroup_generic(NamedMatrixGroup_generic):
     r"""
     General Orthogonal Group over arbitrary rings.
@@ -510,6 +529,7 @@ class OrthogonalMatrixGroup_generic(NamedMatrixGroup_generic):
             return self._invariant_form
 
         from sage.matrix.constructor import identity_matrix
+
         m = identity_matrix(self.base_ring(), self.degree())
         m.set_immutable()
         return m
@@ -539,5 +559,8 @@ class OrthogonalMatrixGroup_generic(NamedMatrixGroup_generic):
             if F == self.one().matrix():
                 raise TypeError('matrix must be orthogonal')
             else:
-                raise TypeError('matrix must be orthogonal with respect to the symmetric form\n%s' % (F))
+                raise TypeError(
+                    'matrix must be orthogonal with respect to the symmetric form\n%s'
+                    % (F)
+                )
         # TODO: check that quadratic form is preserved in characteristic two

@@ -21,7 +21,8 @@ AUTHORS:
 
 - Filip Ion, Marketa Slukova (2019-06): initial version
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2019 Filip Ion <filip.alexandru.ion@gmail.com>,
 #                          Marketa Slukova <em.slukova@gmail.com>
 #
@@ -29,7 +30,7 @@ AUTHORS:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.coding.linear_code import AbstractLinearCode
 from sage.coding.encoder import Encoder
 from sage.modules.free_module_element import vector
@@ -93,6 +94,7 @@ class GoppaCode(AbstractLinearCode):
         sage: C
         [55, 16] Goppa code over GF(2)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
@@ -119,11 +121,15 @@ class GoppaCode(AbstractLinearCode):
         if not generating_pol.is_monic():
             raise ValueError("generating polynomial must be monic")
         F = self._field
-        if (not F.is_field() or not F.is_finite()):
-            raise ValueError("generating polynomial must be defined over a finite field")
+        if not F.is_field() or not F.is_finite():
+            raise ValueError(
+                "generating polynomial must be defined over a finite field"
+            )
         for a in defining_set:
             if generating_pol(a) == 0:
-                raise ValueError("defining elements cannot be roots of generating polynomial")
+                raise ValueError(
+                    "defining elements cannot be roots of generating polynomial"
+                )
 
     def _repr_(self):
         """
@@ -140,8 +146,8 @@ class GoppaCode(AbstractLinearCode):
             [8, 2] Goppa code over GF(2)
         """
         return "[{}, {}] Goppa code over GF({})".format(
-            self.length(), self.dimension(),
-            self.base_field().cardinality())
+            self.length(), self.dimension(), self.base_field().cardinality()
+        )
 
     def _latex_(self):
         r"""
@@ -157,8 +163,9 @@ class GoppaCode(AbstractLinearCode):
             sage: latex(C)
             [8, 2]\text{ Goppa code over }\Bold{F}_{2}
         """
-        return r"[{}, {}]\text{{ Goppa code over }}{}".format(self.length(), self.dimension(),
-                                                              self.base_field()._latex_())
+        return r"[{}, {}]\text{{ Goppa code over }}{}".format(
+            self.length(), self.dimension(), self.base_field()._latex_()
+        )
 
     def __eq__(self, other):
         """
@@ -185,10 +192,12 @@ class GoppaCode(AbstractLinearCode):
             sage: C == E
             False
         """
-        return (isinstance(other, GoppaCode)
-           and self.length() == other.length()
-           and self._generating_pol == other._generating_pol
-           and self._defining_set == other._defining_set)
+        return (
+            isinstance(other, GoppaCode)
+            and self.length() == other.length()
+            and self._generating_pol == other._generating_pol
+            and self._defining_set == other._defining_set
+        )
 
     def parity_check_matrix(self):
         r"""
@@ -228,7 +237,7 @@ class GoppaCode(AbstractLinearCode):
         D = self._defining_set
         h = [(g(D[i]).inverse_of_unit()) for i in range(n)]
 
-        #assemble top row
+        # assemble top row
         M = _columnize(alpha)
         for i in range(n):
             v = _columnize(h[i])
@@ -236,11 +245,11 @@ class GoppaCode(AbstractLinearCode):
         M = M.delete_columns([0])
         old = M
 
-        for t in range(1,d):
-            #assemble row
+        for t in range(1, d):
+            # assemble row
             M = _columnize(alpha)
             for i in range(n):
-                v = _columnize(h[i]*(D[i]**t))
+                v = _columnize(h[i] * (D[i] ** t))
                 M = M.augment(v)
             M = M.delete_columns([0])
             new = M
@@ -282,7 +291,7 @@ class GoppaCode(AbstractLinearCode):
         GLI = [j.inverse_of_unit() for j in GL]
         D = diagonal_matrix(GLI)
         VF = matrix([V.row(i) for i in range(t)])
-        H = VF*D
+        H = VF * D
 
         matrices = [matrix([vector(i) for i in H.row(j)]) for j in range(t)]
         matrices = [m.transpose() for m in matrices]
@@ -342,6 +351,7 @@ class GoppaCodeEncoder(Encoder):
         sage: c in C
         True
     """
+
     def __init__(self, code):
         """
         Initialize.
@@ -408,8 +418,7 @@ class GoppaCodeEncoder(Encoder):
             sage: E1 == E2
             True
         """
-        return (isinstance(other, GoppaCodeEncoder)
-           and self.code() == other.code())
+        return isinstance(other, GoppaCodeEncoder) and self.code() == other.code()
 
     def generator_matrix(self):
         r"""

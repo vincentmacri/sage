@@ -85,6 +85,7 @@ class VoronoiDiagram(SageObject):
 
     - Moritz Firsching (2012-09-21)
     """
+
     def __init__(self, points):
         r"""
         See ``VoronoiDiagram`` for full documentation.
@@ -99,23 +100,33 @@ class VoronoiDiagram(SageObject):
         self._n = self._points.n_points()
         if not self._n or self._points.base_ring().is_subring(QQ):
             self._base_ring = QQ
-        elif isinstance(self._points.base_ring(), (sage.rings.abc.RealDoubleField, sage.rings.abc.AlgebraicRealField)):
+        elif isinstance(
+            self._points.base_ring(),
+            (sage.rings.abc.RealDoubleField, sage.rings.abc.AlgebraicRealField),
+        ):
             self._base_ring = self._points.base_ring()
         elif isinstance(self._points.base_ring(), sage.rings.abc.RealField):
             from sage.rings.real_double import RDF
+
             self._base_ring = RDF
-            self._points = PointConfiguration([[RDF(cor) for cor in poi]
-                                               for poi in self._points])
+            self._points = PointConfiguration(
+                [[RDF(cor) for cor in poi] for poi in self._points]
+            )
         else:
-            raise NotImplementedError('Base ring of the Voronoi diagram must '
-                                      'be one of QQ, RDF, AA.')
+            raise NotImplementedError(
+                'Base ring of the Voronoi diagram must be one of QQ, RDF, AA.'
+            )
 
         if self._n > 0:
             self._d = self._points.ambient_dim()
-            e = [([sum(vector(i)[k] ** 2
-                       for k in range(self._d))] +
-                  [(-2) * vector(i)[l] for l in range(self._d)] + [1])
-                 for i in self._points]
+            e = [
+                (
+                    [sum(vector(i)[k] ** 2 for k in range(self._d))]
+                    + [(-2) * vector(i)[l] for l in range(self._d)]
+                    + [1]
+                )
+                for i in self._points
+            ]
             # we attach hyperplane to the paraboloid
 
             e = [[self._base_ring(i) for i in k] for k in e]
@@ -145,15 +156,18 @@ class VoronoiDiagram(SageObject):
                 equ = p.Hrepresentation(hlistnormalized.index(enormalized[i]))
             else:
                 equ = p.Hrepresentation(i)
-            pvert = [[u[k] for k in range(self._d)] for u in equ.incident()
-                     if u.is_vertex()]
-            prays = [[u[k] for k in range(self._d)] for u in equ.incident()
-                     if u.is_ray()]
-            pline = [[u[k] for k in range(self._d)] for u in equ.incident()
-                     if u.is_line()]
-            (self._P)[self._points[i]] = Polyhedron(vertices=pvert,
-                                                    lines=pline, rays=prays,
-                                                    base_ring=self._base_ring)
+            pvert = [
+                [u[k] for k in range(self._d)] for u in equ.incident() if u.is_vertex()
+            ]
+            prays = [
+                [u[k] for k in range(self._d)] for u in equ.incident() if u.is_ray()
+            ]
+            pline = [
+                [u[k] for k in range(self._d)] for u in equ.incident() if u.is_line()
+            ]
+            (self._P)[self._points[i]] = Polyhedron(
+                vertices=pvert, lines=pline, rays=prays, base_ring=self._base_ring
+            )
 
     def points(self):
         r"""
@@ -289,6 +303,7 @@ class VoronoiDiagram(SageObject):
 
             if cell_colors is None:
                 from random import shuffle
+
                 cell_colors = rainbow(self._n)
                 shuffle(cell_colors)
             else:
@@ -300,9 +315,12 @@ class VoronoiDiagram(SageObject):
                 S += point(p, color=col, pointsize=10, zorder=3)
                 S += point(p, color='black', pointsize=20, zorder=2)
             return plot(S, **kwds)
-        raise NotImplementedError('Plotting of ' + str(self.ambient_dim()) +
-                                  '-dimensional Voronoi diagrams not' +
-                                  ' implemented')
+        raise NotImplementedError(
+            'Plotting of '
+            + str(self.ambient_dim())
+            + '-dimensional Voronoi diagrams not'
+            + ' implemented'
+        )
 
     def _are_points_in_regions(self):
         """

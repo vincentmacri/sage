@@ -88,6 +88,7 @@ class FinitePermutationGroups(CategoryWithAxiom):
             Dihedral group of order 6 as a permutation group
         """
         from sage.groups.perm_gps.permgroup_named import DihedralGroup
+
         return DihedralGroup(3)
 
     def extra_super_categories(self):
@@ -225,16 +226,24 @@ class FinitePermutationGroups(CategoryWithAxiom):
                 p[1]
             """
             from sage.categories.modules import Modules
+
             if parent is None:
                 from sage.rings.rational_field import QQ
                 from sage.combinat.sf.sf import SymmetricFunctions
+
                 parent = SymmetricFunctions(QQ).powersum()
             elif parent not in Modules.WithBasis:
-                raise ValueError("`parent` should be a module with basis indexed by partitions")
+                raise ValueError(
+                    "`parent` should be a module with basis indexed by partitions"
+                )
             base_ring = parent.base_ring()
-            return parent.sum_of_terms([C.an_element().cycle_type(), base_ring(C.cardinality())]
-                                       for C in self.conjugacy_classes()
-                                      ) / self.cardinality()
+            return (
+                parent.sum_of_terms(
+                    [C.an_element().cycle_type(), base_ring(C.cardinality())]
+                    for C in self.conjugacy_classes()
+                )
+                / self.cardinality()
+            )
 
         @cached_method
         def profile_series(self, variable='z'):
@@ -328,6 +337,7 @@ class FinitePermutationGroups(CategoryWithAxiom):
             if using_polya:
                 return self.profile_polynomial()[n]
             from sage.libs.gap.libgap import libgap
+
             subs_n = libgap.Combinations(list(self.domain()), n)
             return len(libgap.Orbits(self, subs_n, libgap.OnSets))
 

@@ -84,6 +84,7 @@ def gram_schmidt(B):
         ValueError: linearly dependent input for module version of Gram-Schmidt
     """
     from sage.modules.free_module_element import vector
+
     if len(B) == 0 or len(B[0]) == 0:
         return B, matrix(ZZ, 0, 0, [])
     n = len(B)
@@ -98,5 +99,7 @@ def gram_schmidt(B):
             mu[i, j] = B[i].dot_product(Bstar[j]) / (Bstar[j].dot_product(Bstar[j]))
         Bstar.append(B[i] - sum(mu[i, j] * Bstar[j] for j in range(i)))
         if Bstar[i] == zero:
-            raise ValueError("linearly dependent input for module version of Gram-Schmidt")
+            raise ValueError(
+                "linearly dependent input for module version of Gram-Schmidt"
+            )
     return Bstar, mu

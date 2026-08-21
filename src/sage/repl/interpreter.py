@@ -158,11 +158,14 @@ from sage.repl.prompts import InterfacePrompts
 
 # PyOS_sighandler_t PyOS_getsig(int i)
 pythonapi.PyOS_getsig.restype = c_void_p
-pythonapi.PyOS_getsig.argtypes = c_int,
+pythonapi.PyOS_getsig.argtypes = (c_int,)
 
 # PyOS_sighandler_t PyOS_setsig(int i, PyOS_sighandler_t h)
 pythonapi.PyOS_setsig.restype = c_void_p
-pythonapi.PyOS_setsig.argtypes = c_int, c_void_p,
+pythonapi.PyOS_setsig.argtypes = (
+    c_int,
+    c_void_p,
+)
 
 
 # TODO: This global variable _do_preparse should be associated with an
@@ -210,15 +213,22 @@ def inline_plots(on=None):
         False
     """
     from IPython.core.getipython import get_ipython
+
     IP = get_ipython()
     try:
         from IPython.core.kitty import kitty_png_render, supports_kitty_graphics
     except ImportError:
         supports_kitty_graphics = False
     if on is None:
-        return supports_kitty_graphics and hasattr(IP, 'mime_renderers') and 'image/png' in IP.mime_renderers
+        return (
+            supports_kitty_graphics
+            and hasattr(IP, 'mime_renderers')
+            and 'image/png' in IP.mime_renderers
+        )
     if not supports_kitty_graphics:
-        print('Inline plots are not supported for the current terminal and IPython version')
+        print(
+            'Inline plots are not supported for the current terminal and IPython version'
+        )
         return
     if on:
         IP.mime_renderers['image/png'] = kitty_png_render
@@ -251,6 +261,7 @@ class SageShellOverride:
             sage: shell.quit()
         """
         from sage.misc.sagedoc import help
+
         help()
 
     def system_raw(self, cmd):
@@ -300,6 +311,7 @@ class SageNotebookInteractiveShell(SageShellOverride, InteractiveShell):
             sage: SageNotebookInteractiveShell().init_display_formatter()   # not tested
         """
         from sage.repl.rich_output.backend_ipython import BackendIPythonNotebook
+
         backend = BackendIPythonNotebook()
         backend.get_display_manager().switch_backend(backend, shell=self)
 
@@ -329,6 +341,7 @@ class SageTerminalInteractiveShell(SageShellOverride, TerminalInteractiveShell):
         """
         super().init_display_formatter()
         from sage.repl.rich_output.backend_ipython import BackendIPythonCommandline
+
         backend = BackendIPythonCommandline()
         backend.get_display_manager().switch_backend(backend, shell=self)
 
@@ -338,6 +351,7 @@ class SageTerminalInteractiveShell(SageShellOverride, TerminalInteractiveShell):
         # https://github.com/sagemath/sage/issues/33428
         # https://github.com/sagemath/sage/pull/35251
         import signal
+
         sigint = signal.getsignal(signal.SIGINT)
         sigint_os = pythonapi.PyOS_getsig(signal.SIGINT)
         text = TerminalInteractiveShell.prompt_for_code(self)
@@ -376,9 +390,12 @@ class SageTestShell(SageShellOverride, TerminalInteractiveShell):
             sage: shell.quit()
         """
         from sage.repl.rich_output.backend_ipython import BackendIPythonCommandline
+
         self._ipython_backend = backend = BackendIPythonCommandline()
         self._display_manager = backend.get_display_manager()
-        self._doctest_backend = self._display_manager.switch_backend(backend, shell=self)
+        self._doctest_backend = self._display_manager.switch_backend(
+            backend, shell=self
+        )
 
     def quit(self):
         """
@@ -504,12 +521,15 @@ def SagePreparseTransformer(lines):
     return lines
 
 
-SagePromptTransformer = PromptStripper(prompt_re=re.compile(r'^(\s*(:?sage: |\.\.\. |\.\.\.\.: ))+'))
+SagePromptTransformer = PromptStripper(
+    prompt_re=re.compile(r'^(\s*(:?sage: |\.\.\. |\.\.\.\.: ))+')
+)
 
 
 ###################
 # Interface shell #
 ###################
+
 
 class logstr(str):
     """
@@ -517,6 +537,7 @@ class logstr(str):
     This provides a ``_latex_`` method which is just the string
     wrapped in a ``\\verb`` environment.
     """
+
     def __repr__(self):
         """
         EXAMPLES::
@@ -544,7 +565,11 @@ class logstr(str):
             delim = '@'
         elif '~' not in self:
             delim = '~'
-        return r"""\verb%s%s%s""" % (delim, self.replace('\n\n', '\n').replace('\n', '; '), delim)
+        return r"""\verb%s%s%s""" % (
+            delim,
+            self.replace('\n\n', '\n').replace('\n', '; '),
+            delim,
+        )
 
 
 class InterfaceShellTransformer(PrefilterTransformer):
@@ -574,8 +599,9 @@ class InterfaceShellTransformer(PrefilterTransformer):
         """
         super().__init__(*args, **kwds)
         self.temporary_objects = set()
-        self._sage_import_re = re.compile(r'(?:sage|%s)\('
-                                          % self.shell.interface.name())
+        self._sage_import_re = re.compile(
+            r'(?:sage|%s)\(' % self.shell.interface.name()
+        )
 
     def preparse_imports_from_sage(self, line):
         """
@@ -624,12 +650,13 @@ class InterfaceShellTransformer(PrefilterTransformer):
             if not m:
                 new_line.append(line[pos:])
                 break
-            expr_start, expr_end = containing_block(line, m.end() - 1,
-                                                    delimiters=['()'])
-            expr = preparse(line[expr_start + 1:expr_end - 1])
+            expr_start, expr_end = containing_block(
+                line, m.end() - 1, delimiters=['()']
+            )
+            expr = preparse(line[expr_start + 1 : expr_end - 1])
             result = self.shell.interface(eval(expr, self.shell.user_ns))
             self.temporary_objects.add(result)
-            new_line += [line[pos:m.start()], result.name()]
+            new_line += [line[pos : m.start()], result.name()]
             pos = expr_end
         return ' '.join(new_line)
 
@@ -712,9 +739,11 @@ def interface_shell_embed(interface):
         <ExecutionResult object at ..., execution_count=... error_before_exec=None error_in_exec=None ...result=[ false, true, true, false, true, false, true, false, false, false ]>
     """
     cfg = sage_ipython_config.copy()
-    ipshell = InteractiveShellEmbed(config=cfg,
-                                    banner1='\n  --> Switching to %s <--\n\n' % interface,
-                                    exit_msg='\n  --> Exiting back to Sage <--\n')
+    ipshell = InteractiveShellEmbed(
+        config=cfg,
+        banner1='\n  --> Switching to %s <--\n\n' % interface,
+        exit_msg='\n  --> Exiting back to Sage <--\n',
+    )
     ipshell.interface = interface
     ipshell.prompts = InterfacePrompts(interface.name())
 
@@ -724,9 +753,9 @@ def interface_shell_embed(interface):
         ipshell.prefilter_manager.checkers.pop()
     ipshell.ex('import sage.misc.all')
 
-    InterfaceShellTransformer(shell=ipshell,
-                              prefilter_manager=ipshell.prefilter_manager,
-                              config=cfg)
+    InterfaceShellTransformer(
+        shell=ipshell, prefilter_manager=ipshell.prefilter_manager, config=cfg
+    )
     return ipshell
 
 
@@ -778,6 +807,7 @@ def get_test_shell():
 # IPython TerminalApp #
 #######################
 
+
 class SageCrashHandler(IPAppCrashHandler):
     def __init__(self, app):
         """
@@ -800,9 +830,14 @@ class SageCrashHandler(IPAppCrashHandler):
         contact_name = 'sage-support'
         contact_email = 'sage-support@googlegroups.com'
         bug_tracker = 'https://github.com/sagemath/sage/issues'
-        CrashHandler.__init__(self,
-                              app, contact_name, contact_email,
-                              bug_tracker, show_crash_traceback=True)
+        CrashHandler.__init__(
+            self,
+            app,
+            contact_name,
+            contact_email,
+            bug_tracker,
+            show_crash_traceback=True,
+        )
         self.crash_report_fname = 'Sage_crash_report.txt'
 
 
@@ -864,13 +899,15 @@ class SageTerminalApp(TerminalIPythonApp):
             parent=self,
             config=self.config,
             profile_dir=self.profile_dir,
-            ipython_dir=self.ipython_dir)
+            ipython_dir=self.ipython_dir,
+        )
         self.shell.configurables.append(self)
         self.shell.has_sage_extensions = SAGE_EXTENSION in self.extensions
 
         # Load the %lprun extension if available
         try:
             import line_profiler
+
             assert line_profiler  # silence pyflakes
         except ImportError:
             pass

@@ -9,6 +9,7 @@ AUTHORS:
 
 - Antoine Genitrini (2020) : new implementation of the lexicographic unranking of combinations
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #
@@ -290,8 +291,10 @@ class Combinations_mset(Parent):
             sage: Combinations(['a','a','b']).cardinality()                             # needs sage.libs.gap
             6
         """
-        return ZZ.sum(Combinations_msetk(self.mset, k).cardinality()
-                      for k in range(len(self.mset) + 1))
+        return ZZ.sum(
+            Combinations_msetk(self.mset, k).cardinality()
+            for k in range(len(self.mset) + 1)
+        )
 
 
 class Combinations_set(Combinations_mset):
@@ -351,7 +354,7 @@ class Combinations_set(Combinations_mset):
             sage: Combinations(range(16000)).cardinality() == 2^16000
             True
         """
-        return ZZ(2)**len(self.mset)
+        return ZZ(2) ** len(self.mset)
 
 
 class Combinations_msetk(Parent):
@@ -402,8 +405,11 @@ class Combinations_msetk(Parent):
             sage: c == Combinations([1,2,2,3], 2)
             False
         """
-        return (isinstance(other, Combinations_msetk) and
-                self.mset == other.mset and self.k == other.k)
+        return (
+            isinstance(other, Combinations_msetk)
+            and self.mset == other.mset
+            and self.k == other.k
+        )
 
     def __ne__(self, other) -> bool:
         """
@@ -439,8 +445,9 @@ class Combinations_msetk(Parent):
         for i in items:
             counts[indices.index(i)] += 1
         for iv in IntegerVectors(self.k, len(indices), outer=counts):
-            result = sum([[self.mset[indices[i]]] * iv[i]
-                          for i in range(len(indices))], [])
+            result = sum(
+                [[self.mset[indices[i]]] * iv[i] for i in range(len(indices))], []
+            )
             yield tuple(result) if self.as_tuples else result
 
     def cardinality(self) -> Integer:
@@ -456,6 +463,7 @@ class Combinations_msetk(Parent):
             12
         """
         from sage.libs.gap.libgap import libgap
+
         items = [self.mset.index(i) for i in self.mset]
         nc = libgap.function_factory('NrCombinations')
         return ZZ(nc(items, ZZ(self.k)))

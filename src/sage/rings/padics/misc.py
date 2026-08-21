@@ -124,22 +124,22 @@ def gauss_sum(a, p, f, prec=20, factored=False, algorithm='pari', parent=None):
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
     q = p**f
-    a = a % (q-1)
+    a = a % (q - 1)
     if parent is None:
         R = Zp(p, prec)
     else:
         R = parent
     out = -R.one()
     if a != 0:
-        t = R(1/(q-1))
+        t = R(1 / (q - 1))
         for i in range(f):
-            out *= (a*t).gamma(algorithm)
-            a = (a*p) % (q-1)
+            out *= (a * t).gamma(algorithm)
+            a = (a * p) % (q - 1)
     s = sum(a.digits(base=p))
     if factored:
         return s, out
     X = PolynomialRing(R, name='X').gen()
-    pi = R.ext(X**(p - 1) + p, names='pi').gen()
+    pi = R.ext(X ** (p - 1) + p, names='pi').gen()
     out *= pi**s
     return out
 
@@ -202,13 +202,15 @@ def precprint(prec_type, prec_cap, p):
         sage: precprint('fixed-mod', 1, 17)
         'of fixed modulus 17^1'
     """
-    precD = {'capped-rel':'with capped relative precision %s' % prec_cap,
-             'capped-abs':'with capped absolute precision %s' % prec_cap,
-             'floating-point':'with floating precision %s' % prec_cap,
-             'fixed-mod':'of fixed modulus %s^%s' % (p, prec_cap),
-             'lattice-cap':'with lattice-cap precision',
-             'lattice-float':'with lattice-float precision',
-             'relaxed':'handled with relaxed arithmetics'}
+    precD = {
+        'capped-rel': 'with capped relative precision %s' % prec_cap,
+        'capped-abs': 'with capped absolute precision %s' % prec_cap,
+        'floating-point': 'with floating precision %s' % prec_cap,
+        'fixed-mod': 'of fixed modulus %s^%s' % (p, prec_cap),
+        'lattice-cap': 'with lattice-cap precision',
+        'lattice-float': 'with lattice-float precision',
+        'relaxed': 'handled with relaxed arithmetics',
+    }
     return precD[prec_type]
 
 

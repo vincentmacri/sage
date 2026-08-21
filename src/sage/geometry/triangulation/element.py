@@ -29,7 +29,7 @@ Here is a simple example of how to triangulate a point configuration::
 See :mod:`sage.geometry.triangulation.point_configuration` for more details.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2010 Volker Braun <vbraun.name@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ See :mod:`sage.geometry.triangulation.point_configuration` for more details.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.structure.richcmp import richcmp
 from sage.structure.element import Element
@@ -71,11 +71,10 @@ def triangulation_render_2d(triangulation, **kwds):
     from sage.plot.point import point2d
     from sage.plot.line import line2d
     from sage.plot.polygon import polygon2d
+
     points = [point.reduced_affine() for point in triangulation.point_configuration()]
-    coord = [ [p[0], p[1]] for p in points ]
-    plot_points = sum([ point2d(p,
-                                zorder=2, pointsize=10, **kwds)
-                        for p in coord ])
+    coord = [[p[0], p[1]] for p in points]
+    plot_points = sum([point2d(p, zorder=2, pointsize=10, **kwds) for p in coord])
 
     tmp_lines = []
     for t in triangulation:
@@ -93,21 +92,33 @@ def triangulation_render_2d(triangulation, **kwds):
             interior_lines.append(l)
     exterior_lines = [l for l in all_lines if l not in interior_lines]
 
-    plot_interior_lines = sum([ line2d([ coord[l[0]], coord[l[1]] ],
-                                       zorder=1, rgbcolor=(0,1,0), **kwds)
-                                for l in interior_lines ])
-    plot_exterior_lines = sum([ line2d([ coord[l[0]], coord[l[1]] ],
-                                       zorder=1, rgbcolor=(0,0,1), **kwds)
-                                for l in exterior_lines ])
+    plot_interior_lines = sum(
+        [
+            line2d([coord[l[0]], coord[l[1]]], zorder=1, rgbcolor=(0, 1, 0), **kwds)
+            for l in interior_lines
+        ]
+    )
+    plot_exterior_lines = sum(
+        [
+            line2d([coord[l[0]], coord[l[1]]], zorder=1, rgbcolor=(0, 0, 1), **kwds)
+            for l in exterior_lines
+        ]
+    )
 
-    plot_triangs = sum([ polygon2d([coord[t[0]], coord[t[1]], coord[t[2]]],
-                                   zorder=0, rgbcolor=(0.8, 1, 0.8), **kwds)
-                         for t in triangulation if len(t) >= 3 ])
+    plot_triangs = sum(
+        [
+            polygon2d(
+                [coord[t[0]], coord[t[1]], coord[t[2]]],
+                zorder=0,
+                rgbcolor=(0.8, 1, 0.8),
+                **kwds,
+            )
+            for t in triangulation
+            if len(t) >= 3
+        ]
+    )
 
-    return \
-        plot_points + \
-        plot_interior_lines + plot_exterior_lines + \
-        plot_triangs
+    return plot_points + plot_interior_lines + plot_exterior_lines + plot_triangs
 
 
 def triangulation_render_3d(triangulation, **kwds):
@@ -131,11 +142,10 @@ def triangulation_render_3d(triangulation, **kwds):
         Graphics3d Object
     """
     from sage.plot.plot3d.all import point3d, line3d, polygon3d
-    points = [ point.reduced_affine() for point in triangulation.point_configuration() ]
-    coord = [ [p[0], p[1], p[2] ] for p in points ]
-    plot_points = sum([ point3d(p, size=15,
-                                **kwds)
-                        for p in coord ])
+
+    points = [point.reduced_affine() for point in triangulation.point_configuration()]
+    coord = [[p[0], p[1], p[2]] for p in points]
+    plot_points = sum([point3d(p, size=15, **kwds) for p in coord])
 
     tmp_lines = []
     for t in triangulation:
@@ -158,17 +168,28 @@ def triangulation_render_3d(triangulation, **kwds):
     exterior_lines = [l for l in all_lines if l not in interior_lines]
 
     from sage.plot.plot3d.texture import Texture
+
     line_int = Texture(color='darkblue', ambient=1, diffuse=0)
     line_ext = Texture(color='green', ambient=1, diffuse=0)
-    triang_int = Texture(opacity=0.3, specular=0, shininess=0, diffuse=0, ambient=1, color='yellow')
-    triang_ext = Texture(opacity=0.6, specular=0, shininess=0, diffuse=0, ambient=1, color='green')
+    triang_int = Texture(
+        opacity=0.3, specular=0, shininess=0, diffuse=0, ambient=1, color='yellow'
+    )
+    triang_ext = Texture(
+        opacity=0.6, specular=0, shininess=0, diffuse=0, ambient=1, color='green'
+    )
 
-    plot_interior_lines = sum([ line3d([ coord[l[0]], coord[l[1]] ],
-                                       thickness=2, texture=line_int, **kwds)
-                                for l in interior_lines ])
-    plot_exterior_lines = sum([ line3d([ coord[l[0]], coord[l[1]] ],
-                                       thickness=3, texture=line_ext, **kwds)
-                                for l in exterior_lines ])
+    plot_interior_lines = sum(
+        [
+            line3d([coord[l[0]], coord[l[1]]], thickness=2, texture=line_int, **kwds)
+            for l in interior_lines
+        ]
+    )
+    plot_exterior_lines = sum(
+        [
+            line3d([coord[l[0]], coord[l[1]]], thickness=3, texture=line_ext, **kwds)
+            for l in exterior_lines
+        ]
+    )
 
     tmp_triangs = []
     for t in triangulation:
@@ -187,18 +208,30 @@ def triangulation_render_3d(triangulation, **kwds):
             interior_triangs.append(l)
     exterior_triangs = [l for l in all_triangs if l not in interior_triangs]
 
-    plot_interior_triangs = \
-        sum([polygon3d([coord[t[0]], coord[t[1]], coord[t[2]]],
-                       texture=triang_int, **kwds)
-             for t in interior_triangs])
-    plot_exterior_triangs = \
-        sum([polygon3d([coord[t[0]], coord[t[1]], coord[t[2]]],
-                       texture=triang_ext, **kwds)
-              for t in exterior_triangs])
+    plot_interior_triangs = sum(
+        [
+            polygon3d(
+                [coord[t[0]], coord[t[1]], coord[t[2]]], texture=triang_int, **kwds
+            )
+            for t in interior_triangs
+        ]
+    )
+    plot_exterior_triangs = sum(
+        [
+            polygon3d(
+                [coord[t[0]], coord[t[1]], coord[t[2]]], texture=triang_ext, **kwds
+            )
+            for t in exterior_triangs
+        ]
+    )
 
-    return plot_points + \
-        plot_interior_lines + plot_exterior_lines + \
-        plot_interior_triangs + plot_exterior_triangs
+    return (
+        plot_points
+        + plot_interior_lines
+        + plot_exterior_lines
+        + plot_interior_triangs
+        + plot_exterior_triangs
+    )
 
 
 ########################################################################
@@ -216,6 +249,7 @@ class Triangulation(Element):
         :meth:`~sage.geometry.triangulation.point_configuration.PointConfiguration.triangulations`
         to triangulate point configurations.
     """
+
     def __init__(self, triangulation, parent, check=True):
         """
         The constructor of a ``Triangulation`` object.
@@ -258,12 +292,14 @@ class Triangulation(Element):
         self._point_configuration = parent
 
         try:
-            triangulation = tuple(sorted( tuple(sorted(t)) for t in triangulation))
+            triangulation = tuple(sorted(tuple(sorted(t)) for t in triangulation))
         except TypeError:
-            triangulation = tuple( self.point_configuration().int_to_simplex(i)
-                                   for i in triangulation )
-        assert not check or all( len(t) == self.point_configuration().dim()+1
-                                 for t in triangulation)
+            triangulation = tuple(
+                self.point_configuration().int_to_simplex(i) for i in triangulation
+            )
+        assert not check or all(
+            len(t) == self.point_configuration().dim() + 1 for t in triangulation
+        )
         self._triangulation = triangulation
 
     def point_configuration(self):
@@ -385,11 +421,11 @@ class Triangulation(Element):
             sage: next(t)._repr_()
             '(<1,4,5>, <2,4,5>)'
         """
-        #s = 'A triangulation'
-        #s += ' in QQ^'+str(self.point_configuration().ambient_dim())
-        #s += ' consisting of '+str(len(self))+' simplices.'
+        # s = 'A triangulation'
+        # s += ' in QQ^'+str(self.point_configuration().ambient_dim())
+        # s += ' consisting of '+str(len(self))+' simplices.'
         s = '('
-        s += ', '.join([ '<'+','.join(map(str,t))+'>' for t in self._triangulation])
+        s += ', '.join(['<' + ','.join(map(str, t)) + '>' for t in self._triangulation])
         s += ')'
         return s
 
@@ -414,7 +450,9 @@ class Triangulation(Element):
         if dim == 3:
             return triangulation_render_3d(self, **kwds)
 
-        raise NotImplementedError('Plotting '+str(dim)+'-dimensional triangulations not implemented!')
+        raise NotImplementedError(
+            'Plotting ' + str(dim) + '-dimensional triangulations not implemented!'
+        )
 
     def gkz_phi(self):
         r"""
@@ -488,7 +526,7 @@ class Triangulation(Element):
              <4,6,9,10,11,12>, <4,6,10,11,12,13>)
         """
         pc = self._point_configuration
-        return tuple( pc.simplex_to_int(t) for t in self )
+        return tuple(pc.simplex_to_int(t) for t in self)
 
     def fan(self, origin=None):
         r"""
@@ -540,6 +578,7 @@ class Triangulation(Element):
             in 3-d lattice N
         """
         from sage.geometry.fan import Fan
+
         if origin is None:
             origin = self.point_configuration().star_center()
         R = self.base_ring()
@@ -566,6 +605,7 @@ class Triangulation(Element):
             {0: 0, 1: 0, 2: 0, 3: 0}
         """
         from sage.topology.simplicial_complex import SimplicialComplex
+
         return SimplicialComplex(self)
 
     @cached_method
@@ -607,7 +647,7 @@ class Triangulation(Element):
         result = dict()
         for simplex in self:
             for i in range(len(simplex)):
-                facet = simplex[:i] + simplex[i+1:]
+                facet = simplex[:i] + simplex[i + 1 :]
                 result[facet] = result.get(facet, tuple()) + (simplex,)
         return result
 
@@ -643,9 +683,11 @@ class Triangulation(Element):
             sage: triangulation.interior_facets()
             frozenset({(0, 1, 7), (0, 2, 7), (0, 3, 7), (0, 4, 7), (0, 5, 7), (1, 5, 7)})
         """
-        return frozenset(facet for facet, bounded_simplices
-                         in self._boundary_simplex_dictionary().items()
-                         if len(bounded_simplices) == 1)
+        return frozenset(
+            facet
+            for facet, bounded_simplices in self._boundary_simplex_dictionary().items()
+            if len(bounded_simplices) == 1
+        )
 
     @cached_method
     def boundary_simplicial_complex(self):
@@ -674,6 +716,7 @@ class Triangulation(Element):
             True
         """
         from sage.topology.simplicial_complex import SimplicialComplex
+
         return SimplicialComplex(self.boundary(), maximality_check=False)
 
     @cached_method
@@ -708,9 +751,11 @@ class Triangulation(Element):
             sage: triangulation.interior_facets()
             frozenset({(0, 1, 7), (0, 2, 7), (0, 3, 7), (0, 4, 7), (0, 5, 7), (1, 5, 7)})
         """
-        return frozenset(facet for facet, bounded_simplices
-                         in self._boundary_simplex_dictionary().items()
-                         if len(bounded_simplices) == 2)
+        return frozenset(
+            facet
+            for facet, bounded_simplices in self._boundary_simplex_dictionary().items()
+            if len(bounded_simplices) == 2
+        )
 
     def polyhedral_complex(self, **kwds):
         """
@@ -739,14 +784,16 @@ class Triangulation(Element):
         """
         from sage.geometry.polyhedral_complex import PolyhedralComplex
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         ambient_dim = self.point_configuration().ambient_dim()
         points = self.point_configuration().points()
-        return PolyhedralComplex([Polyhedron(vertices=[points[i] for i in simplex])
-                                  for simplex in self],
-                                 ambient_dim=ambient_dim,
-                                 maximality_check=False,
-                                 face_to_face_check=False,
-                                 **kwds)
+        return PolyhedralComplex(
+            [Polyhedron(vertices=[points[i] for i in simplex]) for simplex in self],
+            ambient_dim=ambient_dim,
+            maximality_check=False,
+            face_to_face_check=False,
+            **kwds,
+        )
 
     def boundary_polyhedral_complex(self, **kwds):
         r"""
@@ -787,14 +834,19 @@ class Triangulation(Element):
         """
         from sage.geometry.polyhedral_complex import PolyhedralComplex
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         ambient_dim = self.point_configuration().ambient_dim()
         points = self.point_configuration().points()
-        return PolyhedralComplex([Polyhedron(vertices=[points[i] for i in simplex])
-                                  for simplex in self.boundary()],
-                                 ambient_dim=ambient_dim,
-                                 maximality_check=False,
-                                 face_to_face_check=False,
-                                 **kwds)
+        return PolyhedralComplex(
+            [
+                Polyhedron(vertices=[points[i] for i in simplex])
+                for simplex in self.boundary()
+            ],
+            ambient_dim=ambient_dim,
+            maximality_check=False,
+            face_to_face_check=False,
+            **kwds,
+        )
 
     @cached_method
     def normal_cone(self):
@@ -853,6 +905,7 @@ class Triangulation(Element):
         from ppl import Constraint_System, Linear_Expression, C_Polyhedron
         from sage.matrix.constructor import matrix
         from sage.arith.functions import lcm
+
         pc = self.point_configuration()
         cs = Constraint_System()
         for facet in self.interior_facets():
@@ -861,24 +914,28 @@ class Triangulation(Element):
             q = set(s1).difference(facet).pop()
             origin = pc.point(p).reduced_affine_vector()
             base_indices = [i for i in s0 if i != p]
-            base = matrix([ pc.point(i).reduced_affine_vector()-origin for i in base_indices ])
-            sol = base.solve_left( pc.point(q).reduced_affine_vector()-origin )
-            relation = [0]*pc.n_points()
-            relation[p] = sum(sol)-1
+            base = matrix(
+                [pc.point(i).reduced_affine_vector() - origin for i in base_indices]
+            )
+            sol = base.solve_left(pc.point(q).reduced_affine_vector() - origin)
+            relation = [0] * pc.n_points()
+            relation[p] = sum(sol) - 1
             relation[q] = 1
             for i, base_i in enumerate(base_indices):
                 relation[base_i] = -sol[i]
             rel_denom = lcm([QQ(r).denominator() for r in relation])
-            relation = [ ZZ(r*rel_denom) for r in relation ]
-            ex = Linear_Expression(relation,0)
+            relation = [ZZ(r * rel_denom) for r in relation]
+            ex = Linear_Expression(relation, 0)
             cs.insert(ex >= 0)
         from sage.modules.free_module import FreeModule
+
         ambient = FreeModule(ZZ, self.point_configuration().n_points())
         if cs.empty():
             cone = C_Polyhedron(ambient.dimension(), 'universe')
         else:
             cone = C_Polyhedron(cs)
         from sage.geometry.cone import _Cone_from_PPL
+
         return _Cone_from_PPL(cone, lattice=ambient)
 
     def adjacency_graph(self):
@@ -911,5 +968,5 @@ class Triangulation(Element):
         """
         vertices = [Set(_) for _ in list(self)]
         from sage.graphs.graph import Graph
-        return Graph([vertices,
-                  lambda x,y: len(x-y) == 1])
+
+        return Graph([vertices, lambda x, y: len(x - y) == 1])

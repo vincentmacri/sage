@@ -1,27 +1,44 @@
 r"""
 Super modules
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_types import Category_over_base_ring
-from sage.categories.covariant_functorial_construction import CovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    CovariantConstructionCategory,
+)
 
 # Note, a commutative algebra is not a commutative super algebra,
 #   therefore the following whitelist.
-axiom_whitelist = frozenset(["Facade", "Finite", "Infinite",
-                             "FiniteDimensional", "Connected", "WithBasis",
-                             "FinitelyGeneratedAsLambdaBracketAlgebra",
-                             # "Commutative", "Cocommutative",
-                             "Supercommutative", "Supercocommutative",
-                             "Associative", "Inverse", "Unital", "Division",
-                             "AdditiveCommutative", "AdditiveAssociative",
-                             "AdditiveInverse", "AdditiveUnital",
-                             "NoZeroDivisors", "Distributive"])
+axiom_whitelist = frozenset(
+    [
+        "Facade",
+        "Finite",
+        "Infinite",
+        "FiniteDimensional",
+        "Connected",
+        "WithBasis",
+        "FinitelyGeneratedAsLambdaBracketAlgebra",
+        # "Commutative", "Cocommutative",
+        "Supercommutative",
+        "Supercocommutative",
+        "Associative",
+        "Inverse",
+        "Unital",
+        "Division",
+        "AdditiveCommutative",
+        "AdditiveAssociative",
+        "AdditiveInverse",
+        "AdditiveUnital",
+        "NoZeroDivisors",
+        "Distributive",
+    ]
+)
 
 
 class SuperModulesCategory(CovariantConstructionCategory, Category_over_base_ring):
@@ -113,6 +130,7 @@ class SuperModules(SuperModulesCategory):
 
         sage: TestSuite(Modules(ZZ).Super()).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::
@@ -157,6 +175,7 @@ class SuperModules(SuperModulesCategory):
         """
         from sage.categories.modules import Modules
         from sage.categories.fields import Fields
+
         base_ring = self.base_ring()
         if base_ring in Fields():
             return [Modules(base_ring)]

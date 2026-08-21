@@ -25,6 +25,7 @@ class Pandoc(Executable):
         sage: Pandoc().is_present()  # optional - pandoc
         FeatureTestResult('pandoc', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -33,8 +34,9 @@ class Pandoc(Executable):
             sage: isinstance(Pandoc(), Pandoc)
             True
         """
-        Executable.__init__(self, "pandoc", executable='pandoc',
-                            url='https://pandoc.org/')
+        Executable.__init__(
+            self, "pandoc", executable='pandoc', url='https://pandoc.org/'
+        )
 
 
 def all_features():

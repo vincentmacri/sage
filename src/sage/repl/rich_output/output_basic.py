@@ -40,7 +40,6 @@ To create new types of output, you must create your own subclass of
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.structure.sage_object import SageObject
 from sage.repl.rich_output.buffer import OutputBuffer
 
@@ -87,7 +86,6 @@ class OutputBase(SageObject):
 
 
 class OutputPlainText(OutputBase):
-
     def __init__(self, plain_text):
         """
         Plain Text Output.
@@ -151,7 +149,6 @@ class OutputPlainText(OutputBase):
 
 
 class OutputAsciiArt(OutputBase):
-
     def __init__(self, ascii_art):
         """
         ASCII Art Output.
@@ -191,9 +188,11 @@ class OutputAsciiArt(OutputBase):
             sage: OutputAsciiArt.example().ascii_art.get_str()
             '[                        *   *   *    * ]\n[      **   **   *    *  *   *  *    *  ]\n[ ***, * , *  , **, ** , *, * , * , *   ]'
         """
-        return cls('[                        *   *   *    * ]\n'
-                   '[      **   **   *    *  *   *  *    *  ]\n'
-                   '[ ***, * , *  , **, ** , *, * , * , *   ]')
+        return cls(
+            '[                        *   *   *    * ]\n'
+            '[      **   **   *    *  *   *  *    *  ]\n'
+            '[ ***, * , *  , **, ** , *, * , * , *   ]'
+        )
 
     def print_to_stdout(self):
         """
@@ -214,7 +213,6 @@ class OutputAsciiArt(OutputBase):
 
 
 class OutputUnicodeArt(OutputBase):
-
     def __init__(self, unicode_art):
         """
         Unicode Art Output.
@@ -263,9 +261,7 @@ class OutputUnicodeArt(OutputBase):
             ⎜  3  -1   0⎟
             ⎝ -1  -1   0⎠
         """
-        return cls('⎛-11   0   1⎞\n'
-                   '⎜  3  -1   0⎟\n'
-                   '⎝ -1  -1   0⎠')
+        return cls('⎛-11   0   1⎞\n⎜  3  -1   0⎟\n⎝ -1  -1   0⎠')
 
     def print_to_stdout(self):
         """
@@ -286,7 +282,6 @@ class OutputUnicodeArt(OutputBase):
 
 
 class OutputLatex(OutputBase):
-
     def __init__(self, latex):
         """
         LaTeX Output.
@@ -331,8 +326,7 @@ class OutputLatex(OutputBase):
             sage: rich_output.display_equation()
             '\\begin{equation}\n1\n\\end{equation}'
         """
-        return '\n'.join([r'\begin{equation}', self.latex.get_str(),
-                          r'\end{equation}'])
+        return '\n'.join([r'\begin{equation}', self.latex.get_str(), r'\end{equation}'])
 
     def inline_equation(self):
         r"""
@@ -371,8 +365,10 @@ class OutputLatex(OutputBase):
             sage: OutputLatex.example().latex.get_str()
             '\\newcommand{\\Bold}[1]{\\mathbf{#1}}\\int \\sin\\left(x\\right)\\,{d x}'
         """
-        return cls(r'\newcommand{\Bold}[1]{\mathbf{#1}}'
-                   r'\int \sin\left(x\right)\,{d x}')
+        return cls(
+            r'\newcommand{\Bold}[1]{\mathbf{#1}}'
+            r'\int \sin\left(x\right)\,{d x}'
+        )
 
     def print_to_stdout(self):
         r"""

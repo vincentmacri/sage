@@ -169,6 +169,7 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
 
         sage: TestSuite(Z).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, simplicial_complex):
         """
@@ -186,14 +187,20 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
         if simplicial_complex:
             if isinstance(simplicial_complex, MomentAngleComplex):
                 # Allows for copy constructor
-                immutable_complex = SimplicialComplex(simplicial_complex._simplicial_complex, immutable=True)
+                immutable_complex = SimplicialComplex(
+                    simplicial_complex._simplicial_complex, immutable=True
+                )
             elif not isinstance(simplicial_complex, SimplicialComplex):
                 # Try to create a SimplicialComplex out of simplicial_complex
                 # in case that simplicial_complex is a list of facets, or
                 # something that can generate a SimplicialComplex
-                immutable_complex = SimplicialComplex(simplicial_complex, immutable=True)
+                immutable_complex = SimplicialComplex(
+                    simplicial_complex, immutable=True
+                )
             elif simplicial_complex.is_mutable():
-                immutable_complex = SimplicialComplex(simplicial_complex, immutable=True)
+                immutable_complex = SimplicialComplex(
+                    simplicial_complex, immutable=True
+                )
             else:
                 immutable_complex = simplicial_complex
         else:
@@ -217,9 +224,10 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
         circle = simplicial_complexes.Sphere(1)
 
         # A dictionary of components indexed by facets
-        self._components = {facet: [disk if j in facet else circle
-                                    for j in vertices]
-                            for facet in self._simplicial_complex.maximal_faces()}
+        self._components = {
+            facet: [disk if j in facet else circle for j in vertices]
+            for facet in self._simplicial_complex.maximal_faces()
+        }
 
     @lazy_attribute
     def _moment_angle_complex(self):
@@ -492,13 +500,27 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
             for x in combinations(vertices, j):
                 S = self._simplicial_complex.generated_subcomplex(x)
                 if in_field:
-                    invfac.append(S.homology(i - j - 1, base_ring=base_ring,
-                                             cohomology=cohomology, algorithm=algorithm,
-                                             verbose=verbose, reduced=True).dimension())
+                    invfac.append(
+                        S.homology(
+                            i - j - 1,
+                            base_ring=base_ring,
+                            cohomology=cohomology,
+                            algorithm=algorithm,
+                            verbose=verbose,
+                            reduced=True,
+                        ).dimension()
+                    )
                 else:
-                    invfac.extend(S.homology(i - j - 1, base_ring=base_ring,
-                                             cohomology=cohomology, algorithm=algorithm,
-                                             verbose=verbose, reduced=True)._original_invts)
+                    invfac.extend(
+                        S.homology(
+                            i - j - 1,
+                            base_ring=base_ring,
+                            cohomology=cohomology,
+                            algorithm=algorithm,
+                            verbose=verbose,
+                            reduced=True,
+                        )._original_invts
+                    )
 
         if in_field:
             return HomologyGroup(sum(invfac), base_ring)
@@ -506,8 +528,15 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
         m = len(invfac)
         return HomologyGroup(m, base_ring, invfac)
 
-    def homology(self, dim=None, base_ring=ZZ, cohomology=False,
-                 algorithm='pari', verbose=False, reduced=True) -> dict:
+    def homology(
+        self,
+        dim=None,
+        base_ring=ZZ,
+        cohomology=False,
+        algorithm='pari',
+        verbose=False,
+        reduced=True,
+    ) -> dict:
         r"""
         The (reduced) homology of ``self``.
 
@@ -637,11 +666,21 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
         else:
             dims = range(self.dimension() + 1)
 
-        return {i: self._homology_group(i, base_ring=base_ring, cohomology=cohomology,
-                                        algorithm=algorithm, verbose=verbose, reduced=reduced) for i in dims}
+        return {
+            i: self._homology_group(
+                i,
+                base_ring=base_ring,
+                cohomology=cohomology,
+                algorithm=algorithm,
+                verbose=verbose,
+                reduced=reduced,
+            )
+            for i in dims
+        }
 
-    def cohomology(self, dim=None, base_ring=ZZ, algorithm='pari',
-                   verbose=False, reduced=True) -> dict:
+    def cohomology(
+        self, dim=None, base_ring=ZZ, algorithm='pari', verbose=False, reduced=True
+    ) -> dict:
         r"""
         The reduced cohomology of ``self``.
 
@@ -669,8 +708,14 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
             sage: Z.cohomology() == product_of_spheres.cohomology()  # long time
             True
         """
-        return self.homology(dim=dim, cohomology=True, base_ring=base_ring,
-                             algorithm=algorithm, verbose=verbose, reduced=reduced)
+        return self.homology(
+            dim=dim,
+            cohomology=True,
+            base_ring=base_ring,
+            algorithm=algorithm,
+            verbose=verbose,
+            reduced=reduced,
+        )
 
     def betti(self, dim=None) -> dict:
         r"""
@@ -733,8 +778,7 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
             1
         """
         sc = self.simplicial_complex()
-        return (ZZ.one() if sc.dimension() + 1 == len(sc.vertices())
-                else ZZ.zero())
+        return ZZ.one() if sc.dimension() + 1 == len(sc.vertices()) else ZZ.zero()
 
     def product(self, other):
         """
@@ -760,7 +804,9 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
             sage: Z.product(M) == MomentAngleComplex(X*Y)
             True
         """
-        simplicial_complex = self._simplicial_complex.join(other._simplicial_complex, rename_vertices=True)
+        simplicial_complex = self._simplicial_complex.join(
+            other._simplicial_complex, rename_vertices=True
+        )
         return MomentAngleComplex(simplicial_complex)
 
     def has_trivial_lowest_deg_massey_product(self) -> bool:
@@ -812,10 +858,29 @@ class MomentAngleComplex(UniqueRepresentation, SageObject):
             Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (4, 5), (1, 6)]),
             Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (4, 5), (1, 6), (2, 6)]),
             Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (4, 5), (1, 6), (4, 6)]),
-            Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (4, 5), (1, 6), (2, 6), (4, 6)]),
-            Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (3, 4), (2, 6), (1, 6), (4, 5)]),
-            Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (3, 4), (2, 6), (1, 6), (4, 5), (4, 6)]),
-            Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (3, 4), (2, 6), (4, 5), (4, 6)]),
+            Graph(
+                [(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (4, 5), (1, 6), (2, 6), (4, 6)]
+            ),
+            Graph(
+                [(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (3, 4), (2, 6), (1, 6), (4, 5)]
+            ),
+            Graph(
+                [
+                    (1, 2),
+                    (1, 4),
+                    (2, 3),
+                    (3, 5),
+                    (5, 6),
+                    (3, 4),
+                    (2, 6),
+                    (1, 6),
+                    (4, 5),
+                    (4, 6),
+                ]
+            ),
+            Graph(
+                [(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (3, 4), (2, 6), (4, 5), (4, 6)]
+            ),
             Graph([(1, 2), (1, 4), (2, 3), (3, 5), (5, 6), (3, 4), (2, 6), (4, 6)]),
         ]
 

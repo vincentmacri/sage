@@ -38,6 +38,7 @@ class JmolData(SageObject):
         Create an animated image file (GIF) if spin is on and put data
         extracted from a file into a variable/string/structure to return
     """
+
     def __init__(self):
         """
         EXAMPLES:
@@ -63,11 +64,15 @@ class JmolData(SageObject):
             <... 'bool'>
         """
         try:
-            version = bytes_to_str(subprocess.check_output(['java', '-version'], stderr=subprocess.STDOUT))
+            version = bytes_to_str(
+                subprocess.check_output(['java', '-version'], stderr=subprocess.STDOUT)
+            )
         except (subprocess.CalledProcessError, OSError):
             return False
 
-        java_version_number = int(re.sub(r'.*version "(0\.|1\.)?(\d*)[\s\S]*', r'\2', version, flags=re.S))
+        java_version_number = int(
+            re.sub(r'.*version "(0\.|1\.)?(\d*)[\s\S]*', r'\2', version, flags=re.S)
+        )
         return java_version_number >= 7
 
     def jmolpath(self):
@@ -103,13 +108,15 @@ class JmolData(SageObject):
 
         return self.is_jvm_available()
 
-    def export_image(self,
-                     targetfile,
-                     datafile,  # name (path) of data file Jmol can read or script file telling it what to read or load
-                     datafile_cmd='script',  # "script" or "load"
-                     image_type='PNG',  # PNG, JPG, GIF
-                     figsize=5,
-                     **kwds):
+    def export_image(
+        self,
+        targetfile,
+        datafile,  # name (path) of data file Jmol can read or script file telling it what to read or load
+        datafile_cmd='script',  # "script" or "load"
+        image_type='PNG',  # PNG, JPG, GIF
+        figsize=5,
+        **kwds,
+    ):
         r"""
         This executes JmolData.jar to make an image file.
 
@@ -182,7 +189,7 @@ class JmolData(SageObject):
         target_native = targetfile
 
         launchscript = ""
-        if (datafile_cmd != 'script'):
+        if datafile_cmd != 'script':
             launchscript = "load "
         launchscript = launchscript + datafile
 
@@ -195,10 +202,27 @@ class JmolData(SageObject):
             env = dict(os.environ)
             env['LC_ALL'] = 'C'
             env['LANG'] = 'C'
-            subprocess.call(["java", "-Xmx512m", "-Djava.awt.headless=true",
-                             "-jar", jmolpath, "-iox", "-g", size_arg,
-                             "-J", launchscript, "-j", imagescript],
-                            stdout=jout, stderr=jout, env=env)
+            subprocess.call(
+                [
+                    "java",
+                    "-Xmx512m",
+                    "-Djava.awt.headless=true",
+                    "-jar",
+                    jmolpath,
+                    "-iox",
+                    "-g",
+                    size_arg,
+                    "-J",
+                    launchscript,
+                    "-j",
+                    imagescript,
+                ],
+                stdout=jout,
+                stderr=jout,
+                env=env,
+            )
         if not os.path.isfile(targetfile):
-            raise RuntimeError(f"Jmol failed to create file {targetfile}: {Path(scratchout).read_text()}")
+            raise RuntimeError(
+                f"Jmol failed to create file {targetfile}: {Path(scratchout).read_text()}"
+            )
         os.unlink(scratchout)

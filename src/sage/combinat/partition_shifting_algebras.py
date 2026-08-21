@@ -12,6 +12,7 @@ AUTHORS:
 
 - Matthew Lancellotti, George H. Seelinger (2018): initial version
 """
+
 # ****************************************************************************
 #  Copyright (C) 2018 Matthew Lancellotti <mvlancellotti@gmail.com>
 #                     George H. Seelinger <ghseeli@gmail.com>
@@ -29,7 +30,9 @@ from sage.combinat.sf.sf import SymmetricFunctions
 from sage.misc.fast_methods import Singleton
 from sage.misc.cachefunc import cached_method
 from sage.rings.rational_field import QQ
-from sage.rings.semirings.non_negative_integer_semiring import NonNegativeIntegerSemiring
+from sage.rings.semirings.non_negative_integer_semiring import (
+    NonNegativeIntegerSemiring,
+)
 from sage.rings.integer_ring import ZZ
 
 
@@ -61,8 +64,7 @@ class ShiftingSequenceSpace(Singleton, Parent):
             sage: from sage.combinat.partition_shifting_algebras import ShiftingSequenceSpace
             sage: S = ShiftingSequenceSpace()
         """
-        Parent.__init__(self, facade=(tuple,),
-                        category=Sets().Infinite().Facade())
+        Parent.__init__(self, facade=(tuple,), category=Sets().Infinite().Facade())
 
     def __contains__(self, seq):
         r"""
@@ -85,8 +87,11 @@ class ShiftingSequenceSpace(Singleton, Parent):
             sage: (0.5, 1) in S
             False
         """
-        return (isinstance(seq, tuple) and all(i in ZZ for i in seq)
-                and (not seq or seq[-1]))
+        return (
+            isinstance(seq, tuple)
+            and all(i in ZZ for i in seq)
+            and (not seq or seq[-1])
+        )
 
     def check(self, seq):
         r"""
@@ -246,16 +251,20 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
         """
         indices = ShiftingSequenceSpace()
         cat = Algebras(base_ring).WithBasis()
-        CombinatorialFreeModule.__init__(self, base_ring, indices,
-                                         prefix=prefix,
-                                         bracket=False, category=cat)
+        CombinatorialFreeModule.__init__(
+            self, base_ring, indices, prefix=prefix, bracket=False, category=cat
+        )
 
         # Setup default conversions
         sym = SymmetricFunctions(base_ring)
         self._sym_h = sym.h()
         self._sym_s = sym.s()
-        self._sym_h.register_conversion(self.module_morphism(self._supp_to_h, codomain=self._sym_h))
-        self._sym_s.register_conversion(self.module_morphism(self._supp_to_s, codomain=self._sym_s))
+        self._sym_h.register_conversion(
+            self.module_morphism(self._supp_to_h, codomain=self._sym_h)
+        )
+        self._sym_s.register_conversion(
+            self.module_morphism(self._supp_to_s, codomain=self._sym_s)
+        )
 
     def _repr_(self):
         r"""
@@ -311,7 +320,7 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
         index = len(seq) - 1
         while index >= 0 and seq[index] == 0:
             index -= 1
-        seq = seq[:index + 1]
+        seq = seq[: index + 1]
         self._indices.check(seq)
         return seq
 
@@ -357,7 +366,7 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
         index = len(x) - 1
         while index >= 0 and x[index] == 0:
             index -= 1
-        return self.monomial(tuple(x[:index + 1]))
+        return self.monomial(tuple(x[: index + 1]))
 
     @cached_method
     def one_basis(self):
@@ -425,15 +434,18 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
             sage: S._supp_to_s(S([3,2,0]).support_of_term())
             s[3, 2]
         """
+
         def number_of_noninversions(lis):
-            return sum(1 for i, val in enumerate(lis)
-                       for j in range(i + 1, len(lis))
-                       if val < lis[j])  # i < j is already enforced
+            return sum(
+                1
+                for i, val in enumerate(lis)
+                for j in range(i + 1, len(lis))
+                if val < lis[j]
+            )  # i < j is already enforced
 
         rho = list(range(len(gamma) - 1, -1, -1))
         combined = [g + r for g, r in zip(gamma, rho)]
-        if len(set(combined)) == len(combined) and all(e >= 0
-                                                       for e in combined):
+        if len(set(combined)) == len(combined) and all(e >= 0 for e in combined):
             sign = (-1) ** number_of_noninversions(combined)
             sort_combined = sorted(combined, reverse=True)
             new_gamma = [sc - r for sc, r in zip(sort_combined, rho)]
@@ -496,8 +508,7 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
             sage: op(2*m[4,3] + 5*m[2,2] + 7*m[2]) == 2*m[5, 2] + 5*m[3, 1]
             True
         """
-        module_morphism = self.module_morphism(support_map,
-                                               codomain=codomain)
+        module_morphism = self.module_morphism(support_map, codomain=codomain)
         codomain.register_conversion(module_morphism)
 
     def ij(self, i, j):
@@ -523,7 +534,9 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
         if j not in NonNegativeIntegerSemiring():
             raise ValueError('j (={}) must be a natural number'.format(j))
         if not i < j:
-            raise ValueError('index j (={j}) must be greater than index i (={i})'.format(i=i, j=j))
+            raise ValueError(
+                'index j (={j}) must be greater than index i (={i})'.format(i=i, j=j)
+            )
         seq = [0] * (max(i, j) + 1)
         seq[i] = 1
         seq[j] = -1
@@ -559,6 +572,7 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
             """
             P = self.parent()
             if isinstance(operand, (list, tuple, Composition, Partition)):
+
                 def add_lists(x, y):
                     # Make x have the longer length
                     if len(x) < len(y):
@@ -567,12 +581,13 @@ class ShiftingOperatorAlgebra(CombinatorialFreeModule):
                     for i, val in enumerate(y):
                         x[i] += val
                     return x
-                return [(add_lists(index, operand), coeff)
-                        for index, coeff in self]
+
+                return [(add_lists(index, operand), coeff) for index, coeff in self]
 
             R = self.base_ring()
-            lift_operand = P._from_dict({P._prepare_seq(p): R(c)
-                                         for p, c in operand}, coerce=False)
+            lift_operand = P._from_dict(
+                {P._prepare_seq(p): R(c) for p, c in operand}, coerce=False
+            )
             result = self * lift_operand
             operand_parent = operand.parent()
             try:

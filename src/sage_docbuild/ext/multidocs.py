@@ -18,6 +18,7 @@ More precisely this extension ensures the correct merging of
 - the javascript index
 - the citations
 """
+
 import os
 import pickle
 import shutil
@@ -53,11 +54,15 @@ def merge_environment(app, env):
             todos = docenv.domaindata['todo'].get('todos', dict())
             citations = docenv.domaindata['citation'].get('citations', dict())
             indexentries = docenv.domaindata['index'].get('entries', dict())
-            logger.info(" %s todos, %s index, %s citations" % (
+            logger.info(
+                " %s todos, %s index, %s citations"
+                % (
                     sum(len(t) for t in todos.values()),
                     len(indexentries),
-                    len(citations)
-                    ), nonl=1)
+                    len(citations),
+                ),
+                nonl=1,
+            )
 
             # merge titles
             for t in docenv.titles:
@@ -93,15 +98,26 @@ def merge_environment(app, env):
             # merge the py:module indexes
             newmodules = {}
             from sphinx.domains.python import ModuleEntry
-            for ind,mod in docenv.domaindata['py']['modules'].items():
-                newmodules[ind] = ModuleEntry(fixpath(mod.docname), mod.node_id, mod.synopsis, mod.platform, mod.deprecated)
+
+            for ind, mod in docenv.domaindata['py']['modules'].items():
+                newmodules[ind] = ModuleEntry(
+                    fixpath(mod.docname),
+                    mod.node_id,
+                    mod.synopsis,
+                    mod.platform,
+                    mod.deprecated,
+                )
             env.domaindata['py']['modules'].update(newmodules)
             logger.info(", %s modules" % (len(newmodules)))
-    logger.info('... done (%s todos, %s index, %s citations, %s modules)' % (
+    logger.info(
+        '... done (%s todos, %s index, %s citations, %s modules)'
+        % (
             sum(len(t) for t in env.domaindata['todo']['todos'].values()),
             len(env.domaindata['index']['entries']),
             len(env.domaindata['citation']['citations']),
-            len(env.domaindata['py']['modules'])))
+            len(env.domaindata['py']['modules']),
+        )
+    )
     write_citations(app, env.domaindata['citation']['citations'])
 
 
@@ -110,8 +126,8 @@ def get_env(app, curdoc):
     Get the environment of a sub-doc from the pickle
     """
     from sphinx.application import ENV_PICKLE_FILENAME
-    filename = os.path.join(
-        app.env.doctreedir, curdoc, ENV_PICKLE_FILENAME)
+
+    filename = os.path.join(app.env.doctreedir, curdoc, ENV_PICKLE_FILENAME)
     try:
         f = open(filename, 'rb')
     except OSError:
@@ -141,22 +157,22 @@ def merge_js_index(app):
         if index is not None:
             # merge the mappings
             logger.info(" %s js index entries" % (len(index._mapping)))
-            for (ref, locs) in index._mapping.items():
+            for ref, locs in index._mapping.items():
                 newmapping = set(map(fixpath, locs))
                 if ref in mapping:
                     newmapping = mapping[ref] | newmapping
                 mapping[str(ref)] = newmapping
             # merge the titles
             titles = app.builder.indexer._titles
-            for (res, title) in index._titles.items():
+            for res, title in index._titles.items():
                 titles[fixpath(res)] = title
             # merge the alltitles
             alltitles = app.builder.indexer._all_titles
-            for (res, alltitle) in index._all_titles.items():
+            for res, alltitle in index._all_titles.items():
                 alltitles[fixpath(res)] = alltitle
             # merge the filenames
             filenames = app.builder.indexer._filenames
-            for (res, filename) in index._filenames.items():
+            for res, filename in index._filenames.items():
                 filenames[fixpath(res)] = fixpath(filename)
             # TODO: merge indexer._objtypes, indexer._objnames as well
 
@@ -166,7 +182,7 @@ def merge_js_index(app):
                 os.symlink(os.path.join("..", curdoc, "_sources"), dest)
     logger.info('... done (%s js index entries)' % (len(mapping)))
     logger.info(bold('Writing js search indexes...'), nonl=1)
-    return [] # no extra page to setup
+    return []  # no extra page to setup
 
 
 def get_js_index(app, curdoc):
@@ -174,9 +190,9 @@ def get_js_index(app, curdoc):
     Get the JS index of a sub-doc from the file
     """
     from sphinx.search import IndexBuilder
+
     # FIXME: find the correct lang
-    indexer = IndexBuilder(app.env, 'en',
-                           app.config.html_search_options, scoring=None)
+    indexer = IndexBuilder(app.env, 'en', app.config.html_search_options, scoring=None)
     indexfile = os.path.join(app.outdir, curdoc, 'searchindex.js')
     try:
         f = open(indexfile)
@@ -189,8 +205,7 @@ def get_js_index(app, curdoc):
     return indexer
 
 
-mustbefixed = ['search', 'genindex', 'genindex-all',
-               'py-modindex', 'searchindex.js']
+mustbefixed = ['search', 'genindex', 'genindex-all', 'py-modindex', 'searchindex.js']
 
 
 def fix_path_html(app, pagename, templatename, ctx, event_arg):
@@ -213,6 +228,7 @@ def fix_path_html(app, pagename, templatename, ctx, event_arg):
         if otheruri in mustbefixed:
             otheruri = os.path.join("..", otheruri)
         return old_pathto(otheruri, *args, **opts)
+
     ctx['pathto'] = sage_pathto
 
 
@@ -242,6 +258,7 @@ def write_citations(app: Sphinx, citations):
     Pickle the citation in a file.
     """
     from sage.misc.temporary_file import atomic_write
+
     outdir = citation_dir(app)
     with atomic_write(outdir / CITE_FILENAME, binary=True) as f:
         pickle.dump(citations, f)
@@ -262,7 +279,7 @@ def fetch_citation(app: Sphinx, env):
     logger.info("done (%s citations)." % len(cache))
     cite = env.domaindata['citation'].get('citations', dict())
     for ind, (path, tag, lineno) in cache.items():
-        if ind not in cite: # don't override local citation
+        if ind not in cite:  # don't override local citation
             cite[ind] = (os.path.join("..", path), tag, lineno)
 
 
@@ -280,6 +297,7 @@ def init_subdoc(app):
             # Monkey patch index fetching to silence warning about broken index
             def load_indexer(docnames):
                 logger.info(bold('skipping loading of indexes... '), nonl=1)
+
             app.builder.load_indexer = load_indexer
 
     else:
@@ -309,8 +327,9 @@ def init_subdoc(app):
                     os.unlink(static_dir)
             # This ensures that the symlink we are creating points to an
             # existing directory. See trac #33608.
-            os.makedirs(os.path.join(app.builder.outdir, master_static_dir),
-                        exist_ok=True)
+            os.makedirs(
+                os.path.join(app.builder.outdir, master_static_dir), exist_ok=True
+            )
             os.symlink(master_static_dir, static_dir)
 
         app.builder.copy_static_files = link_static_files
@@ -324,6 +343,8 @@ def init_subdoc(app):
 def setup(app: Sphinx):
     app.add_config_value('multidocs_is_master', True, True)
     app.add_config_value('multidocs_subdoc_list', [], True)
-    app.add_config_value('multidoc_first_pass', 0, False)   # 1 = deactivate the loading of the inventory
+    app.add_config_value(
+        'multidoc_first_pass', 0, False
+    )  # 1 = deactivate the loading of the inventory
     app.connect('builder-inited', init_subdoc)
     return {'parallel_read_safe': True}

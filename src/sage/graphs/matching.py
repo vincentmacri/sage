@@ -53,8 +53,9 @@ from sage.rings.integer import Integer
 from sage.graphs.views import EdgesView
 
 
-def has_perfect_matching(G, algorithm='Edmonds', solver=None, verbose=0,
-                         *, integrality_tolerance=1e-3):
+def has_perfect_matching(
+    G, algorithm='Edmonds', solver=None, verbose=0, *, integrality_tolerance=1e-3
+):
     r"""
     Return whether the graph has a perfect matching.
 
@@ -133,18 +134,21 @@ def has_perfect_matching(G, algorithm='Edmonds', solver=None, verbose=0,
         return False
 
     if algorithm == "Edmonds":
-        return len(G) == 2*G.matching(value_only=True,
-                                      use_edge_labels=False,
-                                      algorithm='Edmonds')
+        return len(G) == 2 * G.matching(
+            value_only=True, use_edge_labels=False, algorithm='Edmonds'
+        )
     if algorithm == "LP_matching":
-        return len(G) == 2*G.matching(value_only=True,
-                                      use_edge_labels=False,
-                                      algorithm='LP',
-                                      solver=solver,
-                                      verbose=verbose,
-                                      integrality_tolerance=integrality_tolerance)
+        return len(G) == 2 * G.matching(
+            value_only=True,
+            use_edge_labels=False,
+            algorithm='LP',
+            solver=solver,
+            verbose=verbose,
+            integrality_tolerance=integrality_tolerance,
+        )
     if algorithm == "LP":
         from sage.numerical.mip import MixedIntegerLinearProgram, MIPSolverException
+
         p = MixedIntegerLinearProgram(solver=solver)
         b = p.new_variable(binary=True)
         for v in G:
@@ -160,8 +164,16 @@ def has_perfect_matching(G, algorithm='Edmonds', solver=None, verbose=0,
     raise ValueError('algorithm must be set to "Edmonds", "LP_matching" or "LP"')
 
 
-def is_bicritical(G, matching=None, algorithm='Edmonds', coNP_certificate=False,
-                  solver=None, verbose=0, *, integrality_tolerance=0.001):
+def is_bicritical(
+    G,
+    matching=None,
+    algorithm='Edmonds',
+    coNP_certificate=False,
+    solver=None,
+    verbose=0,
+    *,
+    integrality_tolerance=0.001,
+):
     r"""
     Check if the graph is bicritical.
 
@@ -421,9 +433,14 @@ def is_bicritical(G, matching=None, algorithm='Edmonds', coNP_certificate=False,
                 return (False, set(component[:2]))
 
         # Check if there are at least two even components
-        components_of_even_order = [component for component in components if len(component) % 2 == 0]
+        components_of_even_order = [
+            component for component in components if len(component) % 2 == 0
+        ]
         if len(components_of_even_order) > 1:
-            return (False, set([components_of_even_order[0][0], components_of_even_order[1][0]]))
+            return (
+                False,
+                set([components_of_even_order[0][0], components_of_even_order[1][0]]),
+            )
 
         # Or otherwise there is at most one even component with at least two trivial odd components
         u, v = None, None
@@ -447,6 +464,7 @@ def is_bicritical(G, matching=None, algorithm='Edmonds', coNP_certificate=False,
         return (False, set(list(B)[:2]))
 
     from sage.graphs.graph import Graph
+
     if matching:
         # The input matching must be a valid perfect matching of the graph
         M = Graph(matching)
@@ -456,12 +474,18 @@ def is_bicritical(G, matching=None, algorithm='Edmonds', coNP_certificate=False,
         if any(not G.has_edge(edge) for edge in M.edge_iterator()):
             raise ValueError("the input is not a matching of the graph")
 
-        if (G.order() != M.order()) or (G.order() != 2*M.size()):
+        if (G.order() != M.order()) or (G.order() != 2 * M.size()):
             raise ValueError("the input is not a perfect matching of the graph")
     else:
         # A maximum matching of the graph is computed
-        M = Graph(G.matching(algorithm=algorithm, solver=solver, verbose=verbose,
-                             integrality_tolerance=integrality_tolerance))
+        M = Graph(
+            G.matching(
+                algorithm=algorithm,
+                solver=solver,
+                verbose=verbose,
+                integrality_tolerance=integrality_tolerance,
+            )
+        )
 
         # It must be a perfect matching
         if G.order() != M.order():
@@ -486,8 +510,15 @@ def is_bicritical(G, matching=None, algorithm='Edmonds', coNP_certificate=False,
     return (True, None) if coNP_certificate else True
 
 
-def is_factor_critical(G, matching=None, algorithm='Edmonds', solver=None, verbose=0,
-                       *, integrality_tolerance=0.001):
+def is_factor_critical(
+    G,
+    matching=None,
+    algorithm='Edmonds',
+    solver=None,
+    verbose=0,
+    *,
+    integrality_tolerance=0.001,
+):
     r"""
     Check whether the graph is factor-critical.
 
@@ -608,11 +639,16 @@ def is_factor_critical(G, matching=None, algorithm='Edmonds', solver=None, verbo
 
     # The graph must have an odd number of vertices, be 2-edge connected, so
     # without bridges, and not bipartite
-    if (not G.order() % 2 or not G.is_connected() or
-            list(G.bridges()) or G.is_bipartite()):
+    if (
+        not G.order() % 2
+        or not G.is_connected()
+        or list(G.bridges())
+        or G.is_bipartite()
+    ):
         return False
 
     from sage.graphs.graph import Graph
+
     if matching:
         # We check that the input matching is a valid near perfect matching
         # of the graph.
@@ -621,12 +657,18 @@ def is_factor_critical(G, matching=None, algorithm='Edmonds', solver=None, verbo
             raise ValueError("the input is not a matching")
         if not M.is_subgraph(G, induced=False):
             raise ValueError("the input is not a matching of the graph")
-        if (G.order() != M.order() + 1) or (G.order() != 2*M.size() + 1):
+        if (G.order() != M.order() + 1) or (G.order() != 2 * M.size() + 1):
             raise ValueError("the input is not a near perfect matching of the graph")
     else:
         # We compute a maximum matching of the graph
-        M = Graph(G.matching(algorithm=algorithm, solver=solver, verbose=verbose,
-                             integrality_tolerance=integrality_tolerance))
+        M = Graph(
+            G.matching(
+                algorithm=algorithm,
+                solver=solver,
+                verbose=verbose,
+                integrality_tolerance=integrality_tolerance,
+            )
+        )
 
         # It must be a near-perfect matching
         if G.order() != M.order() + 1:
@@ -640,6 +682,7 @@ def is_factor_critical(G, matching=None, algorithm='Edmonds', solver=None, verbo
 
     # We virtually build an M-alternating tree T
     from queue import Queue
+
     Q = Queue()
     Q.put(u)
     even = set([u])
@@ -690,8 +733,16 @@ def is_factor_critical(G, matching=None, algorithm='Edmonds', solver=None, verbo
     return len(even) == G.order()
 
 
-def is_matching_covered(G, matching=None, algorithm='Edmonds', coNP_certificate=False,
-                        solver=None, verbose=0, *, integrality_tolerance=0.001):
+def is_matching_covered(
+    G,
+    matching=None,
+    algorithm='Edmonds',
+    coNP_certificate=False,
+    solver=None,
+    verbose=0,
+    *,
+    integrality_tolerance=0.001,
+):
     r"""
     Check if the graph is matching covered.
 
@@ -979,6 +1030,7 @@ def is_matching_covered(G, matching=None, algorithm='Edmonds', coNP_certificate=
         return (True, None) if coNP_certificate else True
 
     from sage.graphs.graph import Graph
+
     if matching:
         # The input matching must be a valid perfect matching of the graph
         M = Graph(matching)
@@ -989,12 +1041,18 @@ def is_matching_covered(G, matching=None, algorithm='Edmonds', coNP_certificate=
         if any(not G.has_edge(edge) for edge in M.edge_iterator()):
             raise ValueError("the input is not a matching of the graph")
 
-        if (G.order() != M.order()) or (G.order() != 2*M.size()):
+        if (G.order() != M.order()) or (G.order() != 2 * M.size()):
             raise ValueError("the input is not a perfect matching of the graph")
     else:
         # A maximum matching of the graph is computed
-        M = Graph(G.matching(algorithm=algorithm, solver=solver, verbose=verbose,
-                             integrality_tolerance=integrality_tolerance))
+        M = Graph(
+            G.matching(
+                algorithm=algorithm,
+                solver=solver,
+                verbose=verbose,
+                integrality_tolerance=integrality_tolerance,
+            )
+        )
 
         # It must be a perfect matching
         if G.order() != M.order():
@@ -1016,6 +1074,7 @@ def is_matching_covered(G, matching=None, algorithm='Edmonds', coNP_certificate=
             color[u] = 0 if u in A else 1
 
         from sage.graphs.digraph import DiGraph
+
         H = DiGraph()
 
         for u, v in G.edge_iterator(labels=False):
@@ -1073,9 +1132,16 @@ def is_matching_covered(G, matching=None, algorithm='Edmonds', coNP_certificate=
     return (True, None) if coNP_certificate else True
 
 
-def matching(G, value_only=False, algorithm='Edmonds',
-             use_edge_labels=False, solver=None, verbose=0,
-             *, integrality_tolerance=1e-3):
+def matching(
+    G,
+    value_only=False,
+    algorithm='Edmonds',
+    use_edge_labels=False,
+    solver=None,
+    verbose=0,
+    *,
+    integrality_tolerance=1e-3,
+):
     r"""
     Return a maximum weighted matching of the graph represented by the list
     of its edges.
@@ -1237,6 +1303,7 @@ def matching(G, value_only=False, algorithm='Edmonds',
 
     if algorithm == "Edmonds":
         import networkx
+
         g = networkx.Graph()
         if use_edge_labels:
             for (u, v), w in W.items():
@@ -1251,12 +1318,15 @@ def matching(G, value_only=False, algorithm='Edmonds',
             return Integer(len(d))
 
         from sage.graphs.graph import Graph
-        return EdgesView(Graph([(u, v, L[frozenset((u, v))]) for u, v in d],
-                               format='list_of_edges'))
+
+        return EdgesView(
+            Graph([(u, v, L[frozenset((u, v))]) for u, v in d], format='list_of_edges')
+        )
 
     if algorithm == "LP":
         g = G
         from sage.numerical.mip import MixedIntegerLinearProgram
+
         # returns the weight of an edge considering it may not be
         # weighted ...
         p = MixedIntegerLinearProgram(maximization=True, solver=solver)
@@ -1268,8 +1338,14 @@ def matching(G, value_only=False, algorithm='Edmonds',
         # for any vertex v, there is at most one edge incident to v in
         # the maximum matching
         for v in g:
-            p.add_constraint(p.sum(b[frozenset(e)] for e in G.edge_iterator(vertices=[v], labels=False)
-                                   if e[0] != e[1]), max=1)
+            p.add_constraint(
+                p.sum(
+                    b[frozenset(e)]
+                    for e in G.edge_iterator(vertices=[v], labels=False)
+                    if e[0] != e[1]
+                ),
+                max=1,
+            )
 
         p.solve(log=verbose)
         b = p.get_values(b, convert=bool, tolerance=integrality_tolerance)
@@ -1279,9 +1355,13 @@ def matching(G, value_only=False, algorithm='Edmonds',
             return Integer(sum(1 for fe in L if b[fe]))
 
         from sage.graphs.graph import Graph
-        return EdgesView(Graph([(u, v, L[frozenset((u, v))])
-                                for u, v in L if b[frozenset((u, v))]],
-                               format='list_of_edges'))
+
+        return EdgesView(
+            Graph(
+                [(u, v, L[frozenset((u, v))]) for u, v in L if b[frozenset((u, v))]],
+                format='list_of_edges',
+            )
+        )
 
     raise ValueError('algorithm must be set to either "Edmonds" or "LP"')
 
@@ -1562,6 +1642,7 @@ def M_alternating_even_mark(G, vertex, matching):
 
     # The input matching must be a valid matching of the graph
     from sage.graphs.graph import Graph
+
     M = Graph(matching)
     if any(d != 1 for d in M.degree()):
         raise ValueError("the input is not a matching")

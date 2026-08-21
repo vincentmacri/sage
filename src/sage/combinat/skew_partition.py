@@ -169,6 +169,7 @@ class SkewPartition(CombinatorialElement):
     partition `\lambda` and removing the partition `\mu` from the upper-left
     corner in English convention.
     """
+
     @staticmethod
     def __classcall_private__(cls, skp):
         """
@@ -195,8 +196,9 @@ class SkewPartition(CombinatorialElement):
             sage: skp = SkewPartition([[3,2,1],[2,1]])
             sage: TestSuite(skp).run()
         """
-        CombinatorialElement.__init__(self, parent,
-                [_Partitions(skp[0]), _Partitions(skp[1])])
+        CombinatorialElement.__init__(
+            self, parent, [_Partitions(skp[0]), _Partitions(skp[1])]
+        )
 
     def _repr_(self):
         """
@@ -283,8 +285,9 @@ class SkewPartition(CombinatorialElement):
         char = self.parent().options.latex_diagram_str
 
         from sage.combinat.output import tex_from_array
-        arr = [[char]*row_size for row_size in self[0]]
-        for i, skew_size in enumerate(self[1]): # This is always smaller by containment
+
+        arr = [[char] * row_size for row_size in self[0]]
+        for i, skew_size in enumerate(self[1]):  # This is always smaller by containment
             for j in range(skew_size):
                 arr[i][j] = None
         return tex_from_array(arr)
@@ -315,8 +318,9 @@ class SkewPartition(CombinatorialElement):
             return "{\\emptyset}"
 
         from sage.combinat.output import tex_from_array
-        arr = [["\\phantom{x}"]*row_size for row_size in self[0]]
-        for i, skew_size in enumerate(self[1]): # This is always smaller by containment
+
+        arr = [["\\phantom{x}"] * row_size for row_size in self[0]]
+        for i, skew_size in enumerate(self[1]):  # This is always smaller by containment
             for j in range(skew_size):
                 arr[i][j] = None
         return tex_from_array(arr)
@@ -347,9 +351,10 @@ class SkewPartition(CombinatorialElement):
             return "{\\emptyset}"
 
         from sage.combinat.output import tex_from_array
+
         char = self.parent().options.latex_marking_str
-        arr = [["\\phantom{x}"]*row_size for row_size in self[0]]
-        for i, skew_size in enumerate(self[1]): # This is always smaller by containment
+        arr = [["\\phantom{x}"] * row_size for row_size in self[0]]
+        for i, skew_size in enumerate(self[1]):  # This is always smaller by containment
             for j in range(skew_size):
                 arr[i][j] = char
         return tex_from_array(arr)
@@ -399,10 +404,10 @@ class SkewPartition(CombinatorialElement):
         s = ""
         for i in L:
             if len(self[1]) > i:
-                s += " "*self[1][i]
-                s += char*(self[0][i]-self[1][i])
+                s += " " * self[1][i]
+                s += char * (self[0][i] - self[1][i])
             else:
-                s += char*self[0][i]
+                s += char * self[0][i]
             s += "\n"
         return s[:-1]
 
@@ -439,6 +444,7 @@ class SkewPartition(CombinatorialElement):
             sage: SkewPartitions.options._reset()
         """
         from sage.typeset.ascii_art import AsciiArt
+
         return AsciiArt(self.diagram().splitlines())
 
     def _unicode_art_(self):
@@ -473,6 +479,7 @@ class SkewPartition(CombinatorialElement):
             ∅
         """
         from sage.typeset.unicode_art import UnicodeArt
+
         out, inn = self
         inn = inn + [0] * (len(out) - len(inn))
         if not any(self._list):
@@ -566,8 +573,8 @@ class SkewPartition(CombinatorialElement):
         """
         skp = self
         o = skp[0]
-        i = skp[1]+[0]*(len(skp[0])-len(skp[1]))
-        return [x[0]-x[1] for x in zip(o,i)]
+        i = skp[1] + [0] * (len(skp[0]) - len(skp[1]))
+        return [x[0] - x[1] for x in zip(o, i)]
 
     def size(self):
         """
@@ -628,6 +635,7 @@ class SkewPartition(CombinatorialElement):
         p, q = self
         if len(p) <= 1:
             from sage.rings.infinity import PlusInfinity
+
             return PlusInfinity()
         if len(q) == 0:
             return min(p)
@@ -709,7 +717,7 @@ class SkewPartition(CombinatorialElement):
         mu = self[1]
         l_out = len(lam)
         l_in = len(mu)
-        mu += [0]*(l_out-l_in)
+        mu += [0] * (l_out - l_in)
 
         if l_out == 0:
             return True
@@ -728,7 +736,7 @@ class SkewPartition(CombinatorialElement):
         v = u + 1
         v_test = True
         while v_test:
-            if v >= l_out or lam[v] != mu[v-1] + 1:
+            if v >= l_out or lam[v] != mu[v - 1] + 1:
                 v_test = False
             else:
                 v += 1
@@ -794,12 +802,12 @@ class SkewPartition(CombinatorialElement):
         if inner == []:
             if outer == []:
                 return []
-            return [(0,0)]
+            return [(0, 0)]
         icorners = [(0, inner[0])]
         nn = len(inner)
-        for i in range(1,nn):
-            if inner[i] != inner[i-1]:
-                icorners += [ (i, inner[i]) ]
+        for i in range(1, nn):
+            if inner[i] != inner[i - 1]:
+                icorners += [(i, inner[i])]
 
         icorners += [(nn, 0)]
         return icorners
@@ -920,20 +928,26 @@ class SkewPartition(CombinatorialElement):
             False
         """
         from sage.combinat.posets.posets import Poset
+
         # Getting the cover relations seems hard, so let's just compute
         # the comparison function.
         if orientation == "NW":
+
             def poset_le(u, v):
                 return u[0] >= v[0] and u[1] >= v[1]
         elif orientation == "NE":
+
             def poset_le(u, v):
                 return u[0] >= v[0] and u[1] <= v[1]
         elif orientation == "SE":
+
             def poset_le(u, v):
                 return u[0] <= v[0] and u[1] <= v[1]
         elif orientation == "SW":
+
             def poset_le(u, v):
                 return u[0] <= v[0] and u[1] >= v[1]
+
         return Poset((self.cells(), poset_le))
 
     def frobenius_rank(self):
@@ -998,9 +1012,8 @@ class SkewPartition(CombinatorialElement):
         """
         N = len(self[0])
         mu_betas = [x - j for j, x in enumerate(self[1])]
-        mu_betas.extend(- j for j in range(len(self[1]), N))
-        return sum(1 for i, x in enumerate(self[0])
-                   if (x - i) not in mu_betas)
+        mu_betas.extend(-j for j in range(len(self[1]), N))
+        return sum(1 for i, x in enumerate(self[0]) if (x - i) not in mu_betas)
 
     def cells(self):
         """
@@ -1019,8 +1032,7 @@ class SkewPartition(CombinatorialElement):
         outer = self.outer()
         inner = self.inner()[:]
         inner += [0] * (len(outer) - len(inner))
-        return [(i, j) for i, outi in enumerate(outer)
-                for j in range(inner[i], outi)]
+        return [(i, j) for i, outi in enumerate(outer) for j in range(inner[i], outi)]
 
     def to_list(self):
         """
@@ -1081,7 +1093,7 @@ class SkewPartition(CombinatorialElement):
                 else:
                     string = (i, j)
                 G.add_vertex(string)
-                #Check to see if there is a node to the right
+                # Check to see if there is a node to the right
                 if j != outer_i - 1:
                     if format == "string":
                         newstring = "%d,%d" % (i, j + 1)
@@ -1089,9 +1101,9 @@ class SkewPartition(CombinatorialElement):
                         newstring = (i, j + 1)
                     G.add_edge(string, newstring)
 
-                #Check to see if there is anything below
+                # Check to see if there is anything below
                 if i != len(outer) - 1:
-                    if outer[i+1] > j:
+                    if outer[i + 1] > j:
                         if format == "string":
                             newstring = "%d,%d" % (i + 1, j)
                         else:
@@ -1115,8 +1127,10 @@ class SkewPartition(CombinatorialElement):
         if self.inner().core(k) == self.outer().core(k):
             rqinner = self.inner().quotient(k)
             rqouter = self.outer().quotient(k)
-            return [ SkewPartitions()([rqouter[i],rqinner[i]]) for i in range(k) ]
-        raise ValueError("quotient map is only defined for skew partitions with inner and outer partitions having the same core")
+            return [SkewPartitions()([rqouter[i], rqinner[i]]) for i in range(k)]
+        raise ValueError(
+            "quotient map is only defined for skew partitions with inner and outer partitions having the same core"
+        )
 
     def rows_intersection_set(self):
         r"""
@@ -1134,9 +1148,12 @@ class SkewPartition(CombinatorialElement):
         inner = self.inner()
         inner += [0] * (len(outer) - len(inner))
 
-        res = [(i, j) for i, outi in enumerate(outer)
-               for j in range(outi)
-               if outi != inner[i]]
+        res = [
+            (i, j)
+            for i, outi in enumerate(outer)
+            for j in range(outi)
+            if outi != inner[i]
+        ]
         return Set(res)
 
     def columns_intersection_set(self):
@@ -1151,7 +1168,7 @@ class SkewPartition(CombinatorialElement):
             sage: skp.columns_intersection_set() == cells
             True
         """
-        res = [ (x[1], x[0]) for x in self.conjugate().rows_intersection_set()]
+        res = [(x[1], x[0]) for x in self.conjugate().rows_intersection_set()]
         return Set(res)
 
     def pieri_macdonald_coeffs(self):
@@ -1175,8 +1192,8 @@ class SkewPartition(CombinatorialElement):
         set_prod = self.rows_intersection_set() - self.columns_intersection_set()
         res = 1
         for s in set_prod:
-            res *= self.inner().arms_legs_coeff(s[0],s[1])
-            res /= self.outer().arms_legs_coeff(s[0],s[1])
+            res *= self.inner().arms_legs_coeff(s[0], s[1])
+            res /= self.outer().arms_legs_coeff(s[0], s[1])
         return res
 
     def k_conjugate(self, k):
@@ -1192,7 +1209,7 @@ class SkewPartition(CombinatorialElement):
             sage: SkewPartition([[3,2,1],[2,1]]).k_conjugate(5)
             [3, 2, 1] / [2, 1]
         """
-        return SkewPartition([ self.outer().k_conjugate(k), self.inner().k_conjugate(k) ])
+        return SkewPartition([self.outer().k_conjugate(k), self.inner().k_conjugate(k)])
 
     def jacobi_trudi(self):
         """
@@ -1212,6 +1229,7 @@ class SkewPartition(CombinatorialElement):
         p = self.outer()
         q = self.inner()
         from sage.combinat.sf.sf import SymmetricFunctions
+
         nn = len(p)
         if nn == 0:
             return MatrixSpace(SymmetricFunctions(QQ).homogeneous(), 0)(0)
@@ -1220,10 +1238,10 @@ class SkewPartition(CombinatorialElement):
 
         q = q + [0] * (nn - len(q))
         m = []
-        for i in range(1,nn+1):
+        for i in range(1, nn + 1):
             row = []
-            for j in range(1,nn+1):
-                v = p[j-1]-q[i-1]-j+i
+            for j in range(1, nn + 1):
+                v = p[j - 1] - q[i - 1] - j + i
                 if v < 0:
                     row.append(h.zero())
                 elif v == 0:
@@ -1288,8 +1306,10 @@ class SkewPartition(CombinatorialElement):
         """
         from sage.combinat.specht_module import SpechtModule
         from sage.combinat.symmetric_group_algebra import SymmetricGroupAlgebra
+
         if base_ring is None:
             from sage.rings.rational_field import QQ
+
             base_ring = QQ
         R = SymmetricGroupAlgebra(base_ring, self.size())
         return SpechtModule(R, self.cells())
@@ -1310,10 +1330,15 @@ class SkewPartition(CombinatorialElement):
             8
         """
         from sage.categories.fields import Fields
-        if base_ring is None or (base_ring in Fields() and base_ring.characteristic() == 0):
+
+        if base_ring is None or (
+            base_ring in Fields() and base_ring.characteristic() == 0
+        ):
             from sage.combinat.skew_tableau import StandardSkewTableaux
+
             return StandardSkewTableaux(self).cardinality()
         from sage.combinat.specht_module import specht_module_rank
+
         return specht_module_rank(self, base_ring)
 
 
@@ -1356,6 +1381,7 @@ class SkewPartitions(UniqueRepresentation, Parent):
         sage: SkewPartitions(4, overlap=2).list()
         [[4] / [], [2, 2] / []]
     """
+
     @staticmethod
     def __classcall_private__(self, n=None, row_lengths=None, overlap=0):
         """
@@ -1440,29 +1466,44 @@ class SkewPartitions(UniqueRepresentation, Parent):
               4  5
             sage: SkewPartitions.options._reset()
         """
+
         NAME = 'SkewPartitions'
         module = 'sage.combinat.skew_partition'
-        display = dict(default='quotient',
-                     description='Specifies how skew partitions should be printed',
-                     values=dict(lists='displayed as a pair of lists',
-                                 quotient='displayed as a quotient of partitions',
-                                 diagram='as a skew Ferrers diagram'),
-                     alias=dict(array='diagram', ferrers_diagram='diagram',
-                                young_diagram='diagram', pair='lists'),
-                     case_sensitive=False)
-        latex = dict(default='young_diagram',
-                   description='Specifies how skew partitions should be latexed',
-                   values=dict(diagram='latex as a skew Ferrers diagram',
-                               young_diagram='latex as a skew Young diagram',
-                               marked='latex as a partition where the skew shape is marked'),
-                   alias=dict(array='diagram', ferrers_diagram='diagram'),
-                   case_sensitive=False)
-        diagram_str = dict(link_to=(Partitions.options,'diagram_str'))
-        latex_diagram_str = dict(link_to=(Partitions.options,'latex_diagram_str'))
-        latex_marking_str = dict(default='X',
-                         description='The character used to marked the deleted cells when latexing marked partitions',
-                         checker=lambda char: isinstance(char, str))
-        convention = dict(link_to=(Tableaux.options,'convention'))
+        display = dict(
+            default='quotient',
+            description='Specifies how skew partitions should be printed',
+            values=dict(
+                lists='displayed as a pair of lists',
+                quotient='displayed as a quotient of partitions',
+                diagram='as a skew Ferrers diagram',
+            ),
+            alias=dict(
+                array='diagram',
+                ferrers_diagram='diagram',
+                young_diagram='diagram',
+                pair='lists',
+            ),
+            case_sensitive=False,
+        )
+        latex = dict(
+            default='young_diagram',
+            description='Specifies how skew partitions should be latexed',
+            values=dict(
+                diagram='latex as a skew Ferrers diagram',
+                young_diagram='latex as a skew Young diagram',
+                marked='latex as a partition where the skew shape is marked',
+            ),
+            alias=dict(array='diagram', ferrers_diagram='diagram'),
+            case_sensitive=False,
+        )
+        diagram_str = dict(link_to=(Partitions.options, 'diagram_str'))
+        latex_diagram_str = dict(link_to=(Partitions.options, 'latex_diagram_str'))
+        latex_marking_str = dict(
+            default='X',
+            description='The character used to marked the deleted cells when latexing marked partitions',
+            checker=lambda char: isinstance(char, str),
+        )
+        convention = dict(link_to=(Tableaux.options, 'convention'))
         notation = dict(alt_name='convention')
 
     Element = SkewPartition
@@ -1618,14 +1659,18 @@ class SkewPartitions(UniqueRepresentation, Parent):
         for row in rowL:
             inP = len(colL_new) - row
             if inP < 0 or inP > inPOld:
-                raise ValueError("incompatible row and column length : %s and %s" % (rowL, colL))
+                raise ValueError(
+                    "incompatible row and column length : %s and %s" % (rowL, colL)
+                )
             inPOld = inP
             resIn.append(inP)
             resOut.append(len(colL_new))
             for iCol in range(inP, len(colL_new)):
                 colL_new[iCol] -= 1
                 if colL_new[iCol] < 0:
-                    raise ValueError("incompatible row and column length : %s and %s" % (rowL, colL))
+                    raise ValueError(
+                        "incompatible row and column length : %s and %s" % (rowL, colL)
+                    )
             while colL_new and colL_new[-1] == 0:
                 colL_new.pop()
         return self.element_class(self, [resOut, [x for x in resIn if x]])
@@ -1706,6 +1751,7 @@ class SkewPartitions_n(SkewPartitions):
         ``SkewPartition(n, row_lengths=...)``, and one would want to
         "inherit" list and cardinality from this composition.
     """
+
     @staticmethod
     def __classcall_private__(cls, n, overlap=0):
         """
@@ -1785,9 +1831,11 @@ class SkewPartitions_n(SkewPartitions):
             sage: [[7, 4, 3, 2], [5, 2, 1]] in SkewPartitions(8, overlap=-2)
             True
         """
-        return x in SkewPartitions() \
-            and sum(x[0])-sum(x[1]) == self.n \
+        return (
+            x in SkewPartitions()
+            and sum(x[0]) - sum(x[1]) == self.n
             and self.overlap <= SkewPartition(x).overlap()
+        )
 
     def _repr_(self):
         """
@@ -1909,6 +1957,7 @@ class SkewPartitions_n(SkewPartitions):
             for sp in SkewPartitions(row_lengths=co, overlap=self.overlap):
                 yield self.element_class(self, sp)
 
+
 ######################################
 # Skew Partitions (from row lengths) #
 ######################################
@@ -1918,6 +1967,7 @@ class SkewPartitions_rowlengths(SkewPartitions):
     """
     All skew partitions with given row lengths.
     """
+
     @staticmethod
     def __classcall_private__(cls, co, overlap=0):
         """
@@ -1961,8 +2011,8 @@ class SkewPartitions_rowlengths(SkewPartitions):
         """
         if x in SkewPartitions():
             o = x[0]
-            i = x[1]+[0]*(len(x[0])-len(x[1]))
-            return [u[0]-u[1] for u in zip(o,i)] == self.co
+            i = x[1] + [0] * (len(x[0]) - len(x[1]))
+            return [u[0] - u[1] for u in zip(o, i)] == self.co
         return False
 
     def _repr_(self):
@@ -1991,14 +2041,14 @@ class SkewPartitions_rowlengths(SkewPartitions):
             [[2, 1] / [], [3, 1] / [1]]
         """
         nn = min(ck_1, ck)
-        mm = max(0, ck-ck_1)
+        mm = max(0, ck - ck_1)
         # nn should be >= 0.  In the case of the positive overlap,
         # the min_part condition insures ck>=overlap for all k
 
         nn -= overlap
-        for i in range(nn+1):
+        for i in range(nn + 1):
             skp1, skp2 = sskp
-            skp2 += [0]*(len(skp1)-len(skp2))
+            skp2 += [0] * (len(skp1) - len(skp2))
             skp1 = [x + i + mm for x in skp1]
             skp1 += [ck]
             skp2 = [x + i + mm for x in skp2]
@@ -2018,14 +2068,16 @@ class SkewPartitions_rowlengths(SkewPartitions):
             [[2, 2] / [], [3, 2] / [1]]
         """
         if self.co == []:
-            yield self.element_class(self, [[],[]])
+            yield self.element_class(self, [[], []])
             return
 
         nn = len(self.co)
         if nn == 1:
-            yield self.element_class(self, [[self.co[0]],[]])
+            yield self.element_class(self, [[self.co[0]], []])
             return
 
         for sskp in SkewPartitions(row_lengths=self.co[:-1], overlap=self.overlap):
-            for sp in self._from_row_lengths_aux(sskp, self.co[-2], self.co[-1], self.overlap):
+            for sp in self._from_row_lengths_aux(
+                sskp, self.co[-2], self.co[-1], self.overlap
+            ):
                 yield self.element_class(self, sp)

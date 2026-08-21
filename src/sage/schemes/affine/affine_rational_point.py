@@ -108,9 +108,12 @@ def enum_affine_rational_field(X, B):
     - Raman Raghukul 2018: updated.
     """
     from sage.schemes.affine.affine_space import AffineSpace_generic
+
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), AffineSpace_generic):
-            raise TypeError("ambient space must be affine space over the rational field")
+            raise TypeError(
+                "ambient space must be affine space over the rational field"
+            )
         X = X(X.base_ring())
     elif not isinstance(X.codomain().ambient_space(), AffineSpace_generic):
         raise TypeError("codomain must be affine space over the rational field")
@@ -213,6 +216,7 @@ def enum_affine_number_field(X, **kwds):
     tol = kwds.pop('tolerance', 1e-2)
     prec = kwds.pop('precision', 53)
     from sage.schemes.affine.affine_space import AffineSpace_generic
+
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), AffineSpace_generic):
             raise TypeError("ambient space must be affine space over a number field")
@@ -287,6 +291,7 @@ def enum_affine_finite_field(X):
     - John Cremona and Charlie Turner (06-2010)
     """
     from sage.schemes.affine.affine_space import AffineSpace_generic
+
     if isinstance(X, Scheme):
         if not isinstance(X.ambient_space(), AffineSpace_generic):
             raise TypeError("ambient space must be affine space over a finite field")

@@ -190,8 +190,17 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
         sage: s in E.section_module()
         True
     """
-    def __init__(self, rank, name, base_space, field='real',
-                 latex_name=None, category=None, unique_tag=None):
+
+    def __init__(
+        self,
+        rank,
+        name,
+        base_space,
+        field='real',
+        latex_name=None,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a topological vector bundle.
 
@@ -223,15 +232,16 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
                 self._field_type = 'neither_real_nor_complex'
         bs_field = base_space.base_field()
         if not bs_field.is_subring(self._field):
-            raise ValueError("for concrete implementation, manifold's base "
-                             "field must be a subfield of the vector bundle's "
-                             "base field")
+            raise ValueError(
+                "for concrete implementation, manifold's base "
+                "field must be a subfield of the vector bundle's "
+                "base field"
+            )
         ###
         # Get the category:
         if category is None:
             category = VectorBundles(base_space, self._field)
-        CategoryObject.__init__(self, base=self._field,
-                                category=category)
+        CategoryObject.__init__(self, base=self._field, category=category)
         # Check rank:
         if not isinstance(rank, (int, Integer)):
             raise TypeError("the rank must be an integer")
@@ -441,6 +451,7 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
         if domain is None:
             domain = self._base_space
         from sage.manifolds.trivialization import Trivialization
+
         return Trivialization(self, name, domain=domain, latex_name=latex_name)
 
     def transitions(self):
@@ -506,9 +517,12 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
              (phi_U, E|_U)
         """
         if (triv1, triv2) not in self._transitions:
-            raise TypeError("the transition map from " +
-                            "{} to {}".format(triv1, triv2) + " has not " +
-                            "been defined on the {}".format(self))
+            raise TypeError(
+                "the transition map from "
+                + "{} to {}".format(triv1, triv2)
+                + " has not "
+                + "been defined on the {}".format(self)
+            )
         return self._transitions[(triv1, triv2)]
 
     def atlas(self):
@@ -642,6 +656,7 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
         if domain is None:
             domain = self._base_space
         from sage.manifolds.section_module import SectionFreeModule, SectionModule
+
         if domain not in self._section_modules:
             if force_free or domain in self._trivial_parts:
                 self._section_modules[domain] = SectionFreeModule(self, domain)
@@ -771,11 +786,15 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
             indices, see :class:`~sage.manifolds.local_frame.LocalFrame`.
         """
         from sage.manifolds.local_frame import LocalFrame
+
         # Input processing
         n_args = len(args)
         if n_args < 1 or n_args > 2:
-            raise TypeError("local_frame() takes one or two positional "
-                            "arguments, not {}".format(n_args))
+            raise TypeError(
+                "local_frame() takes one or two positional arguments, not {}".format(
+                    n_args
+                )
+            )
         symbol = args[0]
         sections = None
         if n_args == 2:
@@ -788,20 +807,26 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
         domain = kwargs.pop('domain', None)
 
         sec_module = self.section_module(domain=domain, force_free=True)
-        resu = LocalFrame(sec_module, symbol=symbol, latex_symbol=latex_symbol,
-                          indices=indices, latex_indices=latex_indices,
-                          symbol_dual=symbol_dual,
-                          latex_symbol_dual=latex_symbol_dual)
+        resu = LocalFrame(
+            sec_module,
+            symbol=symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         if sections:
             linked = False
             try:
                 resu._init_from_family(sections)
             except ArithmeticError as err:
-                linked = str(err) in ["non-invertible matrix",
-                                      "input matrix must be nonsingular"]
+                linked = str(err) in [
+                    "non-invertible matrix",
+                    "input matrix must be nonsingular",
+                ]
             if linked:
-                raise ValueError("the provided sections are not linearly "
-                                 "independent")
+                raise ValueError("the provided sections are not linearly independent")
         return resu
 
     def section(self, *comp, **kwargs):
@@ -876,22 +901,26 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
         """
         if self._total_space is None:
             from sage.manifolds.manifold import Manifold
+
             base_space = self._base_space
             dim = base_space._dim + self._rank
             sindex = base_space.start_index()
             self._total_space = Manifold(
-                dim, self._name,
+                dim,
+                self._name,
                 latex_name=self._latex_name,
-                field=self._field, structure='topological',
-                start_index=sindex
+                field=self._field,
+                structure='topological',
+                start_index=sindex,
             )
 
         # TODO: if update_atlas: introduce charts via self._atlas
 
         return self._total_space
 
-    def set_change_of_frame(self, frame1, frame2, change_of_frame,
-                            compute_inverse=True):
+    def set_change_of_frame(
+        self, frame1, frame2, change_of_frame, compute_inverse=True
+    ):
         r"""
         Relate two vector frames by an automorphism.
 
@@ -933,17 +962,20 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
             [0 3]
         """
         from sage.tensor.modules.free_module_automorphism import FreeModuleAutomorphism
+
         sec_module = frame1._fmodule
         if frame2._fmodule != sec_module:
-            raise ValueError("the two frames are not defined on the same " +
-                             "section module")
+            raise ValueError(
+                "the two frames are not defined on the same " + "section module"
+            )
         if isinstance(change_of_frame, FreeModuleAutomorphism):
             auto = change_of_frame
         else:  # Otherwise try to coerce the input
             auto_group = sec_module.general_linear_group()
             auto = auto_group(change_of_frame, basis=frame1)
-        sec_module.set_change_of_basis(frame1, frame2, auto,
-                                       compute_inverse=compute_inverse)
+        sec_module.set_change_of_basis(
+            frame1, frame2, auto, compute_inverse=compute_inverse
+        )
         self._frame_changes[(frame1, frame2)] = auto
         if compute_inverse:
             self._frame_changes[(frame2, frame1)] = ~auto
@@ -983,8 +1015,10 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
             True
         """
         if (frame1, frame2) not in self._frame_changes:
-            raise ValueError("the change of frame from {} to {}".format(frame1, frame2) +
-                             " has not been defined on the {}".format(self))
+            raise ValueError(
+                "the change of frame from {} to {}".format(frame1, frame2)
+                + " has not been defined on the {}".format(self)
+            )
         return self._frame_changes[(frame1, frame2)]
 
     def changes_of_frame(self):
@@ -1102,11 +1136,11 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
             Local frame (E|_M, (f_0,f_1))
         """
         from sage.manifolds.local_frame import LocalFrame
+
         if not isinstance(frame, LocalFrame):
             raise TypeError("{} is not a local frame".format(frame))
         if not frame._domain.is_subset(self._base_space):
-            raise ValueError("the frame must be defined on " +
-                             "the {}".format(self))
+            raise ValueError("the frame must be defined on " + "the {}".format(self))
         frame._fmodule.set_default_basis(frame)
         self._def_frame = frame
 
@@ -1158,18 +1192,19 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
              Local frame (E|_V, (f_0,f_1))]
         """
         from sage.manifolds.local_frame import LocalFrame
+
         if isinstance(orientation, LocalFrame):
             orientation = [orientation]
         elif isinstance(orientation, (tuple, list)):
             orientation = list(orientation)
         else:
-            raise TypeError("orientation must be a frame or a list/tuple of "
-                            "frames")
+            raise TypeError("orientation must be a frame or a list/tuple of frames")
         dom_union = None
         for frame in orientation:
             if frame not in self.frames():
-                raise ValueError("{} must be a frame ".format(frame) +
-                                 "defined on {}".format(self))
+                raise ValueError(
+                    "{} must be a frame ".format(frame) + "defined on {}".format(self)
+                )
             dom = frame.domain()
             if dom_union is not None:
                 dom_union = dom.union(dom_union)
@@ -1177,8 +1212,7 @@ class TopologicalVectorBundle(CategoryObject, UniqueRepresentation):
                 dom_union = dom
         base_space = self._base_space
         if dom_union != base_space:
-            raise ValueError("the frames's domains must "
-                             "cover {}".format(base_space))
+            raise ValueError("the frames's domains must cover {}".format(base_space))
         self._orientation = orientation
 
     def orientation(self):

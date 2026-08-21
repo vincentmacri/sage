@@ -66,7 +66,9 @@ def is_triangular(B) -> bool:
         try:
             G = B.gens()
         except Exception:
-            raise TypeError("is_triangular wants as input an ideal, or a list of polynomials\n")
+            raise TypeError(
+                "is_triangular wants as input an ideal, or a list of polynomials\n"
+            )
     vars = G[0].parent().gens()
     n = len(G)
     # We expect the polynomials of G to be ordered G[i].lm() > G[i+1].lm();
@@ -108,6 +110,7 @@ def coefficient_matrix(polys):
         in the future.
     """
     from sage.matrix.constructor import matrix
+
     R = polys[0].base_ring()
     mons = set()
     for each in polys:
@@ -218,8 +221,11 @@ def linear_representation(p, polys):
         [3, 32001, 1]
     """
     from sage.matrix.constructor import diagonal_matrix
+
     R = p.base_ring()
-    M = coefficient_matrix(polys + [p]).augment(diagonal_matrix(R, [1 for each in range(len(polys) + 1)]))
+    M = coefficient_matrix(polys + [p]).augment(
+        diagonal_matrix(R, [1 for each in range(len(polys) + 1)])
+    )
     M.echelonize()
     j = M.ncols() - 1
     n = M.nrows() - 1
@@ -266,7 +272,9 @@ def triangular_factorization(B, n=-1):
         try:
             G = B.gens()
         except Exception:
-            raise TypeError("triangular_factorization wants as input an ideal, or a list of polynomials\n")
+            raise TypeError(
+                "triangular_factorization wants as input an ideal, or a list of polynomials\n"
+            )
     # easy cases
     if not G:
         return []

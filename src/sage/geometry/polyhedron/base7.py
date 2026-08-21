@@ -56,6 +56,7 @@ class Polyhedron_base7(Polyhedron_base6):
         sage: Polyhedron_base7.volume(P, measure='induced')
         79/3
     """
+
     @cached_method(do_pickle=True)
     def centroid(self, engine='auto', **kwds):
         r"""
@@ -131,14 +132,24 @@ class Polyhedron_base7(Polyhedron_base6):
         if self.ambient_dim() == self.dim():
             pc = triangulation.point_configuration()
         else:
-            from sage.geometry.triangulation.point_configuration import PointConfiguration
-            A, b = self.affine_hull_projection(as_affine_map=True, orthogonal=True, orthonormal=True, extend=True)
+            from sage.geometry.triangulation.point_configuration import (
+                PointConfiguration,
+            )
+
+            A, b = self.affine_hull_projection(
+                as_affine_map=True, orthogonal=True, orthonormal=True, extend=True
+            )
             pc = PointConfiguration(A(v.vector()) for v in self.Vrep_generator())
 
-        barycenters = [sum(self.Vrepresentation(i).vector() for i in simplex)/(self.dim() + 1) for simplex in triangulation]
+        barycenters = [
+            sum(self.Vrepresentation(i).vector() for i in simplex) / (self.dim() + 1)
+            for simplex in triangulation
+        ]
         volumes = [pc.volume(simplex) for simplex in triangulation]
 
-        centroid = sum(volumes[i]*barycenters[i] for i in range(len(volumes)))/sum(volumes)
+        centroid = sum(volumes[i] * barycenters[i] for i in range(len(volumes))) / sum(
+            volumes
+        )
         if self.ambient_dim() != self.dim():
             # By the affine hull projection, the centroid has base ring ``AA``,
             # we try return the centroid in a reasonable ring.
@@ -172,7 +183,9 @@ class Polyhedron_base7(Polyhedron_base6):
         """
         raise TypeError("the polyhedron's backend should be 'normaliz'")
 
-    def triangulate(self, engine='auto', connected=True, fine=False, regular=None, star=None):
+    def triangulate(
+        self, engine='auto', connected=True, fine=False, regular=None, star=None
+    ):
         r"""
         Return a triangulation of the polytope.
 
@@ -280,15 +293,27 @@ class Polyhedron_base7(Polyhedron_base6):
             (<0,1,2>, <0,1,3>)
         """
         if self.lines():
-            raise NotImplementedError('triangulation of polyhedra with lines is not supported')
+            raise NotImplementedError(
+                'triangulation of polyhedra with lines is not supported'
+            )
         if len(self.vertices_list()) >= 2 and self.rays_list():
-            raise NotImplementedError('triangulation of non-compact polyhedra that are not cones is not supported')
+            raise NotImplementedError(
+                'triangulation of non-compact polyhedra that are not cones is not supported'
+            )
         if not self.is_compact() and engine != 'normaliz':
-            raise NotImplementedError("triangulation of pointed polyhedra requires 'normaliz'")
+            raise NotImplementedError(
+                "triangulation of pointed polyhedra requires 'normaliz'"
+            )
         from sage.geometry.triangulation.point_configuration import PointConfiguration
+
         if self.is_compact():
-            pc = PointConfiguration((v.vector() for v in self.vertex_generator()),
-                                    connected=connected, fine=fine, regular=regular, star=star)
+            pc = PointConfiguration(
+                (v.vector() for v in self.vertex_generator()),
+                connected=connected,
+                fine=fine,
+                regular=regular,
+                star=star,
+            )
             # If the engine is not normaliz, we pass directly to the
             # PointConfiguration module.
             if engine != 'normaliz':
@@ -297,16 +322,25 @@ class Polyhedron_base7(Polyhedron_base6):
             return pc(self._triangulate_normaliz())
         # From above, we have a pointed cone and the engine is normaliz
         try:
-            pc = PointConfiguration((v.vector() for v in self.ray_generator()),
-                                    connected=connected, fine=fine, regular=regular, star=star)
+            pc = PointConfiguration(
+                (v.vector() for v in self.ray_generator()),
+                connected=connected,
+                fine=fine,
+                regular=regular,
+                star=star,
+            )
             return pc(self._triangulate_normaliz())
         except AssertionError:
             # PointConfiguration is not adapted to inhomogeneous cones
             # This is a hack. TODO: Implement the necessary things in
             # PointConfiguration to accept such cases.
             c = self.representative_point()
-            normed_v = ((1/(r.vector()*c))*r.vector() for r in self.ray_generator())
-            pc = PointConfiguration(normed_v, connected=connected, fine=fine, regular=regular, star=star)
+            normed_v = (
+                (1 / (r.vector() * c)) * r.vector() for r in self.ray_generator()
+            )
+            pc = PointConfiguration(
+                normed_v, connected=connected, fine=fine, regular=regular, star=star
+            )
             return pc(self._triangulate_normaliz())
 
     def _volume_lrs(self, verbose=False):
@@ -329,6 +363,7 @@ class Polyhedron_base7(Polyhedron_base6):
         - David Avis's lrs program.
         """
         from sage.features.lrs import Lrs
+
         Lrs().require()
 
         from sage.misc.temporary_file import tmp_filename
@@ -343,8 +378,12 @@ class Polyhedron_base7(Polyhedron_base6):
         if verbose:
             print(in_str)
 
-        lrs_procs = Popen([Lrs().absolute_filename(), in_filename],
-                          stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        lrs_procs = Popen(
+            [Lrs().absolute_filename(), in_filename],
+            stdin=PIPE,
+            stdout=PIPE,
+            stderr=PIPE,
+        )
         ans, err = lrs_procs.communicate()
         ans = bytes_to_str(ans)
         err = bytes_to_str(err)
@@ -430,7 +469,13 @@ class Polyhedron_base7(Polyhedron_base6):
         if self.base_ring() == RDF:
             raise ValueError("LattE integrale cannot be applied over inexact rings")
         else:
-            return integrate(self.cdd_Hrepresentation(), algorithm=algorithm, cdd=True, verbose=verbose, **kwargs)
+            return integrate(
+                self.cdd_Hrepresentation(),
+                algorithm=algorithm,
+                cdd=True,
+                verbose=verbose,
+                **kwargs,
+            )
 
     def _volume_normaliz(self, measure='induced'):
         r"""
@@ -668,39 +713,56 @@ class Polyhedron_base7(Polyhedron_base6):
             sage: F2 = Polyhedron([[sqrt2,0],[0,sqrt3]])
             sage: F2.volume(measure="induced")
             2.236067977499790?
-       """
+        """
         from sage.features import FeatureNotPresentError
-        if measure == 'induced_rational' and engine not in ['auto', 'latte', 'normaliz']:
-            raise RuntimeError("the induced rational measure can only be computed with the engine set to `auto`, `latte`, or `normaliz`")
+
+        if measure == 'induced_rational' and engine not in [
+            'auto',
+            'latte',
+            'normaliz',
+        ]:
+            raise RuntimeError(
+                "the induced rational measure can only be computed with the engine set to `auto`, `latte`, or `normaliz`"
+            )
         if measure == 'induced_lattice' and engine not in ['auto', 'latte', 'normaliz']:
-            raise RuntimeError("the induced lattice measure can only be computed with the engine set to `auto`, `latte`, or `normaliz`")
+            raise RuntimeError(
+                "the induced lattice measure can only be computed with the engine set to `auto`, `latte`, or `normaliz`"
+            )
         if engine == 'auto' and measure == 'induced_rational':
             # Enforce a default choice, change if a better engine is found.
             from sage.features.latte import Latte
+
             try:
                 Latte().require()
                 engine = 'latte'
             except FeatureNotPresentError:
                 from sage.features.normaliz import PyNormaliz
+
                 try:
                     PyNormaliz().require()
                     engine = 'normaliz'
                 except FeatureNotPresentError:
-                    raise RuntimeError("the induced rational measure can only be computed with the optional packages `latte_int`, or `pynormaliz`")
+                    raise RuntimeError(
+                        "the induced rational measure can only be computed with the optional packages `latte_int`, or `pynormaliz`"
+                    )
 
         if engine == 'auto' and measure == 'induced_lattice':
             # Enforce a default choice, change if a better engine is found.
             from sage.features.normaliz import PyNormaliz
+
             try:
                 PyNormaliz().require()
                 engine = 'normaliz'
             except FeatureNotPresentError:
                 try:
                     from sage.features.latte import Latte
+
                     Latte().require()
                     engine = 'latte'
                 except FeatureNotPresentError:
-                    raise RuntimeError("the induced rational measure can only be computed with the optional packages `latte_int`, or `pynormaliz`")
+                    raise RuntimeError(
+                        "the induced rational measure can only be computed with the optional packages `latte_int`, or `pynormaliz`"
+                    )
 
         if engine == 'auto' and measure == 'ambient' and self.backend() == 'normaliz':
             engine = 'normaliz'
@@ -713,6 +775,7 @@ class Polyhedron_base7(Polyhedron_base6):
             # if the polyhedron is unbounded, return infinity
             if not self.is_compact():
                 from sage.rings.infinity import infinity
+
                 return infinity
             if engine == 'lrs':
                 return self._volume_lrs(**kwds)
@@ -723,7 +786,10 @@ class Polyhedron_base7(Polyhedron_base6):
 
             triangulation = self.triangulate(engine=engine, **kwds)
             pc = triangulation.point_configuration()
-            return sum([pc.volume(simplex) for simplex in triangulation]) / ZZ(self.dim()).factorial()
+            return (
+                sum([pc.volume(simplex) for simplex in triangulation])
+                / ZZ(self.dim()).factorial()
+            )
         if measure == 'induced':
             # if polyhedron is actually full-dimensional, return volume with ambient measure
             if self.dim() == self.ambient_dim():
@@ -731,18 +797,24 @@ class Polyhedron_base7(Polyhedron_base6):
             # if the polyhedron is unbounded, return infinity
             if not self.is_compact():
                 from sage.rings.infinity import infinity
+
                 return infinity
             if engine == 'normaliz':
                 return self._volume_normaliz(measure='euclidean')
             # use an orthogonal transformation, which preserves volume up to a factor provided by the transformation matrix
-            affine_hull_data = self.affine_hull_projection(orthogonal=True, as_polyhedron=True, as_affine_map=True)
+            affine_hull_data = self.affine_hull_projection(
+                orthogonal=True, as_polyhedron=True, as_affine_map=True
+            )
             A = affine_hull_data.projection_linear_map.matrix()
             Adet = (A.transpose() * A).det()
-            scaled_volume = affine_hull_data.image.volume(measure='ambient', engine=engine, **kwds)
+            scaled_volume = affine_hull_data.image.volume(
+                measure='ambient', engine=engine, **kwds
+            )
             if Adet.is_square():
                 sqrt_Adet = Adet.sqrt()
             else:
                 from sage.rings.qqbar import AA
+
                 sqrt_Adet = AA(Adet).sqrt()
                 scaled_volume = AA(scaled_volume)
             return scaled_volume / sqrt_Adet
@@ -750,21 +822,28 @@ class Polyhedron_base7(Polyhedron_base6):
             # if the polyhedron is unbounded, return infinity
             if not self.is_compact():
                 from sage.rings.infinity import infinity
+
                 return infinity
             if engine == 'latte':
                 return self._volume_latte(**kwds)
             # engine is 'normaliz'
-            return self._volume_normaliz(measure='induced_lattice') / ZZ(self.dim()).factorial()
+            return (
+                self._volume_normaliz(measure='induced_lattice')
+                / ZZ(self.dim()).factorial()
+            )
         if measure == 'induced_lattice':
             # if the polyhedron is unbounded, return infinity
             if not self.is_compact():
                 from sage.rings.infinity import infinity
+
                 return infinity
             if engine == 'latte':
                 return self._volume_latte(**kwds) * ZZ(self.dim()).factorial()
             # engine is 'normaliz'
             return self._volume_normaliz(measure='induced_lattice')
-        raise TypeError("the measure should be `ambient`, `induced`, `induced_rational`, or `induced_lattice`")
+        raise TypeError(
+            "the measure should be `ambient`, `induced`, `induced_rational`, or `induced_lattice`"
+        )
 
     def integrate(self, function, measure='ambient', **kwds):
         r"""
@@ -904,7 +983,8 @@ class Polyhedron_base7(Polyhedron_base6):
 
         if not self.is_compact():
             raise NotImplementedError(
-                'integration over non-compact polyhedra not allowed')
+                'integration over non-compact polyhedra not allowed'
+            )
 
         if measure == 'ambient':
             if not self.is_full_dimensional():
@@ -921,26 +1001,36 @@ class Polyhedron_base7(Polyhedron_base6):
             if isinstance(function, str):
                 raise NotImplementedError(
                     'LattE description strings for polynomials not allowed '
-                    'when using measure="induced"')
+                    'when using measure="induced"'
+                )
 
             # use an orthogonal transformation
-            affine_hull_data = self.affine_hull_projection(orthogonal=True, return_all_data=True)
+            affine_hull_data = self.affine_hull_projection(
+                orthogonal=True, return_all_data=True
+            )
             polyhedron = affine_hull_data.image
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-            R = PolynomialRing(affine_hull_data.section_linear_map.base_ring(), 'x', self.dim())
-            coordinate_images = affine_hull_data.section_linear_map.matrix().transpose() * vector(R.gens()) + affine_hull_data.section_translation
+
+            R = PolynomialRing(
+                affine_hull_data.section_linear_map.base_ring(), 'x', self.dim()
+            )
+            coordinate_images = (
+                affine_hull_data.section_linear_map.matrix().transpose()
+                * vector(R.gens())
+                + affine_hull_data.section_translation
+            )
 
             hom = function.parent().hom(coordinate_images)
             function_in_affine_hull = hom(function)
 
-            I = polyhedron.integrate(function_in_affine_hull,
-                                     measure='ambient', **kwds)
+            I = polyhedron.integrate(function_in_affine_hull, measure='ambient', **kwds)
             if measure == 'induced_nonnormalized':
                 return I
             A = affine_hull_data.projection_linear_map.matrix()
             Adet = (A.transpose() * A).det()
             try:
                 from sage.rings.qqbar import AA
+
                 Adet = AA.coerce(Adet)
             except TypeError:
                 pass
@@ -991,6 +1081,5 @@ class Polyhedron_base7(Polyhedron_base6):
             return polynomial(vertex)
 
         from sage.interfaces.latte import integrate
-        return integrate(self.cdd_Hrepresentation(),
-                         polynomial,
-                         cdd=True, **kwds)
+
+        return integrate(self.cdd_Hrepresentation(), polynomial, cdd=True, **kwds)

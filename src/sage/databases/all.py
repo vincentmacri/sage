@@ -56,8 +56,9 @@ lazy_import('sage.databases.cremona', 'CremonaDatabase')
 
 lazy_import('sage.databases.jones', 'JonesDatabase')
 
-lazy_import('sage.databases.stein_watkins',
-            ['SteinWatkinsAllData', 'SteinWatkinsPrimeData'])
+lazy_import(
+    'sage.databases.stein_watkins', ['SteinWatkinsAllData', 'SteinWatkinsPrimeData']
+)
 
 lazy_import('sage.databases.sloane', 'SloaneEncyclopedia')
 
@@ -67,15 +68,15 @@ lazy_import('sage.databases.symbolic_data', 'SymbolicData')
 
 lazy_import('sage.databases.odlyzko', 'zeta_zeros')
 
-from sage.databases.db_modular_polynomials import \
-    ClassicalModularPolynomialDatabase, \
-    DedekindEtaModularPolynomialDatabase, \
-    DedekindEtaModularCorrespondenceDatabase, \
-    AtkinModularPolynomialDatabase, \
-    AtkinModularCorrespondenceDatabase
+from sage.databases.db_modular_polynomials import (
+    ClassicalModularPolynomialDatabase,
+    DedekindEtaModularPolynomialDatabase,
+    DedekindEtaModularCorrespondenceDatabase,
+    AtkinModularPolynomialDatabase,
+    AtkinModularCorrespondenceDatabase,
+)
 
-from sage.databases.db_class_polynomials import \
-    HilbertClassPolynomialDatabase
+from sage.databases.db_class_polynomials import HilbertClassPolynomialDatabase
 
 lazy_import('sage.databases.cunningham_tables', 'cunningham_prime_factors')
 

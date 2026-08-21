@@ -107,15 +107,16 @@ def _create_relations_matrix(module, relations, source_degs, target_degs):
         target_space = module.vector_presentation(target_degs[i])
 
         for j, r_ij in enumerate(r_i):
-
             values = []
             for b in module.basis_elements(source_degs[j]):
                 w = r_ij * b
                 values.append(
-                    target_space.zero() if w.is_zero() else w.vector_presentation())
+                    target_space.zero() if w.is_zero() else w.vector_presentation()
+                )
 
             row.append(
-                Hom(module.vector_presentation(source_degs[j]), target_space)(values))
+                Hom(module.vector_presentation(source_degs[j]), target_space)(values)
+            )
 
         block_matrix.append(row)
 
@@ -218,8 +219,10 @@ class FPModuleMorphism(Morphism):
 
         # Check the homomorphism is well defined.
         if len(D.generator_degrees()) != len(values):
-            raise ValueError('the number of values must equal the number of '
-                             'generators in the domain; invalid argument: %s' % values)
+            raise ValueError(
+                'the number of values must equal the number of '
+                'generators in the domain; invalid argument: %s' % values
+            )
 
         self._values = tuple(values)
 
@@ -255,6 +258,7 @@ class FPModuleMorphism(Morphism):
         """
         P = self.parent()
         from sage.modules.fp_graded.free_module import FreeGradedModule
+
         if isinstance(P.codomain(), FreeGradedModule):
             Homspace = Hom(P.domain()._j.codomain(), P.codomain())
             return Homspace(self._values)
@@ -292,9 +296,10 @@ class FPModuleMorphism(Morphism):
         """
         new_codomain = self.codomain().change_ring(algebra)
         # We have to change the ring for the values, too:
-        new_values = [new_codomain([algebra(a)
-                                    for a in v.dense_coefficient_list()])
-                      for v in self._values]
+        new_values = [
+            new_codomain([algebra(a) for a in v.dense_coefficient_list()])
+            for v in self._values
+        ]
         return Hom(self.domain().change_ring(algebra), new_codomain)(new_values)
 
     def degree(self):
@@ -685,8 +690,7 @@ class FPModuleMorphism(Morphism):
             sage: one.is_identity()
             True
         """
-        return (self.parent().is_endomorphism_set()
-                and self.parent().identity() == self)
+        return self.parent().is_endomorphism_set() and self.parent().identity() == self
 
     def __call__(self, x):
         r"""
@@ -759,8 +763,12 @@ class FPModuleMorphism(Morphism):
             b[4] |--> Sq(4)*c[3]
             b[5] |--> Sq(4)*c[4]
         """
-        s = '\n'.join(['%s |--> %s' % (x, y) for (x, y) in
-                       zip(self.domain().generators(), self._values)])
+        s = '\n'.join(
+            [
+                '%s |--> %s' % (x, y)
+                for (x, y) in zip(self.domain().generators(), self._values)
+            ]
+        )
         return s
 
     @cached_method
@@ -893,8 +901,9 @@ class FPModuleMorphism(Morphism):
 
         values = [self(e) for e in self.domain().basis_elements(n)]
 
-        return Hom(D_n, C_n)([C_n.zero() if e.is_zero() else e.vector_presentation()
-                              for e in values])
+        return Hom(D_n, C_n)(
+            [C_n.zero() if e.is_zero() else e.vector_presentation() for e in values]
+        )
 
     def solve(self, x):
         r"""
@@ -938,7 +947,9 @@ class FPModuleMorphism(Morphism):
             ValueError: the given element is not in the codomain of this homomorphism
         """
         if x.parent() != self.codomain():
-            raise ValueError('the given element is not in the codomain of this homomorphism')
+            raise ValueError(
+                'the given element is not in the codomain of this homomorphism'
+            )
 
         # The zero element lifts over all morphisms.
         if x.is_zero():
@@ -1139,8 +1150,10 @@ class FPModuleMorphism(Morphism):
 
         # It is an error to call this function with incompatible arguments.
         if f.codomain() is not N:
-            raise ValueError('the codomains of this homomorphism and the homomorphism '
-                             'we are lifting over are different')
+            raise ValueError(
+                'the codomains of this homomorphism and the homomorphism '
+                'we are lifting over are different'
+            )
 
         # The trivial map lifts over any other map.
         if self.is_zero():
@@ -1149,8 +1162,10 @@ class FPModuleMorphism(Morphism):
         # A non-trivial map never lifts over the trivial map.
         if f.is_zero():
             if verbose:
-                print('This homomorphism cannot lift over a trivial homomorphism'
-                      ' since it is non-trivial.')
+                print(
+                    'This homomorphism cannot lift over a trivial homomorphism'
+                    ' since it is non-trivial.'
+                )
             return None
 
         xs = [f.solve(self(g)) for g in L.generators()]
@@ -1159,8 +1174,10 @@ class FPModuleMorphism(Morphism):
         # hope finding a lift.
         if None in xs:
             if verbose:
-                print('The generators of the domain of this homomorphism do '
-                      'not map into the image of the homomorphism we are lifting over.')
+                print(
+                    'The generators of the domain of this homomorphism do '
+                    'not map into the image of the homomorphism we are lifting over.'
+                )
             return None
 
         # If L is free there are no relations to take into consideration.
@@ -1172,7 +1189,9 @@ class FPModuleMorphism(Morphism):
 
         # Compute the kernel of f.  The equations we will solve will live in
         # this submodule.
-        iK = f.kernel_inclusion(top_dim=max([r.degree() + lift_deg for r in L.relations()]))
+        iK = f.kernel_inclusion(
+            top_dim=max([r.degree() + lift_deg for r in L.relations()])
+        )
 
         source_degs = [g.degree() + lift_deg for g in L.generators()]
         target_degs = [r.degree() + lift_deg for r in L.relations()]
@@ -1188,9 +1207,11 @@ class FPModuleMorphism(Morphism):
             y = iK.solve(sum([c * x for c, x in zip(r.dense_coefficient_list(), xs)]))
             if y is None:
                 if verbose:
-                    print('The homomorphism cannot be lifted in any '
-                          'way such that the relations of the domain are '
-                          'respected.')
+                    print(
+                        'The homomorphism cannot be lifted in any '
+                        'way such that the relations of the domain are '
+                        'respected.'
+                    )
                 return None
 
             if y.is_zero():
@@ -1205,16 +1226,22 @@ class FPModuleMorphism(Morphism):
             return Hom(L, M)(xs)
 
         block_matrix, R = _create_relations_matrix(
-            K, [r.dense_coefficient_list() for r in L.relations()], source_degs, target_degs)
+            K,
+            [r.dense_coefficient_list() for r in L.relations()],
+            source_degs,
+            target_degs,
+        )
 
         try:
             solution = R.solve_right(vector(ys))
         except ValueError as error:
             if str(error) == 'matrix equation has no solutions':
                 if verbose:
-                    print('The homomorphism cannot be lifted in any '
-                          'way such that the relations of the domain '
-                          'are respected: %s' % error)
+                    print(
+                        'The homomorphism cannot be lifted in any '
+                        'way such that the relations of the domain '
+                        'are respected: %s' % error
+                    )
 
                 return None
             raise ValueError(error)
@@ -1223,11 +1250,11 @@ class FPModuleMorphism(Morphism):
         # $ K_1\oplus K_2\oplus \ldots \oplus K_n $.
         n = 0
         for j, source_degree in enumerate(source_degs):
-
             source_dimension = block_matrix[0][j].domain().dimension()
 
             w = K.element_from_coordinates(
-                solution[n:n + source_dimension], source_degree)
+                solution[n : n + source_dimension], source_degree
+            )
 
             # Subtract the solution w_i from our initial choice of lift
             # for the generator g_i.
@@ -1331,9 +1358,11 @@ class FPModuleMorphism(Morphism):
         k = self.kernel_inclusion(top_dim, verbose)
         f_ = f.lift(k)
         if f_ is None:
-            raise ValueError('the image of the given homomorphism is not contained '
-                             'in the kernel of this homomorphism; the homology is '
-                             'therefore not defined for this pair of maps')
+            raise ValueError(
+                'the image of the given homomorphism is not contained '
+                'in the kernel of this homomorphism; the homology is '
+                'therefore not defined for this pair of maps'
+            )
 
         return f_.cokernel_projection()
 
@@ -1386,8 +1415,9 @@ class FPModuleMorphism(Morphism):
 
         D = self.domain().suspension(t)
         C = self.codomain().suspension(t)
-        return Hom(D, C)([C(x.lift_to_free().dense_coefficient_list())
-                          for x in self._values])
+        return Hom(D, C)(
+            [C(x.lift_to_free().dense_coefficient_list()) for x in self._values]
+        )
 
     def cokernel_projection(self):
         r"""
@@ -1415,18 +1445,20 @@ class FPModuleMorphism(Morphism):
             sage: co.domain().is_trivial()
             False
         """
-        new_relations = ([x.dense_coefficient_list()
-                          for x in self.codomain().relations()] +
-                         [x.dense_coefficient_list() for x in self._values])
+        new_relations = [
+            x.dense_coefficient_list() for x in self.codomain().relations()
+        ] + [x.dense_coefficient_list() for x in self._values]
 
         try:
             FPModule = self.base_ring()._fp_graded_module_class
         except AttributeError:
             from .module import FPModule
 
-        coker = FPModule(self.base_ring(),
-                         self.codomain().generator_degrees(),
-                         relations=tuple(new_relations))
+        coker = FPModule(
+            self.base_ring(),
+            self.codomain().generator_degrees(),
+            relations=tuple(new_relations),
+        )
 
         projection = Hom(self.codomain(), coker)(coker.generators())
 
@@ -1703,7 +1735,9 @@ class FPModuleMorphism(Morphism):
         dim = domain.connectivity()
         if dim == infinity:
             if verbose:
-                print('The domain of the morphism is trivial, so there is nothing to resolve.')
+                print(
+                    'The domain of the morphism is trivial, so there is nothing to resolve.'
+                )
             return j
 
         if not R.dimension() < infinity:
@@ -1715,17 +1749,22 @@ class FPModuleMorphism(Morphism):
             limit = min(top_dim, limit)
 
         if limit == infinity:
-            raise ValueError('a top dimension must be specified for this calculation to terminate')
+            raise ValueError(
+                'a top dimension must be specified for this calculation to terminate'
+            )
 
         if verbose:
             if dim > limit:
                 print('The dimension range is empty: [%d, %d]' % (dim, limit))
             else:
-                print('Resolving the kernel in the range of dimensions [%d, %d]:' % (dim, limit), end='')
+                print(
+                    'Resolving the kernel in the range of dimensions [%d, %d]:'
+                    % (dim, limit),
+                    end='',
+                )
 
         # The induction loop.
         for n in range(dim, limit + 1):
-
             if verbose:
                 print(' %d' % n, end='')
 
@@ -1744,8 +1783,9 @@ class FPModuleMorphism(Morphism):
                 new_generator_degrees = kernel_n.rank() * (n,)
                 F_ = R.free_graded_module(generator_degrees + new_generator_degrees)
 
-                new_values = tuple([
-                    domain.element_from_coordinates(q, n) for q in kernel_n.basis()])
+                new_values = tuple(
+                    [domain.element_from_coordinates(q, n) for q in kernel_n.basis()]
+                )
 
             else:
                 Q_n = kernel_n.quotient(j.vector_presentation(n).image())
@@ -1757,8 +1797,12 @@ class FPModuleMorphism(Morphism):
                 new_generator_degrees = Q_n.rank() * (n,)
                 F_ = R.free_graded_module(generator_degrees + new_generator_degrees)
 
-                new_values = tuple([
-                    domain.element_from_coordinates(Q_n.lift(q), n) for q in Q_n.basis()])
+                new_values = tuple(
+                    [
+                        domain.element_from_coordinates(Q_n.lift(q), n)
+                        for q in Q_n.basis()
+                    ]
+                )
 
             # Create a new homomorphism which is surjective onto the kernel
             # in all degrees less than, and including `n`.
@@ -1828,7 +1872,9 @@ class FPModuleMorphism(Morphism):
         dim = self.codomain().connectivity()
         if dim == infinity:
             if verbose:
-                print('The codomain of the morphism is trivial, so there is nothing to resolve.')
+                print(
+                    'The codomain of the morphism is trivial, so there is nothing to resolve.'
+                )
             return j
 
         try:
@@ -1839,23 +1885,31 @@ class FPModuleMorphism(Morphism):
             return j
 
         degree_values = [0] + [v.degree() for v in self._values if v]
-        limit = (infinity if not R.dimension() < infinity else
-                 (_top_dim(R) + max(degree_values)))
+        limit = (
+            infinity
+            if not R.dimension() < infinity
+            else (_top_dim(R) + max(degree_values))
+        )
 
         if top_dim is not None:
             limit = min(top_dim, limit)
 
         if limit == infinity:
-            raise ValueError('a top dimension must be specified for this calculation to terminate')
+            raise ValueError(
+                'a top dimension must be specified for this calculation to terminate'
+            )
 
         if verbose:
             if dim > limit:
                 print('The dimension range is empty: [%d, %d]' % (dim, limit))
             else:
-                print('Resolving the image in the range of dimensions [%d, %d]:' % (dim, limit), end='')
+                print(
+                    'Resolving the image in the range of dimensions [%d, %d]:'
+                    % (dim, limit),
+                    end='',
+                )
 
         for n in range(dim, limit + 1):
-
             if verbose:
                 print(' %d' % n, end='')
 
@@ -1871,11 +1925,14 @@ class FPModuleMorphism(Morphism):
                 new_generator_degrees = image_n.rank() * (n,)
                 F_ = R.free_graded_module(generator_degrees + new_generator_degrees)
 
-                new_values = tuple([
-                    self.codomain().element_from_coordinates(q, n) for q in image_n.basis()])
+                new_values = tuple(
+                    [
+                        self.codomain().element_from_coordinates(q, n)
+                        for q in image_n.basis()
+                    ]
+                )
 
             else:
-
                 j_n = j.vector_presentation(n)
                 Q_n = image_n.quotient(j_n.image())
 
@@ -1886,8 +1943,12 @@ class FPModuleMorphism(Morphism):
                 new_generator_degrees = Q_n.rank() * (n,)
                 F_ = R.free_graded_module(generator_degrees + new_generator_degrees)
 
-                new_values = tuple([
-                    self.codomain().element_from_coordinates(Q_n.lift(q), n) for q in Q_n.basis()])
+                new_values = tuple(
+                    [
+                        self.codomain().element_from_coordinates(Q_n.lift(q), n)
+                        for q in Q_n.basis()
+                    ]
+                )
 
             # Create a new homomorphism which is surjective onto the image
             # in all degrees less than, and including `n`.
@@ -1950,9 +2011,11 @@ class FPModuleMorphism(Morphism):
             FPModule = self.base_ring()._fp_graded_module_class
         except AttributeError:
             from .module import FPModule
-        return FPModule(self.base_ring(),
-                        self.codomain().generator_degrees(),
-                        tuple([r.dense_coefficient_list() for r in self._values]))
+        return FPModule(
+            self.base_ring(),
+            self.codomain().generator_degrees(),
+            tuple([r.dense_coefficient_list() for r in self._values]),
+        )
 
 
 @cached_function

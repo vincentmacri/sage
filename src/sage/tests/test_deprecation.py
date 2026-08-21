@@ -9,6 +9,7 @@ EXAMPLES::
     use sage.tests.test_deprecation.function_new instead.
     See https://github.com/sagemath/sage/issues/12345 for details.
 """
+
 from sage.misc.superseded import deprecated_function_alias
 
 

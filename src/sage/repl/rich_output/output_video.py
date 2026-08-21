@@ -3,6 +3,7 @@ Video Output Types
 
 This module defines the rich output types for video formats.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2015 Martin von Gagern <Martin.vGagern@gmx.net>
 #
@@ -18,7 +19,6 @@ from sage.repl.rich_output.buffer import OutputBuffer
 
 
 class OutputVideoBase(OutputBase):
-
     def __init__(self, video, loop=True):
         """
         Abstract base class for rich video output.
@@ -64,8 +64,9 @@ class OutputVideoBase(OutputBase):
             'video/ogg'
         """
         with importlib.resources.path(__package__, 'example' + cls.ext) as filename:
-            return cls(OutputBuffer.from_file(filename),
-                       {'controls': True, 'loop': False})
+            return cls(
+                OutputBuffer.from_file(filename), {'controls': True, 'loop': False}
+            )
 
     def html_fragment(self, url, link_attrs=''):
         r"""
@@ -96,16 +97,16 @@ class OutputVideoBase(OutputBase):
         }
         if self.loop:
             attrs['loop'] = 'loop'
-        attrs = ''.join(' {}="{}"'.format(k, v)
-                        for k, v in sorted(attrs.items()))
-        txt = ('<video{attrs}>'
-               '<source src="{url}" type="{mimetype}" /><p>'
-               '<a target="_new" href="{url}" {link_attrs}>'
-               'Download {mimetype} video</a></p></video>')
-        return txt.format(url=url,
-                          mimetype=self.mimetype,
-                          attrs=attrs,
-                          link_attrs=link_attrs)
+        attrs = ''.join(' {}="{}"'.format(k, v) for k, v in sorted(attrs.items()))
+        txt = (
+            '<video{attrs}>'
+            '<source src="{url}" type="{mimetype}" /><p>'
+            '<a target="_new" href="{url}" {link_attrs}>'
+            'Download {mimetype} video</a></p></video>'
+        )
+        return txt.format(
+            url=url, mimetype=self.mimetype, attrs=attrs, link_attrs=link_attrs
+        )
 
 
 class OutputVideoOgg(OutputVideoBase):

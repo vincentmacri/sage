@@ -40,6 +40,7 @@ class CoTree:
     This data structure is used for the generation of cographs in
     :meth:`cographs`.
     """
+
     def __init__(self, name='root'):
         r"""
         Initialize a cotree.
@@ -211,8 +212,9 @@ def find_pivot(T):
 
     # Check if T is a pivot
     i = T.name
-    if (i != 1 and ((i//2 != T.children[0].name) or
-                    (i//2 + i % 2 != T.children[1].name))):
+    if i != 1 and (
+        (i // 2 != T.children[0].name) or (i // 2 + i % 2 != T.children[1].name)
+    ):
         T.info = 'p'  # pivot mark
         return T
     return None
@@ -343,9 +345,11 @@ def cographs(n, as_graph=True, immutable=False):
     if n < 1:
         raise ValueError('parameter n must be at least >= 1')
     if as_graph:
+
         def func(T):
             return tree_to_graph(T, immutable=immutable)
     else:
+
         def func(T):
             return T
 
@@ -432,6 +436,7 @@ def tree_to_graph(tree, immutable=False):
         [(1, 2)]
     """
     from sage.graphs.graph import Graph
+
     g = Graph()
     _tree_to_graph_rec(tree, g)
     return g.copy(immutable=True) if immutable else g

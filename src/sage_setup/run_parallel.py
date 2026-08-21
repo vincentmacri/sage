@@ -73,10 +73,11 @@ def execute_list_of_commands_in_parallel(command_list, nthreads):
     N = len(command_list)
     progress_fmt = "[{:%i}/{}] " % len(str(N))
     for i in range(N):
-        progress = progress_fmt.format(i+1, N)
+        progress = progress_fmt.format(i + 1, N)
         command_list[i] = command_list[i] + (progress,)
 
     from multiprocessing import Pool
+
     # map_async handles KeyboardInterrupt correctly if an argument is
     # given to get().  Plain map() and apply_async() do not work
     # correctly, see Issue #16113.
@@ -123,7 +124,7 @@ def execute_list_of_commands(command_list):
         nthreads = 1
 
     # normalize the command_list to handle strings correctly
-    command_list = [ [run_command, x] if isinstance(x, str) else x for x in command_list ]
+    command_list = [[run_command, x] if isinstance(x, str) else x for x in command_list]
 
     # No need for more threads than there are commands, but at least one
     nthreads = min(len(command_list), nthreads)
@@ -134,6 +135,12 @@ def execute_list_of_commands(command_list):
             return "1 %s" % noun
         return "%i %ss" % (n, noun)
 
-    print("Executing %s (using %s)" % (plural(len(command_list),"command"), plural(nthreads,"thread")))
+    print(
+        "Executing %s (using %s)"
+        % (plural(len(command_list), "command"), plural(nthreads, "thread"))
+    )
     execute_list_of_commands_in_parallel(command_list, nthreads)
-    print("Time to execute %s: %.2f seconds." % (plural(len(command_list),"command"), time.time() - t))
+    print(
+        "Time to execute %s: %.2f seconds."
+        % (plural(len(command_list), "command"), time.time() - t)
+    )

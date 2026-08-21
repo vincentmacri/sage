@@ -116,7 +116,9 @@ def matrix_method(func=None, name=None):
         if name is None:
             name = func.__name__.replace('matrix', '').strip('_')
         prefix = "    This function is available as %s(...) and matrix.%s(...)." % (
-            func.__name__, name)
+            func.__name__,
+            name,
+        )
         func.__doc__ = "%s\n\n%s" % (prefix, func.__doc__)
         setattr(matrix, name, func)
         return func
@@ -211,7 +213,9 @@ def column_matrix(*args, **kwds):
 
 
 @matrix_method
-def random_matrix(ring, nrows, ncols=None, algorithm='randomize', implementation=None, *args, **kwds):
+def random_matrix(
+    ring, nrows, ncols=None, algorithm='randomize', implementation=None, *args, **kwds
+):
     r"""
     Return a random matrix with entries in a specified ring, and possibly with additional properties.
 
@@ -647,7 +651,9 @@ def random_matrix(ring, nrows, ncols=None, algorithm='randomize', implementation
         ncols = nrows
     sparse = kwds.pop('sparse', False)
     # Construct the parent of the desired matrix
-    parent = matrix_space.MatrixSpace(ring, nrows, ncols, sparse=sparse, implementation=implementation)
+    parent = matrix_space.MatrixSpace(
+        ring, nrows, ncols, sparse=sparse, implementation=implementation
+    )
     if algorithm == 'randomize':
         density = kwds.pop('density', None)
         # zero matrix is immutable, copy is mutable
@@ -880,10 +886,15 @@ def diagonal_matrix(arg0=None, arg1=None, arg2=None, sparse=True):
     try:
         nentries = len(entries)
     except TypeError:
-        raise TypeError('unable to determine number of entries for diagonal matrix construction')
+        raise TypeError(
+            'unable to determine number of entries for diagonal matrix construction'
+        )
     # sometimes catches a negative size
     if nrows is not None and nentries > nrows:
-        raise ValueError('number of diagonal matrix entries (%s) exceeds the requested matrix size (%s)' % (nentries, nrows))
+        raise ValueError(
+            'number of diagonal matrix entries (%s) exceeds the requested matrix size (%s)'
+            % (nentries, nrows)
+        )
     if nrows is None:
         nrows = nentries
 
@@ -893,6 +904,7 @@ def diagonal_matrix(arg0=None, arg1=None, arg2=None, sparse=True):
 
     # Convert entries to a list v over a common ring
     from sage.modules.free_module_element import prepare
+
     v, ring = prepare(entries, ring)
 
     # Create a "diagonal" dictionary for matrix constructor
@@ -974,7 +986,12 @@ def lehmer(ring, n=0):
     if isinstance(ring, (Integer, int)):
         n = ring
         ring = QQ
-    return matrix_space.MatrixSpace(ring, n, n).matrix([[min(i, j)/max(i, j) for i in IntegerRange(1, n+1)] for j in IntegerRange(1, n+1)])
+    return matrix_space.MatrixSpace(ring, n, n).matrix(
+        [
+            [min(i, j) / max(i, j) for i in IntegerRange(1, n + 1)]
+            for j in IntegerRange(1, n + 1)
+        ]
+    )
 
 
 @matrix_method
@@ -1116,13 +1133,15 @@ def ones_matrix(ring, nrows=None, ncols=None, sparse=False):
         nrows, ncols = (ring, nrows)
         ring = ZZ
     if nrows is None:
-        raise ValueError("constructing an all ones matrix requires at least one dimension")
+        raise ValueError(
+            "constructing an all ones matrix requires at least one dimension"
+        )
     if ncols is None:
         nents = nrows**2
     else:
-        nents = nrows*ncols
+        nents = nrows * ncols
     one = ring(1)
-    return matrix_space.MatrixSpace(ring, nrows, ncols, sparse).matrix([one]*nents)
+    return matrix_space.MatrixSpace(ring, nrows, ncols, sparse).matrix([one] * nents)
 
 
 @matrix_method
@@ -1442,7 +1461,9 @@ def elementary_matrix(arg0, arg1=None, **kwds):
         arg0 = arg1
     elif scale is not None:
         if not isinstance(scale, RingElement):
-            raise TypeError('scale must be an element of some ring, not {0}'.format(scale))
+            raise TypeError(
+                'scale must be an element of some ring, not {0}'.format(scale)
+            )
         R = scale.parent()
     else:
         R = ZZ
@@ -1451,9 +1472,13 @@ def elementary_matrix(arg0, arg1=None, **kwds):
     try:
         n = Integer(arg0)
     except TypeError:
-        raise TypeError('size of elementary matrix must be an integer, not {0}'.format(arg0))
+        raise TypeError(
+            'size of elementary matrix must be an integer, not {0}'.format(arg0)
+        )
     if n <= 0:
-        raise ValueError('size of elementary matrix must be 1 or greater, not {0}'.format(n))
+        raise ValueError(
+            'size of elementary matrix must be 1 or greater, not {0}'.format(n)
+        )
     # row operations or column operations?
     # column operation matrix will be transpose of a row operation matrix
     row1 = kwds.pop('row1', None)
@@ -1473,36 +1498,62 @@ def elementary_matrix(arg0, arg1=None, **kwds):
     sparse = kwds.pop('sparse', False)
     if kwds:
         extra = kwds.popitem()
-        raise ValueError('received an unexpected keyword: {0}={1}'.format(extra[0], extra[1]))
+        raise ValueError(
+            'received an unexpected keyword: {0}={1}'.format(extra[0], extra[1])
+        )
 
     # analyze parameters to determine matrix type
     try:
         row1 = Integer(row1)
     except TypeError:
-        raise TypeError('{0} of elementary matrix must be an integer, not {1}'.format(opstring, row1))
+        raise TypeError(
+            '{0} of elementary matrix must be an integer, not {1}'.format(
+                opstring, row1
+            )
+        )
     if row1 < 0 or row1 >= n:
-        raise ValueError('{0} of elementary matrix must be positive and smaller than {1}, not {2}'.format(opstring, n, row1))
+        raise ValueError(
+            '{0} of elementary matrix must be positive and smaller than {1}, not {2}'.format(
+                opstring, n, row1
+            )
+        )
     if row2 is not None:
         try:
             row2 = Integer(row2)
         except TypeError:
-            raise TypeError('{0} of elementary matrix must be an integer, not {1}'.format(opstring, row2))
+            raise TypeError(
+                '{0} of elementary matrix must be an integer, not {1}'.format(
+                    opstring, row2
+                )
+            )
         if row2 < 0 or row2 >= n:
-            raise ValueError('{0} of elementary matrix must be positive and smaller than {1}, not {2}'.format(opstring, n, row2))
+            raise ValueError(
+                '{0} of elementary matrix must be positive and smaller than {1}, not {2}'.format(
+                    opstring, n, row2
+                )
+            )
     if scale is not None:
         try:
             scale = R(scale)
         except Exception:
-            raise TypeError('scale parameter of elementary matrix must an element of {0}, not {1}'.format(R, scale))
+            raise TypeError(
+                'scale parameter of elementary matrix must an element of {0}, not {1}'.format(
+                    R, scale
+                )
+            )
 
     # determine type of matrix and adjust an identity matrix
     # return row operation matrix or the transpose as a column operation matrix
     elem = identity_matrix(R, n, sparse=sparse)
     if row2 is None and scale is None:
-        raise ValueError('insufficient parameters provided to construct elementary matrix')
+        raise ValueError(
+            'insufficient parameters provided to construct elementary matrix'
+        )
     elif row2 is not None and scale is not None:
         if row1 == row2:
-            raise ValueError('cannot add a multiple of a {0} to itself'.format(opstring))
+            raise ValueError(
+                'cannot add a multiple of a {0} to itself'.format(opstring)
+            )
         elem[row1, row2] = scale
     elif row2 is not None and scale is None:
         elem[row1, row1] = 0
@@ -1511,7 +1562,11 @@ def elementary_matrix(arg0, arg1=None, **kwds):
         elem[row2, row1] = 1
     elif row2 is None and scale is not None:
         if scale == 0:
-            raise ValueError('scale parameter of {0} of elementary matrix must be nonzero'.format(opstring))
+            raise ValueError(
+                'scale parameter of {0} of elementary matrix must be nonzero'.format(
+                    opstring
+                )
+            )
         elem[row1, row1] = scale
     if rowop:
         return elem
@@ -1761,7 +1816,9 @@ def _determine_block_matrix_rows(sub_matrices):
                 if remaining_width < 0:
                     raise ValueError("incompatible submatrix widths")
                 if remaining_width > 0 and zero_state == 3:
-                    raise ValueError("insufficient information to determine submatrix widths")
+                    raise ValueError(
+                        "insufficient information to determine submatrix widths"
+                    )
                 if remaining_width > 0 and zero_state == 0:
                     raise ValueError("incompatible submatrix widths")
                 # otherwise, things fit
@@ -1770,7 +1827,9 @@ def _determine_block_matrix_rows(sub_matrices):
             elif zero_state != 0:
                 # if we don't know the height, and there are zeroes,
                 # we can't determine the height
-                raise ValueError("insufficient information to determine submatrix heights")
+                raise ValueError(
+                    "insufficient information to determine submatrix heights"
+                )
             elif total_width % len(R):
                 raise ValueError("incompatible submatrix widths")
             else:
@@ -2044,7 +2103,9 @@ def block_matrix(*args, **kwds):
             nrows = int(args[0])
             args.pop(0)
             if kwds.get('nrows', nrows) != nrows:
-                raise ValueError("number of rows specified twice and they are different")
+                raise ValueError(
+                    "number of rows specified twice and they are different"
+                )
         except TypeError:
             nrows = kwds.get('nrows', None)
     else:
@@ -2056,7 +2117,9 @@ def block_matrix(*args, **kwds):
             ncols = int(args[0])
             args.pop(0)
             if kwds.get('ncols', ncols) != ncols:
-                raise ValueError("number of columns specified twice and they are different")
+                raise ValueError(
+                    "number of columns specified twice and they are different"
+                )
         except TypeError:
             ncols = kwds.get('ncols', None)
     else:
@@ -2078,8 +2141,7 @@ def block_matrix(*args, **kwds):
     if isinstance(sub_matrices, Matrix):
         M = sub_matrices
         # a single matrix (check nrows/ncols/ring)
-        if (nrows is not None and nrows != 1) or \
-           (ncols is not None and ncols != 1):
+        if (nrows is not None and nrows != 1) or (ncols is not None and ncols != 1):
             raise ValueError("invalid nrows/ncols passed to block_matrix")
         if ring is not None:
             M = M.change_ring(ring)
@@ -2096,8 +2158,7 @@ def block_matrix(*args, **kwds):
     try_grid = True
 
     if not sub_matrices:
-        if (nrows is not None and nrows != 0) or \
-           (ncols is not None and ncols != 0):
+        if (nrows is not None and nrows != 0) or (ncols is not None and ncols != 0):
             raise ValueError("invalid nrows/ncols passed to block_matrix")
     elif isinstance(sub_matrices[0], (list, tuple)):
         # A list of lists: verify all elements are lists, and if
@@ -2107,9 +2168,13 @@ def block_matrix(*args, **kwds):
         first_len = len(sub_matrices[0])
         if ncols is not None and first_len != ncols:
             raise ValueError("invalid ncols passed to block_matrix")
-        same_length = all(isinstance(v, (list, tuple)) and len(v) == first_len for v in sub_matrices)
+        same_length = all(
+            isinstance(v, (list, tuple)) and len(v) == first_len for v in sub_matrices
+        )
         if subdivide and not same_length:
-            raise ValueError("list of rows is not valid (rows are wrong types or lengths)")
+            raise ValueError(
+                "list of rows is not valid (rows are wrong types or lengths)"
+            )
         try_grid = same_length
     else:
         # A flat list
@@ -2123,25 +2188,44 @@ def block_matrix(*args, **kwds):
         elif ncols is None:
             ncols = n // nrows
         if nrows * ncols != n:
-            raise ValueError("given number of rows (%s), columns (%s) incompatible with number of submatrices (%s)" % (nrows, ncols, n))
+            raise ValueError(
+                "given number of rows (%s), columns (%s) incompatible with number of submatrices (%s)"
+                % (nrows, ncols, n)
+            )
         # Now create a list of lists from this
-        sub_matrices = [sub_matrices[i * ncols: (i + 1) * ncols]
-                        for i in range(nrows)]
+        sub_matrices = [sub_matrices[i * ncols : (i + 1) * ncols] for i in range(nrows)]
 
     # At this point sub_matrices is a list of lists
 
     from sage.structure.coerce import py_scalar_to_element
     from sage.structure.element import Vector
-    sub_matrices = [[M.column() if isinstance(M, Vector) else M if isinstance(M, Matrix) else py_scalar_to_element(M)
-                     for M in row] for row in sub_matrices]
+
+    sub_matrices = [
+        [
+            M.column()
+            if isinstance(M, Vector)
+            else M
+            if isinstance(M, Matrix)
+            else py_scalar_to_element(M)
+            for M in row
+        ]
+        for row in sub_matrices
+    ]
 
     # determine the base ring and sparsity
     if ring is None:
         from sage.structure.element import get_coercion_model
-        parents = [M.base_ring() if isinstance(M, Matrix) else parent(M) for row in sub_matrices for M in row]
+
+        parents = [
+            M.base_ring() if isinstance(M, Matrix) else parent(M)
+            for row in sub_matrices
+            for M in row
+        ]
         for p in parents:
             if p not in Rings():
-                raise ValueError(f"an element of parent {p} was passed in, but only matrices, vectors and ring elements are accepted")
+                raise ValueError(
+                    f"an element of parent {p} was passed in, but only matrices, vectors and ring elements are accepted"
+                )
         ring = get_coercion_model().common_parent(*parents) if parents else ZZ
 
     if sparse is None:
@@ -2167,7 +2251,9 @@ def block_matrix(*args, **kwds):
     if col_widths is None:
         # Try placing the matrices in rows instead
         # (Only if subdivide is False)
-        (row_heights, zero_widths, total_width) = _determine_block_matrix_rows(sub_matrices)
+        (row_heights, zero_widths, total_width) = _determine_block_matrix_rows(
+            sub_matrices
+        )
 
     # Success, so assemble the final matrix
 
@@ -2212,8 +2298,7 @@ def block_matrix(*args, **kwds):
         big = matrix(ring, 0, 0)
 
     if subdivide:
-        big.subdivide(running_total(row_heights[:-1]),
-                      running_total(col_widths[:-1]))
+        big.subdivide(running_total(row_heights[:-1]), running_total(col_widths[:-1]))
 
     return big
 
@@ -2251,7 +2336,7 @@ def block_diagonal_matrix(*sub_matrices, **kwds):
     n = len(sub_matrices)
     entries = [ZZ.zero()] * n**2
     for i in range(n):
-        entries[n*i+i] = sub_matrices[i]
+        entries[n * i + i] = sub_matrices[i]
     return block_matrix(n, n, entries, **kwds)
 
 
@@ -2463,17 +2548,28 @@ def companion_matrix(poly, format='right'):
     - Rob Beezer (2011-05-19)
     """
     import sage.matrix.constructor
+
     if format not in ['right', 'left', 'top', 'bottom']:
-        raise ValueError("format must be 'right', 'left', 'top' or 'bottom', not {0}".format(format))
+        raise ValueError(
+            "format must be 'right', 'left', 'top' or 'bottom', not {0}".format(format)
+        )
     try:
         poly = Sequence(poly)
     except TypeError:
-        raise TypeError('input must be a polynomial (not a symbolic expression, see docstring), or other iterable, not {0}'.format(poly))
+        raise TypeError(
+            'input must be a polynomial (not a symbolic expression, see docstring), or other iterable, not {0}'.format(
+                poly
+            )
+        )
     n = len(poly) - 1
     if n == -1:
         raise ValueError('polynomial cannot be specified by an empty list')
     if not poly[n] == 1:
-        raise ValueError('polynomial (or the polynomial implied by coefficients) must be monic, not a leading coefficient of {0}'.format(poly[n]))
+        raise ValueError(
+            'polynomial (or the polynomial implied by coefficients) must be monic, not a leading coefficient of {0}'.format(
+                poly[n]
+            )
+        )
     try:
         M = sage.matrix.constructor.matrix(poly.universe(), n, n)
     except TypeError:
@@ -2481,23 +2577,23 @@ def companion_matrix(poly, format='right'):
     # 1s below diagonal, or above diagonal
     if format in ['right', 'top']:
         for i in range(n - 1):
-            M[i+1, i] = 1
+            M[i + 1, i] = 1
     else:
-        for i in range(n-1):
-            M[i, i+1] = 1
+        for i in range(n - 1):
+            M[i, i + 1] = 1
     # right side, left side (reversed), bottom edge, top edge (reversed)
     if format == 'right':
         for i in range(n):
-            M[i, n-1] = -poly[i]
+            M[i, n - 1] = -poly[i]
     elif format == 'left':
         for i in range(n):
-            M[n-1-i, 0] = -poly[i]
+            M[n - 1 - i, 0] = -poly[i]
     elif format == 'bottom':
         for i in range(n):
-            M[n-1, i] = -poly[i]
+            M[n - 1, i] = -poly[i]
     elif format == 'top':
         for i in range(n):
-            M[0, n-1-i] = -poly[i]
+            M[0, n - 1 - i] = -poly[i]
     return M
 
 
@@ -2637,7 +2733,7 @@ def random_rref_matrix(parent, num_pivots):
     # No harm if no pivots at all.
     subset = list(range(1, num_col))
     shuffle(subset)
-    pivots = [0] + sorted(subset[:num_pivots - 1])
+    pivots = [0] + sorted(subset[: num_pivots - 1])
 
     # Use the list of pivot columns to set the pivot entries of the return_matrix to leading ones.
     for pivot_row, pivot in enumerate(pivots):
@@ -2647,27 +2743,43 @@ def random_rref_matrix(parent, num_pivots):
         # the right of the initial pivot column, go until the first column to the left of the next
         # pivot column.
         for pivot_index in range(num_pivots - 1):
-            for non_pivot_column_index in range(pivots[pivot_index] + 1, pivots[pivot_index + 1]):
+            for non_pivot_column_index in range(
+                pivots[pivot_index] + 1, pivots[pivot_index + 1]
+            ):
                 entry_generator1 = pd.RealDistribution("beta", [6, 4])
                 # Experimental distribution used to generate the values.
                 for non_pivot_column_entry in range(pivot_index + 1):
-                    sign1 = (2 * randint(0, 1) - 1)
-                    return_matrix[non_pivot_column_entry, non_pivot_column_index] = sign1 * int(entry_generator1.get_random_element() * ((1 - non_pivot_column_entry / return_matrix.ncols()) * 7))
+                    sign1 = 2 * randint(0, 1) - 1
+                    return_matrix[non_pivot_column_entry, non_pivot_column_index] = (
+                        sign1
+                        * int(
+                            entry_generator1.get_random_element()
+                            * ((1 - non_pivot_column_entry / return_matrix.ncols()) * 7)
+                        )
+                    )
         # Use index to fill entries of the columns to the right of the last pivot column.
         for rest_non_pivot_column in range(pivots[num_pivots - 1] + 1, num_col):
             entry_generator2 = pd.RealDistribution("beta", [2.6, 4])
             # experimental distribution to generate small values.
             for rest_entries in range(num_pivots):
-                sign2 = (2 * randint(0, 1) - 1)
-                return_matrix[rest_entries, rest_non_pivot_column] = sign2 * int(entry_generator2.get_random_element() * 5)
+                sign2 = 2 * randint(0, 1) - 1
+                return_matrix[rest_entries, rest_non_pivot_column] = sign2 * int(
+                    entry_generator2.get_random_element() * 5
+                )
     else:
         for pivot_index in range(num_pivots - 1):
-            for non_pivot_column_index in range(pivots[pivot_index] + 1, pivots[pivot_index + 1]):
+            for non_pivot_column_index in range(
+                pivots[pivot_index] + 1, pivots[pivot_index + 1]
+            ):
                 for non_pivot_column_entry in range(pivot_index + 1):
-                    return_matrix[non_pivot_column_entry, non_pivot_column_index] = ring.random_element()
+                    return_matrix[non_pivot_column_entry, non_pivot_column_index] = (
+                        ring.random_element()
+                    )
         for rest_non_pivot_column in range(pivots[num_pivots - 1] + 1, num_col):
             for rest_entries in range(num_pivots):
-                return_matrix[rest_entries, rest_non_pivot_column] = ring.random_element()
+                return_matrix[rest_entries, rest_non_pivot_column] = (
+                    ring.random_element()
+                )
     return return_matrix
 
 
@@ -2815,19 +2927,18 @@ def random_echelonizable_matrix(parent, rank, upper_bound=None, max_tries=100):
         # If upper_bound is not set, don't control entry size.
         if upper_bound is None:
             # If size control is not desired, the routine will run slightly faster, particularly with large matrices.
-            for pivots in range(rank-1, -1, -1):
+            for pivots in range(rank - 1, -1, -1):
                 row_index = 0
                 while row_index < rows:
                     if pivots == row_index:
                         row_index += 1
                     if pivots != row_index and row_index != rows:
-                        matrix.add_multiple_of_row(row_index,
-                                                   matrix.pivot_rows()[pivots],
-                                                   randint(-5, 5))
+                        matrix.add_multiple_of_row(
+                            row_index, matrix.pivot_rows()[pivots], randint(-5, 5)
+                        )
                         row_index += 1
             if rows > 1:
-                matrix.add_multiple_of_row(0, randint(1, rows-1),
-                                           randint(-3, 3))
+                matrix.add_multiple_of_row(0, randint(1, rows - 1), randint(-3, 3))
         else:
             if rank == 1:  # would be better just to have a special generator...
                 tries = 0
@@ -2835,7 +2946,11 @@ def random_echelonizable_matrix(parent, rank, upper_bound=None, max_tries=100):
                     matrix = random_rref_matrix(parent, rank)
                     tries += 1
                     if tries > max_tries:  # to prevent endless attempts
-                        raise ValueError("tried "+str(max_tries)+" times to get a rank 1 random matrix. Try bigger upper_bound?")
+                        raise ValueError(
+                            "tried "
+                            + str(max_tries)
+                            + " times to get a rank 1 random matrix. Try bigger upper_bound?"
+                        )
                 matrix_copy = matrix
 
             for pivots in range(len(matrix.pivots()) - 1, -1, -1):
@@ -2849,7 +2964,9 @@ def random_echelonizable_matrix(parent, rank, upper_bound=None, max_tries=100):
                     if pivots != row_index:
                         # To ensure a leading one is not removed by the addition of the pivot row by its
                         # additive inverse.
-                        matrix_copy = matrix.with_added_multiple_of_row(row_index, matrix.pivot_rows()[pivots], randint(-5, 5))
+                        matrix_copy = matrix.with_added_multiple_of_row(
+                            row_index, matrix.pivot_rows()[pivots], randint(-5, 5)
+                        )
                         tries += 1
                         # Range for scalar multiples determined experimentally.
                     if max(map(abs, matrix_copy.list())) < upper_bound:
@@ -2858,29 +2975,39 @@ def random_echelonizable_matrix(parent, rank, upper_bound=None, max_tries=100):
                         row_index += 1
                         tries = 0
                     if tries > max_tries:  # to prevent endless unsuccessful row adding
-                        raise ValueError("tried "+str(max_tries)+" times to get row number "+str(row_index)+". Try bigger upper_bound?")
+                        raise ValueError(
+                            "tried "
+                            + str(max_tries)
+                            + " times to get row number "
+                            + str(row_index)
+                            + ". Try bigger upper_bound?"
+                        )
             # The leading one in row one has not been altered, so add a scalar multiple of a random row
             # to row one.
             row1 = 0
             if rows > 1:
                 while row1 < 1:
-                    matrix_copy = matrix.with_added_multiple_of_row(0, randint(1, rows-1), randint(-3, 3))
+                    matrix_copy = matrix.with_added_multiple_of_row(
+                        0, randint(1, rows - 1), randint(-3, 3)
+                    )
                     if max(map(abs, matrix_copy.list())) < upper_bound:
                         matrix = matrix_copy
                         row1 += 1
     # If the matrix generated over a different ring, random elements from the designated ring are used as and
     # the routine is run similarly to the size unchecked version for rationals and integers.
     else:
-        for pivots in range(rank-1, -1, -1):
+        for pivots in range(rank - 1, -1, -1):
             row_index = 0
             while row_index < rows:
                 if pivots == row_index:
                     row_index += 1
                 if pivots != row_index and row_index != rows:
-                    matrix.add_multiple_of_row(row_index, matrix.pivot_rows()[pivots], ring.random_element())
+                    matrix.add_multiple_of_row(
+                        row_index, matrix.pivot_rows()[pivots], ring.random_element()
+                    )
                     row_index += 1
         if rows > 1:
-            matrix.add_multiple_of_row(0, randint(1, rows-1), ring.random_element())
+            matrix.add_multiple_of_row(0, randint(1, rows - 1), ring.random_element())
     return matrix
 
 
@@ -3005,23 +3132,22 @@ def random_subspaces_matrix(parent, rank=None):
     # skewing to smaller numbers, always at least 1.
     if rank is None:
         left_nullity_generator = pd.RealDistribution("beta", [1.4, 5.5])
-        nullity = int(left_nullity_generator.get_random_element()*(rows-1) + 1)
+        nullity = int(left_nullity_generator.get_random_element() * (rows - 1) + 1)
         rank = rows - nullity
     if rank < 0:
         raise ValueError("matrices must have rank zero or greater.")
     if rank > rows or rank > columns:
         raise ValueError("rank cannot exceed the number of rows or columns.")
     nullity = rows - rank
-    B = random_matrix(ring, rows, columns, algorithm='echelon_form',
-                      num_pivots=rank)
+    B = random_matrix(ring, rows, columns, algorithm='echelon_form', num_pivots=rank)
 
     # Create a nonsingular matrix whose columns will be used to stack a matrix
     # over the L matrix, forming a nonsingular matrix.
-    K_nonzero_columns = random_matrix(ring, rank, rank,
-                                      algorithm='echelonizable', rank=rank)
+    K_nonzero_columns = random_matrix(
+        ring, rank, rank, algorithm='echelonizable', rank=rank
+    )
     K = matrix(QQ, rank, rows)
-    L = random_matrix(ring, nullity, rows, algorithm='echelon_form',
-                      num_pivots=nullity)
+    L = random_matrix(ring, nullity, rows, algorithm='echelon_form', num_pivots=nullity)
     for column in range(len(L.nonpivots())):
         for entry in range(rank):
             K[entry, L.nonpivots()[column]] = K_nonzero_columns[entry, column]
@@ -3135,8 +3261,14 @@ def random_unimodular_matrix(parent, upper_bound=None, max_tries=100):
         # random_echelonizable_matrix() always returns a determinant one matrix if given full rank.
         return random_matrix(ring, size, algorithm='echelonizable', rank=size)
     if upper_bound is not None and (ring == ZZ or ring == QQ):
-        return random_matrix(ring, size, algorithm='echelonizable',
-                             rank=size, upper_bound=upper_bound, max_tries=max_tries)
+        return random_matrix(
+            ring,
+            size,
+            algorithm='echelonizable',
+            rank=size,
+            upper_bound=upper_bound,
+            max_tries=max_tries,
+        )
 
 
 @matrix_method
@@ -3278,25 +3410,30 @@ def random_unitary_matrix(parent):
         raise ValueError("base ring of parent must have characteristic zero")
 
     from sage.rings.real_lazy import CLF, RLF
-    if not (RLF.has_coerce_map_from(F) or
-            F.has_coerce_map_from(RLF) or
-            CLF.has_coerce_map_from(F) or
-            F.has_coerce_map_from(CLF)):
+
+    if not (
+        RLF.has_coerce_map_from(F)
+        or F.has_coerce_map_from(RLF)
+        or CLF.has_coerce_map_from(F)
+        or F.has_coerce_map_from(CLF)
+    ):
         # The implementation of SR.random_element() currently just
         # returns a random integer coerced into SR, so there is no
         # benefit to allowing SR here when QQ is available.
-        raise ValueError("base ring of parent must be a subfield "
-                         "of the complex numbers")
+        raise ValueError(
+            "base ring of parent must be a subfield of the complex numbers"
+        )
 
     I = identity_matrix(F, n)
     A = random_matrix(F, n)
     S = A - A.conjugate_transpose()
-    U = (S-I).inverse()*(S+I)
+    U = (S - I).inverse() * (S + I)
 
     # Scale the rows of U by plus/minus one with equal probability.
     # This generates the equivalence class of U according to the
     # Liebeck/Osborne paper.
     from random import random
+
     for i in range(n):
         if random() < 0.5:
             U.set_row_to_multiple_of_row(i, i, -1)
@@ -3399,9 +3536,9 @@ def random_bistochastic_matrix(parent):
         ValueError: base ring of parent must be a subfield of the real numbers
     """
     from sage.rings.real_mpfr import RR
+
     if not parent.base_ring().is_subring(RR):
-        raise ValueError("base ring of parent must be a subfield of the real "
-                         "numbers")
+        raise ValueError("base ring of parent must be a subfield of the real numbers")
 
     B = random_unitary_matrix(parent)
     # Squaring every entry.
@@ -3620,9 +3757,13 @@ def random_diagonalizable_matrix(parent, eigenvalues=None, dimensions=None):
     if parent.nrows() != parent.ncols():
         raise TypeError("a diagonalizable matrix must be square")
     if eigenvalues is not None and dimensions is None:
-        raise ValueError("the list of eigenvalues must have a list of dimensions corresponding to each eigenvalue")
+        raise ValueError(
+            "the list of eigenvalues must have a list of dimensions corresponding to each eigenvalue"
+        )
     if eigenvalues is None and dimensions is not None:
-        raise ValueError("the list of dimensions must have a list of corresponding eigenvalues")
+        raise ValueError(
+            "the list of dimensions must have a list of corresponding eigenvalues"
+        )
     if eigenvalues is None and dimensions is None:
         eigenvalues = [ring(randint(-10, 10)) for _ in range(size)]
         dimensions = [1] * size
@@ -3632,7 +3773,9 @@ def random_diagonalizable_matrix(parent, eigenvalues=None, dimensions=None):
     if min(dimensions) < 1:
         raise ValueError("eigenspaces must have a dimension of at least 1")
     if len(eigenvalues) != len(dimensions):
-        raise ValueError("each eigenvalue must have a corresponding dimension and each dimension a corresponding eigenvalue")
+        raise ValueError(
+            "each eigenvalue must have a corresponding dimension and each dimension a corresponding eigenvalue"
+        )
     # Merge equal eigenvalues after coercion into the base ring.  The dict
     # groups by equality (hash only selects the bucket), so this still relies
     # on the ring having meaningful equality; rings that signal otherwise by
@@ -3644,7 +3787,9 @@ def random_diagonalizable_matrix(parent, eigenvalues=None, dimensions=None):
     eigenvalue_dimensions = sorted(grouped.items(), key=lambda pair: pair[1])
     dimensions = [dimension for _, dimension in eigenvalue_dimensions]
     # Create the matrix of eigenvalues on the diagonal, each repeated according to its dimension.
-    diag_matrix = diagonal_matrix(ring, [e for e, d in eigenvalue_dimensions for _ in range(d)])
+    diag_matrix = diagonal_matrix(
+        ring, [e for e, d in eigenvalue_dimensions for _ in range(d)]
+    )
     # Create a matrix to hold each of the eigenvectors as its columns, begin with an identity matrix so that after row and column
     # operations the resulting matrix will be unimodular.
     eigenvector_matrix = identity_matrix(ring, size)
@@ -3657,20 +3802,27 @@ def random_diagonalizable_matrix(parent, eigenvalues=None, dimensions=None):
     dimension_check = [dim for dim in dimensions for _ in range(dim)]
     # run routine over the rows that are in the range of the protected ones.  Use addition of column multiples to fill entries.
     for dimension_multiplicity in range(max(dimensions), min(dimensions), -1):
-        highest_one_row = size-dimension_multiplicity
+        highest_one_row = size - dimension_multiplicity
         # find the column with the protected one in the lowest indexed row.
-        highest_one_column = min(col for col in range(size) if eigenvector_matrix[highest_one_row, col] != 0)
+        highest_one_column = min(
+            col for col in range(size) if eigenvector_matrix[highest_one_row, col] != 0
+        )
         # dimension_check determines if column has a low enough eigenvalue dimension to take a column multiple.
         for bottom_entry_filler in range(size):
-            if dimension_check[bottom_entry_filler] < dimension_multiplicity and eigenvector_matrix[highest_one_row, bottom_entry_filler] == 0:
+            if (
+                dimension_check[bottom_entry_filler] < dimension_multiplicity
+                and eigenvector_matrix[highest_one_row, bottom_entry_filler] == 0
+            ):
                 # randint range determined experimentally to keep entries manageable.
-                eigenvector_matrix.add_multiple_of_column(bottom_entry_filler, highest_one_column, randint(-4, 4))
+                eigenvector_matrix.add_multiple_of_column(
+                    bottom_entry_filler, highest_one_column, randint(-4, 4)
+                )
     # Fill remaining rows using scalar row addition.
-    for row in range(size-max(dimensions), size):
-        for upper_row in range(size-max(dimensions)):
+    for row in range(size - max(dimensions), size):
+        for upper_row in range(size - max(dimensions)):
             # range of multiplier determined experimentally so that entries stay manageable for small matrices
             eigenvector_matrix.add_multiple_of_row(upper_row, row, randint(-4, 4))
-    return eigenvector_matrix*diag_matrix*eigenvector_matrix.inverse()
+    return eigenvector_matrix * diag_matrix * eigenvector_matrix.inverse()
 
 
 @matrix_method
@@ -3847,6 +3999,7 @@ def ith_to_zero_rotation_matrix(v, i, ring=None):
     if b == 0:
         return identity_matrix(dim, sparse=True)
     from sage.misc.functional import sqrt
+
     norm = sqrt(a * a + b * b)
     aa = a / norm
     bb = b / norm
@@ -3884,8 +4037,10 @@ def hilbert(dim, ring=QQ):
         [1/4 1/5 1/6 1/7 1/8]
         [1/5 1/6 1/7 1/8 1/9]
     """
+
     def entries(i, j):
         return ZZ.one() / (i + j + 1)
+
     return matrix(entries, nrows=dim, ncols=dim, base_ring=ring)
 
 
@@ -3918,8 +4073,10 @@ def vandermonde(v, ring=None):
         [   1   x1 x1^2]
         [   1   x2 x2^2]
     """
+
     def entries(i, j):
-        return v[i]**j
+        return v[i] ** j
+
     return matrix(entries, nrows=len(v), ncols=len(v), base_ring=ring)
 
 
@@ -3964,9 +4121,11 @@ def toeplitz(c, r, ring=None):
         [ 0  1 -2  1]
         [ 0  0  1 -2]
     """
+
     def entries(i, j):
         return c[i - j] if i >= j else r[j - i - 1]
-    return matrix(entries, nrows=len(c), ncols=len(r)+1, base_ring=ring)
+
+    return matrix(entries, nrows=len(c), ncols=len(r) + 1, base_ring=ring)
 
 
 @matrix_method
@@ -4036,4 +4195,5 @@ def hankel(c, r=None, ring=None):
 
     def entries(i):
         return c[i] if i < m else r[i - m]
+
     return matrix(lambda i, j: entries(i + j), nrows=m, ncols=n + 1, base_ring=ring)

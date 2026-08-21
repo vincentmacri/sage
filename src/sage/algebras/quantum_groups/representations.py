@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2018): initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2018 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.misc.lazy_attribute import lazy_attribute
@@ -36,6 +36,7 @@ class QuantumGroupRepresentation(CombinatorialFreeModule):
     - ``q`` -- (default: the generator of ``R``) the parameter `q`
       of the quantum group
     """
+
     @staticmethod
     def __classcall__(cls, R, C, q=None):
         """
@@ -123,7 +124,7 @@ class QuantumGroupRepresentation(CombinatorialFreeModule):
         """
         WLR = self.basis().keys().weight_lattice_realization()
         alc = WLR.simple_coroots()
-        return self.term(b, self._q**(b.weight().scalar(alc[i]) * self._d[i] * power))
+        return self.term(b, self._q ** (b.weight().scalar(alc[i]) * self._d[i] * power))
 
 
 class CyclicRepresentation(QuantumGroupRepresentation):
@@ -139,6 +140,7 @@ class CyclicRepresentation(QuantumGroupRepresentation):
     and
     :class:`~sage.algebras.quantum_groups.representations.MinusculeRepresentation`.
     """
+
     def _repr_(self):
         """
         Return a string representation of ``self``.
@@ -181,6 +183,7 @@ class CyclicRepresentation(QuantumGroupRepresentation):
         except (TypeError, AttributeError):
             mg = self.basis().keys().module_generators[0]
         from sage.misc.latex import latex
+
         return r"V\left( {} \right)".format(latex(mg.weight()))
 
     @cached_method
@@ -299,6 +302,7 @@ class AdjointRepresentation(CyclicRepresentation):
 
     - [OS2018]_
     """
+
     def __init__(self, R, C, q):
         """
         Initialize ``self``.
@@ -326,10 +330,14 @@ class AdjointRepresentation(CyclicRepresentation):
         CyclicRepresentation.__init__(self, R, C, q)
         ct = C.cartan_type()
         if ct.is_finite() and ct.type() == 'A':
+
             def test_zero(x):
                 wt = x.weight()
-                return all(wt.scalar(ac) == 0
-                           for ac in self._WLR_zero.parent().simple_coroots())
+                return all(
+                    wt.scalar(ac) == 0
+                    for ac in self._WLR_zero.parent().simple_coroots()
+                )
+
             self._check_zero_wt = test_zero
         else:
             self._check_zero_wt = lambda x: x.weight() == self._WLR_zero
@@ -400,15 +408,19 @@ class AdjointRepresentation(CyclicRepresentation):
         x = b.e(i)
         if x is None:
             return self.zero()
-        I = {j: pos for pos,j in enumerate(C.index_set())}
+        I = {j: pos for pos, j in enumerate(C.index_set())}
         if self._check_zero_wt(x):
             A = C.cartan_type().cartan_matrix()
-            return self.monomial(x) + sum(self.term(self._zero_elts[j],
-                                                    q_int(-A[I[i],I[j]], self._q**self._d[i])
-                                                    / q_int(2, self._q**self._d[j]))
-                                          for j in C.index_set()
-                                          if A[I[i],I[j]] < 0 and j in self._zero_elts)
-        return self.term(x, q_int(x.phi(i), self._q**self._d[i]))
+            return self.monomial(x) + sum(
+                self.term(
+                    self._zero_elts[j],
+                    q_int(-A[I[i], I[j]], self._q ** self._d[i])
+                    / q_int(2, self._q ** self._d[j]),
+                )
+                for j in C.index_set()
+                if A[I[i], I[j]] < 0 and j in self._zero_elts
+            )
+        return self.term(x, q_int(x.phi(i), self._q ** self._d[i]))
 
     def f_on_basis(self, i, b):
         r"""
@@ -452,16 +464,19 @@ class AdjointRepresentation(CyclicRepresentation):
         x = b.f(i)
         if x is None:
             return self.zero()
-        I = {j: pos for pos,j in enumerate(C.index_set())}
+        I = {j: pos for pos, j in enumerate(C.index_set())}
         if self._check_zero_wt(x):
             A = C.cartan_type().cartan_matrix()
-            return self.monomial(x) + sum(self.term(self._zero_elts[j],
-                                                    q_int(-A[I[i],I[j]],
-                                                    self._q**self._d[i])
-                                                    / q_int(2, self._q**self._d[j]))
-                                          for j in C.index_set()
-                                          if A[I[i],I[j]] < 0 and j in self._zero_elts)
-        return self.term(x, q_int(x.epsilon(i), self._q**self._d[i]))
+            return self.monomial(x) + sum(
+                self.term(
+                    self._zero_elts[j],
+                    q_int(-A[I[i], I[j]], self._q ** self._d[i])
+                    / q_int(2, self._q ** self._d[j]),
+                )
+                for j in C.index_set()
+                if A[I[i], I[j]] < 0 and j in self._zero_elts
+            )
+        return self.term(x, q_int(x.epsilon(i), self._q ** self._d[i]))
 
 
 class MinusculeRepresentation(CyclicRepresentation):
@@ -526,6 +541,7 @@ class MinusculeRepresentation(CyclicRepresentation):
 
     - [OS2018]_
     """
+
     def e_on_basis(self, i, b):
         r"""
         Return the action of `e_i` on the basis element indexed by ``b``.

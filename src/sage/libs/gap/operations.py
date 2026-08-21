@@ -28,7 +28,6 @@ NAME_RE = re.compile(r'(Setter|Getter|Tester)\((.*)\)')
 
 
 class OperationInspector(SageObject):
-
     def __init__(self, libgap_element):
         """
         Information about operations that can act on a given LibGAP element.
@@ -91,10 +90,12 @@ class OperationInspector(SageObject):
             sage: Unknown in x.operations()
             True
         """
+
         def mfi(o):
             filts = GET_OPER_FLAGS(o)
-            return any(all(IS_SUBSET_FLAGS(self.flags, fl) for fl in fls)
-                       for fls in filts)
+            return any(
+                all(IS_SUBSET_FLAGS(self.flags, fl) for fl in fls) for fls in filts
+            )
 
         return (op for op in OPERATIONS if mfi(op))
 

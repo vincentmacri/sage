@@ -57,6 +57,7 @@ class SagecodeTransform(SphinxTransform):
 
     enabling live execution of the code.
     """
+
     # lower than the priority of jupyer_sphinx.execute.ExecuteJupyterCells
     default_priority = 170
 
@@ -69,6 +70,7 @@ class SagecodeTransform(SphinxTransform):
                     from docutils.nodes import label as Label
                     from docutils.nodes import literal_block as LiteralBlock
                     from sphinx_inline_tabs._impl import TabContainer
+
                     parent = node.parent
                     index = parent.index(node)
                     prev_node = node.previous_sibling()
@@ -93,6 +95,7 @@ class SagecodeTransform(SphinxTransform):
 
                     # Tab for preparsed version
                     from sage.repl.preparse import preparse
+
                     container = TabContainer("", type="tab", new_set=False)
                     textnodes = [Text('Python')]
                     label = Label("", "", *textnodes)
@@ -100,7 +103,9 @@ class SagecodeTransform(SphinxTransform):
                     content = Container("", is_div=True, classes=["tab-content"])
                     example_lines = []
                     preparsed_lines = ['>>> from sage.all import *']
-                    for line in node.rawsource.splitlines() + ['']:  # one extra to process last example
+                    for line in node.rawsource.splitlines() + [
+                        ''
+                    ]:  # one extra to process last example
                         newline = line.lstrip()
                         if newline.startswith('....: '):
                             example_lines.append(newline[6:])
@@ -117,7 +122,9 @@ class SagecodeTransform(SphinxTransform):
                             else:
                                 preparsed_lines.append(line)
                     preparsed = '\n'.join(preparsed_lines)
-                    preparsed_node = LiteralBlock(preparsed, preparsed, language='ipycon')
+                    preparsed_node = LiteralBlock(
+                        preparsed, preparsed, language='ipycon'
+                    )
                     content += preparsed_node
                     container += content
                     parent.insert(index, container)
@@ -128,26 +135,29 @@ class SagecodeTransform(SphinxTransform):
                     if SAGE_LIVE_DOC == 'yes':
                         # Tab for Jupyter-sphinx cell
                         from jupyter_sphinx.ast import CellInputNode, JupyterCellNode
+
                         source = node.rawsource
                         lines = []
                         for line in source.splitlines():
                             newline = line.lstrip()
-                            if newline.startswith('sage: ') or newline.startswith('....: '):
+                            if newline.startswith('sage: ') or newline.startswith(
+                                '....: '
+                            ):
                                 lines.append(newline[6:])
                         cell_node = JupyterCellNode(
-                                    execute=False,
-                                    hide_code=False,
-                                    hide_output=True,
-                                    emphasize_lines=[],
-                                    raises=False,
-                                    stderr=True,
-                                    code_below=False,
-                                    classes=["jupyter_cell"])
-                        cell_input = CellInputNode(classes=['cell_input','live-doc'])
+                            execute=False,
+                            hide_code=False,
+                            hide_output=True,
+                            emphasize_lines=[],
+                            raises=False,
+                            stderr=True,
+                            code_below=False,
+                            classes=["jupyter_cell"],
+                        )
+                        cell_input = CellInputNode(classes=['cell_input', 'live-doc'])
                         cell_input += nodes.literal_block(
-                            text='\n'.join(lines),
-                            linenos=False,
-                            linenostart=1)
+                            text='\n'.join(lines), linenos=False, linenostart=1
+                        )
                         cell_node += cell_input
                         container = TabContainer("", type="tab", new_set=False)
                         textnodes = [Text('Sage Live')]
@@ -163,7 +173,6 @@ class SagecodeTransform(SphinxTransform):
 
 
 class Ignore(SphinxDirective):
-
     has_content = True
 
     def run(self):

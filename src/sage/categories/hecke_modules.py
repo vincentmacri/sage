@@ -58,6 +58,7 @@ class HeckeModules(Category_module):
 
         sage: TestSuite(HeckeModules(ZZ)).run()
     """
+
     def __init__(self, R):
         """
         TESTS::
@@ -70,6 +71,7 @@ class HeckeModules(Category_module):
             TypeError: R (=Partitions of the integer 3) must be a commutative ring
         """
         from .commutative_rings import CommutativeRings
+
         if R not in CommutativeRings():
             raise TypeError("R (=%s) must be a commutative ring" % R)
         Category_module.__init__(self, R)
@@ -100,7 +102,6 @@ class HeckeModules(Category_module):
         return "Hecke modules over {}".format(self.base())
 
     class ParentMethods:
-
         def _Hom_(self, Y, category):
             r"""
             Return the homset from ``self`` to ``Y`` in the category ``category``.
@@ -150,9 +151,15 @@ class HeckeModules(Category_module):
                 is not a subcategory of Category of Hecke modules over Rational Field
             """
             # TODO: double check that it's the correct HeckeModules category below:
-            if category is not None and not category.is_subcategory(HeckeModules(self.base_ring())):
-                raise TypeError("%s is not a subcategory of %s" % (category, HeckeModules(self.base_ring())))
+            if category is not None and not category.is_subcategory(
+                HeckeModules(self.base_ring())
+            ):
+                raise TypeError(
+                    "%s is not a subcategory of %s"
+                    % (category, HeckeModules(self.base_ring()))
+                )
             from sage.modular.hecke.homspace import HeckeModuleHomspace
+
             return HeckeModuleHomspace(self, Y, category=category)
 
     class Homsets(HomsetsCategory):
@@ -178,6 +185,7 @@ class HeckeModules(Category_module):
                 [Category of vector spaces over Rational Field, Category of homsets]
             """
             from sage.categories.modules import Modules
+
             return [Modules(self.base_category().base_ring())]
 
         class ParentMethods:

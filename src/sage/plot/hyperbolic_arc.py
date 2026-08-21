@@ -93,6 +93,7 @@ class HyperbolicArcCore(BezierPath):
     The Upper Half Model, Poincaré Disk Model, and Klein Disk model
     are supported.
     """
+
     def _bezier_path(self, z0, z1, model, first=False):
         """
         Construct a bezier path from a given arc object and store it
@@ -111,7 +112,8 @@ class HyperbolicArcCore(BezierPath):
         """
         import numpy as np
         from sage.rings.infinity import infinity
-        EPSILON = 10 ** -5
+
+        EPSILON = 10**-5
 
         arc0 = model.get_geodesic(z0, z1).plot()[0]
 
@@ -120,25 +122,37 @@ class HyperbolicArcCore(BezierPath):
         else:
             points = arc0.bezier_path()[0].vertices
         if (
-            ((z0.is_infinity() or z0 == infinity)
-             and abs(CC(points[0][0], points[0][1]) - z1) < EPSILON)
-            or ((z1.is_infinity() or z1 == infinity)
-                and abs(CC(points[1][0], points[1][1]) - z0) < EPSILON)
-            or (abs(CC(points[0][0], points[0][1]) - z0) >= EPSILON
-                and not (z0.is_infinity() or z0 == infinity or z1.is_infinity()
-                         or z1 == infinity))
-            ):
+            (
+                (z0.is_infinity() or z0 == infinity)
+                and abs(CC(points[0][0], points[0][1]) - z1) < EPSILON
+            )
+            or (
+                (z1.is_infinity() or z1 == infinity)
+                and abs(CC(points[1][0], points[1][1]) - z0) < EPSILON
+            )
+            or (
+                abs(CC(points[0][0], points[0][1]) - z0) >= EPSILON
+                and not (
+                    z0.is_infinity()
+                    or z0 == infinity
+                    or z1.is_infinity()
+                    or z1 == infinity
+                )
+            )
+        ):
             points = np.flipud(points)  # order is important
 
         if first:
-            self.path.append(points[0:4])  # if it is a line it will append only two control points
+            self.path.append(
+                points[0:4]
+            )  # if it is a line it will append only two control points
             if isinstance(arc0, BezierPath):
                 self.last_plotted = "line"
             else:
                 N = 4
                 # Add new triplets
                 while N < len(points):
-                    self.path.append(points[N: N + 3])
+                    self.path.append(points[N : N + 3])
                     N += 3
                 self.last_plotted = "arc"
         else:
@@ -151,7 +165,7 @@ class HyperbolicArcCore(BezierPath):
             elif self.last_plotted == "line":  # actual segment is an arc
                 # Add new triplets
                 while N < len(points):
-                    self.path.append(points[N: N + 3])
+                    self.path.append(points[N : N + 3])
                     N += 3
                 self.last_plotted = "arc"
             else:
@@ -164,7 +178,7 @@ class HyperbolicArcCore(BezierPath):
                     N += 1
                 # Add new triplets
                 while N < len(points):
-                    self.path.append(points[N: N + 3])
+                    self.path.append(points[N : N + 3])
                     N += 3
                 self.last_plotted = "arc"
 
@@ -191,6 +205,7 @@ class HyperbolicArc(HyperbolicArcCore):
          sage: HyperbolicArc(0, 1/2+I*sqrt(3)/2, "UHP", {})
          Hyperbolic arc (0.000000000000000, 0.500000000000000 + 0.866025403784439*I)
     """
+
     def __init__(self, A, B, model, options):
         """
         Initialize ``self``.
@@ -204,6 +219,7 @@ class HyperbolicArc(HyperbolicArcCore):
         if model == "HM":
             raise ValueError("the hyperboloid model is not supported")
         from sage.geometry.hyperbolic_space.hyperbolic_interface import HyperbolicPlane
+
         HP = HyperbolicPlane()
         M = getattr(HP, model)()
         self.A = CC(A)
@@ -387,9 +403,9 @@ def hyperbolic_arc(a, b, model='UHP', **options):
         from sage.geometry.hyperbolic_space.hyperbolic_interface import HyperbolicPlane
 
         # Check for valid points
-        if a[2] < 0 or a[0]**2+a[1]**2-a[2]**2 + 1 > EPSILON:
+        if a[2] < 0 or a[0] ** 2 + a[1] ** 2 - a[2] ** 2 + 1 > EPSILON:
             raise ValueError(f"{a} is not a valid point in the HM model")
-        if b[2] < 0 or b[0]**2+b[1]**2-b[2]**2 + 1 > EPSILON:
+        if b[2] < 0 or b[0] ** 2 + b[1] ** 2 - b[2] ** 2 + 1 > EPSILON:
             raise ValueError(f"{b} is not a valid point in the HM model")
 
         HM = HyperbolicPlane().HM()

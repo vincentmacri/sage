@@ -6,6 +6,7 @@ solves its instance using :class:`MixedIntegerLinearProgram`. Its performance
 can be expected to be slower than when using
 :class:`~sage.sat.solvers.cryptominisat.CryptoMiniSat`.
 """
+
 from sage.numerical.mip import MIPSolverException, MixedIntegerLinearProgram
 from sage.sat.solvers.satsolver import SatSolver
 
@@ -102,8 +103,9 @@ class SatLP(SatSolver):
         if 0 in lits:
             raise ValueError("0 should not appear in the clause: {}".format(lits))
         p = self._LP
-        p.add_constraint(p.sum(self._vars[x] if x > 0 else 1-self._vars[-x] for x in lits)
-                         >= 1)
+        p.add_constraint(
+            p.sum(self._vars[x] if x > 0 else 1 - self._vars[-x] for x in lits) >= 1
+        )
 
     def __call__(self):
         """
@@ -140,7 +142,9 @@ class SatLP(SatSolver):
         except MIPSolverException:
             return False
 
-        b = self._LP.get_values(self._vars, convert=bool, tolerance=self._integrality_tolerance)
+        b = self._LP.get_values(
+            self._vars, convert=bool, tolerance=self._integrality_tolerance
+        )
         n = max(b)
         return [None] + [b.get(i, False) for i in range(1, n + 1)]
 

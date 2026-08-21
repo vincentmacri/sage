@@ -48,6 +48,7 @@ class NoetherianRings(Category):
 
         sage: TestSuite(C).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::

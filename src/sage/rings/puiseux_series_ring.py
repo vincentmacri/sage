@@ -56,6 +56,7 @@ class PuiseuxSeriesRing(UniqueRepresentation, Parent):
         sage: f.add_bigoh(1)
         y^(-5/6) + O(y)
     """
+
     @staticmethod
     def __classcall__(cls, *args, **kwds):
         r"""
@@ -106,9 +107,9 @@ class PuiseuxSeriesRing(UniqueRepresentation, Parent):
         cat = laurent_series.category()
         if base_ring in Fields():
             cat &= Fields()
-        Parent.__init__(self, base_ring,
-                        names=laurent_series.variable_names(),
-                        category=cat)
+        Parent.__init__(
+            self, base_ring, names=laurent_series.variable_names(), category=cat
+        )
 
     def _repr_(self) -> str:
         """
@@ -224,6 +225,7 @@ class PuiseuxSeriesRing(UniqueRepresentation, Parent):
         """
         from sage.categories.integral_domains import IntegralDomains
         from sage.categories.fields import Fields
+
         if self in Fields():
             return self
         if self in IntegralDomains():
@@ -357,8 +359,7 @@ class PuiseuxSeriesRing(UniqueRepresentation, Parent):
             l = self._laurent_series_ring(x)
             e = 1
         # 4. x is a Laurent or power series with the same base ring
-        elif (isinstance(x, (LaurentSeries, PowerSeries))
-              and P is self.base_ring()):
+        elif isinstance(x, (LaurentSeries, PowerSeries)) and P is self.base_ring():
             l = self._laurent_series_ring(x)
         # 5. everything else: try to coerce to laurent series ring
         else:
@@ -409,10 +410,19 @@ class PuiseuxSeriesRing(UniqueRepresentation, Parent):
 
         # Laurent series rings, power series rings, and polynomial rings with
         # the same variable name and the base rings are coercible
-        if (isinstance(P, (PuiseuxSeriesRing, LaurentSeriesRing,
-                           PowerSeriesRing_generic, LazyPowerSeriesRing))
-                and P.variable_name() == self.variable_name()
-                and A.has_coerce_map_from(P.base_ring())):
+        if (
+            isinstance(
+                P,
+                (
+                    PuiseuxSeriesRing,
+                    LaurentSeriesRing,
+                    PowerSeriesRing_generic,
+                    LazyPowerSeriesRing,
+                ),
+            )
+            and P.variable_name() == self.variable_name()
+            and A.has_coerce_map_from(P.base_ring())
+        ):
             return True
 
         # # other Puiseux series rings with the same variable name and

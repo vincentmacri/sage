@@ -18,9 +18,13 @@ AUTHORS:
 # ****************************************************************************
 
 from sage.structure.sage_object import SageObject
-from sage.combinat.rigged_configurations.tensor_product_kr_tableaux import TensorProductOfKirillovReshetikhinTableaux
+from sage.combinat.rigged_configurations.tensor_product_kr_tableaux import (
+    TensorProductOfKirillovReshetikhinTableaux,
+)
 from sage.combinat.rigged_configurations.kr_tableaux import KirillovReshetikhinTableaux
-from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+from sage.combinat.rigged_configurations.rigged_configurations import (
+    RiggedConfigurations,
+)
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.typeset.ascii_art import ascii_art
 from sage.rings.integer_ring import ZZ
@@ -291,6 +295,7 @@ class SolitonCellularAutomata(SageObject):
         t: 7
                           .       (-2, 5)(-2, -5, 4, 6) ... (-6, 2) ...
     """
+
     def __init__(self, initial_state, cartan_type=2, vacuum=1):
         """
         Initialize ``self``.
@@ -301,7 +306,7 @@ class SolitonCellularAutomata(SageObject):
             sage: TestSuite(B).run()
         """
         if cartan_type in ZZ:
-            cartan_type = CartanType(['A',cartan_type-1,1])
+            cartan_type = CartanType(['A', cartan_type - 1, 1])
         else:
             cartan_type = CartanType(cartan_type)
         self._cartan_type = cartan_type
@@ -317,14 +322,14 @@ class SolitonCellularAutomata(SageObject):
             # We consider things 1-9
             initial_state = [[ZZ(x) if x != '.' else ZZ.one()] for x in initial_state]
         try:
-            KRT = TensorProductOfKirillovReshetikhinTableaux(self._cartan_type,
-                                                             [[vacuum, len(st)//vacuum]
-                                                              for st in initial_state])
+            KRT = TensorProductOfKirillovReshetikhinTableaux(
+                self._cartan_type, [[vacuum, len(st) // vacuum] for st in initial_state]
+            )
             self._states = [KRT(pathlist=initial_state)]
         except TypeError:
-            KRT = TensorProductOfKirillovReshetikhinTableaux(self._cartan_type,
-                                                             [[vacuum, 1]
-                                                              for st in initial_state])
+            KRT = TensorProductOfKirillovReshetikhinTableaux(
+                self._cartan_type, [[vacuum, 1] for st in initial_state]
+            )
             self._states = [KRT(*initial_state)]
 
         self._evolutions = []
@@ -355,9 +360,11 @@ class SolitonCellularAutomata(SageObject):
             sage: B1 == B2
             False
         """
-        return (isinstance(other, SolitonCellularAutomata)
-                and self._states[0] == other._states[0]
-                and self._evolutions == other._evolutions)
+        return (
+            isinstance(other, SolitonCellularAutomata)
+            and self._states[0] == other._states[0]
+            and self._evolutions == other._evolutions
+        )
 
     def __ne__(self, other):
         """
@@ -498,8 +505,9 @@ class SolitonCellularAutomata(SageObject):
             if not isinstance(carrier_index, (list, tuple)):
                 carrier_index = [carrier_index] * len(carrier_capacity)
             if len(carrier_index) != len(carrier_capacity):
-                raise ValueError("carrier_index and carrier_capacity"
-                                 " must have the same length")
+                raise ValueError(
+                    "carrier_index and carrier_capacity must have the same length"
+                )
             for i, r in zip(carrier_capacity, carrier_index):
                 self.evolve(i, r)
             return
@@ -520,7 +528,9 @@ class SolitonCellularAutomata(SageObject):
             return
 
         passed = False
-        K = KirillovReshetikhinTableaux(self._cartan_type, carrier_index, carrier_capacity)
+        K = KirillovReshetikhinTableaux(
+            self._cartan_type, carrier_index, carrier_capacity
+        )
         try:
             # FIXME: the maximal_vector() does not work in type E and F
             empty_carrier = K.maximal_vector()
@@ -532,15 +542,20 @@ class SolitonCellularAutomata(SageObject):
         state = self._states[-1]
         dims = state.parent().dims
         while not passed:
-            KRT = TensorProductOfKirillovReshetikhinTableaux(self._cartan_type,
-                                                             dims + (carrier_factor,))
+            KRT = TensorProductOfKirillovReshetikhinTableaux(
+                self._cartan_type, dims + (carrier_factor,)
+            )
             elt = KRT(*(list(state) + [empty_carrier]))
             RC = RiggedConfigurations(self._cartan_type, (carrier_factor,) + dims)
-            elt2 = RC(*elt.to_rigged_configuration()).to_tensor_product_of_kirillov_reshetikhin_tableaux()
+            elt2 = RC(
+                *elt.to_rigged_configuration()
+            ).to_tensor_product_of_kirillov_reshetikhin_tableaux()
             # Back to an empty carrier or we are not getting any better
             if elt2[0] == empty_carrier or elt2[0] == last_final_carrier:
                 passed = True
-                KRT = TensorProductOfKirillovReshetikhinTableaux(self._cartan_type, dims)
+                KRT = TensorProductOfKirillovReshetikhinTableaux(
+                    self._cartan_type, dims
+                )
                 self._states.append(KRT(*elt2[1:]))
                 self._evolutions.append(carrier_factor)
                 if elt2[0] != empty_carrier:
@@ -549,7 +564,7 @@ class SolitonCellularAutomata(SageObject):
             else:
                 # We need to add more vacuum states
                 last_final_carrier = elt2[0]
-                dims = tuple([(self._vacuum, 1)]*carrier_capacity) + dims
+                dims = tuple([(self._vacuum, 1)] * carrier_capacity) + dims
 
     def state_evolution(self, num):
         """
@@ -599,9 +614,11 @@ class SolitonCellularAutomata(SageObject):
                 self.evolve()
 
         carrier = KirillovReshetikhinTableaux(self._cartan_type, *self._evolutions[num])
-        num_factors = len(self._states[num+1])
+        num_factors = len(self._states[num + 1])
         vacuum = self._vacuum_elt
-        state = [vacuum]*(num_factors - len(self._states[num])) + list(self._states[num])
+        state = [vacuum] * (num_factors - len(self._states[num])) + list(
+            self._states[num]
+        )
         final = []
         u = [self._initial_carrier[num]]
         # Assume every element has the same parent
@@ -677,7 +694,7 @@ class SolitonCellularAutomata(SageObject):
             return ascii_art(s if s[0] != '-' else '_\n' + s[1:])
         letter_str = [str(letter) for letter in b]
         max_width = max(len(s) for s in letter_str)
-        return ascii_art('\n'.join(' '*(max_width-len(s)) + s for s in letter_str))
+        return ascii_art('\n'.join(' ' * (max_width - len(s)) + s for s in letter_str))
 
     def _repr_state(self, state, vacuum_letter='.'):
         """
@@ -694,8 +711,10 @@ class SolitonCellularAutomata(SageObject):
         """
         output = [self._column_repr(b, vacuum_letter) for b in state]
         max_width = max(cell.width() for cell in output)
-        return sum((ascii_art(' '*(max_width-b.width())) + b for b in output),
-                    ascii_art(''))
+        return sum(
+            (ascii_art(' ' * (max_width - b.width())) + b for b in output),
+            ascii_art(''),
+        )
 
     def _repr_(self):
         """
@@ -738,12 +757,14 @@ class SolitonCellularAutomata(SageObject):
                4  -3-3
                3 . 1 2
         """
-        ret = "Soliton cellular automata of type {} and vacuum = {}\n".format(self._cartan_type, self._vacuum)
+        ret = "Soliton cellular automata of type {} and vacuum = {}\n".format(
+            self._cartan_type, self._vacuum
+        )
         ret += "  initial state:\n{}\n  evoltuions: {}\n  current state:\n{}".format(
             ascii_art('  ') + self._repr_state(self._states[0]),
             self._evolutions,
-            ascii_art('  ') + self._repr_state(self._states[-1])
-            )
+            ascii_art('  ') + self._repr_state(self._states[-1]),
+        )
         return ret
 
     def print_state(self, num=None, vacuum_letter='.', remove_trailing_vacuums=False):
@@ -784,7 +805,7 @@ class SolitonCellularAutomata(SageObject):
             #   entirely of vacuum elements.
             while pos >= 0 and state[pos] == self._vacuum_elt:
                 pos -= 1
-            state = state[:pos+1]
+            state = state[: pos + 1]
         print(self._repr_state(state, vacuum_letter))
 
     def print_states(self, num=None, vacuum_letter='.'):
@@ -946,16 +967,20 @@ class SolitonCellularAutomata(SageObject):
                 self.evolve()
 
         vacuum = self._vacuum_elt
-        num_factors = len(self._states[num-1])
-        for i,state in enumerate(self._states[:num]):
-            state = [vacuum]*(num_factors - len(state)) + list(state)
+        num_factors = len(self._states[num - 1])
+        for i, state in enumerate(self._states[:num]):
+            state = [vacuum] * (num_factors - len(state)) + list(state)
             output = [self._column_repr(b, vacuum_letter) for b in state]
             max_width = max(b.width() for b in output)
             start = ascii_art("t: %s \n" % i)
             start._baseline = -1
-            print(start
-                  + sum((ascii_art(' '*(max_width-b.width())) + b for b in output),
-                        ascii_art('')))
+            print(
+                start
+                + sum(
+                    (ascii_art(' ' * (max_width - b.width())) + b for b in output),
+                    ascii_art(''),
+                )
+            )
 
     def latex_states(self, num=None, as_array=True, box_width='5pt'):
         r"""
@@ -1011,6 +1036,7 @@ class SolitonCellularAutomata(SageObject):
             \end{array}}
         """
         from sage.misc.latex import latex, LatexExpr
+
         if not as_array:
             latex.add_package_to_preamble_if_available('xcolor')
 
@@ -1035,21 +1061,27 @@ class SolitonCellularAutomata(SageObject):
 
             if b == vacuum:
                 return "{\\color{gray} %s}" % temp
-            return temp # "\\makebox[%s]{$%s$}"%(box_width, temp)
+            return temp  # "\\makebox[%s]{$%s$}"%(box_width, temp)
 
-        num_factors = len(self._states[num-1])
+        num_factors = len(self._states[num - 1])
         if as_array:
             ret = "{\\arraycolsep=0.5pt \\begin{array}"
-            ret += "{c|c%s}\n" % ('c'*num_factors)
+            ret += "{c|c%s}\n" % ('c' * num_factors)
         else:
             ret = "{\\begin{array}"
             ret += "{c|c}\n"
-        for i,state in enumerate(self._states[:num]):
-            state = [vacuum]*(num_factors-len(state)) + list(state)
+        for i, state in enumerate(self._states[:num]):
+            state = [vacuum] * (num_factors - len(state)) + list(state)
             if as_array:
-                ret += "t = %s & \\cdots & %s \\\\\n" % (i, r" & ".join(compact_repr(b) for b in state))
+                ret += "t = %s & \\cdots & %s \\\\\n" % (
+                    i,
+                    r" & ".join(compact_repr(b) for b in state),
+                )
             else:
-                ret += "t = %s & \\cdots %s \\\\\n" % (i, r" ".join(compact_repr(b) for b in state))
+                ret += "t = %s & \\cdots %s \\\\\n" % (
+                    i,
+                    r" ".join(compact_repr(b) for b in state),
+                )
         ret += "\\end{array}}\n"
         return LatexExpr(ret)
 
@@ -1080,9 +1112,11 @@ class SolitonCellularAutomata(SageObject):
                   3         3         2         1         1         1         1
         """
         u = self.state_evolution(num)  # Also evolves as necessary
-        final = self._states[num+1]
+        final = self._states[num + 1]
         vacuum = self._vacuum_elt
-        state = [vacuum]*(len(final) - len(self._states[num])) + list(self._states[num])
+        state = [vacuum] * (len(final) - len(self._states[num])) + list(
+            self._states[num]
+        )
         carrier = KirillovReshetikhinTableaux(self._cartan_type, *self._evolutions[num])
 
         def simple_repr(x):
@@ -1090,26 +1124,34 @@ class SolitonCellularAutomata(SageObject):
 
         def carrier_repr(x):
             if carrier._tableau_height == 1:
-                return sum((ascii_art(repr(b)) if repr(b)[0] != '-'
-                            else ascii_art("_" + '\n' + repr(b)[1:])
-                            for b in x),
-                           ascii_art(''))
+                return sum(
+                    (
+                        ascii_art(repr(b))
+                        if repr(b)[0] != '-'
+                        else ascii_art("_" + '\n' + repr(b)[1:])
+                        for b in x
+                    ),
+                    ascii_art(''),
+                )
             return ascii_art(''.join(repr(x).strip('[]').split(', ')))
 
         def cross_repr(i):
             ret = ascii_art(
-"""
+                """
 {!s:^7}
    |
  --+--
    |
 {!s:^7}
-""".format(simple_repr(state[i]), simple_repr(final[i])))
+""".format(simple_repr(state[i]), simple_repr(final[i]))
+            )
             ret._baseline = 2
             return ret
-        art = sum((cross_repr(i)
-                 + carrier_repr(u[i+1])
-                 for i in range(len(state))), ascii_art(''))
+
+        art = sum(
+            (cross_repr(i) + carrier_repr(u[i + 1]) for i in range(len(state))),
+            ascii_art(''),
+        )
         print(ascii_art(carrier_repr(u[0])) + art)
 
     def latex_state_evolution(self, num, scale=1):
@@ -1141,25 +1183,35 @@ class SolitonCellularAutomata(SageObject):
         """
         from sage.graphs.graph_latex import setup_latex_preamble
         from sage.misc.latex import LatexExpr
+
         setup_latex_preamble()
-        u = self.state_evolution(num) # Also evolves as necessary
-        final = self._states[num+1]
+        u = self.state_evolution(num)  # Also evolves as necessary
+        final = self._states[num + 1]
         vacuum = self._vacuum_elt
-        initial = [vacuum]*(len(final) - len(self._states[num])) + list(self._states[num])
-        cs = len(u[0]) * 0.08 + 1 # carrier scaling
+        initial = [vacuum] * (len(final) - len(self._states[num])) + list(
+            self._states[num]
+        )
+        cs = len(u[0]) * 0.08 + 1  # carrier scaling
 
         def simple_repr(x):
             return ''.join(repr(x).strip('[]').split(', '))
+
         ret = '\\begin{{tikzpicture}}[scale={}]\n'.format(scale)
-        for i,val in enumerate(initial):
-            ret += '\\node (i{}) at ({},0.9) {{${}$}};\n'.format(i, 2*i*cs, simple_repr(val))
-        for i,val in enumerate(final):
-            ret += '\\node (t{}) at ({},-1) {{${}$}};\n'.format(i, 2*i*cs, simple_repr(val))
-        for i,val in enumerate(u):
-            ret += '\\node (u{}) at ({},0) {{${}$}};\n'.format(i, (2*i-1)*cs, simple_repr(val))
+        for i, val in enumerate(initial):
+            ret += '\\node (i{}) at ({},0.9) {{${}$}};\n'.format(
+                i, 2 * i * cs, simple_repr(val)
+            )
+        for i, val in enumerate(final):
+            ret += '\\node (t{}) at ({},-1) {{${}$}};\n'.format(
+                i, 2 * i * cs, simple_repr(val)
+            )
+        for i, val in enumerate(u):
+            ret += '\\node (u{}) at ({},0) {{${}$}};\n'.format(
+                i, (2 * i - 1) * cs, simple_repr(val)
+            )
         for i in range(len(initial)):
             ret += '\\draw[->] (i{}) -- (t{});\n'.format(i, i)
-            ret += '\\draw[->] (u{}) -- (u{});\n'.format(i+1, i)
+            ret += '\\draw[->] (u{}) -- (u{});\n'.format(i + 1, i)
         ret += '\\end{tikzpicture}'
         return LatexExpr(ret)
 
@@ -1294,6 +1346,7 @@ class PeriodicSolitonCellularAutomata(SolitonCellularAutomata):
     - [YT2002]_
     - [YYT2003]_
     """
+
     def evolve(self, carrier_capacity=None, carrier_index=None, number=None):
         r"""
         Evolve ``self``.
@@ -1381,8 +1434,9 @@ class PeriodicSolitonCellularAutomata(SolitonCellularAutomata):
             if not isinstance(carrier_index, (list, tuple)):
                 carrier_index = [carrier_index] * len(carrier_capacity)
             if len(carrier_index) != len(carrier_capacity):
-                raise ValueError("carrier_index and carrier_capacity"
-                                 " must have the same length")
+                raise ValueError(
+                    "carrier_index and carrier_capacity must have the same length"
+                )
             for i, r in zip(carrier_capacity, carrier_index):
                 self.evolve(i, r)
             return
@@ -1406,19 +1460,26 @@ class PeriodicSolitonCellularAutomata(SolitonCellularAutomata):
         if carrier_index is None:
             carrier_index = self._vacuum
 
-        K = KirillovReshetikhinTableaux(self._cartan_type, carrier_index, carrier_capacity)
+        K = KirillovReshetikhinTableaux(
+            self._cartan_type, carrier_index, carrier_capacity
+        )
         carrier_factor = (carrier_index, carrier_capacity)
         state = self._states[-1]
         dims = state.parent().dims
         for carrier in K:
-            KRT = TensorProductOfKirillovReshetikhinTableaux(self._cartan_type,
-                                                             dims + (carrier_factor,))
+            KRT = TensorProductOfKirillovReshetikhinTableaux(
+                self._cartan_type, dims + (carrier_factor,)
+            )
             elt = KRT(*(list(state) + [carrier]))
             RC = RiggedConfigurations(self._cartan_type, (carrier_factor,) + dims)
-            elt2 = RC(*elt.to_rigged_configuration()).to_tensor_product_of_kirillov_reshetikhin_tableaux()
+            elt2 = RC(
+                *elt.to_rigged_configuration()
+            ).to_tensor_product_of_kirillov_reshetikhin_tableaux()
             # Back to an empty carrier or we are not getting any better
             if elt2[0] == carrier:
-                KRT = TensorProductOfKirillovReshetikhinTableaux(self._cartan_type, dims)
+                KRT = TensorProductOfKirillovReshetikhinTableaux(
+                    self._cartan_type, dims
+                )
                 self._states.append(KRT(*elt2[1:]))
                 self._evolutions.append(carrier_factor)
                 self._initial_carrier.append(carrier)
@@ -1457,5 +1518,6 @@ class PeriodicSolitonCellularAutomata(SolitonCellularAutomata):
             sage: B == P
             False
         """
-        return (isinstance(other, PeriodicSolitonCellularAutomata)
-                and SolitonCellularAutomata.__eq__(self, other))
+        return isinstance(
+            other, PeriodicSolitonCellularAutomata
+        ) and SolitonCellularAutomata.__eq__(self, other)

@@ -135,6 +135,7 @@ class EllipticCurveTorsionSubgroup(groups.AdditiveAbelianGroupWrapper):
     - Chris Wuthrich: initial implementation over number fields.
     - John Cremona: additional features and unification.
     """
+
     def __init__(self, E):
         r"""
         Initialization function for EllipticCurveTorsionSubgroup class.
@@ -176,12 +177,14 @@ class EllipticCurveTorsionSubgroup(groups.AdditiveAbelianGroupWrapper):
             gens = G[2].sage()
 
             self.__torsion_gens = [self.__E(P) for P in gens]
-            groups.AdditiveAbelianGroupWrapper.__init__(self, self.__E(0).parent(), self.__torsion_gens, structure)
+            groups.AdditiveAbelianGroupWrapper.__init__(
+                self, self.__E(0).parent(), self.__torsion_gens, structure
+            )
             return
 
-        T1 = E(0) # these will be the two generators
+        T1 = E(0)  # these will be the two generators
         T2 = E(0)
-        k1 = 1    # with their order
+        k1 = 1  # with their order
         k2 = 1
 
         # find a multiple of the order of the torsion group
@@ -192,10 +195,10 @@ class EllipticCurveTorsionSubgroup(groups.AdditiveAbelianGroupWrapper):
             ptor = E._p_primary_torsion_basis(p, e)
             if ptor:
                 T1 += ptor[0][0]
-                k1 *= p**(ptor[0][1])
+                k1 *= p ** (ptor[0][1])
             if len(ptor) > 1:
                 T2 += ptor[1][0]
-                k2 *= p**(ptor[1][1])
+                k2 *= p ** (ptor[1][1])
 
         if k1 == 1:
             structure = []
@@ -207,10 +210,11 @@ class EllipticCurveTorsionSubgroup(groups.AdditiveAbelianGroupWrapper):
             structure = [k1, k2]
             gens = [T1, T2]
 
-        #self.__torsion_gens = gens
+        # self.__torsion_gens = gens
         self._structure = structure
-        groups.AdditiveAbelianGroupWrapper.__init__(self, T1.parent(),
-                                                    [T1, T2], structure)
+        groups.AdditiveAbelianGroupWrapper.__init__(
+            self, T1.parent(), [T1, T2], structure
+        )
 
     def _repr_(self):
         r"""
@@ -225,7 +229,10 @@ class EllipticCurveTorsionSubgroup(groups.AdditiveAbelianGroupWrapper):
             sage: T = EK.torsion_subgroup(); T._repr_()                                 # needs sage.rings.number_field
             'Torsion Subgroup isomorphic to Z/5 associated to the Elliptic Curve defined by y^2 + y = x^3 + (-1)*x^2 + (-10)*x + (-20) over Number Field in i with defining polynomial x^2 + 1'
         """
-        return "Torsion Subgroup isomorphic to %s associated to the %s" % (self.short_name(), self.__E)
+        return "Torsion Subgroup isomorphic to %s associated to the %s" % (
+            self.short_name(),
+            self.__E,
+        )
 
     def __richcmp__(self, other, op):
         r"""
@@ -380,7 +387,7 @@ def torsion_bound(E, number_of_places=20):
     if den != 1:
         x = f.parent().gen()
         n = f.degree()
-        f = den**n * f(x/den)
+        f = den**n * f(x / den)
     disc_f = f.discriminant()
     d = K.absolute_degree()
 
@@ -428,6 +435,7 @@ def torsion_bound(E, number_of_places=20):
 
             def red(c):
                 return Fq.sum(Fq(c[j]) * ai**j for j in range(d))
+
             new_bound = EllipticCurve([red(c) for c in ainvs]).cardinality()
             bound = bound.gcd(new_bound)
             if bound == 1:

@@ -33,13 +33,16 @@ Bijections
 - :ref:`sage.combinat.rigged_configurations.bij_type_D_tri`
 - :ref:`sage.combinat.rigged_configurations.bij_infinity`
 """
+
 # install the docstring of this module to the containing package
 from sage.misc.namespace_package import install_doc
+
 install_doc(__package__, __doc__)
 
 from sage.misc.lazy_import import lazy_import
 
-lazy_import('sage.combinat.rigged_configurations.rigged_configurations',
-            'RiggedConfigurations')
+lazy_import(
+    'sage.combinat.rigged_configurations.rigged_configurations', 'RiggedConfigurations'
+)
 del lazy_import
 del install_doc

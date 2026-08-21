@@ -166,7 +166,6 @@ from sage.schemes.elliptic_curves.hom_scalar import EllipticCurveHom_scalar
 
 
 class EllipticCurveHom_frobenius(EllipticCurveHom):
-
     _degree = None
 
     def __init__(self, E, power=1):
@@ -218,7 +217,7 @@ class EllipticCurveHom_frobenius(EllipticCurveHom):
         if self._n < 0:
             raise ValueError('negative powers of Frobenius are not isogenies')
 
-        self._degree = self._p ** self._n
+        self._degree = self._p**self._n
 
         self._domain = E
         as_ = [a**self._degree for a in self._domain.a_invariants()]
@@ -233,7 +232,7 @@ class EllipticCurveHom_frobenius(EllipticCurveHom):
             self._codomain._fetch_cached_order(self._domain)
 
         self._poly_ring = PolynomialRing(self._base_ring, ['x'], sparse=True)
-        self._mpoly_ring = PolynomialRing(self._base_ring, ['x','y'], sparse=True)
+        self._mpoly_ring = PolynomialRing(self._base_ring, ['x', 'y'], sparse=True)
         self._xfield = self._poly_ring.fraction_field()
         self._xyfield = self._mpoly_ring.fraction_field()
 
@@ -303,9 +302,11 @@ class EllipticCurveHom_frobenius(EllipticCurveHom):
         """
         kind = 'endomorphism' if self._codomain == self._domain else 'isogeny'
         degs_str = '' if self._n == 1 else f' = {self._p}^{self._n}'
-        return f'Frobenius {kind} of degree {self._degree}{degs_str}:' \
-                f'\n  From: {self._domain}' \
-                f'\n  To:   {self._codomain}'
+        return (
+            f'Frobenius {kind} of degree {self._degree}{degs_str}:'
+            f'\n  From: {self._domain}'
+            f'\n  To:   {self._codomain}'
+        )
 
     # EllipticCurveHom methods
 
@@ -331,7 +332,7 @@ class EllipticCurveHom_frobenius(EllipticCurveHom):
             sage: pi.rational_maps()[1].parent()
             Fraction Field of Multivariate Polynomial Ring in x, y over Finite Field of size 11
         """
-        x,y = self._xyfield.gens()
+        x, y = self._xyfield.gens()
         return (x**self._degree, y**self._degree)
 
     def x_rational_map(self):
@@ -354,7 +355,7 @@ class EllipticCurveHom_frobenius(EllipticCurveHom):
             sage: pi.x_rational_map().parent()
             Fraction Field of Sparse Univariate Polynomial Ring in x over Finite Field of size 11
         """
-        x, = self._xfield.gens()
+        (x,) = self._xfield.gens()
         return x**self._degree
 
     def scaling_factor(self):
@@ -489,7 +490,7 @@ class EllipticCurveHom_frobenius(EllipticCurveHom):
         else:
             E = self._domain
             poly = self._domain.division_polynomial(self._p)
-            ker = self._poly_ring(list(poly)[::self._p]).monic()
+            ker = self._poly_ring(list(poly)[:: self._p]).monic()
             Phis = []
             for _ in range(self._n):
                 Ep = EllipticCurve([a**self._p for a in E.a_invariants()])

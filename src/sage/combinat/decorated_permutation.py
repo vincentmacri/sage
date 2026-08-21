@@ -5,6 +5,7 @@ AUTHORS:
 
 - Martin Rubey (2020): Initial version
 """
+
 # ****************************************************************************
 #       Copyright (C) 2020 Martin Rubey <martin.rubey at tuwien.ac.at>
 #
@@ -31,14 +32,16 @@ from sage.combinat.colored_permutations import SignedPermutations
 from sage.structure.list_clone import ClonableArray
 
 
-class DecoratedPermutation(ClonableArray,
-        metaclass=InheritComparisonClasscallMetaclass):
+class DecoratedPermutation(
+    ClonableArray, metaclass=InheritComparisonClasscallMetaclass
+):
     r"""
     A decorated permutation.
 
     A decorated permutation is a signed permutation where all
     non-fixed points have positive sign.
     """
+
     @staticmethod
     def __classcall_private__(cls, pi):
         """
@@ -210,7 +213,9 @@ class DecoratedPermutations(UniqueRepresentation, Parent):
         if isinstance(pi, DecoratedPermutation):
             if pi.parent() is self:
                 return pi
-            raise ValueError("cannot convert between decorated permutations of different sizes")
+            raise ValueError(
+                "cannot convert between decorated permutations of different sizes"
+            )
 
         pi = tuple(pi)
         if check and pi not in self:
@@ -246,8 +251,9 @@ class DecoratedPermutations(UniqueRepresentation, Parent):
             sage: [DecoratedPermutations(n).cardinality() for n in range(11)]
             [1, 2, 5, 16, 65, 326, 1957, 13700, 109601, 986410, 9864101]
         """
-        return Integer(sum(factorial(self._n) // factorial(k)
-                           for k in range(self._n + 1)))
+        return Integer(
+            sum(factorial(self._n) // factorial(k) for k in range(self._n + 1))
+        )
 
     def __iter__(self):
         r"""

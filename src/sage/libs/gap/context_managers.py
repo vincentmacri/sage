@@ -46,7 +46,6 @@ from sage.libs.gap.libgap import libgap
 
 
 class GlobalVariableContext:
-
     def __init__(self, variable, value):
         """
         Context manager for GAP global variables.

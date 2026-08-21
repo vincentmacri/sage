@@ -15,6 +15,7 @@ REFERENCES:
 - [AM1990]_
 - [RS2012]_
 """
+
 # *****************************************************************************
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
@@ -663,6 +664,7 @@ class SymplecticFormParal(SymplecticForm, DiffFormParal):
         sage: omega.display()
         omega = -dq∧dp
     """
+
     _poisson: TensorFieldParal
 
     def __init__(
@@ -873,9 +875,7 @@ class SymplecticFormParal(SymplecticForm, DiffFormParal):
                     start_index=si,
                     output_formatter=fmodule._output_formatter,
                 )
-                comp_poisson_scal = (
-                    {}
-                )  # dict. of scalars representing the components of the poisson tensor (keys: comp. indices)
+                comp_poisson_scal = {}  # dict. of scalars representing the components of the poisson tensor (keys: comp. indices)
                 for i in fmodule.irange():
                     for j in range(i, nsi):  # symmetry taken into account
                         comp_poisson_scal[(i, j)] = dom.scalar_field()

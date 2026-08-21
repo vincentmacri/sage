@@ -24,7 +24,9 @@ from sage.groups.perm_gps.partn_ref.refinement_graphs import search_tree, get_or
 from sage.rings.integer_ring import ZZ
 from sage.rings.infinity import infinity
 from sage.graphs.digraph import DiGraph
-from sage.combinat.cluster_algebra_quiver.quiver_mutation_type import _edge_list_to_matrix
+from sage.combinat.cluster_algebra_quiver.quiver_mutation_type import (
+    _edge_list_to_matrix,
+)
 
 
 def _principal_part(mat):
@@ -103,10 +105,8 @@ def _digraph_mutate(dg, k, frozen=None):
     edge_it = dg.outgoing_edge_iterator([k], True)
     out_edges = list(edge_it)
 
-    in_edges_new = [(v2, v1, (-label[1], -label[0]))
-                    for v1, v2, label in in_edges]
-    out_edges_new = [(v2, v1, (-label[1], -label[0]))
-                     for v1, v2, label in out_edges]
+    in_edges_new = [(v2, v1, (-label[1], -label[0])) for v1, v2, label in in_edges]
+    out_edges_new = [(v2, v1, (-label[1], -label[0])) for v1, v2, label in out_edges]
     diag_edges_new = []
     diag_edges_del = []
 
@@ -137,8 +137,7 @@ def _digraph_mutate(dg, k, frozen=None):
     del_edges += diag_edges_del
     new_edges = in_edges_new + out_edges_new
     new_edges += diag_edges_new
-    new_edges += [(*ed, edges[ed]) for ed in edges
-                  if ed not in del_edges]
+    new_edges += [(*ed, edges[ed]) for ed in edges if ed not in del_edges]
 
     dg_new = DiGraph()
     dg_new.add_vertices(list(dg))
@@ -243,8 +242,9 @@ def _dg_canonical_form(dg, frozen=None):
     partition_add, edges = _graph_without_edge_labels(dg, vertices)
 
     partition += partition_add
-    automorphism_group, _, iso = search_tree(dg, partition=partition, lab=True,
-                                             dig=True, certificate=True)
+    automorphism_group, _, iso = search_tree(
+        dg, partition=partition, lab=True, dig=True, certificate=True
+    )
     orbits = get_orbits(automorphism_group, n_plus_m)
     orbits = [[iso[i] for i in orbit] for orbit in orbits]
 
@@ -269,7 +269,16 @@ def _dg_canonical_form(dg, frozen=None):
     return iso, orbits
 
 
-def _mutation_class_iter(dg, n, m, depth=infinity, return_dig6=False, show_depth=False, up_to_equivalence=True, sink_source=False):
+def _mutation_class_iter(
+    dg,
+    n,
+    m,
+    depth=infinity,
+    return_dig6=False,
+    show_depth=False,
+    up_to_equivalence=True,
+    sink_source=False,
+):
     """
     Return an iterator for mutation class of dg with respect to several parameters.
 
@@ -355,7 +364,9 @@ def _mutation_class_iter(dg, n, m, depth=infinity, return_dig6=False, show_depth
                     else:
                         gets_bigger = True
                         if up_to_equivalence:
-                            orbits = [orbit[0] for orbit in orbits if i_new not in orbit]
+                            orbits = [
+                                orbit[0] for orbit in orbits if i_new not in orbit
+                            ]
                             d6_key = dig6s[key][2]
                             iso_history = {a: d6_key[iso_inv[a]] for a in iso}
                             i_history = iso_history[i_new]
@@ -399,9 +410,11 @@ def _digraph_to_dig6(dg, hashable=False) -> tuple[str, dict | tuple]:
         ('COD?', {})
     """
     dig6 = dg.dig6_string()
-    D = {(E0, E1): E2
-         for E0, E1, E2 in dg._backend.iterator_in_edges(dg, True)
-         if E2 != (1, -1)}
+    D = {
+        (E0, E1): E2
+        for E0, E1, E2 in dg._backend.iterator_in_edges(dg, True)
+        if E2 != (1, -1)
+    }
     if hashable:
         D = tuple(sorted(D.items()))
     return (dig6, D)
@@ -516,8 +529,7 @@ def _graph_without_edge_labels(dg, vertices):
     """
     vertices = list(vertices)
     edges = dg.edge_iterator(labels=True)
-    edge_labels = tuple(sorted({label for _, _, label in edges
-                                if label != (1, -1)}))
+    edge_labels = tuple(sorted({label for _, _, label in edges if label != (1, -1)}))
     edge_partition = [[] for _ in edge_labels]
     i = 0
     while i in vertices:
@@ -591,15 +603,26 @@ def _is_valid_digraph_edge_set(edges, frozen=0) -> bool:
         return False
 
     # checks if all edge labels are 'None', positive integers or tuples of positive integers
-    if not all(i is None or (i in ZZ and i > 0) or (isinstance(i, tuple) and len(i) == 2 and i[0] in ZZ and i[1] in ZZ) for i in dg.edge_labels()):
-        print("The given digraph has edge labels which are not integral or integral 2-tuples.")
+    if not all(
+        i is None
+        or (i in ZZ and i > 0)
+        or (isinstance(i, tuple) and len(i) == 2 and i[0] in ZZ and i[1] in ZZ)
+        for i in dg.edge_labels()
+    ):
+        print(
+            "The given digraph has edge labels which are not integral or integral 2-tuples."
+        )
         return False
 
     # checks if all edge labels for multiple edges are 'None' or positive integers
     if dg.has_multiple_edges():
         for e in set(dg.multiple_edges(labels=False)):
-            if not all(i is None or (i in ZZ and i > 0) for i in dg.edge_label(e[0], e[1])):
-                print("The given digraph or edge list contains multiple edges with non-integral labels.")
+            if not all(
+                i is None or (i in ZZ and i > 0) for i in dg.edge_label(e[0], e[1])
+            ):
+                print(
+                    "The given digraph or edge list contains multiple edges with non-integral labels."
+                )
                 return False
 
     n = dg.order() - frozen
@@ -608,7 +631,9 @@ def _is_valid_digraph_edge_set(edges, frozen=0) -> bool:
         return False
 
     if any(e[0] >= n for e in dg.edges(sort=True, labels=False)):
-        print("The given digraph or edge list contains edges within the frozen vertices.")
+        print(
+            "The given digraph or edge list contains edges within the frozen vertices."
+        )
         return False
 
     return True

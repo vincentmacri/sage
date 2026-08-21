@@ -3,7 +3,7 @@ r"""
 Highest weight crystals
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009   Anne Schilling <anne at math.ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -16,18 +16,22 @@ Highest weight crystals
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 from sage.categories.classical_crystals import ClassicalCrystals
 from sage.structure.parent import Parent
 from sage.combinat.crystals.letters import CrystalOfLetters
-from sage.combinat.crystals.tensor_product import TensorProductOfCrystals, \
-    TensorProductOfRegularCrystalsElement
+from sage.combinat.crystals.tensor_product import (
+    TensorProductOfCrystals,
+    TensorProductOfRegularCrystalsElement,
+)
 
 from sage.combinat.crystals.tensor_product import CrystalOfTableaux
 from sage.combinat.crystals.alcove_path import CrystalOfAlcovePaths
 from sage.combinat.crystals.littelmann_path import CrystalOfLSPaths
-from sage.combinat.crystals.generalized_young_walls import CrystalOfGeneralizedYoungWalls
+from sage.combinat.crystals.generalized_young_walls import (
+    CrystalOfGeneralizedYoungWalls,
+)
 from sage.combinat.crystals.monomial_crystals import CrystalOfNakajimaMonomials
 from sage.combinat.rigged_configurations.rc_crystal import CrystalOfRiggedConfigurations
 from sage.rings.integer_ring import ZZ
@@ -198,7 +202,7 @@ def HighestWeightCrystal(dominant_weight, model=None):
         if cartan_type.is_finite():
             if cartan_type.type() == 'E':
                 model = 'TypeE'
-            elif cartan_type.type() in ['A','B','C','D','G']:
+            elif cartan_type.type() in ['A', 'B', 'C', 'D', 'G']:
                 model = 'Tableaux'
             else:
                 model = 'LSPaths'
@@ -237,7 +241,7 @@ def HighestWeightCrystal(dominant_weight, model=None):
             P = dominant_weight.parent().root_system.weight_space(extended=True)
         else:
             P = dominant_weight.parent().root_system.weight_space()
-        wt = P.sum_of_terms((i, c) for i,c in dominant_weight)
+        wt = P.sum_of_terms((i, c) for i, c in dominant_weight)
         return CrystalOfLSPaths(wt)
 
     if model == 'AlcovePaths':
@@ -250,8 +254,8 @@ def HighestWeightCrystal(dominant_weight, model=None):
             raise NotImplementedError("only for affine type A")
         # Make sure it's in the weight lattice
         P = dominant_weight.parent().root_system.weight_lattice(extended=True)
-        wt = P.sum_of_terms((i, c) for i,c in dominant_weight)
-        return CrystalOfGeneralizedYoungWalls(cartan_type.rank()-1, wt)
+        wt = P.sum_of_terms((i, c) for i, c in dominant_weight)
+        return CrystalOfGeneralizedYoungWalls(cartan_type.rank() - 1, wt)
 
     if model == 'RiggedConfigurations':
         return CrystalOfRiggedConfigurations(cartan_type, dominant_weight)
@@ -303,7 +307,8 @@ class FiniteDimensionalHighestWeightCrystal_TypeE(TensorProductOfCrystals):
             Finite dimensional highest weight crystal of type ['E', 6] and highest weight 2*Lambda[2]
         """
         return "Finite dimensional highest weight crystal of type {} and highest weight {}".format(
-                self._cartan_type, self._highest_weight)
+            self._cartan_type, self._highest_weight
+        )
 
     Element = TensorProductOfRegularCrystalsElement
 
@@ -330,11 +335,19 @@ class FiniteDimensionalHighestWeightCrystal_TypeE(TensorProductOfCrystals):
             [[(-7, 1), (7,)]]
         """
         dominant_weight = self._highest_weight
-        tensor = sum(( [self.column_crystal[i]]*dominant_weight.coefficient(i) for i in dominant_weight.support()), [])
+        tensor = sum(
+            (
+                [self.column_crystal[i]] * dominant_weight.coefficient(i)
+                for i in dominant_weight.support()
+            ),
+            [],
+        )
         return self._element_constructor_(*[B.module_generators[0] for B in tensor])
 
 
-class FiniteDimensionalHighestWeightCrystal_TypeE6(FiniteDimensionalHighestWeightCrystal_TypeE):
+class FiniteDimensionalHighestWeightCrystal_TypeE6(
+    FiniteDimensionalHighestWeightCrystal_TypeE
+):
     r"""
     Class of finite dimensional highest weight crystals of type `E_6`.
 
@@ -376,17 +389,24 @@ class FiniteDimensionalHighestWeightCrystal_TypeE6(FiniteDimensionalHighestWeigh
             sage: T.cardinality()
             2430
         """
-        B1 = CrystalOfLetters(['E',6])
-        B6 = CrystalOfLetters(['E',6], dual=True)
-        self.column_crystal = {1 : B1, 6 : B6,
-                               4 : TensorProductOfCrystals(B1,B1,B1,generators=[[B1([-3,4]),B1([-1,3]),B1([1])]]),
-                               3 : TensorProductOfCrystals(B1,B1,generators=[[B1([-1,3]),B1([1])]]),
-                               5 : TensorProductOfCrystals(B6,B6,generators=[[B6([5,-6]),B6([6])]]),
-                               2 : TensorProductOfCrystals(B6,B1,generators=[[B6([2,-1]),B1([1])]])}
+        B1 = CrystalOfLetters(['E', 6])
+        B6 = CrystalOfLetters(['E', 6], dual=True)
+        self.column_crystal = {
+            1: B1,
+            6: B6,
+            4: TensorProductOfCrystals(
+                B1, B1, B1, generators=[[B1([-3, 4]), B1([-1, 3]), B1([1])]]
+            ),
+            3: TensorProductOfCrystals(B1, B1, generators=[[B1([-1, 3]), B1([1])]]),
+            5: TensorProductOfCrystals(B6, B6, generators=[[B6([5, -6]), B6([6])]]),
+            2: TensorProductOfCrystals(B6, B1, generators=[[B6([2, -1]), B1([1])]]),
+        }
         FiniteDimensionalHighestWeightCrystal_TypeE.__init__(self, dominant_weight)
 
 
-class FiniteDimensionalHighestWeightCrystal_TypeE7(FiniteDimensionalHighestWeightCrystal_TypeE):
+class FiniteDimensionalHighestWeightCrystal_TypeE7(
+    FiniteDimensionalHighestWeightCrystal_TypeE
+):
     r"""
     Class of finite dimensional highest weight crystals of type `E_7`.
 
@@ -424,12 +444,22 @@ class FiniteDimensionalHighestWeightCrystal_TypeE7(FiniteDimensionalHighestWeigh
             sage: T.cardinality()
             7371
         """
-        B = CrystalOfLetters(['E',7])
-        self.column_crystal = {7 : B,
-                               1 : TensorProductOfCrystals(B,B,generators=[[B([-7,1]),B([7])]]),
-                               2 : TensorProductOfCrystals(B,B,B,generators=[[B([-1,2]),B([-7,1]),B([7])]]),
-                               3 : TensorProductOfCrystals(B,B,B,B,generators=[[B([-2,3]),B([-1,2]),B([-7,1]),B([7])]]),
-                               4 : TensorProductOfCrystals(B,B,B,B,generators=[[B([-5,4]),B([-6,5]),B([-7,6]),B([7])]]),
-                               5 : TensorProductOfCrystals(B,B,B,generators=[[B([-6,5]),B([-7,6]),B([7])]]),
-                               6 : TensorProductOfCrystals(B,B,generators=[[B([-7,6]),B([7])]])}
+        B = CrystalOfLetters(['E', 7])
+        self.column_crystal = {
+            7: B,
+            1: TensorProductOfCrystals(B, B, generators=[[B([-7, 1]), B([7])]]),
+            2: TensorProductOfCrystals(
+                B, B, B, generators=[[B([-1, 2]), B([-7, 1]), B([7])]]
+            ),
+            3: TensorProductOfCrystals(
+                B, B, B, B, generators=[[B([-2, 3]), B([-1, 2]), B([-7, 1]), B([7])]]
+            ),
+            4: TensorProductOfCrystals(
+                B, B, B, B, generators=[[B([-5, 4]), B([-6, 5]), B([-7, 6]), B([7])]]
+            ),
+            5: TensorProductOfCrystals(
+                B, B, B, generators=[[B([-6, 5]), B([-7, 6]), B([7])]]
+            ),
+            6: TensorProductOfCrystals(B, B, generators=[[B([-7, 6]), B([7])]]),
+        }
         FiniteDimensionalHighestWeightCrystal_TypeE.__init__(self, dominant_weight)

@@ -258,7 +258,7 @@ class EllipticCurveLocalData(SageObject):
         """
         self._curve = E
         K = E.base_field()
-        p = check_prime(K,P) # error handling done in that function
+        p = check_prime(K, P)  # error handling done in that function
         if algorithm != "pari" and algorithm != "generic":
             raise ValueError("algorithm must be one of 'pari', 'generic'")
 
@@ -278,9 +278,11 @@ class EllipticCurveLocalData(SageObject):
             self._Emin_reduced = Eint.minimal_model()
             self._val_disc = self._Emin_reduced.discriminant().valuation(p)
             if self._fp > 0:
-                self._reduction_type = Eint.ap(p) # = 0,-1 or +1
+                self._reduction_type = Eint.ap(p)  # = 0,-1 or +1
         else:
-            self._Emin, _, self._val_disc, self._fp, self._KS, self._cp, self._split = self._tate(proof, globally)
+            self._Emin, _, self._val_disc, self._fp, self._KS, self._cp, self._split = (
+                self._tate(proof, globally)
+            )
             if self._fp > 0:
                 if self._Emin.c4().valuation(p) > 0:
                     self._reduction_type = 0
@@ -306,8 +308,23 @@ class EllipticCurveLocalData(SageObject):
         """
         red_type = "good"
         if self._reduction_type is not None:
-            red_type = ["bad non-split multiplicative","bad additive","bad split multiplicative"][1+self._reduction_type]
-        return "Local data at %s:\nReduction type: %s\nLocal minimal model: %s\nMinimal discriminant valuation: %s\nConductor exponent: %s\nKodaira Symbol: %s\nTamagawa Number: %s" % (self._prime,red_type,self.minimal_model(),self._val_disc,self._fp,self._KS,self._cp)
+            red_type = [
+                "bad non-split multiplicative",
+                "bad additive",
+                "bad split multiplicative",
+            ][1 + self._reduction_type]
+        return (
+            "Local data at %s:\nReduction type: %s\nLocal minimal model: %s\nMinimal discriminant valuation: %s\nConductor exponent: %s\nKodaira Symbol: %s\nTamagawa Number: %s"
+            % (
+                self._prime,
+                red_type,
+                self.minimal_model(),
+                self._val_disc,
+                self._fp,
+                self._KS,
+                self._cp,
+            )
+        )
 
     def minimal_model(self, reduce=True):
         """
@@ -385,7 +402,9 @@ class EllipticCurveLocalData(SageObject):
         try:
             return self._Emin
         except AttributeError:
-            raise ValueError("the argument reduce must not be False if algorithm=pari is used")
+            raise ValueError(
+                "the argument reduce must not be False if algorithm=pari is used"
+            )
 
     def prime(self):
         """
@@ -790,15 +809,16 @@ class EllipticCurveLocalData(SageObject):
         # case (Simon King, github issue #8800).
 
         from sage.categories.pushout import pushout, CoercionException
+
         try:
-            if hasattr(F.p.ring(), 'maximal_order'): # it is not ZZ
+            if hasattr(F.p.ring(), 'maximal_order'):  # it is not ZZ
                 pushout(F.p.ring().maximal_order(), K)
             pinv = lambda x: F.lift(~F(x))
-            proot = lambda x,e: F.lift(F(x).nth_root(e, extend=False, all=True)[0])
+            proot = lambda x, e: F.lift(F(x).nth_root(e, extend=False, all=True)[0])
             preduce = lambda x: F.lift(F(x))
-        except CoercionException: # the pushout does not exist, we need conversion
+        except CoercionException:  # the pushout does not exist, we need conversion
             pinv = lambda x: K(F.lift(~F(x)))
-            proot = lambda x,e: K(F.lift(F(x).nth_root(e, extend=False, all=True)[0]))
+            proot = lambda x, e: K(F.lift(F(x).nth_root(e, extend=False, all=True)[0]))
             preduce = lambda x: K(F.lift(F(x)))
 
         def _pquadroots(a, b, c):
@@ -810,8 +830,8 @@ class EllipticCurveLocalData(SageObject):
             if a == 0:
                 return (b != 0) or (c == 0)
             if p == 2:
-                return len(PolynomialRing(F, "x")([c,b,a]).roots()) > 0
-            return (b**2 - 4*a*c).is_square()
+                return len(PolynomialRing(F, "x")([c, b, a]).roots()) > 0
+            return (b**2 - 4 * a * c).is_square()
 
         def _pcubicroots(b, c, d):
             r"""
@@ -819,7 +839,13 @@ class EllipticCurveLocalData(SageObject):
             b*x^2 + c*x + d` modulo `P`, counting multiplicities
             """
 
-            return sum([rr[1] for rr in PolynomialRing(F, 'x')([F(d), F(c), F(b), F(1)]).roots()],0)
+            return sum(
+                [
+                    rr[1]
+                    for rr in PolynomialRing(F, 'x')([F(d), F(c), F(b), F(1)]).roots()
+                ],
+                0,
+            )
 
         if p == 2:
             halfmodp = OK(Integer(0))
@@ -828,20 +854,30 @@ class EllipticCurveLocalData(SageObject):
 
         A = E.a_invariants()
         A = [0, A[0], A[1], A[2], A[3], 0, A[4]]
-        indices = [1,2,3,4,6]
+        indices = [1, 2, 3, 4, 6]
         if min([pval(a) for a in A if a != 0]) < 0:
-            verbose("Non-integral model at P: valuations are %s; making integral" % ([pval(a) for a in A if a != 0]), t, 1)
+            verbose(
+                "Non-integral model at P: valuations are %s; making integral"
+                % ([pval(a) for a in A if a != 0]),
+                t,
+                1,
+            )
             e = 0
             for i in range(7):
                 if A[i] != 0:
-                    e = max(e, (-pval(A[i])/i).ceil())
+                    e = max(e, (-pval(A[i]) / i).ceil())
             pie = pi**e
             for i in range(7):
                 if A[i] != 0:
                     A[i] *= pie**i
-            verbose("P-integral model is %s, with valuations %s" % ([A[i] for i in indices], [pval(A[i]) for i in indices]), t, 1)
+            verbose(
+                "P-integral model is %s, with valuations %s"
+                % ([A[i] for i in indices], [pval(A[i]) for i in indices]),
+                t,
+                1,
+            )
 
-        split = None # only relevant for multiplicative reduction
+        split = None  # only relevant for multiplicative reduction
 
         (a1, a2, a3, a4, a6) = (A[1], A[2], A[3], A[4], A[6])
         while True:
@@ -856,17 +892,17 @@ class EllipticCurveLocalData(SageObject):
                 cp = 1
                 fp = 0
                 KS = KodairaSymbol("I0")
-                break #return
+                break  # return
 
             # Otherwise, we change coordinates so that p | a3, a4, a6
             if p == 2:
                 if pdiv(b2):
                     r = proot(a4, 2)
-                    t = proot(((r + a2)*r + a4)*r + a6, 2)
+                    t = proot(((r + a2) * r + a4) * r + a6, 2)
                 else:
                     temp = pinv(a1)
                     r = temp * a3
-                    t = temp * (a4 + r*r)
+                    t = temp * (a4 + r * r)
             elif p == 3:
                 if pdiv(b2):
                     r = proot(-b6, 3)
@@ -877,7 +913,7 @@ class EllipticCurveLocalData(SageObject):
                 if pdiv(c4):
                     r = -pinv(12) * b2
                 else:
-                    r = -pinv(12*c4) * (c6 + b2 * c4)
+                    r = -pinv(12 * c4) * (c6 + b2 * c4)
                 t = -halfmodp * (a1 * r + a3)
             r = preduce(r)
             t = preduce(t)
@@ -888,7 +924,16 @@ class EllipticCurveLocalData(SageObject):
             (b2, b4, b6, b8) = C.b_invariants()
             if min([pval(a) for a in (a1, a2, a3, a4, a6) if a != 0]) < 0:
                 raise RuntimeError("Non-integral model after first transform!")
-            verbose("After first transform %s\n, [a1,a2,a3,a4,a6] = %s\n, valuations = %s" % ([r, 0, t], [a1, a2, a3, a4, a6], [pval(a1), pval(a2), pval(a3), pval(a4), pval(a6)]), t, 2)
+            verbose(
+                "After first transform %s\n, [a1,a2,a3,a4,a6] = %s\n, valuations = %s"
+                % (
+                    [r, 0, t],
+                    [a1, a2, a3, a4, a6],
+                    [pval(a1), pval(a2), pval(a3), pval(a4), pval(a6)],
+                ),
+                t,
+                2,
+            )
             if pval(a3) == 0:
                 raise RuntimeError("p does not divide a3 after first transform!")
             if pval(a4) == 0:
@@ -911,7 +956,7 @@ class EllipticCurveLocalData(SageObject):
                     cp = 1
                 KS = KodairaSymbol("I%s" % val_disc)
                 fp = 1
-                break #return
+                break  # return
 
             # Additive reduction
 
@@ -920,39 +965,48 @@ class EllipticCurveLocalData(SageObject):
                 KS = KodairaSymbol("II")
                 fp = val_disc
                 cp = 1
-                break #return
+                break  # return
             if pval(b8) < 3:
                 ## Type III
                 KS = KodairaSymbol("III")
                 fp = val_disc - 1
                 cp = 2
-                break #return
+                break  # return
             if pval(b6) < 3:
                 ## Type IV
                 cp = 1
-                a3t = preduce(a3/pi)
-                a6t = preduce(a6/pi2)
+                a3t = preduce(a3 / pi)
+                a6t = preduce(a6 / pi2)
                 if _pquadroots(1, a3t, -a6t):
                     cp = 3
                 KS = KodairaSymbol("IV")
                 fp = val_disc - 2
-                break #return
+                break  # return
 
             # If our curve is none of these types, we change coords so that
             # p | a1, a2;  p^2 | a3, a4;  p^3 | a6
             if p == 2:
-                s = proot(a2, 2)        # so s^2=a2 (mod pi)
-                t = pi*proot(a6/pi2, 2) # so t^2=a6 (mod pi^3)
+                s = proot(a2, 2)  # so s^2=a2 (mod pi)
+                t = pi * proot(a6 / pi2, 2)  # so t^2=a6 (mod pi^3)
             elif p == 3:
-                s = a1       # so a1'=2s+a1=3a1=0 (mod pi)
-                t = a3       # so a3'=2t+a3=3a3=0 (mod pi^2)
+                s = a1  # so a1'=2s+a1=3a1=0 (mod pi)
+                t = a3  # so a3'=2t+a3=3a3=0 (mod pi^2)
             else:
-                s = -a1*halfmodp   # so a1'=2s+a1=0 (mod pi)
-                t = -a3*halfmodp   # so a3'=2t+a3=0 (mod pi^2)
+                s = -a1 * halfmodp  # so a1'=2s+a1=0 (mod pi)
+                t = -a3 * halfmodp  # so a3'=2t+a3=0 (mod pi^2)
             C = C.rst_transform(0, s, t)
             (a1, a2, a3, a4, a6) = C.a_invariants()
 
-            verbose("After second transform %s\n[a1, a2, a3, a4, a6] = %s\nValuations: %s" % ([0, s, t], [a1,a2,a3,a4,a6],[pval(a1),pval(a2),pval(a3),pval(a4),pval(a6)]), t, 2)
+            verbose(
+                "After second transform %s\n[a1, a2, a3, a4, a6] = %s\nValuations: %s"
+                % (
+                    [0, s, t],
+                    [a1, a2, a3, a4, a6],
+                    [pval(a1), pval(a2), pval(a3), pval(a4), pval(a6)],
+                ),
+                t,
+                2,
+            )
             if pval(a1) == 0:
                 raise RuntimeError("p does not divide a1 after second transform!")
             if pval(a2) == 0:
@@ -968,14 +1022,14 @@ class EllipticCurveLocalData(SageObject):
 
             # Analyze roots of the cubic T^3 + bT^2 + cT + d = 0 mod P, where
             # b = a2/p, c = a4/p^2, d = a6/p^3
-            b = preduce(a2/pi)
-            c = preduce(a4/pi2)
-            d = preduce(a6/pi3)
-            bb = b*b
-            cc = c*c
-            bc = b*c
-            w = 27*d*d - bb*cc + 4*b*bb*d - 18*bc*d + 4*c*cc
-            x = 3*c - bb
+            b = preduce(a2 / pi)
+            c = preduce(a4 / pi2)
+            d = preduce(a6 / pi3)
+            bb = b * b
+            cc = c * c
+            bc = b * c
+            w = 27 * d * d - bb * cc + 4 * b * bb * d - 18 * bc * d + 4 * c * cc
+            x = 3 * c - bb
             if pdiv(w):
                 if pdiv(x):
                     sw = 3
@@ -983,14 +1037,19 @@ class EllipticCurveLocalData(SageObject):
                     sw = 2
             else:
                 sw = 1
-            verbose("Analyzing roots of cubic T^3 + %s*T^2 + %s*T + %s, case %s" % (b, c, d, sw), t, 1)
+            verbose(
+                "Analyzing roots of cubic T^3 + %s*T^2 + %s*T + %s, case %s"
+                % (b, c, d, sw),
+                t,
+                1,
+            )
             if sw == 1:
                 ## Three distinct roots - Type I*0
                 verbose("Distinct roots", t, 1)
                 KS = KodairaSymbol("I0*")
                 cp = 1 + _pcubicroots(b, c, d)
                 fp = val_disc - 4
-                break #return
+                break  # return
             elif sw == 2:
                 ## One double root - Type I*m for some m
                 verbose("One double root", t, 1)
@@ -1000,7 +1059,7 @@ class EllipticCurveLocalData(SageObject):
                 elif p == 3:
                     r = c * pinv(b)
                 else:
-                    r = (bc - 9*d)*pinv(2*x)
+                    r = (bc - 9 * d) * pinv(2 * x)
                 r = pi * preduce(r)
                 C = C.rst_transform(r, 0, 0)
                 (a1, a2, a3, a4, a6) = C.a_invariants()
@@ -1014,48 +1073,48 @@ class EllipticCurveLocalData(SageObject):
                 while True:
                     a2t = preduce(a2 / pi)
                     a3t = preduce(a3 / my)
-                    a4t = preduce(a4 / (pi*mx))
-                    a6t = preduce(a6 / (mx*my))
-                    if pdiv(a3t*a3t + 4*a6t):
+                    a4t = preduce(a4 / (pi * mx))
+                    a6t = preduce(a6 / (mx * my))
+                    if pdiv(a3t * a3t + 4 * a6t):
                         if p == 2:
-                            t = my*proot(a6t, 2)
+                            t = my * proot(a6t, 2)
                         else:
-                            t = my*preduce(-a3t*halfmodp)
+                            t = my * preduce(-a3t * halfmodp)
                         C = C.rst_transform(0, 0, t)
                         (a1, a2, a3, a4, a6) = C.a_invariants()
 
                         my *= pi
                         iy += 1
                         a2t = preduce(a2 / pi)
-                        a3t = preduce(a3/my)
-                        a4t = preduce(a4/(pi*mx))
-                        a6t = preduce(a6/(mx*my))
-                        if pdiv(a4t*a4t - 4*a6t*a2t):
+                        a3t = preduce(a3 / my)
+                        a4t = preduce(a4 / (pi * mx))
+                        a6t = preduce(a6 / (mx * my))
+                        if pdiv(a4t * a4t - 4 * a6t * a2t):
                             if p == 2:
-                                r = mx*proot(a6t*pinv(a2t), 2)
+                                r = mx * proot(a6t * pinv(a2t), 2)
                             else:
-                                r = mx*preduce(-a4t*pinv(2*a2t))
+                                r = mx * preduce(-a4t * pinv(2 * a2t))
                             C = C.rst_transform(r, 0, 0)
                             (a1, a2, a3, a4, a6) = C.a_invariants()
 
                             mx *= pi
-                            ix += 1 # and stay in loop
+                            ix += 1  # and stay in loop
                         else:
                             if _pquadroots(a2t, a4t, a6t):
                                 cp = 4
                             else:
                                 cp = 2
-                            break # exit loop
+                            break  # exit loop
                     else:
                         if _pquadroots(1, a3t, -a6t):
                             cp = 4
                         else:
                             cp = 2
                         break
-                KS = KodairaSymbol("I%s*" % (ix+iy-5))
+                KS = KodairaSymbol("I%s*" % (ix + iy - 5))
                 fp = val_disc - ix - iy + 1
-                break #return
-            else: # sw == 3
+                break  # return
+            else:  # sw == 3
                 ## The cubic has a triple root
                 verbose("Triple root", t, 1)
                 ## First we change coordinates so that T = 0 mod p
@@ -1065,28 +1124,39 @@ class EllipticCurveLocalData(SageObject):
                     r = proot(-d, 3)
                 else:
                     r = -b * pinv(3)
-                r = pi*preduce(r)
+                r = pi * preduce(r)
                 C = C.rst_transform(r, 0, 0)
                 (a1, a2, a3, a4, a6) = C.a_invariants()
 
-                verbose("After third transform %s\n[a1,a2,a3,a4,a6] = %s\nValuations: %s" % ([r,0,0],[a1,a2,a3,a4,a6],[pval(ai) for ai in [a1,a2,a3,a4,a6]]), t, 2)
-                if min(pval(ai) for ai in [a1,a2,a3,a4,a6]) < 0:
+                verbose(
+                    "After third transform %s\n[a1,a2,a3,a4,a6] = %s\nValuations: %s"
+                    % (
+                        [r, 0, 0],
+                        [a1, a2, a3, a4, a6],
+                        [pval(ai) for ai in [a1, a2, a3, a4, a6]],
+                    ),
+                    t,
+                    2,
+                )
+                if min(pval(ai) for ai in [a1, a2, a3, a4, a6]) < 0:
                     raise RuntimeError("Non-integral model after third transform!")
                 if pval(a2) < 2 or pval(a4) < 3 or pval(a6) < 4:
-                    raise RuntimeError("Cubic after transform does not have a triple root at 0")
-                a3t = preduce(a3/pi2)
-                a6t = preduce(a6/pi4)
+                    raise RuntimeError(
+                        "Cubic after transform does not have a triple root at 0"
+                    )
+                a3t = preduce(a3 / pi2)
+                a6t = preduce(a6 / pi4)
                 # We test for Type IV*
-                if not pdiv(a3t*a3t + 4*a6t):
+                if not pdiv(a3t * a3t + 4 * a6t):
                     cp = 3 if _pquadroots(1, a3t, -a6t) else 1
                     KS = KodairaSymbol("IV*")
                     fp = val_disc - 6
-                    break #return
+                    break  # return
                 # Now change coordinates so that p^3|a3, p^5|a6
                 if p == 2:
-                    t = -pi2*proot(a6t, 2)
+                    t = -pi2 * proot(a6t, 2)
                 else:
-                    t = pi2*preduce(-a3t*halfmodp)
+                    t = pi2 * preduce(-a3t * halfmodp)
                 C = C.rst_transform(0, 0, t)
                 (a1, a2, a3, a4, a6) = C.a_invariants()
 
@@ -1096,28 +1166,33 @@ class EllipticCurveLocalData(SageObject):
                     KS = KodairaSymbol("III*")
                     fp = val_disc - 7
                     cp = 2
-                    break #return
+                    break  # return
                 if pval(a6) < 6:
                     ## Type II*
                     KS = KodairaSymbol("II*")
                     fp = val_disc - 8
                     cp = 1
-                    break #return
+                    break  # return
                 if pi_neg is None:
                     if principal_flag:
                         pi_neg = pi
                     else:
                         pi_neg = K.uniformizer(P, 'negative')
-                    pi_neg2 = pi_neg*pi_neg
-                    pi_neg3 = pi_neg*pi_neg2
-                    pi_neg4 = pi_neg*pi_neg3
-                    pi_neg6 = pi_neg4*pi_neg2
+                    pi_neg2 = pi_neg * pi_neg
+                    pi_neg3 = pi_neg * pi_neg2
+                    pi_neg4 = pi_neg * pi_neg3
+                    pi_neg6 = pi_neg4 * pi_neg2
                 a1 /= pi_neg
                 a2 /= pi_neg2
                 a3 /= pi_neg3
                 a4 /= pi_neg4
                 a6 /= pi_neg6
-                verbose("Non-minimal equation, dividing out...\nNew model is %s" % ([a1, a2, a3, a4, a6]), t, 1)
+                verbose(
+                    "Non-minimal equation, dividing out...\nNew model is %s"
+                    % ([a1, a2, a3, a4, a6]),
+                    t,
+                    1,
+                )
         return (C, p, val_disc, fp, KS, cp, split)
 
 
@@ -1185,7 +1260,9 @@ def check_prime(K, P):
                 return P.gen()
             raise TypeError("The ideal %s is not a prime ideal of %s" % (P, ZZ))
         else:
-            raise TypeError("%s is neither an element of QQ or an ideal of %s" % (P, ZZ))
+            raise TypeError(
+                "%s is neither an element of QQ or an ideal of %s" % (P, ZZ)
+            )
 
     if not isinstance(K, NumberField):
         raise TypeError("%s is not a number field" % (K,))

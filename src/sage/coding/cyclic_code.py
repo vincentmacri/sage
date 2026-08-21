@@ -34,9 +34,11 @@ For now, only single-root cyclic codes (i.e. whose length `n` and field order
 #                  http://www.gnu.org/licenses/
 # *****************************************************************************
 
-from .linear_code import (AbstractLinearCode,
-                          LinearCodeSyndromeDecoder,
-                          LinearCodeNearestNeighborDecoder)
+from .linear_code import (
+    AbstractLinearCode,
+    LinearCodeSyndromeDecoder,
+    LinearCodeNearestNeighborDecoder,
+)
 from .encoder import Encoder
 from .decoder import Decoder
 from copy import copy
@@ -85,7 +87,7 @@ def find_generator_polynomial(code, check=True):
     if check:
         n = code.length()
         k = code.dimension()
-        if (g.degree() != n - k):
+        if g.degree() != n - k:
             raise ValueError("The code is not cyclic.")
         c = _to_complete_list(g, n)
         if any(vector(c[i:] + c[:i]) not in code for i in range(n)):
@@ -171,6 +173,7 @@ def bch_bound(n, D, arithmetic=False):
         sage: sage.coding.cyclic_code.bch_bound(n, D, True)
         (4, (2, 12))
     """
+
     def longest_streak(step):
         max_len = 1
         max_offset = 0
@@ -190,8 +193,7 @@ def bch_bound(n, D, arithmetic=False):
         try:
             isD[d] = 1
         except IndexError:
-            raise ValueError("%s must contains integers between 0 and %s" %
-                             (D, n - 1))
+            raise ValueError("%s must contains integers between 0 and %s" % (D, n - 1))
     if 0 not in isD:
         return (n + 1, (1, 0))
 
@@ -199,9 +201,11 @@ def bch_bound(n, D, arithmetic=False):
         one_len, offset = longest_streak(1)
         return (one_len + 1, (1, offset))
     n = Integer(n)
-    longest_streak_list = [(longest_streak(step), step)
-                           for step in n.coprime_integers(n // 2 + 1)
-                           if step >= 1]
+    longest_streak_list = [
+        (longest_streak(step), step)
+        for step in n.coprime_integers(n // 2 + 1)
+        if step >= 1
+    ]
     (max_len, offset), step = max(longest_streak_list)
     return (max_len + 1, (step, offset))
 
@@ -286,8 +290,16 @@ class CyclicCode(AbstractLinearCode):
     _registered_encoders = {}
     _registered_decoders = {}
 
-    def __init__(self, generator_pol=None, length=None, code=None, check=True,
-                 D=None, field=None, primitive_root=None) -> None:
+    def __init__(
+        self,
+        generator_pol=None,
+        length=None,
+        code=None,
+        check=True,
+        D=None,
+        field=None,
+        primitive_root=None,
+    ) -> None:
         r"""
         TESTS:
 
@@ -357,24 +369,34 @@ class CyclicCode(AbstractLinearCode):
             ValueError: primitive_root must be a primitive n-th root of unity
         """
         # Case (1) : generator polynomial and length are provided.
-        if (generator_pol is not None and length is not None and
-                code is None and D is None and field is None and
-                primitive_root is None):
+        if (
+            generator_pol is not None
+            and length is not None
+            and code is None
+            and D is None
+            and field is None
+            and primitive_root is None
+        ):
             F = generator_pol.base_ring()
             if not F.is_finite() or not F.is_field():
-                raise ValueError("The generator polynomial must be defined "
-                                 "over a finite field.")
+                raise ValueError(
+                    "The generator polynomial must be defined over a finite field."
+                )
             q = F.cardinality()
             if not gcd(length, q) == 1:
-                raise ValueError("Only cyclic codes whose length and field "
-                                 "order are coprimes are implemented.")
+                raise ValueError(
+                    "Only cyclic codes whose length and field "
+                    "order are coprimes are implemented."
+                )
             R = generator_pol.parent()
             deg = generator_pol.degree()
             if not isinstance(length, Integer):
                 length = Integer(length)
             if not generator_pol.divides(R.gen() ** length - 1):
-                raise ValueError("Provided polynomial must divide x^n - 1, "
-                                 "where n is the provided length.")
+                raise ValueError(
+                    "Provided polynomial must divide x^n - 1, "
+                    "where n is the provided length."
+                )
             self._polynomial_ring = R
             self._dimension = length - deg
             if not generator_pol.is_monic():
@@ -384,17 +406,24 @@ class CyclicCode(AbstractLinearCode):
             super().__init__(F, length, "Vector", "Syndrome")
 
         # Case (2) : a code is provided.
-        elif (code is not None and
-              generator_pol is None and length is None and D is None and
-              field is None and primitive_root is None):
+        elif (
+            code is not None
+            and generator_pol is None
+            and length is None
+            and D is None
+            and field is None
+            and primitive_root is None
+        ):
             if not isinstance(code, AbstractLinearCode):
                 raise ValueError("code must be an AbstractLinearCode")
             F = code.base_ring()
             q = F.cardinality()
             n = code.length()
             if not gcd(n, q) == 1:
-                raise ValueError("Only cyclic codes whose length and field "
-                                 "order are coprimes are implemented.")
+                raise ValueError(
+                    "Only cyclic codes whose length and field "
+                    "order are coprimes are implemented."
+                )
             g = find_generator_polynomial(code, check)
             self._polynomial_ring = g.parent()
             self._generator_polynomial = g
@@ -402,16 +431,23 @@ class CyclicCode(AbstractLinearCode):
             super().__init__(code.base_ring(), n, "Vector", "Syndrome")
 
         # Case (3) : a defining set, a length and a field are provided
-        elif (D is not None and length is not None and field is not None and
-              generator_pol is None and code is None):
+        elif (
+            D is not None
+            and length is not None
+            and field is not None
+            and generator_pol is None
+            and code is None
+        ):
             F = field
             if not F.is_finite() or not F.is_field():
                 raise ValueError("You must provide a finite field.")
             n = length
             q = F.cardinality()
             if not gcd(n, q) == 1:
-                raise ValueError("Only cyclic codes whose length and field "
-                                 "order are coprimes are implemented.")
+                raise ValueError(
+                    "Only cyclic codes whose length and field "
+                    "order are coprimes are implemented."
+                )
 
             R = F['x']
             s = Zmod(n)(q).multiplicative_order()
@@ -421,13 +457,14 @@ class CyclicCode(AbstractLinearCode):
                 try:
                     FE = Hom(F, Fsplit)[0]
                 except Exception:
-                    raise ValueError("primitive_root must belong to an "
-                                     "extension of the base field")
+                    raise ValueError(
+                        "primitive_root must belong to an extension of the base field"
+                    )
                 extension_degree = Fsplit.degree() // F.degree()
-                if (extension_degree != s or
-                        primitive_root.multiplicative_order() != n):
-                    raise ValueError("primitive_root must be a primitive "
-                                     "n-th root of unity")
+                if extension_degree != s or primitive_root.multiplicative_order() != n:
+                    raise ValueError(
+                        "primitive_root must be a primitive n-th root of unity"
+                    )
                 alpha = primitive_root
             else:
                 Fsplit, FE = F.extension(Integer(s), map=True)
@@ -457,9 +494,11 @@ class CyclicCode(AbstractLinearCode):
             super().__init__(F, n, "Vector", "SurroundingBCH")
 
         else:
-            raise AttributeError("You must provide either a code, or a list "
-                                 "of powers and the length and the field, or "
-                                 "a generator polynomial and the code length")
+            raise AttributeError(
+                "You must provide either a code, or a list "
+                "of powers and the length and the field, or "
+                "a generator polynomial and the code length"
+            )
 
     def __contains__(self, word) -> bool:
         r"""
@@ -481,7 +520,7 @@ class CyclicCode(AbstractLinearCode):
         """
         g = self.generator_polynomial()
         R = self._polynomial_ring
-        return (g.divides(R(word.list())) and word in self.ambient_space())
+        return g.divides(R(word.list())) and word in self.ambient_space()
 
     def __eq__(self, other) -> bool:
         r"""
@@ -504,9 +543,11 @@ class CyclicCode(AbstractLinearCode):
         if not isinstance(other, CyclicCode):
             return False
         R = self._polynomial_ring
-        return (self.base_field() == other.base_field() and
-                self.length() == other.length() and
-                self.generator_polynomial() == R(other.generator_polynomial()))
+        return (
+            self.base_field() == other.base_field()
+            and self.length() == other.length()
+            and self.generator_polynomial() == R(other.generator_polynomial())
+        )
 
     def _repr_(self):
         r"""
@@ -521,9 +562,11 @@ class CyclicCode(AbstractLinearCode):
             sage: C
             [7, 4] Cyclic Code over GF(2)
         """
-        return ("[%s, %s] Cyclic Code over GF(%s)"
-                % (self.length(), self.dimension(),
-                   self.base_field().cardinality()))
+        return "[%s, %s] Cyclic Code over GF(%s)" % (
+            self.length(),
+            self.dimension(),
+            self.base_field().cardinality(),
+        )
 
     def _latex_(self):
         r"""
@@ -538,9 +581,11 @@ class CyclicCode(AbstractLinearCode):
             sage: latex(C)
             [7, 4] \textnormal{ Cyclic Code over } \Bold{F}_{2}
         """
-        return ("[%s, %s] \\textnormal{ Cyclic Code over } %s"
-                % (self.length(), self.dimension(),
-                   self.base_field()._latex_()))
+        return "[%s, %s] \\textnormal{ Cyclic Code over } %s" % (
+            self.length(),
+            self.dimension(),
+            self.base_field()._latex_(),
+        )
 
     def generator_polynomial(self):
         r"""
@@ -633,9 +678,9 @@ class CyclicCode(AbstractLinearCode):
             sage: C1.defining_set() == C2.defining_set()
             True
         """
-        if (hasattr(self, "_defining_set") and
-                (primitive_root is None or
-                 primitive_root == self._primitive_root)):
+        if hasattr(self, "_defining_set") and (
+            primitive_root is None or primitive_root == self._primitive_root
+        ):
             return self._defining_set
         F = self.base_field()
         n = self.length()
@@ -653,11 +698,14 @@ class CyclicCode(AbstractLinearCode):
                 Fsplit = alpha.parent()
                 FE = Hom(Fsplit, F)[0]
             except ValueError:
-                raise ValueError("primitive_root does not belong to the "
-                                 "right splitting field")
+                raise ValueError(
+                    "primitive_root does not belong to the right splitting field"
+                )
             if alpha.multiplicative_order() != n:
-                raise ValueError("primitive_root must have multiplicative "
-                                 "order equal to the code length")
+                raise ValueError(
+                    "primitive_root must have multiplicative "
+                    "order equal to the code length"
+                )
 
         Rsplit = Fsplit['xx']
         gsplit = Rsplit([FE(coeff) for coeff in g])
@@ -802,9 +850,15 @@ class CyclicCode(AbstractLinearCode):
             True
         """
         from .bch_code import BCHCode
+
         delta, params = self.bch_bound(arithmetic=True)
-        return BCHCode(self.base_field(), self.length(), delta,
-                       offset=params[1], jump_size=params[0])
+        return BCHCode(
+            self.base_field(),
+            self.length(),
+            delta,
+            offset=params[1],
+            jump_size=params[0],
+        )
 
 
 class CyclicCodePolynomialEncoder(Encoder):
@@ -864,8 +918,10 @@ class CyclicCodePolynomialEncoder(Encoder):
             sage: E1 == E2
             True
         """
-        return (isinstance(other, CyclicCodePolynomialEncoder) and
-                self.code() == other.code())
+        return (
+            isinstance(other, CyclicCodePolynomialEncoder)
+            and self.code() == other.code()
+        )
 
     def _repr_(self):
         r"""
@@ -897,8 +953,7 @@ class CyclicCodePolynomialEncoder(Encoder):
             sage: latex(E)
             \textnormal{Polynomial-style encoder for }[7, 4] \textnormal{ Cyclic Code over } \Bold{F}_{2}
         """
-        return ("\\textnormal{Polynomial-style encoder for }%s" %
-                self.code()._latex_())
+        return "\\textnormal{Polynomial-style encoder for }%s" % self.code()._latex_()
 
     def encode(self, p):
         r"""
@@ -1034,8 +1089,9 @@ class CyclicCodeVectorEncoder(Encoder):
             sage: E1 == E2
             True
         """
-        return (isinstance(other, CyclicCodeVectorEncoder) and
-                self.code() == other.code())
+        return (
+            isinstance(other, CyclicCodeVectorEncoder) and self.code() == other.code()
+        )
 
     def _repr_(self):
         r"""
@@ -1067,8 +1123,7 @@ class CyclicCodeVectorEncoder(Encoder):
             sage: latex(E)
             \textnormal{Vector-style encoder for }[7, 4] \textnormal{ Cyclic Code over } \Bold{F}_{2}
         """
-        return ("\\textnormal{Vector-style encoder for }%s" %
-                self.code()._latex_())
+        return "\\textnormal{Vector-style encoder for }%s" % self.code()._latex_()
 
     def encode(self, m):
         r"""
@@ -1194,6 +1249,7 @@ class CyclicCodeSurroundingBCHDecoder(Decoder):
         sage: D
         Decoder through the surrounding BCH code of the [15, 10] Cyclic Code over GF(16)
     """
+
     def __init__(self, code, **kwargs) -> None:
         r"""
 
@@ -1221,9 +1277,11 @@ class CyclicCodeSurroundingBCHDecoder(Decoder):
             sage: D1 == D2
             True
         """
-        return (isinstance(other, CyclicCodeSurroundingBCHDecoder) and
-                self.code() == other.code() and
-                self.bch_decoder() == other.bch_decoder())
+        return (
+            isinstance(other, CyclicCodeSurroundingBCHDecoder)
+            and self.code() == other.code()
+            and self.bch_decoder() == other.bch_decoder()
+        )
 
     def _repr_(self):
         r"""
@@ -1236,8 +1294,7 @@ class CyclicCodeSurroundingBCHDecoder(Decoder):
             sage: D
             Decoder through the surrounding BCH code of the [15, 10] Cyclic Code over GF(16)
         """
-        return ("Decoder through the surrounding BCH code of the %s" %
-                self.code())
+        return "Decoder through the surrounding BCH code of the %s" % self.code()
 
     def _latex_(self):
         r"""
@@ -1250,8 +1307,10 @@ class CyclicCodeSurroundingBCHDecoder(Decoder):
             sage: latex(D)
             \textnormal{Decoder through the surrounding BCH code of the }[15, 10] \textnormal{ Cyclic Code over } \Bold{F}_{2^{4}}
         """
-        return ("\\textnormal{Decoder through the surrounding BCH code of "
-                "the }%s" % self.code()._latex_())
+        return (
+            "\\textnormal{Decoder through the surrounding BCH code of "
+            "the }%s" % self.code()._latex_()
+        )
 
     def bch_code(self):
         r"""

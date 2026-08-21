@@ -85,21 +85,25 @@ from math import sqrt
 from urllib.request import urlopen
 
 from sage.arith.misc import divisors, is_prime_power, is_square, is_prime
-from sage.combinat.designs.difference_family import (get_fixed_relative_difference_set,
-                                                     relative_difference_set_from_homomorphism,
-                                                     skew_supplementary_difference_set,
-                                                     complementary_difference_sets)
+from sage.combinat.designs.difference_family import (
+    get_fixed_relative_difference_set,
+    relative_difference_set_from_homomorphism,
+    skew_supplementary_difference_set,
+    complementary_difference_sets,
+)
 from sage.combinat.t_sequences import T_sequences_smallcases
 from sage.rings.integer_ring import ZZ
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-from sage.matrix.constructor import (block_matrix,
-                                     block_diagonal_matrix,
-                                     diagonal_matrix,
-                                     identity_matrix as I,
-                                     ones_matrix as J,
-                                     matrix,
-                                     matrix_method,
-                                     zero_matrix)
+from sage.matrix.constructor import (
+    block_matrix,
+    block_diagonal_matrix,
+    diagonal_matrix,
+    identity_matrix as I,
+    ones_matrix as J,
+    matrix,
+    matrix_method,
+    zero_matrix,
+)
 from sage.misc.unknown import Unknown
 from sage.modules.free_module_element import vector
 
@@ -134,7 +138,7 @@ def normalise_hadamard(H, skew=False):
 
     if skew:
         dd = diagonal_matrix(H[0])
-        return dd*H*dd
+        return dd * H * dd
     for i in range(H.ncols()):
         if H[0, i] < 0:
             H.rescale_col(i, -1)
@@ -191,15 +195,18 @@ def hadamard_matrix_paleyI(n, normalize=True):
     """
     p = n - 1
     if not (is_prime_power(p) and (p % 4 == 3)):
-        raise ValueError("The order %s is not covered by the Paley type I construction." % n)
+        raise ValueError(
+            "The order %s is not covered by the Paley type I construction." % n
+        )
 
     from sage.rings.finite_rings.finite_field_constructor import FiniteField
+
     K = FiniteField(p, 'x')
     K_list = list(K)
     K_list.insert(0, K.zero())
-    H = matrix(ZZ, [[(1 if (x-y).is_square() else -1)
-                     for x in K_list]
-                    for y in K_list])
+    H = matrix(
+        ZZ, [[(1 if (x - y).is_square() else -1) for x in K_list] for y in K_list]
+    )
     for i in range(n):
         H[i, 0] = -1
         H[0, i] = 1
@@ -244,15 +251,19 @@ def symmetric_conference_matrix_paley(n):
     """
     q = n - 1
     if not (is_prime_power(q) and (q % 4 == 1)):
-        raise ValueError("The order %s is not covered by Paley construction of symmetric conference matrices." % n)
+        raise ValueError(
+            "The order %s is not covered by Paley construction of symmetric conference matrices."
+            % n
+        )
 
     from sage.rings.finite_rings.finite_field_constructor import FiniteField
+
     K = FiniteField(q, 'x')
     K_list = list(K)
     K_list.insert(0, K.zero())
-    H = matrix(ZZ, [[(1 if (x-y).is_square() else -1)
-                     for x in K_list]
-                    for y in K_list])
+    H = matrix(
+        ZZ, [[(1 if (x - y).is_square() else -1) for x in K_list] for y in K_list]
+    )
     for i in range(n):
         H[0, i] = 1
         H[i, 0] = 1
@@ -303,17 +314,21 @@ def hadamard_matrix_paleyII(n):
         ....:     for n in test_cases)
         True
     """
-    q = n//2 - 1
+    q = n // 2 - 1
     if not (n % 2 == 0 and is_prime_power(q) and (q % 4 == 1)):
-        raise ValueError("The order %s is not covered by the Paley type II construction." % n)
+        raise ValueError(
+            "The order %s is not covered by the Paley type II construction." % n
+        )
 
-    H = symmetric_conference_matrix_paley(q+1)
+    H = symmetric_conference_matrix_paley(q + 1)
 
-    tr = { 0: matrix(2, 2, [ 1, -1, -1, -1]),
-           1: matrix(2, 2, [ 1,  1,  1, -1]),
-          -1: matrix(2, 2, [-1, -1, -1,  1])}
+    tr = {
+        0: matrix(2, 2, [1, -1, -1, -1]),
+        1: matrix(2, 2, [1, 1, 1, -1]),
+        -1: matrix(2, 2, [-1, -1, -1, 1]),
+    }
 
-    H = block_matrix(q+1, q+1, [tr[v] for r in H for v in r])
+    H = block_matrix(q + 1, q + 1, [tr[v] for r in H for v in r])
 
     return normalise_hadamard(H)
 
@@ -381,19 +396,20 @@ def hadamard_matrix_from_symmetric_conference_matrix(n, existence=False, check=T
     if n < 0 or n % 4 != 0:
         raise ValueError(f'No Hadamard matrix of order {n} exists.')
 
-    m = n//2
+    m = n // 2
     exists = symmetric_conference_matrix(m, existence=True)
 
     if existence:
         return exists
 
     if not exists:
-        raise ValueError(f'Cannot construct Hadamard matrix of order {n}, a symmetric conference matrix of order {m} is not available in sage.')
+        raise ValueError(
+            f'Cannot construct Hadamard matrix of order {n}, a symmetric conference matrix of order {m} is not available in sage.'
+        )
 
     C = symmetric_conference_matrix(m)
 
-    H = block_matrix([[C + I(m), C - I(m)],
-                      [C - I(m), -C - I(m)]])
+    H = block_matrix([[C + I(m), C - I(m)], [C - I(m), -C - I(m)]])
 
     if check:
         assert is_hadamard_matrix(H)
@@ -462,51 +478,72 @@ def hadamard_matrix_miyamoto_construction(n, existence=False, check=True):
     q = n // 4
     if existence:
         # return is_prime_power(q) and q % 4 == 1 and hadamard_matrix(q-1, existence=True) is True
-        return symmetric_conference_matrix(q+1, existence=True) and hadamard_matrix(q-1, existence=True) is True
+        return (
+            symmetric_conference_matrix(q + 1, existence=True)
+            and hadamard_matrix(q - 1, existence=True) is True
+        )
 
     # if not (is_prime_power(q) and q % 4 == 1 and hadamard_matrix(q-1, existence=True)):
-    if not (symmetric_conference_matrix(q+1, existence=True) and hadamard_matrix(q-1, existence=True)):
+    if not (
+        symmetric_conference_matrix(q + 1, existence=True)
+        and hadamard_matrix(q - 1, existence=True)
+    ):
         raise ValueError(f'The order {n} is not covered by Miyamoto construction.')
 
-    m = (q-1) // 2
+    m = (q - 1) // 2
 
     C = symmetric_conference_matrix(q + 1)
 
-    neg = [i for i in range(2, m+2) if C[1, i] == -1]
-    pos = [i for i in range(m+2, 2*m+2) if C[1, i] == 1]
+    neg = [i for i in range(2, m + 2) if C[1, i] == -1]
+    pos = [i for i in range(m + 2, 2 * m + 2) if C[1, i] == 1]
 
     for i, j in zip(neg, pos):
         C.swap_rows(i, j)
         C.swap_columns(i, j)
 
     C1 = -C.submatrix(row=2, col=2, nrows=m, ncols=m)
-    C2 = C.submatrix(row=2, col=m+2, nrows=m, ncols=m)
-    C4 = C.submatrix(row=m+2, col=m+2, nrows=m, ncols=m)
+    C2 = C.submatrix(row=2, col=m + 2, nrows=m, ncols=m)
+    C4 = C.submatrix(row=m + 2, col=m + 2, nrows=m, ncols=m)
 
     K = hadamard_matrix(q - 1)
-    K1 = K.submatrix(row=0, col=0, nrows=(q-1)//2, ncols=(q-1)//2)
-    K2 = K.submatrix(row=0, col=(q-1)//2, nrows=(q-1)//2, ncols=(q-1)//2)
-    K3 = -K.submatrix(row=(q-1)//2, col=0, nrows=(q-1)//2, ncols=(q-1)//2)
-    K4 = K.submatrix(row=(q-1)//2, col=(q-1)//2, nrows=(q-1)//2, ncols=(q-1)//2)
+    K1 = K.submatrix(row=0, col=0, nrows=(q - 1) // 2, ncols=(q - 1) // 2)
+    K2 = K.submatrix(row=0, col=(q - 1) // 2, nrows=(q - 1) // 2, ncols=(q - 1) // 2)
+    K3 = -K.submatrix(row=(q - 1) // 2, col=0, nrows=(q - 1) // 2, ncols=(q - 1) // 2)
+    K4 = K.submatrix(
+        row=(q - 1) // 2, col=(q - 1) // 2, nrows=(q - 1) // 2, ncols=(q - 1) // 2
+    )
 
     Zr = zero_matrix(m)
     Us = [[C1, C2, Zr, Zr], [C2.T, C4, Zr, Zr], [Zr, Zr, C1, C2], [Zr, Zr, C2.T, C4]]
-    Vs = [[I(m), Zr, K1, K2], [Zr, I(m), K3, K4], [K1.T, K3.T, I(m), Zr], [K2.T, K4.T, Zr, I(m)]]
+    Vs = [
+        [I(m), Zr, K1, K2],
+        [Zr, I(m), K3, K4],
+        [K1.T, K3.T, I(m), Zr],
+        [K2.T, K4.T, Zr, I(m)],
+    ]
 
     def T(i, j):
-        return block_matrix([[Us[i][j]+Vs[i][j], Us[i][j]-Vs[i][j]],
-                             [Us[i][j]-Vs[i][j], Us[i][j]+Vs[i][j]]])
+        return block_matrix(
+            [
+                [Us[i][j] + Vs[i][j], Us[i][j] - Vs[i][j]],
+                [Us[i][j] - Vs[i][j], Us[i][j] + Vs[i][j]],
+            ]
+        )
 
-    e = matrix([[1] * (2*m)])
+    e = matrix([[1] * (2 * m)])
     one = matrix([1])
-    H = block_matrix([[ one, -e,  one,        e,  one,        e,  one,        e],
-                      [-e.T,  T(0, 0),  e.T,  T(0, 1),  e.T,  T(0, 2),  e.T,  T(0, 3)],
-                      [-one, -e,  one, -e,  one,        e, -one, -e],
-                      [-e.T, -T(1, 0), -e.T,  T(1, 1),  e.T,  T(1, 2), -e.T, -T(1, 3)],
-                      [-one, -e, -one, -e,  one, -e,  one,        e],
-                      [-e.T, -T(2, 0), -e.T, -T(2, 1), -e.T,  T(2, 2),  e.T,  T(2, 3)],
-                      [-one, -e,  one,        e, -one, -e,  one, -e],
-                      [-e.T, -T(3, 0),  e.T,  T(3, 1), -e.T, -T(3, 2), -e.T,  T(3, 3)]])
+    H = block_matrix(
+        [
+            [one, -e, one, e, one, e, one, e],
+            [-e.T, T(0, 0), e.T, T(0, 1), e.T, T(0, 2), e.T, T(0, 3)],
+            [-one, -e, one, -e, one, e, -one, -e],
+            [-e.T, -T(1, 0), -e.T, T(1, 1), e.T, T(1, 2), -e.T, -T(1, 3)],
+            [-one, -e, -one, -e, one, -e, one, e],
+            [-e.T, -T(2, 0), -e.T, -T(2, 1), -e.T, T(2, 2), e.T, T(2, 3)],
+            [-one, -e, one, e, -one, -e, one, -e],
+            [-e.T, -T(3, 0), e.T, T(3, 1), -e.T, -T(3, 2), -e.T, T(3, 3)],
+        ]
+    )
 
     if check:
         assert is_hadamard_matrix(H)
@@ -563,12 +600,9 @@ def hadamard_matrix_williamson_type(a, b, c, d, check=True):
 
     n = len(a)
     assert len(a) == len(b) == len(c) == len(d)
-    assert A*A.T+B*B.T+C*C.T+D*D.T == 4*n*I(n)
+    assert A * A.T + B * B.T + C * C.T + D * D.T == 4 * n * I(n)
 
-    M = block_matrix([[ A,  B,  C,  D],
-                      [-B,  A, -D,  C],
-                      [-C,  D,  A, -B],
-                      [-D, -C,  B,  A]])
+    M = block_matrix([[A, B, C, D], [-B, A, -D, C], [-C, D, A, -B], [-D, -C, B, A]])
     if check:
         assert is_hadamard_matrix(M, normalized=False, skew=False)
     return M
@@ -625,48 +659,132 @@ def williamson_type_quadruples_smallcases(n, existence=False):
         9: ('+---++---', '+--+--+--', '+-+----+-', '++------+'),
         11: ('++--------+', '++-+-++-+-+', '++-++--++-+', '+-++----++-'),
         13: ('++++-+--+-+++', '+---+-++-+---', '++---+--+---+', '++---+--+---+'),
-        15: ('+-+---++++---+-', '++-++------++-+',
-             '++-++++--++++-+', '++-++-+--+-++-+'),
-        17: ('+---+++----+++---', '++-+---+--+---+-+',
-             '+--+-++++++++-+--', '+-++-+++--+++-++-'),
-        19: ('++--+++-+--+-+++--+', '++-++--+-++-+--++-+',
-             '+-+---++++++++---+-', '++--+-++++++++-+--+'),
-        21: ('+--++++---++---++++--', '++++-+---+--+---+-+++',
-             '++--+-+-++--++-+-+--+', '++-+++++-+--+-+++++-+'),
-        23: ('++---+---+-++-+---+---+', '+-++-++--++++++--++-++-',
-             '+++---++-+-++-+-++---++', '+++-+++-+------+-+++-++'),
-        25: ('++++-+-+-+--++--+-+-+-+++', '++--+--+-++++++++-+--+--+',
-             '+++--+--++++--++++--+--++', '+-+--+++--++++++--+++--+-'),
-        27: ('+--+--+-+++--++--+++-+--+--', '+++-++-+---++--++---+-++-++',
-             '+---+++++-+-++++-+-+++++---', '+---+++++-+-++++-+-+++++---'),
-        29: ('+++---++--+-+----+-+--++---++', '+-+---++--+-++++++-+--++---+-',
-             '++++-++-+---++++++---+-++-+++', '++--+--+-+++-++++-+++-+--+--+'),
-        31: ('++++++-+--+---++++---+--+-+++++', '+--++---+-+-++----++-+-+---++--',
-             '+--++---+-+-++----++-+-+---++--', '+-----+-++-+++----+++-++-+-----'),
-        33: ('++++++-+-+-+++------+++-+-+-+++++', '++-+-++-+----+++--+++----+-++-+-+',
-             '++--++-+++-+--+-++-+--+-+++-++--+', '+--++--+++++-++----++-+++++--++--'),
-        37: ('+--+-+-+-++---+--++++--+---++-+-+-+--', '+---++-++--+-+-++----++-+-+--++-++---',
-             '+++++-+-----++----++----++-----+-++++', '+--+++-+-----+----++----+-----+-+++--'),
-        39: ('+++--+-+-----+--++----++--+-----+-+--++', '+++--++-+---+-+--+----+--+-+---+-++--++',
-             '++++---+--++----+-+--+-+----++--+---+++', '+---++-+-+-----+++-++-+++-----+-+-++---'),
-        41: ('++++--+-++++-++--++----++--++-++++-+--+++', '++++--+-++++-++--++----++--++-++++-+--+++',
-             '+++-++-+-+-+-----+++--+++-----+-+-+-++-++', '+--+--+-+-+-+++++---++---+++++-+-+-+--+--'),
-        43: ('++---++++-+--+--++--------++--+--+-++++---+', '+++-+-++--+-+-++++-+----+-++++-+-+--++-+-++',
-             '++-++++++----+-+--++-++-++--+-+----++++++-+', '+---++--++++-+-+++-++--++-+++-+-++++--++---'),
-        45: ('+++++-++----+-++--++-++-++--++-+----++-++++', '+++---++--+-+-+-++--------++-+-+-+--++---++',
-             '++-+-++++-+--+--+++--++--+++--+--+-++++-+-+', '+-++-----++++-+-+++-++++-+++-+-++++-----++-'),
-        49: ('++++-++-+---++-+++---++-++-++---+++-++---+-++-+++', '++++-++-+---++-+++---++-++-++---+++-++---+-++-+++',
-             '+----+-++++--+-+++-+-+++--+++-+-+++-+--++++-+----', '+++++-+----++-+---+-+---++---+-+---+-++----+-++++'),
-        51: ('+---+++-++-+-+++--+++++--++--+++++--+++-+-++-+++---', '----+++-++-+-+++--+++++--++--+++++--+++-+-++-+++---',
-             '-+--+----+-+++-+-+++++--+--+--+++++-+-+++-+----+--+', '-+--+----+-+++-+-+++++--+--+--+++++-+-+++-+----+--+'),
-        55: ('+-+--+-+-++--+-+++++-+++--++++--+++-+++++-+--++-+-+--+-', '--+--+-+-++--+-+++++-+++--++++--+++-+++++-+--++-+-+--+-',
-             '+++----++-++--++----+-+-++++++++-+-+----++--++-++----++', '+++----++-++--++----+-+-++++++++-+-+----++--++-++----++'),
-        57: ('+---++-+--++++-+++-++---+-++++++-+---++-+++-++++--+-++---', '----++-+--++++-+++-++---+-++++++-+---++-+++-++++--+-++---',
-             '--+-+-+++--+--+-++---+++++-++++-+++++---++-+--+--+++-+-+-', '--+-+-+++--+--+-++---+++++-++++-+++++---++-+--+--+++-+-+-'),
-        61: ('++--+--++--+-+-++++--+-----+------+-----+--++++-+-+--++--+--+', '++--+--++--+-+-++++--+-----+------+-----+--++++-+-+--++--+--+',
-             '+---+-+-++++---++--+-++-+---++++++---+-++-+--++---++++-+-+---', '++++-+-+----+++--++-+--+-+++------+++-+--+-++--+++----+-+-+++'),
-        63: ('++-+++--++-++--+--+-++-+-+++--------+++-+-++-+--+--++-++--+++-+', '-+-+++--++-++--+--+-++-+-+++--------+++-+-++-+--+--++-++--+++-+',
-             '++++-++-+-++++-+---+---+++---++++++---+++---+---+-++++-+-++-+++', '++++-++-+-++++-+---+---+++---++++++---+++---+---+-++++-+-++-+++'),
+        15: (
+            '+-+---++++---+-',
+            '++-++------++-+',
+            '++-++++--++++-+',
+            '++-++-+--+-++-+',
+        ),
+        17: (
+            '+---+++----+++---',
+            '++-+---+--+---+-+',
+            '+--+-++++++++-+--',
+            '+-++-+++--+++-++-',
+        ),
+        19: (
+            '++--+++-+--+-+++--+',
+            '++-++--+-++-+--++-+',
+            '+-+---++++++++---+-',
+            '++--+-++++++++-+--+',
+        ),
+        21: (
+            '+--++++---++---++++--',
+            '++++-+---+--+---+-+++',
+            '++--+-+-++--++-+-+--+',
+            '++-+++++-+--+-+++++-+',
+        ),
+        23: (
+            '++---+---+-++-+---+---+',
+            '+-++-++--++++++--++-++-',
+            '+++---++-+-++-+-++---++',
+            '+++-+++-+------+-+++-++',
+        ),
+        25: (
+            '++++-+-+-+--++--+-+-+-+++',
+            '++--+--+-++++++++-+--+--+',
+            '+++--+--++++--++++--+--++',
+            '+-+--+++--++++++--+++--+-',
+        ),
+        27: (
+            '+--+--+-+++--++--+++-+--+--',
+            '+++-++-+---++--++---+-++-++',
+            '+---+++++-+-++++-+-+++++---',
+            '+---+++++-+-++++-+-+++++---',
+        ),
+        29: (
+            '+++---++--+-+----+-+--++---++',
+            '+-+---++--+-++++++-+--++---+-',
+            '++++-++-+---++++++---+-++-+++',
+            '++--+--+-+++-++++-+++-+--+--+',
+        ),
+        31: (
+            '++++++-+--+---++++---+--+-+++++',
+            '+--++---+-+-++----++-+-+---++--',
+            '+--++---+-+-++----++-+-+---++--',
+            '+-----+-++-+++----+++-++-+-----',
+        ),
+        33: (
+            '++++++-+-+-+++------+++-+-+-+++++',
+            '++-+-++-+----+++--+++----+-++-+-+',
+            '++--++-+++-+--+-++-+--+-+++-++--+',
+            '+--++--+++++-++----++-+++++--++--',
+        ),
+        37: (
+            '+--+-+-+-++---+--++++--+---++-+-+-+--',
+            '+---++-++--+-+-++----++-+-+--++-++---',
+            '+++++-+-----++----++----++-----+-++++',
+            '+--+++-+-----+----++----+-----+-+++--',
+        ),
+        39: (
+            '+++--+-+-----+--++----++--+-----+-+--++',
+            '+++--++-+---+-+--+----+--+-+---+-++--++',
+            '++++---+--++----+-+--+-+----++--+---+++',
+            '+---++-+-+-----+++-++-+++-----+-+-++---',
+        ),
+        41: (
+            '++++--+-++++-++--++----++--++-++++-+--+++',
+            '++++--+-++++-++--++----++--++-++++-+--+++',
+            '+++-++-+-+-+-----+++--+++-----+-+-+-++-++',
+            '+--+--+-+-+-+++++---++---+++++-+-+-+--+--',
+        ),
+        43: (
+            '++---++++-+--+--++--------++--+--+-++++---+',
+            '+++-+-++--+-+-++++-+----+-++++-+-+--++-+-++',
+            '++-++++++----+-+--++-++-++--+-+----++++++-+',
+            '+---++--++++-+-+++-++--++-+++-+-++++--++---',
+        ),
+        45: (
+            '+++++-++----+-++--++-++-++--++-+----++-++++',
+            '+++---++--+-+-+-++--------++-+-+-+--++---++',
+            '++-+-++++-+--+--+++--++--+++--+--+-++++-+-+',
+            '+-++-----++++-+-+++-++++-+++-+-++++-----++-',
+        ),
+        49: (
+            '++++-++-+---++-+++---++-++-++---+++-++---+-++-+++',
+            '++++-++-+---++-+++---++-++-++---+++-++---+-++-+++',
+            '+----+-++++--+-+++-+-+++--+++-+-+++-+--++++-+----',
+            '+++++-+----++-+---+-+---++---+-+---+-++----+-++++',
+        ),
+        51: (
+            '+---+++-++-+-+++--+++++--++--+++++--+++-+-++-+++---',
+            '----+++-++-+-+++--+++++--++--+++++--+++-+-++-+++---',
+            '-+--+----+-+++-+-+++++--+--+--+++++-+-+++-+----+--+',
+            '-+--+----+-+++-+-+++++--+--+--+++++-+-+++-+----+--+',
+        ),
+        55: (
+            '+-+--+-+-++--+-+++++-+++--++++--+++-+++++-+--++-+-+--+-',
+            '--+--+-+-++--+-+++++-+++--++++--+++-+++++-+--++-+-+--+-',
+            '+++----++-++--++----+-+-++++++++-+-+----++--++-++----++',
+            '+++----++-++--++----+-+-++++++++-+-+----++--++-++----++',
+        ),
+        57: (
+            '+---++-+--++++-+++-++---+-++++++-+---++-+++-++++--+-++---',
+            '----++-+--++++-+++-++---+-++++++-+---++-+++-++++--+-++---',
+            '--+-+-+++--+--+-++---+++++-++++-+++++---++-+--+--+++-+-+-',
+            '--+-+-+++--+--+-++---+++++-++++-+++++---++-+--+--+++-+-+-',
+        ),
+        61: (
+            '++--+--++--+-+-++++--+-----+------+-----+--++++-+-+--++--+--+',
+            '++--+--++--+-+-++++--+-----+------+-----+--++++-+-+--++--+--+',
+            '+---+-+-++++---++--+-++-+---++++++---+-++-+--++---++++-+-+---',
+            '++++-+-+----+++--++-+--+-+++------+++-+--+-++--+++----+-+-+++',
+        ),
+        63: (
+            '++-+++--++-++--+--+-++-+-+++--------+++-+-++-+--+--++-++--+++-+',
+            '-+-+++--++-++--+--+-++-+-+++--------+++-+-++-+--+--++-++--+++-+',
+            '++++-++-+-++++-+---+---+++---++++++---+++---+---+-++++-+-++-+++',
+            '++++-++-+-++++-+---+---+++---++++++---+++---+---+-++++-+-++-+++',
+        ),
     }
 
     def pmtoZ(s):
@@ -676,7 +794,9 @@ def williamson_type_quadruples_smallcases(n, existence=False):
         return n in db
 
     if n not in db:
-        raise ValueError("The Williamson type quadruple of order %s is not yet implemented." % n)
+        raise ValueError(
+            "The Williamson type quadruple of order %s is not yet implemented." % n
+        )
 
     a, b, c, d = (vector(pmtoZ(s)) for s in db[n])
     return a, b, c, d
@@ -715,12 +835,15 @@ def williamson_hadamard_matrix_smallcases(n, existence=False, check=True):
     if not williamson_type_quadruples_smallcases(n // 4, existence=True):
         if existence:
             return False
-        raise ValueError("The Williamson type Hadamard matrix of order %s is not yet implemented." % n)
+        raise ValueError(
+            "The Williamson type Hadamard matrix of order %s is not yet implemented."
+            % n
+        )
 
     if existence:
         return True
 
-    a, b, c, d = williamson_type_quadruples_smallcases(n//4)
+    a, b, c, d = williamson_type_quadruples_smallcases(n // 4)
     return hadamard_matrix_williamson_type(a, b, c, d, check=check)
 
 
@@ -747,18 +870,22 @@ def hadamard_matrix_156():
 
     A, B, C, D = map(matrix.circulant, [a, b, c, d])
 
-    return block_matrix([[ A,  A,  A,  B, -B,  C, -C, -D,  B,  C, -D, -D],
-                         [ A, -A,  B, -A, -B, -D,  D, -C, -B, -D, -C, -C],
-                         [ A, -B, -A,  A, -D,  D, -B,  B, -C, -D,  C, -C],
-                         [ B,  A, -A, -A,  D,  D,  D,  C,  C, -B, -B, -C],
-                         [ B, -D,  D,  D,  A,  A,  A,  C, -C,  B, -C,  B],
-                         [ B,  C, -D,  D,  A, -A,  C, -A, -D,  C,  B, -B],
-                         [ D, -C,  B, -B,  A, -C, -A,  A,  B,  C,  D, -D],
-                         [-C, -D, -C, -D,  C,  A, -A, -A, -D,  B, -B, -B],
-                         [ D, -C, -B, -B, -B,  C,  C, -D,  A,  A,  A,  D],
-                         [-D, -B,  C,  C,  C,  B,  B, -D,  A, -A,  D, -A],
-                         [ C, -B, -C,  C,  D, -B, -D, -B,  A, -D, -A,  A],
-                         [-C, -D, -D,  C, -C, -B,  B,  B,  D,  A, -A, -A]])
+    return block_matrix(
+        [
+            [A, A, A, B, -B, C, -C, -D, B, C, -D, -D],
+            [A, -A, B, -A, -B, -D, D, -C, -B, -D, -C, -C],
+            [A, -B, -A, A, -D, D, -B, B, -C, -D, C, -C],
+            [B, A, -A, -A, D, D, D, C, C, -B, -B, -C],
+            [B, -D, D, D, A, A, A, C, -C, B, -C, B],
+            [B, C, -D, D, A, -A, C, -A, -D, C, B, -B],
+            [D, -C, B, -B, A, -C, -A, A, B, C, D, -D],
+            [-C, -D, -C, -D, C, A, -A, -A, -D, B, -B, -B],
+            [D, -C, -B, -B, -B, C, C, -D, A, A, A, D],
+            [-D, -B, C, C, C, B, B, -D, A, -A, D, -A],
+            [C, -B, -C, C, D, -B, -D, -B, A, -D, -A, A],
+            [-C, -D, -D, C, -C, -B, B, B, D, A, -A, -A],
+        ]
+    )
 
 
 def construction_four_symbol_delta_code_I(X, Y, Z, W):
@@ -816,10 +943,11 @@ def construction_four_symbol_delta_code_I(X, Y, Z, W):
         AssertionError
     """
     n = len(X)
-    assert len(Y) == n and len(Z) == n-1 and len(W) == n-1
+    assert len(Y) == n and len(Z) == n - 1 and len(W) == n - 1
 
     def autocorrelation(seq, j):
-        return sum([seq[i]*seq[i+j] for i in range(len(seq)-j)])
+        return sum([seq[i] * seq[i + j] for i in range(len(seq) - j)])
+
     for j in range(1, n):
         assert sum(autocorrelation(seq, j) for seq in [X, Y, Z, W]) == 0
 
@@ -889,16 +1017,19 @@ def construction_four_symbol_delta_code_II(X, Y, Z, W):
     """
 
     n = len(Z)
-    assert len(X) == n+1 and len(Y) == n+1 and len(W) == n
+    assert len(X) == n + 1 and len(Y) == n + 1 and len(W) == n
 
     def autocorrelation(seq, j):
-        return sum([seq[i]*seq[i+j] for i in range(len(seq)-j)])
+        return sum([seq[i] * seq[i + j] for i in range(len(seq) - j)])
 
     for j in range(1, n):
         assert sum(autocorrelation(seq, j) for seq in [X, Y, Z, W]) == 0
 
     def alternate(seq1, seq2):
-        return [seq1[i//2] if i % 2 == 0 else seq2[(i-1)//2] for i in range(len(seq1)+len(seq2))]
+        return [
+            seq1[i // 2] if i % 2 == 0 else seq2[(i - 1) // 2]
+            for i in range(len(seq1) + len(seq2))
+        ]
 
     XaltZ = alternate(X, Z)
     Wneg = [-w for w in W]
@@ -944,29 +1075,33 @@ def four_symbol_delta_code_smallcases(n, existence=False):
     """
     db = {
         1: ([1, -1], [1, 1], [1], [1]),
-        14: ([1, 1, -1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, 1],
-             [1, 1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1, -1],
-             [1, 1, 1, 1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1],
-             [1, -1, -1, -1, -1, 1, -1, 1, -1, 1, 1, 1, 1, -1])
+        14: (
+            [1, 1, -1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, 1],
+            [1, 1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1, -1],
+            [1, 1, 1, 1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1],
+            [1, -1, -1, -1, -1, 1, -1, 1, -1, 1, 1, 1, 1, -1],
+        ),
     }
 
     T1, T2, T3, T4 = None, None, None, None
-    if n % 2 == 1 and (n-1)//2 in db:
+    if n % 2 == 1 and (n - 1) // 2 in db:
         if existence:
             return True
-        X, Y, Z, W = db[(n-1)//2]
+        X, Y, Z, W = db[(n - 1) // 2]
         T1, T2, T3, T4 = construction_four_symbol_delta_code_I(X, Y, Z, W)
-    elif n % 4 == 3 and (n-3) // 4 in db:
+    elif n % 4 == 3 and (n - 3) // 4 in db:
         if existence:
             return True
-        X, Y, Z, W = db[(n-3)//4]
+        X, Y, Z, W = db[(n - 3) // 4]
         T1, T2, T3, T4 = construction_four_symbol_delta_code_II(X, Y, Z, W)
 
     if existence:
         return False
 
     if T1 is None:
-        raise ValueError("The four-symbol delta code of length %s have not yet been implemented" % n)
+        raise ValueError(
+            "The four-symbol delta code of length %s have not yet been implemented" % n
+        )
 
     return T1, T2, T3, T4
 
@@ -1018,11 +1153,15 @@ def _construction_goethals_seidel_matrix(A, B, C, D):
         [-1  1| 1 -1| 1 -1| 1  1]
     """
     n = len(A[0])
-    R = matrix(ZZ, n, n, lambda i, j: 1 if i+j == n-1 else 0)
-    return block_matrix([[   A,    B*R,    C*R,    D*R],
-                         [-B*R,      A, -D.T*R,  C.T*R],
-                         [-C*R,  D.T*R,      A, -B.T*R],
-                         [-D*R, -C.T*R,  B.T*R,      A]])
+    R = matrix(ZZ, n, n, lambda i, j: 1 if i + j == n - 1 else 0)
+    return block_matrix(
+        [
+            [A, B * R, C * R, D * R],
+            [-B * R, A, -D.T * R, C.T * R],
+            [-C * R, D.T * R, A, -B.T * R],
+            [-D * R, -C.T * R, B.T * R, A],
+        ]
+    )
 
 
 def hadamard_matrix_from_sds(n, existence=False, check=True):
@@ -1083,7 +1222,9 @@ def hadamard_matrix_from_sds(n, existence=False, check=True):
         ...
         ValueError: n must be a positive multiple of four
     """
-    from sage.combinat.designs.difference_family import supplementary_difference_set_hadamard
+    from sage.combinat.designs.difference_family import (
+        supplementary_difference_set_hadamard,
+    )
 
     if n <= 0 or n % 4 != 0:
         raise ValueError('n must be a positive multiple of four')
@@ -1103,7 +1244,7 @@ def hadamard_matrix_from_sds(n, existence=False, check=True):
 
     A, B, C, D = map(matrix.circulant, [a, b, c, d])
     if check:
-        assert A*A.T+B*B.T+C*C.T+D*D.T == 4*t*I(t)
+        assert A * A.T + B * B.T + C * C.T + D * D.T == 4 * t * I(t)
 
     H = _construction_goethals_seidel_matrix(A, B, C, D)
     if check:
@@ -1169,24 +1310,32 @@ def hadamard_matrix_cooper_wallis_construction(x1, x2, x3, x4, A, B, C, D, check
 
     matrices = [X1, X2, X3, X4]
     for i in range(4):
-        for j in range(i+1, 4):
+        for j in range(i + 1, 4):
             assert matrices[i].elementwise_product(matrices[j]) == zero_matrix(n)
-    assert X1*X1.T + X2*X2.T + X3*X3.T + X4*X4.T == n*I(n)
+    assert X1 * X1.T + X2 * X2.T + X3 * X3.T + X4 * X4.T == n * I(n)
 
     m = len(A[0])
     assert m == len(B[0]) == len(C[0]) == len(D[0])
     will_matrices = [A, B, C, D]
     for i in range(4):
-        for j in range(i+1, 4):
-            assert will_matrices[i]*will_matrices[j].T == will_matrices[j]*will_matrices[i].T
-    assert A*A.T + B*B.T + C*C.T + D*D.T == 4*m*I(m)
+        for j in range(i + 1, 4):
+            assert (
+                will_matrices[i] * will_matrices[j].T
+                == will_matrices[j] * will_matrices[i].T
+            )
+    assert A * A.T + B * B.T + C * C.T + D * D.T == 4 * m * I(m)
 
     e1 = _construction_goethals_seidel_matrix(X1, X2, X3, X4)
     e2 = _construction_goethals_seidel_matrix(X2, -X1, X4, -X3)
     e3 = _construction_goethals_seidel_matrix(X3, -X4, -X1, X2)
     e4 = _construction_goethals_seidel_matrix(X4, X3, -X2, -X1)
 
-    H = e1.tensor_product(A) + e2.tensor_product(B) + e3.tensor_product(C) + e4.tensor_product(D)
+    H = (
+        e1.tensor_product(A)
+        + e2.tensor_product(B)
+        + e3.tensor_product(C)
+        + e4.tensor_product(D)
+    )
     if check:
         assert is_hadamard_matrix(H)
     return H
@@ -1255,16 +1404,290 @@ def hadamard_matrix_cooper_wallis_smallcases(n, check=True, existence=False):
 
     db = {
         67: (
-            [1, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0, -1, -1, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, -1, 0, -1, 0, 1, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 1, 0, 0, 0, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 1, 0, 0, -1, -1, -1, 0, 0, 0, 0, 0, -1, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-            [0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, -1, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 1, -1, -1, 0, 1, 0, 0, 0, 0, 0, 0],
-            [0, 0, -1, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, -1, 1, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, -1, 0, 0, -1, 0, 0, 0, 0, -1, 0, -1, 1, 1, 0, 0, 0]
+            [
+                1,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                -1,
+                -1,
+                -1,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                -1,
+                0,
+                -1,
+                0,
+                1,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+            ],
+            [
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                1,
+                1,
+                0,
+                0,
+                -1,
+                -1,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                1,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                1,
+                0,
+            ],
+            [
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                1,
+                -1,
+                0,
+                0,
+                1,
+                0,
+                -1,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                -1,
+                -1,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
+            [
+                0,
+                0,
+                -1,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                -1,
+                1,
+                -1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                -1,
+                0,
+                0,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                -1,
+                0,
+                -1,
+                1,
+                1,
+                0,
+                0,
+                0,
+            ],
         )
     }
 
-    for T_seq_len in divisors(n//4):
-        will_size = n // (4*T_seq_len)
-        if (T_seq_len in db or T_sequences_smallcases(T_seq_len, existence=True)) and williamson_type_quadruples_smallcases(will_size, existence=True):
+    for T_seq_len in divisors(n // 4):
+        will_size = n // (4 * T_seq_len)
+        if (
+            T_seq_len in db or T_sequences_smallcases(T_seq_len, existence=True)
+        ) and williamson_type_quadruples_smallcases(will_size, existence=True):
             if existence:
                 return True
 
@@ -1276,7 +1699,9 @@ def hadamard_matrix_cooper_wallis_smallcases(n, check=True, existence=False):
 
             will_matrices = williamson_type_quadruples_smallcases(will_size)
             A, B, C, D = map(matrix.circulant, will_matrices)
-            M = hadamard_matrix_cooper_wallis_construction(e1, e2, e3, e4, A, B, C, D, check=False)
+            M = hadamard_matrix_cooper_wallis_construction(
+                e1, e2, e3, e4, A, B, C, D, check=False
+            )
 
             if check:
                 assert is_hadamard_matrix(M)
@@ -1284,7 +1709,10 @@ def hadamard_matrix_cooper_wallis_smallcases(n, check=True, existence=False):
 
     if existence:
         return False
-    raise ValueError("The Cooper-Wallis construction for Hadamard matrices of order %s is not yet implemented." % n)
+    raise ValueError(
+        "The Cooper-Wallis construction for Hadamard matrices of order %s is not yet implemented."
+        % n
+    )
 
 
 def _get_baumert_hall_units(n, existence=False):
@@ -1334,11 +1762,13 @@ def _get_baumert_hall_units(n, existence=False):
     """
     assert n % 4 == 0 and n > 0
 
-    delta_codes_len = n//4
+    delta_codes_len = n // 4
     if not four_symbol_delta_code_smallcases(delta_codes_len, existence=True):
         if existence:
             return False
-        raise ValueError("The Baumert-Hall units of size %s have not yet been implemented" % n)
+        raise ValueError(
+            "The Baumert-Hall units of size %s have not yet been implemented" % n
+        )
 
     if existence:
         return True
@@ -1349,10 +1779,10 @@ def _get_baumert_hall_units(n, existence=False):
     M3 = matrix.circulant(T3)
     M4 = matrix.circulant(T4)
 
-    M1hat = matrix(ZZ, 0.25*(M1+M2+M3+M4))
-    M2hat = matrix(ZZ, 0.25*(M1-M2-M3+M4))
-    M3hat = matrix(ZZ, 0.25*(M1+M2-M3-M4))
-    M4hat = matrix(ZZ, 0.25*(M1-M2+M3-M4))
+    M1hat = matrix(ZZ, 0.25 * (M1 + M2 + M3 + M4))
+    M2hat = matrix(ZZ, 0.25 * (M1 - M2 - M3 + M4))
+    M3hat = matrix(ZZ, 0.25 * (M1 + M2 - M3 - M4))
+    M4hat = matrix(ZZ, 0.25 * (M1 - M2 + M3 - M4))
 
     e1 = _construction_goethals_seidel_matrix(M1hat, -M2hat, -M3hat, -M4hat)
     e2 = _construction_goethals_seidel_matrix(M2hat, M1hat, M4hat, -M3hat)
@@ -1409,7 +1839,7 @@ def hadamard_matrix_turyn_type(a, b, c, d, e1, e2, e3, e4, check=True):
 
     n = len(a)
     assert len(a) == len(b) == len(c) == len(d)
-    assert A*A.T+B*B.T+C*C.T+D*D.T == 4*n*I(n)
+    assert A * A.T + B * B.T + C * C.T + D * D.T == 4 * n * I(n)
 
     t4 = len(e1[0])
     assert t4 % 4 == 0
@@ -1420,14 +1850,24 @@ def hadamard_matrix_turyn_type(a, b, c, d, e1, e2, e3, e4, check=True):
         for j in range(t4):
             assert abs(e1[i, j]) + abs(e2[i, j]) + abs(e3[i, j]) + abs(e4[i, j]) == 1
 
-    assert e1*e1.T == t*I(t4) and e2*e2.T == t*I(t4) and e3*e3.T == t*I(t4) and e4*e4.T == t*I(t4)
+    assert (
+        e1 * e1.T == t * I(t4)
+        and e2 * e2.T == t * I(t4)
+        and e3 * e3.T == t * I(t4)
+        and e4 * e4.T == t * I(t4)
+    )
 
     units = [e1, e2, e3, e4]
     for i in range(len(units)):
-        for j in range(i+1, len(units)):
-            assert units[i]*units[j].T + units[j]*units[i].T == 0*I(t4)
+        for j in range(i + 1, len(units)):
+            assert units[i] * units[j].T + units[j] * units[i].T == 0 * I(t4)
 
-    H = e1.tensor_product(A) + e2.tensor_product(B) + e3.tensor_product(C) + e4.tensor_product(D)
+    H = (
+        e1.tensor_product(A)
+        + e2.tensor_product(B)
+        + e3.tensor_product(C)
+        + e4.tensor_product(D)
+    )
     if check:
         assert is_hadamard_matrix(H)
     return H
@@ -1472,10 +1912,12 @@ def turyn_type_hadamard_matrix_smallcases(n, existence=False, check=True):
     """
     assert n % 4 == 0 and n > 0
 
-    for delta_code_len in divisors(n//4):
-        units_size = delta_code_len*4
-        will_size = n//units_size
-        if _get_baumert_hall_units(units_size, existence=True) and williamson_type_quadruples_smallcases(will_size, existence=True):
+    for delta_code_len in divisors(n // 4):
+        units_size = delta_code_len * 4
+        will_size = n // units_size
+        if _get_baumert_hall_units(
+            units_size, existence=True
+        ) and williamson_type_quadruples_smallcases(will_size, existence=True):
             if existence:
                 return True
 
@@ -1485,7 +1927,10 @@ def turyn_type_hadamard_matrix_smallcases(n, existence=False, check=True):
 
     if existence:
         return False
-    raise ValueError("The Turyn type construction for Hadamard matrices of order %s is not yet implemented." % n)
+    raise ValueError(
+        "The Turyn type construction for Hadamard matrices of order %s is not yet implemented."
+        % n
+    )
 
 
 def hadamard_matrix_spence_construction(n, existence=False, check=True):
@@ -1541,11 +1986,13 @@ def hadamard_matrix_spence_construction(n, existence=False, check=True):
         ...
         AssertionError
     """
-    from sage.combinat.designs.difference_family import supplementary_difference_set_from_rel_diff_set
+    from sage.combinat.designs.difference_family import (
+        supplementary_difference_set_from_rel_diff_set,
+    )
 
     assert n % 4 == 0 and n > 0
 
-    q = n//4
+    q = n // 4
 
     if existence:
         return supplementary_difference_set_from_rel_diff_set(q, existence=True)
@@ -1561,19 +2008,29 @@ def hadamard_matrix_spence_construction(n, existence=False, check=True):
     A3 = matrix.circulant([1 if j in S3 else -1 for j in Glist])
     A4 = matrix.circulant([1 if j in S2 else -1 for j in Glist])
 
-    P = matrix(ZZ, [[1 if (i + j) % (q-1) == 0 else 0 for i in range(1, q)] for j in range(1, q)])
+    P = matrix(
+        ZZ,
+        [
+            [1 if (i + j) % (q - 1) == 0 else 0 for i in range(1, q)]
+            for j in range(1, q)
+        ],
+    )
 
-    e = matrix([1]*(q-1))
+    e = matrix([1] * (q - 1))
     m1 = matrix([-1])
     p1 = matrix([1])
-    H = block_matrix([[  p1,   m1,   p1,   p1,     e,       e,       e,       e],
-                      [  p1,   p1,   m1,   p1, -e,       e, -e,       e],
-                      [  m1,   p1,   p1,   p1, -e,       e,       e, -e],
-                      [  m1,   m1,   m1,   p1, -e, -e,       e,       e],
-                      [-e.T,  e.T,  e.T, -e.T,    A1,    A2*P,    A3*P,    A4*P],
-                      [-e.T, -e.T,  e.T,  e.T, -A2*P,      A1, -A4.T*P,  A3.T*P],
-                      [-e.T, -e.T, -e.T, -e.T, -A3*P,  A4.T*P,      A1, -A2.T*P],
-                      [ e.T, -e.T,  e.T, -e.T, -A4*P, -A3.T*P,  A2.T*P,      A1]])
+    H = block_matrix(
+        [
+            [p1, m1, p1, p1, e, e, e, e],
+            [p1, p1, m1, p1, -e, e, -e, e],
+            [m1, p1, p1, p1, -e, e, e, -e],
+            [m1, m1, m1, p1, -e, -e, e, e],
+            [-e.T, e.T, e.T, -e.T, A1, A2 * P, A3 * P, A4 * P],
+            [-e.T, -e.T, e.T, e.T, -A2 * P, A1, -A4.T * P, A3.T * P],
+            [-e.T, -e.T, -e.T, -e.T, -A3 * P, A4.T * P, A1, -A2.T * P],
+            [e.T, -e.T, e.T, -e.T, -A4 * P, -A3.T * P, A2.T * P, A1],
+        ]
+    )
     if check:
         assert is_hadamard_matrix(H, verbose=True)
 
@@ -1655,13 +2112,20 @@ def is_hadamard_matrix(M, normalized=False, skew=False, verbose=False):
 
     for r in M:
         for v in r:
-            if v*v != 1:
+            if v * v != 1:
                 if verbose:
-                    print("The matrix does not only contain +1 and -1 entries, e.g. " + str(v))
+                    print(
+                        "The matrix does not only contain +1 and -1 entries, e.g. "
+                        + str(v)
+                    )
                 return False
 
-    prod = (M*M.transpose()).dict()
-    if (len(prod) != n or set(prod.values()) != {n} or any((i, i) not in prod for i in range(n))):
+    prod = (M * M.transpose()).dict()
+    if (
+        len(prod) != n
+        or set(prod.values()) != {n}
+        or any((i, i) not in prod for i in range(n))
+    ):
         if verbose:
             print("The product M*M.transpose() is not equal to nI")
         return False
@@ -1677,8 +2141,8 @@ def is_hadamard_matrix(M, normalized=False, skew=False, verbose=False):
             return False
 
     if skew:
-        for i in range(n-1):
-            for j in range(i+1, n):
+        for i in range(n - 1):
+            for j in range(i + 1, n):
                 if M[i, j] != -M[j, i]:
                     if verbose:
                         print("The matrix is not skew")
@@ -1821,9 +2285,11 @@ def hadamard_matrix(n, existence=False, check=True, construction_name=False):
     """
     name = str(n)
     if construction_name:
+
         def report_name(nam):
             return nam
     else:
+
         def report_name(nam):
             return True
 
@@ -1839,21 +2305,20 @@ def hadamard_matrix(n, existence=False, check=True, construction_name=False):
         if existence:
             return report_name(name)
         M = matrix([1])
-    elif is_prime_power(n//2 - 1) and (n//2 - 1) % 4 == 1:
+    elif is_prime_power(n // 2 - 1) and (n // 2 - 1) % 4 == 1:
         name = "paleyII " + name
         if existence:
             return report_name(name)
         M = hadamard_matrix_paleyII(n)
-    elif n == 4 or n % 8 == 0 and hadamard_matrix(n//2, existence=True) is True:
+    elif n == 4 or n % 8 == 0 and hadamard_matrix(n // 2, existence=True) is True:
         name = "doubling " + name
         if existence:
             return report_name(name)
-        had = hadamard_matrix(n//2, check=False)
+        had = hadamard_matrix(n // 2, check=False)
         chad1 = matrix([list(r) + list(r) for r in had.rows()])
         mhad = (-1) * had
         R = len(had.rows())
-        chad2 = matrix([list(had.rows()[i]) + list(mhad.rows()[i])
-                       for i in range(R)])
+        chad2 = matrix([list(had.rows()[i]) + list(mhad.rows()[i]) for i in range(R)])
         M = chad1.stack(chad2)
     elif is_prime_power(n - 1) and (n - 1) % 4 == 3:
         name = "paleyI " + name
@@ -1899,7 +2364,10 @@ def hadamard_matrix(n, existence=False, check=True, construction_name=False):
         if existence:
             return report_name(name)
         M = skew_hadamard_matrix(n, check=False)
-    elif regular_symmetric_hadamard_matrix_with_constant_diagonal(n, 1, existence=True) is True:
+    elif (
+        regular_symmetric_hadamard_matrix_with_constant_diagonal(n, 1, existence=True)
+        is True
+    ):
         name = "RSHCD " + name
         if existence:
             return report_name(name)
@@ -2067,63 +2535,79 @@ def regular_symmetric_hadamard_matrix_with_constant_diagonal(n, e, existence=Fal
         if existence:
             return true()
         if e == 1:
-            M = J(4)-2*matrix(4, [[int(i+j == 3) for i in range(4)] for j in range(4)])
+            M = J(4) - 2 * matrix(
+                4, [[int(i + j == 3) for i in range(4)] for j in range(4)]
+            )
         else:
-            M = -J(4)+2*I(4)
+            M = -J(4) + 2 * I(4)
     elif n == 36:
         if existence:
             return true()
         if e == 1:
             M = strongly_regular_graph(36, 15, 6, 6).adjacency_matrix()
-            M = J(36) - 2*M
+            M = J(36) - 2 * M
         else:
             M = strongly_regular_graph(36, 14, 4, 6).adjacency_matrix()
-            M = -J(36) + 2*M + 2*I(36)
+            M = -J(36) + 2 * M + 2 * I(36)
     elif n == 100:
         if existence:
             return true()
         if e == -1:
             M = strongly_regular_graph(100, 44, 18, 20).adjacency_matrix()
-            M = 2*M - J(100) + 2*I(100)
+            M = 2 * M - J(100) + 2 * I(100)
         else:
             M = strongly_regular_graph(100, 45, 20, 20).adjacency_matrix()
-            M = J(100) - 2*M
+            M = J(100) - 2 * M
     elif n == 196 and e == 1:
         if existence:
             return true()
         M = strongly_regular_graph(196, 91, 42, 42).adjacency_matrix()
-        M = J(196) - 2*M
+        M = J(196) - 2 * M
     elif n == 324:
         if existence:
             return true()
         M = RSHCD_324(e)
-    elif (e == 1 and
-          n % 16 == 0 and
-          sqn is not None and
-          is_prime_power(sqn - 1) and
-          is_prime_power(sqn + 1)):
+    elif (
+        e == 1
+        and n % 16 == 0
+        and sqn is not None
+        and is_prime_power(sqn - 1)
+        and is_prime_power(sqn + 1)
+    ):
         if existence:
             return true()
         M = -rshcd_from_close_prime_powers(sqn)
 
-    elif (e == 1 and
-          sqn is not None and
-          sqn % 4 == 2 and
-          strongly_regular_graph(sqn-1, (sqn-2)//2, (sqn-6)//4,
-            existence=True) is True and
-          is_prime_power(ZZ(sqn + 1))):
+    elif (
+        e == 1
+        and sqn is not None
+        and sqn % 4 == 2
+        and strongly_regular_graph(
+            sqn - 1, (sqn - 2) // 2, (sqn - 6) // 4, existence=True
+        )
+        is True
+        and is_prime_power(ZZ(sqn + 1))
+    ):
         if existence:
             return true()
-        M = rshcd_from_prime_power_and_conference_matrix(sqn+1)
+        M = rshcd_from_prime_power_and_conference_matrix(sqn + 1)
 
     # Recursive construction: the Kronecker product of two RSHCD is a RSHCD
     else:
         from itertools import product
+
         for n1, e1 in product(divisors(n)[1:-1], [-1, 1]):
-            e2 = e1*e
-            n2 = n//n1
-            if (regular_symmetric_hadamard_matrix_with_constant_diagonal(n1, e1, existence=True) is True and
-                regular_symmetric_hadamard_matrix_with_constant_diagonal(n2, e2, existence=True)) is True:
+            e2 = e1 * e
+            n2 = n // n1
+            if (
+                regular_symmetric_hadamard_matrix_with_constant_diagonal(
+                    n1, e1, existence=True
+                )
+                is True
+                and regular_symmetric_hadamard_matrix_with_constant_diagonal(
+                    n2, e2, existence=True
+                )
+            ) is True:
                 if existence:
                     return true()
                 M1 = regular_symmetric_hadamard_matrix_with_constant_diagonal(n1, e1)
@@ -2133,13 +2617,14 @@ def regular_symmetric_hadamard_matrix_with_constant_diagonal(n, e, existence=Fal
 
     if M is None:
         from sage.misc.unknown import Unknown
+
         _rshcd_cache[n, e] = Unknown
         if existence:
             return Unknown
         raise ValueError("I do not know how to build a {}-RSHCD".format((n, e)))
 
-    assert M*M.transpose() == n*I(n)
-    assert set(map(sum, M)) == {ZZ(e*sqn)}
+    assert M * M.transpose() == n * I(n)
+    assert set(map(sum, M)) == {ZZ(e * sqn)}
 
     return M
 
@@ -2187,8 +2672,9 @@ def RSHCD_324(e):
     - [CP2016]_
     """
     from sage.graphs.generators.smallgraphs import JankoKharaghaniTonchevGraph as JKTG
+
     M = JKTG().adjacency_matrix()
-    M = J(324) - 2*M
+    M = J(324) - 2 * M
     if e == -1:
         M1 = M[:162].T
         M2 = M[162:].T
@@ -2260,6 +2746,7 @@ def _helper_payley_matrix(n, zero_position=True):
         [-1  1 -1 -1 -1  1  1  1 -1  1  0]
     """
     from sage.rings.finite_rings.finite_field_constructor import FiniteField
+
     K = FiniteField(n, prefix='x')
 
     # Order the elements of K in K_list
@@ -2272,8 +2759,9 @@ def _helper_payley_matrix(n, zero_position=True):
         K_list[i + shift] = x
         K_list[-i - 1] = y
 
-    M = matrix(ZZ, n, n, [(1 if (x - y).is_square() else -1)
-                          for x in K_list for y in K_list])
+    M = matrix(
+        ZZ, n, n, [(1 if (x - y).is_square() else -1) for x in K_list for y in K_list]
+    )
     M -= I(n)
     assert (M * J(n)).is_zero()
     assert M * M.transpose() == n * I(n) - J(n)
@@ -2327,21 +2815,25 @@ def rshcd_from_close_prime_powers(n):
     if n % 4:
         raise ValueError("n(={}) must be congruent to 0 mod 4")
 
-    a, b = sorted([n-1, n+1], key=lambda x: -x % 4)
+    a, b = sorted([n - 1, n + 1], key=lambda x: -x % 4)
     Sa = _helper_payley_matrix(a)
     Sb = _helper_payley_matrix(b)
-    U = matrix(a, [[int(i+j == a-1) for i in range(a)] for j in range(a)])
+    U = matrix(a, [[int(i + j == a - 1) for i in range(a)] for j in range(a)])
 
-    K = (U*Sa).tensor_product(Sb) + U.tensor_product(J(b)-I(b)) - J(a).tensor_product(I(b))
+    K = (
+        (U * Sa).tensor_product(Sb)
+        + U.tensor_product(J(b) - I(b))
+        - J(a).tensor_product(I(b))
+    )
 
-    F = lambda x: diagonal_matrix([-(-1)**i for i in range(x)])
+    F = lambda x: diagonal_matrix([-((-1) ** i) for i in range(x)])
     G = block_diagonal_matrix([J(1), I(a).tensor_product(F(b))])
-    e = matrix(a*b, [1]*(a*b))
+    e = matrix(a * b, [1] * (a * b))
     H = block_matrix(2, [-J(1), e.transpose(), e, K])
 
-    HH = G*H*G
+    HH = G * H * G
     assert len(set(map(sum, HH))) == 1
-    assert HH**2 == n**2*I(n**2)
+    assert HH**2 == n**2 * I(n**2)
     return HH
 
 
@@ -2382,8 +2874,8 @@ def williamson_goethals_seidel_skew_hadamard_matrix(a, b, c, d, check=True):
     n = len(a)
     A, B, C, D = map(matrix.circulant, [a, b, c, d])
     if check:
-        assert A*A.T+B*B.T+C*C.T+D*D.T == 4*n*I(n)
-        assert A+A.T == 2*I(n)
+        assert A * A.T + B * B.T + C * C.T + D * D.T == 4 * n * I(n)
+        assert A + A.T == 2 * I(n)
 
     M = _construction_goethals_seidel_matrix(A, B, C, D)
     if check:
@@ -2432,19 +2924,21 @@ def skew_hadamard_matrix_spence_construction(n, check=True):
         ...
         ValueError: The order 16 is not covered by the Spence construction.
     """
-    q = n//2 - 1
-    m = (q+1)//2
+    q = n // 2 - 1
+    m = (q + 1) // 2
     if n % 4 != 0 or not is_prime_power(q) or q % 8 != 5:
         raise ValueError(f'The order {n} is not covered by the Spence construction.')
 
-    G, D = relative_difference_set_from_homomorphism(q, 2, (q-1)//4, check=False, return_group=True)
+    G, D = relative_difference_set_from_homomorphism(
+        q, 2, (q - 1) // 4, check=False, return_group=True
+    )
     D_fixed = get_fixed_relative_difference_set(G, D)
-    D_union = D_fixed + [q+1+el for el in D_fixed]
-    D_union = list({el % (4*(q+1)) for el in D_union})
+    D_union = D_fixed + [q + 1 + el for el in D_fixed]
+    D_union = list({el % (4 * (q + 1)) for el in D_union})
 
     def find_a(i):
         for a in range(8):
-            if (a*(q+1)//2+i) % 8 == 0:
+            if (a * (q + 1) // 2 + i) % 8 == 0:
                 return a
 
     ai = [find_a(0), find_a(1), find_a(2), find_a(3)]
@@ -2467,7 +2961,7 @@ def skew_hadamard_matrix_spence_construction(n, check=True):
         for el in Ds[i]:
             psis[i] += P.monomial(el)
 
-    diffs = [(2*psis[i] - Tm).mod(P.monomial(m)-1) for i in range(4)]
+    diffs = [(2 * psis[i] - Tm).mod(P.monomial(m) - 1) for i in range(4)]
     a = [-el for el in diffs[1].coefficients()]
     b = diffs[0].coefficients()
     c = diffs[2].coefficients()
@@ -2539,7 +3033,11 @@ def skew_hadamard_matrix_spence_1975(n, existence=False, check=True):
         ...
         ValueError: q=8 is not a valid parameter for this construction
     """
-    from sage.combinat.designs.difference_family import is_fixed_relative_difference_set, difference_family, complementary_difference_sets
+    from sage.combinat.designs.difference_family import (
+        is_fixed_relative_difference_set,
+        difference_family,
+        complementary_difference_sets,
+    )
 
     q = None
     m = n // 4
@@ -2553,7 +3051,9 @@ def skew_hadamard_matrix_spence_1975(n, existence=False, check=True):
             return False
         raise ValueError('n is not in the form 4*(1+q+q^2)')
 
-    is_valid = (is_prime(m) and m % 8 in [3, 5, 7]) or is_prime_power(3 + 2*q + 2*q**2)
+    is_valid = (is_prime(m) and m % 8 in [3, 5, 7]) or is_prime_power(
+        3 + 2 * q + 2 * q**2
+    )
     if existence:
         return is_valid
 
@@ -2580,7 +3080,7 @@ def skew_hadamard_matrix_spence_1975(n, existence=False, check=True):
         if i in indices:
             continue
         indices.add(i)
-        for j in range(i+1, len(Dnot)):
+        for j in range(i + 1, len(Dnot)):
             if j not in indices and Dnot[i] % m == Dnot[j] % m:
                 indices.add(j)
                 D2.append(Dnot[i])
@@ -2647,38 +3147,51 @@ def GS_skew_hadamard_smallcases(n, existence=False, check=True):
     db = {
         36: ['+++-+-+--', '+-++--++-', '--++++++-', '+++-++-++'],
         52: ['++++-++--+---', '-+-++----++-+', '--+-+++++-+++', '--+-+++++-+++'],
-        92: ['+-------++-+-+--+++++++', '++--+--++++--++++--+--+', '++---+-+-+-++-+-+-+---+', '+----+--+--++--+--+----'],
-        188: ['+----+----++-+-+---++-++--+--+++-+-+--++++-++++',
-              '++--+---+------++------++-+-++--+-+-+----+---++',
-              '+-+-++---++-+---+++---++-++-++-++-+++++-+-+----',
-              '+++-++-+-+---+-+++++--+-----++---+--+++++--++-+'],
-        236: ['+-+---+-+-++-++---+----++-----+++++--++++-+++--+--+-+-+++-+',
-              '+-+---+-+-++-++---+----++-----+++++--++++-+++--+--+-+-+++-+',
-              '+++-++----+++-+-+++--+--++------+---+-----+--+-+--+---+----',
-              '++++++--+++--+---++-+-+-+---+-+----++++-++-+--++-+--+------'],
-        276: ['+--+++--+-+++--+---++-+++++-+++-++-+--+---+-----+--+++-++---+-++---++',
-              '+-++--+-+----++-+---++++-+---+-++++++++-+---+-++++---+-++----+-+--++-',
-              '--+--+-++---+--++--+-+-+++-+--++---++++-+-+-+--+-++-+++++++--+--+++++',
-              '-+---+++-----++---+++-+++--+++++--+---+-+-++++-++++-++-++-+-+++++++++']
+        92: [
+            '+-------++-+-+--+++++++',
+            '++--+--++++--++++--+--+',
+            '++---+-+-+-++-+-+-+---+',
+            '+----+--+--++--+--+----',
+        ],
+        188: [
+            '+----+----++-+-+---++-++--+--+++-+-+--++++-++++',
+            '++--+---+------++------++-+-++--+-+-+----+---++',
+            '+-+-++---++-+---+++---++-++-++-++-+++++-+-+----',
+            '+++-++-+-+---+-+++++--+-----++---+--+++++--++-+',
+        ],
+        236: [
+            '+-+---+-+-++-++---+----++-----+++++--++++-+++--+--+-+-+++-+',
+            '+-+---+-+-++-++---+----++-----+++++--++++-+++--+--+-+-+++-+',
+            '+++-++----+++-+-+++--+--++------+---+-----+--+-+--+---+----',
+            '++++++--+++--+---++-+-+-+---+-+----++++-++-+--++-+--+------',
+        ],
+        276: [
+            '+--+++--+-+++--+---++-+++++-+++-++-+--+---+-----+--+++-++---+-++---++',
+            '+-++--+-+----++-+---++++-+---+-++++++++-+---+-++++---+-++----+-+--++-',
+            '--+--+-++---+--++--+-+-+++-+--++---++++-+-+-+--+-++-+++++++--+--+++++',
+            '-+---+++-----++---+++-+++--+++++--+---+-+-++++-++++-++-++-+-+++++++++',
+        ],
     }
 
     if existence:
-        return n in db or skew_supplementary_difference_set(n//4, existence=True)
+        return n in db or skew_supplementary_difference_set(n // 4, existence=True)
 
     if n in db:
         a, b, c, d = map(pmtoZ, db[n])
         return WGS(a, b, c, d, check=check)
 
-    if skew_supplementary_difference_set(n//4, existence=True):
-        t = n//4
+    if skew_supplementary_difference_set(n // 4, existence=True):
+        t = n // 4
 
-        G, [S1, S2, S3, S4] = skew_supplementary_difference_set(t, check=False, return_group=True)
+        G, [S1, S2, S3, S4] = skew_supplementary_difference_set(
+            t, check=False, return_group=True
+        )
         Glist = list(G)
 
-        A = matrix([[-1 if y-x in S1 else +1 for y in Glist] for x in Glist])
-        B = matrix([[-1 if y-x in S2 else +1 for y in Glist] for x in Glist])
-        C = matrix([[-1 if y-x in S3 else +1 for y in Glist] for x in Glist])
-        D = matrix([[-1 if y-x in S4 else +1 for y in Glist] for x in Glist])
+        A = matrix([[-1 if y - x in S1 else +1 for y in Glist] for x in Glist])
+        B = matrix([[-1 if y - x in S2 else +1 for y in Glist] for x in Glist])
+        C = matrix([[-1 if y - x in S3 else +1 for y in Glist] for x in Glist])
+        D = matrix([[-1 if y - x in S4 else +1 for y in Glist] for x in Glist])
 
         H = _construction_goethals_seidel_matrix(A, B, C, D)
         if check:
@@ -2744,8 +3257,12 @@ def skew_hadamard_matrix_from_orthogonal_design(n, existence=False, check=True):
     """
     # We use value i to represent entries where variable x_i should be, and -i for -x_i
     orthogonal_designs = {
-        (1, 1, 26): [[1, 3, 3, -3, 3, -3, -3],  [2, 3, 3, -3, 3, -3, -3],
-                     [3, 3, 3, -3, 3, 3, 3], [3, 3, -3, -3, -3, 3, -3]]
+        (1, 1, 26): [
+            [1, 3, 3, -3, 3, -3, -3],
+            [2, 3, 3, -3, 3, -3, -3],
+            [3, 3, 3, -3, 3, 3, 3],
+            [3, 3, -3, -3, -3, 3, -3],
+        ]
     }
 
     if n % 4 != 0:
@@ -2753,17 +3270,23 @@ def skew_hadamard_matrix_from_orthogonal_design(n, existence=False, check=True):
 
     m1, m2 = None, None
     for d in divisors(n)[1:-1]:
-        if (n//d) % (d-1) != 0:
+        if (n // d) % (d - 1) != 0:
             continue
-        d1 = n // (d*(d - 1))
-        if (1, d1, d1*d - d1 - 1) in orthogonal_designs and amicable_hadamard_matrices(d, existence=True):
+        d1 = n // (d * (d - 1))
+        if (
+            1,
+            d1,
+            d1 * d - d1 - 1,
+        ) in orthogonal_designs and amicable_hadamard_matrices(d, existence=True):
             m1 = d1
             m2 = d
 
     if m2 is None or m1 is None:
         if existence:
             return False
-        raise NotImplementedError(f'orthogonal designs for matrix of order {n} not yet implemented')
+        raise NotImplementedError(
+            f'orthogonal designs for matrix of order {n} not yet implemented'
+        )
 
     if existence:
         return True
@@ -2775,7 +3298,9 @@ def skew_hadamard_matrix_from_orthogonal_design(n, existence=False, check=True):
     P = M[1:, 1:] - I(m2 - 1)
     D = N[1:, 1:]
 
-    A1, A2, A3, A4 = map(matrix.circulant, orthogonal_designs[(1, m1, m1*m2 - m1 - 1)])
+    A1, A2, A3, A4 = map(
+        matrix.circulant, orthogonal_designs[(1, m1, m1 * m2 - m1 - 1)]
+    )
     OD = _construction_goethals_seidel_matrix(A1, A2, A3, A4)
 
     blocks = {1: P, -1: -P, 2: J(m2 - 1), -2: -J(m2 - 1), 3: D, -3: -D}
@@ -2787,7 +3312,9 @@ def skew_hadamard_matrix_from_orthogonal_design(n, existence=False, check=True):
     return H
 
 
-def skew_hadamard_matrix_from_complementary_difference_sets(n, existence=False, check=True):
+def skew_hadamard_matrix_from_complementary_difference_sets(
+    n, existence=False, check=True
+):
     r"""
     Construct a skew Hadamard matrix of order `n=4(m+1)` from complementary difference sets.
 
@@ -2842,34 +3369,36 @@ def skew_hadamard_matrix_from_complementary_difference_sets(n, existence=False, 
     if n <= 0 or (n > 2 and n % 4 != 0):
         raise ValueError('n must be 1, 2 or a multiple of four.')
 
-    m = n//4 - 1
+    m = n // 4 - 1
 
     if existence:
-        return complementary_difference_sets(2*m+1, existence=True)
+        return complementary_difference_sets(2 * m + 1, existence=True)
 
-    if not complementary_difference_sets(2*m+1, existence=True):
-        raise NotImplementedError(f'hadamard matrix of order {n} from complementary difference sets is not implemented yet')
+    if not complementary_difference_sets(2 * m + 1, existence=True):
+        raise NotImplementedError(
+            f'hadamard matrix of order {n} from complementary difference sets is not implemented yet'
+        )
 
-    G, A, B = complementary_difference_sets(2*m+1, check=False)
+    G, A, B = complementary_difference_sets(2 * m + 1, check=False)
 
-    m = n//4 - 1
+    m = n // 4 - 1
     Glist = list(G)
 
     S = [[0 for i in range(n)] for j in range(n)]
-    for i in range(2*m + 1):
-        for j in range(2*m + 1):
-            S[2*m + 1 + i][2*m + 1 + j] = -1 if Glist[j] - Glist[i] in A else 1
-            S[i][j] = -S[2*m + 1 + i][2*m + 1 + j]
-            S[2*m + 1 + j][i] = -1 if Glist[j] - Glist[i] in B else 1
-            S[i][2*m + 1 + j] = -S[2*m + 1 + j][i]
-        S[4*m + 2][i] = -1
-        S[4*m + 2][2*m + 1 + i] = 1
-        S[i][4*m + 2] = 1
-        S[i + 2*m + 1][4*m + 2] = -1
-    for i in range(4*m + 3):
-        S[4*m + 3][i] = 1
-        S[i][4*m + 3] = -1
-    for i in range(4*m + 4):
+    for i in range(2 * m + 1):
+        for j in range(2 * m + 1):
+            S[2 * m + 1 + i][2 * m + 1 + j] = -1 if Glist[j] - Glist[i] in A else 1
+            S[i][j] = -S[2 * m + 1 + i][2 * m + 1 + j]
+            S[2 * m + 1 + j][i] = -1 if Glist[j] - Glist[i] in B else 1
+            S[i][2 * m + 1 + j] = -S[2 * m + 1 + j][i]
+        S[4 * m + 2][i] = -1
+        S[4 * m + 2][2 * m + 1 + i] = 1
+        S[i][4 * m + 2] = 1
+        S[i + 2 * m + 1][4 * m + 2] = -1
+    for i in range(4 * m + 3):
+        S[4 * m + 3][i] = 1
+        S[i][4 * m + 3] = -1
+    for i in range(4 * m + 4):
         S[i][i] = 1
 
     H = matrix(S)
@@ -2943,30 +3472,31 @@ def skew_hadamard_matrix_whiteman_construction(n, existence=False, check=True):
         raise ValueError(f'The order {n} is not covered by the Whiteman construction.')
 
     from sage.rings.finite_rings.finite_field_constructor import GF
+
     G = GF(q)
-    f = (q-1) // 8
-    Cs = {i: [G.gen()**(8*s+i) for s in range(f)] for i in [0, 1, 2, 3, 6, 7]}
+    f = (q - 1) // 8
+    Cs = {i: [G.gen() ** (8 * s + i) for s in range(f)] for i in [0, 1, 2, 3, 6, 7]}
     A = Cs[0] + Cs[1] + Cs[2] + Cs[3]
     B = Cs[0] + Cs[1] + Cs[6] + Cs[7]
 
-    m = n//4 - 1
+    m = n // 4 - 1
     Glist = list(G)
 
     S = [[0 for i in range(n)] for j in range(n)]
-    for i in range(2*m + 1):
-        for j in range(2*m + 1):
-            S[2*m + 1 + i][2*m + 1 + j] = -1 if Glist[j] - Glist[i] in A else 1
-            S[i][j] = -S[2*m + 1 + i][2*m + 1 + j]
-            S[2*m + 1 + j][i] = -1 if Glist[j] - Glist[i] in B else 1
-            S[i][2*m + 1 + j] = -S[2*m + 1 + j][i]
-        S[4*m + 2][i] = -1
-        S[4*m + 2][2*m + 1 + i] = 1
-        S[i][4*m + 2] = 1
-        S[i + 2*m + 1][4*m + 2] = -1
-    for i in range(4*m + 3):
-        S[4*m + 3][i] = 1
-        S[i][4*m + 3] = -1
-    for i in range(4*m + 4):
+    for i in range(2 * m + 1):
+        for j in range(2 * m + 1):
+            S[2 * m + 1 + i][2 * m + 1 + j] = -1 if Glist[j] - Glist[i] in A else 1
+            S[i][j] = -S[2 * m + 1 + i][2 * m + 1 + j]
+            S[2 * m + 1 + j][i] = -1 if Glist[j] - Glist[i] in B else 1
+            S[i][2 * m + 1 + j] = -S[2 * m + 1 + j][i]
+        S[4 * m + 2][i] = -1
+        S[4 * m + 2][2 * m + 1 + i] = 1
+        S[i][4 * m + 2] = 1
+        S[i + 2 * m + 1][4 * m + 2] = -1
+    for i in range(4 * m + 3):
+        S[4 * m + 3][i] = 1
+        S[i][4 * m + 3] = -1
+    for i in range(4 * m + 4):
         S[i][i] = 1
 
     H = matrix(S)
@@ -3026,26 +3556,30 @@ def skew_hadamard_matrix_from_good_matrices(a, b, c, d, check=True):
         AssertionError
     """
     n = len(a)
-    m = (n-1) // 2
+    m = (n - 1) // 2
 
     assert len(a) == len(b) == len(c) == len(d)
     assert a[0] == 1 and b[0] == 1 and c[0] == 1 and d[0] == 1
-    for i in range(1, m+1):
-        assert a[i] == -a[n-i] and b[i] == b[n-i] and c[i] == c[n-i] and d[i] == d[n-i]
+    for i in range(1, m + 1):
+        assert (
+            a[i] == -a[n - i]
+            and b[i] == b[n - i]
+            and c[i] == c[n - i]
+            and d[i] == d[n - i]
+        )
 
     def back_circulant(row):
         length = len(row)
-        return matrix([[row[(j+i) % length] for j in range(length)] for i in range(length)])
+        return matrix(
+            [[row[(j + i) % length] for j in range(length)] for i in range(length)]
+        )
 
     A = matrix.circulant(a)
     B = back_circulant(b)
     C = back_circulant(c)
     D = back_circulant(d)
 
-    H = block_matrix([[ A,  B,  C,  D],
-                      [-B,  A,  D, -C],
-                      [-C, -D,  A,  B],
-                      [-D,  C, -B,  A]])
+    H = block_matrix([[A, B, C, D], [-B, A, D, -C], [-C, -D, A, B], [-D, C, -B, A]])
 
     if check:
         assert is_hadamard_matrix(H, skew=True)
@@ -3135,7 +3669,12 @@ def skew_hadamard_matrix_from_good_matrices_smallcases(n, existence=False, check
         12: ['+-----+-+---', '+-++++-+-++-', '---+--++++--', '--+-+++--+--'],
         13: ['+---+-+--++-+', '+++---++-++-+', '+++-+++-++---', '+---++++-+-+-'],
         14: ['+--+----+-+-++', '+---++++-++--+', '+-+----++-+--+', '++++++---+-+-+'],
-        15: ['+--++----+---+-', '-++-+---+-+++--', '++---+--+--+++-', '-++++++++--+-+-']
+        15: [
+            '+--++----+---+-',
+            '-++-+---+-+++--',
+            '++---+--+--+++-',
+            '-++++++++--+-+-',
+        ],
     }
 
     def pm_to_good_matrix(s, sign=1):
@@ -3144,13 +3683,16 @@ def skew_hadamard_matrix_from_good_matrices_smallcases(n, existence=False, check
         e2.reverse()
         return [1] + e1 + e2
 
-    if not (n % 4 == 0 and (n//4) % 2 == 1):
+    if not (n % 4 == 0 and (n // 4) % 2 == 1):
         if existence:
             return False
-        raise ValueError("The skew Hadamard matrix of order %s from good matrices does not exist." % n)
+        raise ValueError(
+            "The skew Hadamard matrix of order %s from good matrices does not exist."
+            % n
+        )
 
-    m = n//4
-    l = (m-1) // 2
+    m = n // 4
+    l = (m - 1) // 2
 
     if existence:
         return l in E_sequences
@@ -3169,8 +3711,9 @@ def skew_hadamard_matrix_from_good_matrices_smallcases(n, existence=False, check
 _skew_had_cache = {}
 
 
-def skew_hadamard_matrix(n, existence=False, skew_normalize=True, check=True,
-                         construction_name=False):
+def skew_hadamard_matrix(
+    n, existence=False, skew_normalize=True, check=True, construction_name=False
+):
     r"""
     Try to construct a skew Hadamard matrix.
 
@@ -3260,8 +3803,9 @@ def skew_hadamard_matrix(n, existence=False, skew_normalize=True, check=True,
     def true(nam):
         _skew_had_cache[n] = nam
         if construction_name:
-            return nam+": "+str(n)
+            return nam + ": " + str(n)
         return True
+
     M = None
     name = ''
     if existence and n in _skew_had_cache:
@@ -3288,7 +3832,7 @@ def skew_hadamard_matrix(n, existence=False, skew_normalize=True, check=True,
         if existence:
             return true(name)
         M = hadamard_matrix_paleyI(n, normalize=False)
-    elif is_prime_power(n//2 - 1) and (n//2 - 1) % 8 == 5:
+    elif is_prime_power(n // 2 - 1) and (n // 2 - 1) % 8 == 5:
         name = "spence"
         if existence:
             return true(name)
@@ -3309,30 +3853,57 @@ def skew_hadamard_matrix(n, existence=False, skew_normalize=True, check=True,
             return true(name)
         M = skew_hadamard_matrix_from_orthogonal_design(n, check=False)
     elif n % 8 == 0:
-        if skew_hadamard_matrix(n//2, existence=True) is True:  # (Lemma 14.1.6 in [Ha83]_)
+        if (
+            skew_hadamard_matrix(n // 2, existence=True) is True
+        ):  # (Lemma 14.1.6 in [Ha83]_)
             name = "doubling"
             if existence:
                 return true(name)
-            H = skew_hadamard_matrix(n//2, check=False)
+            H = skew_hadamard_matrix(n // 2, check=False)
             M = block_matrix([[H, H], [-H.T, H.T]])
 
         else:  # try Williamson construction (Lemma 14.1.5 in [Ha83]_)
             for d in divisors(n)[2:-2]:  # skip 1, 2, n/2, and n
-                n1 = n//d
-                if is_prime_power(d - 1) and (d % 4 == 0) and (n1 % 4 == 0)\
-                    and skew_hadamard_matrix(n1, existence=True) is True:
+                n1 = n // d
+                if (
+                    is_prime_power(d - 1)
+                    and (d % 4 == 0)
+                    and (n1 % 4 == 0)
+                    and skew_hadamard_matrix(n1, existence=True) is True
+                ):
                     from sage.arith.misc import factor
-                    name = "williamson - Lemma 14.1.5 [Ha83] ("+str(factor(d-1))+","+str(n1)+") "
+
+                    name = (
+                        "williamson - Lemma 14.1.5 [Ha83] ("
+                        + str(factor(d - 1))
+                        + ","
+                        + str(n1)
+                        + ") "
+                    )
                     if existence:
                         return true(name)
-                    H = skew_hadamard_matrix(n1, check=False)-I(n1)
-                    U = matrix(ZZ, d, lambda i, j: -1 if i == j == 0 else
-                                        1 if i == j == 1 or (i > 1 and j-1 == d-i)
-                                          else 0)
-                    A = block_matrix([[matrix([0]), matrix(ZZ, 1, d-1, [1]*(d-1))],
-                                      [matrix(ZZ, d-1, 1, [-1]*(d-1)),
-                                       _helper_payley_matrix(d-1, zero_position=0)]])+I(d)
-                    M = A.tensor_product(I(n1))+(U*A).tensor_product(H)
+                    H = skew_hadamard_matrix(n1, check=False) - I(n1)
+                    U = matrix(
+                        ZZ,
+                        d,
+                        lambda i, j: (
+                            -1
+                            if i == j == 0
+                            else 1
+                            if i == j == 1 or (i > 1 and j - 1 == d - i)
+                            else 0
+                        ),
+                    )
+                    A = block_matrix(
+                        [
+                            [matrix([0]), matrix(ZZ, 1, d - 1, [1] * (d - 1))],
+                            [
+                                matrix(ZZ, d - 1, 1, [-1] * (d - 1)),
+                                _helper_payley_matrix(d - 1, zero_position=0),
+                            ],
+                        ]
+                    ) + I(d)
+                    M = A.tensor_product(I(n1)) + (U * A).tensor_product(H)
                     break
     if M is None:  # try Williamson-Goethals-Seidel construction
         if GS_skew_hadamard_smallcases(n, existence=True) is True:
@@ -3344,7 +3915,9 @@ def skew_hadamard_matrix(n, existence=False, skew_normalize=True, check=True,
         else:
             if existence:
                 return Unknown
-            raise ValueError("A skew Hadamard matrix of order %s is not yet implemented." % n)
+            raise ValueError(
+                "A skew Hadamard matrix of order %s is not yet implemented." % n
+            )
     if skew_normalize:
         M = normalise_hadamard(M, skew=True)
     if check:
@@ -3391,15 +3964,18 @@ def symmetric_conference_matrix(n, check=True, existence=False):
         True
     """
     from sage.graphs.strongly_regular_db import strongly_regular_graph as srg
+
     try:
-        m = srg(n-1, (n-2)/2, (n-6)/4, (n-2)/4, existence=existence)
+        m = srg(n - 1, (n - 2) / 2, (n - 6) / 4, (n - 2) / 4, existence=existence)
     except ValueError:
         raise
     if existence:
         return m
-    C = matrix([0]+[1]*(n-1)).stack(matrix([1]*(n-1)).stack(m.seidel_adjacency_matrix()).T)
+    C = matrix([0] + [1] * (n - 1)).stack(
+        matrix([1] * (n - 1)).stack(m.seidel_adjacency_matrix()).T
+    )
     if check:
-        assert (C == C.T and C**2 == (n-1)*I(n))
+        assert C == C.T and C**2 == (n - 1) * I(n)
     return C
 
 
@@ -3436,20 +4012,21 @@ def szekeres_difference_set_pair(m, check=True):
     - [Sz1969]_
     """
     from sage.rings.finite_rings.finite_field_constructor import GF
-    F = GF(4*m+3)
-    t = F.multiplicative_generator()**2
+
+    F = GF(4 * m + 3)
+    t = F.multiplicative_generator() ** 2
     G = F.cyclotomic_cosets(t, cosets=[F.one()])[0]
     sG = set(G)
     A = [a for a in G if a - F.one() in sG]
     B = [b for b in G if b + F.one() in sG]
     if check:
         from itertools import product, chain
-        assert (len(A) == len(B) == m)
+
+        assert len(A) == len(B) == m
         if m > 1:
-            assert (sG == {xy[0] / xy[1]
-                           for xy in chain(product(A, A), product(B, B))})
+            assert sG == {xy[0] / xy[1] for xy in chain(product(A, A), product(B, B))}
         assert all(F.one() / b + F.one() in sG for b in B)
-        assert (not any(F.one() / a - F.one() in sG for a in A))
+        assert not any(F.one() / a - F.one() in sG for a in A)
     return G, A, B
 
 
@@ -3473,7 +4050,7 @@ def typeI_matrix_difference_set(G, A):
         [-1 -1  1  1 -1]
     """
     n = len(G)
-    return matrix(n, n, lambda i, j: 1 if G[i]/G[j] in A else -1)
+    return matrix(n, n, lambda i, j: 1 if G[i] / G[j] in A else -1)
 
 
 def rshcd_from_prime_power_and_conference_matrix(n):
@@ -3527,30 +4104,48 @@ def rshcd_from_prime_power_and_conference_matrix(n):
     - [WW1972]_
     """
     from sage.graphs.strongly_regular_db import strongly_regular_graph as srg
-    if is_prime_power(n) and 2 == (n-1) % 4:
+
+    if is_prime_power(n) and 2 == (n - 1) % 4:
         try:
-            M = srg(n-2, (n-3)//2, (n-7)//4)
+            M = srg(n - 2, (n - 3) // 2, (n - 7) // 4)
         except ValueError:
             return
-        m = (n-3)//4
+        m = (n - 3) // 4
         Q, X, Y = szekeres_difference_set_pair(m)
         B = typeI_matrix_difference_set(Q, X)
         A = -typeI_matrix_difference_set(Q, Y)  # must be symmetric
         W = M.seidel_adjacency_matrix()
-        f = J(1, 4*m+1)
-        e = J(1, 2*m+1)
-        JJ = J(2*m+1, 2*m+1)
-        II = I(n-2)
-        Ib = I(2*m+1)
-        J4m = J(4*m+1, 4*m+1)
-        H34 = -(B+Ib).tensor_product(W)+Ib.tensor_product(J4m)+(Ib-JJ).tensor_product(II)
+        f = J(1, 4 * m + 1)
+        e = J(1, 2 * m + 1)
+        JJ = J(2 * m + 1, 2 * m + 1)
+        II = I(n - 2)
+        Ib = I(2 * m + 1)
+        J4m = J(4 * m + 1, 4 * m + 1)
+        H34 = (
+            -(B + Ib).tensor_product(W)
+            + Ib.tensor_product(J4m)
+            + (Ib - JJ).tensor_product(II)
+        )
         A_t_W = A.tensor_product(W)
         e_t_f = e.tensor_product(f)
-        H = block_matrix([
-            [J(1, 1),                f,                      e_t_f, -e_t_f],
-            [f.T,                  J4m,     e.tensor_product(W-II),  e.tensor_product(W+II)],
-            [ e_t_f.T, (e.T).tensor_product(W-II), A_t_W+JJ.tensor_product(II),         H34],
-            [-e_t_f.T, (e.T).tensor_product(W+II), H34.T, -A_t_W+JJ.tensor_product(II)]])
+        H = block_matrix(
+            [
+                [J(1, 1), f, e_t_f, -e_t_f],
+                [f.T, J4m, e.tensor_product(W - II), e.tensor_product(W + II)],
+                [
+                    e_t_f.T,
+                    (e.T).tensor_product(W - II),
+                    A_t_W + JJ.tensor_product(II),
+                    H34,
+                ],
+                [
+                    -e_t_f.T,
+                    (e.T).tensor_product(W + II),
+                    H34.T,
+                    -A_t_W + JJ.tensor_product(II),
+                ],
+            ]
+        )
         return H
 
 
@@ -3678,7 +4273,7 @@ def amicable_hadamard_matrices_wallis(n, check=True):
 
     squares = []
     for el in Glist:
-        squares.append(el*el)
+        squares.append(el * el)
 
     def chi(el):
         if el == 0:
@@ -3688,18 +4283,21 @@ def amicable_hadamard_matrices_wallis(n, check=True):
         return -1
 
     S = matrix([[chi(Glist[i] - Glist[j]) for j in range(q)] for i in range(q)])
-    R = matrix([[1 if (i, j) == (0, 0) else 1 if j == q-i else 0 for j in range(q)] for i in range(q)])
+    R = matrix(
+        [
+            [1 if (i, j) == (0, 0) else 1 if j == q - i else 0 for j in range(q)]
+            for i in range(q)
+        ]
+    )
 
     P = S + I(q)
-    D = R + R*S
+    D = R + R * S
 
     e = matrix([1 for _ in range(q)])
     one = matrix([1])
 
-    M = block_matrix([[ one, e],
-                      [-e.T, P]])
-    N = block_matrix([[-one, -e],
-                      [-e.T,  D]])
+    M = block_matrix([[one, e], [-e.T, P]])
+    N = block_matrix([[-one, -e], [-e.T, D]])
 
     if check:
         assert are_amicable_hadamard_matrices(M, N)
@@ -3768,7 +4366,7 @@ def amicable_hadamard_matrices(n, existence=False, check=True):
             return True
         M = matrix([[1, 1], [-1, 1]])
         N = matrix([[1, 1], [1, -1]])
-    elif is_prime_power(n-1):
+    elif is_prime_power(n - 1):
         if existence:
             return True
         M, N = amicable_hadamard_matrices_wallis(n, check=False)
@@ -3777,7 +4375,9 @@ def amicable_hadamard_matrices(n, existence=False, check=True):
         return False
 
     if M is None:
-        raise NotImplementedError(f'construction for amicable Hadamard matrices of order {n} not yet implemented')
+        raise NotImplementedError(
+            f'construction for amicable Hadamard matrices of order {n} not yet implemented'
+        )
 
     if check:
         assert are_amicable_hadamard_matrices(M, N)

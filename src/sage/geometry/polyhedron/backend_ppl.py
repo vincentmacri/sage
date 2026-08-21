@@ -14,9 +14,20 @@ from .representation import VERTEX, RAY, LINE, INEQUALITY, EQUATION
 
 from sage.misc.lazy_import import lazy_import
 from sage.features import PythonModule
-lazy_import('ppl', ['C_Polyhedron', 'Generator_System', 'Constraint_System',
-                    'Linear_Expression', 'line', 'ray', 'point'],
-                    feature=PythonModule("ppl", spkg='pplpy', type='standard'))
+
+lazy_import(
+    'ppl',
+    [
+        'C_Polyhedron',
+        'Generator_System',
+        'Constraint_System',
+        'Linear_Expression',
+        'line',
+        'ray',
+        'point',
+    ],
+    feature=PythonModule("ppl", spkg='pplpy', type='standard'),
+)
 
 
 #########################################################################
@@ -60,7 +71,9 @@ class Polyhedron_ppl(Polyhedron_mutable):
         self._dependent_objects = []
         if ppl_polyhedron:
             if Hrep is not None or Vrep is not None:
-                raise ValueError("only one of Vrep, Hrep, or ppl_polyhedron can be different from None")
+                raise ValueError(
+                    "only one of Vrep, Hrep, or ppl_polyhedron can be different from None"
+                )
             Element.__init__(self, parent=parent)
             minimize = bool('minimize' in kwds and kwds['minimize'])
             self._init_from_ppl_polyhedron(ppl_polyhedron, minimize)
@@ -69,7 +82,9 @@ class Polyhedron_ppl(Polyhedron_mutable):
         if not mutable:
             self.set_immutable()
 
-    def _init_from_Vrepresentation(self, vertices, rays, lines, minimize=True, verbose=False):
+    def _init_from_Vrepresentation(
+        self, vertices, rays, lines, minimize=True, verbose=False
+    ):
         """
         Construct polyhedron from V-representation data.
 
@@ -269,7 +284,9 @@ class Polyhedron_ppl(Polyhedron_mutable):
             except TypeError:
                 # Apparently the polyhedron is (no longer) integral.
                 self._clear_cache()
-                raise TypeError("the polyhedron is not integral; do a base extension ``self.base_extend(QQ)``")
+                raise TypeError(
+                    "the polyhedron is not integral; do a base extension ``self.base_extend(QQ)``"
+                )
         if index is None:
             return self._Vrepresentation
         return self._Vrepresentation[index]
@@ -305,7 +322,7 @@ class Polyhedron_ppl(Polyhedron_mutable):
                 if d.is_one():
                     parent._make_Vertex(self, coefficients)
                 else:
-                    parent._make_Vertex(self, [x/d for x in coefficients])
+                    parent._make_Vertex(self, [x / d for x in coefficients])
             elif g.is_ray():
                 parent._make_Ray(self, coefficients)
             elif g.is_line():
@@ -340,9 +357,13 @@ class Polyhedron_ppl(Polyhedron_mutable):
         parent = self.parent()
         for c in cs:
             if c.is_inequality():
-                parent._make_Inequality(self, (c.inhomogeneous_term(),) + c.coefficients())
+                parent._make_Inequality(
+                    self, (c.inhomogeneous_term(),) + c.coefficients()
+                )
             elif c.is_equality():
-                parent._make_Equation(self, (c.inhomogeneous_term(),) + c.coefficients())
+                parent._make_Equation(
+                    self, (c.inhomogeneous_term(),) + c.coefficients()
+                )
         self._Hrepresentation = tuple(self._Hrepresentation)
 
     def Hrepresentation(self, index=None):
@@ -439,7 +460,7 @@ class Polyhedron_ppl(Polyhedron_mutable):
         d = LCM_list([denominator(v_i) for v_i in v])
         if d.is_one():
             return ob(Linear_Expression(v, 0))
-        dv = [ d*v_i for v_i in v ]
+        dv = [d * v_i for v_i in v]
         if typ == VERTEX:
             return ob(Linear_Expression(dv, 0), d)
         return ob(Linear_Expression(dv, 0))
@@ -500,7 +521,7 @@ class Polyhedron_ppl(Polyhedron_mutable):
             x0+6*x1+2==0
         """
         d = LCM_list([denominator(c_i) for c_i in c])
-        dc = [ ZZ(d*c_i) for c_i in c ]
+        dc = [ZZ(d * c_i) for c_i in c]
         b = dc[0]
         A = dc[1:]
         if typ == INEQUALITY:
@@ -553,6 +574,7 @@ class Polyhedron_QQ_ppl(Polyhedron_ppl, Polyhedron_QQ):
         ....:                backend='ppl', base_ring=QQ)
         sage: TestSuite(p).run()
     """
+
     pass
 
 
@@ -573,4 +595,5 @@ class Polyhedron_ZZ_ppl(Polyhedron_ppl, Polyhedron_ZZ):
         ....:                backend='ppl', base_ring=ZZ)
         sage: TestSuite(p).run()
     """
+
     pass

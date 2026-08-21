@@ -69,7 +69,9 @@ class Derangement(CombinatorialElement):
             ValueError: can only convert to a permutation for derangements of [1, 2, ..., n]
         """
         if self.parent()._set != tuple(range(1, len(self) + 1)):
-            raise ValueError("can only convert to a permutation for derangements of [1, 2, ..., n]")
+            raise ValueError(
+                "can only convert to a permutation for derangements of [1, 2, ..., n]"
+            )
         return Permutation(list(self))
 
 
@@ -131,6 +133,7 @@ class Derangements(UniqueRepresentation, Parent):
         sage: D2.random_element() # random
         [2, 3, 1, 3, 1, 2]
     """
+
     @staticmethod
     def __classcall_private__(cls, x):
         """
@@ -434,7 +437,7 @@ class Derangements(UniqueRepresentation, Parent):
             A = [self._set.count(i) for i in sL]
             R = PolynomialRing(QQ, 'x', len(A))
             S = sum(R.gens())
-            e = prod((S - x)**y for x, y in zip(R.gens(), A))
+            e = prod((S - x) ** y for x, y in zip(R.gens(), A))
             return Integer(e.coefficient(dict(zip(R.gens(), A))))
         return self._count_der(len(self._set))
 

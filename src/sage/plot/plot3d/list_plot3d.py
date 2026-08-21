@@ -248,13 +248,15 @@ def list_plot3d(v, interpolation_type='default', point_list=None, **kwds):
         ValueError: we need at least 3 points to perform the interpolation
     """
     import numpy
+
     if isinstance(v, Matrix):
-        if (interpolation_type == 'default' or
-                interpolation_type == 'linear' and 'num_points' not in kwds):
+        if (
+            interpolation_type == 'default'
+            or interpolation_type == 'linear'
+            and 'num_points' not in kwds
+        ):
             return list_plot3d_matrix(v, **kwds)
-        data = [(i, j, v[i, j])
-                for i in range(v.nrows())
-                for j in range(v.ncols())]
+        data = [(i, j, v[i, j]) for i in range(v.nrows()) for j in range(v.ncols())]
         return list_plot3d_tuples(data, interpolation_type, **kwds)
 
     if isinstance(v, numpy.ndarray):
@@ -264,14 +266,17 @@ def list_plot3d(v, interpolation_type='default', point_list=None, **kwds):
         if not v:
             # return empty 3d graphic
             from .base import Graphics3d
+
             return Graphics3d()
         if len(v) == 1:
             # return a point
             from .shapes2 import point3d
+
             return point3d(v[0], **kwds)
         if len(v) == 2:
             # return a line
             from .shapes2 import line3d
+
             return line3d(v, **kwds)
         if isinstance(v[0], tuple) or point_list and len(v[0]) == 3:
             return list_plot3d_tuples(v, interpolation_type, **kwds)
@@ -359,8 +364,8 @@ def list_plot3d_matrix(m, **kwds):
 
     def f(i, j):
         return (i, j, float(m[int(i), int(j)]))
-    G = ParametricSurface(f, (list(range(m.nrows())), list(range(m.ncols()))),
-                          **kwds)
+
+    G = ParametricSurface(f, (list(range(m.nrows())), list(range(m.ncols()))), **kwds)
     G._set_extra_kwds(kwds)
     return G
 
@@ -534,8 +539,7 @@ def list_plot3d_tuples(v, interpolation_type, **kwds):
     from .plot3d import plot3d
 
     if len(v) < 3:
-        raise ValueError("we need at least 3 points to perform the "
-                         "interpolation")
+        raise ValueError("we need at least 3 points to perform the interpolation")
 
     x = [float(p[0]) for p in v]
     y = [float(p[1]) for p in v]
@@ -547,7 +551,7 @@ def list_plot3d_tuples(v, interpolation_type, **kwds):
     # noise to avoid the problem if needed.
     corr_matrix = numpy.corrcoef(x, y)
     if not (-0.9 <= corr_matrix[0, 1] <= 0.9):
-        ep = .000001
+        ep = 0.000001
         x = [float(p[0]) + random() * ep for p in v]
         y = [float(p[1]) + random() * ep for p in v]
 
@@ -564,9 +568,11 @@ def list_plot3d_tuples(v, interpolation_type, **kwds):
         for j in range(i + 1, nb_points):
             if x[i] == x[j] and y[i] == y[j]:
                 if z[i] != z[j]:
-                    raise ValueError("points with same x,y coordinates"
-                                     " and different z coordinates were"
-                                     " given. Interpolation cannot handle this.")
+                    raise ValueError(
+                        "points with same x,y coordinates"
+                        " and different z coordinates were"
+                        " given. Interpolation cannot handle this."
+                    )
                 elif z[i] == z[j]:
                     drop_list.append(j)
     x = [x[i] for i in range(nb_points) if i not in drop_list]
@@ -592,14 +598,18 @@ def list_plot3d_tuples(v, interpolation_type, **kwds):
             z = f(x, y)
             return (x, y, z)
 
-        G = ParametricSurface(g, (list(numpy.r_[xmin:xmax:num_points * j]),
-                                  list(numpy.r_[ymin:ymax:num_points * j])),
-                              **kwds)
+        G = ParametricSurface(
+            g,
+            (
+                list(numpy.r_[xmin : xmax : num_points * j]),
+                list(numpy.r_[ymin : ymax : num_points * j]),
+            ),
+            **kwds,
+        )
         G._set_extra_kwds(kwds)
         return G
 
     if interpolation_type == 'clough' or interpolation_type == 'default':
-
         points = [[x[i], y[i]] for i in range(len(x))]
         j = complex(0, 1)
         f = interpolate.CloughTocher2DInterpolator(points, z)
@@ -609,9 +619,14 @@ def list_plot3d_tuples(v, interpolation_type, **kwds):
             z = f([x, y]).item()
             return (x, y, z)
 
-        G = ParametricSurface(g, (list(numpy.r_[xmin:xmax:num_points * j]),
-                                  list(numpy.r_[ymin:ymax:num_points * j])),
-                              **kwds)
+        G = ParametricSurface(
+            g,
+            (
+                list(numpy.r_[xmin : xmax : num_points * j]),
+                list(numpy.r_[ymin : ymax : num_points * j]),
+            ),
+            **kwds,
+        )
         G._set_extra_kwds(kwds)
         return G
 
@@ -622,11 +637,13 @@ def list_plot3d_tuples(v, interpolation_type, **kwds):
             kx = kwds['degree']
             ky = kwds['degree']
         s = kwds.get('smoothing', len(x) - numpy.sqrt(2 * len(x)))
-        s = interpolate.bisplrep(x, y, z, [1.0] * len(x), xmin, xmax,
-                                 ymin, ymax, kx=kx, ky=ky, s=s)
+        s = interpolate.bisplrep(
+            x, y, z, [1.0] * len(x), xmin, xmax, ymin, ymax, kx=kx, ky=ky, s=s
+        )
 
         def f(x, y):
             return interpolate.bisplev(x, y, s)
 
-        return plot3d(f, (xmin, xmax), (ymin, ymax),
-                      plot_points=[num_points, num_points], **kwds)
+        return plot3d(
+            f, (xmin, xmax), (ymin, ymax), plot_points=[num_points, num_points], **kwds
+        )

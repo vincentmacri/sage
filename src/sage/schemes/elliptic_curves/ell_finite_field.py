@@ -35,7 +35,9 @@ from sage.groups import generic
 
 from sage.arith.functions import lcm
 from sage.arith.misc import binomial, GCD as gcd
-from sage.groups.additive_abelian.additive_abelian_wrapper import AdditiveAbelianGroupWrapper
+from sage.groups.additive_abelian.additive_abelian_wrapper import (
+    AdditiveAbelianGroupWrapper,
+)
 from sage.misc.cachefunc import cached_method
 from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.rings.finite_rings.finite_field_constructor import FiniteField as GF
@@ -43,7 +45,10 @@ from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.polynomial.polynomial_ring import polygen
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-from sage.schemes.curves.projective_curve import Hasse_bounds, ProjectivePlaneCurve_finite_field
+from sage.schemes.curves.projective_curve import (
+    Hasse_bounds,
+    ProjectivePlaneCurve_finite_field,
+)
 from sage.structure.element import Element
 
 from . import ell_point
@@ -51,7 +56,9 @@ from .constructor import EllipticCurve
 from .ell_field import EllipticCurve_field
 
 
-class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finite_field):
+class EllipticCurve_finite_field(
+    EllipticCurve_field, ProjectivePlaneCurve_finite_field
+):
     r"""
     Elliptic curve over a finite field.
 
@@ -231,6 +238,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
             return self.__points
 
         from sage.structure.sequence import Sequence
+
         v = self._points_via_group_structure()
         v.sort()
         self.__points = Sequence(v, immutable=True)
@@ -501,15 +509,20 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
             N = self.cardinality_pari()
             N2 = self.cardinality_bsgs()
             if N != N2:
-                raise AssertionError("cardinality with pari=%s but with bsgs=%s" % (N, N2))
+                raise AssertionError(
+                    "cardinality with pari=%s but with bsgs=%s" % (N, N2)
+                )
         else:
             raise ValueError("algorithm {!r} is not known".format(algorithm))
 
         self._order = N
         return N
 
-    from .cardinality import (cardinality_bsgs,
-                              cardinality_exhaustive, _cardinality_subfield)
+    from .cardinality import (
+        cardinality_bsgs,
+        cardinality_exhaustive,
+        _cardinality_subfield,
+    )
 
     order = cardinality  # alias
 
@@ -626,60 +639,87 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
         F = self.base_field()
 
         if self.is_supersingular():
-            n = n.prime_to_m_part(F.characteristic()) # p-torsion is trivial
+            n = n.prime_to_m_part(F.characteristic())  # p-torsion is trivial
             if n.is_one():
                 ext = 1
             elif n == 2:
-                ext = 3 if self.two_torsion_rank() == 0 else 2 if self.two_torsion_rank() == 1 else 1
+                ext = (
+                    3
+                    if self.two_torsion_rank() == 0
+                    else 2
+                    if self.two_torsion_rank() == 1
+                    else 1
+                )
             else:
                 from sage.rings.finite_rings.integer_mod import Mod
+
                 if (pi := self.frobenius()) in ZZ:
                     ext = Mod(pi, n).multiplicative_order()
                 else:
-                    m = next(m for m in range(1,7) if not (pi**m)[1] % n)
+                    m = next(m for m in range(1, 7) if not (pi**m)[1] % n)
                     ext = m * Mod((pi**m)[0], n).multiplicative_order()
 
         else:
+
             def van_tuyl(f, e):
                 N = f**e
                 chi = self.frobenius_polynomial()
 
                 if e == 1:
                     chi_mod_N = chi.change_ring(GF(N))
-                    if (roots := chi_mod_N.roots(multiplicities=False)):
-
+                    if roots := chi_mod_N.roots(multiplicities=False):
                         if len(roots) == 1:  # repeated root
                             assert F(N)
                             dstar = roots[0].multiplicative_order()
                             from sage.rings.qqbar import QQbar
-                            gamma, delta = (r for r,m in chi.roots(ring=QQbar) for _ in range(m))
-                            if (N**2).divides(1 + F.cardinality()**dstar - gamma**dstar - delta**dstar):
-                                l = lcm(f.degree() for f,_ in self.division_polynomial(N).factor())
-                                if dstar in (l, 2*l):
+
+                            gamma, delta = (
+                                r for r, m in chi.roots(ring=QQbar) for _ in range(m)
+                            )
+                            if (N**2).divides(
+                                1
+                                + F.cardinality() ** dstar
+                                - gamma**dstar
+                                - delta**dstar
+                            ):
+                                l = lcm(
+                                    f.degree()
+                                    for f, _ in self.division_polynomial(N).factor()
+                                )
+                                if dstar in (l, 2 * l):
                                     return dstar
                             return N * dstar
 
-                        return lcm(r.multiplicative_order() for r in roots if r.is_unit())
+                        return lcm(
+                            r.multiplicative_order() for r in roots if r.is_unit()
+                        )
 
                     return GF(N).extension(chi_mod_N, 'U').gen().multiplicative_order()
 
-                if f.divides(chi.discriminant()): # case that frobenius has 1 or > 2 roots over Z/NZ
+                if f.divides(
+                    chi.discriminant()
+                ):  # case that frobenius has 1 or > 2 roots over Z/NZ
                     # defer to general implementation
-                    return EllipticCurve_field.division_field(self, N).degree() // F.degree()
+                    return (
+                        EllipticCurve_field.division_field(self, N).degree()
+                        // F.degree()
+                    )
 
                 from sage.rings.finite_rings.integer_mod_ring import Zmod
+
                 chi_mod_N = chi.change_ring(Zmod(N))
 
-                if (roots := chi_mod_N.roots(multiplicities=False)):
+                if roots := chi_mod_N.roots(multiplicities=False):
                     assert len(roots) == 2
                     return lcm(r.multiplicative_order() for r in roots if r.is_unit())
 
                 # Irreducible case
                 U = Zmod(N)['U'].quotient(chi_mod_N).gen()
                 from sage.groups.generic import order_from_multiple
-                return order_from_multiple(U, N*(f**2 - 1), operation='*')
 
-            ext = lcm(van_tuyl(f, e) for f,e in n.factor())
+                return order_from_multiple(U, N * (f**2 - 1), operation='*')
+
+            ext = lcm(van_tuyl(f, e) for f, e in n.factor())
 
         return F.extension(ext, names=names, map=map, **kwds)
 
@@ -731,7 +771,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
             (x + 5)^2
         """
         x = polygen(ZZ)
-        return x**2-self.trace_of_frobenius()*x+self.base_field().cardinality()
+        return x**2 - self.trace_of_frobenius() * x + self.base_field().cardinality()
 
     def frobenius_order(self):
         r"""
@@ -1134,29 +1174,28 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
         assert len(gens) <= 2
 
         if len(gens) == 2:
-
             P, Q = gens
-            n = self.cardinality()              # cached
-            n1 = P.order()                      # cached
-            n2 = n//n1
-            assert not n1 * Q                   # PARI should guarantee this
+            n = self.cardinality()  # cached
+            n1 = P.order()  # cached
+            n2 = n // n1
+            assert not n1 * Q  # PARI should guarantee this
 
             k = n1.prime_to_m_part(n2)
-            Q *= k                              # don't need; kill that part
-            nQ = n2 * generic.order_from_multiple(n2*Q, n1//k//n2)
+            Q *= k  # don't need; kill that part
+            nQ = n2 * generic.order_from_multiple(n2 * Q, n1 // k // n2)
 
-            S = n//nQ * P
+            S = n // nQ * P
             T = n2 * Q
-            S.set_order(nQ//n2, check=False)    # for .log()
+            S.set_order(nQ // n2, check=False)  # for .log()
             x = T.log(S)
-            Q -= x * n1//nQ * P
+            Q -= x * n1 // nQ * P
 
-            assert not n2 * Q                   # by construction
+            assert not n2 * Q  # by construction
             Q.set_order(n2, check=False)
 
             gens = P, Q
 
-        orders = [T.order() for T in gens]      # cached
+        orders = [T.order() for T in gens]  # cached
 
         self.gens.set_cache(gens)
         return AdditiveAbelianGroupWrapper(self.point_homset(), gens, orders)
@@ -1354,7 +1393,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
             for step in range(999):
                 # check P,Q is a basis of the subgroup <P,Q> with ord(Q) | ord(P)
                 assert Q._order.divides(P._order)
-#                assert generic.has_order(P.weil_pairing(Q, P._order), Q._order, operation='*')
+                #                assert generic.has_order(P.weil_pairing(Q, P._order), Q._order, operation='*')
 
                 if n.divides(Q._order):
                     P *= P._order // n
@@ -1368,7 +1407,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
 
                 cof = N.prime_to_m_part(n)
                 T = cof * E.random_point()
-                T.set_order(multiple=N//cof, check=False)
+                T.set_order(multiple=N // cof, check=False)
 
                 # extend P using T as much as possible
                 m, k1, k2 = xlcm(P._order, T._order)
@@ -1381,7 +1420,9 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
                     continue
 
                 # remove the P component from T
-                l = generic.order_from_multiple(P.weil_pairing(T, P._order), P._order, operation='*')
+                l = generic.order_from_multiple(
+                    P.weil_pairing(T, P._order), P._order, operation='*'
+                )
                 x = (l * T).log(l * P)
                 T -= x * P
                 T.set_order(multiple=P._order, check=False)
@@ -1391,27 +1432,35 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
                 Q._order = m
 
                 # remove the P component from Q
-                l = generic.order_from_multiple(P.weil_pairing(Q, P._order), P._order, operation='*')
+                l = generic.order_from_multiple(
+                    P.weil_pairing(Q, P._order), P._order, operation='*'
+                )
                 y = (l * Q).log(l * P)
                 Q -= y * P
                 Q.set_order(multiple=P._order, check=False)
 
             else:
-                raise RuntimeError('overwhelmingly unlikely event, or (more likely) a bug in EllipticCurve_finite_field.torsion_subgroup()')
+                raise RuntimeError(
+                    'overwhelmingly unlikely event, or (more likely) a bug in EllipticCurve_finite_field.torsion_subgroup()'
+                )
 
             assert hasattr(P, '_order')
             assert hasattr(Q, '_order')
 
-#            if P and Q:
-#                assert Q._order.divides(P._order)
-#                assert generic.has_order(P.weil_pairing(Q, P._order), Q._order, operation='*')
+            #            if P and Q:
+            #                assert Q._order.divides(P._order)
+            #                assert generic.has_order(P.weil_pairing(Q, P._order), Q._order, operation='*')
 
             gens = list(filter(bool, [P, Q]))
-            return AdditiveAbelianGroupWrapper(E.point_homset(), gens, [pt._order for pt in gens])
+            return AdditiveAbelianGroupWrapper(
+                E.point_homset(), gens, [pt._order for pt in gens]
+            )
 
         if algorithm == 'divpoly':
             # NB: we already handled extend= above
-            return EllipticCurve_field.torsion_subgroup(E, n, extend=False, algorithm='divpoly')
+            return EllipticCurve_field.torsion_subgroup(
+                E, n, extend=False, algorithm='divpoly'
+            )
 
         if algorithm == 'structure':
             return E.abelian_group().torsion_subgroup(n)
@@ -1509,6 +1558,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
             False
         """
         from .ell_generic import EllipticCurve_generic
+
         if not isinstance(other, EllipticCurve_generic):
             raise ValueError("Second argument is not an Elliptic Curve.")
         if self.is_isomorphic(other):
@@ -1519,21 +1569,39 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
             if self.base_field().degree() == other.base_field().degree():
                 return self.cardinality() == other.cardinality()
 
-            if self.base_field().degree() == gcd(self.base_field().degree(),
-                                                   other.base_field().degree()):
-                return self.cardinality(extension_degree=other.base_field().degree()//self.base_field().degree()) == other.cardinality()
+            if self.base_field().degree() == gcd(
+                self.base_field().degree(), other.base_field().degree()
+            ):
+                return (
+                    self.cardinality(
+                        extension_degree=other.base_field().degree()
+                        // self.base_field().degree()
+                    )
+                    == other.cardinality()
+                )
 
-            if other.base_field().degree() == gcd(self.base_field().degree(),
-                                                    other.base_field().degree()):
-                return other.cardinality(extension_degree=self.base_field().degree()//other.base_field().degree()) == self.cardinality()
+            if other.base_field().degree() == gcd(
+                self.base_field().degree(), other.base_field().degree()
+            ):
+                return (
+                    other.cardinality(
+                        extension_degree=self.base_field().degree()
+                        // other.base_field().degree()
+                    )
+                    == self.cardinality()
+                )
 
-            raise ValueError("Curves have different base fields: use the field parameter.")
+            raise ValueError(
+                "Curves have different base fields: use the field parameter."
+            )
         else:
             f_deg = field.degree()
             s_deg = self.base_field().degree()
             o_deg = other.base_field().degree()
             if not lcm(s_deg, o_deg).divides(f_deg):
-                raise ValueError("Field must be an extension of the base fields of both curves")
+                raise ValueError(
+                    "Field must be an extension of the base fields of both curves"
+                )
             else:
                 sc = self.cardinality(extension_degree=f_deg // s_deg)
                 oc = other.cardinality(extension_degree=f_deg // o_deg)
@@ -1914,7 +1982,9 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
         """
         pi = self.frobenius()
         if pi in ZZ:
-            raise ValueError("{} has a (rational) endomorphism ring of rank 4".format(self))
+            raise ValueError(
+                "{} has a (rational) endomorphism ring of rank 4".format(self)
+            )
 
         e = ZZ(e)
         if not e:
@@ -1927,7 +1997,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
                 # is that Frobenius must be of the form phi o [p^k] where phi is
                 # a purely inseparable isogeny of degree 1 or p, hence this [p^k]
                 # can always be divided out while retaining an endomorphism.
-                assert self.base_field().cardinality().valuation(ell) >= 2*e
+                assert self.base_field().cardinality().valuation(ell) >= 2 * e
                 return e
 
             # In the supersingular case, the j-invariant alone does not determine
@@ -1949,7 +2019,11 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
                 for i in range(3):
                     isogs = E1[i].isogenies_prime_degree(ell)
                     try:
-                        step = next(phi for phi in isogs if not phi.codomain().is_isomorphic(E0[i]))
+                        step = next(
+                            phi
+                            for phi in isogs
+                            if not phi.codomain().is_isomorphic(E0[i])
+                        )
                     except StopIteration:
                         return h
                     E0[i], E1[i] = step.domain(), step.codomain()
@@ -1964,22 +2038,23 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
         x = polygen(F)
         from sage.rings.polynomial.polynomial_ring import polygens
         from sage.schemes.elliptic_curves.mod_poly import classical_modular_polynomial
+
         X, Y = polygens(F, 'X,Y')
         phi = classical_modular_polynomial(ell)(X, Y)
-        j1 = phi([x,j]).roots(multiplicities=False)
+        j1 = phi([x, j]).roots(multiplicities=False)
         nj1 = len(j1)
         on_floor = self.two_torsion_rank() < 2 if ell == 2 else nj1 <= ell
         if on_floor:
             return ZZ.zero()
-        if e == 1 or nj1 != ell+1:  # double roots can only happen at the surface
+        if e == 1 or nj1 != ell + 1:  # double roots can only happen at the surface
             return e
         if nj1 < 3:
             return ZZ.zero()
-        j0 = [j,j,j]
+        j0 = [j, j, j]
         h = ZZ.one()
         while True:
             for i in range(3):
-                r = (phi([x,j1[i]])//(x-j0[i])).roots(multiplicities=False)
+                r = (phi([x, j1[i]]) // (x - j0[i])).roots(multiplicities=False)
                 if not r:
                     return h
                 j0[i] = j1[i]
@@ -2040,25 +2115,28 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
         D0 = D1.squarefree_part()
         if D0 % 4 != 1:
             D0 *= 4
-        v = ZZ(D1//D0).isqrt()
+        v = ZZ(D1 // D0).isqrt()
         h0 = D0.class_number()
         if h % h0:
             raise ValueError("Incorrect class number {}".format(h))
         from sage.schemes.elliptic_curves.cm import OrderClassNumber
-        cs = [v//f for f in v.divisors() if OrderClassNumber(D0,h0,f) == h] # cofactors c=v/f compatible with h(f**2D0)=h
+
+        cs = [
+            v // f for f in v.divisors() if OrderClassNumber(D0, h0, f) == h
+        ]  # cofactors c=v/f compatible with h(f**2D0)=h
         if not cs:
             raise ValueError("Incorrect class number {}".format(h))
         if len(cs) == 1:
-            return (v//cs[0])**2 * D0
+            return (v // cs[0]) ** 2 * D0
 
         L = sorted(set(sum([c.prime_factors() for c in cs], [])))
         for ell in L:
-            e = self.height_above_floor(ell,v.valuation(ell))
+            e = self.height_above_floor(ell, v.valuation(ell))
             cs = [c for c in cs if c.valuation(ell) == e]
             if not cs:
                 raise ValueError("Incorrect class number {}".format(h))
             if len(cs) == 1:
-                return (v//cs[0])**2 * D0
+                return (v // cs[0]) ** 2 * D0
         raise ValueError("Incorrect class number {}".format(h))
 
     def endomorphism_order(self):
@@ -2117,9 +2195,9 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
         f0 = O.conductor()
 
         f = 1
-        for l,e in f0.factor():
+        for l, e in f0.factor():
             h = self.height_above_floor(l, e)
-            f *= l**(e-h)
+            f *= l ** (e - h)
 
         K = O.number_field()
         return K.order_of_conductor(f)
@@ -2454,7 +2532,7 @@ def curves_with_j_1728(K):
         return curves_with_j_0_char3(K)
     q = K.cardinality()
     if q % 4 == 3:
-        return [EllipticCurve(K, [a,0]) for a in [1,-1]]
+        return [EllipticCurve(K, [a, 0]) for a in [1, -1]]
     # Now we have genuine quartic twists, find D generating K* mod 4th powers
     q2 = (q - 1) // 2
     D = K.gen()
@@ -2529,9 +2607,11 @@ def curves_with_j_0_char2(K):
     if not K.is_finite() or K.characteristic() != 2:
         raise ValueError("field must be finite of characteristic 2")
     if K.degree() % 2:
-        return [EllipticCurve(K, [0, 0, 1, 0, 0]),
-                EllipticCurve(K, [0, 0, 1, 1, 0]),
-                EllipticCurve(K, [0, 0, 1, 1, 1])]
+        return [
+            EllipticCurve(K, [0, 0, 1, 0, 0]),
+            EllipticCurve(K, [0, 0, 1, 1, 0]),
+            EllipticCurve(K, [0, 0, 1, 1, 1]),
+        ]
     # find a,b,c,d,e such that
     # a is not a cube, i.e. a**((q-1)//3)!=1
     # Tr(b)=1
@@ -2540,22 +2620,32 @@ def curves_with_j_0_char2(K):
     # X^2+a^2*X+e irreducible
     a = b = c = d = e = None
     x = polygen(K)
-    q3 = (K.cardinality()-1)//3
+    q3 = (K.cardinality() - 1) // 3
     while not a or a**q3 == 1:
         a = K.random_element()
-    asq = a*a
+    asq = a * a
     while not b or not b.trace():
         b = K.random_element()
-    c = K.one() # OK if degree is 2 mod 4
+    c = K.one()  # OK if degree is 2 mod 4
     if K.degree() % 4 == 0:
-        while (x**4+x+c).roots():
+        while (x**4 + x + c).roots():
             c = K.random_element()
-    while not d or (x**2+a*x+d).roots():
+    while not d or (x**2 + a * x + d).roots():
         d = K.random_element()
-    while not e or (x**2+asq*x+e).roots():
+    while not e or (x**2 + asq * x + e).roots():
         e = K.random_element()
-    return [EllipticCurve(K, ai) for ai in
-            [[0,0,1,0,0], [0,0,1,0,b], [0,0,1,c,0], [0,0,a,0,0], [0,0,a,0,d], [0,0,asq,0,0], [0,0,asq,0,e]]]
+    return [
+        EllipticCurve(K, ai)
+        for ai in [
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, b],
+            [0, 0, 1, c, 0],
+            [0, 0, a, 0, 0],
+            [0, 0, a, 0, d],
+            [0, 0, asq, 0, 0],
+            [0, 0, asq, 0, e],
+        ]
+    ]
 
 
 def curves_with_j_0_char3(K):
@@ -2630,24 +2720,26 @@ def curves_with_j_0_char3(K):
         b = K.random_element()
 
     if K.degree() % 2:
-        return [EllipticCurve(K, a4a6) for a4a6 in
-            [[1,0], [-1,0], [-1,b], [-1,-b]]]
+        return [EllipticCurve(K, a4a6) for a4a6 in [[1, 0], [-1, 0], [-1, b], [-1, -b]]]
 
     # find a, i, c where:
     # a generates K* mod 4th powers, i.e. non-square,
     # i^2=-1
     # c with x^3+a^2*x+c irreducible
     a = K.gen()
-    q2 = (K.cardinality()-1)//2
+    q2 = (K.cardinality() - 1) // 2
     while not a or a**q2 == 1:
         a = K.random_element()
     x = polygen(K)
-    i = (x**2+1).roots()[0][0]
+    i = (x**2 + 1).roots()[0][0]
     c = None
-    while not c or (x**3 + a**2*x + c).roots():
+    while not c or (x**3 + a**2 * x + c).roots():
         c = K.random_element()
-    return [EllipticCurve(K, a4a6) for a4a6 in
-            [[1,0], [1,i*b], [a,0], [a**2,0], [a**2,c], [a**3,0]]]
+    return [
+        EllipticCurve(K, a4a6)
+        for a4a6 in [[1, 0], [1, i * b], [a, 0], [a**2, 0], [a**2, c], [a**3, 0]]
+    ]
+
 
 # dict to hold precomputed coefficient vectors of supersingular j values (excluding 0, 1728):
 
@@ -2692,36 +2784,616 @@ def fill_ss_j_dict():
         supersingular_j_polynomials[113] = [86, 71, 75, 6, 47, 97, 100, 4, 60, 1]
         supersingular_j_polynomials[127] = [32, 31, 5, 50, 115, 122, 114, 67, 38, 35, 1]
         supersingular_j_polynomials[131] = [65, 64, 10, 34, 129, 35, 94, 127, 7, 7, 1]
-        supersingular_j_polynomials[137] = [104, 83, 3, 82, 112, 23, 77, 135, 18, 50, 60, 1]
-        supersingular_j_polynomials[139] = [87, 79, 109, 21, 138, 9, 104, 130, 61, 118, 90, 1]
-        supersingular_j_polynomials[149] = [135, 55, 80, 86, 87, 74, 32, 60, 130, 80, 146, 60, 1]
-        supersingular_j_polynomials[151] = [94, 125, 8, 6, 93, 21, 114, 80, 107, 58, 42, 18, 1]
-        supersingular_j_polynomials[157] = [14, 95, 22, 58, 110, 23, 71, 51, 47, 5, 147, 59, 60, 1]
-        supersingular_j_polynomials[163] = [102, 26, 74, 95, 112, 151, 98, 107, 27, 37, 25, 111, 109, 1]
-        supersingular_j_polynomials[167] = [14, 9, 27, 109, 97, 55, 51, 74, 145, 125, 36, 113, 89, 1]
-        supersingular_j_polynomials[173] = [152, 73, 56, 12, 18, 96, 98, 49, 30, 43, 52, 79, 163, 60, 1]
-        supersingular_j_polynomials[179] = [110, 51, 3, 94, 123, 90, 156, 90, 88, 119, 158, 27, 71, 29, 1]
-        supersingular_j_polynomials[181] = [7, 65, 77, 29, 139, 34, 65, 84, 164, 73, 51, 136, 7, 141, 60, 1]
-        supersingular_j_polynomials[191] = [173, 140, 144, 3, 135, 80, 182, 84, 93, 75, 83, 17, 22, 42, 160, 1]
-        supersingular_j_polynomials[193] = [23, 48, 26, 15, 108, 141, 124, 44, 132, 49, 72, 173, 126, 101, 22, 60, 1]
-        supersingular_j_polynomials[197] = [14, 111, 64, 170, 193, 32, 124, 91, 112, 163, 14, 112, 167, 191, 183, 60, 1]
-        supersingular_j_polynomials[199] = [125, 72, 65, 30, 63, 45, 10, 177, 91, 102, 28, 27, 5, 150, 51, 128, 1]
-        supersingular_j_polynomials[211] = [27, 137, 128, 90, 102, 141, 5, 77, 131, 144, 83, 108, 23, 105, 98, 13, 80, 1]
-        supersingular_j_polynomials[223] = [56, 183, 46, 133, 191, 94, 20, 8, 92, 100, 57, 200, 166, 67, 59, 218, 28, 32, 1]
-        supersingular_j_polynomials[227] = [79, 192, 142, 66, 11, 114, 100, 208, 57, 147, 32, 5, 144, 93, 185, 147, 92, 16, 1]
-        supersingular_j_polynomials[229] = [22, 55, 182, 130, 228, 172, 63, 25, 108, 99, 100, 101, 220, 111, 205, 199, 91, 163, 60, 1]
-        supersingular_j_polynomials[233] = [101, 148, 85, 113, 226, 68, 71, 103, 61, 44, 173, 175, 5, 225, 227, 99, 146, 170, 60, 1]
-        supersingular_j_polynomials[239] = [225, 81, 47, 26, 133, 182, 238, 2, 144, 154, 234, 178, 165, 130, 35, 61, 144, 112, 207, 1]
-        supersingular_j_polynomials[241] = [224, 51, 227, 139, 134, 186, 187, 152, 161, 175, 213, 59, 105, 88, 87, 124, 202, 40, 15, 60, 1]
-        supersingular_j_polynomials[251] = [30, 183, 80, 127, 40, 56, 230, 168, 192, 48, 226, 61, 214, 54, 165, 147, 105, 88, 38, 171, 1]
-        supersingular_j_polynomials[257] = [148, 201, 140, 146, 169, 147, 220, 4, 205, 224, 35, 42, 198, 97, 127, 7, 110, 229, 118, 202, 60, 1]
-        supersingular_j_polynomials[263] = [245, 126, 72, 213, 14, 64, 152, 83, 169, 114, 9, 128, 138, 231, 103, 85, 114, 211, 173, 249, 135, 1]
-        supersingular_j_polynomials[269] = [159, 32, 69, 95, 201, 266, 190, 176, 76, 151, 212, 21, 106, 49, 263, 105, 136, 194, 215, 181, 237, 60, 1]
-        supersingular_j_polynomials[271] = [169, 87, 179, 109, 133, 101, 31, 167, 208, 99, 127, 120, 83, 62, 36, 23, 61, 50, 69, 263, 265, 111, 1]
-        supersingular_j_polynomials[277] = [251, 254, 171, 72, 190, 237, 12, 231, 123, 217, 263, 151, 270, 183, 29, 228, 85, 4, 67, 101, 29, 169, 60, 1]
-        supersingular_j_polynomials[281] = [230, 15, 146, 69, 41, 23, 142, 232, 18, 80, 58, 134, 270, 62, 272, 70, 247, 189, 118, 255, 274, 159, 60, 1]
-        supersingular_j_polynomials[283] = [212, 4, 42, 155, 38, 1, 270, 175, 172, 256, 264, 232, 50, 82, 244, 127, 148, 46, 249, 72, 59, 124, 75, 1]
-        supersingular_j_polynomials[293] = [264, 66, 165, 144, 243, 25, 163, 210, 18, 107, 160, 153, 70, 255, 91, 211, 22, 7, 256, 50, 150, 94, 225, 60, 1]
+        supersingular_j_polynomials[137] = [
+            104,
+            83,
+            3,
+            82,
+            112,
+            23,
+            77,
+            135,
+            18,
+            50,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[139] = [
+            87,
+            79,
+            109,
+            21,
+            138,
+            9,
+            104,
+            130,
+            61,
+            118,
+            90,
+            1,
+        ]
+        supersingular_j_polynomials[149] = [
+            135,
+            55,
+            80,
+            86,
+            87,
+            74,
+            32,
+            60,
+            130,
+            80,
+            146,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[151] = [
+            94,
+            125,
+            8,
+            6,
+            93,
+            21,
+            114,
+            80,
+            107,
+            58,
+            42,
+            18,
+            1,
+        ]
+        supersingular_j_polynomials[157] = [
+            14,
+            95,
+            22,
+            58,
+            110,
+            23,
+            71,
+            51,
+            47,
+            5,
+            147,
+            59,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[163] = [
+            102,
+            26,
+            74,
+            95,
+            112,
+            151,
+            98,
+            107,
+            27,
+            37,
+            25,
+            111,
+            109,
+            1,
+        ]
+        supersingular_j_polynomials[167] = [
+            14,
+            9,
+            27,
+            109,
+            97,
+            55,
+            51,
+            74,
+            145,
+            125,
+            36,
+            113,
+            89,
+            1,
+        ]
+        supersingular_j_polynomials[173] = [
+            152,
+            73,
+            56,
+            12,
+            18,
+            96,
+            98,
+            49,
+            30,
+            43,
+            52,
+            79,
+            163,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[179] = [
+            110,
+            51,
+            3,
+            94,
+            123,
+            90,
+            156,
+            90,
+            88,
+            119,
+            158,
+            27,
+            71,
+            29,
+            1,
+        ]
+        supersingular_j_polynomials[181] = [
+            7,
+            65,
+            77,
+            29,
+            139,
+            34,
+            65,
+            84,
+            164,
+            73,
+            51,
+            136,
+            7,
+            141,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[191] = [
+            173,
+            140,
+            144,
+            3,
+            135,
+            80,
+            182,
+            84,
+            93,
+            75,
+            83,
+            17,
+            22,
+            42,
+            160,
+            1,
+        ]
+        supersingular_j_polynomials[193] = [
+            23,
+            48,
+            26,
+            15,
+            108,
+            141,
+            124,
+            44,
+            132,
+            49,
+            72,
+            173,
+            126,
+            101,
+            22,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[197] = [
+            14,
+            111,
+            64,
+            170,
+            193,
+            32,
+            124,
+            91,
+            112,
+            163,
+            14,
+            112,
+            167,
+            191,
+            183,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[199] = [
+            125,
+            72,
+            65,
+            30,
+            63,
+            45,
+            10,
+            177,
+            91,
+            102,
+            28,
+            27,
+            5,
+            150,
+            51,
+            128,
+            1,
+        ]
+        supersingular_j_polynomials[211] = [
+            27,
+            137,
+            128,
+            90,
+            102,
+            141,
+            5,
+            77,
+            131,
+            144,
+            83,
+            108,
+            23,
+            105,
+            98,
+            13,
+            80,
+            1,
+        ]
+        supersingular_j_polynomials[223] = [
+            56,
+            183,
+            46,
+            133,
+            191,
+            94,
+            20,
+            8,
+            92,
+            100,
+            57,
+            200,
+            166,
+            67,
+            59,
+            218,
+            28,
+            32,
+            1,
+        ]
+        supersingular_j_polynomials[227] = [
+            79,
+            192,
+            142,
+            66,
+            11,
+            114,
+            100,
+            208,
+            57,
+            147,
+            32,
+            5,
+            144,
+            93,
+            185,
+            147,
+            92,
+            16,
+            1,
+        ]
+        supersingular_j_polynomials[229] = [
+            22,
+            55,
+            182,
+            130,
+            228,
+            172,
+            63,
+            25,
+            108,
+            99,
+            100,
+            101,
+            220,
+            111,
+            205,
+            199,
+            91,
+            163,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[233] = [
+            101,
+            148,
+            85,
+            113,
+            226,
+            68,
+            71,
+            103,
+            61,
+            44,
+            173,
+            175,
+            5,
+            225,
+            227,
+            99,
+            146,
+            170,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[239] = [
+            225,
+            81,
+            47,
+            26,
+            133,
+            182,
+            238,
+            2,
+            144,
+            154,
+            234,
+            178,
+            165,
+            130,
+            35,
+            61,
+            144,
+            112,
+            207,
+            1,
+        ]
+        supersingular_j_polynomials[241] = [
+            224,
+            51,
+            227,
+            139,
+            134,
+            186,
+            187,
+            152,
+            161,
+            175,
+            213,
+            59,
+            105,
+            88,
+            87,
+            124,
+            202,
+            40,
+            15,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[251] = [
+            30,
+            183,
+            80,
+            127,
+            40,
+            56,
+            230,
+            168,
+            192,
+            48,
+            226,
+            61,
+            214,
+            54,
+            165,
+            147,
+            105,
+            88,
+            38,
+            171,
+            1,
+        ]
+        supersingular_j_polynomials[257] = [
+            148,
+            201,
+            140,
+            146,
+            169,
+            147,
+            220,
+            4,
+            205,
+            224,
+            35,
+            42,
+            198,
+            97,
+            127,
+            7,
+            110,
+            229,
+            118,
+            202,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[263] = [
+            245,
+            126,
+            72,
+            213,
+            14,
+            64,
+            152,
+            83,
+            169,
+            114,
+            9,
+            128,
+            138,
+            231,
+            103,
+            85,
+            114,
+            211,
+            173,
+            249,
+            135,
+            1,
+        ]
+        supersingular_j_polynomials[269] = [
+            159,
+            32,
+            69,
+            95,
+            201,
+            266,
+            190,
+            176,
+            76,
+            151,
+            212,
+            21,
+            106,
+            49,
+            263,
+            105,
+            136,
+            194,
+            215,
+            181,
+            237,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[271] = [
+            169,
+            87,
+            179,
+            109,
+            133,
+            101,
+            31,
+            167,
+            208,
+            99,
+            127,
+            120,
+            83,
+            62,
+            36,
+            23,
+            61,
+            50,
+            69,
+            263,
+            265,
+            111,
+            1,
+        ]
+        supersingular_j_polynomials[277] = [
+            251,
+            254,
+            171,
+            72,
+            190,
+            237,
+            12,
+            231,
+            123,
+            217,
+            263,
+            151,
+            270,
+            183,
+            29,
+            228,
+            85,
+            4,
+            67,
+            101,
+            29,
+            169,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[281] = [
+            230,
+            15,
+            146,
+            69,
+            41,
+            23,
+            142,
+            232,
+            18,
+            80,
+            58,
+            134,
+            270,
+            62,
+            272,
+            70,
+            247,
+            189,
+            118,
+            255,
+            274,
+            159,
+            60,
+            1,
+        ]
+        supersingular_j_polynomials[283] = [
+            212,
+            4,
+            42,
+            155,
+            38,
+            1,
+            270,
+            175,
+            172,
+            256,
+            264,
+            232,
+            50,
+            82,
+            244,
+            127,
+            148,
+            46,
+            249,
+            72,
+            59,
+            124,
+            75,
+            1,
+        ]
+        supersingular_j_polynomials[293] = [
+            264,
+            66,
+            165,
+            144,
+            243,
+            25,
+            163,
+            210,
+            18,
+            107,
+            160,
+            153,
+            70,
+            255,
+            91,
+            211,
+            22,
+            7,
+            256,
+            50,
+            150,
+            94,
+            225,
+            60,
+            1,
+        ]
 
 
 def supersingular_j_polynomial(p, use_cache=True):
@@ -2783,7 +3455,7 @@ def supersingular_j_polynomial(p, use_cache=True):
     if not p.is_prime():
         raise ValueError("p (=%s) should be a prime number" % p)
 
-    J = polygen(GF(p),'j')
+    J = polygen(GF(p), 'j')
     if p < 13:
         return J.parent().one()
     if use_cache:
@@ -2792,10 +3464,11 @@ def supersingular_j_polynomial(p, use_cache=True):
             return J.parent()(supersingular_j_polynomials[p])
 
     from sage.misc.misc_c import prod
-    m = (p-1)//2
-    X,T = PolynomialRing(GF(p),2,names=['X','T']).gens()
-    H = sum(binomial(m, i) ** 2 * T ** i for i in range(m + 1))
-    F = T**2 * (T-1)**2 * X - 256*(T**2-T+1)**3
+
+    m = (p - 1) // 2
+    X, T = PolynomialRing(GF(p), 2, names=['X', 'T']).gens()
+    H = sum(binomial(m, i) ** 2 * T**i for i in range(m + 1))
+    F = T**2 * (T - 1) ** 2 * X - 256 * (T**2 - T + 1) ** 3
     R = F.resultant(H, T)
     R = prod([fi for fi, e in R([J, 0]).factor()])
     if R(0) == 0:
@@ -2917,14 +3590,14 @@ def is_j_supersingular(j, proof=True):
                 P = E.random_element()
 
             if n is None:  # not yet decided between p+1 and p-1
-                pP = p*P
+                pP = p * P
                 if pP[0] != P[0]:  # i.e. pP is neither P nor -P
                     return False
                 if pP[1] == P[1]:  # then p*P == P != -P
                     n = p - 1
-                else:           # then p*P == -P != P
+                else:  # then p*P == -P != P
                     n = p + 1
-            elif not (n*P).is_zero():
+            elif not (n * P).is_zero():
                 return False
 
     # when proof is False we return True for any curve which passes
@@ -3256,7 +3929,9 @@ def special_supersingular_curve(F, q=None, *, endomorphism=False, maximal_order=
     deg = F.degree()
 
     if endomorphism and deg % 2:
-        raise ValueError('endomorphism was requested but is not defined over given field')
+        raise ValueError(
+            'endomorphism was requested but is not defined over given field'
+        )
 
     if maximal_order and not endomorphism:
         raise ValueError('maximal_order can only be returned if endomorphism is, too')
@@ -3269,32 +3944,33 @@ def special_supersingular_curve(F, q=None, *, endomorphism=False, maximal_order=
             q += 1
     else:
         q = ZZ(q)
-        if 4*q >= p or p.divides(q) or hilbert_conductor(-q, -p) != p:
+        if 4 * q >= p or p.divides(q) or hilbert_conductor(-q, -p) != p:
             raise ValueError('invalid choice of q')
 
     from sage.arith.misc import fundamental_discriminant
     from sage.schemes.elliptic_curves.cm import hilbert_class_polynomial
+
     H = hilbert_class_polynomial(fundamental_discriminant(-q))
     j = H.change_ring(GF(p)).any_root()
     if j.is_zero():
         if p == 2:
-            ainvs = [0,0,1,0,0]
+            ainvs = [0, 0, 1, 0, 0]
         elif p == 3:
-            ainvs = [1,0]
+            ainvs = [1, 0]
         else:
-            ainvs = [0,1]
+            ainvs = [0, 1]
     elif j == 1728:
-        ainvs = [1,0]
+        ainvs = [1, 0]
     else:
-        a = 27 * j / (4 * (1728-j))
-        ainvs = [a,-a]
+        a = 27 * j / (4 * (1728 - j))
+        ainvs = [a, -a]
     E = EllipticCurve(F, ainvs)
 
     if ZZ(2).divides(deg):
-        k = deg//2
-        E.set_order((p**k - (-1)**k)**2)
+        k = deg // 2
+        E.set_order((p**k - (-1) ** k) ** 2)
     else:
-        E.set_order(p**deg - (-1)**deg)
+        E.set_order(p**deg - (-1) ** deg)
 
     if not endomorphism:
         return E
@@ -3306,8 +3982,11 @@ def special_supersingular_curve(F, q=None, *, endomorphism=False, maximal_order=
         try:
             endo = iso * E.isogeny(None, iso.domain(), degree=q)
         except NotImplementedError:
-            endos = (iso*phi for phi in E.isogenies_degree(q)
-                             for iso in phi.codomain().isomorphisms(E))
+            endos = (
+                iso * phi
+                for phi in E.isogenies_degree(q)
+                for iso in phi.codomain().isomorphisms(E)
+            )
             endo = next(endo for endo in endos if endo.trace().is_zero())
 
     endo._degree = ZZ(q)
@@ -3318,24 +3997,34 @@ def special_supersingular_curve(F, q=None, *, endomorphism=False, maximal_order=
 
     from sage.algebras.quatalg.quaternion_algebra import QuaternionAlgebra
 
-    Quat, (i,j,k) = QuaternionAlgebra(-q, -p).objgens()
+    Quat, (i, j, k) = QuaternionAlgebra(-q, -p).objgens()
     assert Quat.discriminant() == p
 
     if q == 1:
         if p == 2:
-            O = Quat.quaternion_order([1, i, (1+i+j)/2, (1+i+k)/2])
+            O = Quat.quaternion_order([1, i, (1 + i + j) / 2, (1 + i + k) / 2])
         else:
-            O = Quat.quaternion_order([1, i, (i+j)/2, (1+k)/2])
+            O = Quat.quaternion_order([1, i, (i + j) / 2, (1 + k) / 2])
 
     elif q == 3:
-        O = Quat.quaternion_order([1, (1+i)/2, (j+k)/2, (i+k)/3])
+        O = Quat.quaternion_order([1, (1 + i) / 2, (j + k) / 2, (i + k) / 3])
 
     else:
         from sage.matrix.constructor import matrix
-        from sage.algebras.quatalg.quaternion_algebra import basis_for_quaternion_lattice as bfql
-        from sage.schemes.elliptic_curves.hom_fractional import EllipticCurveHom_fractional
+        from sage.algebras.quatalg.quaternion_algebra import (
+            basis_for_quaternion_lattice as bfql,
+        )
+        from sage.schemes.elliptic_curves.hom_fractional import (
+            EllipticCurveHom_fractional,
+        )
 
-        maps = [E.identity_morphism(), endo, E.frobenius_isogeny(), endo * E.frobenius_isogeny()]
+        maps = [
+            E.identity_morphism(),
+            endo,
+            E.frobenius_isogeny(),
+            endo * E.frobenius_isogeny(),
+        ]
+
         def matrix_of_quat(quat, PQ):
             denom = quat.denominator()
             numer = sum(ZZ(c) * phi for c, phi in zip(quat * denom, maps))
@@ -3346,7 +4035,9 @@ def special_supersingular_curve(F, q=None, *, endomorphism=False, maximal_order=
         gens = []
 
         # saturate for each prime power in 4q separately
-        assert Quat.quaternion_order([Quat.one(), i, j, i * j]).discriminant() == 4 * q * p
+        assert (
+            Quat.quaternion_order([Quat.one(), i, j, i * j]).discriminant() == 4 * q * p
+        )
         for l in (2 * q).prime_factors():
             lgens = [Quat.one(), i, j, i * j]
 
@@ -3356,7 +4047,9 @@ def special_supersingular_curve(F, q=None, *, endomorphism=False, maximal_order=
                 mat = matrix(matrix_of_quat(gen, tors).list() for gen in lgens)
                 ker = mat.left_kernel_matrix().change_ring(ZZ)
                 if not ker.nrows():
-                    raise RuntimeError('could not saturate quaternion order; this is likely an invalid choice of q')
+                    raise RuntimeError(
+                        'could not saturate quaternion order; this is likely an invalid choice of q'
+                    )
 
                 for vec in ker:
                     gen = sum(c * g for c, g in zip(vec, lgens)) / l
@@ -3723,7 +4416,7 @@ def EllipticCurve_with_prime_order(N):
         yield from [
             EllipticCurve(GF(2), [1, 0, 1, 0, 1]),
             EllipticCurve(GF(3), [0, 2, 0, 0, 2]),
-            EllipticCurve(GF(5), [2, 0])
+            EllipticCurve(GF(5), [2, 0]),
         ]
         return
 
@@ -3731,8 +4424,11 @@ def EllipticCurve_with_prime_order(N):
     # 1000 is a magic constant, it's just fast enough to compute without
     # sacrificing much speed.
     # The if-then-else term is (-1)^((p - 1) / 2) * p in [BS2007]_ page 5.
-    S = [(-p if p % 4 == 3 else p) for p in prime_range(3, min(1000, 4 * N))
-         if legendre_symbol(N, p) == 1]
+    S = [
+        (-p if p % 4 == 3 else p)
+        for p in prime_range(3, min(1000, 4 * N))
+        if legendre_symbol(N, p) == 1
+    ]
 
     def abs_products_under(bound):
         """
@@ -3741,6 +4437,7 @@ def EllipticCurve_with_prime_order(N):
         distinct elements in ``S`` in ascending order.
         """
         import heapq
+
         hq = [(1, 1, -1)]
         while hq:
             abs_n, n, idx = heapq.heappop(hq)
@@ -3789,8 +4486,7 @@ def EllipticCurve_with_prime_order(N):
             x, _ = sol
             for p_i in [N + 1 - x, N + 1 + x]:
                 if is_prime(p_i):
-                    verbose(f"Computing the Hilbert class polynomial H_{D}",
-                            level=2)
+                    verbose(f"Computing the Hilbert class polynomial H_{D}", level=2)
                     H = hilbert_class_polynomial(D)
                     K = GF(p_i)
                     for j0 in H.roots(ring=K, multiplicities=False):

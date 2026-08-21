@@ -28,11 +28,17 @@ from sage.misc.lazy_import import lazy_import
 from sage.rings.integer_ring import ZZ
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.schemes.generic.algebraic_scheme import AlgebraicScheme_subscheme
-from sage.schemes.projective.projective_morphism import SchemeMorphism_polynomial_projective_subscheme_field
+from sage.schemes.projective.projective_morphism import (
+    SchemeMorphism_polynomial_projective_subscheme_field,
+)
 
 lazy_import('sage.dynamics.arithmetic_dynamics.generic_ds', 'DynamicalSystem')
 lazy_import('sage.matrix.constructor', 'matrix')
-lazy_import('sage.schemes.elliptic_curves.ell_generic', 'EllipticCurve_generic', as_='EllipticCurve')
+lazy_import(
+    'sage.schemes.elliptic_curves.ell_generic',
+    'EllipticCurve_generic',
+    as_='EllipticCurve',
+)
 
 
 class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
@@ -69,6 +75,7 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
         Closed subscheme of Projective Space of dimension 2 over Rational Field defined by:
           x^2 - y*z
     """
+
     def point(self, v, check=True):
         """
         Create a point on this projective subscheme.
@@ -108,13 +115,16 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
               x^2 + 2*y^2
         """
         from sage.rings.infinity import infinity
-        if v is infinity or\
-           (isinstance(v, (list, tuple)) and len(v) == 1 and v[0] is infinity):
+
+        if v is infinity or (
+            isinstance(v, (list, tuple)) and len(v) == 1 and v[0] is infinity
+        ):
             if self.ambient_space().dimension_relative() > 1:
                 raise ValueError("%s not well defined in dimension > 1" % v)
             v = [1, 0]
         # todo: update elliptic curve stuff to take point_homset as argument
         from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
+
         if isinstance(self, EllipticCurve_generic):
             try:
                 return self._point(self.point_homset(), v, check=check)
@@ -252,7 +262,7 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
             Closed subscheme of Affine Space of dimension 2 over Integer Ring defined by:
               x^2 - y
         """
-        i = int(i)   # implicit type checking
+        i = int(i)  # implicit type checking
         PP = self.ambient_space()
         n = PP.dimension_relative()
         if i < 0 or i > n:
@@ -385,9 +395,12 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
             phi[j + 1] += R.gen(j)
 
         pullback_polys = [f(phi) for f in self.defining_polynomials()]
-        return patch_cover.subscheme(pullback_polys, embedding_center=[0] * n,
-                                     embedding_codomain=self,
-                                     embedding_images=phi)
+        return patch_cover.subscheme(
+            pullback_polys,
+            embedding_center=[0] * n,
+            embedding_codomain=self,
+            embedding_images=phi,
+        )
 
     def is_smooth(self, point=None) -> bool:
         r"""
@@ -442,7 +455,7 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
         sing_dim = self.Jacobian().dimension()
         # We really test the affine cone here; the origin is always a
         # singular point:
-        self._smooth = (sing_dim <= 0)
+        self._smooth = sing_dim <= 0
         return self._smooth
 
     def orbit(self, f, N) -> list:
@@ -763,7 +776,10 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
         zero = n * [0]
         psi = R.hom(zero + list(CR_codom.gens()), CR_codom)
         # set up ideal
-        L = R.ideal([phi(t) for t in self.defining_polynomials()] + [R.gen(n + i) - phi(f[i]) for i in range(m)])
+        L = R.ideal(
+            [phi(t) for t in self.defining_polynomials()]
+            + [R.gen(n + i) - phi(f[i]) for i in range(m)]
+        )
         G = L.groebner_basis()  # eliminate
         newL = []
         # get only the elimination ideal portion
@@ -993,19 +1009,23 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
 
         K = self.base_ring()
         if not (isinstance(K, NumberField) or K in Fields().Finite()):
-            raise NotImplementedError("base ring must be QQ, a number field  or a finite field")
+            raise NotImplementedError(
+                "base ring must be QQ, a number field  or a finite field"
+            )
         J = self.defining_ideal()
         m = J.ngens()
         n = J.ring().ngens() - 1
-        if (m != 1 or (n < 1) or J.is_zero()
-                or J.is_trivial() or not J.is_prime()):
-            raise NotImplementedError("At the present, the method is only"
-                                      " implemented for irreducible and"
-                                      " reduced hypersurfaces and the given"
-                                      " list of generators for the ideal must"
-                                      " have exactly one element.")
+        if m != 1 or (n < 1) or J.is_zero() or J.is_trivial() or not J.is_prime():
+            raise NotImplementedError(
+                "At the present, the method is only"
+                " implemented for irreducible and"
+                " reduced hypersurfaces and the given"
+                " list of generators for the ideal must"
+                " have exactly one element."
+            )
         R = PolynomialRing(K, 'x', n + 1)
         from sage.schemes.projective.projective_space import ProjectiveSpace
+
         Pd = ProjectiveSpace(n, K, 'y')
         Rd = Pd.coordinate_ring()
         x = R.variable_names()
@@ -1027,10 +1047,10 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
         except NameError:
             sat = ff.elim__lib.sat
 
-        max_ideal = S.ideal(z[n + 1: 2 * n + 2])
+        max_ideal = S.ideal(z[n + 1 : 2 * n + 2])
         J_sat_gens = sat(J, max_ideal)[0]
         J_sat = S.ideal(J_sat_gens)
-        L = J_sat.elimination_ideal(z[0: n + 1] + (z[-1],))
+        L = J_sat.elimination_ideal(z[0 : n + 1] + (z[-1],))
         return Pd.subscheme(L.change_ring(Rd))
 
     def degree(self):
@@ -1122,7 +1142,11 @@ class AlgebraicScheme_subscheme_projective(AlgebraicScheme_subscheme):
         try:
             self.ambient_space()(P)
         except TypeError:
-            raise TypeError("(={}) must be a point in the ambient space of this subscheme and (={})".format(P, X))
+            raise TypeError(
+                "(={}) must be a point in the ambient space of this subscheme and (={})".format(
+                    P, X
+                )
+            )
         # find an affine chart of the ambient space of this curve that contains P
         n = self.ambient_space().dimension_relative()
         for i in range(n + 1):
@@ -1262,6 +1286,7 @@ class AlgebraicScheme_subscheme_projective_field(AlgebraicScheme_subscheme_proje
     """
     Algebraic subschemes of projective spaces defined over fields.
     """
+
     def _morphism(self, *args, **kwds):
         r"""
         Construct a morphism determined by action on points of ``self``.

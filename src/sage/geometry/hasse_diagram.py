@@ -19,11 +19,14 @@ from sage.graphs.digraph import DiGraph
 from sage.combinat.posets.lattices import FiniteLatticePoset
 
 
-def lattice_from_incidences(atom_to_coatoms, coatom_to_atoms,
-                            face_constructor=None,
-                            required_atoms=None,
-                            key=None,
-                            **kwds):
+def lattice_from_incidences(
+    atom_to_coatoms,
+    coatom_to_atoms,
+    face_constructor=None,
+    required_atoms=None,
+    key=None,
+    **kwds,
+):
     r"""
     Compute an atomic and coatomic lattice from the incidence between
     atoms and coatoms.
@@ -119,6 +122,7 @@ def lattice_from_incidences(atom_to_coatoms, coatom_to_atoms,
 
     def default_face_constructor(atoms, coatoms, **kwds):
         return (atoms, coatoms)
+
     if face_constructor is None:
         face_constructor = default_face_constructor
     atom_to_coatoms = [frozenset(atc) for atc in atom_to_coatoms]
@@ -126,15 +130,15 @@ def lattice_from_incidences(atom_to_coatoms, coatom_to_atoms,
     coatom_to_atoms = [frozenset(cta) for cta in coatom_to_atoms]
     C = frozenset(range(len(coatom_to_atoms)))  # All coatoms
     # Comments with numbers correspond to steps in Section 2.5 of the article
-    L = DiGraph(1)       # 3: initialize L
+    L = DiGraph(1)  # 3: initialize L
     faces = {}
     atoms = frozenset()
     coatoms = C
     faces[atoms, coatoms] = 0
     next_index = 1
-    Q = [(atoms, coatoms)]              # 4: initialize Q with the empty face
-    while Q:                            # 5
-        q_atoms, q_coatoms = Q.pop()    # 6: remove some q from Q
+    Q = [(atoms, coatoms)]  # 4: initialize Q with the empty face
+    while Q:  # 5
+        q_atoms, q_coatoms = Q.pop()  # 6: remove some q from Q
         q = faces[q_atoms, q_coatoms]
         # 7: compute H = {closure(q+atom) : atom not in atoms of q}
         H = {}
@@ -153,19 +157,19 @@ def lattice_from_incidences(atom_to_coatoms, coatom_to_atoms,
             if atoms.isdisjoint(candidates) and atoms.isdisjoint(minimals):
                 minimals.add(candidate)
         # Now G == {H[atom] : atom in minimals}
-        for atom in minimals:   # 9: for g in G:
+        for atom in minimals:  # 9: for g in G:
             g_atoms, g_coatoms = H[atom]
             if required_atoms is not None:
                 if g_atoms.isdisjoint(required_atoms):
                     continue
             if (g_atoms, g_coatoms) in faces:
                 g = faces[g_atoms, g_coatoms]
-            else:               # 11: if g was newly created
+            else:  # 11: if g was newly created
                 g = next_index
                 faces[g_atoms, g_coatoms] = g
                 next_index += 1
                 Q.append((g_atoms, g_coatoms))  # 12
-            L.add_edge(q, g)                    # 14
+            L.add_edge(q, g)  # 14
 
     # End of algorithm, now construct a FiniteLatticePoset.
 
@@ -177,15 +181,19 @@ def lattice_from_incidences(atom_to_coatoms, coatom_to_atoms,
     # Enumeration of graph vertices must be a linear extension of the poset
     new_order = L.topological_sort()
     # Make sure that coatoms are in the end in proper order
-    tail = [faces[atomes, frozenset([coatom])]
-            for coatom, atomes in enumerate(coatom_to_atoms)]
+    tail = [
+        faces[atomes, frozenset([coatom])]
+        for coatom, atomes in enumerate(coatom_to_atoms)
+    ]
     tail.append(faces[A, frozenset()])
     new_order = [n for n in new_order if n not in tail] + tail
     # Make sure that atoms are in the beginning in proper order
-    head = [0] # We know that the empty face has index 0
-    head.extend(faces[frozenset([atom]), coatoms]
-                for atom, coatoms in enumerate(atom_to_coatoms)
-                if required_atoms is None or atom in required_atoms)
+    head = [0]  # We know that the empty face has index 0
+    head.extend(
+        faces[frozenset([atom]), coatoms]
+        for atom, coatoms in enumerate(atom_to_coatoms)
+        if required_atoms is None or atom in required_atoms
+    )
     new_order = head + [n for n in new_order if n not in head]
     # "Invert" this list to a dictionary
     labels = {old: new for new, old in enumerate(new_order)}
@@ -195,7 +203,8 @@ def lattice_from_incidences(atom_to_coatoms, coatom_to_atoms,
     for face, index in faces.items():
         atoms, coatoms = face
         elements[labels[index]] = face_constructor(
-                        tuple(sorted(atoms)), tuple(sorted(coatoms)), **kwds)
+            tuple(sorted(atoms)), tuple(sorted(coatoms)), **kwds
+        )
     D = dict(enumerate(elements))
     L.relabel(D)
     return FiniteLatticePoset(L, elements, key=key)

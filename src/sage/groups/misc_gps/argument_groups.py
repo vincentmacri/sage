@@ -94,12 +94,15 @@ class AbstractArgument(MultiplicativeGroupElement):
         except (TypeError, ValueError) as e:
             from sage.rings.asymptotic.misc import combine_exceptions
             from sage.structure.element import parent as parent_function
+
             raise combine_exceptions(
                 ValueError(
-                    '{} ({}) is not in {}'.format(element,
-                                                  parent_function(element),
-                                                  parent.base())),
-                e)
+                    '{} ({}) is not in {}'.format(
+                        element, parent_function(element), parent.base()
+                    )
+                ),
+                e,
+            )
 
         if normalize:
             element = self._normalize_(element)
@@ -219,9 +222,9 @@ class AbstractArgument(MultiplicativeGroupElement):
             ...
             RuntimeError: cannot decide '<' for the roots of unity -1 and 1
         """
-        raise RuntimeError("cannot decide '<' "
-                           "for the roots of unity "
-                           "{} and {}".format(self, other))
+        raise RuntimeError(
+            "cannot decide '<' for the roots of unity {} and {}".format(self, other)
+        )
 
     def _act_on_(self, other, is_left):
         r"""
@@ -270,13 +273,15 @@ class AbstractArgument(MultiplicativeGroupElement):
             other = S.coerce(other)
         except (TypeError, ValueError) as e:
             from sage.rings.asymptotic.misc import combine_exceptions
+
             raise combine_exceptions(
-                TypeError('{} ({}) cannot ({}-)act on '
-                          '{} ({})'.format(
-                              self, self.parent(),
-                              'left' if is_left else 'right',
-                              other, P)),
-                e)
+                TypeError(
+                    '{} ({}) cannot ({}-)act on {} ({})'.format(
+                        self, self.parent(), 'left' if is_left else 'right', other, P
+                    )
+                ),
+                e,
+            )
         return self._symbolic_(S) * other
 
     def __abs__(self):
@@ -293,6 +298,7 @@ class AbstractArgument(MultiplicativeGroupElement):
             Integer Ring
         """
         from sage.rings.integer_ring import ZZ
+
         return ZZ.one()
 
 
@@ -345,6 +351,7 @@ class AbstractArgumentGroup(UniqueRepresentation, Parent):
         """
         if category is None:
             from sage.categories.groups import Groups
+
             category = Groups().Commutative()
         return category
 
@@ -600,6 +607,7 @@ class UnitCirclePoint(AbstractArgument):
             False
         """
         from sage.rings.rational_field import QQ
+
         return self.exponent == QQ((1, 2))
 
 
@@ -654,6 +662,7 @@ class UnitCircleGroup(AbstractArgumentGroup):
             'UU_RR'
         """
         from sage.rings.asymptotic.misc import parent_to_repr_short
+
         s = parent_to_repr_short(self.base())
         if ' ' in s:
             s = '({})'.format(s)
@@ -763,15 +772,18 @@ class UnitCircleGroup(AbstractArgumentGroup):
                         exponent = QQ(discrete_log(data, zeta)) / QQ(n)
                     except ValueError as e:
                         raise combine_exceptions(
-                            ValueError('{} is not in {}'.format(data, self)), e)
+                            ValueError('{} is not in {}'.format(data, self)), e
+                        )
 
             if exponent is None:
                 raise ValueError('{} is not in {}'.format(data, self))
 
         elif not isinstance(data, int) or data != 0:
-            raise ValueError('input is ambiguous: '
-                             '{} as well as exponent={} '
-                             'specified'.format(data, exponent))
+            raise ValueError(
+                'input is ambiguous: {} as well as exponent={} specified'.format(
+                    data, exponent
+                )
+            )
 
         return self.element_class(self, exponent, **kwds)
 
@@ -944,6 +956,7 @@ class RootOfUnity(UnitCirclePoint):
             zeta3^2
         """
         from sage.rings.rational_field import QQ
+
         if self.exponent == 0:
             return '1'
         if self.exponent == QQ((1, 2)):
@@ -1006,6 +1019,7 @@ class RootsOfUnityGroup(UnitCircleGroup):
             Rational Field
         """
         from sage.rings.rational_field import QQ
+
         super().__init__(base=QQ, category=category)
 
     def _repr_(self):
@@ -1174,7 +1188,7 @@ class ArgumentByElement(AbstractArgument):
         """
         from sage.symbolic.ring import SymbolicRing
 
-        element = self._element_ ** exponent
+        element = self._element_**exponent
         parent = element.parent()
         if isinstance(parent, SymbolicRing):
             return self._symbolic_(parent) ** exponent
@@ -1243,6 +1257,7 @@ class ArgumentByElementGroup(AbstractArgumentGroup):
             'Arg_CC'
         """
         from sage.rings.asymptotic.misc import parent_to_repr_short, repr_op
+
         return repr_op('Arg', '_', parent_to_repr_short(self.base()))
 
     def _element_constructor_(self, data, **kwds):
@@ -1396,8 +1411,7 @@ class Sign(AbstractArgument):
         """
         super().__init__(parent, int(element), normalize=normalize)
         if self._element_ not in (-1, 1):
-            raise ValueError('{} is not allowed '
-                             '(only -1 or 1 is)'.format(element))
+            raise ValueError('{} is not allowed (only -1 or 1 is)'.format(element))
 
     @staticmethod
     def _normalize_(element):
@@ -1471,7 +1485,7 @@ class Sign(AbstractArgument):
             Symbolic Ring
 
         """
-        result = self._element_ ** exponent
+        result = self._element_**exponent
         P = self.parent()
         try:
             return P.element_class(P, result)
@@ -1612,8 +1626,7 @@ class SignGroup(AbstractArgumentGroup):
             Category of finite commutative groups
         """
         category = cls._determine_category_(category).Finite()
-        return super(AbstractArgumentGroup, cls).__classcall__(
-            cls, category)
+        return super(AbstractArgumentGroup, cls).__classcall__(cls, category)
 
     def __init__(self, category):
         r"""
@@ -1782,12 +1795,10 @@ class ArgumentGroupFactory(UniqueFactory):
         Unit Circle Group with Argument of Elements in
         Cyclotomic Field of order 3 and degree 2
     """
-    def create_key_and_extra_args(self,
-                                  data=None,
-                                  specification=None,
-                                  domain=None,
-                                  exponents=None,
-                                  **kwds):
+
+    def create_key_and_extra_args(
+        self, data=None, specification=None, domain=None, exponents=None, **kwds
+    ):
         r"""
         Normalize the input.
 
@@ -1813,16 +1824,26 @@ class ArgumentGroupFactory(UniqueFactory):
         from sage.rings.rational_field import QQ
 
         if not exactly_one_is_true(
-                (data is not None,
-                 specification is not None,
-                 domain is not None,
-                 exponents is not None)):
+            (
+                data is not None,
+                specification is not None,
+                domain is not None,
+                exponents is not None,
+            )
+        ):
             raise ValueError(
-                'input ambiguous: ' +
-                ', '.join('{}={}'.format(s, v) for s, v in
-                          [('data', data), ('specification', specification),
-                           ('domain', domain), ('exponents', exponents)]
-                          if v is not None))
+                'input ambiguous: '
+                + ', '.join(
+                    '{}={}'.format(s, v)
+                    for s, v in [
+                        ('data', data),
+                        ('specification', specification),
+                        ('domain', domain),
+                        ('exponents', exponents),
+                    ]
+                    if v is not None
+                )
+            )
 
         if data is not None:
             if isinstance(data, str):
@@ -1837,22 +1858,33 @@ class ArgumentGroupFactory(UniqueFactory):
                 return (SignGroup, ()), kwds
             if specification.startswith('UU_'):
                 from sage.rings.asymptotic.misc import repr_short_to_parent
+
                 exponents = repr_short_to_parent(specification[3:])
             elif specification.startswith('Arg_') or specification.startswith('arg_'):
                 from sage.rings.asymptotic.misc import repr_short_to_parent
+
                 domain = repr_short_to_parent(specification[4:])
             else:
                 raise ValueError('unknown specification {}'.format(specification))
 
         if domain is not None:
-            if domain in (ZZ, QQ, AA) \
-               or isinstance(domain, (sage.rings.abc.RealField,
-                                      sage.rings.abc.RealIntervalField,
-                                      sage.rings.abc.RealBallField)):
+            if domain in (ZZ, QQ, AA) or isinstance(
+                domain,
+                (
+                    sage.rings.abc.RealField,
+                    sage.rings.abc.RealIntervalField,
+                    sage.rings.abc.RealBallField,
+                ),
+            ):
                 return (SignGroup, ()), kwds
-            if isinstance(domain, (sage.rings.abc.ComplexField,
-                                     sage.rings.abc.ComplexIntervalField,
-                                     sage.rings.abc.ComplexBallField)):
+            if isinstance(
+                domain,
+                (
+                    sage.rings.abc.ComplexField,
+                    sage.rings.abc.ComplexIntervalField,
+                    sage.rings.abc.ComplexBallField,
+                ),
+            ):
                 return (UnitCircleGroup, (domain._real_field(),)), kwds
             return (ArgumentByElementGroup, (domain,)), kwds
 
@@ -1877,7 +1909,9 @@ class ArgumentGroupFactory(UniqueFactory):
         return cls(*args, **kwds)
 
 
-ArgumentGroup = ArgumentGroupFactory('sage.groups.misc_gps.argument_groups.ArgumentGroup')
+ArgumentGroup = ArgumentGroupFactory(
+    'sage.groups.misc_gps.argument_groups.ArgumentGroup'
+)
 r"""
 A factory for argument groups.
 

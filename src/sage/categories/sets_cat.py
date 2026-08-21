@@ -39,6 +39,7 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.lazy_import import lazy_import, LazyImport
 from sage.misc.lazy_format import LazyFormat
+
 # Do not use sage.categories.all here to avoid initialization loop
 from sage.categories.category import Category
 from sage.categories.category_singleton import Category_singleton
@@ -48,10 +49,17 @@ from sage.categories.quotients import QuotientsCategory
 from sage.categories.subobjects import SubobjectsCategory
 from sage.categories.isomorphic_objects import IsomorphicObjectsCategory
 from sage.categories.algebra_functor import AlgebrasCategory
-from sage.categories.cartesian_product import CartesianProductsCategory, CartesianProductFunctor
-from sage.categories.realizations import RealizationsCategory, Category_realization_of_parent
+from sage.categories.cartesian_product import (
+    CartesianProductsCategory,
+    CartesianProductFunctor,
+)
+from sage.categories.realizations import (
+    RealizationsCategory,
+    Category_realization_of_parent,
+)
 from sage.categories.with_realizations import WithRealizationsCategory
 from sage.categories.category_with_axiom import CategoryWithAxiom
+
 lazy_import('sage.sets.cartesian_product', 'CartesianProduct')
 
 
@@ -96,6 +104,7 @@ class EmptySetError(ValueError):
         ...
         EmptySetError: no elements
     """
+
     pass
 
 
@@ -263,8 +272,10 @@ class Sets(Category_singleton):
         """
         if enumerated_set and type(X) in (tuple, list, range):
             from sage.categories.enumerated_sets import EnumeratedSets
+
             return EnumeratedSets()(X)
         from sage.sets.set import Set
+
         return Set(X)
 
     def example(self, choice=None):
@@ -289,20 +300,23 @@ class Sets(Category_singleton):
         """
         if choice is None:
             from sage.categories.examples.sets_cat import PrimeNumbers
+
             return PrimeNumbers()
         if choice == "inherits":
             from sage.categories.examples.sets_cat import PrimeNumbers_Inherits
+
             return PrimeNumbers_Inherits()
         if choice == "facade":
             from sage.categories.examples.sets_cat import PrimeNumbers_Facade
+
             return PrimeNumbers_Facade()
         if choice == "wrapper":
             from sage.categories.examples.sets_cat import PrimeNumbers_Wrapper
+
             return PrimeNumbers_Wrapper()
         raise ValueError("unknown choice")
 
     class SubcategoryMethods:
-
         @cached_method
         def CartesianProducts(self):
             r"""
@@ -681,6 +695,7 @@ class Sets(Category_singleton):
                 sage: TestSuite(Sets().Topological()).run()
             """
             from sage.categories.topological_spaces import TopologicalSpacesCategory
+
             return TopologicalSpacesCategory.category_of(self)
 
         @cached_method
@@ -693,6 +708,7 @@ class Sets(Category_singleton):
                 sage: TestSuite(Sets().Metric()).run()
             """
             from sage.categories.metric_spaces import MetricSpacesCategory
+
             return MetricSpacesCategory.category_of(self)
 
         @cached_method
@@ -732,8 +748,10 @@ class Sets(Category_singleton):
                 sage: TestSuite(Groups().Finite().Algebras(QQ)).run()
             """
             from sage.categories.rings import Rings
-            assert base_ring in Rings() or (isinstance(base_ring, Category)
-                                            and base_ring.is_subcategory(Rings()))
+
+            assert base_ring in Rings() or (
+                isinstance(base_ring, Category) and base_ring.is_subcategory(Rings())
+            )
             return AlgebrasCategory.category_of(self, base_ring)
 
         @cached_method
@@ -1037,6 +1055,7 @@ class Sets(Category_singleton):
                 (True, False)
             """
             from sage.structure.element import parent
+
             return parent(element) == self
 
         @abstract_method
@@ -1111,17 +1130,27 @@ class Sets(Category_singleton):
             except EmptySetError:
                 return
             tester.assertIn(an_element, self, "self.an_element() is not in self")
-#            tester.assertTrue(self.is_parent_of(an_element), "self is not the parent of self.an_element()")
-#            tester.assertEqual(self(an_element), an_element, "element construction is not idempotent")
+            #            tester.assertTrue(self.is_parent_of(an_element), "self is not the parent of self.an_element()")
+            #            tester.assertEqual(self(an_element), an_element, "element construction is not idempotent")
             if self.is_parent_of(an_element):
-                tester.assertEqual(self(an_element), an_element, "element construction is not idempotent")
-            else: # Allows self(an_element) to fails for facade parent.
+                tester.assertEqual(
+                    self(an_element),
+                    an_element,
+                    "element construction is not idempotent",
+                )
+            else:  # Allows self(an_element) to fails for facade parent.
                 try:
                     rebuilt_element = self(an_element)
                 except NotImplementedError:
-                    tester.info("\n  The set doesn't seems to implement __call__; skipping test of construction idempotency")
+                    tester.info(
+                        "\n  The set doesn't seems to implement __call__; skipping test of construction idempotency"
+                    )
                 else:
-                    tester.assertEqual(rebuilt_element, an_element, "element construction is not idempotent")
+                    tester.assertEqual(
+                        rebuilt_element,
+                        an_element,
+                        "element construction is not idempotent",
+                    )
 
         def _test_elements(self, tester=None, **options):
             """
@@ -1164,7 +1193,7 @@ class Sets(Category_singleton):
 
             # The intention is to raise an exception only if this is
             # run as a sub-testsuite of a larger testsuite.
-            is_sub_testsuite = (tester is not None)
+            is_sub_testsuite = tester is not None
             tester = self._tester(tester=tester, **options)
             # Or do we want to run the test on some_elements?
             try:
@@ -1172,9 +1201,11 @@ class Sets(Category_singleton):
             except EmptySetError:
                 return
             tester.info("\n  Running the test suite of self.an_element()")
-            TestSuite(an_element).run(verbose=tester._verbose,
-                                      prefix=tester._prefix + "  ",
-                                      raise_on_failure=is_sub_testsuite)
+            TestSuite(an_element).run(
+                verbose=tester._verbose,
+                prefix=tester._prefix + "  ",
+                raise_on_failure=is_sub_testsuite,
+            )
             tester.info(tester._prefix + " ", newline=False)
 
         def _test_elements_eq_reflexive(self, **options):
@@ -1248,10 +1279,14 @@ class Sets(Category_singleton):
             tester = self._tester(**options)
             S = list(tester.some_elements()) + [None, 0]
             from sage.misc.misc import some_tuples
+
             for x, y in some_tuples(S, 2, tester._max_runs):
-                tester.assertEqual(x == y, y == x,
-                    LazyFormat("non symmetric equality: %s but %s") % (
-                        print_compare(x, y), print_compare(y, x)))
+                tester.assertEqual(
+                    x == y,
+                    y == x,
+                    LazyFormat("non symmetric equality: %s but %s")
+                    % (print_compare(x, y), print_compare(y, x)),
+                )
 
         def _test_elements_eq_transitive(self, **options):
             """
@@ -1279,12 +1314,16 @@ class Sets(Category_singleton):
             tester = self._tester(**options)
             S = list(tester.some_elements())
             n = max(tester._max_runs, 8)
-            if (len(S)+2)**3 <= n:
+            if (len(S) + 2) ** 3 <= n:
                 S = list(S) + [None, 0]
             else:
                 from random import sample
                 from sage.rings.integer import Integer
-                S = sample(S, Integer(n).nth_root(3,truncate_mode=1)[0] - 2) + [None, 0]
+
+                S = sample(S, Integer(n).nth_root(3, truncate_mode=1)[0] - 2) + [
+                    None,
+                    0,
+                ]
 
             for x in S:
                 for y in S:
@@ -1293,12 +1332,16 @@ class Sets(Category_singleton):
                     for z in S:
                         if not y == z:
                             continue
-                        tester.assertEqual(x, z,
-                            LazyFormat("non transitive equality:\n"
-                                       "%s and %s but %s") % (
+                        tester.assertEqual(
+                            x,
+                            z,
+                            LazyFormat("non transitive equality:\n%s and %s but %s")
+                            % (
                                 print_compare(x, y),
                                 print_compare(y, z),
-                                print_compare(x, z)))
+                                print_compare(x, z),
+                            ),
+                        )
 
         def _test_elements_neq(self, **options):
             """
@@ -1338,11 +1381,17 @@ class Sets(Category_singleton):
             S = list(tester.some_elements()) + [None, 0]
 
             from sage.misc.misc import some_tuples
-            for x,y in some_tuples(S, 2, tester._max_runs):
-                tester.assertNotEqual(x == y, x != y,
-                    LazyFormat("__eq__ and __ne__ inconsistency:\n"
-                        "  %s == %s returns %s  but  %s != %s returns %s") % (
-                            x, y, (x == y), x, y, (x != y)))
+
+            for x, y in some_tuples(S, 2, tester._max_runs):
+                tester.assertNotEqual(
+                    x == y,
+                    x != y,
+                    LazyFormat(
+                        "__eq__ and __ne__ inconsistency:\n"
+                        "  %s == %s returns %s  but  %s != %s returns %s"
+                    )
+                    % (x, y, (x == y), x, y, (x != y)),
+                )
 
         def some_elements(self):
             """
@@ -1398,13 +1447,17 @@ class Sets(Category_singleton):
             tester = self._tester(**options)
             elements = self.some_elements()
             # Todo: enable this once
-            #tester.assertTrue(elements != iter(elements),
+            # tester.assertTrue(elements != iter(elements),
             #               "self.some_elements() should return an iterable, not an iterator")
             for x in elements:
-                tester.assertIn(x, self, LazyFormat(
-                    "the object %s in self.some_elements() is not in self") % (x,))
+                tester.assertIn(
+                    x,
+                    self,
+                    LazyFormat("the object %s in self.some_elements() is not in self")
+                    % (x,),
+                )
 
-        #Note: the four methods 'cardinality', 'is_finite_, 'is_empty' and
+        # Note: the four methods 'cardinality', 'is_finite_, 'is_empty' and
         # 'random_element' might or might not be implemented in the parent
         # objects. Most of the time a default implementation will be provided by
         # a subcategory of Sets. We do not declare them as optional abstract
@@ -1439,14 +1492,19 @@ class Sets(Category_singleton):
             """
             try:
                 cardinality = self.cardinality()
-            except (AttributeError,NotImplementedError):
+            except (AttributeError, NotImplementedError):
                 return
             from sage.structure.element import parent
             from sage.rings.infinity import Infinity
             from sage.rings.integer_ring import ZZ
+
             tester = self._tester(**options)
-            tester.assertTrue(cardinality is Infinity or parent(cardinality) is ZZ,
-                    "the output of the method cardinality must either be a Sage integer or infinity. Not {}.".format(type(cardinality)))
+            tester.assertTrue(
+                cardinality is Infinity or parent(cardinality) is ZZ,
+                "the output of the method cardinality must either be a Sage integer or infinity. Not {}.".format(
+                    type(cardinality)
+                ),
+            )
 
         # Functorial constructions
 
@@ -1526,7 +1584,11 @@ class Sets(Category_singleton):
             FO = self.construction()
             if FO is None:
                 return
-            tester.assertEqual(FO[0](FO[1]), self, "the object's construction does not recreate this object")
+            tester.assertEqual(
+                FO[0](FO[1]),
+                self,
+                "the object's construction does not recreate this object",
+            )
 
         CartesianProduct = CartesianProduct
 
@@ -1683,27 +1745,37 @@ class Sets(Category_singleton):
             if category is None:
                 category = self.category()
             from sage.categories.semigroups import Semigroups
-            from sage.categories.commutative_additive_semigroups import CommutativeAdditiveSemigroups
-            if category.is_subcategory(Semigroups()) and category.is_subcategory(CommutativeAdditiveSemigroups()):
+            from sage.categories.commutative_additive_semigroups import (
+                CommutativeAdditiveSemigroups,
+            )
+
+            if category.is_subcategory(Semigroups()) and category.is_subcategory(
+                CommutativeAdditiveSemigroups()
+            ):
                 raise TypeError(
-""" `S = {}` is both an additive and a multiplicative semigroup.
+                    """ `S = {}` is both an additive and a multiplicative semigroup.
 Constructing its algebra is ambiguous.
-Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
+Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self)
+                )
             from sage.categories.groups import Groups
             from sage.categories.additive_groups import AdditiveGroups
             from sage.algebras.group_algebra import GroupAlgebra_class
+
             algebra_category = category.Algebras(base_ring)
-            if (category.is_subcategory(Groups())
-                or category.is_subcategory(AdditiveGroups())):
+            if category.is_subcategory(Groups()) or category.is_subcategory(
+                AdditiveGroups()
+            ):
                 # Somewhat dirty hack to wrap non-atomic objects
                 from sage.categories.modules_with_basis import ModulesWithBasis
+
                 if self not in ModulesWithBasis:
                     if 'prefix' not in kwds:
                         kwds['prefix'] = ''
                     if 'bracket' not in kwds:
                         kwds['bracket'] = False
-            result = GroupAlgebra_class(base_ring, self,
-                                        category=algebra_category, **kwds)
+            result = GroupAlgebra_class(
+                base_ring, self, category=algebra_category, **kwds
+            )
             result.__doc__ = Sets.ParentMethods.algebra.__doc__
             return result
 
@@ -1746,6 +1818,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
             """
             from sage.interfaces.sympy_wrapper import SageSet
             from sage.interfaces.sympy import sympy_init
+
             sympy_init()
             return SageSet(self)
 
@@ -1774,9 +1847,12 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
             FIXME: is this a policy that we want to enforce on all parents?
             """
             from sage.structure.element import parent, Element
+
             assert all(isinstance(element, Element) for element in elements)
             parents = [parent(element) for element in elements]
-            return cartesian_product(parents)._cartesian_product_of_elements(elements) # good name???
+            return cartesian_product(parents)._cartesian_product_of_elements(
+                elements
+            )  # good name???
 
     class MorphismMethods:
         @abstract_method(optional=True)
@@ -1873,6 +1949,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                 domain_subset = D
             from sage.sets.set import Set_base
             from sage.sets.image_set import ImageSubobject, ImageSet
+
             if isinstance(domain_subset, Set_base):
                 # Most of our parents are sets, but the mixin class Set_base
                 # provides the full kit of operators.  The image should get them too.
@@ -1882,17 +1959,23 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
             return cls(self, domain_subset)
 
     # Lazy imports to avoid circularity issues.
-    Enumerated = LazyImport('sage.categories.enumerated_sets', 'EnumeratedSets', at_startup=True)
+    Enumerated = LazyImport(
+        'sage.categories.enumerated_sets', 'EnumeratedSets', at_startup=True
+    )
     Finite = LazyImport('sage.categories.finite_sets', 'FiniteSets', at_startup=True)
-    Topological = LazyImport('sage.categories.topological_spaces',
-                             'TopologicalSpaces', 'Topological', at_startup=True)
-    Metric = LazyImport('sage.categories.metric_spaces', 'MetricSpaces',
-                        'Metric', at_startup=True)
+    Topological = LazyImport(
+        'sage.categories.topological_spaces',
+        'TopologicalSpaces',
+        'Topological',
+        at_startup=True,
+    )
+    Metric = LazyImport(
+        'sage.categories.metric_spaces', 'MetricSpaces', 'Metric', at_startup=True
+    )
     from sage.categories.facade_sets import FacadeSets as Facade
 
     class Infinite(CategoryWithAxiom):
         class SubcategoryMethods:
-
             def Finite(self):
                 """
                 Incompatible axiom.
@@ -1908,7 +1991,6 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                 raise TypeError("incompatible axioms: finite and infinite")
 
         class ParentMethods:
-
             def is_finite(self):
                 """
                 Return whether this set is finite.
@@ -1953,6 +2035,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     +Infinity
                 """
                 from sage.rings.infinity import infinity
+
                 return infinity
 
     class Subquotients(SubquotientsCategory):
@@ -1973,7 +2056,6 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
         """
 
         class ParentMethods:
-
             def _repr_(self):
                 """
                 EXAMPLES::
@@ -2068,7 +2150,6 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                 """
 
         class ElementMethods:
-
             def lift(self):
                 """
                 Lift ``self`` to the ambient space for its parent.
@@ -2107,7 +2188,6 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
         """
 
         class ParentMethods:
-
             def _repr_(self):
                 """
                 EXAMPLES::
@@ -2152,7 +2232,6 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
         """
 
         class ParentMethods:
-
             def _repr_(self):
                 """
                 EXAMPLES::
@@ -2182,7 +2261,6 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
         """
 
         class ParentMethods:
-
             def _repr_(self):
                 """
                 EXAMPLES::
@@ -2236,6 +2314,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
             from .finite_enumerated_sets import FiniteEnumeratedSets
             from .infinite_enumerated_sets import InfiniteEnumeratedSets
             from .cartesian_product import cartesian_product
+
             S1 = Sets().example()
             S2 = InfiniteEnumeratedSets().example()
             S3 = FiniteEnumeratedSets().example()
@@ -2342,6 +2421,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                 factors = list(self.cartesian_factors())
                 if any(f not in Sets().Finite() for f in factors[1:]):
                     from sage.misc.mrange import cantor_product
+
                     for t in cantor_product(*factors):
                         yield self._cartesian_product_of_elements(t)
                     return
@@ -2355,7 +2435,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     return
                 while True:
                     yield self._cartesian_product_of_elements(digits)
-                    for i in range(len(digits)-1, -1, -1):
+                    for i in range(len(digits) - 1, -1, -1):
                         try:
                             digits[i] = next(wheels[i])
                             break
@@ -2380,7 +2460,9 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     sage: C.an_element()
                     (47, 42, 1)
                 """
-                return self._cartesian_product_of_elements(s.an_element() for s in self._sets)
+                return self._cartesian_product_of_elements(
+                    s.an_element() for s in self._sets
+                )
 
             def is_empty(self):
                 r"""
@@ -2533,17 +2615,20 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     # Note: some parent might not implement "is_empty". So we
                     # carefully isolate this test.
                     is_empty = any(c.is_empty() for c in f)
-                except (AttributeError,NotImplementedError):
+                except (AttributeError, NotImplementedError):
                     pass
                 else:
                     if is_empty:
                         from sage.rings.integer_ring import ZZ
+
                         return ZZ.zero()
                     if any(c in Sets().Infinite() for c in f):
                         from sage.rings.infinity import Infinity
+
                         return Infinity
 
                 from sage.misc.misc_c import prod
+
                 return prod(c.cardinality() for c in f)
 
             def random_element(self, *args):
@@ -2574,7 +2659,8 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     True
                 """
                 return self._cartesian_product_of_elements(
-                    c.random_element(*args) for c in self.cartesian_factors())
+                    c.random_element(*args) for c in self.cartesian_factors()
+                )
 
             @abstract_method
             def _sets_keys(self):
@@ -2672,11 +2758,11 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                 """
                 from sympy import ProductSet
                 from sage.interfaces.sympy import sympy_init
+
                 sympy_init()
                 return ProductSet(*self.cartesian_factors())
 
         class ElementMethods:
-
             def cartesian_projection(self, i):
                 """
                 Return the projection of ``self`` onto the `i`-th
@@ -2725,12 +2811,12 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     [F, G, H]
                 """
                 # TODO: optimize
-                return tuple(self.cartesian_projection(i)
-                             for i in self.parent()._sets_keys())
-                #return Family(self._sets.keys(), self.projection)
+                return tuple(
+                    self.cartesian_projection(i) for i in self.parent()._sets_keys()
+                )
+                # return Family(self._sets.keys(), self.projection)
 
     class Algebras(AlgebrasCategory):
-
         def extra_super_categories(self):
             """
             EXAMPLES::
@@ -2748,6 +2834,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                  Category of objects]
             """
             from sage.categories.modules_with_basis import ModulesWithBasis
+
             return [ModulesWithBasis(self.base_ring())]
 
         class ParentMethods:
@@ -2774,12 +2861,14 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     True
                 """
                 from sage.categories.algebra_functor import (
-                        GroupAlgebraFunctor, AlgebraFunctor)
+                    GroupAlgebraFunctor,
+                    AlgebraFunctor,
+                )
+
                 try:
                     group = self.group()
                 except AttributeError:
-                    return (AlgebraFunctor(self.base_ring()),
-                            self.basis().keys())
+                    return (AlgebraFunctor(self.base_ring()), self.basis().keys())
                 return GroupAlgebraFunctor(group), self.base_ring()
 
             def _repr_(self):
@@ -2802,11 +2891,11 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                 """
                 if hasattr(self, "_name"):
                     return self._name + " over {}".format(self.base_ring())
-                return 'Algebra of {} over {}'.format(self.basis().keys(),
-                                                      self.base_ring())
+                return 'Algebra of {} over {}'.format(
+                    self.basis().keys(), self.base_ring()
+                )
 
     class WithRealizations(WithRealizationsCategory):
-
         def extra_super_categories(self):
             """
             A set with multiple realizations is a facade parent.
@@ -2835,15 +2924,16 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
             """
             from sage.rings.rational_field import QQ
             from sage.sets.set import Set
+
             if base_ring is None:
                 base_ring = QQ
             if set is None:
-                set = Set([1,2,3])
+                set = Set([1, 2, 3])
             from sage.categories.examples.with_realizations import SubsetAlgebra
+
             return SubsetAlgebra(base_ring, set)
 
         class ParentMethods:
-
             def _test_with_realizations(self, **options):
                 r"""
                 Test that this parent with realizations is
@@ -3026,16 +3116,23 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     (True, True, True, True, True)
                 """
                 from sage.misc.misc import inject_variable
+
                 if shorthands == 'all':
                     shorthands = getattr(self, '_shorthands_all', None)
                 if shorthands is None:
                     shorthands = getattr(self, '_shorthands', None)
                     if shorthands is None:
-                        raise NotImplementedError("no shorthands defined for {}".format(self))
+                        raise NotImplementedError(
+                            "no shorthands defined for {}".format(self)
+                        )
                 for shorthand in shorthands:
                     realization = getattr(self, shorthand)()
                     if verbose:
-                        print('Defining {} as shorthand for {}'.format(shorthand, realization))
+                        print(
+                            'Defining {} as shorthand for {}'.format(
+                                shorthand, realization
+                            )
+                        )
                     inject_variable(shorthand, realization, warn=False)
 
             @abstract_method(optional=True)
@@ -3104,7 +3201,6 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
 
             # Do we really want this feature?
             class Realizations(Category_realization_of_parent):
-
                 def super_categories(self):
                     """
                     EXAMPLES::
@@ -3166,9 +3262,7 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                 return any(x in realization for realization in self.realizations())
 
     class Realizations(RealizationsCategory):
-
         class ParentMethods:
-
             def __init_extra__(self):
                 """
                 Register ``self`` as a realization of ``self.realization_of``.
@@ -3244,7 +3338,9 @@ Please use, e.g., S.algebra(QQ, category=Semigroups())""".format(self))
                     sage: P     # indirect doctest                                      # needs sage.modules
                     The subset algebra of {1, 2, 3} over Rational Field in the realization Blah
                 """
-                return "{} in the realization {}".format(self.realization_of(), self._realization_name())
+                return "{} in the realization {}".format(
+                    self.realization_of(), self._realization_name()
+                )
 
 
 # Moved from sage.categories.cartesian_product to avoid circular import errors

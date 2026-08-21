@@ -28,6 +28,7 @@ REFERENCES:
 - [DB1996]_
 - [DS2010]_
 """
+
 # *****************************************************************************
 #  Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #  Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
@@ -336,11 +337,17 @@ class PseudoRiemannianMetric(TensorField):
         sage: riem == - r*(g*delta).antisymmetrize(2,3)
         True
     """
-    _derived_objects = ('_connection', '_ricci_scalar', '_weyl',
-                       '_schouten', '_cotton', '_cotton_york')
 
-    def __init__(self, vector_field_module, name, signature=None,
-                 latex_name=None):
+    _derived_objects = (
+        '_connection',
+        '_ricci_scalar',
+        '_weyl',
+        '_schouten',
+        '_cotton',
+        '_cotton_york',
+    )
+
+    def __init__(self, vector_field_module, name, signature=None, latex_name=None):
         r"""
         Construct a metric.
 
@@ -372,8 +379,14 @@ class PseudoRiemannianMetric(TensorField):
             - add a specific parent to the metrics, to fit with the category
               framework
         """
-        TensorField.__init__(self, vector_field_module, (0,2),
-                             name=name, latex_name=latex_name, sym=(0,1))
+        TensorField.__init__(
+            self,
+            vector_field_module,
+            (0, 2),
+            name=name,
+            latex_name=latex_name,
+            sym=(0, 1),
+        )
         # signature:
         ndim = self._ambient_domain.dimension()
         if signature is None:
@@ -381,17 +394,17 @@ class PseudoRiemannianMetric(TensorField):
         else:
             if not isinstance(signature, (int, Integer)):
                 raise TypeError("the metric signature must be an integer")
-            if (signature < - ndim) or (signature > ndim):
+            if (signature < -ndim) or (signature > ndim):
                 raise ValueError("metric signature out of range")
-            if (signature+ndim) % 2 == 1:
+            if (signature + ndim) % 2 == 1:
                 if ndim % 2 == 0:
                     raise ValueError("the metric signature must be even")
                 else:
                     raise ValueError("the metric signature must be odd")
         self._signature = signature
         # the pair (n_+, n_-):
-        self._signature_pm = ((ndim+signature)//2, (ndim-signature)//2)
-        self._indic_signat = 1 - 2*(self._signature_pm[1] % 2)  # (-1)^n_-
+        self._signature_pm = ((ndim + signature) // 2, (ndim - signature) // 2)
+        self._indic_signat = 1 - 2 * (self._signature_pm[1] % 2)  # (-1)^n_-
         # Initialization of derived quantities:
         PseudoRiemannianMetric._init_derived(self)
 
@@ -416,7 +429,7 @@ class PseudoRiemannianMetric(TensorField):
         s = self._signature
         if s == n:
             description = "Riemannian metric "
-        elif s == n-2 or s == 2-n:
+        elif s == n - 2 or s == 2 - n:
             description = "Lorentzian metric "
         else:
             description = "Pseudo-Riemannian metric "
@@ -442,9 +455,12 @@ class PseudoRiemannianMetric(TensorField):
             sage: g1.signature() == g.signature()
             True
         """
-        return type(self)(self._vmodule, 'unnamed metric',
-                          signature=self._signature,
-                          latex_name=r'\text{unnamed metric}')
+        return type(self)(
+            self._vmodule,
+            'unnamed metric',
+            signature=self._signature,
+            latex_name=r'\text{unnamed metric}',
+        )
 
     def _init_derived(self):
         r"""
@@ -461,14 +477,14 @@ class PseudoRiemannianMetric(TensorField):
         # inverse metric:
         inv_name = 'inv_' + self._name
         inv_latex_name = self._latex_name + r'^{-1}'
-        self._inverse = self._vmodule.tensor((2,0), name=inv_name,
-                                             latex_name=inv_latex_name,
-                                             sym=(0,1))
+        self._inverse = self._vmodule.tensor(
+            (2, 0), name=inv_name, latex_name=inv_latex_name, sym=(0, 1)
+        )
         for attr in self._derived_objects:
             self.__setattr__(attr, None)
-        self._determinants = {} # determinants in various frames
-        self._sqrt_abs_dets = {} # sqrt(abs(det g)) in various frames
-        self._vol_forms = [] # volume form and associated tensors
+        self._determinants = {}  # determinants in various frames
+        self._sqrt_abs_dets = {}  # sqrt(abs(det g)) in various frames
+        self._vol_forms = []  # volume form and associated tensors
 
     def _del_derived(self):
         r"""
@@ -636,13 +652,14 @@ class PseudoRiemannianMetric(TensorField):
         """
         if not isinstance(symbiform, TensorField):
             raise TypeError("the argument must be a tensor field")
-        if symbiform._tensor_type != (0,2):
+        if symbiform._tensor_type != (0, 2):
             raise TypeError("the argument must be of tensor type (0,2)")
-        if symbiform._sym != ((0,1),):
+        if symbiform._sym != ((0, 1),):
             raise TypeError("the argument must be symmetric")
         if not symbiform._domain.is_subset(self._domain):
-            raise TypeError("the symmetric bilinear form is not defined " +
-                            "on the metric domain")
+            raise TypeError(
+                "the symmetric bilinear form is not defined " + "on the metric domain"
+            )
         self._del_derived()
         self._restrictions.clear()
         if isinstance(symbiform, TensorFieldParal):
@@ -716,9 +733,9 @@ class PseudoRiemannianMetric(TensorField):
         # Is the inverse metric up to date?
         for dom, rst in self._restrictions.items():
             self._inverse._restrictions[dom] = rst.inverse(
-                                             expansion_symbol=expansion_symbol,
-                                             order=order) # forces the update
-                                                          # of the restriction
+                expansion_symbol=expansion_symbol, order=order
+            )  # forces the update
+            # of the restriction
         return self._inverse
 
     def connection(self, name=None, latex_name=None, init_coef=True):
@@ -790,6 +807,7 @@ class PseudoRiemannianMetric(TensorField):
         from sage.manifolds.differentiable.levi_civita_connection import (
             LeviCivitaConnection,
         )
+
         if self._connection is None:
             if latex_name is None:
                 if name is None:
@@ -798,9 +816,9 @@ class PseudoRiemannianMetric(TensorField):
                     latex_name = name
             if name is None:
                 name = 'nabla_' + self._name
-            self._connection = LeviCivitaConnection(self, name,
-                                                    latex_name=latex_name,
-                                                    init_coef=init_coef)
+            self._connection = LeviCivitaConnection(
+                self, name, latex_name=latex_name, init_coef=init_coef
+            )
         return self._connection
 
     def christoffel_symbols(self, chart=None):
@@ -867,10 +885,17 @@ class PseudoRiemannianMetric(TensorField):
             frame = chart._frame
         return self.connection().coef(frame)
 
-    def christoffel_symbols_display(self, chart=None, symbol=None,
-                latex_symbol=None, index_labels=None, index_latex_labels=None,
-                coordinate_labels=True, only_nonzero=True,
-                only_nonredundant=True):
+    def christoffel_symbols_display(
+        self,
+        chart=None,
+        symbol=None,
+        latex_symbol=None,
+        index_labels=None,
+        index_latex_labels=None,
+        coordinate_labels=True,
+        only_nonzero=True,
+        only_nonredundant=True,
+    ):
         r"""
         Display the Christoffel symbols w.r.t. to a given chart, one
         per line.
@@ -972,11 +997,17 @@ class PseudoRiemannianMetric(TensorField):
         """
         if chart is None:
             chart = self._domain.default_chart()
-        return self.connection().display(frame=chart.frame(), chart=chart,
-              symbol=symbol, latex_symbol=latex_symbol,
-              index_labels=index_labels, index_latex_labels=index_latex_labels,
-              coordinate_labels=coordinate_labels, only_nonzero=only_nonzero,
-              only_nonredundant=only_nonredundant)
+        return self.connection().display(
+            frame=chart.frame(),
+            chart=chart,
+            symbol=symbol,
+            latex_symbol=latex_symbol,
+            index_labels=index_labels,
+            index_latex_labels=index_latex_labels,
+            coordinate_labels=coordinate_labels,
+            only_nonzero=only_nonzero,
+            only_nonredundant=only_nonredundant,
+        )
 
     def riemann(self, name=None, latex_name=None):
         r"""
@@ -1156,8 +1187,7 @@ class PseudoRiemannianMetric(TensorField):
             if name is None:
                 name = "r(" + self._name + ")"
             if latex_name is None:
-                latex_name = r"\mathrm{r}\left(" + self._latex_name + \
-                              r"\right)"
+                latex_name = r"\mathrm{r}\left(" + self._latex_name + r"\right)"
             resu._name = name
             resu._latex_name = latex_name
             self._ricci_scalar = resu
@@ -1207,16 +1237,20 @@ class PseudoRiemannianMetric(TensorField):
         if self._weyl is None:
             n = self._ambient_domain.dimension()
             if n < 3:
-                raise ValueError("the Weyl tensor is not defined for a " +
-                                 "manifold of dimension n <= 2")
-            delta = self._domain.tangent_identity_field(dest_map=self._vmodule._dest_map)
+                raise ValueError(
+                    "the Weyl tensor is not defined for a "
+                    + "manifold of dimension n <= 2"
+                )
+            delta = self._domain.tangent_identity_field(
+                dest_map=self._vmodule._dest_map
+            )
             riem = self.riemann()
             ric = self.ricci()
             rscal = self.ricci_scalar()
             # First index of the Ricci tensor raised with the metric
             ricup = ric.up(self, 0)
-            aux = self*ricup + ric*delta - rscal/(n-1) * self*delta
-            self._weyl = riem + 2/(n-2) * aux.antisymmetrize(2,3)
+            aux = self * ricup + ric * delta - rscal / (n - 1) * self * delta
+            self._weyl = riem + 2 / (n - 2) * aux.antisymmetrize(2, 3)
             if name is None:
                 name = "C(" + self._name + ")"
             if latex_name is None:
@@ -1273,10 +1307,14 @@ class PseudoRiemannianMetric(TensorField):
         """
         n = self._ambient_domain.dimension()
         if n < 3:
-            raise ValueError("the Schouten tensor is only defined for a " +
-                             "manifold of dimension >= 3")
+            raise ValueError(
+                "the Schouten tensor is only defined for a "
+                + "manifold of dimension >= 3"
+            )
         if self._schouten is None:
-            s = (1/(n-2))*self.ricci() - (self.ricci_scalar()/(2*(n-1)*(n-2)))*self
+            s = (1 / (n - 2)) * self.ricci() - (
+                self.ricci_scalar() / (2 * (n - 1) * (n - 2))
+            ) * self
             name = name or 'Schouten(' + self._name + ')'
             latex_name = latex_name or r'\mathrm{Schouten}(' + self._latex_name + ')'
             s.set_name(name=name, latex_name=latex_name)
@@ -1330,12 +1368,14 @@ class PseudoRiemannianMetric(TensorField):
         """
         n = self._ambient_domain.dimension()
         if n < 3:
-            raise ValueError("the Cotton tensor is only defined for a " +
-                             "manifold of dimension >= 3")
+            raise ValueError(
+                "the Cotton tensor is only defined for a "
+                + "manifold of dimension >= 3"
+            )
         if self._cotton is None:
             nabla = self.connection()
             s = self.schouten()
-            cot = 2*(n-2)*nabla(s).antisymmetrize(1,2)
+            cot = 2 * (n - 2) * nabla(s).antisymmetrize(1, 2)
             name = name or 'Cot(' + self._name + ')'
             latex_name = latex_name or r'\mathrm{Cot}(' + self._latex_name + ')'
             cot.set_name(name=name, latex_name=latex_name)
@@ -1389,12 +1429,14 @@ class PseudoRiemannianMetric(TensorField):
         """
         n = self._ambient_domain.dimension()
         if n != 3:
-            raise ValueError("the Cotton-York tensor is only defined for a " +
-                             "manifold of dimension 3")
+            raise ValueError(
+                "the Cotton-York tensor is only defined for a "
+                + "manifold of dimension 3"
+            )
         if self._cotton_york is None:
             cot = self.cotton()
             eps = self.volume_form(2)
-            cy = eps.contract(0, 1, cot, 2, 1)/2
+            cy = eps.contract(0, 1, cot, 2, 1) / 2
             name = name or 'CY(' + self._name + ')'
             latex_name = latex_name or r'\mathrm{CY}(' + self._latex_name + ')'
             cy.set_name(name=name, latex_name=latex_name)
@@ -1479,6 +1521,7 @@ class PseudoRiemannianMetric(TensorField):
             -x**2*y**2 + x - y*(x + 1) + 1
         """
         from sage.matrix.constructor import matrix
+
         dom = self._domain
         if frame is None:
             frame = dom._def_frame
@@ -1494,8 +1537,12 @@ class PseudoRiemannianMetric(TensorField):
             i1 = manif.start_index()
             for chart in gg[[i1, i1]]._express:
                 # TODO: do the computation without the 'SR' enforcement
-                gm = matrix( [[ gg[i, j, chart].expr(method='SR')
-                            for j in manif.irange()] for i in manif.irange()] )
+                gm = matrix(
+                    [
+                        [gg[i, j, chart].expr(method='SR') for j in manif.irange()]
+                        for i in manif.irange()
+                    ]
+                )
                 detgm = chart.simplify(gm.det(), method='SR')
                 resu.add_expr(detgm, chart=chart)
             self._determinants[frame] = resu
@@ -1761,25 +1808,30 @@ class PseudoRiemannianMetric(TensorField):
         if not orient:
             raise ValueError('{} must admit an orientation'.format(dom))
         if contra > ndim:
-            raise ValueError('The number of contravariant indices is greater '
-                             'than the manifold dimension')
+            raise ValueError(
+                'The number of contravariant indices is greater '
+                'than the manifold dimension'
+            )
         if self._vol_forms == []:
             # a new computation is necessary
             # The result is constructed on the vector field module,
             # so that dest_map is taken automatically into account:
-            eps = self._vmodule.alternating_form(ndim, name='eps_'+self._name,
-                                latex_name=r'\epsilon_{'+self._latex_name+r'}')
+            eps = self._vmodule.alternating_form(
+                ndim,
+                name='eps_' + self._name,
+                latex_name=r'\epsilon_{' + self._latex_name + r'}',
+            )
             si = manif.start_index()
-            ind = tuple(range(si, si+ndim))
+            ind = tuple(range(si, si + ndim))
             for frame in orient:
                 if frame.destination_map() is frame.domain().identity_map():
                     eps.add_comp(frame)[[ind]] = self.sqrt_abs_det(frame)
             self._vol_forms.append(eps)  # Levi-Civita tensor constructed
         if contra >= len(self._vol_forms):
             # Tensors related to the Levi-Civita one by index rising:
-            for k in range(len(self._vol_forms), contra+1):
-                epskm1 = self._vol_forms[k-1]
-                epsk = epskm1.up(self, k-1)
+            for k in range(len(self._vol_forms), contra + 1):
+                epskm1 = self._vol_forms[k - 1]
+                epsk = epskm1.up(self, k - 1)
                 if k > 1:
                     # restoring the antisymmetry after the up operation:
                     epsk = epsk.antisymmetrize(*range(k))
@@ -1956,7 +2008,8 @@ class PseudoRiemannianMetric(TensorField):
         return pform.hodge_dual(self)
 
 
-#******************************************************************************
+# ******************************************************************************
+
 
 class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
     r"""
@@ -2080,8 +2133,8 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
          + x*y/(x^2*y^2 + x^2 - 1) ∂/∂x⊗∂/∂y + x*y/(x^2*y^2 + x^2 - 1) ∂/∂y⊗∂/∂x
          - (x + 1)/(x^2*y^2 + x^2 - 1) ∂/∂y⊗∂/∂y
     """
-    def __init__(self, vector_field_module, name, signature=None,
-                 latex_name=None):
+
+    def __init__(self, vector_field_module, name, signature=None, latex_name=None):
         r"""
         Construct a metric on a parallelizable manifold.
 
@@ -2102,8 +2155,14 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
             - add a specific parent to the metrics, to fit with the category
               framework
         """
-        TensorFieldParal.__init__(self, vector_field_module, (0,2),
-                                  name=name, latex_name=latex_name, sym=(0,1))
+        TensorFieldParal.__init__(
+            self,
+            vector_field_module,
+            (0, 2),
+            name=name,
+            latex_name=latex_name,
+            sym=(0, 1),
+        )
         # signature:
         ndim = self._ambient_domain.dimension()
         if signature is None:
@@ -2111,17 +2170,17 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
         else:
             if not isinstance(signature, (int, Integer)):
                 raise TypeError("the metric signature must be an integer")
-            if (signature < - ndim) or (signature > ndim):
+            if (signature < -ndim) or (signature > ndim):
                 raise ValueError("metric signature out of range")
-            if (signature+ndim) % 2 == 1:
+            if (signature + ndim) % 2 == 1:
                 if ndim % 2 == 0:
                     raise ValueError("the metric signature must be even")
                 else:
                     raise ValueError("the metric signature must be odd")
         self._signature = signature
         # the pair (n_+, n_-):
-        self._signature_pm = ((ndim+signature)//2, (ndim-signature)//2)
-        self._indic_signat = 1 - 2*(self._signature_pm[1] % 2)  # (-1)^n_-
+        self._signature_pm = ((ndim + signature) // 2, (ndim - signature) // 2)
+        self._indic_signat = 1 - 2 * (self._signature_pm[1] % 2)  # (-1)^n_-
         # Initialization of derived quantities:
         PseudoRiemannianMetricParal._init_derived(self)
 
@@ -2265,15 +2324,19 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
             g = (x^2 + 1) dx⊗dx + x*y dx⊗dy + x*y dy⊗dx + (y^2 + 1) dy⊗dy
         """
         if not isinstance(symbiform, TensorFieldParal):
-            raise TypeError("the argument must be a tensor field with " +
-                            "values on a parallelizable domain")
-        if symbiform._tensor_type != (0,2):
+            raise TypeError(
+                "the argument must be a tensor field with "
+                + "values on a parallelizable domain"
+            )
+        if symbiform._tensor_type != (0, 2):
             raise TypeError("the argument must be of tensor type (0,2)")
-        if symbiform._sym != ((0,1),):
+        if symbiform._sym != ((0, 1),):
             raise TypeError("the argument must be symmetric")
         if symbiform._vmodule is not self._vmodule:
-            raise TypeError("the symmetric bilinear form and the metric are " +
-                            "not defined on the same vector field module")
+            raise TypeError(
+                "the symmetric bilinear form and the metric are "
+                + "not defined on the same vector field module"
+            )
         self._del_derived()
         self._components.clear()
         for frame in symbiform._components:
@@ -2385,10 +2448,13 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
             [ 0  0 -e  1]
         """
         if expansion_symbol is not None:
-            if (self._inverse is not None and bool(self._inverse._components)
-                and self._inverse._components.values()[0][0,0]._expansion_symbol
-                    == expansion_symbol
-                and self._inverse._components.values()[0][0,0]._order == order):
+            if (
+                self._inverse is not None
+                and bool(self._inverse._components)
+                and self._inverse._components.values()[0][0, 0]._expansion_symbol
+                == expansion_symbol
+                and self._inverse._components.values()[0][0, 0]._order == order
+            ):
                 return self._inverse
 
             if order != 1:
@@ -2397,8 +2463,8 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
             g0 = decompo[0]
             g1 = decompo[1]
 
-            g0m = self._new_instance()   # needed because only metrics have
-            g0m.set_comp()[:] = g0[:]    # an "inverse" method.
+            g0m = self._new_instance()  # needed because only metrics have
+            g0m.set_comp()[:] = g0[:]  # an "inverse" method.
 
             contraction = g1.contract(0, g0m.inverse(), 0)
             contraction = contraction.contract(1, g0m.inverse(), 1)
@@ -2408,6 +2474,7 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
 
         from sage.matrix.constructor import matrix
         from sage.tensor.modules.comp import CompFullySym
+
         # Is the inverse metric up to date ?
         for frame in self._components:
             if frame not in self._inverse._components:
@@ -2416,29 +2483,40 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
                 si = fmodule._sindex
                 nsi = fmodule._rank + si
                 dom = self._domain
-                cinv = CompFullySym(fmodule._ring, frame, 2, start_index=si,
-                                    output_formatter=fmodule._output_formatter)
+                cinv = CompFullySym(
+                    fmodule._ring,
+                    frame,
+                    2,
+                    start_index=si,
+                    output_formatter=fmodule._output_formatter,
+                )
                 cinv_scal = {}  # dict. of scalars representing the components
-                                # of the inverse (keys: comp. indices)
+                # of the inverse (keys: comp. indices)
                 for i in range(si, nsi):
-                    for j in range(i, nsi):   # symmetry taken into account
-                        cinv_scal[(i,j)] = dom.scalar_field()
+                    for j in range(i, nsi):  # symmetry taken into account
+                        cinv_scal[(i, j)] = dom.scalar_field()
                 for chart in dom.top_charts():
                     # TODO: do the computation without the 'SR' enforcement
                     try:
                         gmat = matrix(
-                                  [[self.comp(frame)[i, j, chart].expr(method='SR')
-                                  for j in range(si, nsi)] for i in range(si, nsi)])
+                            [
+                                [
+                                    self.comp(frame)[i, j, chart].expr(method='SR')
+                                    for j in range(si, nsi)
+                                ]
+                                for i in range(si, nsi)
+                            ]
+                        )
                         gmat_inv = gmat.inverse()
                     except (KeyError, ValueError):
                         continue
                     for i in range(si, nsi):
                         for j in range(i, nsi):
-                            val = chart.simplify(gmat_inv[i-si,j-si], method='SR')
-                            cinv_scal[(i,j)].add_expr(val, chart=chart)
+                            val = chart.simplify(gmat_inv[i - si, j - si], method='SR')
+                            cinv_scal[(i, j)].add_expr(val, chart=chart)
                 for i in range(si, nsi):
                     for j in range(i, nsi):
-                        cinv[i,j] = cinv_scal[(i,j)]
+                        cinv[i, j] = cinv_scal[(i, j)]
                 self._inverse._components[frame] = cinv
         return self._inverse
 
@@ -2495,25 +2573,26 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
             cig = ig._components[frame]
             rsum1 = 0
             for i in manif.irange():
-                rsum1 += cig[[i,i]] * cric[[i,i]]
+                rsum1 += cig[[i, i]] * cric[[i, i]]
             rsum2 = 0
             for i in manif.irange():
-                for j in manif.irange(start=i+1):
-                    rsum2 += cig[[i,j]] * cric[[i,j]]
-            self._ricci_scalar = rsum1 + 2*rsum2
+                for j in manif.irange(start=i + 1):
+                    rsum2 += cig[[i, j]] * cric[[i, j]]
+            self._ricci_scalar = rsum1 + 2 * rsum2
             if name is None:
                 self._ricci_scalar._name = "r(" + self._name + ")"
             else:
                 self._ricci_scalar._name = name
             if latex_name is None:
-                self._ricci_scalar._latex_name = r"\mathrm{r}\left(" + \
-                                                 self._latex_name + r"\right)"
+                self._ricci_scalar._latex_name = (
+                    r"\mathrm{r}\left(" + self._latex_name + r"\right)"
+                )
             else:
                 self._ricci_scalar._latex_name = latex_name
         return self._ricci_scalar
 
 
-#****************************************************************************************************
+# ****************************************************************************************************
 
 
 class DegenerateMetric(TensorField):
@@ -2593,8 +2672,7 @@ class DegenerateMetric(TensorField):
         (x, y, z) ↦ 0
     """
 
-    def __init__(self, vector_field_module, name, signature=None,
-                 latex_name=None):
+    def __init__(self, vector_field_module, name, signature=None, latex_name=None):
         r"""
         Construct a metric.
 
@@ -2616,25 +2694,31 @@ class DegenerateMetric(TensorField):
             g = (2*m/r - 1) dt⊗dt + 2*m/r dt⊗dr + 2*m/r dr⊗dt + (2*m/r + 1) dr⊗dr
             + r^2 dth⊗dth + r^2*sin(th)^2 dph⊗dph
         """
-        TensorField.__init__(self, vector_field_module, (0,2),
-                             name=name, latex_name=latex_name, sym=(0,1))
+        TensorField.__init__(
+            self,
+            vector_field_module,
+            (0, 2),
+            name=name,
+            latex_name=latex_name,
+            sym=(0, 1),
+        )
         # signature:
         ndim = self._ambient_domain.dimension()
         if signature is None:
-            signature = (ndim-1,0,1)
+            signature = (ndim - 1, 0, 1)
         else:
             try:
                 for elt in signature:
                     if (elt < 0) or (not isinstance(elt, (int, Integer))):
                         raise ValueError("{} must be a positive integer".format(elt))
                     if elt > ndim:
-                        raise ValueError("{} must be less than {}".format(elt,ndim))
-                    sign = signature[0]+signature[1]+signature[2]
+                        raise ValueError("{} must be less than {}".format(elt, ndim))
+                    sign = signature[0] + signature[1] + signature[2]
                     if sign != ndim:
                         raise ValueError("{} is different from {}".format(sign, ndim))
             except TypeError:
                 raise TypeError("signature must be an iterable")
-        self._signature = (signature[0],signature[1],signature[2])
+        self._signature = (signature[0], signature[1], signature[2])
         # the tuple (n_+, n_-, n_0):
         self._signature_pm = self._signature
 
@@ -2649,7 +2733,7 @@ class DegenerateMetric(TensorField):
             sage: g._repr_()
             'degenerate metric g on the 3-dimensional differentiable manifold M'
         """
-        return self._final_repr("degenerate metric "+self._name + " ")
+        return self._final_repr("degenerate metric " + self._name + " ")
 
     def _new_instance(self):
         r"""
@@ -2669,9 +2753,12 @@ class DegenerateMetric(TensorField):
             sage: g1.signature() == g.signature()
             True
         """
-        return type(self)(self._vmodule, 'unnamed metric',
-                          signature=self._signature,
-                          latex_name=r'\text{unnamed metric}')
+        return type(self)(
+            self._vmodule,
+            'unnamed metric',
+            signature=self._signature,
+            latex_name=r'\text{unnamed metric}',
+        )
 
     def signature(self):
         r"""
@@ -2740,13 +2827,14 @@ class DegenerateMetric(TensorField):
         """
         if not isinstance(symbiform, TensorField):
             raise TypeError("the argument must be a tensor field")
-        if symbiform._tensor_type != (0,2):
+        if symbiform._tensor_type != (0, 2):
             raise TypeError("the argument must be of tensor type (0,2)")
-        if symbiform._sym != ((0,1),):
+        if symbiform._sym != ((0, 1),):
             raise TypeError("the argument must be symmetric")
         if not symbiform._domain.is_subset(self._domain):
-            raise TypeError("the symmetric bilinear form is not defined " +
-                            "on the metric domain")
+            raise TypeError(
+                "the symmetric bilinear form is not defined " + "on the metric domain"
+            )
         self._restrictions.clear()
         if isinstance(symbiform, TensorFieldParal):
             rst = self.restrict(symbiform._domain)
@@ -2820,7 +2908,8 @@ class DegenerateMetric(TensorField):
 
     det = determinant
 
-#****************************************************************************************
+
+# ****************************************************************************************
 
 
 class DegenerateMetricParal(DegenerateMetric, TensorFieldParal):
@@ -2900,8 +2989,7 @@ class DegenerateMetricParal(DegenerateMetric, TensorFieldParal):
         (x, y, z) ↦ 0
     """
 
-    def __init__(self, vector_field_module, name, signature=None,
-                 latex_name=None):
+    def __init__(self, vector_field_module, name, signature=None, latex_name=None):
         r"""
         Construct a metric.
 
@@ -2924,23 +3012,29 @@ class DegenerateMetricParal(DegenerateMetric, TensorFieldParal):
             - x*z/(x^2 + y^2 + z^2) dz⊗dx - y*z/(x^2 + y^2 + z^2) dz⊗dy
             + (x^2 + y^2)/(x^2 + y^2 + z^2) dz⊗dz
         """
-        TensorFieldParal.__init__(self, vector_field_module, (0,2),
-                             name=name, latex_name=latex_name, sym=(0,1))
+        TensorFieldParal.__init__(
+            self,
+            vector_field_module,
+            (0, 2),
+            name=name,
+            latex_name=latex_name,
+            sym=(0, 1),
+        )
         # signature:
         ndim = self._ambient_domain.dimension()
         if signature is None:
-            signature = (ndim-1,0,1)
+            signature = (ndim - 1, 0, 1)
         else:
             try:
                 for elt in signature:
                     if (elt < 0) or (not isinstance(elt, (int, Integer))):
                         raise ValueError("{} must be a positive integer".format(elt))
-                    sign = signature[0]+signature[1]+signature[2]
+                    sign = signature[0] + signature[1] + signature[2]
                     if sign != ndim:
                         raise ValueError("{} is different from {}".format(sign, ndim))
             except TypeError:
                 raise TypeError("signature must be an iterable")
-        self._signature = (signature[0],signature[1],signature[2])
+        self._signature = (signature[0], signature[1], signature[2])
         # the tuple (n_+, n_-, n_0):
         self._signature_pm = self._signature
 
@@ -2970,15 +3064,19 @@ class DegenerateMetricParal(DegenerateMetric, TensorFieldParal):
             g = dx⊗dx + dy⊗dy
         """
         if not isinstance(symbiform, TensorFieldParal):
-            raise TypeError("the argument must be a tensor field with " +
-                            "values on a parallelizable domain")
-        if symbiform._tensor_type != (0,2):
+            raise TypeError(
+                "the argument must be a tensor field with "
+                + "values on a parallelizable domain"
+            )
+        if symbiform._tensor_type != (0, 2):
             raise TypeError("the argument must be of tensor type (0,2)")
-        if symbiform._sym != ((0,1),):
+        if symbiform._sym != ((0, 1),):
             raise TypeError("the argument must be symmetric")
         if symbiform._vmodule is not self._vmodule:
-            raise TypeError("the symmetric bilinear form and the metric are " +
-                            "not defined on the same vector field module")
+            raise TypeError(
+                "the symmetric bilinear form and the metric are "
+                + "not defined on the same vector field module"
+            )
         self._components.clear()
         for frame in symbiform._components:
             self._components[frame] = symbiform._components[frame].copy()
@@ -3034,4 +3132,5 @@ class DegenerateMetricParal(DegenerateMetric, TensorFieldParal):
             self._restrictions[subdomain] = resu
         return self._restrictions[subdomain]
 
-#****************************************************************************************
+
+# ****************************************************************************************

@@ -38,6 +38,7 @@ AUTHORS:
 - used non-decreasing_parking_functions code by Florent Hivert (2009 - 04)
 - Dorota Mazur (2012 - 09)
 """
+
 # ****************************************************************************
 #       Copyright (C) 2012 Dorota Mazur <dorota@yorku.ca>
 #
@@ -153,9 +154,11 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
         ...
         ValueError: [3, 1, 2] is not a valid labeling of area sequence [0, 1, 1]
     """
+
     @staticmethod
-    def __classcall_private__(cls, pf=None, labelling=None, area_sequence=None,
-                              labelled_dyck_word=None):
+    def __classcall_private__(
+        cls, pf=None, labelling=None, area_sequence=None, labelled_dyck_word=None
+    ):
         """
         Construct a parking function based on the input.
 
@@ -171,19 +174,30 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
             PF = ParkingFunctions()
             return PF.element_class(PF, pf)
         if labelling is not None:
-            if (area_sequence is None):
+            if area_sequence is None:
                 raise ValueError("must also provide area sequence along with labelling")
-            if (len(area_sequence) != len(labelling)):
-                raise ValueError("%s must be the same size as the labelling %s" % (area_sequence, labelling))
-            if any(area_sequence[i] < area_sequence[i + 1] and labelling[i] > labelling[i + 1] for i in range(len(labelling) - 1)):
-                raise ValueError("%s is not a valid labeling of area sequence %s" % (labelling, area_sequence))
+            if len(area_sequence) != len(labelling):
+                raise ValueError(
+                    "%s must be the same size as the labelling %s"
+                    % (area_sequence, labelling)
+                )
+            if any(
+                area_sequence[i] < area_sequence[i + 1]
+                and labelling[i] > labelling[i + 1]
+                for i in range(len(labelling) - 1)
+            ):
+                raise ValueError(
+                    "%s is not a valid labeling of area sequence %s"
+                    % (labelling, area_sequence)
+                )
             return from_labelling_and_area_sequence(labelling, area_sequence)
         if labelled_dyck_word is not None:
             return from_labelled_dyck_word(labelled_dyck_word)
         if area_sequence is not None:
             DW = DyckWord(area_sequence)
-            return ParkingFunction(labelling=list(range(1, DW.size() + 1)),
-                                   area_sequence=DW)
+            return ParkingFunction(
+                labelling=list(range(1, DW.size() + 1)), area_sequence=DW
+            )
 
         raise ValueError("did not manage to make this into a parking function")
 
@@ -298,8 +312,9 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
         L = self.to_labelling_permutation()
         D = self.to_area_sequence()
         m = max(D)
-        data = [L[-j - 1] for i in range(m + 1)
-                for j in range(len(L)) if D[-j - 1] == m - i]
+        data = [
+            L[-j - 1] for i in range(m + 1) for j in range(len(L)) if D[-j - 1] == m - i
+        ]
         return Permutation(data)  # type:ignore
 
     diagonal_word = diagonal_reading_word
@@ -439,7 +454,7 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
         """
         return sum(self.jump_list())
 
-    def lucky_cars(self):     # the set of cars that can park in their preferred spots
+    def lucky_cars(self):  # the set of cars that can park in their preferred spots
         r"""
         Return the cars that can park in their preferred spots.  For example,
         ``lucky_cars(PF) = [1, 2, 7]`` means that cars 1, 2 and 7 parked in
@@ -516,8 +531,12 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
         """
         L = self.to_labelling_permutation()
         D = self.to_area_sequence()
-        return [(i, j) for j in range(len(D)) for i in range(j)
-                if D[i] == D[j] and L[i] < L[j]]
+        return [
+            (i, j)
+            for j in range(len(D))
+            for i in range(j)
+            if D[i] == D[j] and L[i] < L[j]
+        ]
 
     def secondary_dinversion_pairs(self) -> list[tuple[int, int]]:
         r"""
@@ -546,8 +565,12 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
         """
         L = self.to_labelling_permutation()
         D = self.to_area_sequence()
-        return [(i, j) for j in range(len(D)) for i in range(j)
-                if D[i] == D[j] + 1 and L[i] > L[j]]
+        return [
+            (i, j)
+            for j in range(len(D))
+            for i in range(j)
+            if D[i] == D[j] + 1 and L[i] > L[j]
+        ]
 
     def dinversion_pairs(self) -> list[tuple[int, int]]:
         r"""
@@ -787,6 +810,7 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
             [2, 4, 1, 3]
         """
         from sage.combinat.words.word import Word
+
         return Word(self).standard_permutation().inverse()
 
     def to_area_sequence(self) -> list:
@@ -963,8 +987,9 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
         """
         return ParkingFunction(sorted(self))  # type:ignore
 
-    def characteristic_quasisymmetric_function(self, q=None,
-                                               R=QQ['q', 't'].fraction_field()):
+    def characteristic_quasisymmetric_function(
+        self, q=None, R=QQ['q', 't'].fraction_field()
+    ):
         r"""
         Return the characteristic quasisymmetric function of ``self``.
 
@@ -1009,13 +1034,14 @@ class ParkingFunction(ClonableArray, metaclass=InheritComparisonClasscallMetacla
             q^2*F[1, 1, 1, 2, 1, 3]
         """
         from sage.combinat.ncsf_qsym.qsym import QuasiSymmetricFunctions
+
         if q is None:
             q = R('q')
         else:
             if q not in R:
                 raise ValueError("q=%s must be an element of the base ring %s" % (q, R))
         F = QuasiSymmetricFunctions(R).Fundamental()
-        return q**self.dinv() * F(self.ides_composition())
+        return q ** self.dinv() * F(self.ides_composition())
 
     def pretty_print(self, underpath=True):
         r"""
@@ -1160,9 +1186,9 @@ def from_labelling_and_area_sequence(L, D) -> PF:
         True
     """
     PF = ParkingFunctions_all()
-    return PF.element_class(PF,
-                            [L.index(i) + 1 - D[L.index(i)]
-                             for i in range(1, len(L) + 1)])
+    return PF.element_class(
+        PF, [L.index(i) + 1 - D[L.index(i)] for i in range(1, len(L) + 1)]
+    )
 
 
 def from_labelled_dyck_word(LDW) -> PF:
@@ -1278,6 +1304,7 @@ class ParkingFunctions(UniqueRepresentation, Parent):
         sage: len(PF.list()) == PF.cardinality()
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, n=None):
         """
@@ -1495,7 +1522,7 @@ class ParkingFunctions_n(ParkingFunctions):
             sage: [ParkingFunctions(i).cardinality() for i in range(6)]
             [1, 1, 3, 16, 125, 1296]
         """
-        return Integer((self.n + 1)**(self.n - 1))
+        return Integer((self.n + 1) ** (self.n - 1))
 
     def __iter__(self) -> Iterator:
         """
@@ -1532,6 +1559,7 @@ class ParkingFunctions_n(ParkingFunctions):
             sage: [e for e in PF] == PF.list()
             True
         """
+
         def iterator_rec(n):
             """
             TESTS::
@@ -1550,6 +1578,7 @@ class ParkingFunctions_n(ParkingFunctions):
                 for i in range(res1[-1], n + 1):
                     yield res1 + [i]
             return
+
         for res in iterator_rec(self.n):
             for pi in Permutations(res):
                 yield self.element_class(self, list(pi))

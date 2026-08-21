@@ -88,7 +88,10 @@ class IntegerModMonoid(UniqueRepresentation, Parent):
             sage: M._repr_()
             'An example of a finite multiplicative monoid: the integers modulo 12'
         """
-        return "An example of a finite multiplicative monoid: the integers modulo %s" % self.n
+        return (
+            "An example of a finite multiplicative monoid: the integers modulo %s"
+            % self.n
+        )
 
     def semigroup_generators(self):
         r"""
@@ -145,7 +148,7 @@ class IntegerModMonoid(UniqueRepresentation, Parent):
         """
         return self(ZZ(42) % self.n)
 
-    class Element (ElementWrapper):
+    class Element(ElementWrapper):
         wrapped_class = Integer
 
 

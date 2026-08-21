@@ -49,6 +49,7 @@ class CuspidalSubmodule(ModularFormsSubmodule):
     """
     Base class for cuspidal submodules of ambient spaces of modular forms.
     """
+
     def __init__(self, ambient_space):
         """
         The cuspidal submodule of an ambient space of modular forms.
@@ -76,6 +77,7 @@ class CuspidalSubmodule(ModularFormsSubmodule):
             True
         """
         from sage.misc.verbose import verbose
+
         verbose('creating cuspidal submodule of %s' % ambient_space)
         d = ambient_space._dim_cuspidal()
         V = ambient_space.module()
@@ -107,7 +109,10 @@ class CuspidalSubmodule(ModularFormsSubmodule):
             sage: S = CuspForms(Gamma1(3),6); S._repr_()
             'Cuspidal subspace of dimension 1 of Modular Forms space of dimension 3 for Congruence Subgroup Gamma1(3) of weight 6 over Rational Field'
         """
-        return "Cuspidal subspace of dimension %s of %s" % (self.dimension(), self.ambient_module())
+        return "Cuspidal subspace of dimension %s of %s" % (
+            self.dimension(),
+            self.ambient_module(),
+        )
 
     def is_cuspidal(self) -> bool:
         """
@@ -201,6 +206,7 @@ class CuspidalSubmodule_R(CuspidalSubmodule):
     """
     Cuspidal submodule over a non-minimal base ring.
     """
+
     def _compute_q_expansion_basis(self, prec):
         r"""
         EXAMPLES::
@@ -216,6 +222,7 @@ class CuspidalSubmodule_modsym_qexp(CuspidalSubmodule):
     """
     Cuspidal submodule with `q`-expansions calculated via modular symbols.
     """
+
     def _compute_q_expansion_basis(self, prec=None):
         """
         Compute `q`-expansions of a basis for ``self`` (via modular symbols).
@@ -299,6 +306,7 @@ class CuspidalSubmodule_level1_Q(CuspidalSubmodule):
     r"""
     Space of cusp forms of level 1 over `\QQ`.
     """
+
     def _compute_q_expansion_basis(self, prec=None):
         """
         Compute `q`-expansions of a basis for ``self``.
@@ -327,6 +335,7 @@ class CuspidalSubmodule_level1_Q(CuspidalSubmodule):
             1
         """
         from sage.libs.pari import pari
+
         return pari.mfinit([self.level(), self.weight()], 1)
 
 
@@ -349,8 +358,10 @@ class CuspidalSubmodule_wt1_eps(CuspidalSubmodule):
         else:
             prec = Integer(prec)
         chi = self.character()
-        return [weight1.modular_ratio_to_prec(chi, f, prec) for f in
-            weight1.hecke_stable_subspace(chi)]
+        return [
+            weight1.modular_ratio_to_prec(chi, f, prec)
+            for f in weight1.hecke_stable_subspace(chi)
+        ]
 
     def _pari_init_(self):
         """
@@ -365,6 +376,7 @@ class CuspidalSubmodule_wt1_eps(CuspidalSubmodule):
             1
         """
         from sage.libs.pari import pari
+
         return pari.mfinit([self.level(), self.weight(), self.character()], 1)
 
 
@@ -399,8 +411,10 @@ class CuspidalSubmodule_wt1_gH(CuspidalSubmodule):
         dim = 0
         for c in chars:
             chi = c.minimize_base_ring()
-            Bchi = [weight1.modular_ratio_to_prec(chi, f, prec)
-                for f in weight1.hecke_stable_subspace(chi) ]
+            Bchi = [
+                weight1.modular_ratio_to_prec(chi, f, prec)
+                for f in weight1.hecke_stable_subspace(chi)
+            ]
             if Bchi == []:
                 continue
             if chi.base_ring() == QQ:
@@ -430,11 +444,11 @@ class CuspidalSubmodule_wt1_gH(CuspidalSubmodule):
         if c >= prec:
             verbose("Precision %s insufficient to determine basis" % prec, level=1)
         else:
-            verbose("Minimal precision for basis: %s" % (c+1), level=1)
+            verbose("Minimal precision for basis: %s" % (c + 1), level=1)
             t = big_mat[:, prec:]
             assert echelon_basis_mat == t * basis_mat
             self.__transformation_matrix = t
-            self._char_basis = [R(f.list(), c+1) for f in basis_mat.rows()]
+            self._char_basis = [R(f.list(), c + 1) for f in basis_mat.rows()]
 
         return [R(f.list(), prec) for f in echelon_basis_mat.rows() if f != 0]
 
@@ -456,7 +470,7 @@ class CuspidalSubmodule_wt1_gH(CuspidalSubmodule):
             [ 1  0  0  0 -1  0  1]
             [ 0  0  1  0  0 -1  0]
         """
-        self.q_expansion_basis() # triggers iterative computation
+        self.q_expansion_basis()  # triggers iterative computation
         return self.__transformation_matrix
 
     def _compute_diamond_matrix(self, d):
@@ -532,15 +546,18 @@ class CuspidalSubmodule_wt1_gH(CuspidalSubmodule):
             chi = c.minimize_base_ring()
             d = weight1.dimension_wt1_cusp_forms(chi)
             e = chi.base_ring().degree()
-            H = Matrix(QQ, d*e, d*e)
+            H = Matrix(QQ, d * e, d * e)
             from .constructor import CuspForms
+
             M = CuspForms(chi, 1).hecke_matrix(n)
             if e == 1:
                 H = M
             else:
                 for i in range(d):
                     for j in range(d):
-                        H[e*i: e*(i+1), e*j: e*(j+1)] = M[i, j].matrix().transpose()
+                        H[e * i : e * (i + 1), e * j : e * (j + 1)] = (
+                            M[i, j].matrix().transpose()
+                        )
             A = A.block_sum(H)
         t = self._transformation_matrix()
         return t * A * ~t
@@ -550,6 +567,7 @@ class CuspidalSubmodule_g0_Q(CuspidalSubmodule_modsym_qexp):
     r"""
     Space of cusp forms for `\Gamma_0(N)` over `\QQ`.
     """
+
     def _pari_init_(self):
         """
         Conversion to Pari.
@@ -564,6 +582,7 @@ class CuspidalSubmodule_g0_Q(CuspidalSubmodule_modsym_qexp):
             2
         """
         from sage.libs.pari import pari
+
         return pari.mfinit([self.level(), self.weight()], 1)
 
 
@@ -642,6 +661,7 @@ class CuspidalSubmodule_eps(CuspidalSubmodule_modsym_qexp):
         sage: f.qexp(1)
         O(q^1)
     """
+
     pass
 
 
@@ -680,10 +700,8 @@ def _convert_matrix_from_modsyms(symbs, T):
 
     # we repeatedly use these matrices below, so we store them
     # once as lists to save time.
-    hecke_matrix_ls = [symbs.hecke_matrix(m).list()
-                       for m in range(1, r + 1)]
-    hecke_image_ls = [(T * symbs.hecke_matrix(m)).list()
-                      for m in range(1, r + 1)]
+    hecke_matrix_ls = [symbs.hecke_matrix(m).list() for m in range(1, r + 1)]
+    hecke_image_ls = [(T * symbs.hecke_matrix(m)).list() for m in range(1, r + 1)]
 
     # compute the q-expansions of some cusp forms and their
     # images under T_n
@@ -703,5 +721,6 @@ def _convert_matrix_from_modsyms(symbs, T):
     bigmat = Matrix(A, basis).augment(Matrix(A, basis_images))
     bigmat.echelonize()
     pivs = bigmat.pivots()
-    return bigmat.matrix_from_rows_and_columns(list(range(d)),
-                                               [r + x for x in pivs]), pivs
+    return bigmat.matrix_from_rows_and_columns(
+        list(range(d)), [r + x for x in pivs]
+    ), pivs

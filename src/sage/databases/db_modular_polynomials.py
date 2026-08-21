@@ -21,6 +21,7 @@ AUTHORS:
 
 - David Kohel (2006-08-04): initial version
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 William Stein <wstein@gmail.com>
 #       Copyright (C) 2006 David Kohel <kohel@maths.usyd.edu.au>
@@ -54,6 +55,7 @@ def _dbz_to_string(name) -> str:
         '0\n1\n'
     """
     from sage.env import sage_data_paths
+
     for path in sage_data_paths('kohel'):
         filename = Path(path) / name
         if os.path.exists(filename):
@@ -84,9 +86,11 @@ def _dbz_to_integer_list(name) -> list[list]:
         [[3, 0, 1], [2, 0, 48], [1, 1, -1], [1, 0, 768], [0, 0, 4096]]
     """
     from sage.rings.integer import Integer
+
     data = _dbz_to_string(name)
-    return [[Integer(v) for v in row.strip().split(" ")]
-            for row in data.split("\n")[:-1]]
+    return [
+        [Integer(v) for v in row.strip().split(" ")] for row in data.split("\n")[:-1]
+    ]
 
 
 def _dbz_to_integers(name) -> list:
@@ -98,6 +102,7 @@ def _dbz_to_integers(name) -> list:
         [0, 1]
     """
     from sage.rings.integer import Integer
+
     return [Integer(i) for i in _dbz_to_string(name).split()]
 
 
@@ -215,6 +220,7 @@ class ClassicalModularPolynomialDatabase(ModularPolynomialDatabase):
     The database of classical modular polynomials, i.e. the polynomials
     Phi_N(X,Y) relating the j-functions j(q) and j(q^N).
     """
+
     model = "Cls"
 
 
@@ -224,6 +230,7 @@ class DedekindEtaModularPolynomialDatabase(ModularPolynomialDatabase):
     of Dedekind eta functions, well-defined on X_0(N), relating x(q) and
     the j-function j(q).
     """
+
     model = "Eta"
 
 
@@ -233,6 +240,7 @@ class DedekindEtaModularCorrespondenceDatabase(ModularCorrespondenceDatabase):
     the model of the curves `X_0(p) = \Bold{P}^1` are specified by quotients of
     Dedekind's eta function.
     """
+
     model = "EtaCrr"
 
 
@@ -242,6 +250,7 @@ class AtkinModularPolynomialDatabase(ModularPolynomialDatabase):
     x is a function on invariant under the Atkin-Lehner invariant,
     with pole of minimal order at infinity.
     """
+
     model = "Atk"
 
 

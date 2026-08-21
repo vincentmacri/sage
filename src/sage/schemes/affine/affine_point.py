@@ -34,6 +34,7 @@ _NumberFields = NumberFields()
 # coordinates.
 # --------------------------------------------------------------------
 
+
 class SchemeMorphism_point_affine(SchemeMorphism_point):
     """
     A rational point on an affine scheme.
@@ -53,6 +54,7 @@ class SchemeMorphism_point_affine(SchemeMorphism_point):
         sage: A(1, 2)
         (1, 2)
     """
+
     def __init__(self, X, v, check=True):
         """
         The Python constructor.
@@ -69,6 +71,7 @@ class SchemeMorphism_point_affine(SchemeMorphism_point):
         SchemeMorphism.__init__(self, X)
         if check:
             from sage.categories.commutative_rings import CommutativeRings
+
             if isinstance(v, SchemeMorphism):
                 v = list(v)
             else:
@@ -82,7 +85,9 @@ class SchemeMorphism_point_affine(SchemeMorphism_point):
             if len(v) != d:
                 raise TypeError("argument v (=%s) must have %s coordinates" % (v, d))
             if not isinstance(v, (list, tuple)):
-                raise TypeError("argument v (= %s) must be a scheme point, list, or tuple" % str(v))
+                raise TypeError(
+                    "argument v (= %s) must be a scheme point, list, or tuple" % str(v)
+                )
             # Make sure the coordinates all lie in the appropriate ring
             v = Sequence(v, X.value_ring())
             # Verify that the point satisfies the equations of X.
@@ -194,14 +199,27 @@ class SchemeMorphism_point_affine(SchemeMorphism_point):
         """
         if self.domain().base_ring() == ZZ:
             from sage.rings.real_mpfr import RealField
+
             if prec is None:
                 R = RealField()
             else:
                 R = RealField(prec)
-            H = max([self[i].abs() for i in range(self.codomain().ambient_space().dimension_relative())])
+            H = max(
+                [
+                    self[i].abs()
+                    for i in range(self.codomain().ambient_space().dimension_relative())
+                ]
+            )
             return R(max(H, 1)).log()
-        if self.domain().base_ring() in _NumberFields or isinstance(self.domain().base_ring(), sage.rings.abc.Order):
-            return max([self[i].global_height(prec) for i in range(self.codomain().ambient_space().dimension_relative())])
+        if self.domain().base_ring() in _NumberFields or isinstance(
+            self.domain().base_ring(), sage.rings.abc.Order
+        ):
+            return max(
+                [
+                    self[i].global_height(prec)
+                    for i in range(self.codomain().ambient_space().dimension_relative())
+                ]
+            )
         raise NotImplementedError("must be over a number field or a number field Order")
 
     def homogenize(self, n):
@@ -234,7 +252,6 @@ class SchemeMorphism_point_affine(SchemeMorphism_point):
 
 
 class SchemeMorphism_point_affine_field(SchemeMorphism_point_affine):
-
     def __hash__(self):
         r"""
         Compute the hash value of this affine point.
@@ -315,6 +332,7 @@ class SchemeMorphism_point_affine_field(SchemeMorphism_point_affine):
                 return self
             # create a CoordinateFunction that gets the relative coordinates in terms of powers
             from sage.rings.number_field.number_field_element import CoordinateFunction
+
             v = L.gen()
             V, from_V, to_V = L.relative_vector_space()
             h = L(1)
@@ -367,6 +385,7 @@ class SchemeMorphism_point_affine_field(SchemeMorphism_point_affine):
             TypeError: this point must be a point on an affine subscheme
         """
         from sage.schemes.affine.affine_space import AffineSpace_generic
+
         if isinstance(self.codomain(), AffineSpace_generic):
             raise TypeError("this point must be a point on an affine subscheme")
         return self.codomain().intersection_multiplicity(X, self)
@@ -392,6 +411,7 @@ class SchemeMorphism_point_affine_field(SchemeMorphism_point_affine):
             2
         """
         from sage.schemes.affine.affine_space import AffineSpace_generic
+
         if isinstance(self.codomain(), AffineSpace_generic):
             raise TypeError("this point must be a point on an affine subscheme")
         return self.codomain().multiplicity(self)
@@ -421,7 +441,6 @@ class SchemeMorphism_point_affine_field(SchemeMorphism_point_affine):
 
 
 class SchemeMorphism_point_affine_finite_field(SchemeMorphism_point_affine_field):
-
     def __hash__(self):
         r"""
         Return the integer hash of the point.

@@ -43,8 +43,9 @@ def max_det_prime(n):
     return Integer(8388593)
 
 
-def det_from_modp_and_divisor(A, d, p, z_mod, moduli,
-                              z_so_far=ZZ.one(), N_so_far=ZZ.one()):
+def det_from_modp_and_divisor(
+    A, d, p, z_mod, moduli, z_so_far=ZZ.one(), N_so_far=ZZ.one()
+):
     """
     This is used for internal purposes for computing determinants
     quickly (with the hybrid `p`-adic / multimodular algorithm).
@@ -83,7 +84,7 @@ def det_from_modp_and_divisor(A, d, p, z_mod, moduli,
     z_mod.append(z)
     moduli.append(p)
     z = CRT_list([z_so_far, z], [N_so_far, p])
-    N = N_so_far*p
+    N = N_so_far * p
 
     if z > N // 2:
         z -= N
@@ -161,19 +162,23 @@ def det_given_divisor(A, d, proof=True, stabilize=2):
     N_so_far = 1
     if proof:
         N = 1
-        B = (2 * 10**A.hadamard_bound()) // d + 1
+        B = (2 * 10 ** A.hadamard_bound()) // d + 1
         dd = d
         # bad verbose statement, since computing the log overflows!
         est = int(RR(B).log() / RR(p).log()) + 1
         cnt = 1
-        verbose("Multimodular det -- need to use about %s primes." % est,
-                level=1)
+        verbose("Multimodular det -- need to use about %s primes." % est, level=1)
         while N < B:
             if d % p != 0:
                 tm = cputime()
-                dd, z_so_far, N_so_far = det_from_modp_and_divisor(A, d, p, z_mod, moduli, z_so_far, N_so_far)
+                dd, z_so_far, N_so_far = det_from_modp_and_divisor(
+                    A, d, p, z_mod, moduli, z_so_far, N_so_far
+                )
                 N *= p
-                verbose("computed det mod p=%s which is %s (of about %s)" % (p, cnt, est), tm)
+                verbose(
+                    "computed det mod p=%s which is %s (of about %s)" % (p, cnt, est),
+                    tm,
+                )
             p = previous_prime(p)
             cnt += 1
         return dd
@@ -181,7 +186,9 @@ def det_given_divisor(A, d, proof=True, stabilize=2):
     while True:
         if d % p:
             tm = cputime()
-            dd, z_so_far, N_so_far = det_from_modp_and_divisor(A, d, p, z_mod, moduli, z_so_far, N_so_far)
+            dd, z_so_far, N_so_far = det_from_modp_and_divisor(
+                A, d, p, z_mod, moduli, z_so_far, N_so_far
+            )
             verbose("computed det mod %s" % p, tm)
             val.append(dd)
             if len(val) >= stabilize and len(set(val[-stabilize:])) == 1:
@@ -319,7 +326,7 @@ def add_column_fallback(B, a, proof):
     tt = verbose('add column fallback...')
     W = B.augment(matrix(ZZ, B.nrows(), a.list()))
     H, _ = hnf(W, proof)
-    C = H.matrix_from_columns([H.ncols()-1])
+    C = H.matrix_from_columns([H.ncols() - 1])
     verbose('finished add column fallback', tt)
     return C
 
@@ -359,7 +366,7 @@ def solve_system_with_difficult_last_row(B, a):
     #    by a random very nice row.
     C = copy(B)
     while True:
-        C[C.nrows()-1] = random_matrix(ZZ, 1, C.ncols()).row(0)
+        C[C.nrows() - 1] = random_matrix(ZZ, 1, C.ncols()).row(0)
         # 2. Then we find the unique solution to C * x = a
         try:
             x = C.solve_right(a)
@@ -370,7 +377,7 @@ def solve_system_with_difficult_last_row(B, a):
 
     # 3. We next delete the last row of B and find a basis vector k
     #    for the 1-dimensional kernel.
-    D = B.matrix_from_rows(range(C.nrows()-1))
+    D = B.matrix_from_rows(range(C.nrows() - 1))
     N = D._rational_kernel_iml()
     if N.ncols() != 1:
         verbose("Try difficult solve again with different random vector")
@@ -396,7 +403,7 @@ def solve_system_with_difficult_last_row(B, a):
 
     w = B[-1]  # last row of B
     a_prime = a[-1]
-    lhs = w*k
+    lhs = w * k
     rhs = a_prime - w * x
 
     if lhs[0] == 0:
@@ -404,7 +411,7 @@ def solve_system_with_difficult_last_row(B, a):
         return solve_system_with_difficult_last_row(B, a)
 
     alpha = rhs[0] / lhs[0]
-    z = x + alpha*k
+    z = x + alpha * k
     return z
 
 
@@ -564,10 +571,10 @@ def hnf_square(A, proof):
         raise ValueError("matrix must have full rank")
 
     t = verbose("starting slicings")
-    B = A.matrix_from_rows(range(m-2)).matrix_from_columns(range(n-1))
-    c = A.matrix_from_rows([m-2]).matrix_from_columns(range(n-1))
-    d = A.matrix_from_rows([m-1]).matrix_from_columns(range(n-1))
-    b = A.matrix_from_columns([n-1]).matrix_from_rows(range(m-2))
+    B = A.matrix_from_rows(range(m - 2)).matrix_from_columns(range(n - 1))
+    c = A.matrix_from_rows([m - 2]).matrix_from_columns(range(n - 1))
+    d = A.matrix_from_rows([m - 1]).matrix_from_columns(range(n - 1))
+    b = A.matrix_from_columns([n - 1]).matrix_from_rows(range(m - 2))
     verbose("done slicing", t)
 
     try:
@@ -592,14 +599,18 @@ def hnf_square(A, proof):
         # A nasty example is A = n*random_matrix(ZZ,m), where
         # this algorithm gets killed.  This is not random input though.
         f = W.gcd()
-        g = g / (f**W.nrows())
+        g = g / (f ** W.nrows())
         if 2 * g <= CUTOFF:
-            verbose("Found common factor of %s -- dividing out; get new g = %s" % (f, g))
+            verbose(
+                "Found common factor of %s -- dividing out; get new g = %s" % (f, g)
+            )
             W0 = (W / f).change_ring(ZZ)
             H = W0._hnf_mod(2 * g)
             H *= f
         else:
-            verbose("Falling back to PARI HNF since input matrix is ill conditioned for p-adic hnf algorithm.")
+            verbose(
+                "Falling back to PARI HNF since input matrix is ill conditioned for p-adic hnf algorithm."
+            )
             # We need more clever preconditioning?
             # It is important to *not* just do the submatrix, since
             # the whole rest of the algorithm will likely be very slow in
@@ -611,16 +622,18 @@ def hnf_square(A, proof):
     else:
         H = W._hnf_mod(2 * g)
 
-    x = add_column(W, H, b.stack(matrix(1, 1,
-                                        [k*A[m-2, m-1] + l*A[m-1, m-1]])),
-                   proof)
+    x = add_column(
+        W, H, b.stack(matrix(1, 1, [k * A[m - 2, m - 1] + l * A[m - 1, m - 1]])), proof
+    )
     Hprime = H.augment(x)
     pivots = pivots_of_hnf_matrix(Hprime)
 
-    Hprime, pivots = add_row(Hprime, A.matrix_from_rows([m - 2]),
-                             pivots, include_zero_rows=False)
-    Hprime, pivots = add_row(Hprime, A.matrix_from_rows([m - 1]),
-                             pivots, include_zero_rows=False)
+    Hprime, pivots = add_row(
+        Hprime, A.matrix_from_rows([m - 2]), pivots, include_zero_rows=False
+    )
+    Hprime, pivots = add_row(
+        Hprime, A.matrix_from_rows([m - 1]), pivots, include_zero_rows=False
+    )
     return Hprime.matrix_from_rows(range(m))
 
 
@@ -742,7 +755,7 @@ def ones(H, pivots) -> tuple[list, list, list, list]:
             onerow.append(i)
     onecol_set = set(onecol)
     non_onerow = [j for j in range(len(pivots)) if j not in onerow]
-    non_onecol = [j for j in range(H.ncols()) if j not in onecol_set][:len(non_onerow)]
+    non_onecol = [j for j in range(H.ncols()) if j not in onecol_set][: len(non_onerow)]
     return onecol, onerow, non_onecol, non_onerow
 
 
@@ -796,9 +809,12 @@ def extract_ones_data(H, pivots):
         C = H.matrix_from_rows_and_columns(onerow, non_onecol)
         # Extract submatrix of all non-onecol columns and other rows
         D = H.matrix_from_rows_and_columns(non_onerow, non_onecol).transpose()
-        tt = verbose("extract ones -- INVERT %s x %s" % (len(non_onerow), len(non_onecol)), level=1)
+        tt = verbose(
+            "extract ones -- INVERT %s x %s" % (len(non_onerow), len(non_onecol)),
+            level=1,
+        )
         try:
-            E = D**(-1)
+            E = D ** (-1)
         except ZeroDivisionError:
             C = D = E = None
         verbose("done inverting", tt, level=1)
@@ -839,7 +855,9 @@ def is_in_hnf_form(H, pivots) -> bool:
                     return False
             for i in range(r):
                 if H[i, j] < 0 or H[i, j] >= H[r, j]:
-                    verbose('not HNF because negative or too big above pivot position', tt)
+                    verbose(
+                        'not HNF because negative or too big above pivot position', tt
+                    )
                     return False
             r += 1
         else:
@@ -913,7 +931,9 @@ def probable_hnf(A, include_zero_rows, proof) -> tuple:
         # raise
         # this signals that we must fallback to PARI
         verbose("generic random modular HNF algorithm failed -- we fall back to PARI")
-        H = A.hermite_form(algorithm='pari', include_zero_rows=include_zero_rows, proof=proof)
+        H = A.hermite_form(
+            algorithm='pari', include_zero_rows=include_zero_rows, proof=proof
+        )
         return H, H.pivots()
 
     # The transformation matrix to HNF is the unique
@@ -962,7 +982,9 @@ def probable_hnf(A, include_zero_rows, proof) -> tuple:
                 continue
             if E is None:
                 H, pivots = add_row(H, v, pivots, include_zero_rows=False)
-                C, D, E, onecol, onerow, non_onecol, non_onerow = extract_ones_data(H, pivots)
+                C, D, E, onecol, onerow, non_onecol, non_onerow = extract_ones_data(
+                    H, pivots
+                )
                 if not proof and len(non_onecol) == 0:
                     # Identity matrix -- done
                     verbose("hnf -- got identity matrix -- early abort (1)")
@@ -972,14 +994,15 @@ def probable_hnf(A, include_zero_rows, proof) -> tuple:
             else:
                 z = A.matrix_from_rows_and_columns([i], non_onecol)
                 w = A.matrix_from_rows_and_columns([i], onecol)
-                tt = verbose("checking denom (%s x %s)" % (D.nrows(),
-                                                           D.ncols()))
+                tt = verbose("checking denom (%s x %s)" % (D.nrows(), D.ncols()))
                 Y = (z - w * C).transpose()
                 k = E * Y
                 verbose("done checking denom", tt)
                 if k.denominator() != 1:
                     H, pivots = add_row(H, v, pivots, include_zero_rows=False)
-                    D = H.matrix_from_rows_and_columns(non_onerow, non_onecol).transpose()
+                    D = H.matrix_from_rows_and_columns(
+                        non_onerow, non_onecol
+                    ).transpose()
                 nn = ones(H, pivots)
                 if not proof and len(nn[2]) == 0:
                     verbose("hnf -- got identity matrix -- early abort (2)")
@@ -1080,24 +1103,26 @@ def hnf(A, include_zero_rows=True, proof=True):
         return A, pivots
 
     if not proof:
-        H, pivots = probable_hnf(A, include_zero_rows=include_zero_rows,
-                                 proof=False)
+        H, pivots = probable_hnf(A, include_zero_rows=include_zero_rows, proof=False)
         if not include_zero_rows and len(pivots) > H.nrows():
             return H.matrix_from_rows(range(len(pivots))), pivots
 
     while True:
         try:
-            H, pivots = probable_hnf(A, include_zero_rows=include_zero_rows,
-                                     proof=True)
+            H, pivots = probable_hnf(A, include_zero_rows=include_zero_rows, proof=True)
         except ValueError:
-            verbose("The attempt failed since the pivots must have been wrong. We try again.")
+            verbose(
+                "The attempt failed since the pivots must have been wrong. We try again."
+            )
             continue
 
         if is_in_hnf_form(H, pivots):
             if not include_zero_rows and len(pivots) > H.nrows():
                 H = H.matrix_from_rows(range(len(pivots)))
             return H, pivots
-        verbose("After attempt the return matrix is not in HNF form since pivots must have been wrong. We try again.")
+        verbose(
+            "After attempt the return matrix is not in HNF form since pivots must have been wrong. We try again."
+        )
 
 
 def hnf_with_transformation(A, proof=True):
@@ -1196,17 +1221,20 @@ def benchmark_magma_hnf(nrange, bits=4):
         ('magma', 100, 32, ...),
     """
     from sage.interfaces.magma import magma
+
     b = 2**bits
     for n in nrange:
-        a = magma('MatrixAlgebra(IntegerRing(),%s)![Random(%s,%s) : i in [1..%s]]' % (n, -b, b, n**2))
+        a = magma(
+            'MatrixAlgebra(IntegerRing(),%s)![Random(%s,%s) : i in [1..%s]]'
+            % (n, -b, b, n**2)
+        )
         t = magma.cputime()
         a.EchelonForm()
         tm = magma.cputime(t)
         print('%s,' % (('magma', n, bits, tm),))
 
 
-def sanity_checks(times=50, n=8, m=5, proof=True, stabilize=2,
-                  check_using_magma=True):
+def sanity_checks(times=50, n=8, m=5, proof=True, stabilize=2, check_using_magma=True):
     """
     Run random sanity checks on the modular `p`-adic HNF with tall and wide matrices
     both dense and sparse.
@@ -1258,27 +1286,28 @@ def sanity_checks(times=50, n=8, m=5, proof=True, stabilize=2,
             if check_using_magma:
                 if magma(hnf(a)[0]) != magma(a).EchelonForm():
                     print("bug computing hnf of a matrix")
-                    print('a = matrix(ZZ, %s, %s, %s)' % (a.nrows(), a.ncols(),
-                                                          a.list()))
+                    print(
+                        'a = matrix(ZZ, %s, %s, %s)' % (a.nrows(), a.ncols(), a.list())
+                    )
                     return
             else:
                 if hnf(a)[0] != a.echelon_form(algorithm='pari'):
                     print("bug computing hnf of a matrix")
-                    print('a = matrix(ZZ, %s, %s, %s)' % (a.nrows(), a.ncols(),
-                                                          a.list()))
+                    print(
+                        'a = matrix(ZZ, %s, %s, %s)' % (a.nrows(), a.ncols(), a.list())
+                    )
                     return
         print(" (done)")
+
     print("small %s x %s" % (n, m))
     __do_check([random_matrix(ZZ, n, m, x=-1, y=1) for _ in range(times)])
     print("big %s x %s" % (n, m))
-    __do_check([random_matrix(ZZ, n, m, x=-2**32, y=2**32)
-                for _ in range(times)])
+    __do_check([random_matrix(ZZ, n, m, x=-(2**32), y=2**32) for _ in range(times)])
 
     print("small %s x %s" % (m, n))
     __do_check([random_matrix(ZZ, m, n, x=-1, y=1) for _ in range(times)])
     print("big %s x %s" % (m, n))
-    __do_check([random_matrix(ZZ, m, n, x=-2**32, y=2**32)
-                for _ in range(times)])
+    __do_check([random_matrix(ZZ, m, n, x=-(2**32), y=2**32) for _ in range(times)])
 
     print("sparse %s x %s" % (n, m))
     __do_check([random_matrix(ZZ, n, m, density=0.1) for _ in range(times)])
@@ -1286,7 +1315,7 @@ def sanity_checks(times=50, n=8, m=5, proof=True, stabilize=2,
     __do_check([random_matrix(ZZ, m, n, density=0.1) for _ in range(times)])
 
     print("ill conditioned -- 1000*A -- %s x %s" % (n, m))
-    __do_check([1000*random_matrix(ZZ, n, m, x=-1, y=1) for _ in range(times)])
+    __do_check([1000 * random_matrix(ZZ, n, m, x=-1, y=1) for _ in range(times)])
 
     print("ill conditioned -- 1000*A but one row -- %s x %s" % (n, m))
     v = []

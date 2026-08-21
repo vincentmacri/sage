@@ -132,7 +132,6 @@ AUTHORS:
 #   * Cythonize the Buchberger algorithm for toric ideals
 #   * Use the (multiple) weighted homogeneity during Groebner basis computations
 
-
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.misc.misc_c import prod
 from sage.matrix.constructor import matrix
@@ -196,10 +195,14 @@ class ToricIdeal(MPolynomialIdeal):
         ValueError: you must not specify both variable names and a polynomial ring
     """
 
-    def __init__(self, A,
-                 names='z', base_ring=QQ,
-                 polynomial_ring=None,
-                 algorithm='HostenSturmfels'):
+    def __init__(
+        self,
+        A,
+        names='z',
+        base_ring=QQ,
+        polynomial_ring=None,
+        algorithm='HostenSturmfels',
+    ):
         r"""
         Create an ideal and a multivariate polynomial ring containing it.
 
@@ -229,7 +232,9 @@ class ToricIdeal(MPolynomialIdeal):
         self._A = matrix(ZZ, A)
         if polynomial_ring:
             if names != 'z' or base_ring is not QQ:
-                raise ValueError('you must not specify both variable names and a polynomial ring')
+                raise ValueError(
+                    'you must not specify both variable names and a polynomial ring'
+                )
             self._names = [str(g) for g in polynomial_ring.gens()]
             self._base_ring = polynomial_ring.base_ring()
             ring = polynomial_ring
@@ -328,8 +333,9 @@ class ToricIdeal(MPolynomialIdeal):
             sage: z0 < z1 and z1 < z2
             True
         """
-        return PolynomialRing(self._base_ring, self._names,
-                              self.nvariables(), order=term_order)
+        return PolynomialRing(
+            self._base_ring, self._names, self.nvariables(), order=term_order
+        )
 
     def _naive_ideal(self, ring):
         r"""
@@ -354,8 +360,8 @@ class ToricIdeal(MPolynomialIdeal):
         x = ring.gens()
         binomials = []
         for row in self.ker().matrix().rows():
-            xpos = prod(x[i]**max(row[i], 0) for i in range(len(x)))
-            xneg = prod(x[i]**max(-row[i], 0) for i in range(len(x)))
+            xpos = prod(x[i] ** max(row[i], 0) for i in range(len(x)))
+            xneg = prod(x[i] ** max(-row[i], 0) for i in range(len(x)))
             binomials.append(xpos - xneg)
         return ring.ideal(binomials)
 
@@ -409,9 +415,12 @@ class ToricIdeal(MPolynomialIdeal):
         def divide_by_x_n(p):
             d_old = p.monomial_coefficients()
             power = min(e[0] for e in d_old)
-            d_new = {subtract(exponent, power): coefficient
-                     for exponent, coefficient in d_old.items()}
+            d_new = {
+                subtract(exponent, power): coefficient
+                for exponent, coefficient in d_old.items()
+            }
             return p.parent()(d_new)
+
         basis = [divide_by_x_n(b) for b in basis]
         quotient = ring.ideal(basis)
         return quotient.subs(x_to_y)

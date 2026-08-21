@@ -1,7 +1,8 @@
 """
 Circles
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
 #                     2008 Mike Hansen <mhansen@gmail.com>,
@@ -16,7 +17,7 @@ Circles
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from .primitive import GraphicPrimitive
 from sage.misc.decorators import options, rename_keyword
 from sage.plot.colors import to_mpl_color
@@ -57,6 +58,7 @@ class Circle(GraphicPrimitive):
 
         sage: C = circle((2,3), 5)
     """
+
     def __init__(self, x, y, r, options):
         """
         Initialize base class Circle.
@@ -92,9 +94,12 @@ class Circle(GraphicPrimitive):
             2.0
         """
         from sage.plot.plot import minmax_data
-        return minmax_data([self.x - self.r, self.x + self.r],
-                           [self.y - self.r, self.y + self.r],
-                           dict=True)
+
+        return minmax_data(
+            [self.x - self.r, self.x + self.r],
+            [self.y - self.r, self.y + self.r],
+            dict=True,
+        )
 
     def _allowed_options(self):
         """
@@ -108,20 +113,22 @@ class Circle(GraphicPrimitive):
             sage: p[0]._allowed_options()['facecolor']
             '2D only: The color of the face as an RGB tuple.'
         """
-        return {'alpha': 'How transparent the figure is.',
-                'fill': 'Whether or not to fill the circle.',
-                'legend_label': 'The label for this item in the legend.',
-                'legend_color': 'The color of the legend text.',
-                'thickness': 'How thick the border of the circle is.',
-                'edgecolor': '2D only: The color of the edge as an RGB tuple.',
-                'facecolor': '2D only: The color of the face as an RGB tuple.',
-                'rgbcolor': 'The color (edge and face) as an RGB tuple.',
-                'hue': 'The color given as a hue.',
-                'zorder': '2D only: The layer level in which to draw',
-                'linestyle': "2D only: The style of the line, which is one of "
-                "'dashed', 'dotted', 'solid', 'dashdot', or '--', ':', '-', '-.', "
-                "respectively.",
-                'clip': 'Whether or not to clip the circle.'}
+        return {
+            'alpha': 'How transparent the figure is.',
+            'fill': 'Whether or not to fill the circle.',
+            'legend_label': 'The label for this item in the legend.',
+            'legend_color': 'The color of the legend text.',
+            'thickness': 'How thick the border of the circle is.',
+            'edgecolor': '2D only: The color of the edge as an RGB tuple.',
+            'facecolor': '2D only: The color of the face as an RGB tuple.',
+            'rgbcolor': 'The color (edge and face) as an RGB tuple.',
+            'hue': 'The color given as a hue.',
+            'zorder': '2D only: The layer level in which to draw',
+            'linestyle': "2D only: The style of the line, which is one of "
+            "'dashed', 'dotted', 'solid', 'dashdot', or '--', ':', '-', '-.', "
+            "respectively.",
+            'clip': 'Whether or not to clip the circle.',
+        }
 
     def _repr_(self):
         """
@@ -146,7 +153,9 @@ class Circle(GraphicPrimitive):
         from sage.plot.misc import get_matplotlib_linestyle
 
         options = self.options()
-        p = patches.Circle((float(self.x), float(self.y)), float(self.r), clip_on=options['clip'])
+        p = patches.Circle(
+            (float(self.x), float(self.y)), float(self.r), clip_on=options['clip']
+        )
         if not options['clip']:
             self._bbox_extra_artists = [p]
         p.set_linewidth(float(options['thickness']))
@@ -159,7 +168,9 @@ class Circle(GraphicPrimitive):
             ec = fc = to_mpl_color(options['rgbcolor'])
         p.set_edgecolor(ec)
         p.set_facecolor(fc)
-        p.set_linestyle(get_matplotlib_linestyle(options['linestyle'],return_type='long'))
+        p.set_linestyle(
+            get_matplotlib_linestyle(options['linestyle'], return_type='long')
+        )
         p.set_label(options['legend_label'])
         z = int(options.pop('zorder', 0))
         p.set_zorder(z)
@@ -210,26 +221,38 @@ class Circle(GraphicPrimitive):
         """
         options = dict(self.options())
         fill = options['fill']
-        for s in ['clip', 'edgecolor', 'facecolor', 'fill', 'linestyle',
-                'zorder']:
+        for s in ['clip', 'edgecolor', 'facecolor', 'fill', 'linestyle', 'zorder']:
             if s in options:
                 del options[s]
 
         n = 50
-        dt = float(2*pi/n)
+        dt = float(2 * pi / n)
         x, y, r = self.x, self.y, self.r
-        xdata = [x+r*cos(t*dt) for t in range(n+1)]
-        ydata = [y+r*sin(t*dt) for t in range(n+1)]
+        xdata = [x + r * cos(t * dt) for t in range(n + 1)]
+        ydata = [y + r * sin(t * dt) for t in range(n + 1)]
         if fill:
             from .polygon import Polygon
+
             return Polygon(xdata, ydata, options).plot3d(z)
         from .line import Line
-        return Line(xdata, ydata, options).plot3d().translate((0,0,z))
+
+        return Line(xdata, ydata, options).plot3d().translate((0, 0, z))
 
 
 @rename_keyword(color='rgbcolor')
-@options(alpha=1, fill=False, thickness=1, edgecolor='blue', facecolor='blue', linestyle='solid',
-         zorder=5, legend_label=None, legend_color=None, clip=True, aspect_ratio=1.0)
+@options(
+    alpha=1,
+    fill=False,
+    thickness=1,
+    edgecolor='blue',
+    facecolor='blue',
+    linestyle='solid',
+    zorder=5,
+    legend_label=None,
+    legend_color=None,
+    clip=True,
+    aspect_ratio=1.0,
+)
 def circle(center, radius, **options):
     """
     Return a circle at a point center = `(x,y)` (or `(x,y,z)` and
@@ -429,5 +452,6 @@ def circle(center, radius, **options):
         return g
     if len(center) == 3:
         return g[0].plot3d(z=center[2])
-    raise ValueError('the center of a plotted circle should have '
-                     'two or three coordinates')
+    raise ValueError(
+        'the center of a plotted circle should have two or three coordinates'
+    )

@@ -23,9 +23,11 @@ AUTHORS:
 from sage.categories.groups import Groups
 from sage.categories.poor_man_map import PoorManMap
 from sage.groups.group import Group, AbelianGroup
-from sage.monoids.indexed_free_monoid import (IndexedMonoid,
-                                              IndexedFreeMonoidElement,
-                                              IndexedFreeAbelianMonoidElement)
+from sage.monoids.indexed_free_monoid import (
+    IndexedMonoid,
+    IndexedFreeMonoidElement,
+    IndexedFreeAbelianMonoidElement,
+)
 from sage.misc.cachefunc import cached_method
 import sage.data_structures.blas_dict as blas
 from sage.rings.integer import Integer
@@ -64,6 +66,7 @@ class IndexedGroup(IndexedMonoid):
         sage: G.is_finite()
         True
     """
+
     def order(self):
         r"""
         Return the number of elements of ``self``, which is `\infty` unless
@@ -131,7 +134,9 @@ class IndexedGroup(IndexedMonoid):
             [F['a'], F['b'], F['c'], F['d'], F['e']]
         """
         if self._indices.cardinality() == infinity:
-            gen = PoorManMap(self.gen, domain=self._indices, codomain=self, name="Generator map")
+            gen = PoorManMap(
+                self.gen, domain=self._indices, codomain=self, name="Generator map"
+            )
             return Family(self._indices, gen)
         return Family(self._indices, self.gen)
 
@@ -151,6 +156,7 @@ class IndexedFreeGroup(IndexedGroup, Group):
         sage: G
         Free group indexed by {'a', 'b', 'c', 'd', 'e'}
     """
+
     def __init__(self, indices, prefix, category=None, **kwds):
         """
         Initialize ``self``.
@@ -239,7 +245,7 @@ class IndexedFreeGroup(IndexedGroup, Group):
                 sage: len(elt)
                 7
             """
-            return sum(abs(exp) for gen,exp in self._monomial)
+            return sum(abs(exp) for gen, exp in self._monomial)
 
         length = __len__
 
@@ -285,8 +291,9 @@ class IndexedFreeGroup(IndexedGroup, Group):
                 sage: x * ~x
                 1
             """
-            return self.__class__(self.parent(),
-                   tuple((x[0], -x[1]) for x in reversed(self._monomial)))
+            return self.__class__(
+                self.parent(), tuple((x[0], -x[1]) for x in reversed(self._monomial))
+            )
 
         def to_word_list(self) -> list[tuple]:
             """
@@ -302,8 +309,11 @@ class IndexedFreeGroup(IndexedGroup, Group):
                 sage: x.to_word_list()
                 [(0, 1), (1, 1), (1, 1), (4, 1), (0, -1)]
             """
-            return [(k, 1 if e > 0 else -1) for k, e in self._sorted_items()
-                    for dummy in range(abs(e))]
+            return [
+                (k, 1 if e > 0 else -1)
+                for k, e in self._sorted_items()
+                for dummy in range(abs(e))
+            ]
 
 
 class IndexedFreeAbelianGroup(IndexedGroup, AbelianGroup):
@@ -319,6 +329,7 @@ class IndexedFreeAbelianGroup(IndexedGroup, AbelianGroup):
         sage: G
         Free abelian group indexed by {'a', 'b', 'c', 'd', 'e'}
     """
+
     def __init__(self, indices, prefix, category=None, **kwds):
         """
         Initialize ``self``.
@@ -430,8 +441,9 @@ class IndexedFreeAbelianGroup(IndexedGroup, AbelianGroup):
                 sage: (a*b^-2*d^2) * (d^-2*b^2*a^-1)
                 1
             """
-            return self.__class__(self.parent(),
-                                  blas.add(self._monomial, other._monomial))
+            return self.__class__(
+                self.parent(), blas.add(self._monomial, other._monomial)
+            )
 
         def __invert__(self):
             """
@@ -446,7 +458,7 @@ class IndexedFreeAbelianGroup(IndexedGroup, AbelianGroup):
                 sage: x * ~x
                 1
             """
-            return self ** -1
+            return self**-1
 
         def __floordiv__(self, a):
             """
@@ -492,4 +504,6 @@ class IndexedFreeAbelianGroup(IndexedGroup, AbelianGroup):
                 return self
             if n == 0:
                 return self.parent().one()
-            return self.__class__(self.parent(), {k:v*n for k,v in self._monomial.items()})
+            return self.__class__(
+                self.parent(), {k: v * n for k, v in self._monomial.items()}
+            )

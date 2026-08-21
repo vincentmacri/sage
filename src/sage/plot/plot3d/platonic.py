@@ -255,19 +255,24 @@ def tetrahedron(center=(0, 0, 0), size=1, **kwds):
     one = RR.one()
     sqrt2 = RR(2).sqrt()
     sqrt6 = RR(6).sqrt()
-    point_list = [(0, 0, 1),
-                  (2*sqrt2/3, 0, -one/3),
-                  (-sqrt2/3, sqrt6/3, -one/3),
-                  (-sqrt2/3, -sqrt6/3, -one/3)]
-    face_list = [[0,1,2],[1,3,2],[0,2,3],[0,3,1]]
+    point_list = [
+        (0, 0, 1),
+        (2 * sqrt2 / 3, 0, -one / 3),
+        (-sqrt2 / 3, sqrt6 / 3, -one / 3),
+        (-sqrt2 / 3, -sqrt6 / 3, -one / 3),
+    ]
+    face_list = [[0, 1, 2], [1, 3, 2], [0, 2, 3], [0, 3, 1]]
     if 'aspect_ratio' not in kwds:
         kwds['aspect_ratio'] = [1, 1, 1]
-    return index_face_set(face_list, point_list, enclosed=True, center=center, size=size, **kwds)
+    return index_face_set(
+        face_list, point_list, enclosed=True, center=center, size=size, **kwds
+    )
 
 
 @rename_keyword(alpha='opacity')
-def cube(center=(0, 0, 0), size=1, color=None, frame_thickness=0,
-         frame_color=None, **kwds):
+def cube(
+    center=(0, 0, 0), size=1, color=None, frame_thickness=0, frame_color=None, **kwds
+):
     """
     A 3D cube centered at the origin with default side lengths 1.
 
@@ -391,17 +396,26 @@ def cube(center=(0, 0, 0), size=1, color=None, frame_thickness=0,
 
     - William Stein
     """
-    if isinstance(color, (list, tuple)) and len(color) > 0 and isinstance(color[0], (list, tuple, str)):
-        B = ColorCube(size=[0.5,0.5,0.5], colors=color, **kwds)
+    if (
+        isinstance(color, (list, tuple))
+        and len(color) > 0
+        and isinstance(color[0], (list, tuple, str))
+    ):
+        B = ColorCube(size=[0.5, 0.5, 0.5], colors=color, **kwds)
     else:
         if color is not None:
             kwds['color'] = color
         B = Box(0.5, 0.5, 0.5, **kwds)
     if frame_thickness > 0:
         if frame_color is None:
-            B += frame3d((-0.5,-0.5,-0.5),(0.5,0.5,0.5), thickness=frame_thickness)
+            B += frame3d((-0.5, -0.5, -0.5), (0.5, 0.5, 0.5), thickness=frame_thickness)
         else:
-            B += frame3d((-0.5,-0.5,-0.5),(0.5,0.5,0.5), thickness=frame_thickness, color=frame_color)
+            B += frame3d(
+                (-0.5, -0.5, -0.5),
+                (0.5, 0.5, 0.5),
+                thickness=frame_thickness,
+                color=frame_color,
+            )
     return prep(B, center, size, kwds)
 
 
@@ -517,33 +531,36 @@ def dodecahedron(center=(0, 0, 0), size=1, **kwds):
     sqrt3 = RR(3).sqrt()
     sqrt5 = RR(5).sqrt()
     R3 = RR**3
-    rot = matrix(RR, [[-one / 2, -sqrt3 / 2, 0],
-                      [sqrt3 / 2, -one / 2, 0],
-                      [0, 0, 1]])
+    rot = matrix(RR, [[-one / 2, -sqrt3 / 2, 0], [sqrt3 / 2, -one / 2, 0], [0, 0, 1]])
     rot2 = rot * rot
 
     # The top
     Q = R3([0, 0, 1])
     # The first ring
-    P1 = R3([2*one/3, 0, sqrt5/3])
+    P1 = R3([2 * one / 3, 0, sqrt5 / 3])
     # The second ring
-    R1 = R3([sqrt5/3, 1/sqrt3, one/3])
-    R2 = R3([sqrt5/3, -1/sqrt3, one/3])
+    R1 = R3([sqrt5 / 3, 1 / sqrt3, one / 3])
+    R2 = R3([sqrt5 / 3, -1 / sqrt3, one / 3])
 
-    top = [Q, P1, rot*P1, rot2*P1, R1, rot*R2, rot*R1, rot2*R2, rot2*R1, R2]
+    top = [Q, P1, rot * P1, rot2 * P1, R1, rot * R2, rot * R1, rot2 * R2, rot2 * R1, R2]
     point_list = top + [-p for p in reversed(top)]
 
-    top_faces = [[0,1,4,5,2],
-                 [0,2,6,7,3],
-                 [0,3,8,9,1],
-                 [1,9,13,12,4],
-                 [2,5,11,10,6],
-                 [3,7,15,14,8]]
-    face_list = top_faces + [[19-p for p in reversed(f)] for f in top_faces]
+    top_faces = [
+        [0, 1, 4, 5, 2],
+        [0, 2, 6, 7, 3],
+        [0, 3, 8, 9, 1],
+        [1, 9, 13, 12, 4],
+        [2, 5, 11, 10, 6],
+        [3, 7, 15, 14, 8],
+    ]
+    face_list = top_faces + [[19 - p for p in reversed(f)] for f in top_faces]
 
     if 'aspect_ratio' not in kwds:
-        kwds['aspect_ratio'] = [1,1,1]
-    return index_face_set(face_list, point_list, enclosed=True, center=center, size=size, **kwds)
+        kwds['aspect_ratio'] = [1, 1, 1]
+    return index_face_set(
+        face_list, point_list, enclosed=True, center=center, size=size, **kwds
+    )
+
 
 #    if style == 'vertices' or style == 'edges':
 #        from sage.plot.colors import rainbow

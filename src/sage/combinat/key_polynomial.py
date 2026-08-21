@@ -41,7 +41,10 @@ from sage.combinat.integer_vector import IntegerVectors
 from sage.combinat.permutation import Permutation
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ
-from sage.rings.polynomial.infinite_polynomial_ring import InfinitePolynomialRing, InfinitePolynomialRing_sparse
+from sage.rings.polynomial.infinite_polynomial_ring import (
+    InfinitePolynomialRing,
+    InfinitePolynomialRing_sparse,
+)
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_commutative
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
@@ -88,10 +91,10 @@ def sorting_word(alpha):
     n = len(L)
 
     # bubble sort to get the shortest sorting word
-    for i in range(n-1):
-        for j in range(n-i-1):
+    for i in range(n - 1):
+        for j in range(n - i - 1):
             if L[j] < L[j + 1]:
-                w.append(j+1)
+                w.append(j + 1)
                 L[j], L[j + 1] = L[j + 1], L[j]
     return reversed(w), L
 
@@ -149,8 +152,8 @@ def divided_difference(f, i):
     else:
         z = P.gens()
 
-    si_f = f.subs({z[i]: z[i-1], z[i-1]: z[i]})
-    return (si_f - f) // (z[i] - z[i-1])
+    si_f = f.subs({z[i]: z[i - 1], z[i - 1]: z[i]})
+    return (si_f - f) // (z[i] - z[i - 1])
 
 
 def isobaric_divided_difference(f, w):
@@ -193,9 +196,9 @@ def isobaric_divided_difference(f, w):
     if not hasattr(w, "__iter__"):  # this allows us to pass i instead of a word
         w = [w]
     for i in w:
-        fp = z[i-1] * f
-        si_fp = fp.subs({z[i]: z[i-1], z[i-1]: z[i]})
-        f = (si_fp - fp) // (z[i] - z[i-1])
+        fp = z[i - 1] * f
+        si_fp = fp.subs({z[i]: z[i - 1], z[i - 1]: z[i]})
+        f = (si_fp - fp) // (z[i] - z[i - 1])
     return f
 
 
@@ -241,8 +244,8 @@ def isobaric_divided_difference_bar(f, w):
     if not hasattr(w, "__iter__"):  # this allows us to pass i instead of a word
         w = [w]
     for i in w:
-        sif = f.subs({z[i]: z[i-1], z[i-1]: z[i]})
-        f = z[i] * (f - sif) // (z[i-1] - z[i])
+        sif = f.subs({z[i]: z[i - 1], z[i - 1]: z[i]})
+        f = z[i] * (f - sif) // (z[i - 1] - z[i])
     return f
 
 
@@ -258,6 +261,7 @@ class OperatorPolynomial(CombinatorialFreeModule.Element):
     Parents should implement the divided difference operator as
     a ``staticmethod`` ``_operator``.
     """
+
     def _mul_(self, other):
         r"""
         Multiply the elements ``self`` and ``other``.
@@ -384,6 +388,7 @@ class KeyPolynomial(OperatorPolynomial):
         sage: f in k
         True
     """
+
     def pi(self, w):
         r"""
         Apply the operator `\pi_w` to ``self``.
@@ -456,7 +461,7 @@ class KeyPolynomial(OperatorPolynomial):
         N = max(w) + 1
 
         if P._k is not None and N > P._k:
-            raise ValueError(f"pi_{N-1} does not exist for this polynomial ring")
+            raise ValueError(f"pi_{N - 1} does not exist for this polynomial ring")
 
         ret = P.element_class(P, {})
         for m, c in self._monomial_coefficients.items():
@@ -468,9 +473,9 @@ class KeyPolynomial(OperatorPolynomial):
                 if i == n:
                     m += [0]
                     n += 1
-                if m[i-1] <= m[i]:
+                if m[i - 1] <= m[i]:
                     continue
-                m[i-1], m[i] = m[i], m[i-1]
+                m[i - 1], m[i] = m[i], m[i - 1]
             m = P._indices(m)
             if P._k is None:
                 m = m.trim()
@@ -549,6 +554,7 @@ class AtomPolynomial(OperatorPolynomial):
         sage: f in a
         True
     """
+
     def pibar(self, w):
         r"""
         Apply the operator `\bar{\pi}_w` to ``self``.
@@ -621,7 +627,7 @@ class AtomPolynomial(OperatorPolynomial):
         N = max(w) + 1
 
         if P._k is not None and N > P._k:
-            raise ValueError(f"pi_{N-1} does not exist for this polynomial ring")
+            raise ValueError(f"pi_{N - 1} does not exist for this polynomial ring")
 
         ret = P.element_class(P, {})
         for m, c in self._monomial_coefficients.items():
@@ -632,13 +638,13 @@ class AtomPolynomial(OperatorPolynomial):
                 if i == n:
                     m += [0]
                     n += 1
-                if i > n or m[i-1] == m[i]:
+                if i > n or m[i - 1] == m[i]:
                     m = None
                     break
-                if m[i-1] < m[i]:
+                if m[i - 1] < m[i]:
                     sign = -sign
                     continue
-                m[i-1], m[i] = m[i], m[i-1]
+                m[i - 1], m[i] = m[i], m[i - 1]
             if m is None:
                 continue
             m = P._indices(m)
@@ -707,6 +713,7 @@ class OperatorPolynomialBasis(CombinatorialFreeModule):
     type operators such that the result is a triangular change of basis with
     the natural monomial basis.
     """
+
     @staticmethod
     def __classcall__(cls, R=None, k=None, poly_ring=None, poly_coeffs=False):
         r"""
@@ -734,9 +741,11 @@ class OperatorPolynomialBasis(CombinatorialFreeModule):
             sage: KeyPolynomials(QQ, 3)
             Key polynomial basis over Rational Field
         """
-        poly_type = (PolynomialRing_commutative,
-                     MPolynomialRing_base,
-                     InfinitePolynomialRing_sparse)
+        poly_type = (
+            PolynomialRing_commutative,
+            MPolynomialRing_base,
+            InfinitePolynomialRing_sparse,
+        )
 
         if isinstance(R, poly_type):
             # if a polynomial ring is provided, we need to determine
@@ -778,9 +787,11 @@ class OperatorPolynomialBasis(CombinatorialFreeModule):
         self._k = k
 
         if self._k is not None:
+
             def build_index(m):
                 return self._indices(m)
         else:
+
             def build_index(m):
                 mc = m.monomial_coefficients()
                 v = [0 for _ in range(max(mc, default=-1) + 1)]
@@ -792,20 +803,29 @@ class OperatorPolynomialBasis(CombinatorialFreeModule):
 
         if R is not None:
             if poly_ring:
-                raise ValueError("specify only one of base_ring or poly_ring (not both)")
+                raise ValueError(
+                    "specify only one of base_ring or poly_ring (not both)"
+                )
             if k:
                 self._polynomial_ring = PolynomialRing(R, 'z_', k)
             else:
                 self._polynomial_ring = InfinitePolynomialRing(R, 'z')
         if poly_ring is not None:
             if R is not None:
-                raise ValueError("specify only one of base_ring or poly_ring (not both)")
+                raise ValueError(
+                    "specify only one of base_ring or poly_ring (not both)"
+                )
             R = poly_ring.base_ring()
             self._polynomial_ring = poly_ring
 
-        CombinatorialFreeModule.__init__(self, R, IntegerVectors(k=k),
-                                         category=GradedAlgebrasWithBasis(R),
-                                         prefix=self._prefix, bracket=False)
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            IntegerVectors(k=k),
+            category=GradedAlgebrasWithBasis(R),
+            prefix=self._prefix,
+            bracket=False,
+        )
 
     def _coerce_map_from_(self, R):
         r"""
@@ -984,8 +1004,10 @@ class OperatorPolynomialBasis(CombinatorialFreeModule):
         if f not in self._polynomial_ring:
             try:  # to accept elements of SymbolicRing
                 from sage.calculus.var import var
-                f = f.substitute([d == var(f'z_{i}')
-                                  for i, d in enumerate(f.variables())])
+
+                f = f.substitute(
+                    [d == var(f'z_{i}') for i, d in enumerate(f.variables())]
+                )
                 f = self._polynomial_ring(f)
             except AttributeError:
                 raise ValueError(f"f must be an element of {self._polynomial_ring}")
@@ -1134,6 +1156,7 @@ class KeyPolynomialBasis(OperatorPolynomialBasis):
         sage: (q^2 + q + 1)*k([0,2,2,0,3,2])
         (q^2+q+1)*k[0, 2, 2, 0, 3, 2]
     """
+
     Element = KeyPolynomial
     _name = "Key polynomial basis"
     _prefix = 'k'
@@ -1167,6 +1190,7 @@ class KeyPolynomialBasis(OperatorPolynomialBasis):
             return self.from_polynomial
 
         from sage.combinat.schubert_polynomial import SchubertPolynomialRing_xbasis
+
         if isinstance(R, SchubertPolynomialRing_xbasis):
             return self.from_schubert_polynomial
 
@@ -1221,17 +1245,21 @@ class KeyPolynomialBasis(OperatorPolynomialBasis):
             return self(x)
 
         from sage.combinat.schubert_polynomial import SchubertPolynomial_class
+
         if not isinstance(x, SchubertPolynomial_class):
             raise ValueError('not a Schubert polynomial')
 
         from sage.combinat.diagram import RotheDiagram
+
         out = self.zero()
         if self._k is not None:
+
             def build_elt(wt):
                 wt = list(wt)
                 wt += [0] * (self._k - len(wt))
                 return self[wt]
         else:
+
             def build_elt(wt):
                 return self[wt]
 
@@ -1320,6 +1348,7 @@ class AtomPolynomialBasis(OperatorPolynomialBasis):
         sage: a([10,9,1]) * (z[0] + z[3])
         a[10, 9, 1, 1] + a[11, 9, 1]
     """
+
     Element = AtomPolynomial
     _name = "Atom polynomial basis"
     _prefix = 'a'
@@ -1384,8 +1413,10 @@ class AtomPolynomialBasis(OperatorPolynomialBasis):
             w = list(w)
             if not w:
                 return dom
-            sigma = Permutations(max(w)+1).from_reduced_word(w)
-            return self.sum(dom.pibar(wp.reduced_word()) for wp in sigma.bruhat_smaller())
+            sigma = Permutations(max(w) + 1).from_reduced_word(w)
+            return self.sum(
+                dom.pibar(wp.reduced_word()) for wp in sigma.bruhat_smaller()
+            )
 
         return self.linear_combination((on_basis(m), c) for m, c in x)
 
@@ -1420,6 +1451,7 @@ class AtomPolynomialBasis(OperatorPolynomialBasis):
             return self.from_key_polynomial
 
         from sage.combinat.schubert_polynomial import SchubertPolynomialRing_xbasis
+
         if isinstance(R, SchubertPolynomialRing_xbasis):
             K = KeyPolynomialBasis(self.base_ring(), self._k, self._polynomial_ring)
             return self._coerce_map_via([K], R)

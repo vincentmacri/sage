@@ -52,6 +52,7 @@ AUTHORS:
 
 - Clément Chenevière (2024-02-01): added the alt `\nu`-Tamari lattices
 """
+
 # ****************************************************************************
 #    Copyright (C) 2020-2020 Aram Dermenjian <aram.dermenjian@gmail.com>
 #
@@ -187,7 +188,7 @@ def delta_swap(p, k, delta):
         if alt == 0:
             found = True
         j += 1
-    q = p[:k - 1] + p[k:j] + [p[k - 1]] + p[j:]
+    q = p[: k - 1] + p[k:j] + [p[k - 1]] + p[j:]
     return NuDyckWord(q, p._nu)
 
 
@@ -259,8 +260,10 @@ def AltNuTamariLattice(nu, delta=None):
 
     - [CC2023]_
     """
-    if not ((isinstance(nu, (list, tuple)) and all(x in [0, 1] for x in nu)) or
-            (isinstance(nu, str) and all(x in ['0', '1'] for x in nu))):
+    if not (
+        (isinstance(nu, (list, tuple)) and all(x in [0, 1] for x in nu))
+        or (isinstance(nu, str) and all(x in ['0', '1'] for x in nu))
+    ):
         raise ValueError("nu must be a list or a string of 0s and 1s")
     nu = [int(a) for a in nu]
     # transforms nu in a sequence of 0s and 1s if it is a list
@@ -269,13 +272,16 @@ def AltNuTamariLattice(nu, delta=None):
     deltamax = [len(a) for a in nu.split(sep='1')[1:]]
     if delta is None:
         delta = deltamax
-    elif (len(delta) != len(deltamax)
-          or any(d not in ZZ or d < 0 or d > m
-                 for d, m in zip(delta, deltamax))):
+    elif len(delta) != len(deltamax) or any(
+        d not in ZZ or d < 0 or d > m for d, m in zip(delta, deltamax)
+    ):
         raise ValueError("delta is not a valid increment vector")
 
     def covers(p):
-        return [delta_swap(p, k, delta=delta) for k in range(1, p.length())
-                if not p[k - 1] and p[k]]
-    return LatticePoset({p: covers(p) for p in NuDyckWords(nu)},
-                        check=False)
+        return [
+            delta_swap(p, k, delta=delta)
+            for k in range(1, p.length())
+            if not p[k - 1] and p[k]
+        ]
+
+    return LatticePoset({p: covers(p) for p in NuDyckWords(nu)}, check=False)

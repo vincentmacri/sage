@@ -49,6 +49,7 @@ class Core(CombinatorialElement):
         ...
         ValueError: [3, 1] is not a 4-core
     """
+
     @staticmethod
     def __classcall_private__(cls, part, k):
         r"""
@@ -119,8 +120,7 @@ class Core(CombinatorialElement):
             False
         """
         if isinstance(other, Core):
-            return (self._list == other._list and
-                    self.parent().k == other.parent().k)
+            return self._list == other._list and self.parent().k == other.parent().k
         return False
 
     def __ne__(self, other) -> bool:
@@ -326,11 +326,13 @@ class Core(CombinatorialElement):
             True
         """
         mu = self.to_partition()
-        corners = [p for p in mu.outside_corners()
-                   if mu.content(p[0], p[1]) % self.k() == i]
+        corners = [
+            p for p in mu.outside_corners() if mu.content(p[0], p[1]) % self.k() == i
+        ]
         if not corners:
-            corners = [p for p in mu.corners()
-                       if mu.content(p[0], p[1]) % self.k() == i]
+            corners = [
+                p for p in mu.corners() if mu.content(p[0], p[1]) % self.k() == i
+            ]
             if not corners:
                 return self
             for p in corners:
@@ -413,8 +415,10 @@ class Core(CombinatorialElement):
         if t[0] > t[1]:
             return self._transposition_to_reduced_word([t[1], t[0]])
         resu = [i % k for i in range(t[0], t[1] - (t[1] - t[0]) // k)]
-        resu += [(t[1] - (t[1] - t[0]) // k - 2 - i) % k
-                 for i in range(t[1] - (t[1] - t[0]) // k - t[0] - 1)]
+        resu += [
+            (t[1] - (t[1] - t[0]) // k - 2 - i) % k
+            for i in range(t[1] - (t[1] - t[0]) // k - t[0] - 1)
+        ]
         return resu
 
     def weak_le(self, other):
@@ -567,8 +571,9 @@ class Core(CombinatorialElement):
         """
         if not self:
             return []
-        return [ga for ga in Cores(self.k(), length=self.length() - 1)
-                if self.contains(ga)]
+        return [
+            ga for ga in Cores(self.k(), length=self.length() - 1) if self.contains(ga)
+        ]
 
 
 def Cores(k, length=None, **kwargs):
@@ -616,7 +621,9 @@ def Cores(k, length=None, **kwargs):
         return Cores_size(k, kwargs['size'])
     if length is not None:
         return Cores_length(k, length)
-    raise ValueError("you need to either specify the length or size of the cores considered")
+    raise ValueError(
+        "you need to either specify the length or size of the cores considered"
+    )
 
 
 class Cores_length(UniqueRepresentation, Parent):
@@ -654,8 +661,9 @@ class Cores_length(UniqueRepresentation, Parent):
             sage: C.list()
             [[4, 2], [3, 1, 1], [2, 2, 1, 1]]
         """
-        return [la.to_core(self.k - 1)
-                for la in Partitions(self.n, max_part=self.k - 1)]
+        return [
+            la.to_core(self.k - 1) for la in Partitions(self.n, max_part=self.k - 1)
+        ]
 
     def from_partition(self, part):
         r"""
@@ -719,8 +727,7 @@ class Cores_size(UniqueRepresentation, Parent):
             sage: C.list()
             [[3, 1], [2, 1, 1]]
         """
-        return [Core(x, self.k) for x in Partitions(self.n)
-                if x.is_core(self.k)]
+        return [Core(x, self.k) for x in Partitions(self.n) if x.is_core(self.k)]
 
     def from_partition(self, part):
         r"""

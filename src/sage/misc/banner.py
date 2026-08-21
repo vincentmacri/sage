@@ -77,11 +77,15 @@ def banner_text(full: bool = True) -> str:
     a('┌' + bars + '┐')
     a("\n│ %-66s │\n" % sage_banner)
     python_version = sys.version_info[:3]
-    a("│ %-66s │\n" % 'Using Python {}.{}.{}. Type "help()" for help.'.format(*python_version))
+    a(
+        "│ %-66s │\n"
+        % 'Using Python {}.{}.{}. Type "help()" for help.'.format(*python_version)
+    )
     a('└' + bars + '┘')
     pre = version_dict()['prerelease']
     try:
         import sage.all
+
         have_sage_all = True
     except ImportError:
         have_sage_all = False
@@ -92,9 +96,15 @@ def banner_text(full: bool = True) -> str:
         a('\n')
         a(red_in + '┏' + bars2 + '┓' + '\n')
         if pre:
-            a("┃ %-66s ┃\n" % 'Warning: this is a prerelease version, and it may be unstable.')
+            a(
+                "┃ %-66s ┃\n"
+                % 'Warning: this is a prerelease version, and it may be unstable.'
+            )
         if not have_sage_all:
-            a("┃ %-66s ┃\n" % 'Warning: sage.all is not available; this is a limited REPL.')
+            a(
+                "┃ %-66s ┃\n"
+                % 'Warning: sage.all is not available; this is a limited REPL.'
+            )
         a('┗' + bars2 + '┛' + red_out)
     return ''.join(s)
 
@@ -193,8 +203,13 @@ def version_dict() -> VersionDict:
     return version_info
 
 
-def require_version(major: int, minor: int = 0, tiny: float = 0,
-                    prerelease: bool = False, print_message: bool = False) -> bool:
+def require_version(
+    major: int,
+    minor: int = 0,
+    tiny: float = 0,
+    prerelease: bool = False,
+    print_message: bool = False,
+) -> bool:
     """
     Return ``True`` if Sage version is at least ``major.minor.tiny``.
 
@@ -235,15 +250,22 @@ def require_version(major: int, minor: int = 0, tiny: float = 0,
         False
     """
     vers = version_dict()
-    prerelease_checked = (prerelease if vers['prerelease'] else True)
-    if (vers['major'] > major
+    prerelease_checked = prerelease if vers['prerelease'] else True
+    if (
+        vers['major'] > major
         or (vers['major'] == major and vers['minor'] > minor)
-        or (vers['major'] == major and vers['minor'] == minor
-            and vers['tiny'] > tiny)
-        or (vers['major'] == major and vers['minor'] == minor
-            and vers['tiny'] == tiny and prerelease_checked)):
+        or (vers['major'] == major and vers['minor'] == minor and vers['tiny'] > tiny)
+        or (
+            vers['major'] == major
+            and vers['minor'] == minor
+            and vers['tiny'] == tiny
+            and prerelease_checked
+        )
+    ):
         return True
     if print_message:
-        print(f"This code requires at least version {major}.{minor} of SageMath to run correctly.")
+        print(
+            f"This code requires at least version {major}.{minor} of SageMath to run correctly."
+        )
         print(f"You are running version {SAGE_VERSION}.")
     return False

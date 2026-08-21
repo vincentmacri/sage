@@ -17,6 +17,7 @@ class _ProofPref(SageObject):
     A ``False`` flag means that the subsystem can use faster methods to return
     answers that have a very small probability of being wrong.
     """
+
     def __init__(self, proof=True):
         self._require_proof = {}
         self._require_proof["arithmetic"] = proof
@@ -203,7 +204,9 @@ class _ProofPref(SageObject):
         self._require_proof["polynomial"] = bool(t)
 
 
-_proof_prefs = _ProofPref(True)  # Creates the global object that stores proof preferences.
+_proof_prefs = _ProofPref(
+    True
+)  # Creates the global object that stores proof preferences.
 
 
 def get_flag(t=None, subsystem=None):
@@ -224,8 +227,13 @@ def get_flag(t=None, subsystem=None):
         False
     """
     if t is None:
-        if subsystem in ["arithmetic", "elliptic_curve",
-                         "linear_algebra", "number_field", "polynomial"]:
+        if subsystem in [
+            "arithmetic",
+            "elliptic_curve",
+            "linear_algebra",
+            "number_field",
+            "polynomial",
+        ]:
             return _proof_prefs._require_proof[subsystem]
         return _proof_prefs._require_proof["other"]
     return t
@@ -251,6 +259,7 @@ class WithProof:
         sage: proof.arithmetic()
         True
     """
+
     def __init__(self, subsystem, t):
         """
         TESTS::

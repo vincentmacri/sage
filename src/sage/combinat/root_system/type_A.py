@@ -1,14 +1,14 @@
 """
 Root system data for type A
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2009 Justin Walker
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.integer_ring import ZZ
 from sage.combinat.root_system.root_lattice_realizations import RootLatticeRealizations
@@ -45,6 +45,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
 
         - ``RootLatticeRealizations.ParentMethods._plot_projection``
     """
+
     @classmethod
     def smallest_base_ring(cls, cartan_type=None):
         """
@@ -68,7 +69,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.dimension()
             4
         """
-        return self.root_system.cartan_type().rank()+1
+        return self.root_system.cartan_type().rank() + 1
 
     def root(self, i, j):
         """
@@ -90,7 +91,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.simple_roots()
             Finite family {1: (1, -1, 0, 0), 2: (0, 1, -1, 0), 3: (0, 0, 1, -1)}
         """
-        return self.root(i-1, i)
+        return self.root(i - 1, i)
 
     def negative_roots(self):
         """
@@ -106,9 +107,9 @@ class AmbientSpace(ambient_space.AmbientSpace):
              (0, 0, -1, 1)]
         """
         res = []
-        for j in range(self.n-1):
-            for i in range(j+1,self.n):
-                res.append(  self.root(i,j) )
+        for j in range(self.n - 1):
+            for i in range(j + 1, self.n):
+                res.append(self.root(i, j))
         return res
 
     def positive_roots(self):
@@ -127,7 +128,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
         res = []
         for j in range(self.n):
             for i in range(j):
-                res.append(  self.root(i,j) )
+                res.append(self.root(i, j))
         return res
 
     def highest_root(self):
@@ -138,7 +139,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
            sage: e.highest_root()
            (1, 0, 0, -1)
         """
-        return self.root(0,self.n-1)
+        return self.root(0, self.n - 1)
 
     def fundamental_weight(self, i):
         """
@@ -164,15 +165,23 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.det(1/2)
             (1/2, 1/2, 1/2, 1/2)
         """
-        return self.sum(self.monomial(j)*k for j in range(self.n))
+        return self.sum(self.monomial(j) * k for j in range(self.n))
 
-    _plot_projection = RootLatticeRealizations.ParentMethods.__dict__['_plot_projection_barycentric']
+    _plot_projection = RootLatticeRealizations.ParentMethods.__dict__[
+        '_plot_projection_barycentric'
+    ]
 
 
-from .cartan_type import CartanType_standard_finite, CartanType_simply_laced, CartanType_simple
+from .cartan_type import (
+    CartanType_standard_finite,
+    CartanType_simply_laced,
+    CartanType_simple,
+)
 
 
-class CartanType(CartanType_standard_finite, CartanType_simply_laced, CartanType_simple):
+class CartanType(
+    CartanType_standard_finite, CartanType_simply_laced, CartanType_simple
+):
     """
     Cartan Type `A_n`.
 
@@ -269,10 +278,11 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced, CartanType
             ([1], [])
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         n = self.n
         g = DynkinDiagram_class(self)
         for i in range(1, n):
-            g.add_edge(i, i+1)
+            g.add_edge(i, i + 1)
         return g
 
     def _latex_dynkin_diagram(self, label=None, node=None, node_dist=2):
@@ -300,11 +310,12 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced, CartanType
         if node is None:
             node = self._latex_draw_node
         if self.n > 1:
-            ret = "\\draw (0 cm,0) -- ({} cm,0);\n".format((self.n-1)*node_dist)
+            ret = "\\draw (0 cm,0) -- ({} cm,0);\n".format((self.n - 1) * node_dist)
         else:
             ret = ""
-        return ret + "".join(node((i-1)*node_dist, 0, label(i))
-                             for i in self.index_set())
+        return ret + "".join(
+            node((i - 1) * node_dist, 0, label(i)) for i in self.index_set()
+        )
 
     def ascii_art(self, label=None, node=None):
         """
@@ -343,5 +354,7 @@ class CartanType(CartanType_standard_finite, CartanType_simply_laced, CartanType
 
 # For unpickling backward compatibility (Sage <= 4.1)
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.root_system.type_A',
-                           'ambient_space', AmbientSpace)
+
+register_unpickle_override(
+    'sage.combinat.root_system.type_A', 'ambient_space', AmbientSpace
+)

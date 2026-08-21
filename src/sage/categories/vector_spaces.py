@@ -1,7 +1,8 @@
 r"""
 Vector Spaces
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
@@ -9,7 +10,7 @@ Vector Spaces
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 from sage.categories.category import Category
 from sage.categories.category_types import Category_module
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
@@ -21,6 +22,7 @@ from sage.categories.graded_modules import GradedModulesCategory
 from sage.categories.fields import Fields
 from sage.categories.modules import Modules
 from sage.categories.modules_with_basis import ModulesWithBasis
+
 _Fields = Fields()
 
 
@@ -37,6 +39,7 @@ class VectorSpaces(Category_module):
         sage: VectorSpaces(QQ).super_categories()
         [Category of modules over Rational Field]
     """
+
     @staticmethod
     def __classcall_private__(cls, K, check=True):
         """
@@ -65,10 +68,13 @@ class VectorSpaces(Category_module):
             Category of vector spaces over Integer Ring
         """
         if check:
-            if not (K in _Fields or
-                    (isinstance(K, Category) and K.is_subcategory(_Fields))):
-                raise ValueError("base must be a field or a subcategory of Fields();" +
-                                 " got {}".format(K))
+            if not (
+                K in _Fields or (isinstance(K, Category) and K.is_subcategory(_Fields))
+            ):
+                raise ValueError(
+                    "base must be a field or a subcategory of Fields();"
+                    + " got {}".format(K)
+                )
         return super().__classcall__(cls, K)
 
     def __init__(self, K):
@@ -112,7 +118,7 @@ class VectorSpaces(Category_module):
             if V.base_field() != self.base_field():
                 V = V.change_ring(self.base_field())
         except (TypeError, AttributeError) as msg:
-            raise TypeError("%s\nunable to coerce x (=%s) into %s" % (msg,x,self))
+            raise TypeError("%s\nunable to coerce x (=%s) into %s" % (msg, x, self))
         return V
 
     def base_field(self):
@@ -157,7 +163,6 @@ class VectorSpaces(Category_module):
         return None
 
     class ParentMethods:
-
         def dimension(self):
             """
             Return the dimension of this vector space.
@@ -181,7 +186,6 @@ class VectorSpaces(Category_module):
         pass
 
     class WithBasis(CategoryWithAxiom_over_base_ring):
-
         _call_ = ModulesWithBasis.__dict__["_call_"]
 
         def is_abelian(self) -> bool:
@@ -224,9 +228,7 @@ class VectorSpaces(Category_module):
                 return [self.base_category()]
 
         class FiniteDimensional(CategoryWithAxiom_over_base_ring):
-
             class TensorProducts(TensorProductsCategory):
-
                 def extra_super_categories(self):
                     """
                     Implement the fact that a (finite) tensor product of
@@ -245,6 +247,7 @@ class VectorSpaces(Category_module):
             """
             Category of graded vector spaces with basis.
             """
+
             def example(self, base_ring=None):
                 """
                 Return an example of a graded vector space with basis,
@@ -257,7 +260,10 @@ class VectorSpaces(Category_module):
                     An example of a graded module with basis:
                      the free module on partitions over Rational Field
                 """
-                from sage.categories.examples.graded_modules_with_basis import GradedPartitionModule
+                from sage.categories.examples.graded_modules_with_basis import (
+                    GradedPartitionModule,
+                )
+
                 if base_ring is None:
                     base_ring = self.base_ring()
                 return GradedPartitionModule(base_ring=base_ring)
@@ -266,6 +272,7 @@ class VectorSpaces(Category_module):
             """
             Category of filtered vector spaces with basis.
             """
+
             def example(self, base_ring=None):
                 """
                 Return an example of a graded vector space with basis,
@@ -278,15 +285,16 @@ class VectorSpaces(Category_module):
                     An example of a graded module with basis:
                      the free module on partitions over Rational Field
                 """
-                from sage.categories.examples.filtered_modules_with_basis import FilteredPartitionModule
+                from sage.categories.examples.filtered_modules_with_basis import (
+                    FilteredPartitionModule,
+                )
+
                 if base_ring is None:
                     base_ring = self.base_ring()
                 return FilteredPartitionModule(base_ring=base_ring)
 
     class FiniteDimensional(CategoryWithAxiom_over_base_ring):
-
         class TensorProducts(TensorProductsCategory):
-
             def extra_super_categories(self):
                 """
                 Implement the fact that a (finite) tensor product of
@@ -302,7 +310,6 @@ class VectorSpaces(Category_module):
                 return [self.base_category()]
 
     class DualObjects(DualObjectsCategory):
-
         def extra_super_categories(self):
             r"""
             Return the dual category.

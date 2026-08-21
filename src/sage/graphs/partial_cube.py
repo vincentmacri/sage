@@ -298,6 +298,7 @@ def is_partial_cube(G, certificate=False):
     from sage.graphs.digraph import DiGraph
     from sage.graphs.graph import Graph
     from sage.sets.disjoint_set import DisjointSet
+
     contracted = DiGraph({v: {w: (v, w) for w in G[v]} for v in G})
     unionfind = DisjointSet(contracted.edges(sort=True, labels=False))
     available = n - 1
@@ -305,7 +306,9 @@ def is_partial_cube(G, certificate=False):
     # Main contraction loop in place of the original algorithm's recursion
     while contracted.order() > 1:
         # Find max degree vertex in contracted, and update label limit
-        deg, root = max([(contracted.out_degree(v), v) for v in contracted], key=lambda x: x[0])
+        deg, root = max(
+            [(contracted.out_degree(v), v) for v in contracted], key=lambda x: x[0]
+        )
         if deg > available:
             return fail
         available -= deg
@@ -328,14 +331,16 @@ def is_partial_cube(G, certificate=False):
         for v, w in contracted.edge_iterator(labels=False):
             diff = bitvec[v] ^ bitvec[w]
             if not diff or not bitvec[w] & ~bitvec[v]:
-                continue    # zero edge or wrong direction
+                continue  # zero edge or wrong direction
             if diff not in neighbors:
                 return fail
             neighbor = neighbors[diff]
-            unionfind.union(contracted.edge_label(v, w),
-                            contracted.edge_label(root, neighbor))
-            unionfind.union(contracted.edge_label(w, v),
-                            contracted.edge_label(neighbor, root))
+            unionfind.union(
+                contracted.edge_label(v, w), contracted.edge_label(root, neighbor)
+            )
+            unionfind.union(
+                contracted.edge_label(w, v), contracted.edge_label(neighbor, root)
+            )
             labeled.add_edge(v, w)
 
         # Map vertices to components of labeled-edge graph
@@ -396,14 +401,19 @@ def is_partial_cube(G, certificate=False):
 
     # Rest of data structure: point from states to list and list to states
     state_to_active_token = {v: -1 for v in g}
-    token_to_states = [[] for _ in activeTokens]  # (i.e. vertices on which each token acts)
+    token_to_states = [
+        [] for _ in activeTokens
+    ]  # (i.e. vertices on which each token acts)
 
     def scan(v):
         """
         Find the next token that is effective for v.
         """
-        a = next(i for i in range(state_to_active_token[v] + 1, len(activeTokens))
-                 if activeTokens[i] is not None and activeTokens[i] in action[v])
+        a = next(
+            i
+            for i in range(state_to_active_token[v] + 1, len(activeTokens))
+            if activeTokens[i] is not None and activeTokens[i] in action[v]
+        )
         state_to_active_token[v] = a
         token_to_states[a].append(v)
 

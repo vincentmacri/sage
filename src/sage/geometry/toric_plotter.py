@@ -54,9 +54,21 @@ from sage.arith.misc import integer_ceil as ceil, integer_floor as floor
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.lazy_import import lazy_import
 from sage.modules.free_module_element import vector
-lazy_import("sage.plot.all", ["Color", "Graphics",
-                              "arrow", "disk", "line", "point",
-                              "polygon", "rainbow", "text"])
+
+lazy_import(
+    "sage.plot.all",
+    [
+        "Color",
+        "Graphics",
+        "arrow",
+        "disk",
+        "line",
+        "point",
+        "polygon",
+        "rainbow",
+        "text",
+    ],
+)
 lazy_import("sage.plot.plot3d.all", "text3d")
 from sage.rings.real_double import RDF
 from sage.structure.sage_object import SageObject
@@ -67,8 +79,8 @@ from sage.structure.sage_object import SageObject
 # automatically based on the plotted object and parameters actually provided by
 # the user.
 _default_options = dict()
-_default_options["mode"] = "round" # Can be also "box" and "generators"
-_default_options["show_lattice"] = None # Default is "True for small plots"
+_default_options["mode"] = "round"  # Can be also "box" and "generators"
+_default_options["show_lattice"] = None  # Default is "True for small plots"
 _default_options["show_rays"] = True
 _default_options["show_generators"] = True
 _default_options["show_walls"] = True
@@ -213,10 +225,12 @@ class ToricPlotter(SageObject):
             if option not in sd:
                 sd[option] = value
         if dimension not in [1, 2, 3]:
-            raise ValueError("toric objects can be plotted only for "
-                             "dimensions 1, 2, and 3, not %s!" % dimension)
+            raise ValueError(
+                "toric objects can be plotted only for "
+                "dimensions 1, 2, and 3, not %s!" % dimension
+            )
         self.dimension = dimension
-        self.origin = vector(RDF, max(dimension, 2)) # 1-d is plotted in 2-d
+        self.origin = vector(RDF, max(dimension, 2))  # 1-d is plotted in 2-d
         if self.mode not in ["box", "generators", "round"]:
             raise ValueError("unrecognized plotting mode: %s!" % self.mode)
         # If radius was explicitly set by the user, it sets other bounds too.
@@ -225,7 +239,7 @@ class ToricPlotter(SageObject):
         if sd["radius"] is not None:
             for key in ["xmin", "ymin", "zmin"]:
                 if sd[key] is None:
-                    sd[key] = - sd["radius"]
+                    sd[key] = -sd["radius"]
             for key in ["xmax", "ymax", "zmax"]:
                 if sd[key] is None:
                     sd[key] = sd["radius"]
@@ -302,8 +316,8 @@ class ToricPlotter(SageObject):
         round = self.mode == "round"
         for key in ["xmin", "ymin", "zmin"]:
             if round or sd[key] is None:
-                sd[key] = - r
-            sd[key] = min(sd[key], - 0.5)
+                sd[key] = -r
+            sd[key] = min(sd[key], -0.5)
             sd[key] = RDF(sd[key])
         for key in ["xmax", "ymax", "zmax"]:
             if round or sd[key] is None:
@@ -395,22 +409,36 @@ class ToricPlotter(SageObject):
         zorder = self.generator_zorder
         for generator, ray, color in zip(generators, self.rays, colors):
             if ray.dot_product(ray) < generator.dot_product(generator):
-                result += line([origin, ray],
-                               color=color, thickness=thickness,
-                               zorder=zorder, **extra_options)
+                result += line(
+                    [origin, ray],
+                    color=color,
+                    thickness=thickness,
+                    zorder=zorder,
+                    **extra_options,
+                )
             else:
                 # This should not be the case, but as of 4.6 plotting
                 # functions are inconsistent and arrows behave very
                 # different compared to lines.
                 if d <= 2:
-                    result += arrow(origin, generator,
-                                    color=color, width=thickness,
-                                    arrowsize=thickness + 1,
-                                    zorder=zorder, **extra_options)
+                    result += arrow(
+                        origin,
+                        generator,
+                        color=color,
+                        width=thickness,
+                        arrowsize=thickness + 1,
+                        zorder=zorder,
+                        **extra_options,
+                    )
                 else:
-                    result += line([origin, generator], arrow_head=True,
-                                   color=color, thickness=thickness,
-                                   zorder=zorder, **extra_options)
+                    result += line(
+                        [origin, generator],
+                        arrow_head=True,
+                        color=color,
+                        thickness=thickness,
+                        zorder=zorder,
+                        **extra_options,
+                    )
         return result
 
     def plot_labels(self, labels, positions):
@@ -443,9 +471,14 @@ class ToricPlotter(SageObject):
             if label is None:
                 continue
             if twod:
-                result += text(label, position,
-                               color=color, fontsize=font_size,
-                               zorder=zorder, **extra_options)
+                result += text(
+                    label,
+                    position,
+                    color=color,
+                    fontsize=font_size,
+                    zorder=zorder,
+                    **extra_options,
+                )
             else:
                 result += text3d(label, position, color=color, **extra_options)
         return result
@@ -469,19 +502,22 @@ class ToricPlotter(SageObject):
             return self.plot_points([self.origin])
         d = self.dimension
         if d == 1:
-            points = ((x, 0)
-                      for x in range(ceil(self.xmin), floor(self.xmax) + 1))
+            points = ((x, 0) for x in range(ceil(self.xmin), floor(self.xmax) + 1))
         elif d == 2:
-            points = ((x, y)
-                      for x in range(ceil(self.xmin), floor(self.xmax) + 1)
-                      for y in range(ceil(self.ymin), floor(self.ymax) + 1))
+            points = (
+                (x, y)
+                for x in range(ceil(self.xmin), floor(self.xmax) + 1)
+                for y in range(ceil(self.ymin), floor(self.ymax) + 1)
+            )
         elif d == 3:
-            points = ((x, y, z)
-                      for x in range(ceil(self.xmin), floor(self.xmax) + 1)
-                      for y in range(ceil(self.ymin), floor(self.ymax) + 1)
-                      for z in range(ceil(self.zmin), floor(self.zmax) + 1))
+            points = (
+                (x, y, z)
+                for x in range(ceil(self.xmin), floor(self.xmax) + 1)
+                for y in range(ceil(self.ymin), floor(self.ymax) + 1)
+                for z in range(ceil(self.zmin), floor(self.zmax) + 1)
+            )
         if self.mode == "round":
-            r = 1.01 * self.radius # To make sure integer values work OK.
+            r = 1.01 * self.radius  # To make sure integer values work OK.
             points = (pt for pt in points if vector(pt).dot_product(vector(pt)) <= r)
         f = self.lattice_filter
         if f is not None:
@@ -506,8 +542,13 @@ class ToricPlotter(SageObject):
             sage: tp.plot_points([(1,0), (0,1)])                                        # needs sage.plot
             Graphics object consisting of 1 graphics primitive
         """
-        return point(points, color=self.point_color, size=self.point_size,
-                     zorder=self.point_zorder, **self.extra_options)
+        return point(
+            points,
+            color=self.point_color,
+            size=self.point_size,
+            zorder=self.point_zorder,
+            **self.extra_options,
+        )
 
     def plot_ray_labels(self):
         r"""
@@ -528,8 +569,7 @@ class ToricPlotter(SageObject):
             sage: tp.plot_ray_labels()                                                  # needs sage.plot
             Graphics object consisting of 1 graphics primitive
         """
-        return self.plot_labels(self.ray_label,
-                                [1.1 * ray for ray in self.rays])
+        return self.plot_labels(self.ray_label, [1.1 * ray for ray in self.rays])
 
     def plot_rays(self):
         r"""
@@ -557,9 +597,13 @@ class ToricPlotter(SageObject):
         thickness = self.ray_thickness
         zorder = self.ray_zorder
         for end, color in zip(rays, colors):
-            result += line([origin, end],
-                           color=color, thickness=thickness,
-                           zorder=zorder, **extra_options)
+            result += line(
+                [origin, end],
+                color=color,
+                thickness=thickness,
+                zorder=zorder,
+                **extra_options,
+            )
         result += self.plot_ray_labels()
         return result
 
@@ -605,29 +649,40 @@ class ToricPlotter(SageObject):
         zorder = self.wall_zorder
         if mode == "box":
             if self.dimension <= 2:
-                ieqs = [(self.xmax, -1, 0), (- self.xmin, 1, 0),
-                        (self.ymax, 0, -1), (- self.ymin, 0, 1)]
+                ieqs = [
+                    (self.xmax, -1, 0),
+                    (-self.xmin, 1, 0),
+                    (self.ymax, 0, -1),
+                    (-self.ymin, 0, 1),
+                ]
             else:
-                ieqs = [(self.xmax, -1, 0, 0), (- self.xmin, 1, 0, 0),
-                        (self.ymax, 0, -1, 0), (- self.ymin, 0, 1, 0),
-                        (self.zmax, 0, 0, -1), (- self.zmin, 0, 0, 1)]
+                ieqs = [
+                    (self.xmax, -1, 0, 0),
+                    (-self.xmin, 1, 0, 0),
+                    (self.ymax, 0, -1, 0),
+                    (-self.ymin, 0, 1, 0),
+                    (self.zmax, 0, 0, -1),
+                    (-self.zmin, 0, 0, 1),
+                ]
             box = Polyhedron(ieqs=ieqs, base_ring=RDF)
             for wall, color in zip(walls, colors):
                 result += box.intersection(wall.polyhedron()).render_solid(
-                    alpha=alpha, color=color, zorder=zorder, **extra_options)
+                    alpha=alpha, color=color, zorder=zorder, **extra_options
+                )
         elif mode == "generators":
             origin = self.origin
             for wall, color in zip(walls, colors):
                 vertices = [rays[i] for i in wall.ambient_ray_indices()]
                 vertices.append(origin)
                 result += Polyhedron(vertices=vertices, base_ring=RDF).render_solid(
-                    alpha=alpha, color=color, zorder=zorder, **extra_options)
+                    alpha=alpha, color=color, zorder=zorder, **extra_options
+                )
         label_sectors = []
         round = mode == "round"
         for wall, color in zip(walls, colors):
             S = wall.linear_subspace()
             lsd = S.dimension()
-            if lsd == 0:    # Strictly convex wall
+            if lsd == 0:  # Strictly convex wall
                 r1, r2 = (rays[i] for i in wall.ambient_ray_indices())
             elif lsd == 1:  # wall is a half-plane
                 for i, ray in zip(wall.ambient_ray_indices(), wall.rays()):
@@ -637,9 +692,15 @@ class ToricPlotter(SageObject):
                         r2 = rays[i]
                 if round:
                     # Plot one "extra" sector
-                    result += sector(- r1, r2,
-                      alpha=alpha, color=color, zorder=zorder, **extra_options)
-            else:           # wall is a plane
+                    result += sector(
+                        -r1,
+                        r2,
+                        alpha=alpha,
+                        color=color,
+                        zorder=zorder,
+                        **extra_options,
+                    )
+            else:  # wall is a plane
                 r1, r2 = S.basis()
                 r1 = vector(RDF, r1)
                 r1 = r1 / r1.norm() * self.radius
@@ -647,18 +708,38 @@ class ToricPlotter(SageObject):
                 r2 = r2 / r2.norm() * self.radius
                 if round:
                     # Plot three "extra" sectors
-                    result += sector(r1, - r2,
-                      alpha=alpha, color=color, zorder=zorder, **extra_options)
-                    result += sector(- r1, r2,
-                      alpha=alpha, color=color, zorder=zorder, **extra_options)
-                    result += sector(- r1, - r2,
-                      alpha=alpha, color=color, zorder=zorder, **extra_options)
+                    result += sector(
+                        r1,
+                        -r2,
+                        alpha=alpha,
+                        color=color,
+                        zorder=zorder,
+                        **extra_options,
+                    )
+                    result += sector(
+                        -r1,
+                        r2,
+                        alpha=alpha,
+                        color=color,
+                        zorder=zorder,
+                        **extra_options,
+                    )
+                    result += sector(
+                        -r1,
+                        -r2,
+                        alpha=alpha,
+                        color=color,
+                        zorder=zorder,
+                        **extra_options,
+                    )
             label_sectors.append([r1, r2])
             if round:
-                result += sector(r1, r2,
-                    alpha=alpha, color=color, zorder=zorder, **extra_options)
-        result += self.plot_labels(self.wall_label,
-                    [sum(label_sector) / 3 for label_sector in label_sectors])
+                result += sector(
+                    r1, r2, alpha=alpha, color=color, zorder=zorder, **extra_options
+                )
+        result += self.plot_labels(
+            self.wall_label, [sum(label_sector) / 3 for label_sector in label_sectors]
+        )
         return result
 
     def set_rays(self, generators):
@@ -695,9 +776,11 @@ class ToricPlotter(SageObject):
         self.generators = generators
         if self.mode == "box":
             rays = []
-            bounds = [self.__dict__[bound]
-                for bound in ["xmin", "xmax", "ymin", "ymax", "zmin", "zmax"]]
-            bounds = bounds[:2 * d]
+            bounds = [
+                self.__dict__[bound]
+                for bound in ["xmin", "xmax", "ymin", "ymax", "zmin", "zmax"]
+            ]
+            bounds = bounds[: 2 * d]
             for gen in generators:
                 factors = []
                 for i, gen_i in enumerate(gen):
@@ -731,8 +814,10 @@ def _unrecognized_option(option):
         KeyError: "unrecognized toric plot option: 'nontoric'!
         Type 'toric_plotter.options?' to see available options."
     """
-    raise KeyError("unrecognized toric plot option: '%s'! " % option
-                + "Type 'toric_plotter.options?' to see available options.")
+    raise KeyError(
+        "unrecognized toric plot option: '%s'! " % option
+        + "Type 'toric_plotter.options?' to see available options."
+    )
 
 
 def color_list(color, n):
@@ -779,8 +864,7 @@ def color_list(color, n):
     except (ValueError, TypeError):
         if isinstance(color, (list, tuple)):
             if len(color) != n:
-                raise ValueError("expected %d colors, got %d!"
-                                 % (n, len(color)))
+                raise ValueError("expected %d colors, got %d!" % (n, len(color)))
             return color
         if color == "rainbow":
             return [Color(c) for c in rainbow(n, "rgbtuple")]
@@ -1011,8 +1095,9 @@ def options(option=None, **kwds):
             except KeyError:
                 _unrecognized_option(option)
     else:
-        raise ValueError("you cannot specify 'option' and other arguments at "
-                         "the same time!")
+        raise ValueError(
+            "you cannot specify 'option' and other arguments at the same time!"
+        )
 
 
 def reset_options():
@@ -1090,7 +1175,7 @@ def sector(ray1, ray2, **extra_options):
             phi1, phi2 = phi2, phi1
         if phi2 - phi1 > pi:
             phi1, phi2 = phi2, phi1 + 2 * pi
-        return disk((0,0), r, (phi1, phi2), **extra_options)
+        return disk((0, 0), r, (phi1, phi2), **extra_options)
     # Plot a polygon, 30 vertices per radian.
     vertices_per_radian = 30
     n = ceil(arccos(ray1 * ray2 / r**2) * vertices_per_radian)

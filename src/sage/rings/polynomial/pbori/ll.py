@@ -52,10 +52,11 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
     if (not reduce) and reduce_by_linear:
         linear_polys = [p for p in polys if p.deg() == 1]
         if linear_polys:
-            linear_ll = ll_encode(linear_polys, reduce=True,
-                                  reduce_by_linear=False)
-            polys = [p.lex_lead() + ll_red_nf_redsb(p + p.lex_lead(),
-                                                    linear_ll) for p in polys]
+            linear_ll = ll_encode(linear_polys, reduce=True, reduce_by_linear=False)
+            polys = [
+                p.lex_lead() + ll_red_nf_redsb(p + p.lex_lead(), linear_ll)
+                for p in polys
+            ]
     reduce = ll_red_nf_redsb if reduce else None
 
     reductors = Polynomial(polys[0].ring().one()).set() if polys else None
@@ -63,7 +64,6 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
     last = None
     counter = 0
     for p in linear_lead:
-
         if prot:
             counter = counter + 1
             progress = (counter * 100) / len(linear_lead)
@@ -74,8 +74,9 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
     return reductors
 
 
-def eliminate(polys, on_the_fly=False, prot=False, reduction_function=None,
-              optimized=True):
+def eliminate(
+    polys, on_the_fly=False, prot=False, reduction_function=None, optimized=True
+):
     r"""
     There exists an optimized variant, which reorders the variable in a different ring.
     """
@@ -88,7 +89,6 @@ def eliminate(polys, on_the_fly=False, prot=False, reduction_function=None,
             continue
         lm = p.lex_lead()
         if lm.deg() == 1:
-
             if lm not in linear_leading_monomials:
                 linear_leading_monomials.add(lm)
                 linear_leads.append(p)
@@ -97,8 +97,10 @@ def eliminate(polys, on_the_fly=False, prot=False, reduction_function=None,
         else:
             rest.append(p)
     if not linear_leads:
+
         def identity(p):
             return p
+
         return (linear_leads, identity, rest)
     if reduction_function is None:
         if on_the_fly:
@@ -110,13 +112,18 @@ def eliminate(polys, on_the_fly=False, prot=False, reduction_function=None,
             reduction_function = ll_red_nf_redsb
 
     if optimized:
-        llnf, reduced_list = eliminate_ll_ranked(linear_leads, rest,
-                                                 reduction_function=reduction_function,
-                                                 reduce_ll_system=(not on_the_fly),
-                                                 prot=prot)
+        llnf, reduced_list = eliminate_ll_ranked(
+            linear_leads,
+            rest,
+            reduction_function=reduction_function,
+            reduce_ll_system=(not on_the_fly),
+            prot=prot,
+        )
     else:
+
         def llnf(p):
             return reduction_function(p, reductors)
+
         reduced_list = []
         reductors = ll_encode(linear_leads, reduce=(not on_the_fly), prot=prot)
         for p in rest:
@@ -131,30 +138,35 @@ def eliminate(polys, on_the_fly=False, prot=False, reduction_function=None,
 
 def construct_map_by_indices(to_ring, idx_mapping):
     v = BoolePolynomialVector((max(idx_mapping.keys()) + 1) * [to_ring.zero()])
-    for (from_idx, to_idx) in idx_mapping.items():
+    for from_idx, to_idx in idx_mapping.items():
         val = to_ring.variable(to_idx)
         v[from_idx] = val
     return v
 
 
-def eliminate_ll_ranked(ll_system, to_reduce,
-                        reduction_function=ll_red_nf_noredsb,
-                        reduce_ll_system=False, prot=False):
+def eliminate_ll_ranked(
+    ll_system,
+    to_reduce,
+    reduction_function=ll_red_nf_noredsb,
+    reduce_ll_system=False,
+    prot=False,
+):
 
     assert ll_system
     from_ring = ll_system[0].ring()
 
     ll_ranks = rank(ll_system)
-    add_vars = set(used_vars_set(to_reduce).variables()).difference(ll_ranks.
-                                                                    keys())
+    add_vars = set(used_vars_set(to_reduce).variables()).difference(ll_ranks.keys())
     for v in add_vars:
         ll_ranks[v] = -1
 
         # pushing variables ignored by ll to the front means,
         # that the routines will quickly eliminate them
         # and they won't give any overhead
+
     def sort_key(v):
         return (ll_ranks[v], v.index())
+
     sorted_vars = sorted(ll_ranks.keys(), key=sort_key)
 
     def var_index(v):
@@ -166,7 +178,7 @@ def eliminate_ll_ranked(ll_system, to_reduce,
 
     var_names = [str(v) for v in sorted_vars]
     try:
-        for (i, v) in enumerate(sorted_vars):
+        for i, v in enumerate(sorted_vars):
             assert var_names[i] == str(v), (var_names[i], v, var_index(v), i)
 
     finally:
@@ -185,12 +197,13 @@ def eliminate_ll_ranked(ll_system, to_reduce,
         return substitute_variables(from_ring, map_back_vec, p)
 
     try:
-        ll_opt_encoded = ll_encode([map_from(p) for p in ll_system],
-                                   prot=False,
-                                   reduce=reduce_ll_system)
+        ll_opt_encoded = ll_encode(
+            [map_from(p) for p in ll_system], prot=False, reduce=reduce_ll_system
+        )
 
         def llnf(p):
             return map_back(reduction_function(map_from(p), ll_opt_encoded))
+
         opt_eliminated = [llnf(p) for p in to_reduce]
     finally:
         pass
@@ -242,6 +255,7 @@ class RingMap:
             sage: mapping(x(1)+1)
             x(1) + 1
         """
+
         def vars(ring):
             return [ring.variable(i) for i in range(ring.n_variables())]
 

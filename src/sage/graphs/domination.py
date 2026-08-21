@@ -206,20 +206,31 @@ def private_neighbors(G, vertex, dom):
     closed_neighborhood_vs = set()
     for u in dom:
         if u != vertex:
-            closed_neighborhood_vs.update(
-                G.neighbor_iterator(u, closed=True))
+            closed_neighborhood_vs.update(G.neighbor_iterator(u, closed=True))
 
-    return (neighbor
-            for neighbor in G.neighbor_iterator(vertex, closed=True)
-            if neighbor not in closed_neighborhood_vs)
+    return (
+        neighbor
+        for neighbor in G.neighbor_iterator(vertex, closed=True)
+        if neighbor not in closed_neighborhood_vs
+    )
 
 
 # ==============================================================================
 # Computation of minimum dominating sets
 # ==============================================================================
 
-def dominating_sets(g, k=1, independent=False, total=False, connected=False,
-                    solver=None, verbose=0, *, integrality_tolerance=1e-3):
+
+def dominating_sets(
+    g,
+    k=1,
+    independent=False,
+    total=False,
+    connected=False,
+    solver=None,
+    verbose=0,
+    *,
+    integrality_tolerance=1e-3,
+):
     r"""
     Return an iterator over the minimum distance-`k` dominating sets
     of the graph.
@@ -395,15 +406,19 @@ def dominating_sets(g, k=1, independent=False, total=False, connected=False,
 
     from sage.numerical.mip import MixedIntegerLinearProgram
     from sage.numerical.mip import MIPSolverException
-    p = MixedIntegerLinearProgram(maximization=False, solver=solver,
-                                  constraint_generation=True)
+
+    p = MixedIntegerLinearProgram(
+        maximization=False, solver=solver, constraint_generation=True
+    )
     b = p.new_variable(binary=True)
 
     if k == 1:
         # For any vertex v, one of its neighbors or v itself is in the minimum
         # dominating set. If g is directed, we use the in-neighbors of v
         # instead.
-        neighbors_iter = g.neighbor_in_iterator if g.is_directed() else g.neighbor_iterator
+        neighbors_iter = (
+            g.neighbor_in_iterator if g.is_directed() else g.neighbor_iterator
+        )
     else:
         # When k > 1, we use BFS to determine the vertices that can reach v
         # through a path of length at most k
@@ -435,8 +450,7 @@ def dominating_sets(g, k=1, independent=False, total=False, connected=False,
         r_edge = p.new_variable(nonnegative=True, name='re')
 
         # 1. We want a tree
-        p.add_constraint(p.sum(edge[fe] for fe in E)
-                         == p.sum(b[u] for u in g) - 1)
+        p.add_constraint(p.sum(edge[fe] for fe in E) == p.sum(b[u] for u in g) - 1)
 
         # 2. An edge can be in the tree if its end vertices are selected
         for fe in E:
@@ -451,7 +465,9 @@ def dominating_sets(g, k=1, independent=False, total=False, connected=False,
 
         eps = 1 / (5 * Integer(g.order()))
         for v in g:
-            p.add_constraint(p.sum(r_edge[u, v] for u in g.neighbor_iterator(v)), max=1 - eps)
+            p.add_constraint(
+                p.sum(r_edge[u, v] for u in g.neighbor_iterator(v)), max=1 - eps
+            )
 
     # Minimizes the number of vertices used
     p.set_objective(p.sum(b[v] for v in g))
@@ -474,8 +490,18 @@ def dominating_sets(g, k=1, independent=False, total=False, connected=False,
         p.add_constraint(p.sum(b[u] for u in dom) <= best - 1)
 
 
-def dominating_set(g, k=1, independent=False, total=False, connected=False, value_only=False,
-                   solver=None, verbose=0, *, integrality_tolerance=1e-3):
+def dominating_set(
+    g,
+    k=1,
+    independent=False,
+    total=False,
+    connected=False,
+    value_only=False,
+    solver=None,
+    verbose=0,
+    *,
+    integrality_tolerance=1e-3,
+):
     r"""
     Return a minimum distance-`k` dominating set of the graph.
 
@@ -577,10 +603,20 @@ def dominating_set(g, k=1, independent=False, total=False, connected=False, valu
         sage: [G.dominating_set(k=k, value_only=True) for k in range(G.radius() + 1)]   # needs sage.numerical.mip
         [5, 2, 1]
     """
-    dom = next(dominating_sets(g, k=k, independent=independent, total=total,
-                               connected=connected, solver=solver, verbose=verbose,
-                               integrality_tolerance=integrality_tolerance))
+    dom = next(
+        dominating_sets(
+            g,
+            k=k,
+            independent=independent,
+            total=total,
+            connected=connected,
+            solver=solver,
+            verbose=verbose,
+            integrality_tolerance=integrality_tolerance,
+        )
+    )
     return Integer(len(dom)) if value_only else dom
+
 
 # ==============================================================================
 # Enumeration of minimal dominating set as described in [BDHPR2019]_
@@ -628,10 +664,12 @@ def _parent(G, dom, V_prev):
         priv = set(G.neighbor_iterator(v, closed=True))
         # We remove the vertices already dominated
         # by other vertices of (D_end union D_start)
-        priv.difference_update(*(G.neighbor_iterator(u, closed=True)
-                                 for u in D_start if u != v))
-        priv.difference_update(*(G.neighbor_iterator(u, closed=True)
-                                 for u in D_end if u != v))
+        priv.difference_update(
+            *(G.neighbor_iterator(u, closed=True) for u in D_start if u != v)
+        )
+        priv.difference_update(
+            *(G.neighbor_iterator(u, closed=True) for u in D_end if u != v)
+        )
         # Now priv is the private neighborhood of v in G wrt D_start + D_end
         if priv.intersection(V_prev) != set():
             # if v has a private in V_prev, we keep it
@@ -767,10 +805,8 @@ def _cand_ext_enum(G, to_dom, u_next):
 
             # When u_next is not in the DS, one of its neighbors w should be:
             for w in H.neighbor_iterator(u_next):
-
                 remains_to_dom = set(to_dom)
-                remains_to_dom.difference_update(
-                    H.neighbor_iterator(w, closed=True))
+                remains_to_dom.difference_update(H.neighbor_iterator(w, closed=True))
                 # Here again we recurse on a smaller instance at it
                 # excludes u_next (and w)
                 for Q in H.minimal_dominating_sets(remains_to_dom):
@@ -782,6 +818,7 @@ def _cand_ext_enum(G, to_dom, u_next):
                     if not H.is_redundant(ext):
                         yield (ext, cand_ext_index)
                         cand_ext_index += 1
+
     #
     # End of aux_with_rep routine
 
@@ -980,6 +1017,7 @@ def minimal_dominating_sets(G, to_dominate=None, work_on_copy=True, k=1):
         sage: {3, 'A'} in L
         True
     """
+
     def tree_search(H, plng, dom, i):
         r"""
         Enumerate minimal dominating sets recursively.
@@ -1024,22 +1062,23 @@ def minimal_dominating_sets(G, to_dominate=None, work_on_copy=True, k=1):
 
         # Otherwise, V_next - <what dom dominates> is what we have to dominate
         to_dom = V_next - set().union(
-            *(G.neighbor_iterator(vert, closed=True)
-              for vert in dom))
+            *(G.neighbor_iterator(vert, closed=True) for vert in dom)
+        )
 
         for can_ext in _cand_ext_enum(H, to_dom, u_next):
-
             # We complete dom with can_ext -> canD
             canD = set().union(can_ext, dom)
 
-            if (not H.is_redundant(canD, V_next)
-                    and set(dom) == set(_parent(H, canD, plng[i][1]))):
+            if not H.is_redundant(canD, V_next) and set(dom) == set(
+                _parent(H, canD, plng[i][1])
+            ):
                 # By construction, can_ext is a dominating set of
                 # `V_next - N[dom]`, so canD dominates V_next.
                 # If canD is a legitimate child of dom and is not redundant, we
                 # recurse on it:
                 for Di in tree_search(H, plng, canD, i + 1):
                     yield Di
+
     ##
     # end of tree-search routine
 
@@ -1070,8 +1109,11 @@ def minimal_dominating_sets(G, to_dominate=None, work_on_copy=True, k=1):
         # at distance at most k in G
         H = G.__class__(G.order())
         for u, ui in vertex_to_int.items():
-            H.add_edges((ui, vertex_to_int[v])
-                        for v in G.breadth_first_search(u, distance=k) if u != v)
+            H.add_edges(
+                (ui, vertex_to_int[v])
+                for v in G.breadth_first_search(u, distance=k)
+                if u != v
+            )
         G = H
     elif work_on_copy:
         G = G.relabel(perm=vertex_to_int, inplace=False)
@@ -1089,7 +1131,10 @@ def minimal_dominating_sets(G, to_dominate=None, work_on_copy=True, k=1):
 # Greedy heuristic for dominating set
 # ==============================================================================
 
-def greedy_dominating_set(G, k=1, vertices=None, ordering=None, return_sets=False, closest=False):
+
+def greedy_dominating_set(
+    G, k=1, vertices=None, ordering=None, return_sets=False, closest=False
+):
     r"""
     Return a greedy distance-`k` dominating set of the graph.
 
@@ -1247,6 +1292,7 @@ def greedy_dominating_set(G, k=1, vertices=None, ordering=None, return_sets=Fals
     if closest:
         # Attach each dominated vertex to its closest dominator
         from sage.rings.infinity import Infinity
+
         dominator = {u: (u, +Infinity) for u in vertices}
         for u in vertices:
             if u in seen:
@@ -1354,6 +1400,11 @@ def maximum_leaf_number(G, solver=None, verbose=0, integrality_tolerance=1e-3):
         raise ValueError('the graph must be connected')
     if G.order() <= 3:
         return G.order() - 1
-    return G.order() - dominating_set(G, connected=True, value_only=True,
-                                      solver=solver, verbose=verbose,
-                                      integrality_tolerance=integrality_tolerance)
+    return G.order() - dominating_set(
+        G,
+        connected=True,
+        value_only=True,
+        solver=solver,
+        verbose=verbose,
+        integrality_tolerance=integrality_tolerance,
+    )

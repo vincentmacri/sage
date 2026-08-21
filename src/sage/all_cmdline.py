@@ -3,6 +3,7 @@ All imports for the Sage (IPython) command line
 
 This is all.py (load all sage functions) plus set-up for the Sage commandline.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 William Stein <wstein@gmail.com>
 #
@@ -19,11 +20,30 @@ from sage.calculus.predefined import x
 
 from sage.misc.lazy_import import lazy_import
 
-for pkg in ['axiom', 'fricas', 'gap', 'gap3', 'giac', 'gp',
-            'gnuplot', 'kash', 'magma', 'macaulay2', 'maple',
-            'mathematica', 'mathics', 'matlab',
-            'mupad', 'mwrank', 'octave', 'qepcad', 'singular',
-            'sage0', 'lie', 'r']:
+for pkg in [
+    'axiom',
+    'fricas',
+    'gap',
+    'gap3',
+    'giac',
+    'gp',
+    'gnuplot',
+    'kash',
+    'magma',
+    'macaulay2',
+    'maple',
+    'mathematica',
+    'mathics',
+    'matlab',
+    'mupad',
+    'mwrank',
+    'octave',
+    'qepcad',
+    'singular',
+    'sage0',
+    'lie',
+    'r',
+]:
     lazy_import(f'sage.interfaces.{pkg}', f'{pkg}_console')
 del pkg
 

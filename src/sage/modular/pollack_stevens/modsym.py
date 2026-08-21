@@ -89,7 +89,9 @@ def _iterate_Up(Phi, p, M, ap, q, aq, check):
         sage: Phi = phi_stabilized.lift(p,prec) # indirect doctest
     """
     if ap.valuation(p) > 0:
-        raise ValueError("Lifting non-ordinary eigensymbols not implemented (issue #20)")
+        raise ValueError(
+            "Lifting non-ordinary eigensymbols not implemented (issue #20)"
+        )
 
     # Act by Hecke to ensure values are in D and not D^dag after solving difference equation
     verbose("Applying Hecke", level=2)
@@ -100,14 +102,17 @@ def _iterate_Up(Phi, p, M, ap, q, aq, check):
     # Killing eisenstein part
     verbose("Killing eisenstein part with q = %s" % q, level=2)
     k = Phi.parent().weight()
-    Phi = ((q ** (k + 1) + 1) * Phi - Phi.hecke(q))
+    Phi = (q ** (k + 1) + 1) * Phi - Phi.hecke(q)
 
     # Iterating U_p
     verbose("Iterating U_p", level=2)
     Psi = apinv * Phi.hecke(p)
 
     for attempts in range(M - 1):
-        verbose("%s attempt (val = %s/%s)" % (attempts + 1, (Phi - Psi).valuation(), M), level=2)
+        verbose(
+            "%s attempt (val = %s/%s)" % (attempts + 1, (Phi - Psi).valuation(), M),
+            level=2,
+        )
         Phi = Psi
         Psi = apinv * Phi.hecke(p)
         Psi._normalize()
@@ -173,7 +178,10 @@ class PSModularSymbolElement(ModuleElement):
             sage: phi._repr_()
             'Modular symbol of level 11 with values in Sym^0 Q^2'
         """
-        return "Modular symbol of level %s with values in %s" % (self.parent().level(), self.parent().coefficient_module())
+        return "Modular symbol of level %s with values in %s" % (
+            self.parent().level(),
+            self.parent().coefficient_module(),
+        )
 
     def dict(self):
         r"""
@@ -269,8 +277,7 @@ class PSModularSymbolElement(ModuleElement):
         if op not in [op_EQ, op_NE]:
             return NotImplemented
 
-        b = all(self._map[g] == other._map[g]
-                for g in self.parent().source().gens())
+        b = all(self._map[g] == other._map[g] for g in self.parent().source().gens())
 
         return b == (op == op_EQ)
 
@@ -392,8 +399,11 @@ class PSModularSymbolElement(ModuleElement):
             ValueError: you must specify a prime
         """
         pp = self.parent().prime()
-        ppp = ((alpha is not None) and hasattr(alpha.parent(), 'prime')
-               and alpha.parent().prime()) or None
+        ppp = (
+            (alpha is not None)
+            and hasattr(alpha.parent(), 'prime')
+            and alpha.parent().prime()
+        ) or None
         p = ZZ(p) or pp or ppp
         if not p:
             if not allow_none:
@@ -489,8 +499,9 @@ class PSModularSymbolElement(ModuleElement):
             sage: all(phi.hecke(p, algorithm='naive') == phi * E.ap(p) for p in [2,3,5,101]) # long time
             True
         """
-        return self.__class__(self._map.hecke(ell, algorithm),
-                                  self.parent(), construct=True)
+        return self.__class__(
+            self._map.hecke(ell, algorithm), self.parent(), construct=True
+        )
 
     def valuation(self, p=None):
         r"""
@@ -656,7 +667,9 @@ class PSModularSymbolElement(ModuleElement):
                 g = gens[i]
             except IndexError:
                 raise ValueError("self is zero")
-        aq = self.parent().base_ring()(self._map[g].find_scalar_from_zeroth_moment(qhecke._map[g], p, M, check))
+        aq = self.parent().base_ring()(
+            self._map[g].find_scalar_from_zeroth_moment(qhecke._map[g], p, M, check)
+        )
 
         verbose("Found eigenvalues of %s" % aq, level=2)
         if check:
@@ -784,8 +797,7 @@ class PSModularSymbolElement(ModuleElement):
         for b in range(1, abs(chi) + 1):
             if gcd(b, chi) == 1:
                 M1 = S0p([1, (b / abs(chi)) % p**M, 0, 1])
-                new_dist = m_map(M2Z([a * abs(chi) + p * b,
-                                      1, p * abs(chi), 0])) * M1
+                new_dist = m_map(M2Z([a * abs(chi) + p * b, 1, p * abs(chi), 0])) * M1
                 new_dist = new_dist.scale(kronecker(chi, b)).normalize()
                 twisted_dist += new_dist
         return twisted_dist.normalize()
@@ -814,20 +826,21 @@ class PSModularSymbolElement(ModuleElement):
         # Test three torsion relations
         for g in MR.reps_with_three_torsion():
             gamg = MR.three_torsion_matrix(g)
-            if not (f[g] * (gamg ** 2) + f[g] * gamg + f[g]).is_zero():
+            if not (f[g] * (gamg**2) + f[g] * gamg + f[g]).is_zero():
                 raise ValueError("Three torsion relation failed with", g)
 
         # Test that the symbol adds to 0 around the boundary of the
         # fundamental domain
         t = self.parent().coefficient_module().zero()
         for g in MR.gens()[1:]:
-            if not (g in MR.reps_with_two_torsion()
-                    or g in MR.reps_with_three_torsion()):
+            if not (
+                g in MR.reps_with_two_torsion() or g in MR.reps_with_three_torsion()
+            ):
                 t += f[g] * MR.gammas[g] - f[g]
             elif g in MR.reps_with_two_torsion():
                 t -= f[g]
             else:
-                t -= f[g]   # what ?? same thing ??
+                t -= f[g]  # what ?? same thing ??
 
         id = MR.gens()[0]
         if f[id] * MR.gammas[id] - f[id] != -t:
@@ -839,7 +852,17 @@ class PSModularSymbolElement(ModuleElement):
 
 
 class PSModularSymbolElement_symk(PSModularSymbolElement):
-    def _find_alpha(self, p, k, M=None, ap=None, new_base_ring=None, ordinary=True, check=True, find_extraprec=True):
+    def _find_alpha(
+        self,
+        p,
+        k,
+        M=None,
+        ap=None,
+        new_base_ring=None,
+        ordinary=True,
+        check=True,
+        find_extraprec=True,
+    ):
         r"""
         Find `\alpha`, a `U_p` eigenvalue, which is found as a root of
         the polynomial `x^2 - a_p * x + p^{k+1} \chi(p)`.
@@ -916,7 +939,9 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             poly = poly.change_ring(new_base_ring)
             (v0, e0), (v1, e1) = poly.roots()
         except (TypeError, ValueError):
-            raise ValueError("new base ring must contain a root of x^2 - ap * x + p^(k+1)")
+            raise ValueError(
+                "new base ring must contain a root of x^2 - ap * x + p^(k+1)"
+            )
         if v0.valuation(p) > 0:
             v0, v1 = v1, v0
         if ordinary:
@@ -932,8 +957,7 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             # and (alpha-1) are both at least *newM*, where newM is
             # obtained from self._find_extraprec
             prec_cap = None
-            verbose("testing prec_rel: newM = %s, alpha = %s" % (newM, alpha),
-                    level=2)
+            verbose("testing prec_rel: newM = %s, alpha = %s" % (newM, alpha), level=2)
             if alpha.precision_relative() < newM:
                 prec_cap = newM + alpha.valuation(p) + (1 if p == 2 else 0)
             if ordinary:
@@ -948,10 +972,28 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             verbose("prec_cap = %s" % prec_cap, level=2)
             if prec_cap is not None:
                 new_base_ring = Qp(p, prec_cap)
-                return self._find_alpha(p=p, k=k, M=M, ap=ap, new_base_ring=new_base_ring, ordinary=ordinary, check=False, find_extraprec=find_extraprec)
+                return self._find_alpha(
+                    p=p,
+                    k=k,
+                    M=M,
+                    ap=ap,
+                    new_base_ring=new_base_ring,
+                    ordinary=ordinary,
+                    check=False,
+                    find_extraprec=find_extraprec,
+                )
         return alpha, new_base_ring, newM, eisenloss, q, aq
 
-    def p_stabilize(self, p=None, M=20, alpha=None, ap=None, new_base_ring=None, ordinary=True, check=True):
+    def p_stabilize(
+        self,
+        p=None,
+        M=20,
+        alpha=None,
+        ap=None,
+        new_base_ring=None,
+        ordinary=True,
+        check=True,
+    ):
         r"""
         Return the `p`-stabilization of ``self`` to level `N p` on which `U_p`
         acts by `\alpha`.
@@ -1031,7 +1073,9 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
         M = ZZ(M)
         verbose("p stabilizing: M = %s" % M, level=2)
         if alpha is None:
-            alpha, new_base_ring, newM, eisenloss, q, aq = self._find_alpha(p, k, M + 1, ap, new_base_ring, ordinary, check, find_extraprec=False)
+            alpha, new_base_ring, newM, eisenloss, q, aq = self._find_alpha(
+                p, k, M + 1, ap, new_base_ring, ordinary, check, find_extraprec=False
+            )
             new_base_ring = Qp(p, M) if p != 2 else Qp(p, M + 1)
         else:
             if new_base_ring is None:
@@ -1039,7 +1083,7 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             if check:
                 if ap is None:
                     ap = self.base_ring()(alpha + p ** (k + 1) / alpha)
-                elif alpha ** 2 - ap * alpha + p ** (k + 1) != 0:
+                elif alpha**2 - ap * alpha + p ** (k + 1) != 0:
                     raise ValueError("alpha must be a root of x^2 - a_p*x + p^(k+1)")
                 if self.hecke(p) != ap * self:
                     raise ValueError("alpha must be a root of x^2 - a_p*x + p^(k+1)")
@@ -1097,7 +1141,9 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             V = self.parent().change_ring(L)
             Dist = V.coefficient_module()
             psi = K.hom([K.gen()], L)
-            embedded_sym = self.parent().element_class(self._map.apply(psi, codomain=Dist, to_moments=True), V, construct=True)
+            embedded_sym = self.parent().element_class(
+                self._map.apply(psi, codomain=Dist, to_moments=True), V, construct=True
+            )
             return [embedded_sym, psi]
         roots = [r[0] for r in v]
         ans = []
@@ -1105,12 +1151,22 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
         Dist = V.coefficient_module()
         for r in roots:
             psi = K.hom([r], Qp(p, M))
-            embedded_sym = self.parent().element_class(self._map.apply(psi, codomain=Dist, to_moments=True), V, construct=True)
+            embedded_sym = self.parent().element_class(
+                self._map.apply(psi, codomain=Dist, to_moments=True), V, construct=True
+            )
             ans.append((embedded_sym, psi))
         return ans
 
-    def lift(self, p=None, M=None, alpha=None, new_base_ring=None,
-             algorithm=None, eigensymbol=False, check=True):
+    def lift(
+        self,
+        p=None,
+        M=None,
+        alpha=None,
+        new_base_ring=None,
+        algorithm=None,
+        eigensymbol=False,
+        check=True,
+    ):
         r"""
         Return a (`p`-adic) overconvergent modular symbol with
         `M` moments which lifts ``self`` up to an Eisenstein error.
@@ -1234,8 +1290,9 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             algorithm = 'greenberg' if eigensymbol else 'stevens'
         elif algorithm == 'greenberg':
             if not eigensymbol:
-                raise ValueError("Greenberg's algorithm only works"
-                                " for eigensymbols. Try 'stevens'")
+                raise ValueError(
+                    "Greenberg's algorithm only works for eigensymbols. Try 'stevens'"
+                )
         elif algorithm != 'stevens':
             raise ValueError("algorithm %s not recognized" % algorithm)
         if eigensymbol:
@@ -1306,7 +1363,7 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
                     # See [PS2011] section 4.1
                     gam = manin.three_torsion_matrix(g)
                     mu = self._map[g].lift(p, M, new_base_ring)
-                    D[g] = (2 * mu - mu * gam - mu * (gam ** 2)) * half
+                    D[g] = (2 * mu - mu * gam - mu * (gam**2)) * half
                 else:
                     # no two or three torsion
                     D[g] = self._map[g].lift(p, M, new_base_ring)
@@ -1378,8 +1435,9 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             else:
                 eisenloss = (aq - 1).valuation(p)
         if q >= 50:
-            raise ValueError("The symbol appears to be eisenstein -- "
-                             "not implemented yet")
+            raise ValueError(
+                "The symbol appears to be eisenstein -- not implemented yet"
+            )
         return q, aq, eisenloss
 
     def _find_extraprec(self, p, M, alpha, check):
@@ -1430,10 +1488,18 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
             newM += -s
         return newM, eisenloss, q, aq
 
-    def p_stabilize_and_lift(self, p, M, alpha=None, ap=None,
-                             new_base_ring=None,
-                             ordinary=True, algorithm='greenberg', eigensymbol=False,
-                             check=True):
+    def p_stabilize_and_lift(
+        self,
+        p,
+        M,
+        alpha=None,
+        ap=None,
+        new_base_ring=None,
+        ordinary=True,
+        algorithm='greenberg',
+        eigensymbol=False,
+        check=True,
+    ):
         """
         `p`-stabilize and lift ``self``.
 
@@ -1488,16 +1554,22 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
         # alpha will be the eigenvalue of Up
         M0 = M + 1
         if alpha is None:
-            alpha, new_base_ring, newM, eisenloss, q, aq = self._find_alpha(p, k, M0, ap, new_base_ring, ordinary, check)
+            alpha, new_base_ring, newM, eisenloss, q, aq = self._find_alpha(
+                p, k, M0, ap, new_base_ring, ordinary, check
+            )
         if new_base_ring is None:
             new_base_ring = alpha.parent()
         newM, eisenloss, q, aq = self._find_extraprec(p, M0, alpha, check)
-        if hasattr(new_base_ring, 'precision_cap') and newM > new_base_ring.precision_cap():
+        if (
+            hasattr(new_base_ring, 'precision_cap')
+            and newM > new_base_ring.precision_cap()
+        ):
             raise ValueError("Not enough precision in new base ring")
 
         # Now we can stabilize
-        self = self.p_stabilize(p=p, alpha=alpha, ap=ap, M=newM,
-                                new_base_ring=new_base_ring, check=check)
+        self = self.p_stabilize(
+            p=p, alpha=alpha, ap=ap, M=newM, new_base_ring=new_base_ring, check=check
+        )
         # And use the standard lifting function for eigensymbols
         Phi = self._lift_to_OMS(p, newM, new_base_ring, algorithm)
         Phi = _iterate_Up(Phi, p=p, M=newM, ap=alpha, q=q, aq=aq, check=check)
@@ -1506,7 +1578,6 @@ class PSModularSymbolElement_symk(PSModularSymbolElement):
 
 
 class PSModularSymbolElement_dist(PSModularSymbolElement):
-
     def reduce_precision(self, M):
         r"""
         Only hold on to `M` moments of each value of ``self``.
@@ -1519,8 +1590,9 @@ class PSModularSymbolElement_dist(PSModularSymbolElement):
             sage: f.reduce_precision(1)
             Modular symbol of level 5 with values in Space of 5-adic distributions with k=0 action and precision cap 10
         """
-        return self.__class__(self._map.reduce_precision(M), self.parent(),
-                              construct=True)
+        return self.__class__(
+            self._map.reduce_precision(M), self.parent(), construct=True
+        )
 
     def precision_relative(self):
         r"""
@@ -1566,8 +1638,11 @@ class PSModularSymbolElement_dist(PSModularSymbolElement):
         """
         if new_base_ring is None:
             new_base_ring = self.base_ring()
-        return self.__class__(self._map.specialize(new_base_ring),
-                              self.parent()._specialize_parent_space(new_base_ring), construct=True)
+        return self.__class__(
+            self._map.specialize(new_base_ring),
+            self.parent()._specialize_parent_space(new_base_ring),
+            construct=True,
+        )
 
     def padic_lseries(self, *args, **kwds):
         """
@@ -1583,4 +1658,5 @@ class PSModularSymbolElement_dist(PSModularSymbolElement):
             O(37^6) + (4 + 37 + 36*37^2 + 19*37^3 + 21*37^4 + O(37^5))*T + O(T^2)
         """
         from sage.modular.pollack_stevens.padic_lseries import pAdicLseries
+
         return pAdicLseries(self, *args, **kwds)

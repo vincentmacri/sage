@@ -24,7 +24,7 @@ EXAMPLES::
             x^6 - 3*x^5 + 6*x^4 - 11*x^3 + 12*x^2 + 3*x + 1
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008 William Stein <wstein@gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -37,7 +37,7 @@ EXAMPLES::
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.map import Map
 from sage.categories.homset import Hom
@@ -63,6 +63,7 @@ class NumberFieldIsomorphism(Map):
         sage: isinstance(fr, sage.rings.number_field.maps.NumberFieldIsomorphism)
         True
     """
+
     def _repr_type(self) -> str:
         r"""
         EXAMPLES::
@@ -204,6 +205,7 @@ class MapNumberFieldToVectorSpace(Map):
         sage: type(to)
         <class 'sage.rings.number_field.maps.MapNumberFieldToVectorSpace'>
     """
+
     def __init__(self, K, V):
         r"""
         Standard initialisation function.
@@ -278,6 +280,7 @@ class MapRelativeVectorSpaceToRelativeNumberField(NumberFieldIsomorphism):
         sage: (to * fr)(V([1, 2])) == V([1, 2])
         True
     """
+
     def __init__(self, V, K):
         r"""
 
@@ -388,7 +391,9 @@ class MapRelativeNumberFieldToRelativeVectorSpace(NumberFieldIsomorphism):
             g = g(beta).lift()
         # Convert the coefficients to elements of the base field.
         B, from_B, _ = K.absolute_base_field()
-        return self.codomain()([from_B(B(z.lift(), check=False)) for z in g.Vecrev(K.relative_degree())])
+        return self.codomain()(
+            [from_B(B(z.lift(), check=False)) for z in g.Vecrev(K.relative_degree())]
+        )
 
 
 class NameChangeMap(NumberFieldIsomorphism):
@@ -414,6 +419,7 @@ class NameChangeMap(NumberFieldIsomorphism):
         (<class 'sage.rings.number_field.maps.NameChangeMap'>,
          <class 'sage.rings.number_field.maps.NameChangeMap'>)
     """
+
     def __init__(self, K, L):
         r"""
         EXAMPLES::
@@ -543,6 +549,7 @@ class MapAbsoluteToRelativeNumberField(NumberFieldIsomorphism):
     r"""
     See :class:`~MapRelativeToAbsoluteNumberField` for examples.
     """
+
     def __init__(self, A, R):
         r"""
         EXAMPLES::
@@ -651,6 +658,7 @@ class MapRelativeNumberFieldToVectorSpace(NumberFieldIsomorphism):
         sage: to(L.gen()), fr(to(L.gen())) == L.gen()
         ((0, 1, 0, 0, 0, 0, 0, 0), True)
     """
+
     def __init__(self, L, V, to_K, to_V):
         r"""
         EXAMPLES::

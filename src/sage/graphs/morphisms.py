@@ -34,8 +34,9 @@ Methods
 # ****************************************************************************
 
 
-def reduced_homeomorphic_graph(G, allow_multiple_edges=False, allow_loops=False,
-                               return_steps=False, immutable=None):
+def reduced_homeomorphic_graph(
+    G, allow_multiple_edges=False, allow_loops=False, return_steps=False, immutable=None
+):
     r"""
     Return the smallest graph homeomorphic to `G`.
 
@@ -177,11 +178,14 @@ def reduced_homeomorphic_graph(G, allow_multiple_edges=False, allow_loops=False,
 
         # candidates is the list of vertices with in and out degree 1
         out_degree_one = (u for u, d in G.out_degree_iterator(labels=True) if d == 1)
-        candidates = (u for u, d in G.in_degree_iterator(vertices=out_degree_one, labels=True) if d == 1)
+        candidates = (
+            u
+            for u, d in G.in_degree_iterator(vertices=out_degree_one, labels=True)
+            if d == 1
+        )
 
         def get_neighbors(g, u):
-            return (next(g.neighbor_in_iterator(u)),
-                    next(g.neighbor_out_iterator(u)))
+            return (next(g.neighbor_in_iterator(u)), next(g.neighbor_out_iterator(u)))
 
     else:
         from sage.graphs.graph import Graph as MyGraph
@@ -203,9 +207,13 @@ def reduced_homeomorphic_graph(G, allow_multiple_edges=False, allow_loops=False,
                 return g.neighbors(u)
 
     # Copy of the (di)graph with required settings for loops and multiple edges
-    H = MyGraph([G, G.edge_iterator(labels=False)], format='vertices_and_edges',
-                multiedges=G.allows_multiple_edges() or allow_multiple_edges,
-                loops=G.allows_loops() or allow_loops, immutable=False)
+    H = MyGraph(
+        [G, G.edge_iterator(labels=False)],
+        format='vertices_and_edges',
+        multiedges=G.allows_multiple_edges() or allow_multiple_edges,
+        loops=G.allows_loops() or allow_loops,
+        immutable=False,
+    )
 
     steps = []
     for u in candidates:
@@ -304,8 +312,9 @@ def is_homeomorphic(G, H):
     return X.is_isomorphic(Y)
 
 
-def has_homomorphism_to(G, H, core=False, solver=None, verbose=0,
-                        *, integrality_tolerance=1e-3):
+def has_homomorphism_to(
+    G, H, core=False, solver=None, verbose=0, *, integrality_tolerance=1e-3
+):
     r"""
     Check whether there is a homomorphism between two graphs.
 
@@ -417,6 +426,7 @@ def has_homomorphism_to(G, H, core=False, solver=None, verbose=0,
     undirected = not G.is_directed()
 
     from sage.numerical.mip import MixedIntegerLinearProgram, MIPSolverException
+
     p = MixedIntegerLinearProgram(solver=solver, maximization=False)
     b = p.new_variable(binary=True)
 
@@ -441,7 +451,6 @@ def has_homomorphism_to(G, H, core=False, solver=None, verbose=0,
 
     # Minimize the mapping's size
     if core:
-
         # The value of m is one if the corresponding vertex of H is used
         m = p.new_variable(nonnegative=True)
         for uh in H:

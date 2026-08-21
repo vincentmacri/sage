@@ -65,8 +65,12 @@ from sage.categories.rings import Rings
 from sage.rings.integer import Integer
 from sage.matrix.matrix_space import MatrixSpace
 from sage.misc.latex import latex
-from sage.structure.richcmp import (richcmp_not_equal, rich_to_bool,
-                                    richcmp_method, richcmp)
+from sage.structure.richcmp import (
+    richcmp_not_equal,
+    rich_to_bool,
+    richcmp_method,
+    richcmp,
+)
 from sage.misc.cachefunc import cached_method
 from sage.groups.group import Group
 
@@ -96,6 +100,7 @@ class MatrixGroup_base(Group):
         sage: G.category()
         Category of finite groups
     """
+
     _ambient = None  # internal attribute to register the ambient group in case this instance is a subgroup
 
     def _check_matrix(self, x, *args) -> None:
@@ -159,6 +164,7 @@ class MatrixGroup_base(Group):
             )
         """
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
         return MatrixGroup(self.gens())
 
     def subgroup(self, generators, check=True):
@@ -216,6 +222,7 @@ class MatrixGroup_base(Group):
                 raise ValueError("generator %s is not in the group" % (g))
 
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
         subgroup = MatrixGroup(generators, check=check, category=cat)
         subgroup._ambient = self
         return subgroup
@@ -274,16 +281,22 @@ class MatrixGroup_base(Group):
         if ambient_group is None:
             if self.ngens() > 5:
                 return 'Matrix group over {0} with {1} generators'.format(
-                    self.base_ring(), self.ngens())
+                    self.base_ring(), self.ngens()
+                )
             from sage.repl.display.util import format_list
+
             return 'Matrix group over {0} with {1} generators {2}'.format(
-                self.base_ring(), self.ngens(), format_list(self.gens()))
+                self.base_ring(), self.ngens(), format_list(self.gens())
+            )
         if self.ngens() > 5:
             return 'Subgroup with {0} generators of {1}'.format(
-                self.ngens(), ambient_group)
+                self.ngens(), ambient_group
+            )
         from sage.repl.display.util import format_list
+
         return 'Subgroup with {0} generators {1} of {2}'.format(
-            self.ngens(), format_list(self.gens()), ambient_group)
+            self.ngens(), format_list(self.gens()), ambient_group
+        )
 
     def _repr_option(self, key):
         """
@@ -359,6 +372,7 @@ class MatrixGroup_base(Group):
         if base_ring.characteristic() == 2:  # characteristic 2
             return self.trivial_representation()
         from sage.modules.with_basis.representation import SignRepresentationMatrixGroup
+
         return SignRepresentationMatrixGroup(self, base_ring)
 
     def natural_representation(self, base_ring=None):
@@ -392,6 +406,7 @@ class MatrixGroup_base(Group):
             e[0] + e[1] + e[2]
         """
         from sage.modules.with_basis.representation import NaturalMatrixRepresentation
+
         return NaturalMatrixRepresentation(self, base_ring)
 
 
@@ -404,7 +419,6 @@ class MatrixGroup_base(Group):
 
 @richcmp_method
 class MatrixGroup_generic(MatrixGroup_base):
-
     Element = MatrixGroupElement_generic
 
     def __init__(self, degree, base_ring, category=None):
@@ -539,6 +553,7 @@ class MatrixGroup_generic(MatrixGroup_base):
             return richcmp_not_equal(self, other, op)
 
         from sage.structure.element import InfinityElement as Infinity
+
         if isinstance(n_self, Infinity) or isinstance(n_other, Infinity):
             return richcmp(id(self), id(other), op)
 
@@ -589,6 +604,7 @@ class MatrixGroup_generic(MatrixGroup_base):
             return hash(id(self))
 
         from sage.structure.element import InfinityElement as Infinity
+
         if isinstance(ngens, Infinity):
             return hash(id(self))
 

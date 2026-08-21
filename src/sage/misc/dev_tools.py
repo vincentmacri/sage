@@ -73,8 +73,12 @@ def runsnake(command):
     deprecation(39274, "just use the runsnake program directly")
 
     tmpfile = tmp_filename()
-    cProfile.runctx(preparse(command.lstrip().rstrip()), get_main_globals(),
-                    locals(), filename=tmpfile)
+    cProfile.runctx(
+        preparse(command.lstrip().rstrip()),
+        get_main_globals(),
+        locals(),
+        filename=tmpfile,
+    )
     os.system("/usr/bin/python -E `which runsnake` %s &" % tmpfile)
 
 
@@ -180,6 +184,7 @@ def load_submodules(module=None, exclude_pattern=None):
 
     if module is None:
         import sage
+
         module = sage
         exclude_pattern = r"^sage\.libs|^sage\.tests|tests$|^sage\.all_|all$|sage\.interacts$|^sage\.misc\.benchmark$"
 
@@ -188,7 +193,9 @@ def load_submodules(module=None, exclude_pattern=None):
     else:
         exclude = None
 
-    for importer, module_name, ispkg in walk_packages(module.__path__, module.__name__ + '.'):
+    for importer, module_name, ispkg in walk_packages(
+        module.__path__, module.__name__ + '.'
+    ):
         if ispkg or module_name in sys.modules:
             continue
 
@@ -284,7 +291,9 @@ def find_objects_from_name(name, module_name=None, include_lazy_imports=False):
             continue
         if hasattr(smodule, '__dict__') and name in smodule.__dict__:
             u = smodule.__dict__[name]
-            if (not isinstance(u, LazyImport) or include_lazy_imports) and all(v is not u for v in obj):
+            if (not isinstance(u, LazyImport) or include_lazy_imports) and all(
+                v is not u for v in obj
+            ):
                 obj.append(u)
 
     return obj
@@ -490,13 +499,15 @@ def import_statements(*objects, **kwds):
         else:
             yield obj
 
-    for obj in itertools.chain.from_iterable(expand_comma_separated_names(object)
-                                             for object in objects):
-        name = None    # the name of the object
+    for obj in itertools.chain.from_iterable(
+        expand_comma_separated_names(object) for object in objects
+    ):
+        name = None  # the name of the object
 
         # 1. if obj is a string, we look for an object that has that name
         if isinstance(obj, str):
             from sage.all import sage_globals
+
             G = sage_globals()
             name = obj
             if name in G:
@@ -530,8 +541,7 @@ def import_statements(*objects, **kwds):
                 modules = set()
                 for o in obj:
                     modules.update(find_object_modules(o))
-                print("# **Warning**: distinct objects with name '{}' "
-                      "in:".format(name))
+                print("# **Warning**: distinct objects with name '{}' in:".format(name))
                 for mod in sorted(modules):
                     print("#   - {}".format(mod))
 
@@ -542,8 +552,10 @@ def import_statements(*objects, **kwds):
             except IndexError:
                 if deprecation:
                     raise LookupError(
-                        "object named {!r} is deprecated (see Issue #"
-                        "{})".format(name, deprecation))
+                        "object named {!r} is deprecated (see Issue #{})".format(
+                            name, deprecation
+                        )
+                    )
                 else:
                     raise LookupError("no object named {!r}".format(name))
 
@@ -579,9 +591,8 @@ def import_statements(*objects, **kwds):
                 Equivalent of `str.isascii` in Python >= 3.7
                 """
                 return all(ord(c) < 128 for c in s)
-            if any(is_ascii(s)
-                   for obj_names in modules.values()
-                   for s in obj_names):
+
+            if any(is_ascii(s) for obj_names in modules.values() for s in obj_names):
                 for module_name, obj_names in list(modules.items()):
                     if any(not is_ascii(s) for s in obj_names):
                         obj_names = [name for name in obj_names if is_ascii(name)]
@@ -591,11 +602,14 @@ def import_statements(*objects, **kwds):
                             modules[module_name] = obj_names
 
         if len(modules) == 1:  # the module is well defined
-            (module_name, obj_names), = modules.items()
+            ((module_name, obj_names),) = modules.items()
             if name is None:
                 if verbose and len(obj_names) > 1:
-                    print("# ** Warning **: several names for that object: "
-                          "{}".format(', '.join(sorted(obj_names))))
+                    print(
+                        "# ** Warning **: several names for that object: {}".format(
+                            ', '.join(sorted(obj_names))
+                        )
+                    )
                 name = alias = obj_names[0]
             elif name in modules[module_name]:
                 alias = name
@@ -619,6 +633,7 @@ def import_statements(*objects, **kwds):
         # if the object is a class instance, it is likely that it is defined in
         # some XYZ.all module
         from .sageinspect import isclassinstance
+
         if isclassinstance(obj):
             module_name = type(obj).__module__
             i = module_name.rfind('.')
@@ -633,16 +648,20 @@ def import_statements(*objects, **kwds):
             # here, either "obj" is a class instance but there is no natural
             # candidate for its module or "obj" is not a class instance.
             all_re = re.compile(r'.+\.all(?:_\w+)?$')
-            not_all_modules = [mod for mod in modules
-                               if not all_re.match(mod)]
+            not_all_modules = [mod for mod in modules if not all_re.match(mod)]
             if not not_all_modules:
-                print("# ** Warning **: the object {} is only defined in "
-                      ".all modules".format(obj))
+                print(
+                    "# ** Warning **: the object {} is only defined in "
+                    ".all modules".format(obj)
+                )
                 module_name = next(iter(modules))
             else:
                 if len(not_all_modules) > 1:
-                    print("# ** Warning **: several modules for the object "
-                          "{}: {}".format(obj, ', '.join(sorted(modules))))
+                    print(
+                        "# ** Warning **: several modules for the object {}: {}".format(
+                            obj, ', '.join(sorted(modules))
+                        )
+                    )
                 module_name = not_all_modules[0]
 
         # 3. Now that we found the module, we fix the problem of the alias
@@ -659,8 +678,10 @@ def import_statements(*objects, **kwds):
     if lazy:
         res.append("from sage.misc.lazy_import import lazy_import")
 
-    res.extend(import_statement_string(module_name, answer[module_name], lazy)
-               for module_name in sorted(answer))
+    res.extend(
+        import_statement_string(module_name, answer[module_name], lazy)
+        for module_name in sorted(answer)
+    )
 
     if answer_as_str:
         return '\n'.join(res)

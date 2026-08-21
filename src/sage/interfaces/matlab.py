@@ -173,19 +173,28 @@ class Matlab(Expect):
            122
            505
     """
-    def __init__(self, maxread=None, script_subdirectory=None,
-                 logfile=None, server=None, server_tmpdir=None):
-        Expect.__init__(self,
-                        name='matlab',
-                        prompt='>> ',
-                        command="matlab -nodisplay",
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=100)
+
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+    ):
+        Expect.__init__(
+            self,
+            name='matlab',
+            prompt='>> ',
+            command="matlab -nodisplay",
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=100,
+        )
 
     def __reduce__(self):
         return reduce_load_Matlab, tuple([])
@@ -228,21 +237,21 @@ for hints on how to do that).
     def whos(self):
         return self.eval('whos')
 
-#    pdehaye/20070819: This is no obsolete, see Expect._get_tmpfile_from_server and Expect._send_tmpfile_to_server
+    #    pdehaye/20070819: This is no obsolete, see Expect._get_tmpfile_from_server and Expect._send_tmpfile_to_server
 
-#    def get_via_file(self, var_name):
-#        t = self._temp_file(var_name)
-#        self.eval('save -text "%s" %s'%(t,var_name))
-#        r = open(t).read()
-#        os.unlink(t)
-#        return r.strip('\n')
+    #    def get_via_file(self, var_name):
+    #        t = self._temp_file(var_name)
+    #        self.eval('save -text "%s" %s'%(t,var_name))
+    #        r = open(t).read()
+    #        os.unlink(t)
+    #        return r.strip('\n')
 
-#    def set_via_file(self, var_name, x):
-#        t = self._temp_file(var_name)
-#        open(t,'w').write(x)
-#        print('load "%s" %s'%(t, var_name))
-#        self.eval('load "%s" %s'%(t, var_name))
-#        #os.unlink(t)
+    #    def set_via_file(self, var_name, x):
+    #        t = self._temp_file(var_name)
+    #        open(t,'w').write(x)
+    #        print('load "%s" %s'%(t, var_name))
+    #        self.eval('load "%s" %s'%(t, var_name))
+    #        #os.unlink(t)
 
     def set(self, var, value):
         """
@@ -251,7 +260,11 @@ for hints on how to do that).
         cmd = '{0}={1};'.format(var, value)
         out = self.eval(cmd)
         if out.find("error") != -1:
-            raise TypeError("Error executing code in Matlab\nCODE:\n\t{0}\nMatlab ERROR:\n\t{1}".format(cmd, out))
+            raise TypeError(
+                "Error executing code in Matlab\nCODE:\n\t{0}\nMatlab ERROR:\n\t{1}".format(
+                    cmd, out
+                )
+            )
 
     def get(self, var):
         """
@@ -277,7 +290,7 @@ for hints on how to do that).
             '     2'
         """
         i = s.find('=')
-        return s[i+1:].strip('\n')
+        return s[i + 1 :].strip('\n')
 
     def console(self):
         matlab_console()
@@ -350,6 +363,7 @@ class MatlabElement(ExpectElement):
             50 x 50 dense matrix over Real Field with 53 bits of precision
         """
         from sage.matrix.constructor import matrix
+
         matlab = self.parent()
         entries = matlab.strip_answer(matlab.eval("mat2str({0})".format(self.name())))
         entries = entries.strip()[1:-1].replace(';', ' ')
@@ -396,8 +410,11 @@ def matlab_console():
     another.
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%matlab magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%matlab magics instead.'
+        )
     os.system('matlab -nodisplay')
 
 

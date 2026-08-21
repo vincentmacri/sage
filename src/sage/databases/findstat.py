@@ -189,6 +189,7 @@ AUTHORS:
 - Martin Rubey (2015): initial version
 - Martin Rubey (2020): rewrite, adapt to new FindStat API
 """
+
 # ****************************************************************************
 #       Copyright (C) 2015 Martin Rubey <martin.rubey@tuwien.ac.at>,
 #
@@ -225,12 +226,18 @@ from json.decoder import JSONDecodeError
 import itertools
 
 # Combinatorial collections
-from sage.combinat.alternating_sign_matrix import AlternatingSignMatrix, AlternatingSignMatrices
+from sage.combinat.alternating_sign_matrix import (
+    AlternatingSignMatrix,
+    AlternatingSignMatrices,
+)
 from sage.combinat.binary_tree import BinaryTree, BinaryTrees
 from sage.combinat.core import Core, Cores
 from sage.combinat.dyck_word import DyckWord, DyckWords
 from sage.combinat.root_system.cartan_type import CartanType_abstract, CartanType
-from sage.combinat.gelfand_tsetlin_patterns import GelfandTsetlinPattern, GelfandTsetlinPatterns
+from sage.combinat.gelfand_tsetlin_patterns import (
+    GelfandTsetlinPattern,
+    GelfandTsetlinPatterns,
+)
 from sage.graphs.graph import Graph
 from sage.combinat.composition import Composition, Compositions
 from sage.combinat.partition import Partition, Partitions
@@ -241,7 +248,12 @@ from sage.combinat.permutation import Permutation, Permutations
 from sage.combinat.posets.posets import Poset, FinitePoset
 from sage.combinat.posets.lattices import LatticePoset, FiniteLatticePoset
 from sage.combinat.posets.poset_examples import Posets
-from sage.combinat.tableau import SemistandardTableau, SemistandardTableaux, StandardTableau, StandardTableaux
+from sage.combinat.tableau import (
+    SemistandardTableau,
+    SemistandardTableaux,
+    StandardTableau,
+    StandardTableaux,
+)
 from sage.combinat.set_partition import SetPartition, SetPartitions
 from sage.combinat.skew_partition import SkewPartition, SkewPartitions
 from sage.graphs.graph_generators import graphs
@@ -250,8 +262,14 @@ from sage.combinat.words.words import Words
 from sage.combinat.words.abstract_word import Word_class
 from sage.combinat.colored_permutations import SignedPermutation, SignedPermutations
 from sage.combinat.plane_partition import PlanePartition
-from sage.combinat.decorated_permutation import DecoratedPermutation, DecoratedPermutations
-from sage.combinat.set_partition_ordered import OrderedSetPartition, OrderedSetPartitions
+from sage.combinat.decorated_permutation import (
+    DecoratedPermutation,
+    DecoratedPermutations,
+)
+from sage.combinat.set_partition_ordered import (
+    OrderedSetPartition,
+    OrderedSetPartitions,
+)
 
 ######################################################################
 # the FindStat URLs
@@ -317,6 +335,7 @@ class FindStat(UniqueRepresentation, SageObject):
 
     :class:`FindStat` is a class preserving user information.
     """
+
     def __init__(self):
         r"""
         Initialize the database.
@@ -493,7 +512,9 @@ def _submit(args, url):
         ....:         "CurrentEmail": ""}
         sage: _submit(args, url)                                                # optional -- webbrowser
     """
-    f = tempfile.NamedTemporaryFile(mode='w', suffix='.html', encoding='utf-8', delete=False)
+    f = tempfile.NamedTemporaryFile(
+        mode='w', suffix='.html', encoding='utf-8', delete=False
+    )
     verbose("Created temporary file %s" % f.name, caller_name='FindStat')
     f.write('<!doctype html>\n<html lang="en">\n<meta charset="utf-8">\n')
     f.write(FINDSTAT_POST_HEADER)
@@ -505,7 +526,9 @@ def _submit(args, url):
             html_content = FINDSTAT_FORM_FORMAT % (key, value_encoded)
             f.write(html_content)
         else:
-            verbose("skipping argument %s because it is empty" % key, caller_name='FindStat')
+            verbose(
+                "skipping argument %s because it is empty" % key, caller_name='FindStat'
+            )
     f.write(FINDSTAT_FORM_FOOTER)
     f.close()
     verbose("Opening file with webbrowser", caller_name='FindStat')
@@ -552,15 +575,17 @@ def _data_to_str(data, domain, codomain=None):
     else:
         to_str_codom = codomain.to_string()
 
-    return "\n".join("\n".join(to_str_dom(element) for element in elements)
-                     + "\n====> "
-                     + FINDSTAT_VALUE_SEPARATOR.join(to_str_codom(value)
-                                                     for value in values)
-                     for elements, values in data)
+    return "\n".join(
+        "\n".join(to_str_dom(element) for element in elements)
+        + "\n====> "
+        + FINDSTAT_VALUE_SEPARATOR.join(to_str_codom(value) for value in values)
+        for elements, values in data
+    )
 
 
-def _data_from_iterable(iterable, mapping=False, domain=None,
-                        codomain=None, check=True):
+def _data_from_iterable(
+    iterable, mapping=False, domain=None, codomain=None, check=True
+):
     """
     Return a list of pairs of lists of the same size, domain, and if
     applicable, codomain.
@@ -624,11 +649,16 @@ def _data_from_iterable(iterable, mapping=False, domain=None,
         elts, vals = list(query0), list(query1)
         if len(elts) == 2:
             if len(vals) != 2:
-                raise ValueError("cannot interpret the given argument as a FindStat query")
+                raise ValueError(
+                    "cannot interpret the given argument as a FindStat query"
+                )
             pre_data = [elts, vals]
         else:
             if len(elts) != len(vals):
-                raise ValueError("FindStat expects the same number of objects (got %s) as values (got %s)" % (len(elts), len(vals)))
+                raise ValueError(
+                    "FindStat expects the same number of objects (got %s) as values (got %s)"
+                    % (len(elts), len(vals))
+                )
             pre_data = [(elts, vals)]
 
     # pre_data is a list of all elements of the iterator accessed so
@@ -660,21 +690,25 @@ def _data_from_iterable(iterable, mapping=False, domain=None,
             else:
                 vals = list(map(Integer, vals))
         if len(elts) != len(vals):
-            raise ValueError("FindStat expects the same number of objects as values in each pair")
+            raise ValueError(
+                "FindStat expects the same number of objects as values in each pair"
+            )
         if check and mapping:
             bad = [elt for elt in vals if not codomain.is_element(elt)]
             assert not bad, "%s are not elements of %s" % (bad, codomain)
         for elt in elts:
             if elt in all_elements:
-                raise ValueError("FindStat expects that every object occurs at most once: %s" % elt)
+                raise ValueError(
+                    "FindStat expects that every object occurs at most once: %s" % elt
+                )
             all_elements.add(elt)
 
         return elts, vals
 
-    lazy_data = lazy_list((sanitize_pair(elts, vals)
-                           for elts, vals in iterator),
-                          initial_values=[sanitize_pair(elts, vals)
-                                          for elts, vals in pre_data])
+    lazy_data = lazy_list(
+        (sanitize_pair(elts, vals) for elts, vals in iterator),
+        initial_values=[sanitize_pair(elts, vals) for elts, vals in pre_data],
+    )
     if mapping:
         return lazy_data, domain, codomain
     return lazy_data, domain
@@ -699,9 +733,11 @@ def _data_from_function(function, domain):
         sage: _data_from_function(lambda pi: pi[0], domain)                     # optional -- internet
         lazy list [([[1]], [1]), ([[1, 2]], [1]), ([[2, 1]], [2]), ...]
     """
-    return lazy_list(([elt], [value])
-                     for elt, value in domain.first_terms(function)
-                     if value is not None)
+    return lazy_list(
+        ([elt], [value])
+        for elt, value in domain.first_terms(function)
+        if value is not None
+    )
 
 
 def _data_from_data(data, max_values):
@@ -741,7 +777,7 @@ def _data_from_data(data, max_values):
             query.append((elts, vals))
             max_values -= len(elts)
         else:
-            break # assuming that the next pair is even larger
+            break  # assuming that the next pair is even larger
 
     return query
 
@@ -771,7 +807,7 @@ def _distribution_from_data(data, domain, max_values, generating_functions=False
         [([[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]],
           [1, 1, 2, 2, 3, 3])]
     """
-    lvl_dict = {} # lvl: elts, vals
+    lvl_dict = {}  # lvl: elts, vals
     total = max_values
     iterator = iter(data)
     levels_with_sizes = domain.levels_with_sizes()
@@ -796,12 +832,17 @@ def _distribution_from_data(data, domain, max_values, generating_functions=False
             total -= levels_with_sizes[lvl]
 
     if generating_functions:
-        return {lvl: {val: vals.count(val) for val in set(vals)}
-                for lvl, (elts, vals) in lvl_dict.items()
-                if levels_with_sizes[lvl] == len(vals)}
+        return {
+            lvl: {val: vals.count(val) for val in set(vals)}
+            for lvl, (elts, vals) in lvl_dict.items()
+            if levels_with_sizes[lvl] == len(vals)
+        }
 
-    return [(elts, vals) for lvl, (elts, vals) in lvl_dict.items()
-            if levels_with_sizes[lvl] == len(elts)]
+    return [
+        (elts, vals)
+        for lvl, (elts, vals) in lvl_dict.items()
+        if levels_with_sizes[lvl] == len(elts)
+    ]
 
 
 def _generating_functions_from_dict(gfs, style):
@@ -836,20 +877,30 @@ def _generating_functions_from_dict(gfs, style):
     if style == "dictionary":
         return gfs
     if style == "list":
-        return {level: [gen_dict.get(deg, 0)
-                        for deg in range(min(gen_dict),
-                                         max(gen_dict)+1)]
-                for level, gen_dict in gfs.items() if gen_dict}
+        return {
+            level: [
+                gen_dict.get(deg, 0) for deg in range(min(gen_dict), max(gen_dict) + 1)
+            ]
+            for level, gen_dict in gfs.items()
+            if gen_dict
+        }
     if style == "polynomial":
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         from sage.rings.integer_ring import ZZ
+
         P = PolynomialRing(ZZ, "q", sparse=True)
         q = P.gen()
-        return {level: sum(coefficient * q**exponent
-                           for exponent, coefficient in gen_dict.items())
-                for level, gen_dict in gfs.items()}
+        return {
+            level: sum(
+                coefficient * q**exponent for exponent, coefficient in gen_dict.items()
+            )
+            for level, gen_dict in gfs.items()
+        }
 
-    raise ValueError("the argument 'style' (='%s') must be 'dictionary', 'polynomial', or 'list'" % style)
+    raise ValueError(
+        "the argument 'style' (='%s') must be 'dictionary', 'polynomial', or 'list'"
+        % style
+    )
 
 
 def _get_code_from_callable(function):
@@ -878,19 +929,28 @@ def _get_code_from_callable(function):
     code = ""
     if function is not None:
         from sage.misc.cachefunc import CachedFunction
+
         try:
             if isinstance(function, CachedFunction):
                 code = inspect.getsource(function.f)
             else:
                 code = inspect.getsource(function)
         except (OSError, TypeError):
-            verbose("inspect.getsource could not get code from function provided",
-                    caller_name='FindStat')
+            verbose(
+                "inspect.getsource could not get code from function provided",
+                caller_name='FindStat',
+            )
     return code
 
 
-def findstat(query=None, values=None, distribution=None, domain=None,
-             depth=FINDSTAT_DEFAULT_DEPTH, max_values=FINDSTAT_MAX_VALUES):
+def findstat(
+    query=None,
+    values=None,
+    distribution=None,
+    domain=None,
+    depth=FINDSTAT_DEFAULT_DEPTH,
+    max_values=FINDSTAT_MAX_VALUES,
+):
     r"""
     Return matching statistics.
 
@@ -1044,7 +1104,10 @@ def findstat(query=None, values=None, distribution=None, domain=None,
         max_values = int(max_values)
         assert 0 <= max_values <= FINDSTAT_MAX_VALUES
     except (ValueError, AssertionError):
-        raise ValueError("the maximal number of values for a FindStat query must be a nonnegative integer less than or equal to %i" % FINDSTAT_MAX_VALUES)
+        raise ValueError(
+            "the maximal number of values for a FindStat query must be a nonnegative integer less than or equal to %i"
+            % FINDSTAT_MAX_VALUES
+        )
 
     check_collection = True
 
@@ -1053,9 +1116,9 @@ def findstat(query=None, values=None, distribution=None, domain=None,
             known_terms = _data_from_function(raw, domain)
             function = raw
         else:
-            known_terms, domain = _data_from_iterable(raw, domain=domain,
-                                                      mapping=False,
-                                                      check=check_collection)
+            known_terms, domain = _data_from_iterable(
+                raw, domain=domain, mapping=False, check=check_collection
+            )
             function = None
         data = _data_from_data(known_terms, max_values)
         return known_terms, data, domain, function
@@ -1065,9 +1128,9 @@ def findstat(query=None, values=None, distribution=None, domain=None,
             known_terms = _data_from_function(raw, domain)
             function = raw
         else:
-            known_terms, domain = _data_from_iterable(raw, domain=domain,
-                                                      mapping=False,
-                                                      check=check_collection)
+            known_terms, domain = _data_from_iterable(
+                raw, domain=domain, mapping=False, check=check_collection
+            )
             function = None
         data = _distribution_from_data(known_terms, domain, max_values)
         return known_terms, data, domain, function
@@ -1077,7 +1140,9 @@ def findstat(query=None, values=None, distribution=None, domain=None,
         return FindStat()
 
     if values is not None and distribution is not None:
-        raise ValueError("not both of `values` and `distribution` may be given for a FindStat query")
+        raise ValueError(
+            "not both of `values` and `distribution` may be given for a FindStat query"
+        )
 
     if values is None and distribution is None:
         if query is None:
@@ -1107,22 +1172,38 @@ def findstat(query=None, values=None, distribution=None, domain=None,
     if values is not None:
         if isinstance(values, (int, Integer, str, FindStatCombinatorialStatistic)):
             if domain is not None:
-                raise ValueError("the domain must not be provided if a statistic identifier is given")
+                raise ValueError(
+                    "the domain must not be provided if a statistic identifier is given"
+                )
             return FindStatStatisticQuery(values_of=values, depth=depth)
 
         known_terms, data, domain, function = get_values(values, domain)
-        return FindStatStatisticQuery(data=data, domain=domain, depth=depth,
-                                      known_terms=known_terms, function=function)
+        return FindStatStatisticQuery(
+            data=data,
+            domain=domain,
+            depth=depth,
+            known_terms=known_terms,
+            function=function,
+        )
 
     if distribution is not None:
-        if isinstance(distribution, (int, Integer, str, FindStatCombinatorialStatistic)):
+        if isinstance(
+            distribution, (int, Integer, str, FindStatCombinatorialStatistic)
+        ):
             if domain is not None:
-                raise ValueError("the domain must not be provided if a statistic identifier is given")
+                raise ValueError(
+                    "the domain must not be provided if a statistic identifier is given"
+                )
             return FindStatStatisticQuery(distribution_of=distribution, depth=depth)
 
         known_terms, data, domain, function = get_distribution(distribution, domain)
-        return FindStatStatisticQuery(data=data, domain=domain, depth=depth,
-                                      known_terms=known_terms, function=function)
+        return FindStatStatisticQuery(
+            data=data,
+            domain=domain,
+            depth=depth,
+            known_terms=known_terms,
+            function=function,
+        )
 
     raise ValueError("the given arguments cannot be used for a FindStat search")
 
@@ -1247,11 +1328,13 @@ def findmap(*args, **kwargs):
         Set of combinatorial maps with codomain Cc0013: Cores used by FindStat
     """
     if len(args) > 3:
-        raise TypeError("findmap takes at most 3 positional arguments (%s given)" % len(args))
+        raise TypeError(
+            "findmap takes at most 3 positional arguments (%s given)" % len(args)
+        )
 
-    bad_args = set(kwargs).difference(["values", "distribution",
-                                       "domain", "codomain",
-                                       "depth", "max_values"])
+    bad_args = set(kwargs).difference(
+        ["values", "distribution", "domain", "codomain", "depth", "max_values"]
+    )
     if bad_args:
         raise TypeError("findmap got unexpected keyword arguments '%s'" % bad_args)
 
@@ -1266,7 +1349,10 @@ def findmap(*args, **kwargs):
         max_values = int(max_values)
         assert 0 <= max_values <= FINDSTAT_MAX_VALUES
     except (ValueError, AssertionError):
-        raise ValueError("the maximal number of values for a FindStat query must be a nonnegative integer less than or equal to %i" % FINDSTAT_MAX_VALUES)
+        raise ValueError(
+            "the maximal number of values for a FindStat query must be a nonnegative integer less than or equal to %i"
+            % FINDSTAT_MAX_VALUES
+        )
 
     check_collection = True
 
@@ -1277,10 +1363,13 @@ def findmap(*args, **kwargs):
                 codomain = FindStatCollection(known_terms[0][1][0])
             function = raw
         else:
-            known_terms, domain, codomain = _data_from_iterable(raw, domain=domain,
-                                                                codomain=codomain,
-                                                                mapping=True,
-                                                                check=check_collection)
+            known_terms, domain, codomain = _data_from_iterable(
+                raw,
+                domain=domain,
+                codomain=codomain,
+                mapping=True,
+                check=check_collection,
+            )
             function = None
         data = _data_from_data(known_terms, max_values)
         return known_terms, data, domain, codomain, function
@@ -1290,10 +1379,13 @@ def findmap(*args, **kwargs):
             known_terms = _data_from_function(raw, domain)
             function = raw
         else:
-            known_terms, domain, codomain = _data_from_iterable(raw, domain=domain,
-                                                             codomain=codomain,
-                                                             mapping=True,
-                                                             check=check_collection)
+            known_terms, domain, codomain = _data_from_iterable(
+                raw,
+                domain=domain,
+                codomain=codomain,
+                mapping=True,
+                check=check_collection,
+            )
             function = None
         data = _distribution_from_data(known_terms, domain, max_values)
         return known_terms, data, domain, codomain, function
@@ -1307,33 +1399,48 @@ def findmap(*args, **kwargs):
 
     def check_domain(arg, domain):
         if domain is not None:
-            raise TypeError("the domain was specified twice, as positional argument (%s) and as keyword domain=%s" % (arg, domain))
+            raise TypeError(
+                "the domain was specified twice, as positional argument (%s) and as keyword domain=%s"
+                % (arg, domain)
+            )
         return arg
 
     def check_codomain(arg, codomain):
         if codomain is not None:
-            raise TypeError("the codomain was specified twice, as positional argument (%s) and as keyword codomain=%s" % (arg, codomain))
+            raise TypeError(
+                "the codomain was specified twice, as positional argument (%s) and as keyword codomain=%s"
+                % (arg, codomain)
+            )
         return arg
 
     def check_values(arg, values):
         if values is not None:
-            raise TypeError("values were specified twice, as positional argument (%s) and as keyword values=%s" % (arg, values))
+            raise TypeError(
+                "values were specified twice, as positional argument (%s) and as keyword values=%s"
+                % (arg, values)
+            )
         return arg
 
     ######################################################################
     if values is not None and distribution is not None:
-        raise ValueError("not both of `values` and `distribution` may be given for a FindStat query")
+        raise ValueError(
+            "not both of `values` and `distribution` may be given for a FindStat query"
+        )
 
     if len(args) == 1:
-        if (values is None and distribution is None
-            and domain is None and codomain is None
-            and (isinstance(args[0], (int, Integer, FindStatCombinatorialMap))
-                 or (isinstance(args[0], str)
-                     and not is_collection(args[0])))):
+        if (
+            values is None
+            and distribution is None
+            and domain is None
+            and codomain is None
+            and (
+                isinstance(args[0], (int, Integer, FindStatCombinatorialMap))
+                or (isinstance(args[0], str) and not is_collection(args[0]))
+            )
+        ):
             return FindStatMap(args[0])
 
-        if (isinstance(args[0], str) and
-            is_collection(args[0])):
+        if isinstance(args[0], str) and is_collection(args[0]):
             domain = check_domain(args[0], domain)
 
         else:
@@ -1356,29 +1463,50 @@ def findmap(*args, **kwargs):
     if codomain is not None:
         codomain = FindStatCollection(codomain)
 
-    if (values is None and distribution is None
-        and (domain is not None or codomain is not None)):
+    if (
+        values is None
+        and distribution is None
+        and (domain is not None or codomain is not None)
+    ):
         return FindStatMaps(domain=domain, codomain=codomain)
 
     if values is not None:
         if isinstance(values, (int, Integer, str, FindStatCombinatorialMap)):
             if domain is not None or codomain is not None:
-                raise ValueError("domain and codomain must not be provided if a map identifier is given")
+                raise ValueError(
+                    "domain and codomain must not be provided if a map identifier is given"
+                )
             return FindStatMapQuery(values_of=values, depth=depth)
 
-        known_terms, data, domain, codomain, function = get_values(values, domain, codomain)
-        return FindStatMapQuery(data=data, domain=domain, codomain=codomain, depth=depth,
-                                known_terms=known_terms, function=function)
+        known_terms, data, domain, codomain, function = get_values(
+            values, domain, codomain
+        )
+        return FindStatMapQuery(
+            data=data,
+            domain=domain,
+            codomain=codomain,
+            depth=depth,
+            known_terms=known_terms,
+            function=function,
+        )
 
     if distribution is not None:
         if isinstance(distribution, (int, Integer, str, FindStatCombinatorialMap)):
             if domain is not None or codomain is not None:
-                raise ValueError("domain and codomain must not be provided if a map identifier is given")
+                raise ValueError(
+                    "domain and codomain must not be provided if a map identifier is given"
+                )
             return FindStatMapQuery(distribution_of=distribution, depth=depth)
 
         known_terms, data, domain, function = get_distribution(distribution, domain)
-        return FindStatMapQuery(data=data, domain=domain, codomain=codomain, depth=depth,
-                                known_terms=known_terms, function=function)
+        return FindStatMapQuery(
+            data=data,
+            domain=domain,
+            codomain=codomain,
+            depth=depth,
+            known_terms=known_terms,
+            function=function,
+        )
 
     raise ValueError("the given arguments cannot be used for a FindStat search")
 
@@ -1394,6 +1522,7 @@ class FindStatFunction(SageObject):
     This class provides methods to access and modify properties of a
     single statistic or map of the FindStat database.
     """
+
     def __init__(self, id, data=None, function=None):
         """
         Initialize a statistic or map.
@@ -1424,18 +1553,23 @@ class FindStatFunction(SageObject):
             ....:                        "SageCode": ""})
             St000000: a new statistic
         """
-        self._id = id # as padded identifier, with number 0 reserved for new statistics or maps
-        self._modified = False # set in every method modifying the data
+        self._id = id  # as padded identifier, with number 0 reserved for new statistics or maps
+        self._modified = False  # set in every method modifying the data
         if callable(function):
             self._function = function
         else:
             self._function = False  # determines that FindStat code may not be executed
         if self.id() != 0 and data is not None:
-            raise ValueError("data (%s) may be provided if and only if id (%s) is %s or %s" %
-                             (data, id,
-                              FINDSTAT_STATISTIC_PADDED_IDENTIFIER % 0,
-                              FINDSTAT_MAP_PADDED_IDENTIFIER % 0))
-        self._data_cache = data # a dictionary with "Description", "Code", etc.
+            raise ValueError(
+                "data (%s) may be provided if and only if id (%s) is %s or %s"
+                % (
+                    data,
+                    id,
+                    FINDSTAT_STATISTIC_PADDED_IDENTIFIER % 0,
+                    FINDSTAT_MAP_PADDED_IDENTIFIER % 0,
+                )
+            )
+        self._data_cache = data  # a dictionary with "Description", "Code", etc.
 
     def _data(self):
         """
@@ -1484,11 +1618,17 @@ class FindStatFunction(SageObject):
             2
         """
         if self._function is False and FindStat()._allow_execution is False:
-            raise ValueError("execution of verified code provided by FindStat is not enabled for %s" % self)
-        if self._function is True or (self._function is False and FindStat()._allow_execution is True):
+            raise ValueError(
+                "execution of verified code provided by FindStat is not enabled for %s"
+                % self
+            )
+        if self._function is True or (
+            self._function is False and FindStat()._allow_execution is True
+        ):
             if not self.sage_code():
                 raise ValueError("there is no verified code available for %s" % self)
             from sage.repl.preparse import preparse
+
             try:
                 l = {}
                 environment = 'sage.all'
@@ -1700,8 +1840,9 @@ class FindStatFunction(SageObject):
                     # this means that the link is unhandled
                     result.append(ref)
                 else:
-                    author_title = ", ".join(e for e in [bibitem["Author"], bibitem["Title"]]
-                                             if e)
+                    author_title = ", ".join(
+                        e for e in [bibitem["Author"], bibitem["Title"]] if e
+                    )
                     result.append(comment + author_title + " " + "".join(parts[1:]))
 
         return FancyTuple(result)
@@ -1795,6 +1936,7 @@ class FindStatFunction(SageObject):
             self._modified = True
             self._data_cache["SageCode"] = value
 
+
 ######################################################################
 # statistics
 ######################################################################
@@ -1808,6 +1950,7 @@ class FindStatCombinatorialStatistic(SageObject):
     :class:`FindStatStatistic`, :class:`FindStatCompoundStatistic`
     and :class:`FindStatStatisticQuery`.
     """
+
     def __init__(self):
         """
         Initialize the combinatorial statistic.
@@ -1914,8 +2057,10 @@ class FindStatCombinatorialStatistic(SageObject):
             sage: len(st.cache)                                                 # optional -- internet
             100
         """
-        return "\n".join(key + " => " + str(val)
-                         for key, val in self._first_terms_raw(max_values=max_values))
+        return "\n".join(
+            key + " => " + str(val)
+            for key, val in self._first_terms_raw(max_values=max_values)
+        )
 
     def _fetch_first_terms(self):
         r"""
@@ -1933,11 +2078,11 @@ class FindStatCombinatorialStatistic(SageObject):
         from_str = self.domain().from_string()
         if self._first_terms_raw_cache is None:
             self._first_terms_raw_cache = self._fetch_first_terms_raw()
-        return [(from_str(obj), Integer(val))
-                for obj, val in self._first_terms_raw_cache]
+        return [
+            (from_str(obj), Integer(val)) for obj, val in self._first_terms_raw_cache
+        ]
 
-    def _generating_functions_dict(self,
-                                   max_values=FINDSTAT_MAX_SUBMISSION_VALUES):
+    def _generating_functions_dict(self, max_values=FINDSTAT_MAX_SUBMISSION_VALUES):
         r"""
         Return the generating functions of ``self`` as dictionary of
         dictionaries, computed from ``self.first_terms``.
@@ -1970,8 +2115,9 @@ class FindStatCombinatorialStatistic(SageObject):
                 del gfs[lvl]
         return gfs
 
-    def generating_functions(self, style='polynomial',
-                             max_values=FINDSTAT_MAX_SUBMISSION_VALUES):
+    def generating_functions(
+        self, style='polynomial', max_values=FINDSTAT_MAX_SUBMISSION_VALUES
+    ):
         r"""
         Return the generating functions of the statistic as a dictionary.
 
@@ -2068,6 +2214,7 @@ class FindStatCombinatorialStatistic(SageObject):
             0: A067311: Triangle read by rows: T(n,k) gives number of ways of arranging n chords on a circle with k simple intersections ...
         """
         from sage.databases.oeis import oeis
+
         gen_funcs = self.generating_functions(style='list')
 
         OEIS_string = ""
@@ -2091,13 +2238,18 @@ class FindStatCombinatorialStatistic(SageObject):
             return oeis(OEIS_string)
 
         if verbose:
-            print("Too little information to search the OEIS for this statistic (only %s values given)." % counter)
+            print(
+                "Too little information to search the OEIS for this statistic (only %s values given)."
+                % counter
+            )
 
 
-class FindStatStatistic(Element,
-                        FindStatFunction,
-                        FindStatCombinatorialStatistic,
-                        metaclass=InheritComparisonClasscallMetaclass):
+class FindStatStatistic(
+    Element,
+    FindStatFunction,
+    FindStatCombinatorialStatistic,
+    metaclass=InheritComparisonClasscallMetaclass,
+):
     r"""
     A FindStat statistic.
 
@@ -2117,6 +2269,7 @@ class FindStatStatistic(Element,
 
         :class:`FindStatStatistics`
     """
+
     @staticmethod
     def __classcall_private__(cls, entry):
         """
@@ -2215,9 +2368,14 @@ class FindStatStatistic(Element,
         """
         fields = "Bibliography,Code,Description,Domain,Name,References,SageCode"
         fields_Bibliography = "Author,Title"
-        url = (FINDSTAT_API_STATISTICS + self.id_str()
-               + "?fields=" + fields
-               + "&fields[Bibliography]=" + fields_Bibliography)
+        url = (
+            FINDSTAT_API_STATISTICS
+            + self.id_str()
+            + "?fields="
+            + fields
+            + "&fields[Bibliography]="
+            + fields_Bibliography
+        )
         verbose("fetching statistic data %s" % url, caller_name='FindStatStatistic')
 
         included = _get_json(url)["included"]
@@ -2388,7 +2546,9 @@ class FindStatStatistic(Element,
         if not self.id():
             url = FINDSTAT_NEWSTATISTIC_FORM_HEADER % FINDSTAT_URL_NEW_STATISTIC
         else:
-            url = FINDSTAT_NEWSTATISTIC_FORM_HEADER % (FINDSTAT_URL_EDIT_STATISTIC + self.id_str())
+            url = FINDSTAT_NEWSTATISTIC_FORM_HEADER % (
+                FINDSTAT_URL_EDIT_STATISTIC + self.id_str()
+            )
         _submit(args, url)
 
     # editing and submitting is really the same thing
@@ -2440,6 +2600,7 @@ class FindStatStatistics(UniqueRepresentation, Parent):
         The number of crossings of a perfect matching.
         The number of crossings plus two-nestings of a perfect matching.
     """
+
     def __init__(self, domain=None):
         """
         TESTS::
@@ -2477,13 +2638,18 @@ class FindStatStatistics(UniqueRepresentation, Parent):
         elif isinstance(id, FindStatCombinatorialStatistic):
             id = id.id_str()
         if not isinstance(id, str):
-            raise TypeError("the value '%s' is not a valid FindStat statistic identifier, nor a FindStat statistic query" % id)
+            raise TypeError(
+                "the value '%s' is not a valid FindStat statistic identifier, nor a FindStat statistic query"
+                % id
+            )
         else:
             id = id.strip()
         if FINDSTAT_MAP_SEPARATOR in id:
             return FindStatCompoundStatistic(id)
         if not re.match(FINDSTAT_STATISTIC_REGEXP, id) or int(id[2:]) <= 0:
-            raise ValueError("the value '%s' is not a valid FindStat statistic identifier" % id)
+            raise ValueError(
+                "the value '%s' is not a valid FindStat statistic identifier" % id
+            )
         if id not in _all_statistics or _all_statistics[id] is None:
             _all_statistics[id] = self.element_class(self, id)
 
@@ -2504,7 +2670,9 @@ class FindStatStatistics(UniqueRepresentation, Parent):
         """
         if self._domain is None:
             return "Set of combinatorial statistics in FindStat"
-        return "Set of combinatorial statistics with domain %s in FindStat" % self._domain
+        return (
+            "Set of combinatorial statistics with domain %s in FindStat" % self._domain
+        )
 
     def __iter__(self):
         """
@@ -2540,6 +2708,7 @@ class FindStatStatistics(UniqueRepresentation, Parent):
             return next(iter(self))
         except StopIteration:
             from sage.categories.sets_cat import EmptySetError
+
             raise EmptySetError
 
     Element = FindStatStatistic
@@ -2549,10 +2718,18 @@ class FindStatStatisticQuery(FindStatStatistic):
     """
     A class representing a query for FindStat (compound) statistics.
     """
-    def __init__(self, data=None, values_of=None, distribution_of=None,
-                 domain=None, known_terms=None, function=None,
-                 depth=FINDSTAT_DEFAULT_DEPTH,
-                 debug=False):
+
+    def __init__(
+        self,
+        data=None,
+        values_of=None,
+        distribution_of=None,
+        domain=None,
+        known_terms=None,
+        function=None,
+        depth=FINDSTAT_DEFAULT_DEPTH,
+        debug=False,
+    ):
         """
         Initialize a query for FindStat (compound) statistics.
 
@@ -2612,8 +2789,10 @@ class FindStatStatisticQuery(FindStatStatistic):
             assert all(param is None for param in [distribution_of, values_of])
 
             domain = FindStatCollection(domain)
-            query = {"Domain": domain.id_str(),
-                     "Data": _data_to_str(self._first_terms, domain)}
+            query = {
+                "Domain": domain.id_str(),
+                "Data": _data_to_str(self._first_terms, domain),
+            }
 
         elif distribution_of is not None:
             assert all(param is None for param in [data, known_terms, values_of])
@@ -2630,7 +2809,10 @@ class FindStatStatisticQuery(FindStatStatistic):
             query = {"ValuesOf": self._values_of.id_str()}
 
         else:
-            raise ValueError("incompatible set of parameters: data: %s, distribution_of: %s, values_of: %s" % ((data, distribution_of, values_of)))
+            raise ValueError(
+                "incompatible set of parameters: data: %s, distribution_of: %s, values_of: %s"
+                % ((data, distribution_of, values_of))
+            )
 
         if depth is not None:
             query["Depth"] = depth
@@ -2649,23 +2831,34 @@ class FindStatStatisticQuery(FindStatStatistic):
         result = []
         for match in response["data"]:
             entry = response["included"]["MatchingStatistics"][match]
-            result.append(FindStatMatchingStatistic(entry["MatchingStatistic"],
-                                                    entry["Offset"],
-                                                    entry["Quality"],
-                                                    domain=domain))
+            result.append(
+                FindStatMatchingStatistic(
+                    entry["MatchingStatistic"],
+                    entry["Offset"],
+                    entry["Quality"],
+                    domain=domain,
+                )
+            )
 
         self._result = FancyTuple(result)
 
-        FindStatFunction.__init__(self, FINDSTAT_STATISTIC_PADDED_IDENTIFIER % 0,
-                                  data={"Bibliography": {},
-                                        "Code": _get_code_from_callable(function),
-                                        "Description": "",
-                                        "Domain": domain,
-                                        "Name": "a new statistic on %s" % domain.name("plural"),
-                                        "References": "",
-                                        "SageCode": ""},
-                                  function=function)
-        Element.__init__(self, FindStatStatistics()) # this is not completely correct, but it works
+        FindStatFunction.__init__(
+            self,
+            FINDSTAT_STATISTIC_PADDED_IDENTIFIER % 0,
+            data={
+                "Bibliography": {},
+                "Code": _get_code_from_callable(function),
+                "Description": "",
+                "Domain": domain,
+                "Name": "a new statistic on %s" % domain.name("plural"),
+                "References": "",
+                "SageCode": "",
+            },
+            function=function,
+        )
+        Element.__init__(
+            self, FindStatStatistics()
+        )  # this is not completely correct, but it works
 
     @lazy_attribute
     def _first_terms_cache(self):
@@ -2699,10 +2892,10 @@ class FindStatStatisticQuery(FindStatStatistic):
              {[]: 0, [(1, 2)]: 0}
 
         """
-        new_terms = self._known_terms[self._known_terms_number:max_values]
-        self._first_terms_cache.update((objs[0], vals[0])
-                                       for objs, vals in new_terms
-                                       if len(vals) == 1)
+        new_terms = self._known_terms[self._known_terms_number : max_values]
+        self._first_terms_cache.update(
+            (objs[0], vals[0]) for objs, vals in new_terms if len(vals) == 1
+        )
         self._known_terms_number = max(max_values, self._known_terms_number)
         return dict(self._first_terms_cache)
 
@@ -2721,11 +2914,12 @@ class FindStatStatisticQuery(FindStatStatistic):
              [('[]', 0), ('[(1, 2)]', 0)]
         """
         to_str = self.domain().to_string()
-        return [(to_str(obj), val)
-                for obj, val in self.first_terms(max_values=max_values).items()]
+        return [
+            (to_str(obj), val)
+            for obj, val in self.first_terms(max_values=max_values).items()
+        ]
 
-    def _generating_functions_dict(self,
-                                   max_values=FINDSTAT_MAX_SUBMISSION_VALUES):
+    def _generating_functions_dict(self, max_values=FINDSTAT_MAX_SUBMISSION_VALUES):
         """
         Return the generating functions of the levels where all values
         can be determined.
@@ -2742,10 +2936,9 @@ class FindStatStatisticQuery(FindStatStatistic):
             sage: q.generating_functions()                                      # optional -- internet, indirect doctest
             {3: 2*q^3 + 2*q^2 + 2*q}
         """
-        return _distribution_from_data(self._known_terms,
-                                       self.domain(),
-                                       max_values,
-                                       generating_functions=True)
+        return _distribution_from_data(
+            self._known_terms, self.domain(), max_values, generating_functions=True
+        )
 
     def __repr__(self):
         """
@@ -2828,20 +3021,28 @@ class FindStatCompoundStatistic(Element, FindStatCombinatorialStatistic):
         self._statistic = FindStatStatistic(composition[0])
         if composition[2]:
             self._maps = FindStatCompoundMap(composition[2], domain=self._domain)
-            self._id = self._statistic.id_str() + FINDSTAT_MAP_SEPARATOR + self._maps.id_str()
+            self._id = (
+                self._statistic.id_str() + FINDSTAT_MAP_SEPARATOR + self._maps.id_str()
+            )
             if self._domain is None:
                 self._domain = self._maps.domain()
         else:
             if self._domain is None:
                 self._domain = self._statistic.domain()
-            self._maps = FindStatCompoundMap("", domain=self._domain, codomain=self._domain)
+            self._maps = FindStatCompoundMap(
+                "", domain=self._domain, codomain=self._domain
+            )
             self._id = self._statistic.id_str()
-        if (check
-            and self._maps.codomain() != self._statistic.domain()):
-            raise ValueError("the statistic %s cannot be composed with the map %s" % (self._statistic, self._maps))
+        if check and self._maps.codomain() != self._statistic.domain():
+            raise ValueError(
+                "the statistic %s cannot be composed with the map %s"
+                % (self._statistic, self._maps)
+            )
 
         FindStatCombinatorialStatistic.__init__(self)
-        Element.__init__(self, FindStatStatistics()) # this is not completely correct, but it works
+        Element.__init__(
+            self, FindStatStatistics()
+        )  # this is not completely correct, but it works
 
     def _fetch_first_terms_raw(self) -> list:
         r"""
@@ -2859,7 +3060,9 @@ class FindStatCompoundStatistic(Element, FindStatCombinatorialStatistic):
         fields = "Values"
         url = FINDSTAT_API_STATISTICS + self.id_str() + "?fields=" + fields
         if self._maps:
-            values = _get_json(url)["included"]["CompoundStatistics"][self.id_str()]["Values"]
+            values = _get_json(url)["included"]["CompoundStatistics"][self.id_str()][
+                "Values"
+            ]
         else:
             values = _get_json(url)["included"]["Statistics"][self.id_str()]["Values"]
         return [(sequence[0], sequence[-1]) for sequence in values]
@@ -2986,7 +3189,9 @@ class FindStatMatchingStatistic(FindStatCompoundStatistic):
         self._quality = quality
         self._offset = offset
         # we can trust that matches have fitting domain / codomain sequence
-        FindStatCompoundStatistic.__init__(self, matching_statistic, domain=domain, check=False)
+        FindStatCompoundStatistic.__init__(
+            self, matching_statistic, domain=domain, check=False
+        )
 
     def _repr_(self):
         """
@@ -2999,7 +3204,11 @@ class FindStatMatchingStatistic(FindStatCompoundStatistic):
             St000042oMp00116 with offset 1 (quality [17, 83])
         """
         if self._offset:
-            return "%s with offset %s (quality %s)" % (self.id_str(), self._offset, self._quality)
+            return "%s with offset %s (quality %s)" % (
+                self.id_str(),
+                self._offset,
+                self._quality,
+            )
         return "%s (quality %s)" % (self.id_str(), self.quality())
 
     def offset(self):
@@ -3081,8 +3290,15 @@ class FindStatMatchingStatistic(FindStatCompoundStatistic):
         print("your input matches")
         self.statistic().info()
         print()
-        print("among the values you sent, %s percent are actually in the database," % self.quality()[0])
-        print("among the distinct values you sent, %s percent are actually in the database" % self.quality()[1])
+        print(
+            "among the values you sent, %s percent are actually in the database,"
+            % self.quality()[0]
+        )
+        print(
+            "among the distinct values you sent, %s percent are actually in the database"
+            % self.quality()[1]
+        )
+
 
 ######################################################################
 # maps
@@ -3094,13 +3310,16 @@ class FindStatCombinatorialMap(SageObject):
     A class serving as common ancestor of :class:`FindStatStatistic`
     and :class:`FindStatCompoundStatistic`.
     """
+
     pass
 
 
-class FindStatMap(Element,
-                  FindStatFunction,
-                  FindStatCombinatorialMap,
-                  metaclass=InheritComparisonClasscallMetaclass):
+class FindStatMap(
+    Element,
+    FindStatFunction,
+    FindStatCombinatorialMap,
+    metaclass=InheritComparisonClasscallMetaclass,
+):
     r"""
     A FindStat map.
 
@@ -3121,6 +3340,7 @@ class FindStatMap(Element,
 
         :class:`FindStatMaps`
     """
+
     @staticmethod
     def __classcall_private__(cls, entry):
         """
@@ -3204,9 +3424,14 @@ class FindStatMap(Element,
         """
         fields = "Bibliography,Codomain,Description,Domain,Name,Properties,References,SageCode"
         fields_Bibliography = "Author,Title"
-        url = (FINDSTAT_API_MAPS + self.id_str()
-               + "?fields=" + fields
-               + "&fields[Bibliography]=" + fields_Bibliography)
+        url = (
+            FINDSTAT_API_MAPS
+            + self.id_str()
+            + "?fields="
+            + fields
+            + "&fields[Bibliography]="
+            + fields_Bibliography
+        )
         verbose("fetching map data %s" % url, caller_name='FindStatMap')
         included = _get_json(url)["included"]
         # slightly simplify the representation
@@ -3354,9 +3579,10 @@ class FindStatMap(Element,
             sage: findmap("Mp00116").info()                                     # optional -- internet
                 Mp00116: Kasraoui-Zeng: Perfect matchings -> Perfect matchings
         """
-        print("    %s: %s -> %s" % (self,
-                                    self.domain().name("plural"),
-                                    self.codomain().name("plural")))
+        print(
+            "    %s: %s -> %s"
+            % (self, self.domain().name("plural"), self.codomain().name("plural"))
+        )
 
 
 _all_maps = {}
@@ -3400,6 +3626,7 @@ class FindStatMaps(UniqueRepresentation, Parent):
         Dyck paths -> Dyck paths
             reverse
     """
+
     def __init__(self, domain=None, codomain=None):
         """
         TESTS::
@@ -3446,8 +3673,13 @@ class FindStatMaps(UniqueRepresentation, Parent):
             id = id.strip()
         if FINDSTAT_MAP_SEPARATOR in id:
             return FindStatCompoundMap(id)
-        if not re.match(FINDSTAT_MAP_REGEXP, id) or id == FINDSTAT_MAP_PADDED_IDENTIFIER % 0:
-            raise ValueError("the value '%s' is not a valid FindStat map identifier" % id)
+        if (
+            not re.match(FINDSTAT_MAP_REGEXP, id)
+            or id == FINDSTAT_MAP_PADDED_IDENTIFIER % 0
+        ):
+            raise ValueError(
+                "the value '%s' is not a valid FindStat map identifier" % id
+            )
         if id not in _all_maps or _all_maps[id] is None:
             _all_maps[id] = self.element_class(self, id)
 
@@ -3471,7 +3703,11 @@ class FindStatMaps(UniqueRepresentation, Parent):
             text.append("codomain %s" % self._codomain)
 
         if text:
-            return "Set of combinatorial maps with " + " and ".join(text) + " used by FindStat"
+            return (
+                "Set of combinatorial maps with "
+                + " and ".join(text)
+                + " used by FindStat"
+            )
         return "Set of combinatorial maps used by FindStat"
 
     def __iter__(self):
@@ -3512,6 +3748,7 @@ class FindStatMaps(UniqueRepresentation, Parent):
             return next(iter(self))
         except StopIteration:
             from sage.categories.sets_cat import EmptySetError
+
             raise EmptySetError
 
     Element = FindStatMap
@@ -3521,10 +3758,19 @@ class FindStatMapQuery(FindStatMap):
     """
     A class representing a query for FindStat (compound) maps.
     """
-    def __init__(self, data=None, values_of=None, distribution_of=None,
-                 domain=None, codomain=None, known_terms=None, function=None,
-                 depth=FINDSTAT_DEFAULT_DEPTH,
-                 debug=False):
+
+    def __init__(
+        self,
+        data=None,
+        values_of=None,
+        distribution_of=None,
+        domain=None,
+        codomain=None,
+        known_terms=None,
+        function=None,
+        depth=FINDSTAT_DEFAULT_DEPTH,
+        debug=False,
+    ):
         """
         Initialize a query for FindStat (compound) maps.
 
@@ -3582,9 +3828,11 @@ class FindStatMapQuery(FindStatMap):
 
             domain = FindStatCollection(domain)
             codomain = FindStatCollection(codomain)
-            query = {"Domain": domain.id_str(),
-                     "Codomain": codomain.id_str(),
-                     "Data": _data_to_str(self._first_terms, domain, codomain)}
+            query = {
+                "Domain": domain.id_str(),
+                "Codomain": codomain.id_str(),
+                "Data": _data_to_str(self._first_terms, domain, codomain),
+            }
 
         elif distribution_of is not None:
             assert all(param is None for param in [data, known_terms, values_of])
@@ -3603,7 +3851,10 @@ class FindStatMapQuery(FindStatMap):
             query = {"ValuesOf": self._values_of.id_str()}
 
         else:
-            raise ValueError("incompatible set of parameters: data: %s, distribution_of: %s, values_of: %s" % ((data, distribution_of, values_of)))
+            raise ValueError(
+                "incompatible set of parameters: data: %s, distribution_of: %s, values_of: %s"
+                % ((data, distribution_of, values_of))
+            )
 
         if depth is not None:
             query["Depth"] = depth
@@ -3622,22 +3873,29 @@ class FindStatMapQuery(FindStatMap):
         result = []
         for match in response["data"]:
             entry = response["included"]["MatchingMaps"][match]
-            result.append(FindStatMatchingMap(entry["MatchingMap"],
-                                              entry["Quality"]))
+            result.append(FindStatMatchingMap(entry["MatchingMap"], entry["Quality"]))
         self._result = FancyTuple(result)
 
-        FindStatFunction.__init__(self, FINDSTAT_MAP_PADDED_IDENTIFIER % 0,
-                                  data={"Bibliography": {},
-                                        "Code": _get_code_from_callable(function),
-                                        "Description": "",
-                                        "Domain": domain,
-                                        "Codomain": codomain,
-                                        "Name": "a new map from %s to %s" % (domain.name("plural"), codomain.name("plural")),
-                                        "References": "",
-                                        "Properties": "",
-                                        "SageCode": ""},
-                                  function=function)
-        Element.__init__(self, FindStatMaps()) # this is not completely correct, but it works
+        FindStatFunction.__init__(
+            self,
+            FINDSTAT_MAP_PADDED_IDENTIFIER % 0,
+            data={
+                "Bibliography": {},
+                "Code": _get_code_from_callable(function),
+                "Description": "",
+                "Domain": domain,
+                "Codomain": codomain,
+                "Name": "a new map from %s to %s"
+                % (domain.name("plural"), codomain.name("plural")),
+                "References": "",
+                "Properties": "",
+                "SageCode": "",
+            },
+            function=function,
+        )
+        Element.__init__(
+            self, FindStatMaps()
+        )  # this is not completely correct, but it works
 
     def __repr__(self):
         """
@@ -3725,11 +3983,16 @@ class FindStatCompoundMap(Element, FindStatCombinatorialMap):
             self._domain = FindStatCollection(domain)
             self._codomain = self._domain
         else:
-            self._maps = [FindStatMap(m) for m in id.split(FINDSTAT_MAP_SEPARATOR)][::-1]
-            if (check
-                and not all(self._maps[i].codomain() == self._maps[i+1].domain()
-                            for i in range(len(self._maps)-1))):
-                raise ValueError("the sequence of maps %s cannot be composed" % self._maps)
+            self._maps = [FindStatMap(m) for m in id.split(FINDSTAT_MAP_SEPARATOR)][
+                ::-1
+            ]
+            if check and not all(
+                self._maps[i].codomain() == self._maps[i + 1].domain()
+                for i in range(len(self._maps) - 1)
+            ):
+                raise ValueError(
+                    "the sequence of maps %s cannot be composed" % self._maps
+                )
             if domain is None:
                 self._domain = self._maps[0].domain()
             else:
@@ -3738,9 +4001,13 @@ class FindStatCompoundMap(Element, FindStatCombinatorialMap):
                 self._codomain = self._maps[-1].codomain()
             else:
                 self._codomain = FindStatCollection(codomain)
-            self._id = FINDSTAT_MAP_SEPARATOR.join(m.id_str() for m in reversed(self._maps))
+            self._id = FINDSTAT_MAP_SEPARATOR.join(
+                m.id_str() for m in reversed(self._maps)
+            )
 
-        Element.__init__(self, FindStatMaps()) # this is not completely correct, but it works
+        Element.__init__(
+            self, FindStatMaps()
+        )  # this is not completely correct, but it works
 
     def domain(self):
         """
@@ -3889,7 +4156,9 @@ class FindStatMatchingMap(FindStatCompoundMap):
         """
         self._quality = quality
         # we can trust that matches have fitting domain / codomain sequence
-        FindStatCompoundMap.__init__(self, matching_map, domain=domain, codomain=codomain, check=False)
+        FindStatCompoundMap.__init__(
+            self, matching_map, domain=domain, codomain=codomain, check=False
+        )
 
     def _repr_(self):
         """
@@ -3932,12 +4201,16 @@ class FindStatMatchingMap(FindStatCompoundMap):
         print("your input matches")
         super().info()
         print()
-        print("among the values you sent, %s percent are actually in the database" % self.quality()[0])
+        print(
+            "among the values you sent, %s percent are actually in the database"
+            % self.quality()[0]
+        )
 
 
 ######################################################################
 # collections
 ######################################################################
+
 
 # helper for generation of CartanTypes
 def _finite_irreducible_cartan_types_by_rank(n):
@@ -3956,20 +4229,21 @@ def _finite_irreducible_cartan_types_by_rank(n):
         sage: _finite_irreducible_cartan_types_by_rank(2)
         [['A', 2], ['B', 2], ['G', 2]]
     """
-    cartan_types = [CartanType(['A',n])]
+    cartan_types = [CartanType(['A', n])]
     if n >= 2:
-        cartan_types += [CartanType(['B',n])]
+        cartan_types += [CartanType(['B', n])]
     if n >= 3:
-        cartan_types += [CartanType(['C',n])]
+        cartan_types += [CartanType(['C', n])]
     if n >= 4:
-        cartan_types += [CartanType(['D',n])]
+        cartan_types += [CartanType(['D', n])]
     if 6 <= n <= 8:
-        cartan_types += [CartanType(['E',n])]
+        cartan_types += [CartanType(['E', n])]
     if n == 4:
-        cartan_types += [CartanType(['F',n])]
+        cartan_types += [CartanType(['F', n])]
     if n == 2:
-        cartan_types += [CartanType(['G',n])]
+        cartan_types += [CartanType(['G', n])]
     return cartan_types
+
 
 # helper for generation of PlanePartitions
 
@@ -3994,10 +4268,10 @@ def _plane_partitions_by_size_aux(n, outer=None):
         yield []
         return
     if outer is None:
-        outer = [n]*n
-    for k in range(1, n+1):
+        outer = [n] * n
+    for k in range(1, n + 1):
         for la in Partitions(k, outer=outer):
-            for pp in _plane_partitions_by_size_aux(n-k, outer=la):
+            for pp in _plane_partitions_by_size_aux(n - k, outer=la):
                 pp = [la] + pp
                 yield pp
 
@@ -4029,6 +4303,7 @@ def _plane_partitions_by_size(n):
     """
     for pp in _plane_partitions_by_size_aux(n):
         yield PlanePartition(pp)
+
 
 # helper for generation of Lattices
 
@@ -4062,8 +4337,7 @@ def _finite_lattices(n):
                 yield LatticePoset(Q)
 
 
-class FindStatCollection(Element,
-                         metaclass=InheritComparisonClasscallMetaclass):
+class FindStatCollection(Element, metaclass=InheritComparisonClasscallMetaclass):
     r"""
     A FindStat collection.
 
@@ -4110,6 +4384,7 @@ class FindStatCollection(Element,
 
         :class:`FindStatCollections`
     """
+
     @staticmethod
     def __classcall_private__(cls, entry):
         """
@@ -4349,7 +4624,9 @@ class FindStatCollection(Element,
             Cc0029: Lattices 1378 True
             Cc0030: Ordered set partitions 5316 True
         """
-        return self._data["Code"].element_level(element) in self._data["LevelsWithSizes"]
+        return (
+            self._data["Code"].element_level(element) in self._data["LevelsWithSizes"]
+        )
 
     def first_terms(self, function, level=None):
         r"""
@@ -4384,17 +4661,22 @@ class FindStatCollection(Element,
         """
         if self._sageconstructor_overridden is None:
             if level is None:
-                g = (x
-                     for level in self._data["LevelsWithSizes"]
-                     for x in self._data["Code"].elements_on_level(level))
+                g = (
+                    x
+                    for level in self._data["LevelsWithSizes"]
+                    for x in self._data["Code"].elements_on_level(level)
+                )
             else:
                 g = (x for x in self._data["Code"].elements_on_level(level))
         else:
             if level is None:
                 g = self._sageconstructor_overridden
             else:
-                g = (x for x in self._sageconstructor_overridden
-                     if self.element_level(x) == level)
+                g = (
+                    x
+                    for x in self._sageconstructor_overridden
+                    if self.element_level(x) == level
+                )
 
         return lazy_list((x, function(x)) for x in g)
 
@@ -4528,174 +4810,237 @@ class FindStatCollection(Element,
             return self._data["Name"]
         if style == "plural":
             return self._data["NamePlural"]
-        raise ValueError("argument 'style' (=%s) must be 'singular' or 'plural'" % style)
+        raise ValueError(
+            "argument 'style' (=%s) must be 'singular' or 'plural'" % style
+        )
 
 
 from collections import namedtuple
-_SupportedFindStatCollection = namedtuple("SupportedFindStatCollection",
-                                          ["string_to_element",
-                                           "element_to_string",
-                                           "elements_on_level", # return all elements on given level
-                                           "element_level",     # return level of a given element
-                                           "is_element"])       # return whether element is member of this collection
+
+_SupportedFindStatCollection = namedtuple(
+    "SupportedFindStatCollection",
+    [
+        "string_to_element",
+        "element_to_string",
+        "elements_on_level",  # return all elements on given level
+        "element_level",  # return level of a given element
+        "is_element",
+    ],
+)  # return whether element is member of this collection
 
 # this dictionary must be sorted so that subclasses come before
 # superclasses, eg., "StandardTableaux" before "SemistandardTableaux"
 _SupportedFindStatCollections = {
-    "Permutations":
-    _SupportedFindStatCollection(lambda x: Permutation(literal_eval(x)),
-                                 str,
-                                 Permutations,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, Permutation)),
-    "BinaryWords":
-    _SupportedFindStatCollection(lambda x: Word((int(e) for e in str(x)), alphabet=[0,1]),
-                                 str,
-                                 lambda x: Words([0,1], length=x),
-                                 lambda x: x.length(),
-                                 lambda x: isinstance(x, Word_class)),
-    "AlternatingSignMatrices":
-    _SupportedFindStatCollection(lambda x: AlternatingSignMatrix(literal_eval(x)),
-                                 lambda x: str(list(map(list, x.to_matrix().rows()))),
-                                 AlternatingSignMatrices,
-                                 lambda x: x.to_matrix().nrows(),
-                                 lambda x: isinstance(x, AlternatingSignMatrix)),
-    "BinaryTrees":
-    _SupportedFindStatCollection(lambda x: BinaryTree(str(x)),
-                                 str,
-                                 BinaryTrees,
-                                 lambda x: x.number_of_nodes(),
-                                 lambda x: isinstance(x, BinaryTree)),
-    "Cores":
-    _SupportedFindStatCollection(lambda x: Core(*literal_eval(x)),
-                                 lambda X: "( " + X._repr_() + ", " + str(X.k()) + " )",
-                                 lambda x: Cores(x[1], x[0]),
-                                 lambda x: (x.length(), x.k()),
-                                 lambda x: isinstance(x, Core)),
-    "DyckPaths":
-    _SupportedFindStatCollection(lambda x: DyckWord(literal_eval(x)),
-                                 lambda x: str(list(DyckWord(x))),
-                                 DyckWords,
-                                 lambda x: x.semilength(),
-                                 lambda x: isinstance(x, DyckWord)),
-    "FiniteCartanTypes":
-    _SupportedFindStatCollection(lambda x: CartanType(*literal_eval(str(x))),
-                                 str,
-                                 _finite_irreducible_cartan_types_by_rank,
-                                 lambda x: x.rank(),
-                                 lambda x: isinstance(x, CartanType_abstract)),
-    "GelfandTsetlinPatterns":
-    _SupportedFindStatCollection(lambda x: GelfandTsetlinPattern(literal_eval(x)),
-                                 str,
-                                 lambda x: (P
-                                            for la in Partitions(x[1], max_length=x[0])
-                                            for P in GelfandTsetlinPatterns(top_row=la + [0]*(x[0]-len(la)))),
-                                 lambda x: (len(x[0]), sum(x[0])),
-                                 lambda x: (x == GelfandTsetlinPatterns
-                                            or isinstance(x, GelfandTsetlinPattern))),
-    "Graphs":
-    _SupportedFindStatCollection(lambda x: (lambda E, V: Graph([list(range(V)),
-                                                                lambda i,j: (i,j) in E or (j,i) in E],
-                                                               immutable=True))(*literal_eval(x)),
-                                 lambda X: str((X.edges(labels=False, sort=True), X.n_vertices())),
-                                 lambda x: (g.copy(immutable=True) for g in graphs(x, copy=False)),
-                                 lambda x: x.n_vertices(),
-                                 lambda x: isinstance(x, Graph)),
-    "IntegerPartitions":
-    _SupportedFindStatCollection(lambda x: Partition(literal_eval(x)),
-                                 str,
-                                 Partitions,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, Partition)),
-    "IntegerCompositions":
-    _SupportedFindStatCollection(lambda x: Composition(literal_eval(x)),
-                                 str,
-                                 Compositions,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, Composition)),
-    "OrderedTrees":
-    _SupportedFindStatCollection(lambda x: OrderedTree(literal_eval(x)),
-                                 str,
-                                 OrderedTrees,
-                                 lambda x: x.number_of_nodes(),
-                                 lambda x: isinstance(x, OrderedTree)),
-    "ParkingFunctions":
-    _SupportedFindStatCollection(lambda x: ParkingFunction(literal_eval(x)),
-                                 str,
-                                 ParkingFunctions,
-                                 len,
-                                 lambda x: isinstance(x, ParkingFunction)),
-    "Lattices":
-    _SupportedFindStatCollection(lambda x: (lambda R, E: LatticePoset((list(range(E)), R)))(*literal_eval(x)),
-                                 lambda X: str((sorted(X._hasse_diagram.cover_relations()),
-                                                len(X._hasse_diagram.vertices(sort=False)))),
-                                 _finite_lattices,
-                                 lambda x: x.cardinality(),
-                                 lambda x: isinstance(x, FiniteLatticePoset)),
-    "Posets":
-    _SupportedFindStatCollection(lambda x: (lambda R, E: Poset((list(range(E)), R)))(*literal_eval(x)),
-                                 lambda X: str((sorted(X._hasse_diagram.cover_relations()),
-                                                len(X._hasse_diagram.vertices(sort=False)))),
-                                 Posets,
-                                 lambda x: x.cardinality(),
-                                 lambda x: isinstance(x, FinitePoset)),
-    "StandardTableaux":
-    _SupportedFindStatCollection(lambda x: StandardTableau(literal_eval(x)),
-                                 str,
-                                 StandardTableaux,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, StandardTableau)),
-    "SemistandardTableaux":
-    _SupportedFindStatCollection(lambda x: SemistandardTableau(literal_eval(x)),
-                                 str,
-                                 lambda x: (T for T in SemistandardTableaux(size=x[0], max_entry=x[1])
-                                            if max(T.entries()) == x[1]),
-                                 lambda x: (x.size(), max(x.entries())),
-                                 lambda x: isinstance(x, SemistandardTableau)),
-    "PerfectMatchings":
-    _SupportedFindStatCollection(lambda x: PerfectMatching(literal_eval(x)),
-                                 str,
-                                 PerfectMatchings,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, PerfectMatching)),
-    "SetPartitions":
-    _SupportedFindStatCollection(lambda x: SetPartition(literal_eval(x.replace('{','[').replace('}',']'))),
-                                 str,
-                                 SetPartitions,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, SetPartition)),
-    "SkewPartitions":
-    _SupportedFindStatCollection(lambda x: SkewPartition(literal_eval(x)),
-                                 str,
-                                 SkewPartitions,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, SkewPartition)),
-    "SignedPermutations":
-    _SupportedFindStatCollection(lambda x: SignedPermutations(len(literal_eval(x)))(list(literal_eval(x))),
-                                 str,
-                                 SignedPermutations,
-                                 lambda x: len(list(x)),
-                                 lambda x: isinstance(x, SignedPermutation)),
-    "PlanePartitions":
-    _SupportedFindStatCollection(lambda x: PlanePartition(literal_eval(x)),
-                                 lambda X: str(list(X)).replace(" ",""),
-                                 _plane_partitions_by_size,
-                                 lambda x: sum(sum(la) for la in x),
-                                 lambda x: isinstance(x, PlanePartition)),
-    "DecoratedPermutations":
-    _SupportedFindStatCollection(lambda x: DecoratedPermutation([v if v > 0 else (i if v == 0 else -i)
-                                                                 for i, v in enumerate(literal_eval(x.replace("+","0").replace("-","-1")), 1)]),
-                                 lambda x: "[" + ",".join((str(v) if abs(v) != i else ("+" if v > 0 else "-")
-                                                           for i, v in enumerate(x, 1))) + "]",
-                                 DecoratedPermutations,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, DecoratedPermutation)),
-    "OrderedSetPartitions":
-    _SupportedFindStatCollection(lambda x: OrderedSetPartition(literal_eval(x.replace('{','[').replace('}',']'))),
-                                 str,
-                                 OrderedSetPartitions,
-                                 lambda x: x.size(),
-                                 lambda x: isinstance(x, OrderedSetPartition))}
+    "Permutations": _SupportedFindStatCollection(
+        lambda x: Permutation(literal_eval(x)),
+        str,
+        Permutations,
+        lambda x: x.size(),
+        lambda x: isinstance(x, Permutation),
+    ),
+    "BinaryWords": _SupportedFindStatCollection(
+        lambda x: Word((int(e) for e in str(x)), alphabet=[0, 1]),
+        str,
+        lambda x: Words([0, 1], length=x),
+        lambda x: x.length(),
+        lambda x: isinstance(x, Word_class),
+    ),
+    "AlternatingSignMatrices": _SupportedFindStatCollection(
+        lambda x: AlternatingSignMatrix(literal_eval(x)),
+        lambda x: str(list(map(list, x.to_matrix().rows()))),
+        AlternatingSignMatrices,
+        lambda x: x.to_matrix().nrows(),
+        lambda x: isinstance(x, AlternatingSignMatrix),
+    ),
+    "BinaryTrees": _SupportedFindStatCollection(
+        lambda x: BinaryTree(str(x)),
+        str,
+        BinaryTrees,
+        lambda x: x.number_of_nodes(),
+        lambda x: isinstance(x, BinaryTree),
+    ),
+    "Cores": _SupportedFindStatCollection(
+        lambda x: Core(*literal_eval(x)),
+        lambda X: "( " + X._repr_() + ", " + str(X.k()) + " )",
+        lambda x: Cores(x[1], x[0]),
+        lambda x: (x.length(), x.k()),
+        lambda x: isinstance(x, Core),
+    ),
+    "DyckPaths": _SupportedFindStatCollection(
+        lambda x: DyckWord(literal_eval(x)),
+        lambda x: str(list(DyckWord(x))),
+        DyckWords,
+        lambda x: x.semilength(),
+        lambda x: isinstance(x, DyckWord),
+    ),
+    "FiniteCartanTypes": _SupportedFindStatCollection(
+        lambda x: CartanType(*literal_eval(str(x))),
+        str,
+        _finite_irreducible_cartan_types_by_rank,
+        lambda x: x.rank(),
+        lambda x: isinstance(x, CartanType_abstract),
+    ),
+    "GelfandTsetlinPatterns": _SupportedFindStatCollection(
+        lambda x: GelfandTsetlinPattern(literal_eval(x)),
+        str,
+        lambda x: (
+            P
+            for la in Partitions(x[1], max_length=x[0])
+            for P in GelfandTsetlinPatterns(top_row=la + [0] * (x[0] - len(la)))
+        ),
+        lambda x: (len(x[0]), sum(x[0])),
+        lambda x: x == GelfandTsetlinPatterns or isinstance(x, GelfandTsetlinPattern),
+    ),
+    "Graphs": _SupportedFindStatCollection(
+        lambda x: (
+            lambda E, V: Graph(
+                [list(range(V)), lambda i, j: (i, j) in E or (j, i) in E],
+                immutable=True,
+            )
+        )(*literal_eval(x)),
+        lambda X: str((X.edges(labels=False, sort=True), X.n_vertices())),
+        lambda x: (g.copy(immutable=True) for g in graphs(x, copy=False)),
+        lambda x: x.n_vertices(),
+        lambda x: isinstance(x, Graph),
+    ),
+    "IntegerPartitions": _SupportedFindStatCollection(
+        lambda x: Partition(literal_eval(x)),
+        str,
+        Partitions,
+        lambda x: x.size(),
+        lambda x: isinstance(x, Partition),
+    ),
+    "IntegerCompositions": _SupportedFindStatCollection(
+        lambda x: Composition(literal_eval(x)),
+        str,
+        Compositions,
+        lambda x: x.size(),
+        lambda x: isinstance(x, Composition),
+    ),
+    "OrderedTrees": _SupportedFindStatCollection(
+        lambda x: OrderedTree(literal_eval(x)),
+        str,
+        OrderedTrees,
+        lambda x: x.number_of_nodes(),
+        lambda x: isinstance(x, OrderedTree),
+    ),
+    "ParkingFunctions": _SupportedFindStatCollection(
+        lambda x: ParkingFunction(literal_eval(x)),
+        str,
+        ParkingFunctions,
+        len,
+        lambda x: isinstance(x, ParkingFunction),
+    ),
+    "Lattices": _SupportedFindStatCollection(
+        lambda x: (lambda R, E: LatticePoset((list(range(E)), R)))(*literal_eval(x)),
+        lambda X: str(
+            (
+                sorted(X._hasse_diagram.cover_relations()),
+                len(X._hasse_diagram.vertices(sort=False)),
+            )
+        ),
+        _finite_lattices,
+        lambda x: x.cardinality(),
+        lambda x: isinstance(x, FiniteLatticePoset),
+    ),
+    "Posets": _SupportedFindStatCollection(
+        lambda x: (lambda R, E: Poset((list(range(E)), R)))(*literal_eval(x)),
+        lambda X: str(
+            (
+                sorted(X._hasse_diagram.cover_relations()),
+                len(X._hasse_diagram.vertices(sort=False)),
+            )
+        ),
+        Posets,
+        lambda x: x.cardinality(),
+        lambda x: isinstance(x, FinitePoset),
+    ),
+    "StandardTableaux": _SupportedFindStatCollection(
+        lambda x: StandardTableau(literal_eval(x)),
+        str,
+        StandardTableaux,
+        lambda x: x.size(),
+        lambda x: isinstance(x, StandardTableau),
+    ),
+    "SemistandardTableaux": _SupportedFindStatCollection(
+        lambda x: SemistandardTableau(literal_eval(x)),
+        str,
+        lambda x: (
+            T
+            for T in SemistandardTableaux(size=x[0], max_entry=x[1])
+            if max(T.entries()) == x[1]
+        ),
+        lambda x: (x.size(), max(x.entries())),
+        lambda x: isinstance(x, SemistandardTableau),
+    ),
+    "PerfectMatchings": _SupportedFindStatCollection(
+        lambda x: PerfectMatching(literal_eval(x)),
+        str,
+        PerfectMatchings,
+        lambda x: x.size(),
+        lambda x: isinstance(x, PerfectMatching),
+    ),
+    "SetPartitions": _SupportedFindStatCollection(
+        lambda x: SetPartition(literal_eval(x.replace('{', '[').replace('}', ']'))),
+        str,
+        SetPartitions,
+        lambda x: x.size(),
+        lambda x: isinstance(x, SetPartition),
+    ),
+    "SkewPartitions": _SupportedFindStatCollection(
+        lambda x: SkewPartition(literal_eval(x)),
+        str,
+        SkewPartitions,
+        lambda x: x.size(),
+        lambda x: isinstance(x, SkewPartition),
+    ),
+    "SignedPermutations": _SupportedFindStatCollection(
+        lambda x: SignedPermutations(len(literal_eval(x)))(list(literal_eval(x))),
+        str,
+        SignedPermutations,
+        lambda x: len(list(x)),
+        lambda x: isinstance(x, SignedPermutation),
+    ),
+    "PlanePartitions": _SupportedFindStatCollection(
+        lambda x: PlanePartition(literal_eval(x)),
+        lambda X: str(list(X)).replace(" ", ""),
+        _plane_partitions_by_size,
+        lambda x: sum(sum(la) for la in x),
+        lambda x: isinstance(x, PlanePartition),
+    ),
+    "DecoratedPermutations": _SupportedFindStatCollection(
+        lambda x: DecoratedPermutation(
+            [
+                v if v > 0 else (i if v == 0 else -i)
+                for i, v in enumerate(
+                    literal_eval(x.replace("+", "0").replace("-", "-1")), 1
+                )
+            ]
+        ),
+        lambda x: (
+            "["
+            + ",".join(
+                (
+                    str(v) if abs(v) != i else ("+" if v > 0 else "-")
+                    for i, v in enumerate(x, 1)
+                )
+            )
+            + "]"
+        ),
+        DecoratedPermutations,
+        lambda x: x.size(),
+        lambda x: isinstance(x, DecoratedPermutation),
+    ),
+    "OrderedSetPartitions": _SupportedFindStatCollection(
+        lambda x: OrderedSetPartition(
+            literal_eval(x.replace('{', '[').replace('}', ']'))
+        ),
+        str,
+        OrderedSetPartitions,
+        lambda x: x.size(),
+        lambda x: isinstance(x, OrderedSetPartition),
+    ),
+}
 
 
 class FindStatCollections(UniqueRepresentation, Parent):
@@ -4736,6 +5081,7 @@ class FindStatCollections(UniqueRepresentation, Parent):
          Cc0029: Lattices,
          Cc0030: Ordered set partitions]
     """
+
     def __init__(self):
         """
         Fetch the collections from FindStat.
@@ -4750,20 +5096,26 @@ class FindStatCollections(UniqueRepresentation, Parent):
         url = FINDSTAT_API_COLLECTIONS + "?fields=" + fields
         d = _get_json(url, object_pairs_hook=dict)["included"]["Collections"]
         for id, data in d.items():
-            data["LevelsWithSizes"] = {literal_eval(level): size
-                                       for level, size in data["LevelsWithSizes"].items()}
+            data["LevelsWithSizes"] = {
+                literal_eval(level): size
+                for level, size in data["LevelsWithSizes"].items()
+            }
             if data["NameWiki"] in _SupportedFindStatCollections:
                 data["Code"] = _SupportedFindStatCollections[data["NameWiki"]]
             else:
                 print("%s provides a new collection:" % FindStat())
                 print("    %s: %s" % (id, data["NamePlural"]))
-                print("To use it with this interface, it has to be added to the dictionary")
-                print("    _SupportedFindStatCollections in src/sage/databases/findstat.py")
+                print(
+                    "To use it with this interface, it has to be added to the dictionary"
+                )
+                print(
+                    "    _SupportedFindStatCollections in src/sage/databases/findstat.py"
+                )
                 print("of the SageMath distribution.  Please open an issue on github!")
-#                print("Very likely, the following code would work:")
-#                fields = "SageCodeElementToString,SageCodeElementsOnLevel,SageCodeStringToElement"
-#                url = FINDSTAT_API_COLLECTIONS + id + "?fields=" + fields
-#                print(json.load(urlopen(url))["included"]["Collections"][id])
+        #                print("Very likely, the following code would work:")
+        #                fields = "SageCodeElementToString,SageCodeElementsOnLevel,SageCodeStringToElement"
+        #                url = FINDSTAT_API_COLLECTIONS + id + "?fields=" + fields
+        #                print(json.load(urlopen(url))["included"]["Collections"][id])
 
         def position(item):
             try:
@@ -4858,10 +5210,12 @@ class FindStatCollections(UniqueRepresentation, Parent):
                 return "".join(e.split()).upper()
 
             for id, data in self._findstat_collections.items():
-                if normalize(entry) in (normalize(id),
-                                        normalize(data["NameWiki"]),
-                                        normalize(data["NamePlural"]),
-                                        normalize(data["Name"])):
+                if normalize(entry) in (
+                    normalize(id),
+                    normalize(data["NameWiki"]),
+                    normalize(data["NamePlural"]),
+                    normalize(data["Name"]),
+                ):
                     return self.element_class(self, id, data, None)
 
         elif isinstance(entry, (int, Integer)):
@@ -4880,12 +5234,13 @@ class FindStatCollections(UniqueRepresentation, Parent):
 
             # first check whether the class fits:
             for id, data in self._findstat_collections.items():
-                if ("Code" in data
-                    and (data["Code"].is_element(entry)
-                         # elements_on_level is rarely equal to entry
-                         # (it may be a function), but it is
-                         # convenient for some types
-                         or data["Code"].elements_on_level == entry)):
+                if "Code" in data and (
+                    data["Code"].is_element(entry)
+                    # elements_on_level is rarely equal to entry
+                    # (it may be a function), but it is
+                    # convenient for some types
+                    or data["Code"].elements_on_level == entry
+                ):
                     return self.element_class(self, id, data, None)
 
             # check whether entry is iterable (it's not a string!)

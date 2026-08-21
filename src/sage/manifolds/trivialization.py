@@ -180,9 +180,13 @@ class Trivialization(UniqueRepresentation, SageObject):
             '\\varphi : E |_{M} \\to M \\times \\Bold{R}^1'
         """
         latex = self._latex_name + r' : '
-        latex += r'{} |_{{{}}} \to {} \times {}^{}'.format(self._vbundle._latex_name,
-                            self._domain._latex_(), self._domain._latex_(),
-                            self._base_field._latex_(), self._bdl_rank)
+        latex += r'{} |_{{{}}} \to {} \times {}^{}'.format(
+            self._vbundle._latex_name,
+            self._domain._latex_(),
+            self._domain._latex_(),
+            self._base_field._latex_(),
+            self._bdl_rank,
+        )
         return latex
 
     def base_space(self):
@@ -227,8 +231,7 @@ class Trivialization(UniqueRepresentation, SageObject):
             Transition map from Trivialization (phi_U, E|_U) to Trivialization
              (phi_V, E|_V)
         """
-        return TransitionMap(self, other, transf,
-                             compute_inverse=compute_inverse)
+        return TransitionMap(self, other, transf, compute_inverse=compute_inverse)
 
     def vector_bundle(self):
         r"""
@@ -301,6 +304,7 @@ class Trivialization(UniqueRepresentation, SageObject):
         """
         return self._frame._coframe
 
+
 # *****************************************************************************
 
 
@@ -362,6 +366,7 @@ class TransitionMap(SageObject):
         Transition map from Trivialization (phi_U, E|_U) to Trivialization
          (phi_V, E|_V)
     """
+
     def __init__(self, triv1, triv2, transf, compute_inverse=True):
         r"""
         Construct a transition map between two trivializations.
@@ -408,23 +413,25 @@ class TransitionMap(SageObject):
         self._inverse = None
         self._vbundle._transitions[(triv1, triv2)] = self
         self._name = triv2._name + "*" + triv1._name + "^(-1)"
-        self._latex_name = triv2._latex_name + r'\circ ' + triv1._latex_name + \
-                           r'^{-1}'
+        self._latex_name = triv2._latex_name + r'\circ ' + triv1._latex_name + r'^{-1}'
         ###
         # Define the automorphism
         auto_name = triv1._name + "^(-1)*" + triv2._name
         auto_lname = triv1._latex_name + r'^{-1} \circ ' + triv2._latex_name
         sec_module = self._vbundle.section_module(dom, force_free=True)
         auto_group = sec_module.general_linear_group()
-        auto = auto_group(transf, basis=self._frame1, name=auto_name,
-                          latex_name=auto_lname)
+        auto = auto_group(
+            transf, basis=self._frame1, name=auto_name, latex_name=auto_lname
+        )
         self._automorphism = auto
         # Add this change of basis to the basis changes
-        self._vbundle.set_change_of_frame(self._frame2, self._frame1, auto,
-                                          compute_inverse=compute_inverse)
+        self._vbundle.set_change_of_frame(
+            self._frame2, self._frame1, auto, compute_inverse=compute_inverse
+        )
         if compute_inverse:
-            self._inverse = type(self)(self._triv2, self._triv1, ~auto,
-                                       compute_inverse=False)
+            self._inverse = type(self)(
+                self._triv2, self._triv1, ~auto, compute_inverse=False
+            )
             self._inverse._inverse = self
 
     def _repr_(self):
@@ -481,8 +488,9 @@ class TransitionMap(SageObject):
             \varphi_V\circ \varphi_U^{-1}:U\cap V\times \Bold{R}^2 \to U\cap
              V\times \Bold{R}^2
         """
-        vspace_lname = r'\times {}^{}'.format(self._triv1._base_field._latex_(),
-                                              self._bdl_rank)
+        vspace_lname = r'\times {}^{}'.format(
+            self._triv1._base_field._latex_(), self._bdl_rank
+        )
         latex = self._latex_name + r':'
         latex += self._domain._latex_name
         latex += vspace_lname + r' \to '
@@ -566,11 +574,12 @@ class TransitionMap(SageObject):
             True
         """
         if self._inverse is None:
-            self._vbundle.set_change_of_frame(self._frame1, self._frame2,
-                                              ~self._automorphism)
-            self._inverse = type(self)(self._triv2, self._triv1,
-                                       ~self._automorphism,
-                                       compute_inverse=False)
+            self._vbundle.set_change_of_frame(
+                self._frame1, self._frame2, ~self._automorphism
+            )
+            self._inverse = type(self)(
+                self._triv2, self._triv1, ~self._automorphism, compute_inverse=False
+            )
             self._inverse._inverse = self
         return self._inverse
 
@@ -706,9 +715,11 @@ class TransitionMap(SageObject):
             return True
         if not isinstance(other, TransitionMap):
             return False
-        return ((self._triv1 == other._triv1)
-                and (self._triv2 == other._triv2)
-                and (self._automorphism == other._automorphism))
+        return (
+            (self._triv1 == other._triv1)
+            and (self._triv2 == other._triv2)
+            and (self._automorphism == other._automorphism)
+        )
 
     def __ne__(self, other):
         r"""

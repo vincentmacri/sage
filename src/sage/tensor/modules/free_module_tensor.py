@@ -182,6 +182,7 @@ tensor ``t`` acts on pairs formed by a linear form and a module element::
     sage: t(a,b)
     -2
 """
+
 # *****************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
@@ -264,6 +265,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
         sage: t.parent() is M.tensor_module(1,1)
         True
     """
+
     _fmodule: FiniteRankFreeModule
 
     def __init__(
@@ -303,19 +305,22 @@ class FreeModuleTensor(ModuleElementWithMutability):
         self._fmodule = fmodule
         self._tensor_type = tuple(tensor_type)
         self._tensor_rank = self._tensor_type[0] + self._tensor_type[1]
-        self._is_zero = False # a priori, may be changed below or via
-                              # method __bool__()
+        self._is_zero = False  # a priori, may be changed below or via
+        # method __bool__()
         self._name = name
         if latex_name is None:
             self._latex_name = self._name
         else:
             self._latex_name = latex_name
-        self._components: dict[FreeModuleBasis, Components] = {}  # dict. of the sets of components on various
-                              # bases, with the bases as keys (initially empty)
+        self._components: dict[
+            FreeModuleBasis, Components
+        ] = {}  # dict. of the sets of components on various
+        # bases, with the bases as keys (initially empty)
 
         # Treatment of symmetry declarations:
         self._sym, self._antisym = CompWithSym._canonicalize_sym_antisym(
-            self._tensor_rank, sym, antisym)
+            self._tensor_rank, sym, antisym
+        )
 
         # Initialization of derived quantities:
         FreeModuleTensor._init_derived(self)
@@ -376,12 +381,13 @@ class FreeModuleTensor(ModuleElementWithMutability):
             Type-(2,1) tensor t on the Rank-3 free module M over the Integer Ring
         """
         # Special cases
-        if self._tensor_type == (0,2) and self._sym == ((0,1),):
+        if self._tensor_type == (0, 2) and self._sym == ((0, 1),):
             description = "Symmetric bilinear form "
         else:
             # Generic case
             description = "Type-({},{}) tensor".format(
-                            self._tensor_type[0], self._tensor_type[1])
+                self._tensor_type[0], self._tensor_type[1]
+            )
         if self._name is not None:
             description += " " + self._name
         description += " on the {}".format(self._fmodule)
@@ -422,7 +428,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
             sage: t = M.tensor((2,1), name='t')
             sage: t._init_derived()
         """
-        pass # no derived quantities
+        pass  # no derived quantities
 
     def _del_derived(self):
         r"""
@@ -434,7 +440,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
             sage: t = M.tensor((2,1), name='t')
             sage: t._del_derived()
         """
-        pass # no derived quantities
+        pass  # no derived quantities
 
     #### Simple accessors ####
 
@@ -534,7 +540,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
             a = "antisymmetry: {}".format(self._antisym[0])
         else:
             a = "antisymmetries: {}".format(list(self._antisym))
-        print(s+a)
+        print(s + a)
 
     #### End of simple accessors #####
 
@@ -678,8 +684,10 @@ class FreeModuleTensor(ModuleElementWithMutability):
         from sage.misc.latex import latex
         from sage.typeset.unicode_characters import unicode_otimes
         from .format_utilities import is_atomic, FormattedExpansion
-        basis, format_spec = self._preparse_display(basis=basis,
-                                                    format_spec=format_spec)
+
+        basis, format_spec = self._preparse_display(
+            basis=basis, format_spec=format_spec
+        )
         cobasis = basis.dual_basis()
         comp = self.comp(basis)
         terms_txt = []
@@ -717,13 +725,13 @@ class FreeModuleTensor(ModuleElementWithMutability):
                     if is_atomic(coef_txt):
                         terms_txt.append(coef_txt + ' ' + basis_term_txt)
                     else:
-                        terms_txt.append('(' + coef_txt + ') ' +
-                                         basis_term_txt)
+                        terms_txt.append('(' + coef_txt + ') ' + basis_term_txt)
                     if is_atomic(coef_latex):
                         terms_latex.append(coef_latex + basis_term_latex)
                     else:
-                        terms_latex.append(r'\left(' + coef_latex +
-                                           r'\right)' + basis_term_latex)
+                        terms_latex.append(
+                            r'\left(' + coef_latex + r'\right)' + basis_term_latex
+                        )
         if terms_txt == []:
             expansion_txt = '0'
         else:
@@ -754,10 +762,17 @@ class FreeModuleTensor(ModuleElementWithMutability):
 
     disp = display
 
-    def display_comp(self, basis=None, format_spec=None, symbol=None,
-                     latex_symbol=None, index_labels=None,
-                     index_latex_labels=None, only_nonzero=True,
-                     only_nonredundant=False):
+    def display_comp(
+        self,
+        basis=None,
+        format_spec=None,
+        symbol=None,
+        latex_symbol=None,
+        index_labels=None,
+        index_latex_labels=None,
+        only_nonzero=True,
+        only_nonredundant=False,
+    ):
         r"""
         Display the tensor components with respect to a given module
         basis, one per line.
@@ -876,15 +891,17 @@ class FreeModuleTensor(ModuleElementWithMutability):
                 latex_symbol = r'{' + self._latex_name + r'}'
             else:
                 latex_symbol = 'X'
-        index_positions = self._tensor_type[0]*'u' + self._tensor_type[1]*'d'
-        return self.comp(basis).display(symbol,
-                                        latex_symbol=latex_symbol,
-                                        index_positions=index_positions,
-                                        index_labels=index_labels,
-                                        index_latex_labels=index_latex_labels,
-                                        format_spec=format_spec,
-                                        only_nonzero=only_nonzero,
-                                        only_nonredundant=only_nonredundant)
+        index_positions = self._tensor_type[0] * 'u' + self._tensor_type[1] * 'd'
+        return self.comp(basis).display(
+            symbol,
+            latex_symbol=latex_symbol,
+            index_positions=index_positions,
+            index_labels=index_labels,
+            index_latex_labels=index_latex_labels,
+            format_spec=format_spec,
+            only_nonzero=only_nonzero,
+            only_nonredundant=only_nonredundant,
+        )
 
     def set_name(self, name: Optional[str] = None, latex_name: Optional[str] = None):
         r"""
@@ -932,8 +949,9 @@ class FreeModuleTensor(ModuleElementWithMutability):
             sage: t._new_instance().parent() is t.parent()
             True
         """
-        return self.__class__(self._fmodule, self._tensor_type, sym=self._sym,
-                              antisym=self._antisym)
+        return self.__class__(
+            self._fmodule, self._tensor_type, sym=self._sym, antisym=self._antisym
+        )
 
     def _new_comp(self, basis):
         r"""
@@ -969,23 +987,40 @@ class FreeModuleTensor(ModuleElementWithMutability):
         """
         fmodule = self._fmodule  # the base free module
         if not self._sym and not self._antisym:
-            return Components(fmodule._ring, basis, self._tensor_rank,
-                              start_index=fmodule._sindex,
-                              output_formatter=fmodule._output_formatter)
+            return Components(
+                fmodule._ring,
+                basis,
+                self._tensor_rank,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
         for isym in self._sym:
             if len(isym) == self._tensor_rank:
-                return CompFullySym(fmodule._ring, basis, self._tensor_rank,
-                                    start_index=fmodule._sindex,
-                                    output_formatter=fmodule._output_formatter)
+                return CompFullySym(
+                    fmodule._ring,
+                    basis,
+                    self._tensor_rank,
+                    start_index=fmodule._sindex,
+                    output_formatter=fmodule._output_formatter,
+                )
         for isym in self._antisym:
             if len(isym) == self._tensor_rank:
-                return CompFullyAntiSym(fmodule._ring, basis, self._tensor_rank,
-                                        start_index=fmodule._sindex,
-                                     output_formatter=fmodule._output_formatter)
-        return CompWithSym(fmodule._ring, basis, self._tensor_rank,
-                           start_index=fmodule._sindex,
-                           output_formatter=fmodule._output_formatter,
-                           sym=self._sym, antisym=self._antisym)
+                return CompFullyAntiSym(
+                    fmodule._ring,
+                    basis,
+                    self._tensor_rank,
+                    start_index=fmodule._sindex,
+                    output_formatter=fmodule._output_formatter,
+                )
+        return CompWithSym(
+            fmodule._ring,
+            basis,
+            self._tensor_rank,
+            start_index=fmodule._sindex,
+            output_formatter=fmodule._output_formatter,
+            sym=self._sym,
+            antisym=self._antisym,
+        )
 
     def components(self, basis=None, from_basis=None) -> Components:
         r"""
@@ -1070,34 +1105,42 @@ class FreeModuleTensor(ModuleElementWithMutability):
             # those in the basis from_basis
             if from_basis is None:
                 for known_basis in self._components:
-                    if (known_basis, basis) in self._fmodule._basis_changes \
-                      and (basis, known_basis) in self._fmodule._basis_changes:
+                    if (known_basis, basis) in self._fmodule._basis_changes and (
+                        basis,
+                        known_basis,
+                    ) in self._fmodule._basis_changes:
                         from_basis = known_basis
                         break
                 if from_basis is None:
-                    raise ValueError("no basis could be found for computing " +
-                                     "the components in the {}".format(basis))
+                    raise ValueError(
+                        "no basis could be found for computing "
+                        + "the components in the {}".format(basis)
+                    )
             elif from_basis not in self._components:
-                raise ValueError("the tensor components are not known in " +
-                                 "the {}".format(from_basis))
+                raise ValueError(
+                    "the tensor components are not known in "
+                    + "the {}".format(from_basis)
+                )
             (n_con, n_cov) = self._tensor_type
             pp = None
             if n_cov > 0:
                 if (from_basis, basis) not in fmodule._basis_changes:
-                    raise ValueError("the change-of-basis matrix from the " +
-                                     "{} to the {}".format(from_basis, basis)
-                                     + " has not been set")
-                pp = \
-                  fmodule._basis_changes[(from_basis, basis)].comp(from_basis)
+                    raise ValueError(
+                        "the change-of-basis matrix from the "
+                        + "{} to the {}".format(from_basis, basis)
+                        + " has not been set"
+                    )
+                pp = fmodule._basis_changes[(from_basis, basis)].comp(from_basis)
                 # pp not used if n_cov = 0 (pure contravariant tensor)
             ppinv = None
             if n_con > 0:
                 if (basis, from_basis) not in fmodule._basis_changes:
-                    raise ValueError("the change-of-basis matrix from the " +
-                                     "{} to the {}".format(basis, from_basis) +
-                                     " has not been set")
-                ppinv = \
-                  fmodule._basis_changes[(basis, from_basis)].comp(from_basis)
+                    raise ValueError(
+                        "the change-of-basis matrix from the "
+                        + "{} to the {}".format(basis, from_basis)
+                        + " has not been set"
+                    )
+                ppinv = fmodule._basis_changes[(basis, from_basis)].comp(from_basis)
                 # ppinv not used if n_con = 0 (pure covariant tensor)
             old_comp = self._components[from_basis]
             new_comp = self._new_comp(basis)
@@ -1107,12 +1150,14 @@ class FreeModuleTensor(ModuleElementWithMutability):
 
             if nproc != 1:
                 # Parallel computation
-                lol = lambda lst, sz: [lst[i:i+sz] for i in range(0, len(lst), sz)]
+                lol = lambda lst, sz: [lst[i : i + sz] for i in range(0, len(lst), sz)]
                 ind_list = list(new_comp.non_redundant_index_generator())
-                ind_step = max(1, int(len(ind_list)/nproc/2))
+                ind_step = max(1, int(len(ind_list) / nproc / 2))
                 local_list = lol(ind_list, ind_step)
                 # list of input parameters
-                listParalInput = [(old_comp, ppinv, pp, n_con, rank, ii) for ii in local_list]
+                listParalInput = [
+                    (old_comp, ppinv, pp, n_con, rank, ii) for ii in local_list
+                ]
 
                 @parallel(p_iter='multiprocessing', ncpus=nproc)
                 def paral_newcomp(old_comp, ppinv, pp, n_con, rank, local_list_ind):
@@ -1123,15 +1168,15 @@ class FreeModuleTensor(ModuleElementWithMutability):
                         # change-of-basis matrix elements (tensor formula):
                         for ind_old in old_comp.index_generator():
                             t = old_comp[[ind_old]]
-                            for i in range(n_con): # loop on contravariant indices
+                            for i in range(n_con):  # loop on contravariant indices
                                 t *= ppinv[[ind[i], ind_old[i]]]
-                            for i in range(n_con,rank):  # loop on covariant indices
+                            for i in range(n_con, rank):  # loop on covariant indices
                                 t *= pp[[ind_old[i], ind[i]]]
                             res += t
-                        partial.append([ind,res])
+                        partial.append([ind, res])
                     return partial
 
-                for ii,val in paral_newcomp(listParalInput):
+                for ii, val in paral_newcomp(listParalInput):
                     for jj in val:
                         new_comp[[jj[0]]] = jj[1]
 
@@ -1143,9 +1188,9 @@ class FreeModuleTensor(ModuleElementWithMutability):
                     res = 0
                     for ind_old in old_comp.index_generator():
                         t = old_comp[[ind_old]]
-                        for i in range(n_con): # loop on contravariant indices
+                        for i in range(n_con):  # loop on contravariant indices
                             t *= ppinv[[ind_new[i], ind_old[i]]]
-                        for i in range(n_con,rank):  # loop on covariant indices
+                        for i in range(n_con, rank):  # loop on covariant indices
                             t *= pp[[ind_old[i], ind_new[i]]]
                         res += t
                     new_comp[ind_new] = res
@@ -1220,10 +1265,12 @@ class FreeModuleTensor(ModuleElementWithMutability):
             basis = self._fmodule._def_basis
         if basis not in self._components:
             if basis not in self._fmodule._known_bases:
-                raise ValueError("the {} has not been ".format(basis) +
-                                 "defined on the {}".format(self._fmodule))
+                raise ValueError(
+                    "the {} has not been ".format(basis)
+                    + "defined on the {}".format(self._fmodule)
+                )
             self._components[basis] = self._new_comp(basis)
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         self.del_other_comp(basis)
         return self._components[basis]
 
@@ -1295,8 +1342,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
             ValueError: the components of an immutable element cannot be changed
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         self._is_zero = False  # a priori
         return self._set_comp_unsafe(basis)
 
@@ -1357,10 +1403,12 @@ class FreeModuleTensor(ModuleElementWithMutability):
             basis = self._fmodule._def_basis
         if basis not in self._components:
             if basis not in self._fmodule._known_bases:
-                raise ValueError("the {} has not been ".format(basis) +
-                                 "defined on the {}".format(self._fmodule))
+                raise ValueError(
+                    "the {} has not been ".format(basis)
+                    + "defined on the {}".format(self._fmodule)
+                )
             self._components[basis] = self._new_comp(basis)
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         return self._components[basis]
 
     def add_comp(self, basis=None):
@@ -1430,8 +1478,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
             ValueError: the components of an immutable element cannot be changed
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         self._is_zero = False  # a priori
         return self._add_comp_unsafe(basis)
 
@@ -1473,10 +1520,10 @@ class FreeModuleTensor(ModuleElementWithMutability):
         if basis is None:
             basis = self._fmodule._def_basis
         if basis not in self._components:
-            raise ValueError(f"the components w.r.t. the {basis}"
-                             " have not been defined")
-        to_be_deleted = [other_basis for other_basis in self._components
-                         if other_basis != basis]
+            raise ValueError(f"the components w.r.t. the {basis} have not been defined")
+        to_be_deleted = [
+            other_basis for other_basis in self._components if other_basis != basis
+        ]
         for other_basis in to_be_deleted:
             del self._components[other_basis]
 
@@ -1518,7 +1565,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
             sage: v.__getitem__((e, slice(None)))
             [3, -5, 2]
         """
-        if isinstance(args, str): # tensor with specified indices
+        if isinstance(args, str):  # tensor with specified indices
             return TensorWithIndices(self, args).update()
         if isinstance(args, list):  # case of [[...]] syntax
             if isinstance(args[0], (int, Integer, slice)):
@@ -1628,11 +1675,11 @@ class FreeModuleTensor(ModuleElementWithMutability):
             False
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if other not in self.parent():
-            raise TypeError("the original must be an element "
-                            + "of {}".format(self.parent()))
+            raise TypeError(
+                "the original must be an element " + "of {}".format(self.parent())
+            )
         self._del_derived()
         self._components.clear()
         for basis, comp in other._components.items():
@@ -1746,15 +1793,16 @@ class FreeModuleTensor(ModuleElementWithMutability):
             raise TypeError("the argument must be a tensor on a free module")
         fmodule = self._fmodule
         if other._fmodule != fmodule:
-            raise TypeError("the two tensors are not defined on the same " +
-                            "free module")
+            raise TypeError(
+                "the two tensors are not defined on the same " + "free module"
+            )
         def_basis = fmodule._def_basis
 
         # 1/ Search for a common basis among the existing components, i.e.
         #    without performing any component transformation.
         #    -------------------------------------------------------------
         if def_basis in self._components and def_basis in other._components:
-            return def_basis # the module's default basis is privileged
+            return def_basis  # the module's default basis is privileged
         for basis1 in self._components:
             if basis1 in other._components:
                 return basis1
@@ -1790,14 +1838,18 @@ class FreeModuleTensor(ModuleElementWithMutability):
         # component transformation to get a common basis
         for sbasis in self._components:
             for obasis in other._components:
-                if (sbasis, def_basis) in fmodule._basis_changes and \
-                   (obasis, def_basis) in fmodule._basis_changes:
+                if (sbasis, def_basis) in fmodule._basis_changes and (
+                    obasis,
+                    def_basis,
+                ) in fmodule._basis_changes:
                     self.comp(def_basis, from_basis=sbasis)
                     other.comp(def_basis, from_basis=obasis)
                     return def_basis
                 for basis in fmodule._known_bases:
-                    if (sbasis, basis) in fmodule._basis_changes and \
-                       (obasis, basis) in fmodule._basis_changes:
+                    if (sbasis, basis) in fmodule._basis_changes and (
+                        obasis,
+                        basis,
+                    ) in fmodule._basis_changes:
                         self.comp(basis, from_basis=sbasis)
                         other.comp(basis, from_basis=obasis)
                         return basis
@@ -1881,7 +1933,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
 
         if self._tensor_rank == 0:
             raise NotImplementedError("scalar comparison not implemented")
-        if isinstance(other, (int, Integer)): # other should be 0
+        if isinstance(other, (int, Integer)):  # other should be 0
             if other == 0:
                 return self.is_zero()
             return False
@@ -1954,7 +2006,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
         """
         result = self._new_instance()
         for basis in self._components:
-            result._components[basis] = + self._components[basis]
+            result._components[basis] = +self._components[basis]
         if self._name is not None:
             result._name = '+' + self._name
         if self._latex_name is not None:
@@ -1984,7 +2036,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
         """
         result = self._new_instance()
         for basis in self._components:
-            result._components[basis] = - self._components[basis]
+            result._components[basis] = -self._components[basis]
         if self._name is not None:
             result._name = '-' + self._name
         if self._latex_name is not None:
@@ -2136,9 +2188,11 @@ class FreeModuleTensor(ModuleElementWithMutability):
         # If other has a name, set the name of the result:
         try:
             from .format_utilities import format_mul_txt, format_mul_latex
+
             result_name = format_mul_txt(other._name, '*', self._name)
-            result_latex = format_mul_latex(other._latex_name, r' \cdot ',
-                                            self._latex_name)
+            result_latex = format_mul_latex(
+                other._latex_name, r' \cdot ', self._latex_name
+            )
             result.set_name(name=result_name, latex_name=result_latex)
         except AttributeError:
             pass
@@ -2168,6 +2222,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
         """
         from sage.typeset.unicode_characters import unicode_otimes
         from .format_utilities import format_mul_txt, format_mul_latex
+
         if isinstance(other, FreeModuleTensor):
             basis = self.common_basis(other)
             if basis is None:
@@ -2177,16 +2232,16 @@ class FreeModuleTensor(ModuleElementWithMutability):
             k1, l1 = self._tensor_type
             k2, l2 = other._tensor_type
             if l1 != 0:
-                comp_result = comp_prov.swap_adjacent_indices(k1,
-                                                          self._tensor_rank,
-                                                          self._tensor_rank+k2)
+                comp_result = comp_prov.swap_adjacent_indices(
+                    k1, self._tensor_rank, self._tensor_rank + k2
+                )
             else:
                 comp_result = comp_prov  # no reordering is necessary
-            result = self._fmodule.tensor_from_comp((k1+k2, l1+l2),
-                                                    comp_result)
+            result = self._fmodule.tensor_from_comp((k1 + k2, l1 + l2), comp_result)
             result._name = format_mul_txt(self._name, unicode_otimes, other._name)
-            result._latex_name = format_mul_latex(self._latex_name,
-                                                r'\otimes ', other._latex_name)
+            result._latex_name = format_mul_latex(
+                self._latex_name, r'\otimes ', other._latex_name
+            )
             return result
 
         # multiplication by a scalar:
@@ -2275,27 +2330,30 @@ class FreeModuleTensor(ModuleElementWithMutability):
         # Consistency checks:
         p = len(args)
         if p != self._tensor_rank:
-            raise TypeError(str(self._tensor_rank) +
-                            " arguments must be provided")
+            raise TypeError(str(self._tensor_rank) + " arguments must be provided")
         for i in range(self._tensor_type[0]):
             if not isinstance(args[i], FreeModuleTensor):
-                raise TypeError("the argument no. " + str(i+1) +
-                                " must be a linear form")
-            if args[i]._tensor_type != (0,1):
-                raise TypeError("the argument no. " + str(i+1) +
-                                " must be a linear form")
+                raise TypeError(
+                    "the argument no. " + str(i + 1) + " must be a linear form"
+                )
+            if args[i]._tensor_type != (0, 1):
+                raise TypeError(
+                    "the argument no. " + str(i + 1) + " must be a linear form"
+                )
         for i in range(self._tensor_type[0], p):
             if not isinstance(args[i], FreeModuleTensor):
-                raise TypeError("the argument no. " + str(i+1) +
-                                " must be a module element")
-            if args[i]._tensor_type != (1,0):
-                raise TypeError("the argument no. " + str(i+1) +
-                                " must be a module element")
+                raise TypeError(
+                    "the argument no. " + str(i + 1) + " must be a module element"
+                )
+            if args[i]._tensor_type != (1, 0):
+                raise TypeError(
+                    "the argument no. " + str(i + 1) + " must be a module element"
+                )
         fmodule = self._fmodule
         #
         # Specific case of a linear form acting on a vector (for efficiency):
         #
-        if self._tensor_type == (0,1):
+        if self._tensor_type == (0, 1):
             vector = args[0]
             basis = self.common_basis(vector)
             if basis is None:
@@ -2304,16 +2362,16 @@ class FreeModuleTensor(ModuleElementWithMutability):
             vv = vector._components[basis]
             resu = 0
             for i in fmodule.irange():
-                resu += omega[[i]]*vv[[i]]
+                resu += omega[[i]] * vv[[i]]
             # Name and LaTeX symbol of the output:
             if hasattr(resu, '_name'):
                 if self._name is not None and vector._name is not None:
                     resu._name = self._name + "(" + vector._name + ")"
             if hasattr(resu, '_latex_name'):
-                if self._latex_name is not None and \
-                                                vector._latex_name is not None:
-                    resu._latex_name = self._latex_name + r"\left(" + \
-                                       vector._latex_name + r"\right)"
+                if self._latex_name is not None and vector._latex_name is not None:
+                    resu._latex_name = (
+                        self._latex_name + r"\left(" + vector._latex_name + r"\right)"
+                    )
             return resu
         #
         # Generic case
@@ -2336,20 +2394,20 @@ class FreeModuleTensor(ModuleElementWithMutability):
                     if bas not in arg._components:
                         basis = None
                         break
-                if basis is not None: # common basis found !
+                if basis is not None:  # common basis found !
                     break
         if basis is None:
             # A last attempt to find a common basis, possibly via a
             # change-of-components transformation
             for arg in args:
-                self.common_basis(arg) # to trigger some change of components
+                self.common_basis(arg)  # to trigger some change of components
             for bas in self._components:
                 basis = bas
                 for arg in args:
                     if bas not in arg._components:
                         basis = None
                         break
-                if basis is not None: # common basis found !
+                if basis is not None:  # common basis found !
                     break
         if basis is None:
             raise ValueError("no common basis for the components")
@@ -2366,15 +2424,15 @@ class FreeModuleTensor(ModuleElementWithMutability):
             res_name = None
             if self._name is not None:
                 res_name = self._name + "("
-                for i in range(p-1):
+                for i in range(p - 1):
                     if args[i]._name is not None:
                         res_name += args[i]._name + ","
                     else:
                         res_name = None
                         break
                 if res_name is not None:
-                    if args[p-1]._name is not None:
-                        res_name += args[p-1]._name + ")"
+                    if args[p - 1]._name is not None:
+                        res_name += args[p - 1]._name + ")"
                     else:
                         res_name = None
             res._name = res_name
@@ -2383,15 +2441,15 @@ class FreeModuleTensor(ModuleElementWithMutability):
             res_latex = None
             if self._latex_name is not None:
                 res_latex = self._latex_name + r"\left("
-                for i in range(p-1):
+                for i in range(p - 1):
                     if args[i]._latex_name is not None:
                         res_latex += args[i]._latex_name + ","
                     else:
                         res_latex = None
                         break
                 if res_latex is not None:
-                    if args[p-1]._latex_name is not None:
-                        res_latex += args[p-1]._latex_name + r"\right)"
+                    if args[p - 1]._latex_name is not None:
+                        res_latex += args[p - 1]._latex_name + r"\right)"
                     else:
                         res_latex = None
             res._latex_name = res_latex
@@ -2542,20 +2600,20 @@ class FreeModuleTensor(ModuleElementWithMutability):
         k_con = self._tensor_type[0]
         l_cov = self._tensor_type[1]
         if pos1 < k_con and pos2 < k_con:
-            raise IndexError("contraction on two contravariant indices is " +
-                             "not allowed")
+            raise IndexError(
+                "contraction on two contravariant indices is " + "not allowed"
+            )
         if pos1 >= k_con and pos2 >= k_con:
-            raise IndexError("contraction on two covariant indices is " +
-                             "not allowed")
+            raise IndexError("contraction on two covariant indices is " + "not allowed")
         # Frame selection for the computation:
         if self._fmodule._def_basis in self._components:
             basis = self._fmodule._def_basis
-        else: # a basis is picked arbitrarily:
+        else:  # a basis is picked arbitrarily:
             basis = self.pick_a_basis()
         resu_comp = self._components[basis].trace(pos1, pos2)
         if self._tensor_rank == 2:  # result is a scalar
             return resu_comp
-        return self._fmodule.tensor_from_comp((k_con-1, l_cov-1), resu_comp)
+        return self._fmodule.tensor_from_comp((k_con - 1, l_cov - 1), resu_comp)
 
     def contract(self, *args):
         r"""
@@ -2763,11 +2821,11 @@ class FreeModuleTensor(ModuleElementWithMutability):
             pos1 = (self._tensor_rank - 1,)
         else:
             pos1 = args[:it]
-        if it == nargs-1:
+        if it == nargs - 1:
             pos2 = (0,)
         else:
-            pos2 = args[it+1:]
-        ncontr = len(pos1) # number of contractions
+            pos2 = args[it + 1 :]
+        ncontr = len(pos1)  # number of contractions
         if len(pos2) != ncontr:
             raise TypeError("different number of indices for the contraction")
         k1, l1 = self._tensor_type
@@ -2776,11 +2834,13 @@ class FreeModuleTensor(ModuleElementWithMutability):
             p1 = pos1[i]
             p2 = pos2[i]
             if p1 < k1 and p2 < k2:
-                raise TypeError("contraction on two contravariant indices " +
-                                "not permitted")
+                raise TypeError(
+                    "contraction on two contravariant indices " + "not permitted"
+                )
             if p1 >= k1 and p2 >= k2:
-                raise TypeError("contraction on two covariant indices " +
-                                "not permitted")
+                raise TypeError(
+                    "contraction on two covariant indices " + "not permitted"
+                )
         #
         # Contraction at the component level
         #
@@ -2789,19 +2849,19 @@ class FreeModuleTensor(ModuleElementWithMutability):
             raise ValueError("no common basis for the contraction")
         args = pos1 + (other._components[basis],) + pos2
         cmp_res = self._components[basis].contract(*args)
-        if self._tensor_rank + other._tensor_rank - 2*ncontr == 0:
+        if self._tensor_rank + other._tensor_rank - 2 * ncontr == 0:
             # Case of scalar output:
             return cmp_res
         #
         # Reordering of the indices to have all contravariant indices first:
         #
         nb_cov_s = 0  # Number of covariant indices of self not involved in the
-                      # contraction
+        # contraction
         for pos in range(k1, k1 + l1):
             if pos not in pos1:
                 nb_cov_s += 1
         nb_con_o = 0  # Number of contravariant indices of other not involved
-                      # in the contraction
+        # in the contraction
         for pos in range(k2):
             if pos not in pos2:
                 nb_con_o += 1
@@ -2811,7 +2871,7 @@ class FreeModuleTensor(ModuleElementWithMutability):
             p1 = p2 - nb_cov_s
             p3 = p2 + nb_con_o
             cmp_res = cmp_res.swap_adjacent_indices(p1, p2, p3)
-        type_res = (k1+k2-ncontr, l1+l2-ncontr)
+        type_res = (k1 + k2 - ncontr, l1 + l2 - ncontr)
         return self._fmodule.tensor_from_comp(type_res, cmp_res)
 
     def symmetrize(self, *pos, **kwargs):
@@ -3019,24 +3079,30 @@ class FreeModuleTensor(ModuleElementWithMutability):
         if not pos:
             pos = range(self._tensor_rank)
         # check whether the symmetrization is possible:
-        pos_cov = self._tensor_type[0]   # first covariant position
+        pos_cov = self._tensor_type[0]  # first covariant position
         pos0 = pos[0]
         if pos0 < pos_cov:  # pos0 is a contravariant position
-            for k in range(1,len(pos)):
+            for k in range(1, len(pos)):
                 if pos[k] >= pos_cov:
                     raise TypeError(
-                        str(pos[0]) + " is a contravariant position, while " +
-                        str(pos[k]) + " is a covariant position; \n"
-                        "symmetrization is meaningful only on tensor " +
-                        "arguments of the same type")
+                        str(pos[0])
+                        + " is a contravariant position, while "
+                        + str(pos[k])
+                        + " is a covariant position; \n"
+                        "symmetrization is meaningful only on tensor "
+                        + "arguments of the same type"
+                    )
         else:  # pos0 is a covariant position
-            for k in range(1,len(pos)):
+            for k in range(1, len(pos)):
                 if pos[k] < pos_cov:
                     raise TypeError(
-                        str(pos[0]) + " is a covariant position, while " +
-                        str(pos[k]) + " is a contravariant position; \n"
-                        "symmetrization is meaningful only on tensor " +
-                        "arguments of the same type")
+                        str(pos[0])
+                        + " is a covariant position, while "
+                        + str(pos[k])
+                        + " is a contravariant position; \n"
+                        "symmetrization is meaningful only on tensor "
+                        + "arguments of the same type"
+                    )
         if 'basis' in kwargs:
             basis = kwargs['basis']
         else:
@@ -3258,24 +3324,30 @@ class FreeModuleTensor(ModuleElementWithMutability):
         if not pos:
             pos = range(self._tensor_rank)
         # check whether the antisymmetrization is possible:
-        pos_cov = self._tensor_type[0]   # first covariant position
+        pos_cov = self._tensor_type[0]  # first covariant position
         pos0 = pos[0]
         if pos0 < pos_cov:  # pos0 is a contravariant position
-            for k in range(1,len(pos)):
+            for k in range(1, len(pos)):
                 if pos[k] >= pos_cov:
                     raise TypeError(
-                        str(pos[0]) + " is a contravariant position, while " +
-                        str(pos[k]) + " is a covariant position; \n"
-                        "antisymmetrization is meaningful only on tensor " +
-                        "arguments of the same type")
+                        str(pos[0])
+                        + " is a contravariant position, while "
+                        + str(pos[k])
+                        + " is a covariant position; \n"
+                        "antisymmetrization is meaningful only on tensor "
+                        + "arguments of the same type"
+                    )
         else:  # pos0 is a covariant position
-            for k in range(1,len(pos)):
+            for k in range(1, len(pos)):
                 if pos[k] < pos_cov:
                     raise TypeError(
-                        str(pos[0]) + " is a covariant position, while " +
-                        str(pos[k]) + " is a contravariant position; \n"
-                        "antisymmetrization is meaningful only on tensor " +
-                        "arguments of the same type")
+                        str(pos[0])
+                        + " is a covariant position, while "
+                        + str(pos[k])
+                        + " is a contravariant position; \n"
+                        "antisymmetrization is meaningful only on tensor "
+                        + "arguments of the same type"
+                    )
         if 'basis' in kwargs:
             basis = kwargs['basis']
         else:

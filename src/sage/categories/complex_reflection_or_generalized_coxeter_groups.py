@@ -206,7 +206,9 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
                 asdf (2,5)(3,9)(4,6)(8,11)(10,12)
             """
             if i not in self.index_set():
-                raise ValueError("%s is not in the Dynkin node set %s" % (i, self.index_set()))
+                raise ValueError(
+                    "%s is not in the Dynkin node set %s" % (i, self.index_set())
+                )
             return self.one().apply_simple_reflection(i)  # don't care about left/right
 
         @cached_method
@@ -250,6 +252,7 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
             :meth:`.simple_reflection`.
             """
             from sage.sets.family import Family
+
             return Family(self.index_set(), self.simple_reflection)
 
         def number_of_simple_reflections(self):
@@ -356,6 +359,7 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
                     cur *= x
                     ct += ZZ.one()
                 return ZZ(ct)
+
             return [mult_order(s[i]) for i in self.index_set()]
 
         def _an_element_(self):
@@ -517,6 +521,7 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
                 10 (4,27,21)(10,28,22)(11,19,13)(12,20,14)(16,30,26)(17,25,18)(23,29,24)
             """
             from sage.sets.family import Family
+
             return Family(self.reflection_index_set(), self.reflection)
 
         ##########################################################################
@@ -640,6 +645,7 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
                 8 (3,13)(4,24)(9,19)(10,29)(11,15)(12,26)(14,21)(16,23)(17,30)(18,27)(20,22)(25,28)
             """
             from sage.sets.family import Family
+
             return Family(self.hyperplane_index_set(), self.distinguished_reflection)
 
         ##########################################################################
@@ -770,11 +776,18 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
             I = self.index_set()
             s = self.simple_reflections()
             from sage.graphs.graph import Graph
-            G = Graph([I,
-                       [[i,j]
-                        for i,j in itertools.combinations(I,2)
-                        if s[i]*s[j] != s[j]*s[i] ]],
-                      format='vertices_and_edges')
+
+            G = Graph(
+                [
+                    I,
+                    [
+                        [i, j]
+                        for i, j in itertools.combinations(I, 2)
+                        if s[i] * s[j] != s[j] * s[i]
+                    ],
+                ],
+                format='vertices_and_edges',
+            )
             return G.connected_components(sort=False)
 
         @abstract_method(optional=True)
@@ -1175,7 +1188,11 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
                 [0 0 0 0 0 1 0]
                 [0 0 0 0 0 0 1]
             """
-            return self.parent().one().apply_simple_reflections(self.reduced_word_reverse_iterator())
+            return (
+                self.parent()
+                .one()
+                .apply_simple_reflections(self.reduced_word_reverse_iterator())
+            )
 
         def apply_conjugation_by_simple_reflection(self, i):
             r"""
@@ -1188,7 +1205,9 @@ class ComplexReflectionOrGeneralizedCoxeterGroups(Category_singleton):
                 sage: w.apply_conjugation_by_simple_reflection(1).reduced_word()        # needs sage.rings.number_field
                 [3, 2]
             """
-            return self.apply_simple_reflection(i).apply_simple_reflection(i, side='left')
+            return self.apply_simple_reflection(i).apply_simple_reflection(
+                i, side='left'
+            )
 
         @abstract_method(optional=True)
         def reflection_length(self):

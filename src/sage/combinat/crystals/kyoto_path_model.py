@@ -21,8 +21,10 @@ Kyoto path model for affine highest weight crystals
 from sage.structure.parent import Parent
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.categories.highest_weight_crystals import HighestWeightCrystals
-from sage.combinat.crystals.tensor_product import TensorProductOfCrystals, \
-    TensorProductOfRegularCrystalsElement
+from sage.combinat.crystals.tensor_product import (
+    TensorProductOfCrystals,
+    TensorProductOfRegularCrystalsElement,
+)
 
 
 class KyotoPathModel(TensorProductOfCrystals):
@@ -195,6 +197,7 @@ class KyotoPathModel(TensorProductOfCrystals):
         sage: x.weight()
         Lambda[0] - delta
     """
+
     @staticmethod
     def __classcall_private__(cls, crystals, weight, P=None):
         """
@@ -224,8 +227,13 @@ class KyotoPathModel(TensorProductOfCrystals):
         ct = crystals[0].cartan_type()
         if P is None:
             P = weight.parent()
-        if sum(ct.dual().c()[i] * weight.scalar(h)
-               for i, h in enumerate(P.simple_coroots())) != level:
+        if (
+            sum(
+                ct.dual().c()[i] * weight.scalar(h)
+                for i, h in enumerate(P.simple_coroots())
+            )
+            != level
+        ):
             raise ValueError(f"{weight} is not a level {level} weight")
 
         return super().__classcall__(cls, crystals, weight, P)
@@ -241,25 +249,31 @@ class KyotoPathModel(TensorProductOfCrystals):
             sage: C = crystals.KyotoPathModel(B, La[0])
             sage: TestSuite(C).run() # long time
         """
-        Parent.__init__(self, category=(HighestWeightCrystals(), InfiniteEnumeratedSets()))
+        Parent.__init__(
+            self, category=(HighestWeightCrystals(), InfiniteEnumeratedSets())
+        )
 
         self._cartan_type = crystals[0].cartan_type()
         self._weight = weight
         if weight.parent().is_extended():
             # public for TensorProductOfCrystals
             self.crystals = tuple([C.affinization() for C in crystals])
-            self._epsilon_dicts = [{b.Epsilon(): self.crystals[i](b, 0) for b in B}
-                                   for i,B in enumerate(crystals)]
-            self._phi_dicts = [{b.Phi(): self.crystals[i](b, 0) for b in B}
-                               for i,B in enumerate(crystals)]
+            self._epsilon_dicts = [
+                {b.Epsilon(): self.crystals[i](b, 0) for b in B}
+                for i, B in enumerate(crystals)
+            ]
+            self._phi_dicts = [
+                {b.Phi(): self.crystals[i](b, 0) for b in B}
+                for i, B in enumerate(crystals)
+            ]
         else:
             # public for TensorProductOfCrystals
             self.crystals = tuple(crystals)
-            self._epsilon_dicts = [{b.Epsilon(): b for b in B}
-                                   for B in crystals]
-            self._phi_dicts = [{b.Phi(): b for b in B}
-                               for B in crystals]
-        self.module_generators = (self.element_class(self, [self._phi_dicts[0][weight]]),)
+            self._epsilon_dicts = [{b.Epsilon(): b for b in B} for B in crystals]
+            self._phi_dicts = [{b.Phi(): b for b in B} for B in crystals]
+        self.module_generators = (
+            self.element_class(self, [self._phi_dicts[0][weight]]),
+        )
 
     def _repr_(self):
         """
@@ -273,7 +287,9 @@ class KyotoPathModel(TensorProductOfCrystals):
             Kyoto path realization of B(Lambda[0]) using
              [Kirillov-Reshetikhin crystal of type ['A', 2, 1] with (r,s)=(1,1)]
         """
-        return "Kyoto path realization of B({}) using {}".format(self._weight, list(self.crystals))
+        return "Kyoto path realization of B({}) using {}".format(
+            self._weight, list(self.crystals)
+        )
 
     def finite_tensor_product(self, k):
         """
@@ -321,6 +337,7 @@ class KyotoPathModel(TensorProductOfCrystals):
         """
         An element in the Kyoto path model.
         """
+
         # For simplicity (and safety), we use the regular crystals implementation
 
         def epsilon(self, i):
@@ -396,10 +413,10 @@ class KyotoPathModel(TensorProductOfCrystals):
             k = self.position_of_first_unmatched_plus(i)
             if k is None:
                 return None
-            if k == len(self)-1:
+            if k == len(self) - 1:
                 return None
             crystal = self[k].e(i)
-            if k == len(self)-2 and crystal.Epsilon() == self[-1].Phi():
+            if k == len(self) - 2 and crystal.Epsilon() == self[-1].Phi():
                 l = self[:-1]
                 l[-1] = crystal
                 return self.__class__(self.parent(), l)
@@ -424,10 +441,10 @@ class KyotoPathModel(TensorProductOfCrystals):
             k = self.position_of_last_unmatched_minus(i)
             if k is None:
                 return None
-            if k == len(self)-1:
+            if k == len(self) - 1:
                 l = list(self)
                 k = len(l) % len(self.parent().crystals)
-                l.append(self.parent()._phi_dicts[k][ l[-1].Epsilon() ])
+                l.append(self.parent()._phi_dicts[k][l[-1].Epsilon()])
                 l[-2] = l[-2].f(i)
                 return self.__class__(self.parent(), l)
             return self._set_index(k, self[k].f(i))
@@ -492,5 +509,5 @@ class KyotoPathModel(TensorProductOfCrystals):
                 N = len(self.parent().crystals)
                 while len(l) < k:
                     i = len(l) % N
-                    l.append(self.parent()._phi_dicts[i][ l[-1].Epsilon() ])
+                    l.append(self.parent()._phi_dicts[i][l[-1].Epsilon()])
             return P(*l)

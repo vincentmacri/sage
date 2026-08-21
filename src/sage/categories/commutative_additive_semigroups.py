@@ -1,12 +1,12 @@
 r"""
 Commutative additive semigroups
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.additive_semigroups import AdditiveSemigroups
@@ -41,4 +41,5 @@ class CommutativeAdditiveSemigroups(CategoryWithAxiom):
 
         sage: TestSuite(C).run()
     """
+
     _base_category_class_and_axiom = (AdditiveSemigroups, "AdditiveCommutative")

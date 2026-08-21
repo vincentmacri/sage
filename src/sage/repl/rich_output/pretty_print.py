@@ -58,7 +58,6 @@ from sage.repl.rich_output import get_display_manager
 
 
 class SequencePrettyPrinter(SageObject):
-
     def __init__(self, *args, **kwds):
         r"""
         Pretty Printer for Multiple Arguments.
@@ -121,6 +120,7 @@ class SequencePrettyPrinter(SageObject):
             Graphics Array of size 1 x 4
         """
         import sage.graphs.graph_list as graphs_list
+
         return graphs_list.to_graphics_array(self.args, **self.kwds)
 
     def _concatenate_graphics(self):
@@ -139,6 +139,7 @@ class SequencePrettyPrinter(SageObject):
             (2, 4)
         """
         from sage.plot.plot import graphics_array
+
         return graphics_array(self.args, ncols=4, **self.kwds)
 
     def pretty_print(self):

@@ -164,9 +164,12 @@ class PieriFactors(UniqueRepresentation, Parent):
             inherit from
             :class:`~sage.sets.recursively_enumerated_set.RecursivelyEnumeratedSet_generic`.
         """
-        return RecursivelyEnumeratedSet(self.maximal_elements(),
-                attrcall('bruhat_lower_covers'), structure=None,
-                enumeration='naive')
+        return RecursivelyEnumeratedSet(
+            self.maximal_elements(),
+            attrcall('bruhat_lower_covers'),
+            structure=None,
+            enumeration='naive',
+        )
 
     def __iter__(self):
         r"""
@@ -252,8 +255,9 @@ class PieriFactors(UniqueRepresentation, Parent):
             sage: WeylGroup(['B',5,1]).pieri_factors()._test_maximal_elements()
         """
         tester = self._tester(**options)
-        tester.assertEqual(set(self.maximal_elements()),
-                           set(self.maximal_elements_combinatorial()))
+        tester.assertEqual(
+            set(self.maximal_elements()), set(self.maximal_elements_combinatorial())
+        )
 
     @cached_method
     def max_length(self):
@@ -327,7 +331,9 @@ class PieriFactors_finite_type(PieriFactors):
 
         # The following line may need to be changed when generalizing to more than types A and B.
         if ct.type() != 'A' and ct.type() != 'B':
-            raise NotImplementedError("currently only implemented for finite types A and B")
+            raise NotImplementedError(
+                "currently only implemented for finite types A and B"
+            )
 
         ct_aff = ct.dual().affine()
 
@@ -338,11 +344,14 @@ class PieriFactors_finite_type(PieriFactors):
                 return [self.W.from_reduced_word(w.reduced_word())]
         for w in max_elts_affine:
             if 0 not in w.apply_simple_reflection(0).reduced_word():
-                return [self.W.from_reduced_word(w.apply_simple_reflection(0).reduced_word())]
+                return [
+                    self.W.from_reduced_word(
+                        w.apply_simple_reflection(0).reduced_word()
+                    )
+                ]
 
 
 class PieriFactors_affine_type(PieriFactors):
-
     def maximal_elements(self):
         r"""
         Return the maximal elements of ``self`` with respect to Bruhat order.
@@ -383,8 +392,10 @@ class PieriFactors_affine_type(PieriFactors):
         s = ct.translation_factors()[1]
         R = RootSystem(ct).weight_space()
         Lambda = R.fundamental_weights()
-        orbit = [R.reduced_word_of_translation(x)
-                 for x in (s*(Lambda[1]-Lambda[1].level()*Lambda[0]))._orbit_iter()]
+        orbit = [
+            R.reduced_word_of_translation(x)
+            for x in (s * (Lambda[1] - Lambda[1].level() * Lambda[0]))._orbit_iter()
+        ]
         return [self.W.from_reduced_word(x) for x in orbit]
 
 
@@ -503,7 +514,12 @@ class PieriFactors_type_B(PieriFactors_finite_type):
             0
         """
         r = w.reduced_word().count(self.W.n)
-        return WeylGroup(self.W.cartan_type().dual().affine()).pieri_factors().stanley_symm_poly_weight(w) - r
+        return (
+            WeylGroup(self.W.cartan_type().dual().affine())
+            .pieri_factors()
+            .stanley_symm_poly_weight(w)
+            - r
+        )
 
 
 class PieriFactors_type_A_affine(PieriFactors_affine_type):
@@ -522,8 +538,14 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
     """
 
     @staticmethod
-    def __classcall__(cls, W, min_length=0, max_length=infinity,
-                      min_support=frozenset(), max_support=None):
+    def __classcall__(
+        cls,
+        W,
+        min_length=0,
+        max_length=infinity,
+        min_support=frozenset(),
+        max_support=None,
+    ):
         r"""
         TESTS::
 
@@ -548,7 +570,9 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
             max_support = frozenset(max_support)
         min_length = max(min_length, len(min_support))
         max_length = min(len(max_support), max_length, len(W.index_set()) - 1)
-        return super().__classcall__(cls, W, min_length, max_length, min_support, max_support)
+        return super().__classcall__(
+            cls, W, min_length, max_length, min_support, max_support
+        )
 
     def __init__(self, W, min_length, max_length, min_support, max_support):
         r"""
@@ -593,8 +617,7 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
         self._max_support = frozenset(max_support)
 
         if not self._min_support.issubset(self._max_support):
-            raise ValueError("the min support must be a subset "
-                             "of the max support")
+            raise ValueError("the min support must be a subset of the max support")
 
         self._extra_support = self._max_support.difference(self._min_support)
 
@@ -624,11 +647,13 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
             sage: PF.cardinality()
             15
         """
-        return self.__class__(self.W,
-                              min_support=self._min_support,
-                              max_support=self._max_support,
-                              min_length=length,
-                              max_length=length)
+        return self.__class__(
+            self.W,
+            min_support=self._min_support,
+            max_support=self._max_support,
+            min_length=length,
+            max_length=length,
+        )
 
     def maximal_elements_combinatorial(self):
         r"""
@@ -658,7 +683,11 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
         """
         tester = self._tester(**options)
         index_set = self.W.index_set()
-        if self._min_length > 0 or self._max_length < len(self.W.index_set())-1 or self._max_support != frozenset(index_set):
+        if (
+            self._min_length > 0
+            or self._max_length < len(self.W.index_set()) - 1
+            or self._max_support != frozenset(index_set)
+        ):
             tester.info("\n  Strict subset of the Pieri factors; skipping test")
             return
         return super()._test_maximal_elements(**options)
@@ -702,10 +731,12 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
         if len(support) < len(red):  # There should be no repetitions
             return False
 
-        if not (self._min_length <= len(support) and
-                len(support) <= self._max_length and
-                self._min_support.issubset(support) and
-                support.issubset(self._max_support)):
+        if not (
+            self._min_length <= len(support)
+            and len(support) <= self._max_length
+            and self._min_support.issubset(support)
+            and support.issubset(self._max_support)
+        ):
             return False
 
         rank, unrank = sage.combinat.ranker.from_list(red)
@@ -745,7 +776,10 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
         while i < len(support) and support[i] == index_set[i]:
             i += 1
         # This finds the first hole: either ley[i] is maximal or support[i] < support[i+1]+1
-        return prod((s[j] for j in list(reversed(support[0:i])) + list(reversed(support[i:]))), self.W.one())
+        return prod(
+            (s[j] for j in list(reversed(support[0:i])) + list(reversed(support[i:]))),
+            self.W.one(),
+        )
 
     def cardinality(self):
         r"""
@@ -756,8 +790,11 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
             sage: WeylGroup(["A", 3, 1]).pieri_factors().cardinality()
             15
         """
-        if self._min_length == len(self._min_support) and self._max_length == len(self._max_support) - 1:
-            return Integer(2**(len(self._extra_support)) - 1)
+        if (
+            self._min_length == len(self._min_support)
+            and self._max_length == len(self._max_support) - 1
+        ):
+            return Integer(2 ** (len(self._extra_support)) - 1)
         return self.generating_series(weight=ConstantFunction(1))
 
     def generating_series(self, weight=None):
@@ -776,8 +813,10 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
             weight = self.default_weight()
         l_min = len(self._min_support)
         l_max = len(self._max_support)
-        return sum(Integer(l_max - l_min).binomial(l - l_min) * weight(l)
-                   for l in range(self._min_length, self._max_length + 1))
+        return sum(
+            Integer(l_max - l_min).binomial(l - l_min) * weight(l)
+            for l in range(self._min_length, self._max_length + 1)
+        )
 
     def __iter__(self):
         r"""
@@ -798,9 +837,9 @@ class PieriFactors_type_A_affine(PieriFactors_affine_type):
             [[0], [1], [2], [3], [4], [1, 0]]
         """
         from sage.combinat.subset import Subsets
+
         for l in range(self._min_length, self._max_length + 1):
-            for extra in Subsets(self._extra_support,
-                                 l - len(self._min_support)):
+            for extra in Subsets(self._extra_support, l - len(self._min_support)):
                 yield self[self._min_support.union(extra)]
 
     def stanley_symm_poly_weight(self, w):
@@ -860,10 +899,14 @@ class PieriFactors_type_C_affine(PieriFactors_affine_type):
             [[0, 1, 2, 3, 2, 1], [1, 0, 1, 2, 3, 2], [2, 1, 0, 1, 2, 3], [3, 2, 1, 0, 1, 2], [2, 3, 2, 1, 0, 1], [1, 2, 3, 2, 1, 0]]
         """
         n = self.W.n
-        rho = self.W.from_reduced_word(range(1, n-1))*self.W.from_reduced_word(range(n-1,-1,-1))
+        rho = self.W.from_reduced_word(range(1, n - 1)) * self.W.from_reduced_word(
+            range(n - 1, -1, -1)
+        )
         rotations = []
         for i in range(2 * (n - 1)):
-            rho = rho.apply_simple_reflections(rho.descents()).apply_simple_reflections(rho.descents(), side='left')
+            rho = rho.apply_simple_reflections(rho.descents()).apply_simple_reflections(
+                rho.descents(), side='left'
+            )
             rotations.append(rho)
         return rotations
 
@@ -893,8 +936,9 @@ class PieriFactors_type_C_affine(PieriFactors_affine_type):
         # vertices is empty, in which case subgraph tries another
         # method which turns out to currently fail with Dynkin diagrams
         D = DiGraph(DynkinDiagram(w.parent().cartan_type()))
-        return D.subgraph(set(w.reduced_word()),
-                          algorithm='delete').number_of_connected_components()
+        return D.subgraph(
+            set(w.reduced_word()), algorithm='delete'
+        ).number_of_connected_components()
 
 
 class PieriFactors_type_B_affine(PieriFactors_affine_type):
@@ -950,13 +994,25 @@ class PieriFactors_type_B_affine(PieriFactors_affine_type):
             [[1, 0, 2, 3, 4, 3, 2], [2, 1, 0, 2, 3, 4, 3], [3, 2, 1, 0, 2, 3, 4], [4, 3, 2, 1, 0, 2, 3], [3, 4, 3, 2, 1, 0, 2], [2, 3, 4, 3, 2, 1, 0], [1, 2, 3, 4, 3, 2, 1], [0, 2, 3, 4, 3, 2, 0]]
         """
         n = self.W.n
-        rho = self.W.from_reduced_word(range(2,n-1))*self.W.from_reduced_word(range(n-1,-1,-1))
+        rho = self.W.from_reduced_word(range(2, n - 1)) * self.W.from_reduced_word(
+            range(n - 1, -1, -1)
+        )
         rotations = []
         for i in range(2 * (n - 2)):
-            rho = rho.apply_simple_reflections(rho.descents()).apply_simple_reflections(rho.descents(), side='left')
+            rho = rho.apply_simple_reflections(rho.descents()).apply_simple_reflections(
+                rho.descents(), side='left'
+            )
             rotations.append(rho)
-        rotations.append(self.W.from_reduced_word(range(1,n-1))*self.W.from_reduced_word(range(n-1,0,-1)))
-        rotations.append(self.W.from_reduced_word([0])*self.W.from_reduced_word(range(2,n-1))*self.W.from_reduced_word(range(n-1,1,-1))*self.W.from_reduced_word([0]))
+        rotations.append(
+            self.W.from_reduced_word(range(1, n - 1))
+            * self.W.from_reduced_word(range(n - 1, 0, -1))
+        )
+        rotations.append(
+            self.W.from_reduced_word([0])
+            * self.W.from_reduced_word(range(2, n - 1))
+            * self.W.from_reduced_word(range(n - 1, 1, -1))
+            * self.W.from_reduced_word([0])
+        )
         return rotations
 
     def stanley_symm_poly_weight(self, w):
@@ -1000,11 +1056,20 @@ class PieriFactors_type_B_affine(PieriFactors_affine_type):
         ct = w.parent().cartan_type()
         support = set(w.reduced_word())
         if 1 in support or 0 in support:
-            support_complement = set(ct.index_set()).difference(support).difference(set([0, 1]))
+            support_complement = (
+                set(ct.index_set()).difference(support).difference(set([0, 1]))
+            )
         else:
-            support_complement = set(ct.index_set()).difference(support).difference(set([0]))
+            support_complement = (
+                set(ct.index_set()).difference(support).difference(set([0]))
+            )
         D = DiGraph(DynkinDiagram(ct))
-        return D.subgraph(support_complement, algorithm='delete').number_of_connected_components() - 1
+        return (
+            D.subgraph(
+                support_complement, algorithm='delete'
+            ).number_of_connected_components()
+            - 1
+        )
 
 
 class PieriFactors_type_D_affine(PieriFactors_affine_type):
@@ -1065,16 +1130,36 @@ class PieriFactors_type_D_affine(PieriFactors_affine_type):
             True
         """
         n = self.W.n
-        rho = self.W.from_reduced_word(range(2,n))*self.W.from_reduced_word(range(n-3,-1,-1))
+        rho = self.W.from_reduced_word(range(2, n)) * self.W.from_reduced_word(
+            range(n - 3, -1, -1)
+        )
         rotations = []
         for i in range(2 * (n - 3)):
-            rho = rho.apply_simple_reflections(rho.descents()).apply_simple_reflections(rho.descents(),side='left')
+            rho = rho.apply_simple_reflections(rho.descents()).apply_simple_reflections(
+                rho.descents(), side='left'
+            )
             rotations.append(rho)
 
-        rotations.append(self.W.from_reduced_word(range(1,n))*self.W.from_reduced_word(range(n-3,0,-1)))
-        rotations.append(self.W.from_reduced_word([0])*self.W.from_reduced_word(range(2,n))*self.W.from_reduced_word(range(n-3,1,-1))*self.W.from_reduced_word([0]))
-        rotations.append(self.W.from_reduced_word(range(n-2,-1,-1))*self.W.from_reduced_word(range(2,n-1)))
-        rotations.append(self.W.from_reduced_word([n-1])*self.W.from_reduced_word(range(n-3,-1,-1))*self.W.from_reduced_word(range(2,n-2))*self.W.from_reduced_word([n-1]))
+        rotations.append(
+            self.W.from_reduced_word(range(1, n))
+            * self.W.from_reduced_word(range(n - 3, 0, -1))
+        )
+        rotations.append(
+            self.W.from_reduced_word([0])
+            * self.W.from_reduced_word(range(2, n))
+            * self.W.from_reduced_word(range(n - 3, 1, -1))
+            * self.W.from_reduced_word([0])
+        )
+        rotations.append(
+            self.W.from_reduced_word(range(n - 2, -1, -1))
+            * self.W.from_reduced_word(range(2, n - 1))
+        )
+        rotations.append(
+            self.W.from_reduced_word([n - 1])
+            * self.W.from_reduced_word(range(n - 3, -1, -1))
+            * self.W.from_reduced_word(range(2, n - 2))
+            * self.W.from_reduced_word([n - 1])
+        )
         return rotations
 
     def stanley_symm_poly_weight(self, w):
@@ -1132,7 +1217,15 @@ class PieriFactors_type_D_affine(PieriFactors_affine_type):
 
 
 # Inserts those classes in CartanTypes
-from sage.combinat.root_system import type_A_affine, type_B_affine, type_C_affine, type_D_affine, type_A, type_B
+from sage.combinat.root_system import (
+    type_A_affine,
+    type_B_affine,
+    type_C_affine,
+    type_D_affine,
+    type_A,
+    type_B,
+)
+
 type_A_affine.CartanType.PieriFactors = PieriFactors_type_A_affine
 type_B_affine.CartanType.PieriFactors = PieriFactors_type_B_affine
 type_C_affine.CartanType.PieriFactors = PieriFactors_type_C_affine
@@ -1144,11 +1237,11 @@ type_B.CartanType.PieriFactors = PieriFactors_type_B
 # introduced rigorously
 #
 # import type_C, type_D, type_E, type_F, type_G, type_E_affine, type_F_affine, type_G_affine
-#type_C.CartanType.PieriFactors = PieriFactors_type_C
-#type_D.CartanType.PieriFactors = PieriFactors_type_D
-#type_E.CartanType.PieriFactors = PieriFactors_type_E
-#type_F.CartanType.PieriFactors = PieriFactors_type_F
-#type_G.CartanType.PieriFactors = PieriFactors_type_G
-#type_E_affine.CartanType.PieriFactors = PieriFactors_type_E_affine
-#type_F_affine.CartanType.PieriFactors = PieriFactors_type_F_affine
-#type_G_affine.CartanType.PieriFactors = PieriFactors_type_G_affine
+# type_C.CartanType.PieriFactors = PieriFactors_type_C
+# type_D.CartanType.PieriFactors = PieriFactors_type_D
+# type_E.CartanType.PieriFactors = PieriFactors_type_E
+# type_F.CartanType.PieriFactors = PieriFactors_type_F
+# type_G.CartanType.PieriFactors = PieriFactors_type_G
+# type_E_affine.CartanType.PieriFactors = PieriFactors_type_E_affine
+# type_F_affine.CartanType.PieriFactors = PieriFactors_type_F_affine
+# type_G_affine.CartanType.PieriFactors = PieriFactors_type_G_affine

@@ -67,12 +67,19 @@ def TetrahedralGraph(immutable=False):
         sage: G.show()                          # long time
     """
     edges = ((0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3))
-    pos = {0: (0, 0),
-           1: (0, 1),
-           2: (cos(3.5*pi/3), sin(3.5*pi/3)),
-           3: (cos(5.5*pi/3), sin(5.5*pi/3))}
-    return Graph([range(4), edges], format="vertices_and_edges",
-                 name='Tetrahedron', pos=pos, immutable=immutable)
+    pos = {
+        0: (0, 0),
+        1: (0, 1),
+        2: (cos(3.5 * pi / 3), sin(3.5 * pi / 3)),
+        3: (cos(5.5 * pi / 3), sin(5.5 * pi / 3)),
+    }
+    return Graph(
+        [range(4), edges],
+        format="vertices_and_edges",
+        name='Tetrahedron',
+        pos=pos,
+        immutable=immutable,
+    )
 
 
 def HexahedralGraph(immutable=False):
@@ -122,13 +129,14 @@ def HexahedralGraph(immutable=False):
         1: (1, 0),
         3: (0, 1),
         2: (1, 1),
-        4: (.5, .5),
-        5: (1.5, .5),
-        7: (.5, 1.5),
-        6: (1.5, 1.5)
-        }
-    return Graph(adj, format="dict_of_lists", name='Hexahedron', pos=pos,
-                 immutable=immutable)
+        4: (0.5, 0.5),
+        5: (1.5, 0.5),
+        7: (0.5, 1.5),
+        6: (1.5, 1.5),
+    }
+    return Graph(
+        adj, format="dict_of_lists", name='Hexahedron', pos=pos, immutable=immutable
+    )
 
 
 def OctahedralGraph(immutable=False):
@@ -175,10 +183,9 @@ def OctahedralGraph(immutable=False):
         sage: G.show()                          # long time
     """
     adj = {0: [1, 2, 3, 4], 1: [2, 3, 5], 2: [4, 5], 3: [4, 5], 4: [5]}
-    G = Graph(adj, format='dict_of_lists', name='Octahedron',
-              immutable=immutable)
-    G._circle_embedding([0, 1, 2], radius=5, angle=pi/2)
-    G._circle_embedding([4, 3, 5], radius=1, angle=pi/6)
+    G = Graph(adj, format='dict_of_lists', name='Octahedron', immutable=immutable)
+    G._circle_embedding([0, 1, 2], radius=5, angle=pi / 2)
+    G._circle_embedding([4, 3, 5], radius=1, angle=pi / 6)
     return G
 
 
@@ -224,13 +231,21 @@ def IcosahedralGraph(immutable=False):
         sage: G = graphics_array(j)
         sage: G.show()                          # long time
     """
-    adj = {0: [1, 5, 7, 8, 11], 1: [2, 5, 6, 8], 2: [3, 6, 8, 9],
-           3: [4, 6, 9, 10], 4: [5, 6, 10, 11], 5: [6, 11],
-           7: [8, 9, 10, 11], 8: [9], 9: [10], 10: [11]}
-    G = Graph(adj, format='dict_of_lists', name='Icosahedron',
-              immutable=immutable)
-    G._circle_embedding([2, 8, 7, 11, 4, 6], radius=5, angle=pi/6)
-    G._circle_embedding([1, 9, 0, 10, 5, 3], radius=2, angle=pi/6)
+    adj = {
+        0: [1, 5, 7, 8, 11],
+        1: [2, 5, 6, 8],
+        2: [3, 6, 8, 9],
+        3: [4, 6, 9, 10],
+        4: [5, 6, 10, 11],
+        5: [6, 11],
+        7: [8, 9, 10, 11],
+        8: [9],
+        9: [10],
+        10: [11],
+    }
+    G = Graph(adj, format='dict_of_lists', name='Icosahedron', immutable=immutable)
+    G._circle_embedding([2, 8, 7, 11, 4, 6], radius=5, angle=pi / 6)
+    G._circle_embedding([1, 9, 0, 10, 5, 3], radius=2, angle=pi / 6)
     return G
 
 
@@ -274,14 +289,30 @@ def DodecahedralGraph(immutable=False):
         sage: G = graphics_array(j)
         sage: G.show()                          # long time
     """
-    adj = {0: [1, 10, 19], 1: [2, 8], 2: [3, 6], 3: [4, 19], 4: [5, 17],
-           5: [6, 15], 6: [7], 7: [8, 14], 8: [9], 9: [10, 13], 10: [11],
-           11: [12, 18], 12: [13, 16], 13: [14], 14: [15], 15: [16], 16: [17],
-           17: [18], 18: [19]}
-    G = Graph(adj, format='dict_of_lists', name='Dodecahedron',
-              immutable=immutable)
-    G._circle_embedding([19, 0, 1, 2, 3], radius=7, angle=pi/10)
-    G._circle_embedding([18, 10, 8, 6, 4], radius=4.7, angle=pi/10)
-    G._circle_embedding([11, 9, 7, 5, 17], radius=3.8, angle=3*pi/10)
-    G._circle_embedding([12, 13, 14, 15, 16], radius=1.5, angle=3*pi/10)
+    adj = {
+        0: [1, 10, 19],
+        1: [2, 8],
+        2: [3, 6],
+        3: [4, 19],
+        4: [5, 17],
+        5: [6, 15],
+        6: [7],
+        7: [8, 14],
+        8: [9],
+        9: [10, 13],
+        10: [11],
+        11: [12, 18],
+        12: [13, 16],
+        13: [14],
+        14: [15],
+        15: [16],
+        16: [17],
+        17: [18],
+        18: [19],
+    }
+    G = Graph(adj, format='dict_of_lists', name='Dodecahedron', immutable=immutable)
+    G._circle_embedding([19, 0, 1, 2, 3], radius=7, angle=pi / 10)
+    G._circle_embedding([18, 10, 8, 6, 4], radius=4.7, angle=pi / 10)
+    G._circle_embedding([11, 9, 7, 5, 17], radius=3.8, angle=3 * pi / 10)
+    G._circle_embedding([12, 13, 14, 15, 16], radius=1.5, angle=3 * pi / 10)
     return G

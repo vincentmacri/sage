@@ -92,6 +92,7 @@ class RegularSuperCrystals(Category_singleton):
         running ._test_rank() . . . pass
         running ._test_some_elements() . . . pass
     """
+
     def super_categories(self):
         r"""
         EXAMPLES::
@@ -157,6 +158,7 @@ class RegularSuperCrystals(Category_singleton):
         The category of regular crystals constructed by tensor
         product of regular crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """

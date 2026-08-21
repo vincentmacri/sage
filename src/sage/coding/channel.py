@@ -90,7 +90,7 @@ def random_error_vector(n, F, error_positions):
         sage: random_error_vector(5, GF(2), [1,3])
         (0, 1, 0, 1, 0)
     """
-    vect = [F.zero()]*n
+    vect = [F.zero()] * n
     for i in error_positions:
         vect[i] = F._random_nonzero_element()
     return vector(F, vect)
@@ -233,9 +233,11 @@ class Channel(SageObject):
         """
         if message in self.input_space():
             return self.transmit_unsafe(message)
-        raise TypeError("Message must be an element of the input space for the given channel")
+        raise TypeError(
+            "Message must be an element of the input space for the given channel"
+        )
 
-    #Alias for transmit method
+    # Alias for transmit method
     __call__ = transmit
 
     def input_space(self):
@@ -336,10 +338,14 @@ class StaticErrorRateChannel(Channel):
         if isinstance(number_errors, (Integer, int)):
             number_errors = (number_errors, number_errors)
         if not isinstance(number_errors, (tuple, list)):
-            raise ValueError("number_errors must be a tuple, a list, an Integer or a Python int")
+            raise ValueError(
+                "number_errors must be a tuple, a list, an Integer or a Python int"
+            )
         super().__init__(space, space)
         if number_errors[1] > space.dimension():
-            raise ValueError("There might be more errors than the dimension of the input space")
+            raise ValueError(
+                "There might be more errors than the dimension of the input space"
+            )
         self._number_errors = number_errors
 
     def _repr_(self):
@@ -355,8 +361,10 @@ class StaticErrorRateChannel(Channel):
             Vector space of dimension 50 over Finite Field of size 59
         """
         no_err = self.number_errors()
-        return "Static error rate channel creating %s errors, of input and output space %s"\
-                    % (format_interval(no_err), self.input_space())
+        return (
+            "Static error rate channel creating %s errors, of input and output space %s"
+            % (format_interval(no_err), self.input_space())
+        )
 
     def _latex_(self):
         r"""
@@ -371,8 +379,10 @@ class StaticErrorRateChannel(Channel):
             input and output space Vector space of dimension 50 over Finite Field of size 59}
         """
         no_err = self.number_errors()
-        return "\\textnormal{Static error rate channel creating %s errors, of input and output space %s}"\
-                % (format_interval(no_err), self.input_space())
+        return (
+            "\\textnormal{Static error rate channel creating %s errors, of input and output space %s}"
+            % (format_interval(no_err), self.input_space())
+        )
 
     def transmit_unsafe(self, message):
         r"""
@@ -413,7 +423,7 @@ class StaticErrorRateChannel(Channel):
         R = V.base_ring()
         for i in sample(range(V.dimension()), number_errors):
             err = R.random_element()
-            while (w[i] == err):
+            while w[i] == err:
                 err = R.random_element()
             w[i] = err
         return w
@@ -495,17 +505,23 @@ class ErrorErasureChannel(Channel):
         if isinstance(number_errors, (Integer, int)):
             number_errors = (number_errors, number_errors)
         if not isinstance(number_errors, (tuple, list)):
-            raise ValueError("number_errors must be a tuple, a list, an Integer or a Python int")
+            raise ValueError(
+                "number_errors must be a tuple, a list, an Integer or a Python int"
+            )
 
         if isinstance(number_erasures, (Integer, int)):
             number_erasures = (number_erasures, number_erasures)
         if not isinstance(number_erasures, (tuple, list)):
-            raise ValueError("number_erasures must be a tuple, a list, an Integer or a Python int")
+            raise ValueError(
+                "number_erasures must be a tuple, a list, an Integer or a Python int"
+            )
 
         output_space = cartesian_product([space, VectorSpace(GF(2), space.dimension())])
         super().__init__(space, output_space)
         if number_errors[1] + number_erasures[1] > space.dimension():
-            raise ValueError("The total number of errors and erasures cannot exceed the dimension of the input space")
+            raise ValueError(
+                "The total number of errors and erasures cannot exceed the dimension of the input space"
+            )
         self._number_errors = number_errors
         self._number_erasures = number_erasures
 
@@ -525,8 +541,15 @@ class ErrorErasureChannel(Channel):
         """
         no_err = self.number_errors()
         no_era = self.number_erasures()
-        return "Error-and-erasure channel creating %s errors and %s erasures of input space %s and output space %s"\
-                % (format_interval(no_err), format_interval(no_era), self.input_space(), self.output_space())
+        return (
+            "Error-and-erasure channel creating %s errors and %s erasures of input space %s and output space %s"
+            % (
+                format_interval(no_err),
+                format_interval(no_era),
+                self.input_space(),
+                self.output_space(),
+            )
+        )
 
     def _latex_(self):
         r"""
@@ -544,8 +567,15 @@ class ErrorErasureChannel(Channel):
         """
         no_err = self.number_errors()
         no_era = self.number_erasures()
-        return "\\textnormal{Error-and-erasure channel creating %s errors and %s erasures of input space %s and output space %s}"\
-                % (format_interval(no_err), format_interval(no_era), self.input_space(), self.output_space())
+        return (
+            "\\textnormal{Error-and-erasure channel creating %s errors and %s erasures of input space %s and output space %s}"
+            % (
+                format_interval(no_err),
+                format_interval(no_era),
+                self.input_space(),
+                self.output_space(),
+            )
+        )
 
     def transmit_unsafe(self, message):
         r"""
@@ -596,7 +626,7 @@ class ErrorErasureChannel(Channel):
         erasure_positions = errors[number_errors:]
 
         error_vector = random_error_vector(n, V.base_ring(), error_positions)
-        erasure_vector = random_error_vector(n , GF(2), erasure_positions)
+        erasure_vector = random_error_vector(n, GF(2), erasure_positions)
 
         message = message + error_vector
 
@@ -699,7 +729,9 @@ class QarySymmetricChannel(Channel):
         try:
             self.transmit_unsafe(space.random_element())
         except Exception:
-            raise ValueError("space has to be of the form Sigma^n, where Sigma has a random_element() method")
+            raise ValueError(
+                "space has to be of the form Sigma^n, where Sigma has a random_element() method"
+            )
 
     def __repr__(self):
         r"""
@@ -713,8 +745,10 @@ class QarySymmetricChannel(Channel):
             q-ary symmetric channel with error probability 0.300000000000000,
             of input and output space Vector space of dimension 50 over Finite Field of size 59
         """
-        return "q-ary symmetric channel with error probability %s, of input and output space %s"\
-                    % (self.error_probability(), self.input_space())
+        return (
+            "q-ary symmetric channel with error probability %s, of input and output space %s"
+            % (self.error_probability(), self.input_space())
+        )
 
     def _latex_(self):
         r"""
@@ -728,8 +762,10 @@ class QarySymmetricChannel(Channel):
             \textnormal{q-ary symmetric channel with error probability 0.300000000000000,
             of input and output space Vector space of dimension 50 over Finite Field of size 59}
         """
-        return "\\textnormal{q-ary symmetric channel with error probability %s, of input and output space %s}"\
-                    % (self.error_probability(), self.input_space())
+        return (
+            "\\textnormal{q-ary symmetric channel with error probability %s, of input and output space %s}"
+            % (self.error_probability(), self.input_space())
+        )
 
     def transmit_unsafe(self, message):
         r"""
@@ -796,7 +832,7 @@ class QarySymmetricChannel(Channel):
         """
         n = self.input_space().dimension()
         epsilon = self.error_probability()
-        return binomial(n, t) * epsilon**t * (1-epsilon)**(n-t)
+        return binomial(n, t) * epsilon**t * (1 - epsilon) ** (n - t)
 
     def probability_of_at_most_t_errors(self, t):
         r"""
@@ -814,5 +850,4 @@ class QarySymmetricChannel(Channel):
             sage: Chan.probability_of_at_most_t_errors(20)
             0.952236164579467
         """
-        return sum(self.probability_of_exactly_t_errors(i)
-                for i in range(t+1))
+        return sum(self.probability_of_exactly_t_errors(i) for i in range(t + 1))

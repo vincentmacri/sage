@@ -203,6 +203,7 @@ def repr_factored(w, latex_output=False) -> str:
     gens = w.parent().polynomial_ring().gens()
 
     if latex_output:
+
         def exp(e):
             return '^{{{}}}'.format(e) if e > 1 else ''
 
@@ -210,19 +211,26 @@ def repr_factored(w, latex_output=False) -> str:
             total = sum(k)
             if total == 0:
                 return ''
-            denom = ' '.join('\\partial {}{}'.format(latex(g), exp(e))
-                             for e, g in zip(k, gens) if e != 0)
+            denom = ' '.join(
+                '\\partial {}{}'.format(latex(g), exp(e))
+                for e, g in zip(k, gens)
+                if e != 0
+            )
             return ''.join(' \\frac{{\\partial{}}}{{{}}}'.format(exp(total), denom))
+
         repr_x = latex
     else:
+
         def exp(e):
             return '^{}'.format(e) if e > 1 else ''
 
         def repr_dx(k):
-            return ''.join('*d{}{}'.format(g, exp(e)) for e, g in zip(k, gens) if e != 0)
+            return ''.join(
+                '*d{}{}'.format(g, exp(e)) for e, g in zip(k, gens) if e != 0
+            )
+
         repr_x = repr
-    ret = " + ".join("({}){}".format(repr_x(f[k]), repr_dx(k))
-                     for k in sorted(f))
+    ret = " + ".join("({}){}".format(repr_x(f[k]), repr_dx(k)) for k in sorted(f))
     if not ret:
         ret = '0'
     if latex_output:
@@ -299,6 +307,7 @@ class DifferentialWeylAlgebraElement(IndexedFreeModuleElement):
         sage: dx < dy or dy < dx
         True
     """
+
     def _repr_(self) -> str:
         r"""
         Return a string representation of ``self``.
@@ -327,6 +336,7 @@ class DifferentialWeylAlgebraElement(IndexedFreeModuleElement):
                 else:
                     ret += '{}^{}'.format(name, power)
             return ret
+
         return repr_from_monomials(self.list(), term)
 
     def _latex_(self) -> str:
@@ -361,12 +371,17 @@ class DifferentialWeylAlgebraElement(IndexedFreeModuleElement):
                 total = sum(mon)
                 if total == 0:
                     return '1'
-                ret = ' '.join('{}{}'.format(latex(R.gen(i)), exp(power)) if polynomial
-                               else '\\partial {}{}'.format(latex(R.gen(i)), exp(power))
-                               for i, power in enumerate(mon) if power > 0)
+                ret = ' '.join(
+                    '{}{}'.format(latex(R.gen(i)), exp(power))
+                    if polynomial
+                    else '\\partial {}{}'.format(latex(R.gen(i)), exp(power))
+                    for i, power in enumerate(mon)
+                    if power > 0
+                )
                 if not polynomial:
                     return '\\frac{{\\partial{}}}{{{}}}'.format(exp(total), ret)
                 return ret
+
             p = half_term(m[0], True)
             d = half_term(m[1], False)
             if p == '1':  # No polynomial part
@@ -374,6 +389,7 @@ class DifferentialWeylAlgebraElement(IndexedFreeModuleElement):
             if d == '1':  # No differential part
                 return p
             return p + ' ' + d
+
         return repr_from_monomials(self.list(), term, True)
 
     def _mul_(self, other):
@@ -390,6 +406,7 @@ class DifferentialWeylAlgebraElement(IndexedFreeModuleElement):
             dx*dy*dz^2 + x^3*dx^2*dz^2 - z*dx^2*dz^2 - 10*x*dy - 10*x^4*dx
              + 10*x*z*dx - 10*x^3 + 10*z
         """
+
         def add_tuples(x, y):
             return tuple(a + y[i] for i, a in enumerate(x))
 
@@ -494,8 +511,10 @@ class DifferentialWeylAlgebraElement(IndexedFreeModuleElement):
              (((0, 0, 1), (1, 0, 0)), 1),
              (((1, 0, 0), (1, 0, 0)), -3)]
         """
-        return sorted(self._monomial_coefficients.items(),
-                      key=lambda x: (-sum(x[0][1]), x[0][1], -sum(x[0][0]), x[0][0]))
+        return sorted(
+            self._monomial_coefficients.items(),
+            key=lambda x: (-sum(x[0][1]), x[0][1], -sum(x[0][0]), x[0][0]),
+        )
 
     # This is essentially copied from
     #   sage.combinat.free_module.CombinatorialFreeModuleElement
@@ -672,6 +691,7 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
         as a polynomial ring once
         they are considered to be graded rings (algebras).
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names=None, n=None):
         """
@@ -685,6 +705,7 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
             True
         """
         from sage.rings.infinity import PlusInfinity
+
         if n is PlusInfinity():  # hook for Infinite weyl algebra
             return InfGenDifferentialWeylAlgebra(R, names)
         if isinstance(R, (PolynomialRing_generic, MPolynomialRing_base)):
@@ -737,7 +758,8 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
         """
         poly_gens = ', '.join(repr(x) for x in self.variables())
         return "Differential Weyl algebra of polynomials in {} over {}".format(
-            poly_gens, self.base_ring())
+            poly_gens, self.base_ring()
+        )
 
     # add options to class
     class options(GlobalOptions):
@@ -766,11 +788,14 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
 
             sage: D.options._reset()
         """
+
         NAME = 'DifferentialWeylAlgebra'
         module = 'sage.algebras.weyl_algebra'
-        factor_representation = {'default': False,
-                                 'description': 'Controls whether to factor the differentials out or not in the output representations',
-                                 'checker': lambda x: x in [True, False]}
+        factor_representation = {
+            'default': False,
+            'description': 'Controls whether to factor the differentials out or not in the output representations',
+            'checker': lambda x: x in [True, False],
+        }
 
     def _element_constructor_(self, x):
         """
@@ -799,8 +824,9 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
             zero = R.zero()
             return self.element_class(self, {i: R(c) for i, c in x if R(c) != zero})
         x = self._poly_ring(x)
-        return self.element_class(self, {(tuple(m), t): c
-                                         for m, c in x.monomial_coefficients().items()})
+        return self.element_class(
+            self, {(tuple(m), t): c for m, c in x.monomial_coefficients().items()}
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -846,8 +872,10 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
         if self._poly_ring.has_coerce_map_from(R):
             return True
         if isinstance(R, DifferentialWeylAlgebra):
-            return (R.variable_names() == self.variable_names()
-                    and self.base_ring().has_coerce_map_from(R.base_ring()))
+            return (
+                R.variable_names() == self.variable_names()
+                and self.base_ring().has_coerce_map_from(R.base_ring())
+            )
         return super()._coerce_map_from_(R)
 
     def degree_on_basis(self, i):
@@ -958,7 +986,7 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
             sage: W.variables()
             Finite family {'x': x, 'y': y, 'z': z}
         """
-        N = self.variable_names()[:self._n]
+        N = self.variable_names()[: self._n]
         d = {x: self.gen(i) for i, x in enumerate(N)}
         return Family(N, lambda x: d[x])
 
@@ -977,7 +1005,7 @@ class DifferentialWeylAlgebra(UniqueRepresentation, Parent):
             sage: W.differentials()
             Finite family {'dx': dx, 'dy': dy, 'dz': dz}
         """
-        N = self.variable_names()[self._n:]
+        N = self.variable_names()[self._n :]
         d = {x: self.gen(self._n + i) for i, x in enumerate(N)}
         return Family(N, lambda x: d[x])
 
@@ -1135,8 +1163,11 @@ class DifferentialWeylAlgebraAction(Action):
             3*x^2*y^3 + 6*y^3 + y
         """
         f = g * x
-        D = {y: c for (y, dy), c in f.monomial_coefficients(copy=False).items()
-             if all(dyi == 0 for dyi in dy)}
+        D = {
+            y: c
+            for (y, dy), c in f.monomial_coefficients(copy=False).items()
+            if all(dyi == 0 for dyi in dy)
+        }
         return self.right_domain()(D)
 
 
@@ -1173,6 +1204,7 @@ class InfGenDifferentialWeylAlgebraElement(IndexedFreeModuleElement):
         sage: (-4/3) * (x[1] + dx[1])
         -4/3*dx[1] - 4/3*x[1]
     """
+
     def _repr_(self) -> str:
         """
         Return a string representation of ``self``.
@@ -1184,6 +1216,7 @@ class InfGenDifferentialWeylAlgebraElement(IndexedFreeModuleElement):
             sage: dx[1]^2*x[1]^2
             x[1]^2*dx[1]^2 + 4*x[1]*dx[1] + 2
         """
+
         def term(m):
             res = ''
             if not m[0].is_one():
@@ -1193,6 +1226,7 @@ class InfGenDifferentialWeylAlgebraElement(IndexedFreeModuleElement):
                     res += '*'
                 res += m[1]._repr_()
             return res if res != '' else '1'
+
         return repr_from_monomials(self.list(), term)
 
     def _mul_(self, other):
@@ -1217,7 +1251,7 @@ class InfGenDifferentialWeylAlgebraElement(IndexedFreeModuleElement):
             for mr in other._monomial_coefficients:
                 cr = other._monomial_coefficients[mr]
                 # apply derivative terms of ml to mr and simplify
-                cur = [((mr[0], zero_m), cl*cr)]
+                cur = [((mr[0], zero_m), cl * cr)]
                 ldd = ml[1].dict()
 
                 for i in ldd:
@@ -1277,8 +1311,10 @@ class InfGenDifferentialWeylAlgebraElement(IndexedFreeModuleElement):
             sage: p.list()
             [((x[1], dx[1]), 1), ((x[5], 1), 1), ((1, 1), 1)]
         """
-        return sorted(self._monomial_coefficients.items(),
-                      key=lambda x: (-x[0][1].length(), x[0][1], -x[0][0].length(), x[0][0]))
+        return sorted(
+            self._monomial_coefficients.items(),
+            key=lambda x: (-x[0][1].length(), x[0][1], -x[0][0].length(), x[0][0]),
+        )
 
 
 class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
@@ -1358,6 +1394,7 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
         sage: W.differential(1)*R2.base_ring()('y')*W.gen(1)
         y*x[1]*dx[1] + y
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names=None):
         """
@@ -1398,8 +1435,12 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
 
         names = (names[0], 'd' + names[0])
         # could probably get away with only using one copy, but the distinction is nice
-        self._var_index = IndexedFreeAbelianMonoid(NonNegativeIntegers(), prefix=names[0])
-        self._diff_index = IndexedFreeAbelianMonoid(NonNegativeIntegers(), prefix=names[1])
+        self._var_index = IndexedFreeAbelianMonoid(
+            NonNegativeIntegers(), prefix=names[0]
+        )
+        self._diff_index = IndexedFreeAbelianMonoid(
+            NonNegativeIntegers(), prefix=names[1]
+        )
         if R.is_field():
             cat = AlgebrasWithBasis(R).NoZeroDivisors().Super()
         else:
@@ -1436,14 +1477,25 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
         if x in R:
             if x == self.base_ring().zero():
                 return self.zero()
-            return self.element_class(self, {(self._var_index.one(), self._diff_index.one()): x})
+            return self.element_class(
+                self, {(self._var_index.one(), self._diff_index.one()): x}
+            )
 
         if isinstance(x, InfinitePolynomial):
             if x.parent().base_ring() is R:
-                return self.element_class(self, {
-                    (prod(self._var_index.gen(len(m)-i-1)**m[i] for i in range(len(m))),
-                     self._diff_index.one()): R(c) for m, c in x._p.monomial_coefficients().items()
-                })
+                return self.element_class(
+                    self,
+                    {
+                        (
+                            prod(
+                                self._var_index.gen(len(m) - i - 1) ** m[i]
+                                for i in range(len(m))
+                            ),
+                            self._diff_index.one(),
+                        ): R(c)
+                        for m, c in x._p.monomial_coefficients().items()
+                    },
+                )
         if isinstance(x, InfGenDifferentialWeylAlgebraElement):
             if x.parent().base_ring() is R:
                 return self.element_class(self, dict(x))
@@ -1451,10 +1503,13 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
             zero = R.zero()
             return self.element_class(self, {m: R(c) for m, c in x if R(c) != zero})
 
-        return self.element_class(self,
-                                  {(self._var_index(m[0]),
-                                    self._diff_index(m[1])): R(c)
-                                      for m, c in x.items()})
+        return self.element_class(
+            self,
+            {
+                (self._var_index(m[0]), self._diff_index(m[1])): R(c)
+                for m, c in x.items()
+            },
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -1482,12 +1537,17 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
             x[1]*dx[1] + 1
         """
         if isinstance(R, InfGenDifferentialWeylAlgebra):
-            return (self.variable_names() == R.variable_names()
-                    and self.base_ring().has_coerce_map_from(R.base_ring()))
+            return (
+                self.variable_names() == R.variable_names()
+                and self.base_ring().has_coerce_map_from(R.base_ring())
+            )
 
         if isinstance(R, InfinitePolynomialRing_dense):
-            return (self.variable_names()[:-1] == R.variable_names()
-                    and self.base_ring().has_coerce_map_from(R.base_ring()))
+            return self.variable_names()[
+                :-1
+            ] == R.variable_names() and self.base_ring().has_coerce_map_from(
+                R.base_ring()
+            )
 
         return super()._coerce_map_from_(R)
 
@@ -1509,8 +1569,10 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
             sage: W.gen(1) == x[1]
             True
         """
-        return self.element_class(self, {(self._var_index.gen(i),
-                                          self._diff_index.one()): self.base_ring().one()})
+        return self.element_class(
+            self,
+            {(self._var_index.gen(i), self._diff_index.one()): self.base_ring().one()},
+        )
 
     @cached_method
     def polynomial_gens(self):
@@ -1528,8 +1590,10 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
             True
         """
         from sage.sets.non_negative_integers import NonNegativeIntegers
-        return Family(NonNegativeIntegers(), lambda x: self.gen(x),
-                      name=self.variable_names()[0])
+
+        return Family(
+            NonNegativeIntegers(), lambda x: self.gen(x), name=self.variable_names()[0]
+        )
 
     @cached_method
     def gens(self) -> tuple:
@@ -1567,8 +1631,10 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
             sage: W.differential(1) == dx[1]
             True
         """
-        return self.element_class(self, {(self._var_index.one(),
-                                          self._diff_index.gen(i)): self.base_ring().one()})
+        return self.element_class(
+            self,
+            {(self._var_index.one(), self._diff_index.gen(i)): self.base_ring().one()},
+        )
 
     @cached_method
     def differentials(self):
@@ -1586,7 +1652,12 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
             True
         """
         from sage.sets.non_negative_integers import NonNegativeIntegers
-        return Family(NonNegativeIntegers(), lambda x: self.differential(x), name=self.variable_names()[1])
+
+        return Family(
+            NonNegativeIntegers(),
+            lambda x: self.differential(x),
+            name=self.variable_names()[1],
+        )
 
     @cached_method
     def zero(self):
@@ -1636,9 +1707,11 @@ class InfGenDifferentialWeylAlgebra(UniqueRepresentation, Parent):
         """
         index_set = cartesian_product([self._var_index, self._diff_index])
         one = self.base_ring().one()
-        return Family(index_set,
-                      lambda x: self.element_class(self, {(x[0], x[1]): one}),
-                      name='basis map')
+        return Family(
+            index_set,
+            lambda x: self.element_class(self, {(x[0], x[1]): one}),
+            name='basis map',
+        )
 
     def degree_on_basis(self, x):
         """

@@ -42,7 +42,7 @@ from sage.matroids.linear_matroid import (
     RegularMatroid,
     BinaryMatroid,
     TernaryMatroid,
-    QuaternaryMatroid
+    QuaternaryMatroid,
 )
 from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.finite_field_constructor import GF
@@ -289,8 +289,9 @@ def Q6(groundset='abcdef'):
     A = Matrix(F, [[1, 0, 0, 1, 0, 1], [0, 1, 0, 1, 1, x], [0, 0, 1, 0, 1, 1]])
     M = QuaternaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "Q6")
-    pos = dict(zip(groundset, [(1, -1), (-1, 0), (1, 1),
-                               (0, -0.5), (0, 0.5), (1.5, 0)]))
+    pos = dict(
+        zip(groundset, [(1, -1), (-1, 0), (1, 1), (0, -0.5), (0, 0.5), (1.5, 0)])
+    )
     M._fix_positions(pos_dict=pos)
     return M
 
@@ -325,8 +326,12 @@ def P6(groundset=None):
     CC = {2: ['abc'], 3: ['abcdef']}
     M = Matroid(circuit_closures=CC)
     M = _rename_and_relabel(M, "P6", groundset)
-    pos = dict(zip(groundset or 'abcdef',
-                   [(-1, 0), (0, 0), (1, 0), (-0.8, 0.7), (0, 1), (0.8, 0.7)]))
+    pos = dict(
+        zip(
+            groundset or 'abcdef',
+            [(-1, 0), (0, 0), (1, 0), (-0.8, 0.7), (0, 1), (0.8, 0.7)],
+        )
+    )
     M._fix_positions(pos_dict=pos)
     return M
 
@@ -393,13 +398,10 @@ def R6(groundset='abcdef'):
 
     [Oxl2011]_, p. 642.
     """
-    A = Matrix(
-        GF(3), [[1, 0, 0, 1, 1, 1], [0, 1, 0, 1, 2, 1], [0, 0, 1, 1, 0, 2]]
-    )
+    A = Matrix(GF(3), [[1, 0, 0, 1, 1, 1], [0, 1, 0, 1, 2, 1], [0, 0, 1, 1, 0, 2]])
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "R6")
-    pos = dict(zip(groundset, [(-1, 0), (1, 0), (1, 1),
-                               (-1, 1), (0, 0), (0, 1)]))
+    pos = dict(zip(groundset, [(-1, 0), (1, 0), (1, 1), (-1, 1), (0, 0), (0, 1)]))
     M._fix_positions(pos_dict=pos)
     return M
 
@@ -446,8 +448,7 @@ def Fano(groundset='abcdefg'):
     [Oxl2011]_, p. 643.
     """
     A = Matrix(
-        GF(2),
-        [[1, 0, 0, 0, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1], [0, 0, 1, 1, 1, 0, 1]]
+        GF(2), [[1, 0, 0, 0, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1], [0, 0, 1, 1, 1, 0, 1]]
     )
     M = BinaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "Fano")
@@ -521,8 +522,7 @@ def NonFano(groundset='abcdefg'):
     [Oxl2011]_, p. 643-4.
     """
     A = Matrix(
-        GF(3),
-        [[1, 0, 0, 0, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1], [0, 0, 1, 1, 1, 0, 1]]
+        GF(3), [[1, 0, 0, 0, 1, 1, 1], [0, 1, 0, 1, 0, 1, 1], [0, 0, 1, 1, 1, 0, 1]]
     )
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "NonFano")
@@ -593,8 +593,7 @@ def O7(groundset='abcdefg'):
     [Oxl2011]_, p. 644.
     """
     A = Matrix(
-        GF(3),
-        [[1, 0, 0, 1, 1, 1, 1], [0, 1, 0, 0, 1, 2, 2], [0, 0, 1, 1, 0, 1, 0]]
+        GF(3), [[1, 0, 0, 1, 1, 1, 1], [0, 1, 0, 0, 1, 2, 2], [0, 0, 1, 1, 0, 1, 0]]
     )
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "O7")
@@ -626,13 +625,15 @@ def P7(groundset='abcdefg'):
     [Oxl2011]_, p. 644-5.
     """
     A = Matrix(
-        GF(3),
-        [[1, 0, 0, 2, 1, 1, 0], [0, 1, 0, 1, 1, 0, 1], [0, 0, 1, 1, 0, 1, 1]]
+        GF(3), [[1, 0, 0, 2, 1, 1, 0], [0, 1, 0, 1, 1, 0, 1], [0, 0, 1, 1, 0, 1, 1]]
     )
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "P7")
-    pos = dict(zip(groundset, [(0, 1), (-1, -1), (1, -1), (0, 0), (-0.5, 0),
-                               (0.5, 0), (0, -1)]))
+    pos = dict(
+        zip(
+            groundset, [(0, 1), (-1, -1), (1, -1), (0, 0), (-0.5, 0), (0.5, 0), (0, -1)]
+        )
+    )
     M._fix_positions(pos_dict=pos)
     return M
 
@@ -737,8 +738,19 @@ def AG32prime(groundset=None):
     """
     CC = {
         3: [
-            'abfg', 'bcdg', 'defg', 'cdeh', 'aefh', 'abch', 'abed',
-            'cfgh', 'bcef', 'adgh', 'acdf', 'begh', 'aceg',
+            'abfg',
+            'bcdg',
+            'defg',
+            'cdeh',
+            'aefh',
+            'abch',
+            'abed',
+            'cfgh',
+            'bcef',
+            'adgh',
+            'acdf',
+            'begh',
+            'aceg',
         ],
         4: ['abcdefgh'],
     }
@@ -836,9 +848,18 @@ def F8(groundset=None):
     """
     CC = {
         3: [
-            'abfg', 'bcdg', 'defg', 'cdeh',
-            'aefh', 'abch', 'abed', 'cfgh',
-            'bcef', 'adgh', 'acdf', 'aceg',
+            'abfg',
+            'bcdg',
+            'defg',
+            'cdeh',
+            'aefh',
+            'abch',
+            'abed',
+            'cfgh',
+            'bcef',
+            'adgh',
+            'acdf',
+            'aceg',
         ],
         4: ['abcdefgh'],
     }
@@ -886,8 +907,17 @@ def Q8(groundset=None):
     """
     CC = {
         3: [
-            'abfg', 'bcdg', 'defg', 'cdeh', 'aefh', 'abch',
-            'abed', 'cfgh', 'bcef', 'adgh', 'acdf',
+            'abfg',
+            'bcdg',
+            'defg',
+            'cdeh',
+            'aefh',
+            'abch',
+            'abed',
+            'cfgh',
+            'bcef',
+            'adgh',
+            'acdf',
         ],
         4: ['abcdefgh'],
     }
@@ -936,8 +966,10 @@ def L8(groundset=None):
 
     [Oxl2011]_, p. 648.
     """
-    CC = {3: ['abfg', 'bcdg', 'defg', 'cdeh', 'aefh', 'abch', 'aceg', 'bdfh'],
-          4: ['abcdefgh']}
+    CC = {
+        3: ['abfg', 'bcdg', 'defg', 'cdeh', 'aefh', 'abch', 'aceg', 'bdfh'],
+        4: ['abcdefgh'],
+    }
     M = Matroid(circuit_closures=CC)
     M = _rename_and_relabel(M, "L8", groundset)
     return M
@@ -1393,8 +1425,23 @@ def R9(groundset=None):
 
     [Oxl2011]_, p. 654.
     """
-    NSC = ['abc', 'abd', 'acd', 'aef', 'agh', 'bcd', 'bfh', 'bgi',
-           'ceg', 'cfi', 'deh', 'dei', 'dfg', 'dhi', 'ehi']
+    NSC = [
+        'abc',
+        'abd',
+        'acd',
+        'aef',
+        'agh',
+        'bcd',
+        'bfh',
+        'bgi',
+        'ceg',
+        'cfi',
+        'deh',
+        'dei',
+        'dfg',
+        'dhi',
+        'ehi',
+    ]
     M = Matroid(rank=3, nonspanning_circuits=NSC)
     M = _rename_and_relabel(M, "R9", groundset)
     return M
@@ -1705,14 +1752,17 @@ def ExtendedTernaryGolayCode(groundset='abcdefghijkl'):
 
     [Oxl2011]_, p. 658.
     """
-    A = Matrix(GF(3), [
-        [1, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 0],
-        [0, 1, 0, 0, 0, 0, 1, 1, 2, 1, 0, 2],
-        [0, 0, 1, 0, 0, 0, 1, 2, 1, 0, 1, 2],
-        [0, 0, 0, 1, 0, 0, 1, 2, 0, 1, 2, 1],
-        [0, 0, 0, 0, 1, 0, 1, 0, 2, 2, 1, 1],
-        [0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1]
-    ])
+    A = Matrix(
+        GF(3),
+        [
+            [1, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 0],
+            [0, 1, 0, 0, 0, 0, 1, 1, 2, 1, 0, 2],
+            [0, 0, 1, 0, 0, 0, 1, 2, 1, 0, 1, 2],
+            [0, 0, 0, 1, 0, 0, 1, 2, 0, 1, 2, 1],
+            [0, 0, 0, 0, 1, 0, 1, 0, 2, 2, 1, 1],
+            [0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1],
+        ],
+    )
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "Extended Ternary Golay Code")
     return M
@@ -2062,9 +2112,7 @@ def AG(n, q, x=None, groundset=None):
         x = 'x'
     F = GF(q, x)
     P = ProjectiveSpace(n, F)
-    A = Matrix(
-        F, [list(p) for p in list(P) if not list(p)[0] == 0]
-    ).transpose()
+    A = Matrix(F, [list(p) for p in list(P) if not list(p)[0] == 0]).transpose()
     M = Matroid(A)
     M = _rename_and_relabel(M, f'AG({n}, {q})', groundset)
     return M
@@ -2144,6 +2192,7 @@ def Z(r, t=True, groundset=None):
     [Oxl2011]_, p. 661-2.
     """
     from sage.matrix.special import identity_matrix, ones_matrix
+
     Id = Matrix(GF(2), identity_matrix(r))
     J = Matrix(GF(2), ones_matrix(r))
     tip = Matrix(GF(2), ones_matrix(r, 1))
@@ -2257,8 +2306,11 @@ def Spike(r, t=True, C3=[], groundset=None):
     if C3 == [] and r > 3:
         # free spike (can be defined fast through circuit closures)
         lines = [['t', f'x{i}', f'y{i}'] for i in range(1, r + 1)]
-        planes = [['t', f'x{i}', f'y{i}', f'x{j}', f'y{j}']
-                  for i in range(1, r + 1) for j in range(i + 1, r + 1)]
+        planes = [
+            ['t', f'x{i}', f'y{i}', f'x{j}', f'y{j}']
+            for i in range(1, r + 1)
+            for j in range(i + 1, r + 1)
+        ]
         CC = {2: lines, 3: planes, r: [E]}
         M = Matroid(circuit_closures=CC)
     else:
@@ -2350,6 +2402,7 @@ def Theta(n, groundset=None):
     Y = [f'y{i}' for i in range(n)]
 
     import itertools
+
     C = []
     C += list(itertools.combinations(X, 3))
     for i in range(n):
@@ -2498,9 +2551,7 @@ def TippedFree3spike(groundset=None):
     GF4 = GF(4, 'w')
     w = GF4('w')
     A = Matrix(GF4, [[1, 1, 1, 1], [1, w + 1, 0, w], [1, 0, w + 1, w]])
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[0, 3, 5, 1, 4, 6, 2]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[0, 3, 5, 1, 4, 6, 2])
     M = _rename_and_relabel(M, "Tipped rank-3 free spike", groundset)
     return M
 
@@ -2544,12 +2595,8 @@ def TQ8(groundset=None):
     """
     GF4 = GF(4, 'w')
     w = GF4('w')
-    A = Matrix(
-        GF4, [[0, w, 1, 1], [1, 0, w, w + 1], [1, w, 0, w], [1, w + 1, 1, 0]]
-    )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[1, 7, 5, 3, 8, 6, 4, 2]
-    )
+    A = Matrix(GF4, [[0, w, 1, 1], [1, 0, w, w + 1], [1, w, 0, w], [1, w + 1, 1, 0]])
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[1, 7, 5, 3, 8, 6, 4, 2])
     M = _rename_and_relabel(M, "TQ8", groundset)
     return M
 
@@ -2571,9 +2618,7 @@ def P8p(groundset=None):
     """
     GF4 = GF(4, 'w')
     w = GF4('w')
-    A = Matrix(
-        GF4, [[1, 1, 1, w], [1, w + 1, 1, 0], [1, 0, w, w], [0, 1, 1, 1]]
-    )
+    A = Matrix(GF4, [[1, 1, 1, w], [1, w + 1, 1, 0], [1, 0, w, w], [0, 1, 1, 1]])
     M = QuaternaryMatroid(
         reduced_matrix=A, groundset=['a', 'c', 'b', 'f', 'd', 'e', 'g', 'h']
     )
@@ -2598,12 +2643,8 @@ def KP8(groundset=None):
     """
     GF4 = GF(4, 'w')
     w = GF4('w')
-    A = Matrix(
-        GF4, [[0, 1, 1, 1], [1, 0, w, w], [1, 1, 1, 1 + w], [1, 1, 1 + w, 0]]
-    )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[1, 4, 3, 5, 6, 7, 0, 2]
-    )
+    A = Matrix(GF4, [[0, 1, 1, 1], [1, 0, w, w], [1, 1, 1, 1 + w], [1, 1, 1 + w, 0]])
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[1, 4, 3, 5, 6, 7, 0, 2])
     M = _rename_and_relabel(M, "KP8", groundset)
     return M
 
@@ -2625,12 +2666,8 @@ def Sp8(groundset=None):
     """
     GF4 = GF(4, 'w')
     w = GF4('w')
-    A = Matrix(
-        GF4, [[1, 1, w + 1, 0], [1, 1, 0, w + 1], [1, 0, w, w], [0, 1, 1, 1]]
-    )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[1, 2, 3, 5, 4, 6, 7, 8]
-    )
+    A = Matrix(GF4, [[1, 1, w + 1, 0], [1, 1, 0, w + 1], [1, 0, w, w], [0, 1, 1, 1]])
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[1, 2, 3, 5, 4, 6, 7, 8])
     M = _rename_and_relabel(M, "Sp8", groundset)
     return M
 
@@ -2653,9 +2690,7 @@ def Sp8pp(groundset=None):
     GF4 = GF(4, 'w')
     w = GF4('w')
     A = Matrix(GF4, [[1, w, 1, 0], [1, 1, 1, 1], [w, 0, 1, w], [0, w, 1, 1]])
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[1, 5, 6, 7, 2, 3, 4, 8]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[1, 5, 6, 7, 2, 3, 4, 8])
     M = _rename_and_relabel(M, "Sp8=", groundset)
     return M
 
@@ -2677,9 +2712,7 @@ def LP8(groundset=None):
     """
     GF4 = GF(4, 'w')
     w = GF4('w')
-    A = Matrix(
-        GF4, [[1, 1, 1, 1], [w + 1, w, 0, 1], [1, 0, w + 1, 1], [0, w, w, 1]]
-    )
+    A = Matrix(GF4, [[1, 1, 1, 1], [w + 1, w, 0, 1], [1, 0, w + 1, 1], [0, w, w, 1]])
     M = QuaternaryMatroid(
         reduced_matrix=A, groundset=['a', 'b', 'd', 'e', 'c', 'f', 'g', 'h']
     )
@@ -2704,12 +2737,8 @@ def WQ8(groundset=None):
     """
     GF4 = GF(4, 'w')
     w = GF4('w')
-    A = Matrix(
-        GF4, [[1, 0, 1, w + 1], [1, 1, 1, 1], [w, 1, 1, 0], [0, w, 1, 1]]
-    )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[0, 1, 3, 4, 2, 5, 6, 7]
-    )
+    A = Matrix(GF4, [[1, 0, 1, w + 1], [1, 1, 1, 1], [w, 1, 1, 0], [0, w, 1, 1]])
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[0, 1, 3, 4, 2, 5, 6, 7])
     M = _rename_and_relabel(M, "WQ8", groundset)
     return M
 
@@ -2744,13 +2773,10 @@ def BB9(groundset=None):
     GF4 = GF(4, 'w')
     w = GF4('w')
     A = Matrix(
-        GF4, [[1, 0, 1, 1, 1, 1],
-              [0, 1, w, 1, 0, w],
-              [w + 1, 1, w + 1, 1, w, 0]]
+        GF4, [[1, 0, 1, 1, 1, 1], [0, 1, w, 1, 0, w], [w + 1, 1, w + 1, 1, w, 0]]
     )
     M = QuaternaryMatroid(
-        reduced_matrix=A,
-        groundset=['i', 'b', 'd', 'j', 'h', 'f', 'c', 'a', 'k']
+        reduced_matrix=A, groundset=['i', 'b', 'd', 'j', 'h', 'f', 'c', 'a', 'k']
     )
     M = _rename_and_relabel(M, "BB9", groundset)
     return M
@@ -2779,14 +2805,10 @@ def TQ9(groundset=None):
     GF4 = GF(4, 'w')
     w = GF4('w')
     A = Matrix(
-        GF4, [[1, 0, w, 1, 1],
-              [w + 1, 0, 0, w, 1],
-              [1, w, 0, 0, w + 1],
-              [1, 1, 1, 1, 0]],
+        GF4,
+        [[1, 0, w, 1, 1], [w + 1, 0, 0, w, 1], [1, w, 0, 0, w + 1], [1, 1, 1, 1, 0]],
     )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[1, 4, 6, 0, 2, 5, 3, 7, 8]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[1, 4, 6, 0, 2, 5, 3, 7, 8])
     M = _rename_and_relabel(M, "TQ9", groundset)
     return M
 
@@ -2823,9 +2845,7 @@ def TQ9p(groundset=None):
             [0, 1, w + 1, w + 1, 0],
         ],
     )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[1, 4, 7, 8, 0, 6, 5, 2, 3]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[1, 4, 7, 8, 0, 6, 5, 2, 3])
     M = _rename_and_relabel(M, "TQ9'", groundset)
     return M
 
@@ -2848,10 +2868,7 @@ def M8591(groundset=None):
     GF4 = GF(4, 'w')
     w = GF4('w')
     A = Matrix(
-        GF4, [[1, 1, 0, w, 1],
-              [0, 1, 1, w, w + 1],
-              [1, 0, w, w, 1],
-              [0, 0, 1, 1, 0]]
+        GF4, [[1, 1, 0, w, 1], [0, 1, 1, w, w + 1], [1, 0, w, w, 1], [0, 0, 1, 1, 0]]
     )
     M = QuaternaryMatroid(reduced_matrix=A)
     M = _rename_and_relabel(M, "M8591", groundset)
@@ -2885,14 +2902,10 @@ def PP9(groundset=None):
     GF4 = GF(4, 'w')
     w = GF4('w')
     A = Matrix(
-        GF4, [[1, 1, 1, w, w],
-              [1, 1 + w, 1, 0, w],
-              [1, 0, w, w, w],
-              [0, 1, 1, 1, 1]]
+        GF4, [[1, 1, 1, w, w], [1, 1 + w, 1, 0, w], [1, 0, w, w, w], [0, 1, 1, 1, 1]]
     )
     M = QuaternaryMatroid(
-        reduced_matrix=A,
-        groundset=['a', 'c', 'b', 'f', 'd', 'e', 'g', 'h', 'z']
+        reduced_matrix=A, groundset=['a', 'c', 'b', 'f', 'd', 'e', 'g', 'h', 'z']
     )
     M = _rename_and_relabel(M, "PP9", groundset)
     return M
@@ -2929,8 +2942,7 @@ def BB9gDY(groundset=None):
     )
     # M9573
     M = QuaternaryMatroid(
-        reduced_matrix=A,
-        groundset=['c', 'd', 'i', 'f', 'h', 'a', 'j', 'k', 'b']
+        reduced_matrix=A, groundset=['c', 'd', 'i', 'f', 'h', 'a', 'j', 'k', 'b']
     )
     M = _rename_and_relabel(M, "Segment cosegment exchange on BB9", groundset)
     return M
@@ -2954,13 +2966,9 @@ def A9(groundset=None):
     GF4 = GF(4, 'w')
     w = GF4('w')
     A = Matrix(
-        GF4, [[w + 1, 1, w, w, w, w],
-              [0, 1, 1, w + 1, 0, w],
-              [w, 0, 1, w + 1, w, 1]]
+        GF4, [[w + 1, 1, w, w, w, w], [0, 1, 1, w + 1, 0, w], [w, 0, 1, w + 1, w, 1]]
     )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[6, 5, 4, 1, 2, 3, 7, 8, 0]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[6, 5, 4, 1, 2, 3, 7, 8, 0])
     M = _rename_and_relabel(M, "A9", groundset)
     return M
 
@@ -2992,8 +3000,7 @@ def FN9(groundset=None):
     )
     # M3209
     M = QuaternaryMatroid(
-        reduced_matrix=A,
-        groundset=['b0', 'a', 'y', 'z', 'x', "c0", 'b', 'c', 'a0']
+        reduced_matrix=A, groundset=['b0', 'a', 'y', 'z', 'x', "c0", 'b', 'c', 'a0']
     )
     M = _rename_and_relabel(M, "FN9", groundset)
     return M
@@ -3059,9 +3066,7 @@ def KR9(groundset=None):
             [w + 1, w + 1, w, w + 1, 0],
         ],
     )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[2, 4, 0, 6, 1, 5, 3, 7, 8]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[2, 4, 0, 6, 1, 5, 3, 7, 8])
     M = _rename_and_relabel(M, "KR9", groundset)
     return M
 
@@ -3098,9 +3103,7 @@ def KQ9(groundset=None):
             [1, 1, w + 1, 0, w + 1],
         ],
     )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[5, 0, 4, 3, 2, 6, 8, 7, 1]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[5, 0, 4, 3, 2, 6, 8, 7, 1])
     M = _rename_and_relabel(M, "KQ9", groundset)
     return M
 
@@ -3168,9 +3171,7 @@ def FF10(groundset=None):
             [1 + w, 1 + w, w, w, 1 + w],
         ],
     )
-    M = QuaternaryMatroid(
-        reduced_matrix=A, groundset=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    )
+    M = QuaternaryMatroid(reduced_matrix=A, groundset=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     M = _rename_and_relabel(M, "FF10", groundset)
     return M
 
@@ -3401,8 +3402,7 @@ def PP10(groundset=None):
         ],
     )
     M = QuaternaryMatroid(
-        reduced_matrix=A,
-        groundset=['z', 'f', 'c', 'g', 'e', 'b', 'a', 'h', 'd', 'x']
+        reduced_matrix=A, groundset=['z', 'f', 'c', 'g', 'e', 'b', 'a', 'h', 'd', 'x']
     )
     M = _rename_and_relabel(M, "PP10", groundset)
     return M
@@ -4297,12 +4297,12 @@ def NestOfTwistedCubes(groundset=None):
         sage: M.is_3connected()
         True
     """
+
     # utility function
     def complement(groundset, subset):
         return list(set(groundset).difference(subset))
 
-    gs = ["e1", "e2", "e3", "e4", "e5", "e6",
-          "f1", "f2", "f3", "f4", "f5", "f6"]
+    gs = ["e1", "e2", "e3", "e4", "e5", "e6", "f1", "f2", "f3", "f4", "f5", "f6"]
     M = Matroid(
         groundset=gs,
         circuit_closures={
@@ -4731,10 +4731,7 @@ def NonVamos(groundset=None):
 
     [Oxl2011]_, p. 72, 84.
     """
-    CC = {
-        3: ['abcd', 'abef', 'cdef', 'abgh', 'cdgh', 'efgh'],
-        4: ['abcdefgh']
-    }
+    CC = {3: ['abcd', 'abef', 'cdef', 'abgh', 'cdgh', 'efgh'], 4: ['abcdefgh']}
     M = Matroid(circuit_closures=CC)
     M = _rename_and_relabel(M, "NonVamos", groundset)
     return M
@@ -4758,12 +4755,15 @@ def NotP8(groundset='abcdefgh'):
 
     [Oxl1992]_, p.512 (the first edition).
     """
-    A = Matrix(GF(3), [
-        [1, 0, 0, 0, 0, 1, 1, -1],
-        [0, 1, 0, 0, 1, 0, 1, 1],
-        [0, 0, 1, 0, 1, 1, 0, 1],
-        [0, 0, 0, 1, -1, 1, 1, 1]
-    ])
+    A = Matrix(
+        GF(3),
+        [
+            [1, 0, 0, 0, 0, 1, 1, -1],
+            [0, 1, 0, 0, 1, 0, 1, 1],
+            [0, 0, 1, 0, 1, 1, 0, 1],
+            [0, 0, 0, 1, -1, 1, 1, 1],
+        ],
+    )
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "NotP8")
     return M
@@ -4791,8 +4791,7 @@ def AG23minus(groundset=None):
 
     [Oxl2011]_, p. 653.
     """
-    CC = {2: ['abc', 'ceh', 'fgh', 'adf', 'aeg', 'cdg', 'bdh', 'bef'],
-          3: ['abcdefgh']}
+    CC = {2: ['abc', 'ceh', 'fgh', 'adf', 'aeg', 'cdg', 'bdh', 'bef'], 3: ['abcdefgh']}
     M = Matroid(circuit_closures=CC)
     M = _rename_and_relabel(M, "AG23minus", groundset)
     return M
@@ -4814,12 +4813,15 @@ def P9(groundset='abcdefghi'):
     This is the matroid referred to as `P_9` by Oxley in his paper "The binary
     matroids with no 4-wheel minor", [Oxl1987]_.
     """
-    A = Matrix(GF(2), [
-        [1, 0, 0, 0, 1, 0, 0, 1, 1],
-        [0, 1, 0, 0, 1, 1, 0, 0, 1],
-        [0, 0, 1, 0, 0, 1, 1, 0, 1],
-        [0, 0, 0, 1, 0, 0, 1, 1, 0]
-    ])
+    A = Matrix(
+        GF(2),
+        [
+            [1, 0, 0, 0, 1, 0, 0, 1, 1],
+            [0, 1, 0, 0, 1, 1, 0, 0, 1],
+            [0, 0, 1, 0, 0, 1, 1, 0, 1],
+            [0, 0, 0, 1, 0, 0, 1, 1, 0],
+        ],
+    )
     M = BinaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "P9")
     return M
@@ -4841,8 +4843,21 @@ def R9A(groundset=None):
         sage: M.is_valid()
         True
     """
-    NSC = ['abch', 'abde', 'abfi', 'acdi', 'aceg', 'adgh', 'aefh', 'bcdf',
-           'bdhi', 'begi', 'cehi', 'defi', 'fghi']
+    NSC = [
+        'abch',
+        'abde',
+        'abfi',
+        'acdi',
+        'aceg',
+        'adgh',
+        'aefh',
+        'bcdf',
+        'bdhi',
+        'begi',
+        'cehi',
+        'defi',
+        'fghi',
+    ]
     M = Matroid(rank=4, nonspanning_circuits=NSC)
     M = _rename_and_relabel(M, "R9A", groundset)
     return M
@@ -4864,8 +4879,21 @@ def R9B(groundset=None):
         sage: M.is_valid() and M.is_paving()
         True
     """
-    NSC = ['abde', 'bcdf', 'aceg', 'abch', 'befh', 'cdgh', 'bcei', 'adfi',
-           'abgi', 'degi', 'bdhi', 'aehi', 'fghi']
+    NSC = [
+        'abde',
+        'bcdf',
+        'aceg',
+        'abch',
+        'befh',
+        'cdgh',
+        'bcei',
+        'adfi',
+        'abgi',
+        'degi',
+        'bdhi',
+        'aehi',
+        'fghi',
+    ]
     M = Matroid(rank=4, nonspanning_circuits=NSC)
     M = _rename_and_relabel(M, "R9B", groundset)
     return M
@@ -4887,9 +4915,26 @@ def Block_9_4(groundset=None):
         sage: BD.is_t_design(return_parameters=True)
         (True, (2, 9, 4, 3))
     """
-    NSC = ['abcd', 'acef', 'bdef', 'cdeg', 'abfg', 'adeh', 'bcfh', 'acgh',
-           'begh', 'dfgh', 'abei', 'cdfi', 'bcgi', 'adgi', 'efgi', 'bdhi',
-           'cehi', 'afhi']
+    NSC = [
+        'abcd',
+        'acef',
+        'bdef',
+        'cdeg',
+        'abfg',
+        'adeh',
+        'bcfh',
+        'acgh',
+        'begh',
+        'dfgh',
+        'abei',
+        'cdfi',
+        'bcgi',
+        'adgi',
+        'efgi',
+        'bdhi',
+        'cehi',
+        'afhi',
+    ]
     M = Matroid(rank=4, nonspanning_circuits=NSC)
     M = _rename_and_relabel(M, "Block(9, 4)", groundset)
     return M
@@ -4913,8 +4958,7 @@ def TicTacToe(groundset=None):
 
     [Hoc]_
     """
-    NSC = ['abcdg', 'adefg', 'abceh', 'abcfi', 'cdefi', 'adghi', 'beghi',
-           'cfghi']
+    NSC = ['abcdg', 'adefg', 'abceh', 'abcfi', 'cdefi', 'adghi', 'beghi', 'cfghi']
     M = Matroid(rank=5, nonspanning_circuits=NSC)
     M = _rename_and_relabel(M, "TicTacToe", groundset)
     return M
@@ -4939,13 +4983,16 @@ def N1(groundset='abcdefghij'):
 
     [Oxl2011]_, p. 554.
     """
-    A = Matrix(GF(3), [
-        [1, 0, 0, 0, 0, 2, 0, 0, 1, 1],
-        [0, 1, 0, 0, 0, 1, 2, 0, 0, 1],
-        [0, 0, 1, 0, 0, 0, 1, 2, 0, 1],
-        [0, 0, 0, 1, 0, 0, 0, 1, 2, 2],
-        [0, 0, 0, 0, 1, 1, 1, 1, 2, 0]
-    ])
+    A = Matrix(
+        GF(3),
+        [
+            [1, 0, 0, 0, 0, 2, 0, 0, 1, 1],
+            [0, 1, 0, 0, 0, 1, 2, 0, 0, 1],
+            [0, 0, 1, 0, 0, 0, 1, 2, 0, 1],
+            [0, 0, 0, 1, 0, 0, 0, 1, 2, 2],
+            [0, 0, 0, 0, 1, 1, 1, 1, 2, 0],
+        ],
+    )
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "N1")
     return M
@@ -4967,12 +5014,44 @@ def Block_10_5(groundset=None):
         sage: BD.is_t_design(return_parameters=True)
         (True, (3, 10, 5, 3))
     """
-    NSC = ['abcde', 'acdfg', 'bdefg', 'bcdfh', 'abefh', 'abcgh', 'adegh',
-           'cefgh', 'bcefi', 'adefi', 'bcdgi', 'acegi', 'abfgi', 'abdhi',
-           'cdehi', 'acfhi', 'beghi', 'dfghi', 'abdfj', 'acefj', 'abegj',
-           'cdegj', 'bcfgj', 'acdhj', 'bcehj', 'defhj', 'bdghj', 'afghj',
-           'abcij', 'bdeij', 'cdfij', 'adgij', 'efgij', 'aehij', 'bfhij',
-           'cghij']
+    NSC = [
+        'abcde',
+        'acdfg',
+        'bdefg',
+        'bcdfh',
+        'abefh',
+        'abcgh',
+        'adegh',
+        'cefgh',
+        'bcefi',
+        'adefi',
+        'bcdgi',
+        'acegi',
+        'abfgi',
+        'abdhi',
+        'cdehi',
+        'acfhi',
+        'beghi',
+        'dfghi',
+        'abdfj',
+        'acefj',
+        'abegj',
+        'cdegj',
+        'bcfgj',
+        'acdhj',
+        'bcehj',
+        'defhj',
+        'bdghj',
+        'afghj',
+        'abcij',
+        'bdeij',
+        'cdfij',
+        'adgij',
+        'efgij',
+        'aehij',
+        'bfhij',
+        'cghij',
+    ]
     M = Matroid(rank=5, nonspanning_circuits=NSC)
     M = _rename_and_relabel(M, "Block(10, 5)", groundset)
     return M
@@ -5008,13 +5087,16 @@ def Q10(groundset='abcdefghij'):
     """
     F = GF(4, 'x')
     x = F.gens()[0]
-    A = Matrix(F, [
-        [1, 0, 0, 0, 0, 1, x, 0, 0, x + 1],
-        [0, 1, 0, 0, 0, x + 1, 1, x, 0, 0],
-        [0, 0, 1, 0, 0, 0, x + 1, 1, x, 0],
-        [0, 0, 0, 1, 0, 0, 0, x + 1, 1, x],
-        [0, 0, 0, 0, 1, x, 0, 0, x + 1, 1]
-    ])
+    A = Matrix(
+        F,
+        [
+            [1, 0, 0, 0, 0, 1, x, 0, 0, x + 1],
+            [0, 1, 0, 0, 0, x + 1, 1, x, 0, 0],
+            [0, 0, 1, 0, 0, 0, x + 1, 1, x, 0],
+            [0, 0, 0, 1, 0, 0, 0, x + 1, 1, x],
+            [0, 0, 0, 0, 1, x, 0, 0, x + 1, 1],
+        ],
+    )
     M = QuaternaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "Q10")
     return M
@@ -5038,23 +5120,53 @@ def BetsyRoss(groundset=None):
         sage: M.is_valid()
         True
     """
-    NSC = ['acf', 'acg', 'adi', 'adj', 'afg', 'ahk', 'aij', 'bdg', 'bdh',
-           'bef', 'bej', 'bfj', 'bgh', 'bik', 'ceh', 'cei', 'cfg', 'chi',
-           'cjk', 'dfk', 'dgh', 'dij', 'efj', 'egk', 'ehi']
+    NSC = [
+        'acf',
+        'acg',
+        'adi',
+        'adj',
+        'afg',
+        'ahk',
+        'aij',
+        'bdg',
+        'bdh',
+        'bef',
+        'bej',
+        'bfj',
+        'bgh',
+        'bik',
+        'ceh',
+        'cei',
+        'cfg',
+        'chi',
+        'cjk',
+        'dfk',
+        'dgh',
+        'dij',
+        'efj',
+        'egk',
+        'ehi',
+    ]
     M = Matroid(rank=3, nonspanning_circuits=NSC)
     M = _rename_and_relabel(M, "BetsyRoss", groundset)
-    pos = dict(zip(groundset or 'abcdefghijk',
-                   [(0, 1.61000000000000),
-                    (1.53120099123520, 0.497517360943665),
-                    (0.946334256190882, -1.30251736094367),
-                    (-0.946334256190882, -1.30251736094367),
-                    (-1.53120099123520, 0.497517360943665),
-                    (0.365084007635076, 0.502495027562079),
-                    (0.590718333102580, -0.191936021350899),
-                    (0, -0.621118012422360),
-                    (-0.590718333102580, -0.191936021350899),
-                    (-0.365084007635076, 0.502495027562079),
-                    (0, 0)]))
+    pos = dict(
+        zip(
+            groundset or 'abcdefghijk',
+            [
+                (0, 1.61000000000000),
+                (1.53120099123520, 0.497517360943665),
+                (0.946334256190882, -1.30251736094367),
+                (-0.946334256190882, -1.30251736094367),
+                (-1.53120099123520, 0.497517360943665),
+                (0.365084007635076, 0.502495027562079),
+                (0.590718333102580, -0.191936021350899),
+                (0, -0.621118012422360),
+                (-0.590718333102580, -0.191936021350899),
+                (-0.365084007635076, 0.502495027562079),
+                (0, 0),
+            ],
+        )
+    )
     M._fix_positions(pos_dict=pos)
     return M
 
@@ -5078,14 +5190,17 @@ def N2(groundset='abcdefghijkl'):
 
     [Oxl2011]_, p. 554.
     """
-    A = Matrix(GF(3), [
-        [1, 0, 0, 0, 0, 0, 2, 0, 0, 1, 1, 1],
-        [0, 1, 0, 0, 0, 0, 1, 2, 0, 0, 0, 1],
-        [0, 0, 1, 0, 0, 0, 0, 1, 2, 0, 0, 1],
-        [0, 0, 0, 1, 0, 0, 0, 0, 1, 2, 1, 0],
-        [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1],
-        [0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 0, 1]
-    ])
+    A = Matrix(
+        GF(3),
+        [
+            [1, 0, 0, 0, 0, 0, 2, 0, 0, 1, 1, 1],
+            [0, 1, 0, 0, 0, 0, 1, 2, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0, 0, 0, 1, 2, 0, 0, 1],
+            [0, 0, 0, 1, 0, 0, 0, 0, 1, 2, 1, 0],
+            [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1],
+            [0, 0, 0, 0, 0, 1, 1, 2, 2, 1, 0, 1],
+        ],
+    )
     M = TernaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "N2")
     return M
@@ -5111,16 +5226,19 @@ def D16(groundset='abcdefghijklmnop'):  # A.K.A. the Carolyn Chun Matroid
 
     [CMO2012]_
     """
-    A = Matrix(GF(2), [
-        [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0],
-        [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-        [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1],
-        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1],
-        [0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0]
-    ])
+    A = Matrix(
+        GF(2),
+        [
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+            [0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1],
+            [0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0],
+        ],
+    )
     M = BinaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "D16")
     return M
@@ -5144,16 +5262,19 @@ def Terrahawk(groundset='abcdefghijklmnop'):  # aka the Dillon Mayhew Matroid
 
     [CMO2011]_
     """
-    A = Matrix(GF(2), [
-        [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-        [0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0]
-    ])
+    A = Matrix(
+        GF(2),
+        [
+            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0],
+        ],
+    )
     M = BinaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "Terrahawk")
     return M
@@ -5177,32 +5298,23 @@ def ExtendedBinaryGolayCode(groundset='abcdefghijklmnopqrstuvwx'):
 
         :class:`GolayCode <sage.coding.golay_code.GolayCode>`
     """
-    A = Matrix(GF(2), [
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0],
-        [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1],
-        [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0],
-        [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0],
-        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0],
-        [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-         0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-         0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-         0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-         0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-         0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    ])
+    A = Matrix(
+        GF(2),
+        [
+            [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0],
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ],
+    )
     M = BinaryMatroid(A, groundset)
     M = _rename_and_relabel(M, "Extended Binary Golay Code")
     return M
@@ -5239,8 +5351,7 @@ def CompleteGraphic(n, groundset=None):
     from sage.graphs.graph_generators import graphs
 
     M = Matroid(
-        groundset=list(range((n * (n - 1)) // 2)),
-        graph=graphs.CompleteGraph(n)
+        groundset=list(range((n * (n - 1)) // 2)), graph=graphs.CompleteGraph(n)
     )
     M = _rename_and_relabel(M, f'M(K{n})', groundset)
     return M
@@ -5267,8 +5378,8 @@ def _rename_and_relabel(M, name=None, groundset=None):
     if groundset is not None:
         if len(groundset) != len(M.groundset()):
             raise ValueError(
-                "the groundset should be of size %s (%s given)" %
-                (len(M.groundset()), len(groundset))
+                "the groundset should be of size %s (%s given)"
+                % (len(M.groundset()), len(groundset))
             )
         M = M.relabel(dict(zip(sorted(M.groundset()), groundset)))
 

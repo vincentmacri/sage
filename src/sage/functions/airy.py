@@ -55,8 +55,7 @@ from sage.symbolic.function import BuiltinFunction
 lazy_import('sage.symbolic.ring', 'SR')
 
 lazy_import('sage.libs.mpmath.utils', 'call', as_='_mpmath_utils_call')
-lazy_import('mpmath', ['airyai', 'airybi'],
-            as_=['_mpmath_airyai', '_mpmath_airybi'])
+lazy_import('mpmath', ['airyai', 'airybi'], as_=['_mpmath_airyai', '_mpmath_airybi'])
 
 
 class FunctionAiryAiGeneral(BuiltinFunction):
@@ -94,8 +93,9 @@ class FunctionAiryAiGeneral(BuiltinFunction):
             sage: derivative(airy_ai_general(n, x), x)
             airy_ai(n + 1, x)
         """
-        BuiltinFunction.__init__(self, "airy_ai", nargs=2,
-                                 latex_name=r"\operatorname{Ai}")
+        BuiltinFunction.__init__(
+            self, "airy_ai", nargs=2, latex_name=r"\operatorname{Ai}"
+        )
 
     def _derivative_(self, alpha, x, diff_param=None):
         """
@@ -112,8 +112,9 @@ class FunctionAiryAiGeneral(BuiltinFunction):
              in the first parameter
         """
         if diff_param == 0:
-            raise NotImplementedError("cannot differentiate airy_ai in the"
-                                      " first parameter")
+            raise NotImplementedError(
+                "cannot differentiate airy_ai in the first parameter"
+            )
         return airy_ai_general(alpha + 1, x)
 
     def _eval_(self, alpha, x):
@@ -127,8 +128,7 @@ class FunctionAiryAiGeneral(BuiltinFunction):
             sage: airy_ai_general(n, 1.0)                                               # needs sage.symbolic
             airy_ai(n, 1.00000000000000)
         """
-        if not isinstance(x, Expression) and \
-                not isinstance(alpha, Expression):
+        if not isinstance(x, Expression) and not isinstance(alpha, Expression):
             if self._is_numerical(x):
                 return self._evalf_(alpha, x)
             if alpha == 0:
@@ -136,7 +136,7 @@ class FunctionAiryAiGeneral(BuiltinFunction):
             if alpha == 1:
                 return airy_ai_prime(x)
             if alpha == 2:
-                return x*airy_ai_simple(x)
+                return x * airy_ai_simple(x)
         return None
 
     def _evalf_(self, alpha, x, parent=None, algorithm=None):
@@ -147,8 +147,7 @@ class FunctionAiryAiGeneral(BuiltinFunction):
             sage: airy_ai_general(-2, 1.0)                                              # needs mpmath
             0.136645379421096
         """
-        return _mpmath_utils_call(_mpmath_airyai, x, derivative=alpha,
-                                  parent=parent)
+        return _mpmath_utils_call(_mpmath_airyai, x, derivative=alpha, parent=parent)
 
 
 class FunctionAiryAiSimple(BuiltinFunction):
@@ -164,13 +163,18 @@ class FunctionAiryAiSimple(BuiltinFunction):
             sage: airy_ai_simple(x)._sympy_()                                           # needs sage.symbolic
             airyai(x)
         """
-        BuiltinFunction.__init__(self, 'airy_ai',
-                                 latex_name=r"\operatorname{Ai}",
-                                 conversions=dict(mathematica='AiryAi',
-                                                  maxima='airy_ai',
-                                                  sympy='airyai',
-                                                  fricas='airyAi',
-                                                  giac='Airy_Ai'))
+        BuiltinFunction.__init__(
+            self,
+            'airy_ai',
+            latex_name=r"\operatorname{Ai}",
+            conversions=dict(
+                mathematica='AiryAi',
+                maxima='airy_ai',
+                sympy='airyai',
+                fricas='airyAi',
+                giac='Airy_Ai',
+            ),
+        )
 
     def _derivative_(self, x, diff_param=None):
         """
@@ -197,6 +201,7 @@ class FunctionAiryAiSimple(BuiltinFunction):
             0.331493305432141 - 0.317449858968444*I
         """
         from .gamma import gamma
+
         if x == 0:
             r = ZZ(2) / 3
             return 1 / (3 ** (r) * gamma(r))
@@ -236,11 +241,14 @@ class FunctionAiryAiSimple(BuiltinFunction):
         parent = kwargs.get('parent')
         if algorithm == 'scipy':
             if hasattr(parent, 'prec') and parent.prec() > 53:
-                raise NotImplementedError("%s not implemented for precision > 53" % self.name())
+                raise NotImplementedError(
+                    "%s not implemented for precision > 53" % self.name()
+                )
             from sage.rings.real_mpfr import RR
             from sage.rings.cc import CC
             from sage.functions.other import real, imag
             from scipy.special import airy
+
             if x in RR:
                 y = airy(real(x))[0]
                 if parent is None:
@@ -272,12 +280,17 @@ class FunctionAiryAiPrime(BuiltinFunction):
             sage: airy_ai_prime(x)._sympy_()                                            # needs sympy
             airyaiprime(x)
         """
-        BuiltinFunction.__init__(self, 'airy_ai_prime',
-                                 latex_name=r"\operatorname{Ai}'",
-                                 conversions=dict(mathematica='AiryAiPrime',
-                                                  maxima='airy_dai',
-                                                  sympy='airyaiprime',
-                                                  fricas='airyAiPrime'))
+        BuiltinFunction.__init__(
+            self,
+            'airy_ai_prime',
+            latex_name=r"\operatorname{Ai}'",
+            conversions=dict(
+                mathematica='AiryAiPrime',
+                maxima='airy_dai',
+                sympy='airyaiprime',
+                fricas='airyAiPrime',
+            ),
+        )
 
     def _derivative_(self, x, diff_param=None):
         """
@@ -298,6 +311,7 @@ class FunctionAiryAiPrime(BuiltinFunction):
             -0.258819403792807
         """
         from .gamma import gamma
+
         if x == 0:
             r = ZZ(1) / 3
             return -1 / (3 ** (r) * gamma(r))
@@ -335,11 +349,14 @@ class FunctionAiryAiPrime(BuiltinFunction):
         parent = kwargs.get('parent', None)
         if algorithm == 'scipy':
             if hasattr(parent, 'prec') and parent.prec() > 53:
-                raise NotImplementedError("%s not implemented for precision > 53" % self.name())
+                raise NotImplementedError(
+                    "%s not implemented for precision > 53" % self.name()
+                )
             from sage.rings.real_mpfr import RR
             from sage.rings.cc import CC
             from sage.functions.other import real, imag
             from scipy.special import airy
+
             if x in RR:
                 y = airy(real(x))[1]
                 if parent is None:
@@ -350,8 +367,7 @@ class FunctionAiryAiPrime(BuiltinFunction):
                     return CC(y)
             return parent(y)
         if algorithm == 'mpmath':
-            return _mpmath_utils_call(_mpmath_airyai, x, derivative=1,
-                                     parent=parent)
+            return _mpmath_utils_call(_mpmath_airyai, x, derivative=1, parent=parent)
         raise ValueError("unknown algorithm '%s'" % algorithm)
 
 
@@ -489,6 +505,7 @@ def airy_ai(alpha, x=None, hold_derivative=True, **kwds):
         return derivative(airy_ai_simple(v, **kwds), v, alpha).subs({v: x})
     return airy_ai_general(alpha, x, **kwds)
 
+
 ########################################################################
 ########################################################################
 
@@ -528,8 +545,9 @@ class FunctionAiryBiGeneral(BuiltinFunction):
             sage: derivative(airy_bi_general(n, x), x)
             airy_bi(n + 1, x)
         """
-        BuiltinFunction.__init__(self, "airy_bi", nargs=2,
-                                 latex_name=r"\operatorname{Bi}")
+        BuiltinFunction.__init__(
+            self, "airy_bi", nargs=2, latex_name=r"\operatorname{Bi}"
+        )
 
     def _derivative_(self, alpha, x, diff_param=None):
         """
@@ -546,8 +564,9 @@ class FunctionAiryBiGeneral(BuiltinFunction):
              in the first parameter
         """
         if diff_param == 0:
-            raise NotImplementedError("cannot differentiate airy_bi in the"
-                                      " first parameter")
+            raise NotImplementedError(
+                "cannot differentiate airy_bi in the first parameter"
+            )
         return airy_bi_general(alpha + 1, x)
 
     def _eval_(self, alpha, x):
@@ -561,14 +580,13 @@ class FunctionAiryBiGeneral(BuiltinFunction):
             sage: airy_bi_general(n, 1.0)                                               # needs sage.symbolic
             airy_bi(n, 1.00000000000000)
         """
-        if not isinstance(x, Expression) and \
-                not isinstance(alpha, Expression):
+        if not isinstance(x, Expression) and not isinstance(alpha, Expression):
             if alpha == 0:
                 return airy_bi_simple(x)
             if alpha == 1:
                 return airy_bi_prime(x)
             if alpha == 2:
-                return x*airy_bi_simple(x)
+                return x * airy_bi_simple(x)
 
     def _evalf_(self, alpha, x, **kwargs):
         """
@@ -581,8 +599,8 @@ class FunctionAiryBiGeneral(BuiltinFunction):
         parent = kwargs.get('parent')
         import mpmath
         from sage.libs.mpmath import utils as mpmath_utils
-        return _mpmath_utils_call(_mpmath_airybi, x, derivative=alpha,
-                                 parent=parent)
+
+        return _mpmath_utils_call(_mpmath_airybi, x, derivative=alpha, parent=parent)
 
 
 class FunctionAiryBiSimple(BuiltinFunction):
@@ -598,13 +616,18 @@ class FunctionAiryBiSimple(BuiltinFunction):
             sage: f._sympy_()                                                           # needs sympy sage.symbolic
             airybi(x)
         """
-        BuiltinFunction.__init__(self, 'airy_bi',
-                                 latex_name=r"\operatorname{Bi}",
-                                 conversions=dict(mathematica='AiryBi',
-                                                  maxima='airy_bi',
-                                                  sympy='airybi',
-                                                  fricas='airyBi',
-                                                  giac='Airy_Bi'))
+        BuiltinFunction.__init__(
+            self,
+            'airy_bi',
+            latex_name=r"\operatorname{Bi}",
+            conversions=dict(
+                mathematica='AiryBi',
+                maxima='airy_bi',
+                sympy='airybi',
+                fricas='airyBi',
+                giac='Airy_Bi',
+            ),
+        )
 
     def _derivative_(self, x, diff_param=None):
         """
@@ -633,6 +656,7 @@ class FunctionAiryBiSimple(BuiltinFunction):
             0.648858208330395 + 0.344958634768048*I
         """
         from .gamma import gamma
+
         if x == 0:
             one_sixth = ZZ(1) / 6
             return 1 / (3 ** (one_sixth) * gamma(4 * one_sixth))
@@ -672,11 +696,14 @@ class FunctionAiryBiSimple(BuiltinFunction):
         parent = kwargs.get('parent', None)
         if algorithm == 'scipy':
             if hasattr(parent, 'prec') and parent.prec() > 53:
-                raise NotImplementedError("%s not implemented for precision > 53" % self.name())
+                raise NotImplementedError(
+                    "%s not implemented for precision > 53" % self.name()
+                )
             from sage.rings.real_mpfr import RR
             from sage.rings.cc import CC
             from sage.functions.other import real, imag
             from scipy.special import airy
+
             if x in RR:
                 y = airy(real(x))[2]
                 if parent is None:
@@ -689,6 +716,7 @@ class FunctionAiryBiSimple(BuiltinFunction):
         if algorithm == 'mpmath':
             import mpmath
             from sage.libs.mpmath import utils as mpmath_utils
+
             return _mpmath_utils_call(_mpmath_airybi, x, parent=parent)
         raise ValueError("unknown algorithm '%s'" % algorithm)
 
@@ -710,12 +738,17 @@ class FunctionAiryBiPrime(BuiltinFunction):
             sage: airy_bi_prime(x)._sympy_()                                            # needs sympy
             airybiprime(x)
         """
-        BuiltinFunction.__init__(self, 'airy_bi_prime',
-                                 latex_name=r"\operatorname{Bi}'",
-                                 conversions=dict(mathematica='AiryBiPrime',
-                                                  maxima='airy_dbi',
-                                                  sympy='airybiprime',
-                                                  fricas='airyBiPrime'))
+        BuiltinFunction.__init__(
+            self,
+            'airy_bi_prime',
+            latex_name=r"\operatorname{Bi}'",
+            conversions=dict(
+                mathematica='AiryBiPrime',
+                maxima='airy_dbi',
+                sympy='airybiprime',
+                fricas='airyBiPrime',
+            ),
+        )
 
     def _derivative_(self, x, diff_param=None):
         """
@@ -736,6 +769,7 @@ class FunctionAiryBiPrime(BuiltinFunction):
             0.448288357353826
         """
         from .gamma import gamma
+
         if x == 0:
             one_sixth = ZZ(1) / 6
             return 3 ** (one_sixth) / gamma(2 * one_sixth)
@@ -773,11 +807,14 @@ class FunctionAiryBiPrime(BuiltinFunction):
         parent = kwargs.get('parent', None)
         if algorithm == 'scipy':
             if hasattr(parent, 'prec') and parent.prec() > 53:
-                raise NotImplementedError("%s not implemented for precision > 53" % self.name())
+                raise NotImplementedError(
+                    "%s not implemented for precision > 53" % self.name()
+                )
             from sage.rings.real_mpfr import RR
             from sage.rings.cc import CC
             from sage.functions.other import real, imag
             from scipy.special import airy
+
             if x in RR:
                 y = airy(real(x))[3]
                 if parent is None:
@@ -788,8 +825,7 @@ class FunctionAiryBiPrime(BuiltinFunction):
                     return CC(y)
             return parent(y)
         if algorithm == 'mpmath':
-            return _mpmath_utils_call(_mpmath_airybi, x, derivative=1,
-                                     parent=parent)
+            return _mpmath_utils_call(_mpmath_airybi, x, derivative=1, parent=parent)
         raise ValueError("unknown algorithm '%s'" % algorithm)
 
 

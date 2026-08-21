@@ -25,6 +25,7 @@ class PalpExecutable(Executable):
 
     - ``suff`` -- string or ``None``
     """
+
     def __init__(self, palpprog, suff=None):
         r"""
         TESTS::
@@ -34,19 +35,28 @@ class PalpExecutable(Executable):
             True
         """
         if suff:
-            Executable.__init__(self, f"palp_{palpprog}_{suff}d",
-                                executable=f"{palpprog}-{suff}d.x",
-                                spkg='palp', type='standard')
+            Executable.__init__(
+                self,
+                f"palp_{palpprog}_{suff}d",
+                executable=f"{palpprog}-{suff}d.x",
+                spkg='palp',
+                type='standard',
+            )
         else:
-            Executable.__init__(self, f"palp_{palpprog}",
-                                executable=f"{palpprog}.x",
-                                spkg='palp', type='standard')
+            Executable.__init__(
+                self,
+                f"palp_{palpprog}",
+                executable=f"{palpprog}.x",
+                spkg='palp',
+                type='standard',
+            )
 
 
 class Palp(JoinFeature):
     r"""
     A :class:`~sage.features.Feature` describing the presence of :ref:`PALP <spkg_palp>`.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -55,11 +65,16 @@ class Palp(JoinFeature):
             sage: isinstance(Palp(), Palp)
             True
         """
-        JoinFeature.__init__(self, "palp",
-                             [PalpExecutable(palpprog, suff)
-                              for palpprog in ("poly", "class", "nef", "cws")
-                              for suff in (None, 4, 5, 6, 11)],
-                             description='PALP')
+        JoinFeature.__init__(
+            self,
+            "palp",
+            [
+                PalpExecutable(palpprog, suff)
+                for palpprog in ("poly", "class", "nef", "cws")
+                for suff in (None, 4, 5, 6, 11)
+            ],
+            description='PALP',
+        )
 
 
 def all_features():

@@ -21,12 +21,15 @@ is in general not possible in higher dimensions.
 from sage.rings.integer_ring import ZZ
 from sage.misc.cachefunc import cached_method, cached_function
 from sage.modules.free_module_element import vector, zero_vector
-from sage.matrix.constructor import (matrix, zero_matrix, block_matrix)
+from sage.matrix.constructor import matrix, zero_matrix, block_matrix
 from ppl import C_Polyhedron, Poly_Con_Relation
 from sage.geometry.polyhedron.lattice_euclidean_group_element import (
-    LatticeEuclideanGroupElement)
+    LatticeEuclideanGroupElement,
+)
 from sage.geometry.polyhedron.ppl_lattice_polytope import (
-    LatticePolytope_PPL, LatticePolytope_PPL_class)
+    LatticePolytope_PPL,
+    LatticePolytope_PPL_class,
+)
 
 
 ########################################################################
@@ -137,8 +140,10 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
             ...
             LatticePolytopesNotIsomorphicError: different number of integral points
         """
-        from sage.geometry.polyhedron.lattice_euclidean_group_element import \
-            LatticePolytopesNotIsomorphicError
+        from sage.geometry.polyhedron.lattice_euclidean_group_element import (
+            LatticePolytopesNotIsomorphicError,
+        )
+
         polytope_vertices = polytope.vertices()
         self_vertices = self.ordered_vertices()
         # handle degenerate cases
@@ -162,7 +167,7 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
             A = zero_matrix(ZZ, Dp.nrows(), Ds.nrows())
             A[0, 0] = 1
             A = Up.inverse() * A * Us * (Vs[0, 0] * Vp[0, 0])
-            b = polytope_origin - A*self_origin
+            b = polytope_origin - A * self_origin
             try:
                 A = matrix(ZZ, A)
                 b = vector(ZZ, b)
@@ -173,9 +178,9 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
                 return hom
             raise LatticePolytopesNotIsomorphicError('different polygons')
 
-    def _find_cyclic_isomorphism_matching_edge(self, polytope,
-                                               polytope_origin, p_ray_left,
-                                               p_ray_right):
+    def _find_cyclic_isomorphism_matching_edge(
+        self, polytope, polytope_origin, p_ray_left, p_ray_right
+    ):
         r"""
         Helper to find an isomorphism of polygons.
 
@@ -213,22 +218,24 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
             b =
             (0, 1, 0)
         """
-        from sage.geometry.polyhedron.lattice_euclidean_group_element import \
-            LatticePolytopesNotIsomorphicError
-        polytope_matrix = block_matrix(1, 2, [p_ray_left.column(),
-                                              p_ray_right.column()])
+        from sage.geometry.polyhedron.lattice_euclidean_group_element import (
+            LatticePolytopesNotIsomorphicError,
+        )
+
+        polytope_matrix = block_matrix(
+            1, 2, [p_ray_left.column(), p_ray_right.column()]
+        )
         self_vertices = self.ordered_vertices()
         for i in range(len(self_vertices)):
             # three consecutive vertices
-            v_left = self_vertices[(i+0) % len(self_vertices)]
-            v_origin = self_vertices[(i+1) % len(self_vertices)]
-            v_right = self_vertices[(i+2) % len(self_vertices)]
-            r_left = v_left-v_origin
-            r_right = v_right-v_origin
-            self_matrix = block_matrix(1, 2, [r_left.column(),
-                                              r_right.column()])
+            v_left = self_vertices[(i + 0) % len(self_vertices)]
+            v_origin = self_vertices[(i + 1) % len(self_vertices)]
+            v_right = self_vertices[(i + 2) % len(self_vertices)]
+            r_left = v_left - v_origin
+            r_right = v_right - v_origin
+            self_matrix = block_matrix(1, 2, [r_left.column(), r_right.column()])
             A = self_matrix.solve_left(polytope_matrix)
-            b = polytope_origin - A*v_origin
+            b = polytope_origin - A * v_origin
             try:
                 A = matrix(ZZ, A)
                 b = vector(ZZ, b)
@@ -287,8 +294,10 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
             ...
             LatticePolytopesNotIsomorphicError: different number of integral points
         """
-        from sage.geometry.polyhedron.lattice_euclidean_group_element import \
-            LatticePolytopesNotIsomorphicError
+        from sage.geometry.polyhedron.lattice_euclidean_group_element import (
+            LatticePolytopesNotIsomorphicError,
+        )
+
         if polytope.affine_dimension() != self.affine_dimension():
             raise LatticePolytopesNotIsomorphicError('different dimension')
         polytope_vertices = polytope.vertices()
@@ -296,7 +305,9 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
             raise LatticePolytopesNotIsomorphicError('different number of vertices')
         self_vertices = self.ordered_vertices()
         if len(polytope.integral_points()) != len(self.integral_points()):
-            raise LatticePolytopesNotIsomorphicError('different number of integral points')
+            raise LatticePolytopesNotIsomorphicError(
+                'different number of integral points'
+            )
 
         if len(self_vertices) < 3:
             return self._find_isomorphism_degenerate(polytope)
@@ -320,13 +331,15 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
         p_ray_left = neighbors[0] - polytope_origin
         p_ray_right = neighbors[1] - polytope_origin
         try:
-            return self._find_cyclic_isomorphism_matching_edge(polytope, polytope_origin,
-                                                               p_ray_left, p_ray_right)
+            return self._find_cyclic_isomorphism_matching_edge(
+                polytope, polytope_origin, p_ray_left, p_ray_right
+            )
         except LatticePolytopesNotIsomorphicError:
             pass
         try:
-            return self._find_cyclic_isomorphism_matching_edge(polytope, polytope_origin,
-                                                               p_ray_right, p_ray_left)
+            return self._find_cyclic_isomorphism_matching_edge(
+                polytope, polytope_origin, p_ray_right, p_ray_left
+            )
         except LatticePolytopesNotIsomorphicError:
             pass
         raise LatticePolytopesNotIsomorphicError('different polygons')
@@ -349,8 +362,10 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
             sage: L1.is_isomorphic(L2)
             True
         """
-        from sage.geometry.polyhedron.lattice_euclidean_group_element import \
-            LatticePolytopesNotIsomorphicError
+        from sage.geometry.polyhedron.lattice_euclidean_group_element import (
+            LatticePolytopesNotIsomorphicError,
+        )
+
         try:
             self.find_isomorphism(polytope)
             return True
@@ -412,15 +427,16 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
         """
         from sage.plot.point import point2d
         from sage.plot.polygon import polygon2d
+
         vertices = self.ordered_vertices()
         points = self.integral_points()
         if self.space_dimension() == 1:
             vertices = [vector(ZZ, (v[0], 0)) for v in vertices]
             points = [vector(ZZ, (p[0], 0)) for p in points]
-        point_plot = sum(point2d(p, pointsize=100, color='red')
-                         for p in points)
-        polygon_plot = polygon2d(vertices, alpha=0.2, color='green',
-                                 zorder=-1, thickness=2)
+        point_plot = sum(point2d(p, pointsize=100, color='red') for p in points)
+        polygon_plot = polygon2d(
+            vertices, alpha=0.2, color='green', zorder=-1, thickness=2
+        )
         return polygon_plot + point_plot
 
 
@@ -429,6 +445,7 @@ class LatticePolygon_PPL_class(LatticePolytope_PPL_class):
 #  Reflexive lattice polygons and their subpolygons
 #
 ########################################################################
+
 
 @cached_function
 def polar_P2_polytope():
@@ -550,6 +567,7 @@ def sub_reflexive_polygons():
     def add_result(subpolygon, ambient):
         if not any(subpolygon.is_isomorphic(p[0]) for p in result):
             result.append((subpolygon, ambient))
+
     for p in subpolygons_of_polar_P2():
         add_result(p, polar_P2_polytope())
     for p in subpolygons_of_polar_P2_112():

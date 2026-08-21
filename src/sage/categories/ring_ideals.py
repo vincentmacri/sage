@@ -41,6 +41,7 @@ class RingIdeals(Category_ideal):
          - Make ``RingIdeals(R)``, return ``CommutativeRingIdeals(R)``
            when ``R`` is commutative.
     """
+
     def __init__(self, R):
         """
         EXAMPLES::

@@ -2,17 +2,15 @@
 r"""
 Coxeter Group Algebras
 """
+
 import functools
 from sage.misc.cachefunc import cached_method
 from sage.categories.algebra_functor import AlgebrasCategory
 
 
 class CoxeterGroupAlgebras(AlgebrasCategory):
-
     class ParentMethods:
-
-        def demazure_lusztig_operator_on_basis(self, w, i, q1, q2,
-                                               side='right'):
+        def demazure_lusztig_operator_on_basis(self, w, i, q1, q2, side='right'):
             r"""
             Return the result of applying the `i`-th Demazure Lusztig
             operator on ``w``.
@@ -67,7 +65,9 @@ class CoxeterGroupAlgebras(AlgebrasCategory):
                 sage: KW.demazure_lusztig_operator_on_basis(w, 3, 1, -1)
                 12
             """
-            return (q1+q2) * self.monomial(w.apply_simple_projection(i,side=side)) - self.term(w.apply_simple_reflection(i, side=side), q2)
+            return (q1 + q2) * self.monomial(
+                w.apply_simple_projection(i, side=side)
+            ) - self.term(w.apply_simple_reflection(i, side=side), q2)
 
         def demazure_lusztig_operators(self, q1, q2, side='right', affine=True):
             r"""
@@ -129,12 +129,17 @@ class CoxeterGroupAlgebras(AlgebrasCategory):
                 diagram. Hence it is possible to explore all cases
                 using only untwisted affinizations.
             """
-            from sage.combinat.root_system.hecke_algebra_representation import HeckeAlgebraRepresentation
+            from sage.combinat.root_system.hecke_algebra_representation import (
+                HeckeAlgebraRepresentation,
+            )
+
             W = self.basis().keys()
             cartan_type = W.cartan_type()
             if affine and cartan_type.is_finite():
                 cartan_type = cartan_type.affine()
-            T_on_basis = functools.partial(self.demazure_lusztig_operator_on_basis, q1=q1, q2=q2, side=side)
+            T_on_basis = functools.partial(
+                self.demazure_lusztig_operator_on_basis, q1=q1, q2=q2, side=side
+            )
             return HeckeAlgebraRepresentation(self, T_on_basis, cartan_type, q1, q2)
 
         @cached_method
@@ -177,8 +182,12 @@ class CoxeterGroupAlgebras(AlgebrasCategory):
             """
             W = self.basis().keys()
             if not W.cartan_type().is_finite():
-                raise ValueError("the Demazure-Lusztig eigenvectors are only defined for finite Coxeter groups")
-            result = self.demazure_lusztig_operators(q1, q2, affine=True).Y_eigenvectors()
+                raise ValueError(
+                    "the Demazure-Lusztig eigenvectors are only defined for finite Coxeter groups"
+                )
+            result = self.demazure_lusztig_operators(
+                q1, q2, affine=True
+            ).Y_eigenvectors()
             w0 = W.long_element()
             result.affine_lift = w0._mul_
             result.affine_retract = w0._mul_

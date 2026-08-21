@@ -370,7 +370,7 @@ class ParametrizedSurface3D(SageObject):
             self.variables_range = None
             self.variables_list = variables
 
-        self.variables = {1:self.variables_list[0], 2:self.variables_list[1]}
+        self.variables = {1: self.variables_list[0], 2: self.variables_list[1]}
         self.name = name
 
     def _latex_(self):
@@ -387,6 +387,7 @@ class ParametrizedSurface3D(SageObject):
             \left(\cos\left(u\right) \cos\left(v\right), \cos\left(v\right) \sin\left(u\right), \sin\left(v\right)\right)
         """
         from sage.misc.latex import latex
+
         return latex(self.equation)
 
     def _repr_(self):
@@ -406,8 +407,10 @@ class ParametrizedSurface3D(SageObject):
         name = 'Parametrized surface'
         if self.name is not None:
             name += " ('%s')" % self.name
-        s = '%(designation)s with equation %(eq)s' % \
-            {'designation': name, 'eq': str(self.equation)}
+        s = '%(designation)s with equation %(eq)s' % {
+            'designation': name,
+            'eq': str(self.equation),
+        }
         return s
 
     def point(self, coords):
@@ -477,8 +480,9 @@ class ParametrizedSurface3D(SageObject):
 
         components = vector(components)
         d = dict(zip(self.variables_list, coords))
-        jacobian = matrix([[f.diff(u).subs(d) for u in self.variables_list]
-                           for f in self.equation])
+        jacobian = matrix(
+            [[f.diff(u).subs(d) for u in self.variables_list] for f in self.equation]
+        )
         return jacobian * components
 
     def plot(self, urange=None, vrange=None, **kwds):
@@ -509,9 +513,9 @@ class ParametrizedSurface3D(SageObject):
 
         if self.variables_range is None:
             if urange is None:
-                urange = (0, 2*pi)
+                urange = (0, 2 * pi)
             if vrange is None:
-                vrange = (0, 2*pi)
+                vrange = (0, 2 * pi)
         else:
             if urange is None:
                 urange = self.variables_range[0]
@@ -542,14 +546,14 @@ class ParametrizedSurface3D(SageObject):
             {1: (1, 0, 2*u), 2: (0, 1, 2*v)}
         """
 
-        dr1 = \
-            vector([_simplify_full_rad( diff(f,self.variables[1]) )
-                    for f in self.equation])
-        dr2 = \
-            vector([_simplify_full_rad( diff(f,self.variables[2]) )
-                    for f in self.equation])
+        dr1 = vector(
+            [_simplify_full_rad(diff(f, self.variables[1])) for f in self.equation]
+        )
+        dr2 = vector(
+            [_simplify_full_rad(diff(f, self.variables[2])) for f in self.equation]
+        )
 
-        return {1:dr1, 2:dr2}
+        return {1: dr1, 2: dr2}
 
     @cached_method
     def normal_vector(self, normalized=False):
@@ -600,7 +604,7 @@ class ParametrizedSurface3D(SageObject):
             4*u*v
         """
         dr = self.natural_frame()
-        return _simplify_full_rad(dr[index[0]]*dr[index[1]])
+        return _simplify_full_rad(dr[index[0]] * dr[index[1]])
 
     def first_fundamental_form_coefficient(self, index):
         r"""
@@ -653,8 +657,9 @@ class ParametrizedSurface3D(SageObject):
         """
         coefficients = {}
         for index in product((1, 2), repeat=2):
-            coefficients[index] = \
-                self._compute_first_fundamental_form_coefficient(index)
+            coefficients[index] = self._compute_first_fundamental_form_coefficient(
+                index
+            )
         return coefficients
 
     def first_fundamental_form(self, vector1, vector2):
@@ -687,8 +692,10 @@ class ParametrizedSurface3D(SageObject):
             2*cos(v)^2 + 1
         """
         gamma = self.first_fundamental_form_coefficients()
-        return sum(gamma[(i,j)] * vector1[i - 1] * vector2[j - 1]
-                   for i, j in product((1, 2), repeat=2))
+        return sum(
+            gamma[(i, j)] * vector1[i - 1] * vector2[j - 1]
+            for i, j in product((1, 2), repeat=2)
+        )
 
     def area_form_squared(self):
         """
@@ -709,7 +716,7 @@ class ParametrizedSurface3D(SageObject):
             cos(v)^2
         """
         gamma = self.first_fundamental_form_coefficients()
-        sq = gamma[(1,1)] * gamma[(2,2)] - gamma[(1,2)]**2
+        sq = gamma[(1, 1)] * gamma[(2, 2)] - gamma[(1, 2)] ** 2
         return _simplify_full_rad(sq)
 
     def area_form(self):
@@ -751,14 +758,14 @@ class ParametrizedSurface3D(SageObject):
         """
 
         g = self.first_fundamental_form_coefficients()
-        D = g[(1,1)] * g[(2,2)] - g[(1,2)]**2
+        D = g[(1, 1)] * g[(2, 2)] - g[(1, 2)] ** 2
 
-        gi11 = _simplify_full_rad(g[(2,2)]/D)
-        gi12 = _simplify_full_rad(-g[(1,2)]/D)
+        gi11 = _simplify_full_rad(g[(2, 2)] / D)
+        gi12 = _simplify_full_rad(-g[(1, 2)] / D)
         gi21 = gi12
-        gi22 = _simplify_full_rad(g[(1,1)]/D)
+        gi22 = _simplify_full_rad(g[(1, 1)] / D)
 
-        return {(1,1): gi11, (1,2): gi12, (2,1): gi21, (2,2): gi22}
+        return {(1, 1): gi11, (1, 2): gi12, (2, 1): gi21, (2, 2): gi22}
 
     def first_fundamental_form_inverse_coefficient(self, index):
         r"""
@@ -827,11 +834,11 @@ class ParametrizedSurface3D(SageObject):
 
         gi = self.first_fundamental_form_inverse_coefficients()
         w12 = self.area_form()
-        R11 = (cos(theta) + sin(theta)*gi[1,2]*w12).simplify_full()
-        R12 = (- sin(theta)*gi[1,1]*w12).simplify_full()
-        R21 = (sin(theta)*gi[2,2]*w12).simplify_full()
-        R22 = (cos(theta) - sin(theta)*gi[2,1]*w12).simplify_full()
-        return matrix([[R11,R12],[R21,R22]])
+        R11 = (cos(theta) + sin(theta) * gi[1, 2] * w12).simplify_full()
+        R12 = (-sin(theta) * gi[1, 1] * w12).simplify_full()
+        R21 = (sin(theta) * gi[2, 2] * w12).simplify_full()
+        R22 = (cos(theta) - sin(theta) * gi[2, 1] * w12).simplify_full()
+        return matrix([[R11, R12], [R21, R22]])
 
     @cached_method
     def orthonormal_frame(self, coordinates='ext'):
@@ -882,8 +889,9 @@ class ParametrizedSurface3D(SageObject):
         from sage.symbolic.constants import pi
 
         if coordinates not in ['ext', 'int']:
-            raise ValueError("Coordinate system must be exterior ('ext') "
-                             "or interior ('int').")
+            raise ValueError(
+                "Coordinate system must be exterior ('ext') or interior ('int')."
+            )
 
         c = self.first_fundamental_form_coefficient([1, 1])
         if coordinates == 'ext':
@@ -891,7 +899,8 @@ class ParametrizedSurface3D(SageObject):
 
             E1 = _simplify_full_rad(f1 / sqrt(c))
             E2 = _simplify_full_rad(
-                self.normal_vector(normalized=True).cross_product(E1))
+                self.normal_vector(normalized=True).cross_product(E1)
+            )
         else:
             E1 = vector([_simplify_full_rad(1 / sqrt(c)), 0])
             E2 = (self.rotation(pi / 2) * E1).simplify_full()
@@ -960,11 +969,19 @@ class ParametrizedSurface3D(SageObject):
         w = vector(SR, w)
 
         variables = self.variables_list
-        Dv = matrix([[_simplify_full_rad(diff(component, u))
-                      for u in variables] for component in v])
-        Dw = matrix([[_simplify_full_rad(diff(component, u))
-                      for u in variables] for component in w])
-        return vector(Dv*w - Dw*v).simplify_full()
+        Dv = matrix(
+            [
+                [_simplify_full_rad(diff(component, u)) for u in variables]
+                for component in v
+            ]
+        )
+        Dw = matrix(
+            [
+                [_simplify_full_rad(diff(component, u)) for u in variables]
+                for component in w
+            ]
+        )
+        return vector(Dv * w - Dw * v).simplify_full()
 
     def frame_structure_functions(self, e1, e2):
         r"""
@@ -1021,10 +1038,18 @@ class ParametrizedSurface3D(SageObject):
         lie_bracket = self.lie_bracket(e1, e2).simplify_full()
         transformation = matrix(SR, [e1, e2]).transpose()
 
-        w = (transformation.inverse()*lie_bracket).simplify_full()
+        w = (transformation.inverse() * lie_bracket).simplify_full()
 
-        return {(1,1,1): 0, (1,1,2): 0, (1,2,1): w[0], (1,2,2): w[1],
-                (2,1,1): -w[0], (2,1,2): -w[1], (2,2,1): 0, (2,2,2): 0}
+        return {
+            (1, 1, 1): 0,
+            (1, 1, 2): 0,
+            (1, 2, 1): w[0],
+            (1, 2, 2): w[1],
+            (2, 1, 1): -w[0],
+            (2, 1, 2): -w[1],
+            (2, 2, 1): 0,
+            (2, 2, 2): 0,
+        }
 
     @cached_method
     def _compute_second_order_frame_element(self, index):
@@ -1045,8 +1070,9 @@ class ParametrizedSurface3D(SageObject):
             (0, 0, 2)
         """
         variables = [self.variables[i] for i in index]
-        ddr_element = vector([_simplify_full_rad(diff(f, variables))
-                              for f in self.equation])
+        ddr_element = vector(
+            [_simplify_full_rad(diff(f, variables)) for f in self.equation]
+        )
 
         return ddr_element
 
@@ -1077,8 +1103,7 @@ class ParametrizedSurface3D(SageObject):
         vectors = {}
         for index in product((1, 2), repeat=2):
             sorted_index = tuple(sorted(index))
-            vectors[index] = \
-                self._compute_second_order_frame_element(sorted_index)
+            vectors[index] = self._compute_second_order_frame_element(sorted_index)
         return vectors
 
     def second_order_natural_frame_element(self, index):
@@ -1125,7 +1150,7 @@ class ParametrizedSurface3D(SageObject):
         """
         N = self.normal_vector(normalized=True)
         v = self.second_order_natural_frame_element(index)
-        return _simplify_full_rad(v*N)
+        return _simplify_full_rad(v * N)
 
     def second_fundamental_form_coefficient(self, index):
         r"""
@@ -1177,8 +1202,9 @@ class ParametrizedSurface3D(SageObject):
 
         coefficients = {}
         for index in product((1, 2), repeat=2):
-            coefficients[index] = \
-                self._compute_second_fundamental_form_coefficient(index)
+            coefficients[index] = self._compute_second_fundamental_form_coefficient(
+                index
+            )
         return coefficients
 
     def second_fundamental_form(self, vector1, vector2):
@@ -1214,8 +1240,10 @@ class ParametrizedSurface3D(SageObject):
            -2*cos(v)^2 - 1
         """
         hh = self.second_fundamental_form_coefficients()
-        return sum(hh[(i, j)] * vector1[i - 1] * vector2[j - 1]
-                   for (i, j) in product((1, 2), repeat=2))
+        return sum(
+            hh[(i, j)] * vector1[i - 1] * vector2[j - 1]
+            for (i, j) in product((1, 2), repeat=2)
+        )
 
     def gauss_curvature(self):
         r"""
@@ -1238,7 +1266,8 @@ class ParametrizedSurface3D(SageObject):
         """
         hh = self.second_fundamental_form_coefficients()
         return _simplify_full_rad(
-            (hh[(1,1)] * hh[(2,2)] - hh[(1,2)]**2)/self.area_form_squared())
+            (hh[(1, 1)] * hh[(2, 2)] - hh[(1, 2)] ** 2) / self.area_form_squared()
+        )
 
     def mean_curvature(self):
         r"""
@@ -1261,10 +1290,13 @@ class ParametrizedSurface3D(SageObject):
         """
         gg = self.first_fundamental_form_coefficients()
         hh = self.second_fundamental_form_coefficients()
-        denom = 2*self.area_form_squared()
-        numer = (gg[(2,2)]*hh[(1,1)] - 2*gg[(1,2)]*hh[(1,2)] +
-                 gg[(1,1)]*hh[(2,2)]).simplify_full()
-        return _simplify_full_rad(numer/denom)
+        denom = 2 * self.area_form_squared()
+        numer = (
+            gg[(2, 2)] * hh[(1, 1)]
+            - 2 * gg[(1, 2)] * hh[(1, 2)]
+            + gg[(1, 1)] * hh[(2, 2)]
+        ).simplify_full()
+        return _simplify_full_rad(numer / denom)
 
     @cached_method
     def shape_operator_coefficients(self):
@@ -1290,12 +1322,12 @@ class ParametrizedSurface3D(SageObject):
         gi = self.first_fundamental_form_inverse_coefficients()
         hh = self.second_fundamental_form_coefficients()
 
-        sh_op11 = _simplify_full_rad(gi[(1,1)]*hh[(1,1)] + gi[(1,2)]*hh[(1,2)])
-        sh_op12 = _simplify_full_rad(gi[(1,1)]*hh[(2,1)] + gi[(1,2)]*hh[(2,2)])
-        sh_op21 = _simplify_full_rad(gi[(2,1)]*hh[(1,1)] + gi[(2,2)]*hh[(1,2)])
-        sh_op22 = _simplify_full_rad(gi[(2,1)]*hh[(2,1)] + gi[(2,2)]*hh[(2,2)])
+        sh_op11 = _simplify_full_rad(gi[(1, 1)] * hh[(1, 1)] + gi[(1, 2)] * hh[(1, 2)])
+        sh_op12 = _simplify_full_rad(gi[(1, 1)] * hh[(2, 1)] + gi[(1, 2)] * hh[(2, 2)])
+        sh_op21 = _simplify_full_rad(gi[(2, 1)] * hh[(1, 1)] + gi[(2, 2)] * hh[(1, 2)])
+        sh_op22 = _simplify_full_rad(gi[(2, 1)] * hh[(2, 1)] + gi[(2, 2)] * hh[(2, 2)])
 
-        return {(1,1): sh_op11, (1,2): sh_op12, (2,1): sh_op21, (2,2): sh_op22}
+        return {(1, 1): sh_op11, (1, 2): sh_op12, (2, 1): sh_op21, (2, 2): sh_op22}
 
     def shape_operator(self):
         r"""
@@ -1330,8 +1362,9 @@ class ParametrizedSurface3D(SageObject):
         """
 
         shop = self.shape_operator_coefficients()
-        shop_matrix = matrix([[shop[(1,1)],shop[(1,2)]],
-                            [shop[(2,1)],shop[(2,2)]]])
+        shop_matrix = matrix(
+            [[shop[(1, 1)], shop[(1, 2)]], [shop[(2, 1)], shop[(2, 2)]]]
+        )
         return shop_matrix
 
     def principal_directions(self):
@@ -1405,15 +1438,16 @@ class ParametrizedSurface3D(SageObject):
         gi = self.first_fundamental_form_inverse_coefficients()
 
         dg = {}
-        for i,j,k in product((1, 2), repeat=3):
-            dg[(i,j,k)] = _simplify_full_rad(gg[(j,k)].differentiate(x[i]))
+        for i, j, k in product((1, 2), repeat=3):
+            dg[(i, j, k)] = _simplify_full_rad(gg[(j, k)].differentiate(x[i]))
 
         structfun = {}
-        for i,j,k in product((1, 2), repeat=3):
-            structfun[(i,j,k)] = sum(gi[(k,s)]*(dg[(i,j,s)] + dg[(j,i,s)]
-                                                - dg[(s,i,j)])/2
-                                     for s in (1,2))
-            structfun[(i,j,k)] = _simplify_full_rad(structfun[(i,j,k)])
+        for i, j, k in product((1, 2), repeat=3):
+            structfun[(i, j, k)] = sum(
+                gi[(k, s)] * (dg[(i, j, s)] + dg[(j, i, s)] - dg[(s, i, j)]) / 2
+                for s in (1, 2)
+            )
+            structfun[(i, j, k)] = _simplify_full_rad(structfun[(i, j, k)])
         return structfun
 
     @cached_method
@@ -1440,15 +1474,26 @@ class ParametrizedSurface3D(SageObject):
 
         with SR.temp_var(domain='real') as v1:
             with SR.temp_var(domain='real') as v2:
-                dv1 = - C[(1,1,1)]*v1**2 - 2*C[(1,2,1)]*v1*v2 - C[(2,2,1)]*v2**2
-                dv2 = - C[(1,1,2)]*v1**2 - 2*C[(1,2,2)]*v1*v2 - C[(2,2,2)]*v2**2
+                dv1 = (
+                    -C[(1, 1, 1)] * v1**2
+                    - 2 * C[(1, 2, 1)] * v1 * v2
+                    - C[(2, 2, 1)] * v2**2
+                )
+                dv2 = (
+                    -C[(1, 1, 2)] * v1**2
+                    - 2 * C[(1, 2, 2)] * v1 * v2
+                    - C[(2, 2, 2)] * v2**2
+                )
                 fun1 = fast_float(dv1, str(u1), str(u2), str(v1), str(v2))
                 fun2 = fast_float(dv2, str(u1), str(u2), str(v1), str(v2))
 
                 geodesic_ode = ode_solver()
-                geodesic_ode.function = (
-                    lambda t, u1_u2_v1_v2:
-                    [u1_u2_v1_v2[2], u1_u2_v1_v2[3], fun1(*u1_u2_v1_v2), fun2(*u1_u2_v1_v2)])
+                geodesic_ode.function = lambda t, u1_u2_v1_v2: [
+                    u1_u2_v1_v2[2],
+                    u1_u2_v1_v2[3],
+                    fun1(*u1_u2_v1_v2),
+                    fun2(*u1_u2_v1_v2),
+                ]
                 return geodesic_ode
 
     def geodesics_numerical(self, p0, v0, tinterval):
@@ -1512,9 +1557,10 @@ class ParametrizedSurface3D(SageObject):
         solver.y_0 = [p0[0], p0[1], v0[0], v0[1]]
         solver.ode_solve(t_span=t_interval, num_points=n)
 
-        parsed_solution = \
-          [[vec[0], vec[1][0:2], vec[1][2:], self.point(vec[1])]
-           for vec in solver.solution]
+        parsed_solution = [
+            [vec[0], vec[1][0:2], vec[1][2:], self.point(vec[1])]
+            for vec in solver.solution
+        ]
 
         return parsed_solution
 
@@ -1554,15 +1600,24 @@ class ParametrizedSurface3D(SageObject):
 
         with SR.temp_var(domain='real') as v1:
             with SR.temp_var(domain='real') as v2:
-                dv1 = - C[(1,1,1)]*v1*du1 - C[(1,2,1)]*(du1*v2 + du2*v1) - \
-                    C[(2,2,1)]*du2*v2
-                dv2 = - C[(1,1,2)]*v1*du1 - C[(1,2,2)]*(du1*v2 + du2*v1) - \
-                    C[(2,2,2)]*du2*v2
+                dv1 = (
+                    -C[(1, 1, 1)] * v1 * du1
+                    - C[(1, 2, 1)] * (du1 * v2 + du2 * v1)
+                    - C[(2, 2, 1)] * du2 * v2
+                )
+                dv2 = (
+                    -C[(1, 1, 2)] * v1 * du1
+                    - C[(1, 2, 2)] * (du1 * v2 + du2 * v1)
+                    - C[(2, 2, 2)] * du2 * v2
+                )
                 fun1 = fast_float(dv1, str(t), str(v1), str(v2))
                 fun2 = fast_float(dv2, str(t), str(v1), str(v2))
 
                 pt_ode = ode_solver()
-                pt_ode.function = lambda t, v1_v2: [fun1(t, v1_v2[0], v1_v2[1]), fun2(t, v1_v2[0], v1_v2[1])]
+                pt_ode.function = lambda t, v1_v2: [
+                    fun1(t, v1_v2[0], v1_v2[1]),
+                    fun2(t, v1_v2[0], v1_v2[1]),
+                ]
                 return pt_ode
 
     def parallel_translation_numerical(self, curve, t, v0, tinterval):

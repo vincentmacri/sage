@@ -1,6 +1,7 @@
 r"""
 Ambient lattices and ambient spaces
 """
+
 # ***************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2013 Nicolas M. Thiery <nthiery at users.sf.net>
@@ -89,20 +90,25 @@ class AmbientSpace(CombinatorialFreeModule):
         self.root_system = root_system
         if index_set is None:
             index_set = tuple(range(self.dimension()))
-        CombinatorialFreeModule.__init__(self, base_ring,
-                                         index_set,
-                                         prefix='e',
-                                         category=WeightLatticeRealizations(base_ring))
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            index_set,
+            prefix='e',
+            category=WeightLatticeRealizations(base_ring),
+        )
         coroot_lattice = self.root_system.coroot_lattice()
-        coroot_lattice.module_morphism(self.simple_coroot, codomain=self).register_as_coercion()
+        coroot_lattice.module_morphism(
+            self.simple_coroot, codomain=self
+        ).register_as_coercion()
 
         # FIXME: here for backward compatibility;
         # Should we use dimension everywhere?
         self.n = self.dimension()
         ct = root_system.cartan_type()
         if ct.is_irreducible() and ct.type() == 'E':
-            self._v0 = self([0,0,0,0,0, 0,1, 1])
-            self._v1 = self([0,0,0,0,0,-2,1,-1])
+            self._v0 = self([0, 0, 0, 0, 0, 0, 1, 1])
+            self._v1 = self([0, 0, 0, 0, 0, -2, 1, -1])
 
     def _test_norm_of_simple_roots(self, **options):
         """
@@ -125,7 +131,7 @@ class AmbientSpace(CombinatorialFreeModule):
         except ImportError:  # Dynkin diagrams need sage.graphs
             return
         for C in DD.connected_components(sort=False):
-            tester.assertEqual(len( set( alpha[i].scalar(alpha[i]) / D[i] for i in C ) ), 1)
+            tester.assertEqual(len(set(alpha[i].scalar(alpha[i]) / D[i] for i in C)), 1)
 
     # FIXME: attribute or method?
     def dimension(self):
@@ -178,7 +184,9 @@ class AmbientSpace(CombinatorialFreeModule):
             sage: RootSystem(['A',4]).ambient_lattice()._name_string()
             "Ambient lattice of the Root system of type ['A', 4]"
         """
-        return self._name_string_helper("ambient", capitalize=capitalize, base_ring=base_ring, type=type)
+        return self._name_string_helper(
+            "ambient", capitalize=capitalize, base_ring=base_ring, type=type
+        )
 
     def __call__(self, v):
         """
@@ -212,7 +220,7 @@ class AmbientSpace(CombinatorialFreeModule):
         """
         if not (i > 0 and i <= self.dimension()):
             raise IndexError("value out of range")
-        return self.monomial(i-1)
+        return self.monomial(i - 1)
 
     def coroot_lattice(self):
         """
@@ -256,7 +264,11 @@ class AmbientSpace(CombinatorialFreeModule):
         """
         # TODO: get rid of this as one can use the generic implementation
         # (i.e. scalar and associated coroot are implemented)
-        return lambda v: v - root.base_ring()(2*root.inner_product(v)/root.inner_product(root))*root
+        return lambda v: (
+            v
+            - root.base_ring()(2 * root.inner_product(v) / root.inner_product(root))
+            * root
+        )
 
     @cached_method
     def fundamental_weight(self, i):
@@ -316,7 +328,11 @@ class AmbientSpace(CombinatorialFreeModule):
             sage: RootSystem("A2").ambient_space().from_vector_notation((1,0),style='coroots')
             (2/3, -1/3, -1/3)
         """
-        if style == "coroots" and isinstance(weight, tuple) and all(xv in ZZ for xv in weight):
+        if (
+            style == "coroots"
+            and isinstance(weight, tuple)
+            and all(xv in ZZ for xv in weight)
+        ):
             weight = self.linear_combination(zip(self.fundamental_weights(), weight))
 
         x = self(weight)
@@ -400,9 +416,9 @@ class AmbientSpaceElement(CombinatorialFreeModule.Element):
         lambdacheck_mc = lambdacheck._monomial_coefficients
 
         result = self.parent().base_ring().zero()
-        for t,c in lambdacheck_mc.items():
+        for t, c in lambdacheck_mc.items():
             if t in self_mc:
-                result += c*self_mc[t]
+                result += c * self_mc[t]
         return result
 
     scalar = inner_product
@@ -419,7 +435,7 @@ class AmbientSpaceElement(CombinatorialFreeModule.Element):
             (1, -1, -1, -1)
         """
         # FIXME: make it work over ZZ!
-        return self * self.base_ring()(2/self.inner_product(self))
+        return self * self.base_ring()(2 / self.inner_product(self))
 
     def is_positive_root(self):
         """
@@ -456,14 +472,20 @@ class AmbientSpaceElement(CombinatorialFreeModule.Element):
         x = self
         if cartan_type.is_atomic():
             if cartan_type.type() == 'A':
-                x = x - self.parent().det(sum(x.to_vector())/(self.parent().dimension()))
+                x = x - self.parent().det(
+                    sum(x.to_vector()) / (self.parent().dimension())
+                )
         else:
             xv = x.to_vector()
             shifts = cartan_type._shifts
             types = cartan_type.component_types()
             for i in range(len(types)):
                 if cartan_type.component_types()[i][0] == 'A':
-                    s = self.parent().ambient_spaces()[i].det(sum(xv[shifts[i]:shifts[i+1]])/(types[i][1]+1))
+                    s = (
+                        self.parent()
+                        .ambient_spaces()[i]
+                        .det(sum(xv[shifts[i] : shifts[i + 1]]) / (types[i][1] + 1))
+                    )
                     x = x - self.parent().inject_weights(i, s)
         return x
 
@@ -483,7 +505,7 @@ class AmbientSpaceElement(CombinatorialFreeModule.Element):
         """
         x = self
         v0 = self.parent()._v0
-        ret = x - (x.inner_product(v0)/2)*v0
+        ret = x - (x.inner_product(v0) / 2) * v0
         return ret
 
     def coerce_to_e6(self):
@@ -502,8 +524,8 @@ class AmbientSpaceElement(CombinatorialFreeModule.Element):
         x = self
         v0 = self.parent()._v0
         v1 = self.parent()._v1
-        x = x - (x.inner_product(v0)/2)*v0
-        return x - (x.inner_product(v1)/6)*v1
+        x = x - (x.inner_product(v0) / 2) * v0
+        return x - (x.inner_product(v1) / 6) * v1
 
     def to_ambient(self):
         r"""

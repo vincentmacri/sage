@@ -1,14 +1,14 @@
 """
 Root system data for type C
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2009 Justin Walker
 #       Copyright (C) 2008-2013 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from . import ambient_space
 
@@ -54,7 +54,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.root(0, 1, 1, 1)
             (-1, -1, 0)
         """
-        return (-1)**p1 * self.monomial(i) + (-1)**p2 * self.monomial(j)
+        return (-1) ** p1 * self.monomial(i) + (-1) ** p2 * self.monomial(j)
 
     def simple_root(self, i):
         """
@@ -65,7 +65,11 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         if i not in self.index_set():
             raise ValueError("{} is not in the index set".format(i))
-        return self.root(i-1, i,0,1) if i < self.n else self.root(self.n-1, self.n-1, 0, 0)
+        return (
+            self.root(i - 1, i, 0, 1)
+            if i < self.n
+            else self.root(self.n - 1, self.n - 1, 0, 0)
+        )
 
     def positive_roots(self):
         """
@@ -121,10 +125,17 @@ class AmbientSpace(ambient_space.AmbientSpace):
         return self.sum(self.monomial(j) for j in range(i))
 
 
-from .cartan_type import CartanType_standard_finite, CartanType_simple, CartanType_crystallographic, CartanType_simply_laced
+from .cartan_type import (
+    CartanType_standard_finite,
+    CartanType_simple,
+    CartanType_crystallographic,
+    CartanType_simply_laced,
+)
 
 
-class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_crystallographic):
+class CartanType(
+    CartanType_standard_finite, CartanType_simple, CartanType_crystallographic
+):
     def __init__(self, n):
         """
         EXAMPLES::
@@ -185,7 +196,7 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             sage: CartanType(['C',4]).coxeter_number()
             8
         """
-        return 2*self.n
+        return 2 * self.n
 
     def dual_coxeter_number(self):
         """
@@ -208,6 +219,7 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             ['B', 3]
         """
         from . import cartan_type
+
         return cartan_type.CartanType(["B", self.n])
 
     def dynkin_diagram(self):
@@ -270,7 +282,9 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
         """
         if label is None:
             label = lambda i: i
-        return self.dual()._latex_dynkin_diagram(label=label, node=node, node_dist=node_dist, dual=not dual)
+        return self.dual()._latex_dynkin_diagram(
+            label=label, node=node, node_dist=node_dist, dual=not dual
+        )
 
     def ascii_art(self, label=None, node=None):
         """
@@ -305,12 +319,16 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_cryst
             ['C', 3] as a folding of ['A', 5]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         n = self.n
-        return CartanTypeFolded(self, ['A', 2*n - 1],
-                                [[i, 2*n - i] for i in range(1, n)] + [[n]])
+        return CartanTypeFolded(
+            self, ['A', 2 * n - 1], [[i, 2 * n - i] for i in range(1, n)] + [[n]]
+        )
 
 
 # For unpickling backward compatibility (Sage <= 4.1)
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.root_system.type_C',
-                           'ambient_space', AmbientSpace)
+
+register_unpickle_override(
+    'sage.combinat.root_system.type_C', 'ambient_space', AmbientSpace
+)

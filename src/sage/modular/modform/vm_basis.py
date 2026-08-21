@@ -113,11 +113,11 @@ def victor_miller_basis(k, prec=10, cusp_only=False, var='q'):
     if k < 0:
         raise ValueError("k must be nonnegative")
     elif k == 0:
-        return Sequence([PowerSeriesRing(ZZ,var)(1).add_bigoh(prec)], cr=True)
+        return Sequence([PowerSeriesRing(ZZ, var)(1).add_bigoh(prec)], cr=True)
     e = k.mod(12)
     if e == 2:
         e += 12
-    n = (k-e) // 12
+    n = (k - e) // 12
 
     if n == 0 and cusp_only:
         return Sequence([])
@@ -126,14 +126,14 @@ def victor_miller_basis(k, prec=10, cusp_only=False, var='q'):
     # cusp forms, which is just n, then we know the answer, and we
     # simply return it.
     if prec <= n:
-        q = PowerSeriesRing(ZZ,var).gen(0)
+        q = PowerSeriesRing(ZZ, var).gen(0)
         err = bigO(q**prec)
-        ls = [0] * (n+1)
+        ls = [0] * (n + 1)
         if not cusp_only:
             ls[0] = 1 + err
-        for i in range(1,prec):
+        for i in range(1, prec):
             ls[i] = q**i + err
-        for i in range(prec,n+1):
+        for i in range(prec, n + 1):
             ls[i] = err
         return Sequence(ls, cr=True)
 
@@ -156,7 +156,7 @@ def victor_miller_basis(k, prec=10, cusp_only=False, var='q'):
         A = -A
 
     if n == 0:
-        return Sequence([PowerSeriesRing(ZZ,var)(A.list()).add_bigoh(prec)],cr=True)
+        return Sequence([PowerSeriesRing(ZZ, var)(A.list()).add_bigoh(prec)], cr=True)
 
     F6_squared = F6**2
     F6_squared._unsafe_mutate_truncate(prec)
@@ -170,9 +170,9 @@ def victor_miller_basis(k, prec=10, cusp_only=False, var='q'):
         ls = [A] * (n + 1)
 
     for i in range(1, n + 1):
-        ls[n-i] *= Fprod
+        ls[n - i] *= Fprod
         ls[i] *= Dprod
-        ls[n-i]._unsafe_mutate_truncate(prec)
+        ls[n - i]._unsafe_mutate_truncate(prec)
         ls[i]._unsafe_mutate_truncate(prec)
 
         Fprod *= F6_squared
@@ -184,7 +184,7 @@ def victor_miller_basis(k, prec=10, cusp_only=False, var='q'):
     if cusp_only:
         for i in range(1, n + 1):
             for j in range(1, i):
-                ls[j] = ls[j] - ls[j][i]*ls[i]
+                ls[j] = ls[j] - ls[j][i] * ls[i]
 
         return Sequence([P(l.list()).add_bigoh(prec) for l in ls[1:]], cr=True)
 
@@ -226,13 +226,15 @@ def _delta_poly(prec=10):
     # First compute F^2 directly by naive polynomial multiplication,
     # since F is very sparse.
 
-    stop = int((-1+math.sqrt(1+8*prec))/2.0)
+    stop = int((-1 + math.sqrt(1 + 8 * prec)) / 2.0)
     # make list of index/value pairs for the sparse poly
-    values = [(n*(n+1)//2, ((-2*n-1) if (n & 1) else (2*n+1)))
-              for n in range(stop + 1)]
+    values = [
+        (n * (n + 1) // 2, ((-2 * n - 1) if (n & 1) else (2 * n + 1)))
+        for n in range(stop + 1)
+    ]
 
-    for (i1, v1) in values:
-        for (i2, v2) in values:
+    for i1, v1 in values:
+        for i2, v2 in values:
             try:
                 v[i1 + i2] += v1 * v2
             except IndexError:
@@ -284,10 +286,10 @@ def _delta_poly_modulo(N, prec=10):
     # Let F = \sum_{n >= 0} (-1)^n (2n+1) q^(floor(n(n+1)/2)).
     # Then delta is F^8.
 
-    stop = int((-1+math.sqrt(8*prec))/2.0)
+    stop = int((-1 + math.sqrt(8 * prec)) / 2.0)
 
-    for n in range(stop+1):
-        v[n*(n+1)//2] = ((N-1)*(2*n+1) if (n & 1) else (2*n+1))
+    for n in range(stop + 1):
+        v[n * (n + 1) // 2] = (N - 1) * (2 * n + 1) if (n & 1) else (2 * n + 1)
 
     P = PolynomialRing(Integers(N), 'q')
     f = P(v)

@@ -47,6 +47,7 @@ class FourTi2:
 
     Each 4ti2 command is exposed as a method of this class.
     """
+
     def __init__(self, directory=None):
         r"""
         Initialize this object.
@@ -84,6 +85,7 @@ class FourTi2:
             '/tmp/'
         """
         from sage.misc.temporary_file import tmp_dir
+
         if self._directory is None:
             # we have to put this here rather than in the __init__
             # method since apparently importing sage.misc.misc does not
@@ -130,6 +132,7 @@ class FourTi2:
         """
         from sage.matrix.constructor import matrix
         from sage.structure.element import Matrix
+
         if not isinstance(mat, Matrix):
             mat = matrix(ZZ, mat)
         if mat.base_ring() != ZZ:
@@ -202,6 +205,7 @@ class FourTi2:
             [3 4 6]
         """
         from sage.matrix.constructor import matrix
+
         try:
             f = open(os.path.join(self.directory(), filename))
             lines = f.readlines()
@@ -210,9 +214,16 @@ class FourTi2:
             return matrix(ZZ, 0, 0)
 
         nrows, ncols = map(ZZ, lines.pop(0).strip().split())
-        return matrix(ZZ, nrows, ncols,
-                      [[ZZ(_) for _ in line.strip().split()] for line in lines
-                       if line.strip() != ""])
+        return matrix(
+            ZZ,
+            nrows,
+            ncols,
+            [
+                [ZZ(_) for _ in line.strip().split()]
+                for line in lines
+                if line.strip() != ""
+            ],
+        )
 
     def _process_input(self, kwds):
         r"""
@@ -260,8 +271,7 @@ class FourTi2:
             if ext == "project" or ext == "self":
                 continue
 
-            if (isinstance(value, list) and
-                not (value and isinstance(value[0], list))):
+            if isinstance(value, list) and not (value and isinstance(value[0], list)):
                 self.write_single_row(value, project + "." + ext)
             else:
                 self.write_matrix(value, project + "." + ext)
@@ -295,6 +305,7 @@ class FourTi2:
         """
         import subprocess
         import shlex
+
         feature = FourTi2Executable(command)
         executable = feature.absolute_filename()
         options = " ".join(options)
@@ -332,8 +343,9 @@ class FourTi2:
         """
         project = self._process_input(locals())
         self.call('zsolve', project, options=['-q'])
-        return [self.read_matrix(project+'.'+ext) for ext in
-                ['zinhom', 'zhom', 'zfree']]
+        return [
+            self.read_matrix(project + '.' + ext) for ext in ['zinhom', 'zhom', 'zfree']
+        ]
 
     def qsolve(self, mat=None, rel=None, sign=None, project=None):
         r"""
@@ -350,8 +362,7 @@ class FourTi2:
         """
         project = self._process_input(locals())
         self.call('qsolve', project, options=['-q', '-parbitrary'])
-        return [self.read_matrix(project+'.'+ext) for ext in
-                ['qhom', 'qfree']]
+        return [self.read_matrix(project + '.' + ext) for ext in ['qhom', 'qfree']]
 
     def rays(self, mat=None, project=None):
         r"""
@@ -370,7 +381,7 @@ class FourTi2:
         """
         project = self._process_input(locals())
         self.call('rays', project, options=['-q', '-parbitrary'])
-        return self.read_matrix(project+'.ray')
+        return self.read_matrix(project + '.ray')
 
     def hilbert(self, mat=None, lat=None, project=None):
         r"""
@@ -394,7 +405,7 @@ class FourTi2:
         """
         project = self._process_input(locals())
         self.call('hilbert', project, options=['-q'])
-        return self.read_matrix(project+'.hil')
+        return self.read_matrix(project + '.hil')
 
     def graver(self, mat=None, lat=None, project=None):
         r"""
@@ -419,7 +430,7 @@ class FourTi2:
         """
         project = self._process_input(locals())
         self.call('graver', project, options=['-q'])
-        return self.read_matrix(project+'.gra')
+        return self.read_matrix(project + '.gra')
 
     def ppi(self, n):
         r"""
@@ -456,7 +467,7 @@ class FourTi2:
         """
         project = self._process_input(locals())
         self.call('circuits', project, options=['-q', '-parbitrary'])
-        return self.read_matrix(project+'.cir')
+        return self.read_matrix(project + '.cir')
 
     def minimize(self, mat=None, lat=None):
         r"""
@@ -472,8 +483,7 @@ class FourTi2:
             ...
             NotImplementedError: 4ti2 command 'minimize' not implemented in Sage.
         """
-        raise NotImplementedError("4ti2 command 'minimize' not implemented "
-                                   "in Sage.")
+        raise NotImplementedError("4ti2 command 'minimize' not implemented in Sage.")
 
     def groebner(self, mat=None, lat=None, project=None):
         r"""
@@ -496,7 +506,7 @@ class FourTi2:
         """
         project = self._process_input(locals())
         self.call('groebner', project, options=['-q', '-parbitrary'])
-        return self.read_matrix(project+'.gro')
+        return self.read_matrix(project + '.gro')
 
     def _magic3x3(self):
         r"""
@@ -515,14 +525,21 @@ class FourTi2:
             [ 1  1  0  0 -1  0 -1  0  0]
         """
         from sage.matrix.constructor import matrix
-        return matrix(ZZ, 7, 9,
-                      [[1, 1, 1, -1, -1, -1, 0, 0, 0],
-                       [1, 1, 1, 0, 0, 0, -1, -1, -1],
-                       [0, 1, 1, -1, 0, 0, -1, 0, 0],
-                       [1, 0, 1, 0, -1, 0, 0, -1, 0],
-                       [1, 1, 0, 0, 0, -1, 0, 0, -1],
-                       [0, 1, 1, 0, -1, 0, 0, 0, -1],
-                       [1, 1, 0, 0, -1, 0, -1, 0, 0]])
+
+        return matrix(
+            ZZ,
+            7,
+            9,
+            [
+                [1, 1, 1, -1, -1, -1, 0, 0, 0],
+                [1, 1, 1, 0, 0, 0, -1, -1, -1],
+                [0, 1, 1, -1, 0, 0, -1, 0, 0],
+                [1, 0, 1, 0, -1, 0, 0, -1, 0],
+                [1, 1, 0, 0, 0, -1, 0, 0, -1],
+                [0, 1, 1, 0, -1, 0, 0, 0, -1],
+                [1, 1, 0, 0, -1, 0, -1, 0, 0],
+            ],
+        )
 
 
 # The instance that should be used outside this file.

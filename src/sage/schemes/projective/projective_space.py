@@ -107,26 +107,41 @@ from sage.rings.rational_field import QQ, RationalField
 from sage.schemes.generic.ambient_space import AmbientSpace
 from sage.structure.category_object import normalize_names
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.schemes.projective.projective_homset import (SchemeHomset_points_projective_ring,
-                                                       SchemeHomset_points_projective_field,
-                                                       SchemeHomset_polynomial_projective_space)
-from sage.schemes.projective.projective_morphism import (SchemeMorphism_polynomial_projective_space,
-                                                         SchemeMorphism_polynomial_projective_space_field,
-                                                         SchemeMorphism_polynomial_projective_space_finite_field)
-from sage.schemes.projective.projective_point import (SchemeMorphism_point_projective_ring,
-                                                      SchemeMorphism_point_projective_field,
-                                                      SchemeMorphism_point_projective_finite_field)
+from sage.schemes.projective.projective_homset import (
+    SchemeHomset_points_projective_ring,
+    SchemeHomset_points_projective_field,
+    SchemeHomset_polynomial_projective_space,
+)
+from sage.schemes.projective.projective_morphism import (
+    SchemeMorphism_polynomial_projective_space,
+    SchemeMorphism_polynomial_projective_space_field,
+    SchemeMorphism_polynomial_projective_space_finite_field,
+)
+from sage.schemes.projective.projective_point import (
+    SchemeMorphism_point_projective_ring,
+    SchemeMorphism_point_projective_field,
+    SchemeMorphism_point_projective_finite_field,
+)
 
 lazy_import('sage.combinat.integer_vector_weighted', 'WeightedIntegerVectors')
 lazy_import('sage.combinat.tuple', ['Tuples', 'UnorderedTuples'])
-lazy_import('sage.dynamics.arithmetic_dynamics.projective_ds', 'DynamicalSystem_projective')
+lazy_import(
+    'sage.dynamics.arithmetic_dynamics.projective_ds', 'DynamicalSystem_projective'
+)
 lazy_import('sage.matrix.constructor', 'matrix')
 lazy_import('sage.modules.free_module_element', 'prepare')
 lazy_import('sage.schemes.generic.algebraic_scheme', 'AlgebraicScheme_subscheme')
-lazy_import('sage.schemes.product_projective.space',
-            ['ProductProjectiveSpaces', 'ProductProjectiveSpaces_ring'])
-lazy_import('sage.schemes.projective.projective_subscheme',
-            ['AlgebraicScheme_subscheme_projective', 'AlgebraicScheme_subscheme_projective_field'])
+lazy_import(
+    'sage.schemes.product_projective.space',
+    ['ProductProjectiveSpaces', 'ProductProjectiveSpaces_ring'],
+)
+lazy_import(
+    'sage.schemes.projective.projective_subscheme',
+    [
+        'AlgebraicScheme_subscheme_projective',
+        'AlgebraicScheme_subscheme_projective_field',
+    ],
+)
 
 
 # for better efficiency
@@ -231,9 +246,10 @@ def ProjectiveSpace(n, R=None, names=None):
             names = normalize_names(n.ngens(), names)
             if n.variable_names() != names:
                 # The provided name doesn't match the name of R's variables
-                raise NameError("variable names passed to ProjectiveSpace conflict with names in ring")
-        A = ProjectiveSpace(n.ngens() - 1, n.base_ring(),
-                            names=n.variable_names())
+                raise NameError(
+                    "variable names passed to ProjectiveSpace conflict with names in ring"
+                )
+        A = ProjectiveSpace(n.ngens() - 1, n.base_ring(), names=n.variable_names())
         A._coordinate_ring = n
         return A
     if names is None:
@@ -304,6 +320,7 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         sage: hash(ProjectiveSpace(ZZ, 2, 'a')) == hash(AffineSpace(ZZ, 2, 'a'))
         False
     """
+
     @staticmethod
     def __classcall__(cls, n, R=ZZ, names=None):
         """
@@ -391,7 +408,9 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         R = self.base_ring()
         for coord in v:
             if coord not in R:
-                raise TypeError('the components of v=%s must be elements of %s' % (v, R))
+                raise TypeError(
+                    'the components of v=%s must be elements of %s' % (v, R)
+                )
         zero = [R(0)] * n
         if v == zero:
             raise TypeError('the zero vector is not a point in projective space')
@@ -419,9 +438,9 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         try:
             return self._coordinate_ring
         except AttributeError:
-            self._coordinate_ring = PolynomialRing(self.base_ring(),
-                                        self.variable_names(),
-                                        self.dimension_relative() + 1)
+            self._coordinate_ring = PolynomialRing(
+                self.base_ring(), self.variable_names(), self.dimension_relative() + 1
+            )
             return self._coordinate_ring
 
     def _validate(self, polynomials):
@@ -461,7 +480,9 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             TypeError: the argument polynomials=x*y - z must be a list or tuple
         """
         if not isinstance(polynomials, (list, tuple)):
-            raise TypeError('the argument polynomials=%s must be a list or tuple' % polynomials)
+            raise TypeError(
+                'the argument polynomials=%s must be a list or tuple' % polynomials
+            )
         for f in polynomials:
             if not f.is_homogeneous():
                 raise TypeError("%s is not a homogeneous polynomial" % f)
@@ -491,7 +512,9 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         mm = int(m)
         if mm != m:
             raise ValueError("m must be an integer")
-        return ProductProjectiveSpaces([self.dimension_relative()] * mm, self.base_ring())
+        return ProductProjectiveSpaces(
+            [self.dimension_relative()] * mm, self.base_ring()
+        )
 
     def __mul__(self, right):
         r"""
@@ -554,8 +577,14 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
 
             phi = self.ambient_space().coordinate_ring().hom(list(CR.gens()[:n]), CR)
             psi = right.ambient_space().coordinate_ring().hom(list(CR.gens()[n:]), CR)
-            return AS.subscheme([phi(t) for t in self.defining_polynomials()] + [psi(t) for t in right.defining_polynomials()])
-        raise TypeError('%s must be a projective space, product of projective spaces, or subscheme' % right)
+            return AS.subscheme(
+                [phi(t) for t in self.defining_polynomials()]
+                + [psi(t) for t in right.defining_polynomials()]
+            )
+        raise TypeError(
+            '%s must be a projective space, product of projective spaces, or subscheme'
+            % right
+        )
 
     def _latex_(self):
         r"""
@@ -571,7 +600,10 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             sage: ProjectiveSpace(11, Zp(5), 'y')._latex_()                             # needs sage.rings.padics
             '{\\mathbf P}_{\\Bold{Z}_{5}}^{11}'
         """
-        return "{\\mathbf P}_{%s}^{%s}" % (latex(self.base_ring()), self.dimension_relative())
+        return "{\\mathbf P}_{%s}^{%s}" % (
+            latex(self.base_ring()),
+            self.dimension_relative(),
+        )
 
     def _linear_system_as_kernel(self, d, pt, m):
         """
@@ -665,23 +697,22 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             raise TypeError('the argument d=%s must be an integer' % d)
         if d < 0:
             raise ValueError('the integer d=%s must be nonnegative' % d)
-        if not isinstance(pt, (list, tuple,
-                               SchemeMorphism_point_projective_ring)):
-            raise TypeError('the argument pt=%s must be a list, tuple, or '
-                            'point on a projective space' % pt)
+        if not isinstance(pt, (list, tuple, SchemeMorphism_point_projective_ring)):
+            raise TypeError(
+                'the argument pt=%s must be a list, tuple, or '
+                'point on a projective space' % pt
+            )
         pt, R = prepare(pt, None)
         n = self.dimension_relative()
         if not len(pt) == n + 1:
-            raise TypeError('the sequence pt=%s must have %s '
-                            'components' % (pt, n + 1))
+            raise TypeError('the sequence pt=%s must have %s components' % (pt, n + 1))
         if not R.has_coerce_map_from(self.base_ring()):
             raise TypeError('unable to find a common ring for all elements')
         try:
             i = pt.index(1)
         except Exception:
-            raise TypeError('at least one component of pt=%s must be equal '
-                            'to 1' % pt)
-        pt = pt[:i] + pt[i + 1:]
+            raise TypeError('at least one component of pt=%s must be equal to 1' % pt)
+        pt = pt[:i] + pt[i + 1 :]
         if not isinstance(m, (int, Integer)):
             raise TypeError('the argument m=%s must be an integer' % m)
         if m < 0:
@@ -694,13 +725,15 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         monoms = IntegerVectors(d, n + 1).list()
         M = matrix(R, len(partials), len(monoms))
         for row in range(M.nrows()):
-            e = partials[row][:i] + partials[row][i + 1:]
+            e = partials[row][:i] + partials[row][i + 1 :]
             for col in range(M.ncols()):
-                f = monoms[col][:i] + monoms[col][i + 1:]
+                f = monoms[col][:i] + monoms[col][i + 1 :]
                 if all(f[j] >= e[j] for j in range(n)):
-                    M[row, col] = prod(binomial(fj, ej) * ptj**(fj - ej)
-                                       for ptj, fj, ej in zip(pt, f, e)
-                                       if fj > ej)
+                    M[row, col] = prod(
+                        binomial(fj, ej) * ptj ** (fj - ej)
+                        for ptj, fj, ej in zip(pt, f, e)
+                        if fj > ej
+                    )
         return M
 
     def _morphism(self, *args, **kwds):
@@ -720,7 +753,7 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         return SchemeMorphism_polynomial_projective_space(*args, **kwds)
 
     def _homset(self, *args, **kwds):
-        """                                          ii
+        """ii
         Construct the Hom-set
 
         EXAMPLES::
@@ -789,8 +822,10 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             ValueError: [+Infinity] not well defined in dimension > 1
         """
         from sage.rings.infinity import infinity
-        if v is infinity or (isinstance(v, (list, tuple)) and
-                             len(v) == 1 and v[0] is infinity):
+
+        if v is infinity or (
+            isinstance(v, (list, tuple)) and len(v) == 1 and v[0] is infinity
+        ):
             if self.dimension_relative() > 1:
                 raise ValueError("%s not well defined in dimension > 1" % v)
             v = [1, 0]
@@ -826,7 +861,10 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             sage: ProjectiveSpace(3, Zp(5), 'y')._repr_()                               # needs sage.rings.padics
             'Projective Space of dimension 3 over 5-adic Ring with capped relative precision 20'
         """
-        return "Projective Space of dimension %s over %s" % (self.dimension_relative(), self.base_ring())
+        return "Projective Space of dimension %s over %s" % (
+            self.dimension_relative(),
+            self.base_ring(),
+        )
 
     def _repr_generic_point(self, v=None):
         """
@@ -900,10 +938,10 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             Projective Space of dimension 2 over Algebraic Field
         """
         if isinstance(R, Map):
-            return ProjectiveSpace(self.dimension_relative(), R.codomain(),
-                               self.variable_names())
-        return ProjectiveSpace(self.dimension_relative(), R,
-                           self.variable_names())
+            return ProjectiveSpace(
+                self.dimension_relative(), R.codomain(), self.variable_names()
+            )
+        return ProjectiveSpace(self.dimension_relative(), R, self.variable_names())
 
     def is_projective(self):
         """
@@ -1124,7 +1162,7 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             ZZ_points_of_bounded_height,
             QQ_points_of_bounded_height,
             IQ_points_of_bounded_height,
-            points_of_bounded_height
+            points_of_bounded_height,
         )
 
         R = self.base_ring()
@@ -1138,16 +1176,20 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         elif R in NumberFields():
             # True for the rational field as well, so check RationalField first
             field_type = True
-        elif R is ZZ or (isinstance(R, sage.rings.abc.Order) and R.is_integrally_closed()):  # Ensure ring of integers / maximal order
+        elif R is ZZ or (
+            isinstance(R, sage.rings.abc.Order) and R.is_integrally_closed()
+        ):  # Ensure ring of integers / maximal order
             is_ring_of_ints = True
         else:
-            raise NotImplementedError("self must be a projective space over a number field or a ring of integers")
+            raise NotImplementedError(
+                "self must be a projective space over a number field or a ring of integers"
+            )
 
         bound = kwds.pop('bound')
         prec = kwds.pop('precision', 53)
 
         # Convert between absolute and relative height for calling Krumm's algorithm
-        bound = bound**R.absolute_degree()
+        bound = bound ** R.absolute_degree()
 
         dim = self.dimension_relative()
 
@@ -1232,7 +1274,7 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             sage: P.affine_patch(0).projective_embedding(0).codomain() == P
             True
         """
-        i = int(i)   # implicit type checking
+        i = int(i)  # implicit type checking
         n = self.dimension_relative()
         if i < 0 or i > n:
             raise ValueError("argument i (= %s) must be between 0 and %s" % (i, n))
@@ -1249,11 +1291,16 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         # if no ith patch exists, we may still be here with AA==None
         if AA is None:
             from sage.schemes.affine.affine_space import AffineSpace
+
             g = self.gens()
-            gens = g[:i] + g[i + 1:]
-            AA = AffineSpace(n, self.base_ring(), names=gens,
-                             ambient_projective_space=self,
-                             default_embedding_index=i)
+            gens = g[:i] + g[i + 1 :]
+            AA = AffineSpace(
+                n,
+                self.base_ring(),
+                names=gens,
+                ambient_projective_space=self,
+                default_embedding_index=i,
+            )
         elif AA.dimension_relative() != n:
             raise ValueError("affine space must be of the dimension %s" % (n))
         self.__affine_patches[i] = AA
@@ -1431,7 +1478,7 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         if self.dimension_relative() != 1:
             raise TypeError("projective space must be of dimension 1")
         n = ZZ(n)
-        if (n < 0):
+        if n < 0:
             raise ValueError("first parameter 'n' must be a nonnegative integer")
         # use the affine version and then homogenize.
         A = self.affine_patch(1)
@@ -1503,10 +1550,14 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             if not isinstance(CS, ProjectiveSpace_ring):
                 raise TypeError("(=%s) must be a projective space" % CS)
             if CS.dimension() != binomial(N + d, d) - 1:
-                raise TypeError("(=%s) has the wrong dimension to serve as the codomain space" % CS)
+                raise TypeError(
+                    "(=%s) has the wrong dimension to serve as the codomain space" % CS
+                )
 
         R = self.coordinate_ring().change_ring(order=order)
-        monomials = sorted([R({tuple(v): 1}) for v in WeightedIntegerVectors(d, [1] * (N + 1))])
+        monomials = sorted(
+            [R({tuple(v): 1}) for v in WeightedIntegerVectors(d, [1] * (N + 1))]
+        )
         monomials.reverse()  # order the monomials greatest to least via the given monomial order
         return Hom(self, CS)(monomials)
 
@@ -1690,9 +1741,13 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         n = self.dimension_relative()
         # makes sure there aren't to few or two many points
         if len(points_source) != n + 2:
-            raise ValueError("incorrect number of points in source, need %d points" % (n + 2))
+            raise ValueError(
+                "incorrect number of points in source, need %d points" % (n + 2)
+            )
         if len(points_target) != n + 2:
-            raise ValueError("incorrect number of points in target, need %d points" % (n + 2))
+            raise ValueError(
+                "incorrect number of points in target, need %d points" % (n + 2)
+            )
         if any(x.codomain() != self for x in points_source):
             raise ValueError("source points not in self")
         if any(x.codomain() != self for x in points_target):
@@ -1712,16 +1767,22 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         #   [1 : 1 : 1 : ... ] ]
         # to the list of points S
         def get_matrix(S, N):
-            a = matrix(N+1, N+1, [S[j][i] for i in range(N+1) for j in range(N+1)])
-            b = matrix(N+1, 1, list(S[N+1]))
+            a = matrix(
+                N + 1, N + 1, [S[j][i] for i in range(N + 1) for j in range(N + 1)]
+            )
+            b = matrix(N + 1, 1, list(S[N + 1]))
             X = a.solve_right(b)
-            m = matrix(N+1, N+1, [X[i,0]*S[i][j] for i in range(N+1) for j in range(N+1)])
+            m = matrix(
+                N + 1,
+                N + 1,
+                [X[i, 0] * S[i][j] for i in range(N + 1) for j in range(N + 1)],
+            )
             m = m.transpose()
             return m
 
         m_source = get_matrix(points_source, n)
         m_target = get_matrix(points_target, n)
-        return_mat = m_target*m_source.inverse()
+        return_mat = m_target * m_source.inverse()
         if normalize:
             R = self.base_ring()
             if R.is_exact():
@@ -1730,7 +1791,7 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
                     last_ele = last_row.pop()
                     while last_ele == 0:
                         last_ele = last_row.pop()
-                    return_mat *= ZZ(1)/last_ele
+                    return_mat *= ZZ(1) / last_ele
                 else:
                     lcm = return_mat[0][0].denominator()
                     for row in return_mat.rows():
@@ -1862,14 +1923,21 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             raise ValueError('plane_1 must be a subscheme of this projective space')
         if plane_2.ambient_space() != self:
             raise ValueError('plane_2 must be a subscheme of this projective space')
-        if len(plane_1.defining_polynomials()) > 1 or plane_1.defining_polynomials()[0].degree() != 1:
+        if (
+            len(plane_1.defining_polynomials()) > 1
+            or plane_1.defining_polynomials()[0].degree() != 1
+        ):
             raise ValueError('plane_1 must be defined by a single degree 1 equation')
-        if len(plane_2.defining_polynomials()) > 1 or plane_2.defining_polynomials()[0].degree() != 1:
+        if (
+            len(plane_2.defining_polynomials()) > 1
+            or plane_2.defining_polynomials()[0].degree() != 1
+        ):
             raise ValueError('plane_2 must be defined by a single degree 1 equation')
         N = self.dimension_relative()
         CR = self.coordinate_ring()
         points = []
         from sage.rings.rational_field import QQ
+
         P_QQ = ProjectiveSpace(QQ, N)
         # to determine the PGL transform, we need N+2 points source points and N+2 target points,
         # of which no N+1 are co-planar. Additionally, in order to map plane_1 to plane_2, N source
@@ -1883,9 +1951,9 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             # we have a single linear equation with N+1 variables
             # first we add a point for each variable with coefficient 0
             # giving us J points added in this loop
-            for i in range(N+1):
+            for i in range(N + 1):
                 if plane.defining_polynomials()[0].coefficient(CR.gens()[i]) == 0:
-                    L = [0]*(N+1)
+                    L = [0] * (N + 1)
                     L[i] = 1
                     source_points.append(self(L))
                 else:
@@ -1893,12 +1961,16 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             # next we add a point for each variable with nonzero coefficient, except the last
             # giving us a total of (N+1) - J - 1 = N - J points added in this loop
             # resulting in exactly J + (N-J) = N points on the plane
-            for i in range(len(nonzero_places)-1):
+            for i in range(len(nonzero_places) - 1):
                 nonzero_place1 = nonzero_places[i]
-                nonzero_place2 = nonzero_places[i+1]
-                L = [0]*(N+1)
-                L[nonzero_place1] = -1*plane.defining_polynomials()[0].coefficient(CR.gens()[nonzero_place2])
-                L[nonzero_place2] = plane.defining_polynomials()[0].coefficient(CR.gens()[nonzero_place1])
+                nonzero_place2 = nonzero_places[i + 1]
+                L = [0] * (N + 1)
+                L[nonzero_place1] = -1 * plane.defining_polynomials()[0].coefficient(
+                    CR.gens()[nonzero_place2]
+                )
+                L[nonzero_place2] = plane.defining_polynomials()[0].coefficient(
+                    CR.gens()[nonzero_place1]
+                )
                 source_points.append(self(L))
 
             # next we add independent points until we have N+2 points total
@@ -1914,9 +1986,11 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
                     if not any(m == 0 for m in Ms.minors(N + 1)):
                         source_points.append(self(point))
                         break
-            if len(source_points) != N+2:
-                raise NotImplementedError('Failed to automatically find sufficient independent points.' +
-                    ' Please find the necessary independent points manually, then use point transformation matrix.')
+            if len(source_points) != N + 2:
+                raise NotImplementedError(
+                    'Failed to automatically find sufficient independent points.'
+                    + ' Please find the necessary independent points manually, then use point transformation matrix.'
+                )
             points.append(source_points)
         return self.point_transformation_matrix(points[0], points[1])
 
@@ -1993,7 +2067,10 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         """
         if not isinstance(points, list):
             raise TypeError("points must be a list")
-        if any(not isinstance(point, SchemeMorphism_point_projective_ring) for point in points):
+        if any(
+            not isinstance(point, SchemeMorphism_point_projective_ring)
+            for point in points
+        ):
             raise TypeError("points must be a list of projective points")
         if any(x.codomain() != self for x in points):
             raise ValueError("points not in this projective space")
@@ -2002,7 +2079,9 @@ class ProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             return M.rank() == len(points)
         n = Integer(n)
         if n < 1 or n > len(points):
-            raise ValueError('n must be a nonnegative integer not greater than the length of points')
+            raise ValueError(
+                'n must be a nonnegative integer not greater than the length of points'
+            )
         all_subsets = Subsets(range(len(points)), n)
         linearly_independent = True
         for subset in all_subsets:
@@ -2132,10 +2211,16 @@ class ProjectiveSpace_field(ProjectiveSpace_ring):
         n = self.dimension_relative()
         R = Ch.parent()
         if binomial(n + 1, n - dim) != R.ngens():
-            raise ValueError("for given dimension, there should be %d variables in the Chow form" % binomial(n + 1, n - dim))
+            raise ValueError(
+                "for given dimension, there should be %d variables in the Chow form"
+                % binomial(n + 1, n - dim)
+            )
         # create the brackets associated to variables
-        L1 = [list(t) for t in UnorderedTuples(range(n + 1), dim + 1)
-              if all(t[i] < t[i + 1] for i in range(dim))]
+        L1 = [
+            list(t)
+            for t in UnorderedTuples(range(n + 1), dim + 1)
+            if all(t[i] < t[i + 1] for i in range(dim))
+        ]
         # create the dual brackets
         L2 = []
         signs = []
@@ -2154,8 +2239,7 @@ class ProjectiveSpace_field(ProjectiveSpace_ring):
         else:
             T = PolynomialRing(R.base_ring(), n + 1, 'z')
             M = matrix(T, n - dim, n + 1, list(T.gens()))
-        coords = [si * M.matrix_from_columns(L2i).det()
-                  for si, L2i in zip(signs, L2)]
+        coords = [si * M.matrix_from_columns(L2i).det() for si, L2i in zip(signs, L2)]
         # substitute in dual brackets to chow form
         phi = R.hom(coords, T)
         ch = phi(Ch)
@@ -2180,6 +2264,7 @@ class ProjectiveSpace_field(ProjectiveSpace_ring):
             Projective Plane Curve over Rational Field defined by y^2 - x*z
         """
         from sage.schemes.curves.constructor import Curve
+
         return Curve(F, self)
 
     def line_through(self, p, q):
@@ -2293,12 +2378,12 @@ class ProjectiveSpace_finite_field(ProjectiveSpace_field):
         """
         n = self.dimension_relative()
         R = self.base_ring()
-        zero = (R.zero(), )
-        one = (R.one(), )
+        zero = (R.zero(),)
+        one = (R.one(),)
         PHom = self.point_homset()
         C = PHom.codomain()
 
-        for k in range(n + 1): # position of last 1 before the 0's
+        for k in range(n + 1):  # position of last 1 before the 0's
             for v in product(*[R for _ in range(n - k)]):
                 yield C._point(PHom, v + one + zero * k, check=False)
 
@@ -2424,7 +2509,7 @@ class ProjectiveSpace_rational_field(ProjectiveSpace_field):
         n = self.dimension_relative()
 
         Q = [k - bound for k in range(2 * bound + 1)]  # the affine coordinates
-        R = [(k + 1) for k in range(bound)]         # the projective coordinate
+        R = [(k + 1) for k in range(bound)]  # the projective coordinate
         S = [Tuples(Q, (k + 1)) for k in range(n)]
         pts = []
 
@@ -2449,10 +2534,14 @@ class ProjectiveSpace_rational_field(ProjectiveSpace_field):
 
 
 # fix the pickles from moving projective_space.py
-register_unpickle_override('sage.schemes.generic.projective_space',
-                           'ProjectiveSpace_field',
-                           ProjectiveSpace_field)
+register_unpickle_override(
+    'sage.schemes.generic.projective_space',
+    'ProjectiveSpace_field',
+    ProjectiveSpace_field,
+)
 
-register_unpickle_override('sage.schemes.generic.projective_space',
-                           'ProjectiveSpace_rational_field',
-                           ProjectiveSpace_rational_field)
+register_unpickle_override(
+    'sage.schemes.generic.projective_space',
+    'ProjectiveSpace_rational_field',
+    ProjectiveSpace_rational_field,
+)

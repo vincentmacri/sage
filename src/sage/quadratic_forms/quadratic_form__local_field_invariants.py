@@ -264,10 +264,8 @@ def _rational_diagonal_form_and_transformation(self):
 
     # Clear the entries one row at a time.
     for i in range(n):
-
         # Deal with rows where the diagonal entry is zero.
         if Q[i, i] == 0:
-
             # Look for a nonzero entry and use it to make the diagonal nonzero (if it exists)
             for j in range(i + 1, n):
                 if Q[i, j] != 0:
@@ -460,14 +458,12 @@ def hasse_invariant(self, p):
     if R == QQ:
         for j in range(n - 1):
             for k in range(j + 1, n):
-                hasse_temp = hasse_temp * hilbert_symbol(Diag[j, j],
-                                                         Diag[k, k], p)
+                hasse_temp = hasse_temp * hilbert_symbol(Diag[j, j], Diag[k, k], p)
 
     else:
         for j in range(n - 1):
             for k in range(j + 1, n):
-                hasse_temp = hasse_temp * R.hilbert_symbol(Diag[j, j],
-                                                           Diag[k, k], p)
+                hasse_temp = hasse_temp * R.hilbert_symbol(Diag[j, j], Diag[k, k], p)
 
     return hasse_temp
 
@@ -544,14 +540,12 @@ def hasse_invariant__OMeara(self, p):
     if R == QQ:
         for j in range(n):
             for k in range(j, n):
-                hasse_temp = hasse_temp * hilbert_symbol(Diag[j, j],
-                                                         Diag[k, k], p)
+                hasse_temp = hasse_temp * hilbert_symbol(Diag[j, j], Diag[k, k], p)
 
     else:
         for j in range(n):
             for k in range(j, n):
-                hasse_temp = hasse_temp * R.hilbert_symbol(Diag[j, j],
-                                                           Diag[k, k], p)
+                hasse_temp = hasse_temp * R.hilbert_symbol(Diag[j, j], Diag[k, k], p)
 
     return hasse_temp
 
@@ -607,12 +601,13 @@ def is_hyperbolic(self, p) -> bool:
         return self.signature() == 0
 
     if p == 2:
-        return (QQ(self.det() * (-1) ** m).is_padic_square(p) and
-                self.hasse_invariant(p) ==
-                (-1) ** m.binomial(2))  # here -1 is hilbert_symbol(-1,-1,2)
+        return QQ(self.det() * (-1) ** m).is_padic_square(p) and self.hasse_invariant(
+            p
+        ) == (-1) ** m.binomial(2)  # here -1 is hilbert_symbol(-1,-1,2)
 
-    return (QQ(self.det() * (-1) ** m).is_padic_square(p) and
-            self.hasse_invariant(p) == 1)
+    return (
+        QQ(self.det() * (-1) ** m).is_padic_square(p) and self.hasse_invariant(p) == 1
+    )
 
 
 def is_anisotropic(self, p) -> bool:
@@ -670,8 +665,9 @@ def is_anisotropic(self, p) -> bool:
         return False
 
     if n == 4:
-        return (QQ(D).is_padic_square(p) and
-                (self.hasse_invariant(p) == - hilbert_symbol(-1, -1, p)))
+        return QQ(D).is_padic_square(p) and (
+            self.hasse_invariant(p) == -hilbert_symbol(-1, -1, p)
+        )
 
     if n == 3:
         return self.hasse_invariant(p) != hilbert_symbol(-1, -D, p)
@@ -682,7 +678,9 @@ def is_anisotropic(self, p) -> bool:
     if n == 1:
         return self[0, 0] != 0
 
-    raise NotImplementedError("we have not established a convention for 0-dim'l quadratic forms")
+    raise NotImplementedError(
+        "we have not established a convention for 0-dim'l quadratic forms"
+    )
 
 
 def is_isotropic(self, p) -> bool:
@@ -820,8 +818,12 @@ def compute_definiteness(self):
     # Sanity Check
     from sage.rings.real_mpfr import RR
 
-    if not ((self.base_ring() == ZZ) or (self.base_ring() == QQ) or (self.base_ring() == RR)):
-        raise NotImplementedError("we can only check definiteness over ZZ, QQ, and RR for now")
+    if not (
+        (self.base_ring() == ZZ) or (self.base_ring() == QQ) or (self.base_ring() == RR)
+    ):
+        raise NotImplementedError(
+            "we can only check definiteness over ZZ, QQ, and RR for now"
+        )
 
     # Some useful variables
     n = self.dim()
@@ -888,8 +890,12 @@ def compute_definiteness_string_by_determinants(self):
     # Sanity Check
     from sage.rings.real_mpfr import RR
 
-    if not ((self.base_ring() == ZZ) or (self.base_ring() == QQ) or (self.base_ring() == RR)):
-        raise NotImplementedError("we can only check definiteness over ZZ, QQ, and RR for now")
+    if not (
+        (self.base_ring() == ZZ) or (self.base_ring() == QQ) or (self.base_ring() == RR)
+    ):
+        raise NotImplementedError(
+            "we can only check definiteness over ZZ, QQ, and RR for now"
+        )
 
     from sage.functions.generalized import sgn
 
@@ -916,7 +922,7 @@ def compute_definiteness_string_by_determinants(self):
             return "indefinite"
 
         # Check for a change of signs in the upper r x r submatrix -- so it's indefinite
-        if sgn(first_coeff)**r != sgn(new_det):
+        if sgn(first_coeff) ** r != sgn(new_det):
             return "indefinite"
 
     # Here all ratios of determinants have the correct sign, so the matrix is (pos or neg) definite.

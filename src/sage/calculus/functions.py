@@ -2,6 +2,7 @@
 r"""
 Calculus functions
 """
+
 from sage.misc.lazy_import import lazy_import
 from sage.structure.element import Matrix, Vector, Expression
 
@@ -99,6 +100,7 @@ def wronskian(*args):
 
             def row(n):
                 return [diff(f, n) for f in fs]
+
         # NOTE: I rewrote the below as two lines to avoid a possible subtle
         # memory management problem on some platforms (only VMware as far
         # as we know?).  See trac #2990.
@@ -151,8 +153,9 @@ def jacobian(functions, variables):
         [-1/4, 0, 0]
 
     """
-    if isinstance(functions, Matrix) and (functions.nrows() == 1
-                                          or functions.ncols() == 1):
+    if isinstance(functions, Matrix) and (
+        functions.nrows() == 1 or functions.ncols() == 1
+    ):
         functions = functions.list()
     elif not isinstance(functions, (tuple, list, Vector)):
         functions = [functions]

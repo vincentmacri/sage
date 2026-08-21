@@ -10,18 +10,33 @@ from sage.modular.ssmod.all import *
 
 from sage.modular.abvar.all import *
 
-from sage.modular.dirichlet import (DirichletGroup,
-                                    kronecker_character, kronecker_character_upside_down,
-                                    trivial_character)
+from sage.modular.dirichlet import (
+    DirichletGroup,
+    kronecker_character,
+    kronecker_character_upside_down,
+    trivial_character,
+)
 
-from sage.modular.arithgroup.all import (Gamma0, Gamma1, GammaH, Gamma, SL2Z,
-                                         ArithmeticSubgroup_Permutation,
-                                         CongruenceSubgroup, FareySymbol)
+from sage.modular.arithgroup.all import (
+    Gamma0,
+    Gamma1,
+    GammaH,
+    Gamma,
+    SL2Z,
+    ArithmeticSubgroup_Permutation,
+    CongruenceSubgroup,
+    FareySymbol,
+)
 
 from sage.modular.cusps import Cusp, Cusps
 
-from sage.modular.etaproducts import (EtaGroup, EtaProduct, EtaGroupElement,
-                                      AllCusps, CuspFamily)
+from sage.modular.etaproducts import (
+    EtaGroup,
+    EtaProduct,
+    EtaGroupElement,
+    AllCusps,
+    CuspFamily,
+)
 
 lazy_import('sage.modular.multiple_zeta', ['Multizeta', 'Multizetas'])
 

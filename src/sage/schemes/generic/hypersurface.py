@@ -21,7 +21,9 @@ AUTHORS:
 
 from sage.rings.polynomial.multi_polynomial import MPolynomial
 from sage.schemes.affine.affine_subscheme import AlgebraicScheme_subscheme_affine
-from sage.schemes.projective.projective_subscheme import AlgebraicScheme_subscheme_projective
+from sage.schemes.projective.projective_subscheme import (
+    AlgebraicScheme_subscheme_projective,
+)
 
 
 class ProjectiveHypersurface(AlgebraicScheme_subscheme_projective):
@@ -69,13 +71,16 @@ class ProjectiveHypersurface(AlgebraicScheme_subscheme_projective):
             True
         """
         if not isinstance(poly, MPolynomial):
-            raise TypeError("Defining polynomial (=%s) must be a multivariate polynomial." % poly)
+            raise TypeError(
+                "Defining polynomial (=%s) must be a multivariate polynomial." % poly
+            )
         if not poly.is_homogeneous():
             raise TypeError("Defining polynomial (=%s) must be homogeneous." % poly)
         if ambient is None:
             R = poly.parent()
             from sage.schemes.projective.projective_space import ProjectiveSpace
-            ambient = ProjectiveSpace(R.base_ring(), R.ngens()-1)
+
+            ambient = ProjectiveSpace(R.base_ring(), R.ngens() - 1)
             ambient._coordinate_ring = R
         AlgebraicScheme_subscheme_projective.__init__(self, ambient, [poly])
 
@@ -95,7 +100,9 @@ class ProjectiveHypersurface(AlgebraicScheme_subscheme_projective):
             'Projective hypersurface defined by y^2 + x*z in Projective Space of dimension 2 over Integer Ring'
         """
         return "Projective hypersurface defined by %s in %s" % (
-            self.defining_polynomial(), self.ambient_space())
+            self.defining_polynomial(),
+            self.ambient_space(),
+        )
 
     def defining_polynomial(self):
         """
@@ -130,6 +137,7 @@ class AffineHypersurface(AlgebraicScheme_subscheme_affine):
         Affine hypersurface defined by -z^3 + x*y
          in Affine Space of dimension 3 over Rational Field
     """
+
     def __init__(self, poly, ambient=None):
         """
         Return the affine hypersurface in the space ambient
@@ -159,10 +167,13 @@ class AffineHypersurface(AlgebraicScheme_subscheme_affine):
             True
         """
         if not isinstance(poly, MPolynomial):
-            raise TypeError("Defining polynomial (= %s) must be a multivariate polynomial" % poly)
+            raise TypeError(
+                "Defining polynomial (= %s) must be a multivariate polynomial" % poly
+            )
         if ambient is None:
             R = poly.parent()
             from sage.schemes.affine.affine_space import AffineSpace
+
             ambient = AffineSpace(R.base_ring(), R.ngens())
             ambient._coordinate_ring = R
         AlgebraicScheme_subscheme_affine.__init__(self, ambient, [poly])
@@ -183,7 +194,9 @@ class AffineHypersurface(AlgebraicScheme_subscheme_affine):
             'Affine hypersurface defined by y^2 + x*z in Affine Space of dimension 3 over Integer Ring'
         """
         return "Affine hypersurface defined by %s in %s" % (
-            self.defining_polynomial(), self.ambient_space())
+            self.defining_polynomial(),
+            self.ambient_space(),
+        )
 
     def defining_polynomial(self):
         """

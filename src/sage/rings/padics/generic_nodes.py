@@ -19,7 +19,7 @@ AUTHORS:
 #  the License, or (at your option) any later version.
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.padics.local_generic import LocalGeneric
 from sage.rings.padics.padic_generic import pAdicGeneric
@@ -30,7 +30,11 @@ from sage.rings.rational_field import QQ
 from sage.rings.infinity import infinity, SignError
 from .lattice_precision import PrecisionLattice, PrecisionModule
 from sage.rings.padics.precision_error import PrecisionError
-from .padic_lattice_element import pAdicLatticeElement, pAdicLatticeCapElement, pAdicLatticeFloatElement
+from .padic_lattice_element import (
+    pAdicLatticeElement,
+    pAdicLatticeCapElement,
+    pAdicLatticeFloatElement,
+)
 
 
 class CappedAbsoluteGeneric(LocalGeneric):
@@ -216,19 +220,26 @@ class FloatingPointGeneric(LocalGeneric):
         tester = self._tester(**options)
         S = tester.some_elements()
         from sage.misc.misc import some_tuples
-        for x,y,z in some_tuples(S, 3, tester._max_runs):
+
+        for x, y, z in some_tuples(S, 3, tester._max_runs):
             yz_prec = min(y.precision_absolute(), z.precision_absolute())
             yz_val = (y + z).valuation()
             try:
-                prec = min(x.valuation() + yz_val + min(x.precision_relative(), yz_prec - yz_val),
-                           x.valuation() + y.valuation() + (x * y).precision_relative(),
-                           x.valuation() + z.valuation() + (x * z).precision_relative())
+                prec = min(
+                    x.valuation()
+                    + yz_val
+                    + min(x.precision_relative(), yz_prec - yz_val),
+                    x.valuation() + y.valuation() + (x * y).precision_relative(),
+                    x.valuation() + z.valuation() + (x * z).precision_relative(),
+                )
             except SignError:
                 pass
             else:
                 if prec > -infinity:
                     # only check left distributivity, since multiplication commutative
-                    tester.assertTrue((x * (y + z)).is_equal_to((x * y) + (x * z),prec))
+                    tester.assertTrue(
+                        (x * (y + z)).is_equal_to((x * y) + (x * z), prec)
+                    )
 
     def _test_additive_associativity(self, **options):
         r"""
@@ -257,8 +268,18 @@ class FloatingPointGeneric(LocalGeneric):
         tester = self._tester(**options)
         S = tester.some_elements()
         from sage.misc.misc import some_tuples
+
         for x, y, z in some_tuples(S, 3, tester._max_runs):
-            tester.assertTrue(((x + y) + z).is_equal_to(x + (y + z), min(x.precision_absolute(), y.precision_absolute(), z.precision_absolute())))
+            tester.assertTrue(
+                ((x + y) + z).is_equal_to(
+                    x + (y + z),
+                    min(
+                        x.precision_absolute(),
+                        y.precision_absolute(),
+                        z.precision_absolute(),
+                    ),
+                )
+            )
 
 
 class FloatingPointRingGeneric(FloatingPointGeneric):
@@ -314,6 +335,7 @@ class pAdicLatticeGeneric(pAdicGeneric):
         sage: R._prec_type()
         'lattice-float'
     """
+
     def __init__(self, p, prec, print_mode, names, label=None, category=None):
         """
         Initialization.
@@ -333,6 +355,7 @@ class pAdicLatticeGeneric(pAdicGeneric):
             'float'
         """
         from sage.rings.padics.lattice_precision import pRational
+
         self._approx_zero = pRational(p, 0)
         self._approx_one = pRational(p, 1)
         self._approx_minusone = pRational(p, -1)
@@ -357,7 +380,9 @@ class pAdicLatticeGeneric(pAdicGeneric):
         else:
             raise ValueError("subtype must be either 'cap' or 'float'")
         self._element_class = self.__make_element_class__(element_class)
-        pAdicGeneric.__init__(self, self, p, prec, print_mode, names, None, category=category)
+        pAdicGeneric.__init__(
+            self, self, p, prec, print_mode, names, None, category=category
+        )
 
     def _prec_type(self):
         """
@@ -666,7 +691,9 @@ class pAdicLatticeGeneric(pAdicGeneric):
             if isinstance(x, pAdicLatticeElement):
                 prec = x.parent().precision()
                 if prec.prime() != p:
-                    raise TypeError("conversion between different p-adic rings not supported")
+                    raise TypeError(
+                        "conversion between different p-adic rings not supported"
+                    )
                 if prec in elt_by_prec:
                     elt_by_prec[prec].append(x)
                 else:
@@ -675,10 +702,10 @@ class pAdicLatticeGeneric(pAdicGeneric):
                 elt_other.append(x)
 
         # We create the elements
-        ans = len(elts)*[None]
+        ans = len(elts) * [None]
         selfprec = self._precision
         # First the elements with precision lattice
-        for (prec, L) in elt_by_prec.items():
+        for prec, L in elt_by_prec.items():
             if prec is selfprec:
                 # Here, we use the _copy method in order
                 # to be sharp on precision
@@ -690,12 +717,22 @@ class pAdicLatticeGeneric(pAdicGeneric):
                 try:
                     lattice = prec.precision_lattice(L)
                 except PrecisionError:
-                    raise NotImplementedError("multiple conversion of a set of variables for which the module precision is not a lattice is not implemented yet")
+                    raise NotImplementedError(
+                        "multiple conversion of a set of variables for which the module precision is not a lattice is not implemented yet"
+                    )
                 for j in range(len(L)):
                     x = L[j]
                     dx = [[L[i], lattice[i, j]] for i in range(j)]
                     prec = lattice[j, j].valuation(p)
-                    y = self._element_class(self, x.value(), prec, dx=dx, dx_mode='values', check=False, reduce=False)
+                    y = self._element_class(
+                        self,
+                        x.value(),
+                        prec,
+                        dx=dx,
+                        dx_mode='values',
+                        check=False,
+                        reduce=False,
+                    )
                     for i in indices[id(x)]:
                         ans[i] = y
                     L[j] = y
@@ -725,6 +762,7 @@ class pAdicRelaxedGeneric(pAdicGeneric):
         sage: R._prec_type()                                                            # needs sage.libs.flint
         'relaxed'
     """
+
     def _get_element_class(self, name=None):
         r"""
         Return the class handling an element of type ``name``.
@@ -956,7 +994,9 @@ class pAdicRelaxedGeneric(pAdicGeneric):
                 num = self._get_element_class('value')(self, num)
                 denom = self._get_element_class('value')(self, denom)
                 return self._get_element_class('div')(self, num, denom, precbound=prec)
-        raise TypeError("unable to convert '%s' to a relaxed %s-adic integer" % (x, self.prime()))
+        raise TypeError(
+            "unable to convert '%s' to a relaxed %s-adic integer" % (x, self.prime())
+        )
 
     def an_element(self, unbounded=False):
         r"""
@@ -1003,9 +1043,9 @@ class pAdicRelaxedGeneric(pAdicGeneric):
         p = self(self.prime())
         a = self.gen()
         one = self.one()
-        L = [self.zero(), one, p, a, (one+p+p).inverse_of_unit(), p-p**2]
+        L = [self.zero(), one, p, a, (one + p + p).inverse_of_unit(), p - p**2]
         if self.is_field():
-            L.extend([~(p-p-a), p**(-20)])
+            L.extend([~(p - p - a), p ** (-20)])
         if not unbounded:
             return [x.at_precision_absolute() for x in L]
         return L
@@ -1156,7 +1196,9 @@ class pAdicRelaxedGeneric(pAdicGeneric):
         x = self(x)
         if x.valuation() < 0:
             raise ValueError("negative valuation")
-        return self._get_element_class('teichmuller')(self, self.exact_ring()(x.residue()))
+        return self._get_element_class('teichmuller')(
+            self, self.exact_ring()(x.residue())
+        )
 
     def teichmuller_system(self):
         r"""
@@ -1175,7 +1217,7 @@ class pAdicRelaxedGeneric(pAdicGeneric):
              ...66666666666666666666]
         """
         R = self.residue_class_field()
-        return [ self.teichmuller(ZZ(i)) for i in R if i != 0 ]
+        return [self.teichmuller(ZZ(i)) for i in R if i != 0]
 
 
 class pAdicRingGeneric(pAdicGeneric, sage.rings.abc.pAdicRing):
@@ -1263,13 +1305,17 @@ class pAdicRingGeneric(pAdicGeneric, sage.rings.abc.pAdicRing):
             ((3 + O(3^2))*x + 1 + O(3), 1 + O(3), 0)
         """
         from sage.misc.stopgap import stopgap
-        stopgap("Extended gcd computations over p-adic fields are performed using the standard Euclidean algorithm which might produce mathematically incorrect results in some cases.", 13439)
+
+        stopgap(
+            "Extended gcd computations over p-adic fields are performed using the standard Euclidean algorithm which might produce mathematically incorrect results in some cases.",
+            13439,
+        )
 
         base_ring = f.base_ring()
         fracfield = base_ring.fraction_field()
         f_field = f.change_ring(fracfield)
         g_field = g.change_ring(fracfield)
-        xgcd = fracfield._xgcd_univariate_polynomial(f_field,g_field)
+        xgcd = fracfield._xgcd_univariate_polynomial(f_field, g_field)
         lcm = base_ring(1)
         for f in xgcd:
             for i in f:
@@ -1314,34 +1360,34 @@ class pAdicFieldGeneric(pAdicGeneric, sage.rings.abc.pAdicField):
         """
         return True
 
-    #def class_field(self, group=None, map=None, generators=None):
+    # def class_field(self, group=None, map=None, generators=None):
     #    raise NotImplementedError
 
-    #def composite(self, subfield1, subfield2):
+    # def composite(self, subfield1, subfield2):
     #    raise NotImplementedError
 
-    #def norm_equation(self):
+    # def norm_equation(self):
     #    raise NotImplementedError
 
-    #def norm_group(self):
+    # def norm_group(self):
     #    raise NotImplementedError
 
-    #def norm_group_discriminant(self, group=None, map=None, generators=None):
+    # def norm_group_discriminant(self, group=None, map=None, generators=None):
     #    raise NotImplementedError
 
-    #def number_of_extensions(self, degree, discriminant=None, e=None, f=None):
+    # def number_of_extensions(self, degree, discriminant=None, e=None, f=None):
     #    raise NotImplementedError
 
-    #def list_of_extensions(self, degree, discriminant=None, e=None, f=None):
+    # def list_of_extensions(self, degree, discriminant=None, e=None, f=None):
     #    raise NotImplementedError
 
-    #def subfield(self, list):
+    # def subfield(self, list):
     #    raise NotImplementedError
 
-    #def subfield_lattice(self):
+    # def subfield_lattice(self):
     #    raise NotImplementedError
 
-    #def subfields_of_degree(self, n):
+    # def subfields_of_degree(self, n):
     #    raise NotImplementedError
 
 
@@ -1409,7 +1455,12 @@ class pAdicRingBaseGeneric(pAdicBaseGeneric, pAdicRingGeneric):
             (Completion[5, prec=(20, 40, True)], Integer Ring)
         """
         from sage.categories.pushout import CompletionFunctor
-        extras = {'print_mode':self._printer.dict(), 'type':self._prec_type(), 'names':self._names}
+
+        extras = {
+            'print_mode': self._printer.dict(),
+            'type': self._prec_type(),
+            'names': self._names,
+        }
         if hasattr(self, '_label'):
             extras['label'] = self._label
         if self._prec_type() == "relaxed":
@@ -1438,24 +1489,37 @@ class pAdicRingBaseGeneric(pAdicBaseGeneric, pAdicRingGeneric):
             sage: ZpFM(5,6).random_element().parent() is ZpFM(5,6)
             True
         """
-        if (algorithm == 'default'):
+        if algorithm == 'default':
             if self.is_capped_relative():
                 i = 0
                 a_i = ZZ.random_element(self.prime())
                 while a_i.is_zero():
                     i += 1
                     a_i = ZZ.random_element(self.prime())
-                return self((self.prime()**i)*(a_i + self.prime()*ZZ.random_element(self.prime_pow.pow_Integer_Integer(self.precision_cap()-1))))
-            return self(ZZ.random_element(self.prime_pow.pow_Integer_Integer(self.precision_cap())))
+                return self(
+                    (self.prime() ** i)
+                    * (
+                        a_i
+                        + self.prime()
+                        * ZZ.random_element(
+                            self.prime_pow.pow_Integer_Integer(self.precision_cap() - 1)
+                        )
+                    )
+                )
+            return self(
+                ZZ.random_element(
+                    self.prime_pow.pow_Integer_Integer(self.precision_cap())
+                )
+            )
         raise NotImplementedError("Don't know %s algorithm" % algorithm)
 
-    #def unit_group(self):
+    # def unit_group(self):
     #    raise NotImplementedError
 
-    #def unit_group_gens(self):
+    # def unit_group_gens(self):
     #    raise NotImplementedError
 
-    #def principal_unit_group(self):
+    # def principal_unit_group(self):
     #    raise NotImplementedError
 
 
@@ -1478,7 +1542,7 @@ class pAdicFieldBaseGeneric(pAdicBaseGeneric, pAdicFieldGeneric):
             sage: K = Qp(17); K.composite(K, K) is K
             True
         """
-        #should be overridden for extension fields
+        # should be overridden for extension fields
         if (subfield1 is self) and (subfield2 is self):
             return self
         raise ValueError("Arguments must be subfields of self.")
@@ -1524,7 +1588,9 @@ class pAdicFieldBaseGeneric(pAdicBaseGeneric, pAdicFieldGeneric):
         """
         for x in list:
             if x not in self:
-                raise TypeError("Members of the list of generators must be elements of self.")
+                raise TypeError(
+                    "Members of the list of generators must be elements of self."
+                )
         return self
 
     def construction(self, forbid_frac_field=False):
@@ -1581,8 +1647,13 @@ class pAdicFieldBaseGeneric(pAdicBaseGeneric, pAdicFieldGeneric):
             (Completion[5, prec=(20, 40, True)], Rational Field)
         """
         from sage.categories.pushout import FractionField, CompletionFunctor
+
         if forbid_frac_field:
-            extras = {'print_mode':self._printer.dict(), 'type':self._prec_type(), 'names':self._names}
+            extras = {
+                'print_mode': self._printer.dict(),
+                'type': self._prec_type(),
+                'names': self._names,
+            }
             if hasattr(self, '_label'):
                 extras['label'] = self._label
             if self._prec_type() == "relaxed":

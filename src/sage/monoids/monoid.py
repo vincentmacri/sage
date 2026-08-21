@@ -22,6 +22,7 @@ class Monoid_class(Parent):
             sage: TestSuite(F).run()
         """
         from sage.categories.monoids import Monoids
+
         if category is None:
             cat = Monoids().FinitelyGeneratedAsMagma()
         else:
@@ -52,4 +53,5 @@ class Monoid_class(Parent):
             Family (a, b, c, d, e)
         """
         from sage.sets.family import Family
+
         return Family(self.gens())

@@ -98,7 +98,7 @@ class KRTToRCBijectionTypeA2Odd(KRTToRCBijectionTypeA):
             self._update_partition_values(tableau_height)
 
         if pos_val <= tableau_height:
-            for a in range(pos_val-1, tableau_height):
+            for a in range(pos_val - 1, tableau_height):
                 self._update_vacancy_nums(a)
                 self._update_partition_values(a)
             if pos_val > 1:
@@ -129,7 +129,7 @@ class RCToKRTBijectionTypeA2Odd(RCToKRTBijectionTypeA):
         """
         height -= 1  # indexing
         n = self.n
-        ell = [None] * (2*n)
+        ell = [None] * (2 * n)
         b = None
 
         # Calculate the rank and ell values
@@ -152,8 +152,11 @@ class RCToKRTBijectionTypeA2Odd(RCToKRTBijectionTypeA):
                 if a < height:
                     end = len(self.cur_partitions[a])
                 for i in reversed(range(end)):
-                    if self.cur_partitions[a][i] >= last_size and \
-                      self.cur_partitions[a].vacancy_numbers[i] == self.cur_partitions[a].rigging[i]:
+                    if (
+                        self.cur_partitions[a][i] >= last_size
+                        and self.cur_partitions[a].vacancy_numbers[i]
+                        == self.cur_partitions[a].rigging[i]
+                    ):
                         ell[n + a] = i
                         break
 
@@ -176,23 +179,33 @@ class RCToKRTBijectionTypeA2Odd(RCToKRTBijectionTypeA):
 
             self._update_vacancy_numbers(a - 1)
             if ret_row is not None:
-                self.cur_partitions[a-1].rigging[ret_row] = self.cur_partitions[a-1].vacancy_numbers[ret_row]
+                self.cur_partitions[a - 1].rigging[ret_row] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[ret_row]
             if ret_row_bar is not None:
-                self.cur_partitions[a-1].rigging[ret_row_bar] = self.cur_partitions[a-1].vacancy_numbers[ret_row_bar]
+                self.cur_partitions[a - 1].rigging[ret_row_bar] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[ret_row_bar]
 
             ret_row = ret_row_next
             ret_row_bar = ret_row_bar_next
 
-        ret_row_next = self.cur_partitions[n-1].remove_cell(ell[n-1])
+        ret_row_next = self.cur_partitions[n - 1].remove_cell(ell[n - 1])
 
         self._update_vacancy_numbers(n - 2)
         if ret_row is not None:
-            self.cur_partitions[n-2].rigging[ret_row] = self.cur_partitions[n-2].vacancy_numbers[ret_row]
+            self.cur_partitions[n - 2].rigging[ret_row] = self.cur_partitions[
+                n - 2
+            ].vacancy_numbers[ret_row]
         if ret_row_bar is not None:
-            self.cur_partitions[n-2].rigging[ret_row_bar] = self.cur_partitions[n-2].vacancy_numbers[ret_row_bar]
+            self.cur_partitions[n - 2].rigging[ret_row_bar] = self.cur_partitions[
+                n - 2
+            ].vacancy_numbers[ret_row_bar]
 
         self._update_vacancy_numbers(n - 1)
         if ret_row_next is not None:
-            self.cur_partitions[n-1].rigging[ret_row_next] = self.cur_partitions[n-1].vacancy_numbers[ret_row_next]
+            self.cur_partitions[n - 1].rigging[ret_row_next] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[ret_row_next]
 
         return b

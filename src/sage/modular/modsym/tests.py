@@ -39,8 +39,10 @@ class Test:
     """
     Modular symbol testing class.
     """
-    def __init__(self, levels=20, weights=4, onlyg0=False, onlyg1=False,
-                 onlychar=False):
+
+    def __init__(
+        self, levels=20, weights=4, onlyg0=False, onlyg1=False, onlychar=False
+    ):
         """
         Create a modular symbol testing object.
 
@@ -298,8 +300,10 @@ class Test:
         V = M.cuspidal_submodule().new_submodule()
         d = V.dimension()
         d2 = M._cuspidal_new_submodule_dimension_formula()
-        assert d == d2, \
-            "Test failed for M=\"%s\", where computed dimension is %s but formula dimension is %s." % (M, d, d2)
+        assert d == d2, (
+            "Test failed for M=\"%s\", where computed dimension is %s but formula dimension is %s."
+            % (M, d, d2)
+        )
 
     def test_csns_nscs(self):
         """
@@ -317,11 +321,15 @@ class Test:
         M = self._modular_symbols_space()
         V1 = M.cuspidal_submodule().new_submodule()
         V2 = M.new_submodule().cuspidal_submodule()
-        assert V1 == V2, "Test failed for M=\"%s\", where the new cuspidal and cuspidal new spaces are computed differently." % M
+        assert V1 == V2, (
+            "Test failed for M=\"%s\", where the new cuspidal and cuspidal new spaces are computed differently."
+            % M
+        )
         d = M._cuspidal_new_submodule_dimension_formula()
-        assert d == V1.dimension(), \
-            "Test failed for M=\"%s\", where computed dimension is %s but formula dimension is %s." % (
-                M, V1.dimension(), d)
+        assert d == V1.dimension(), (
+            "Test failed for M=\"%s\", where computed dimension is %s but formula dimension is %s."
+            % (M, V1.dimension(), d)
+        )
 
     def test_decomposition(self):
         """
@@ -368,8 +376,7 @@ class Test:
             level = 18, weight = 4, sign = -1
             Modular Symbols space of dimension 0 and level 18, weight 4, character [1, -1], sign -1, over Rational Field
         """
-        tests = [a for a in Test.__dict__
-                 if a[:5] == "test_" and a != "test_random"]
+        tests = [a for a in Test.__dict__ if a[:5] == "test_" and a != "test_random"]
         name = random.choice(tests)
         print("Doing random test %s" % name)
         Test.__dict__[name](self)

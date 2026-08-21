@@ -244,6 +244,7 @@ class FiniteEnumeratedSet(UniqueRepresentation, Parent):
         if not self._elements:
             raise EmptySetError
         from sage.misc.prandom import choice
+
         return choice(self._elements)
 
     def cardinality(self):

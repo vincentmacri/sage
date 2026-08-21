@@ -5,19 +5,20 @@ AUTHORS:
 
  - Nicolas M. Thiery (2010): initial revision
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category import Category
-from sage.categories.covariant_functorial_construction import RegressiveCovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    RegressiveCovariantConstructionCategory,
+)
 
 
 class SubobjectsCategory(RegressiveCovariantConstructionCategory):
-
     _functor_category = "Subobjects"
 
     @classmethod
@@ -60,4 +61,6 @@ class SubobjectsCategory(RegressiveCovariantConstructionCategory):
             sage: sage.categories.subobjects.SubobjectsCategory.default_super_categories(Groups())
             Join of Category of groups and Category of subquotients of monoids and Category of subobjects of sets
         """
-        return Category.join([category.Subquotients(), super().default_super_categories(category)])
+        return Category.join(
+            [category.Subquotients(), super().default_super_categories(category)]
+        )

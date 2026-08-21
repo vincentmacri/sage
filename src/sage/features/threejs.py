@@ -25,7 +25,9 @@ class Threejs(StaticFile):
         """
         from sage.env import sage_data_paths, THREEJS_DIR
 
-        threejs_search_path = THREEJS_DIR or list(sage_data_paths('jupyter/nbextensions/threejs-sage')) + list(sage_data_paths('threejs-sage')) + list(sage_data_paths('threejs'))
+        threejs_search_path = THREEJS_DIR or list(
+            sage_data_paths('jupyter/nbextensions/threejs-sage')
+        ) + list(sage_data_paths('threejs-sage')) + list(sage_data_paths('threejs'))
 
         try:
             version = self.required_version()
@@ -34,12 +36,14 @@ class Threejs(StaticFile):
             filename = 'unknown'
 
         StaticFile.__init__(
-            self, name='threejs',
+            self,
+            name='threejs',
             filename=filename,
             spkg='threejs',
             type='standard',
             search_path=threejs_search_path,
-            description="JavaScript library to display 3D graphics")
+            description="JavaScript library to display 3D graphics",
+        )
 
     def required_version(self):
         """

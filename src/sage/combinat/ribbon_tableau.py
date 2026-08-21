@@ -1,6 +1,7 @@
 r"""
 Ribbon tableaux
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #
@@ -79,6 +80,7 @@ class RibbonTableau(SkewTableau):
         sage: RibbonTableau([[0, 0, 3, 0], [1, 1, 0], [2, 0, 4]]).evaluation()
         [2, 1, 1, 1]
     """
+
     # The following method is private and will only get called
     # when calling RibbonTableau() directly, and not via element_class
     @staticmethod
@@ -98,8 +100,7 @@ class RibbonTableau(SkewTableau):
         try:
             rt = [tuple(row) for row in rt]
         except TypeError:
-            raise TypeError("each element of the ribbon tableau "
-                            "must be an iterable")
+            raise TypeError("each element of the ribbon tableau must be an iterable")
         if not all(row for row in rt):
             raise TypeError("a ribbon tableau cannot have empty rows")
         # calls the inherited __init__ method (of SkewTableau )
@@ -147,7 +148,9 @@ class RibbonTableau(SkewTableau):
             word: 2041100030
         """
         from sage.combinat.words.word import Word
+
         return Word([letter for row in reversed(self) for letter in row])
+
 
 # ===================
 #   Ribbon Tableaux
@@ -197,6 +200,7 @@ class RibbonTableaux(UniqueRepresentation, Parent):
           2  0  0
         <BLANKLINE>
     """
+
     @staticmethod
     def __classcall_private__(cls, shape=None, weight=None, length=None):
         """
@@ -272,6 +276,7 @@ class RibbonTableaux_shape_weight_length(RibbonTableaux):
     """
     Ribbon tableaux of a given shape, weight, and length.
     """
+
     @staticmethod
     def __classcall_private__(cls, shape, weight, length):
         """
@@ -316,8 +321,9 @@ class RibbonTableaux_shape_weight_length(RibbonTableaux):
             sage: RibbonTableaux([[2,2],[]],[1,1],2).list()
             [[[0, 0], [1, 2]], [[1, 0], [2, 0]]]
         """
-        for x in graph_implementation_rec(self._shape, self._weight,
-                                          self._length, list_rec):
+        for x in graph_implementation_rec(
+            self._shape, self._weight, self._length, list_rec
+        ):
             yield self.from_expr(x)
 
     def _repr_(self) -> str:
@@ -329,7 +335,11 @@ class RibbonTableaux_shape_weight_length(RibbonTableaux):
             sage: RibbonTableaux([[2,1],[]], [1,1,1], 1)
             Ribbon tableaux of shape [2, 1] / [] and weight [1, 1, 1] with 1-ribbons
         """
-        return "Ribbon tableaux of shape %s and weight %s with %s-ribbons" % (repr(self._shape), list(self._weight), self._length)
+        return "Ribbon tableaux of shape %s and weight %s with %s-ribbons" % (
+            repr(self._shape),
+            list(self._weight),
+            self._length,
+        )
 
     def __contains__(self, x) -> bool:
         """
@@ -405,7 +415,9 @@ class RibbonTableaux_shape_weight_length(RibbonTableaux):
         """
         # Strip zeros for graph_implementation_rec
         wt = [i for i in self._weight if i != 0]
-        return Integer(graph_implementation_rec(self._shape, wt, self._length, count_rec)[0])
+        return Integer(
+            graph_implementation_rec(self._shape, wt, self._length, count_rec)[0]
+        )
 
 
 def insertion_tableau(skp, perm, evaluation, tableau, length):
@@ -455,8 +467,9 @@ def insertion_tableau(skp, perm, evaluation, tableau, length):
         tableau[-(k + 1)] += [0] * (skp[0][k] - partc[k] - len(tableau[-(k + 1)]))
 
     # We construct a tableau from the southwest corner to the northeast one
-    tableau = [[0] * (skp[0][k] - partc[k])
-               for k in reversed(range(len(tableau), len(skp[0])))] + tableau
+    tableau = [
+        [0] * (skp[0][k] - partc[k]) for k in reversed(range(len(tableau), len(skp[0])))
+    ] + tableau
 
     tableau = SkewTableaux().from_expr([skp[1], tableau]).conjugate()
     tableau = tableau.to_expr()[1]
@@ -470,7 +483,9 @@ def insertion_tableau(skp, perm, evaluation, tableau, length):
     lp = len(perm)
     for k in range(lp):
         if perm[-(k + 1)] != 0:
-            tableau[len(tableau) - lp + k][skp[0][lp - (k + 1)] - skp[1][lp - (k + 1)] - 1] = evaluation
+            tableau[len(tableau) - lp + k][
+                skp[0][lp - (k + 1)] - skp[1][lp - (k + 1)] - 1
+            ] = evaluation
 
     return SkewTableau(expr=[psave.conjugate(), tableau]).conjugate().to_expr()
 
@@ -553,15 +568,17 @@ def list_rec(nexts, current, part, weight, length):
 
     # Test if the current nodes drive us to new solutions
     if nexts:
-        return [insertion_tableau(part, curr_i[1], len(weight),
-                                  nexts_ij, length)
-                for nexts_i, curr_i in zip(nexts, current)
-                for nexts_ij in nexts_i]
+        return [
+            insertion_tableau(part, curr_i[1], len(weight), nexts_ij, length)
+            for nexts_i, curr_i in zip(nexts, current)
+            for nexts_ij in nexts_i
+        ]
 
     # The current nodes are at the bottom of the tree
-    return [insertion_tableau(part, curr_i[1],
-                              len(weight), [[], []], length)
-            for curr_i in current]
+    return [
+        insertion_tableau(part, curr_i[1], len(weight), [[], []], length)
+        for curr_i in current
+    ]
 
 
 # ===============================
@@ -611,8 +628,9 @@ def spin_rec(t, nexts, current, part, weight, length):
         tmp.append(weight[-1] * (length - 1) - perm.number_of_inversions())
 
     if nexts:
-        return [sum(sum(t**tval * nval for nval in nexts[i])
-                    for i, tval in enumerate(tmp))]
+        return [
+            sum(sum(t**tval * nval for nval in nexts[i]) for i, tval in enumerate(tmp))
+        ]
     return [sum(t**val for val in tmp)]
 
 
@@ -650,8 +668,11 @@ def spin_polynomial_square(part, weight, length):
         return R.one()
 
     t = R.gen()
-    return R(graph_implementation_rec(part, weight, length,
-                                      functools.partial(spin_rec, t))[0])
+    return R(
+        graph_implementation_rec(part, weight, length, functools.partial(spin_rec, t))[
+            0
+        ]
+    )
 
 
 def spin_polynomial(part, weight, length):
@@ -679,10 +700,11 @@ def spin_polynomial(part, weight, length):
         3*t^9 + 5*t^8 + 9*t^7 + 6*t^6 + 3*t^5
     """
     from sage.symbolic.ring import SR
+
     sp = spin_polynomial_square(part, weight, length)
     t = SR.var('t')
     coeffs = sp.list()
-    return sum(c * t**(ZZ(i) / 2) for i, c in enumerate(coeffs))
+    return sum(c * t ** (ZZ(i) / 2) for i, c in enumerate(coeffs))
 
 
 def cospin_polynomial(part, weight, length):
@@ -720,7 +742,7 @@ def cospin_polynomial(part, weight, length):
     coeffs = [c for c in sp.list() if c]
     d = len(coeffs) - 1
     t = R.gen()
-    return R(sum(c * t**(d - i) for i, c in enumerate(coeffs)))
+    return R(sum(c * t ** (d - i) for i, c in enumerate(coeffs)))
 
 
 #   //////////////////////////////////////////////////////////////////////////////////////////
@@ -757,7 +779,9 @@ def graph_implementation_rec(skp, weight, length, function):
 
     # Some tests in order to know if the shape and the weight are compatible.
     if weight and weight[-1] <= len(partp):
-        perms = permutation.Permutations([0] * (len(partp) - weight[-1]) + [length] * (weight[-1])).list()
+        perms = permutation.Permutations(
+            [0] * (len(partp) - weight[-1]) + [length] * (weight[-1])
+        ).list()
     else:
         return function([], [], skp, weight, length)
 
@@ -787,8 +811,10 @@ def graph_implementation_rec(skp, weight, length, function):
         return function([], selection, skp, weight, length)
     # The recursive calls permit us to construct the list of the sons
     # of all current nodes in selection
-    a = [graph_implementation_rec([p[0], outer], weight[:-1], length, function)
-         for p in selection]
+    a = [
+        graph_implementation_rec([p[0], outer], weight[:-1], length, function)
+        for p in selection
+    ]
     return function(a, selection, skp, weight, length)
 
 
@@ -811,6 +837,7 @@ class MultiSkewTableau(CombinatorialElement):
         sage: mst = MultiSkewTableau([ [[None,1],[2,3]], [[1,2],[2]] ])
         sage: TestSuite(mst).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, x):
         """
@@ -936,8 +963,8 @@ class MultiSkewTableau(CombinatorialElement):
         c = pi - pj
         value = self[pk][pi][pj]
         pk_cells = self[pk].cells_by_content(c)
-        same_diagonal = [t.cells_by_content(c) for t in self[pk + 1:]]
-        above_diagonal = [t.cells_by_content(c + 1) for t in self[pk + 1:]]
+        same_diagonal = [t.cells_by_content(c) for t in self[pk + 1 :]]
+        above_diagonal = [t.cells_by_content(c + 1) for t in self[pk + 1 :]]
 
         res = []
         for i, j in pk_cells:
@@ -1019,6 +1046,7 @@ class SemistandardMultiSkewTableaux(MultiSkewTableaux):
          [[[1, 3], [3]], [[None, 1], [2, 2]]],
          [[[2, 3], [3]], [[None, 1], [1, 2]]]]
     """
+
     @staticmethod
     def __classcall_private__(cls, shape, weight):
         """
@@ -1060,7 +1088,10 @@ class SemistandardMultiSkewTableaux(MultiSkewTableaux):
             sage: SemistandardMultiSkewTableaux([ [[2,1],[]], [[2,2],[1]] ], [2,2,2])
             Semistandard multi skew tableaux of shape [[2, 1] / [], [2, 2] / [1]] and weight [2, 2, 2]
         """
-        return "Semistandard multi skew tableaux of shape %s and weight %s" % (list(self._shape), self._weight)
+        return "Semistandard multi skew tableaux of shape %s and weight %s" % (
+            list(self._shape),
+            self._weight,
+        )
 
     def __contains__(self, x):
         """
@@ -1138,10 +1169,10 @@ class SemistandardMultiSkewTableaux(MultiSkewTableaux):
         for lk in l:
             pos = 0  # Double check this
             lk = list(lk)
-            w = lk[:s[0]]
+            w = lk[: s[0]]
             restmp = [S.from_shape_and_word(parts[0], w)]
             for i in range(1, len(parts)):
-                pos += s[i-1]
-                w = lk[pos: pos + s[i]]
+                pos += s[i - 1]
+                w = lk[pos : pos + s[i]]
                 restmp.append(S.from_shape_and_word(parts[i], w))
             yield self.element_class(self, restmp)

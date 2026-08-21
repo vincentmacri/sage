@@ -107,7 +107,10 @@ def reproducible_repr(val):
         set(['a', 'b', 'c', 'd'])
     """
     from sage.misc.superseded import deprecation
-    deprecation(39420, 'reproducible_repr is deprecated, see its documentation for details')
+
+    deprecation(
+        39420, 'reproducible_repr is deprecated, see its documentation for details'
+    )
 
     def sorted_pairs(iterable, pairs=False):
         # We don't know whether container data structures will have
@@ -127,15 +130,14 @@ def reproducible_repr(val):
     if isinstance(val, dict):
         keys = sorted_pairs(val.keys(), True)
         itms = ["{}: {}".format(r, reproducible_repr(val[k])) for r, k in keys]
-        return ("{{{}}}".format(", ".join(itms)))
+        return "{{{}}}".format(", ".join(itms))
     if isinstance(val, list):
         itms = map(reproducible_repr, val)
-        return ("[{}]".format(", ".join(itms)))
+        return "[{}]".format(", ".join(itms))
     return repr(val)
 
 
 class AttributeAccessTracerHelper:
-
     def __init__(self, delegate, prefix="  ", reads=True):
         r"""
         Helper to print proxied access to attributes.
@@ -204,21 +206,26 @@ class AttributeAccessTracerHelper:
         """
         val = getattr(self.delegate, name)
         from IPython.lib.pretty import pretty
+
         if callable(val) and name not in self.delegate.__dict__:
+
             @wraps(val)
             def wrapper(*args, **kwds):
                 arglst = [pretty(arg) for arg in args]
-                arglst.extend("{}={}".format(k, pretty(v))
-                              for k, v in sorted(kwds.items()))
+                arglst.extend(
+                    "{}={}".format(k, pretty(v)) for k, v in sorted(kwds.items())
+                )
                 res = val(*args, **kwds)
-                print("{}call {}({}) -> {}"
-                      .format(self.prefix, name, ", ".join(arglst),
-                              pretty(res)))
+                print(
+                    "{}call {}({}) -> {}".format(
+                        self.prefix, name, ", ".join(arglst), pretty(res)
+                    )
+                )
                 return res
+
             return wrapper
         if self.reads:
-            print("{}read {} = {}".format(self.prefix, name,
-                                          pretty(val)))
+            print("{}read {} = {}".format(self.prefix, name, pretty(val)))
         return val
 
     def set(self, name, val):
@@ -241,13 +248,12 @@ class AttributeAccessTracerHelper:
             2
         """
         from IPython.lib.pretty import pretty
-        print("{}write {} = {}".format(self.prefix, name,
-                                       pretty(val)))
+
+        print("{}write {} = {}".format(self.prefix, name, pretty(val)))
         setattr(self.delegate, name, val)
 
 
 class AttributeAccessTracerProxy:
-
     def __init__(self, delegate, **kwds):
         r"""
         Proxy object which prints all attribute and method access to an object.
@@ -391,17 +397,19 @@ def trace_method(obj, meth, **kwds):
         9
     """
     from sage.cpython.getattr import raw_getattr
+
     f = raw_getattr(obj, meth)
     t = AttributeAccessTracerProxy(obj, **kwds)
 
     @wraps(f)
     def g(*args, **kwds):
         from IPython.lib.pretty import pretty
+
         arglst = [pretty(arg) for arg in args]
-        arglst.extend("{}={}".format(k, pretty(v))
-                      for k, v in sorted(kwds.items()))
+        arglst.extend("{}={}".format(k, pretty(v)) for k, v in sorted(kwds.items()))
         print("enter {}({})".format(meth, ", ".join(arglst)))
         res = f(t, *args, **kwds)
         print("exit {} -> {}".format(meth, pretty(res)))
         return res
+
     setattr(obj, meth, g)

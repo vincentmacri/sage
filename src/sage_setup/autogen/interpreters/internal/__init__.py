@@ -88,7 +88,7 @@ the architecture, without having to worry about forward and backward
 compatibility.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -97,7 +97,7 @@ compatibility.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 #####################################################################
 # This module is used during the Sage build process, so it should not
@@ -108,7 +108,6 @@ compatibility.
 # interpreter configuration is split out into a separate file,
 # that will have to be changed.
 #####################################################################
-
 
 import os
 from os.path import getmtime
@@ -127,7 +126,7 @@ from .utils import *
 _INTERPRETER_SOURCES = [
     ('interp', 'c', 'interpreter'),
     ('wrapper', 'pxd', 'pxd'),
-    ('wrapper', 'pyx', 'wrapper')
+    ('wrapper', 'pyx', 'wrapper'),
 ]
 
 
@@ -200,9 +199,7 @@ def rebuild(dirname, force=False, interpreters=None, distribution=None):
 
     _INTERPRETERS = [
         getattr(
-            import_module(
-                ".specs." + interpreter.lower(), package=__name__
-            ),
+            import_module(".specs." + interpreter.lower(), package=__name__),
             interpreter + "Interpreter",
         )
         for interpreter in interpreters
@@ -224,6 +221,7 @@ def rebuild(dirname, force=False, interpreters=None, distribution=None):
     # one of the generated files is older than the generator sources
     class NeedToRebuild(Exception):
         pass
+
     try:
         if force:
             raise NeedToRebuild("-> Force rebuilding interpreters")
@@ -239,7 +237,11 @@ def rebuild(dirname, force=False, interpreters=None, distribution=None):
                     src_file = os.path.join(root, basename)
                     src_timestamp = getmtime(src_file)
                     if src_timestamp > gen_timestamp:
-                        raise NeedToRebuild("-> Rebuilding interpreters because {} changed".format(src_file))
+                        raise NeedToRebuild(
+                            "-> Rebuilding interpreters because {} changed".format(
+                                src_file
+                            )
+                        )
     except NeedToRebuild as E:
         # Rebuild
         print(E)

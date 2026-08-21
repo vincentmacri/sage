@@ -3,6 +3,7 @@ Hasse diagrams of posets
 
 {INDEX_OF_FUNCTIONS}
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Peter Jipsen <jipsen@chapman.edu>
 #       Copyright (C) 2008 Franco Saliola <saliola@gmail.com>
@@ -30,9 +31,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-lazy_import('sage.combinat.posets.hasse_cython_flint',
-            ['moebius_matrix_fast', 'coxeter_matrix_fast',
-             'chain_poly'])
+lazy_import(
+    'sage.combinat.posets.hasse_cython_flint',
+    ['moebius_matrix_fast', 'coxeter_matrix_fast', 'chain_poly'],
+)
 lazy_import('sage.matrix.constructor', 'matrix')
 lazy_import('sage.rings.finite_rings.finite_field_constructor', 'GF')
 
@@ -100,6 +102,7 @@ class HasseDiagram(DiGraph):
     .. autoattribute:: _meet
     .. autoattribute:: _join
     """
+
     def _repr_(self) -> str:
         r"""
         TESTS::
@@ -136,7 +139,10 @@ class HasseDiagram(DiGraph):
             sage: list(H.linear_extensions())                                           # needs sage.modules
             [[0, 1, 2, 3], [0, 2, 1, 3]]
         """
-        from sage.combinat.posets.linear_extension_iterator import linear_extension_iterator
+        from sage.combinat.posets.linear_extension_iterator import (
+            linear_extension_iterator,
+        )
+
         return linear_extension_iterator(self)
 
     def greedy_linear_extensions_iterator(self) -> Iterator[list[int]]:
@@ -177,13 +183,18 @@ class HasseDiagram(DiGraph):
 
             S = []
             if linext:
-                S = [x for x in H.neighbor_out_iterator(linext[-1])
-                     if all(low in linext for low in H.neighbor_in_iterator(x))]
+                S = [
+                    x
+                    for x in H.neighbor_out_iterator(linext[-1])
+                    if all(low in linext for low in H.neighbor_in_iterator(x))
+                ]
             if not S:
                 S_ = set(self).difference(set(linext))
-                S = [x for x in S_
-                     if not any(low in S_
-                                for low in self.neighbor_in_iterator(x))]
+                S = [
+                    x
+                    for x in S_
+                    if not any(low in S_ for low in self.neighbor_in_iterator(x))
+                ]
 
             for e in S:
                 yield from greedy_rec(H, linext + [e])
@@ -242,10 +253,14 @@ class HasseDiagram(DiGraph):
                     if not k:  # Start from new minimal element
                         S = [x for x in self.sources() if x not in linext]
                     else:
-                        S = [x for x in self.neighbor_out_iterator(linext[k - 1])
-                             if x not in linext and
-                             all(low in linext
-                                 for low in self.neighbor_in_iterator(x))]
+                        S = [
+                            x
+                            for x in self.neighbor_out_iterator(linext[k - 1])
+                            if x not in linext
+                            and all(
+                                low in linext for low in self.neighbor_in_iterator(x)
+                            )
+                        ]
                         k -= 1
 
                 for e in S:
@@ -269,8 +284,7 @@ class HasseDiagram(DiGraph):
         if lin_ext is None or lin_ext == list(range(len(self))):
             return all(x < y for x, y in self.cover_relations_iterator())
         indices = {x: lin_ext.index(x) for x in self}
-        return all(indices[x] < indices[y]
-                   for x, y in self.cover_relations_iterator())
+        return all(indices[x] < indices[y] for x, y in self.cover_relations_iterator())
 
     def cover_relations_iterator(self) -> Iterator[tuple[int, int]]:
         r"""
@@ -546,9 +560,11 @@ class HasseDiagram(DiGraph):
         """
         if self.cardinality() == 0:
             return True
-        return (self.n_edges() + 1 == self.n_vertices() and  # tree
-                all(d <= 1 for d in self.out_degree()) and
-                all(d <= 1 for d in self.in_degree()))
+        return (
+            self.n_edges() + 1 == self.n_vertices()  # tree
+            and all(d <= 1 for d in self.out_degree())
+            and all(d <= 1 for d in self.in_degree())
+        )
 
     def is_antichain_of_poset(self, elms) -> bool:
         """
@@ -565,9 +581,9 @@ class HasseDiagram(DiGraph):
             False
         """
         from itertools import combinations
+
         elms_sorted = sorted(set(elms))
-        return not any(self.is_lequal(a, b) for a, b in
-                       combinations(elms_sorted, 2))
+        return not any(self.is_lequal(a, b) for a, b in combinations(elms_sorted, 2))
 
     def dual(self):
         """
@@ -617,10 +633,13 @@ class HasseDiagram(DiGraph):
         """
         n = self.order()
         v_up = (frozenset(self.depth_first_search(v)) for v in range(n))
-        v_down = [frozenset(self.depth_first_search(v, neighbors=self.neighbor_in_iterator))
-                  for v in range(n)]
-        self._intervals = [[sorted(up.intersection(down)) for down in v_down]
-                           for up in v_up]
+        v_down = [
+            frozenset(self.depth_first_search(v, neighbors=self.neighbor_in_iterator))
+            for v in range(n)
+        ]
+        self._intervals = [
+            [sorted(up.intersection(down)) for down in v_down] for up in v_up
+        ]
 
     def interval(self, x, y) -> list[int]:
         r"""
@@ -985,7 +1004,9 @@ class HasseDiagram(DiGraph):
                 if not ci:
                     self._moebius_function_values[(i, j)] = 0
                 else:
-                    self._moebius_function_values[(i, j)] = -sum(self.moebius_function(i, k) for k in ci[:-1])
+                    self._moebius_function_values[(i, j)] = -sum(
+                        self.moebius_function(i, k) for k in ci[:-1]
+                    )
         return self._moebius_function_values[(i, j)]
 
     def bottom_moebius_function(self, j):
@@ -1043,7 +1064,9 @@ class HasseDiagram(DiGraph):
                 # about sorting the elements of the order ideal.
                 ci = self._backend.depth_first_search(j, reverse=True)
                 next(ci)  # throw out the first element, which is j
-                self._moebius_function_values[(zero, j)] = -sum(self.bottom_moebius_function(k) for k in ci)
+                self._moebius_function_values[(zero, j)] = -sum(
+                    self.bottom_moebius_function(k) for k in ci
+                )
         return self._moebius_function_values[(zero, j)]
 
     def moebius_function_matrix(self, algorithm='cython'):
@@ -1124,9 +1147,9 @@ class HasseDiagram(DiGraph):
                     for k in greater_than[i]:
                         if k != i:
                             available.append(k)
-                            m[(i, k)] = -ZZ.sum(m[(j, k)]
-                                                for j in available
-                                                if k in greater_than[j])
+                            m[(i, k)] = -ZZ.sum(
+                                m[(j, k)] for j in available if k in greater_than[j]
+                            )
                 M = matrix(ZZ, n, n, m, sparse=True)  # noqa: F821
             elif algorithm == "matrix":
                 M = self.lequal_matrix().inverse_of_unit()
@@ -1203,7 +1226,7 @@ class HasseDiagram(DiGraph):
             ValueError: unknown algorithm
         """
         if algorithm == 'matrix':
-            return - self.lequal_matrix() * self.moebius_function_matrix().transpose()
+            return -self.lequal_matrix() * self.moebius_function_matrix().transpose()
         if algorithm == 'cython':
             return coxeter_matrix_fast(self._leq_storage)  # noqa: F821
         raise ValueError("unknown algorithm")
@@ -1248,8 +1271,9 @@ class HasseDiagram(DiGraph):
             sage: H.order_ideal([7,10])
             [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]
         """
-        return sorted(self.depth_first_search(elements,
-                                              neighbors=self.neighbor_in_iterator))
+        return sorted(
+            self.depth_first_search(elements, neighbors=self.neighbor_in_iterator)
+        )
 
     def order_ideal_cardinality(self, elements):
         r"""
@@ -1460,9 +1484,9 @@ class HasseDiagram(DiGraph):
             meet_prime = None
             for u in upset:
                 for m in self.neighbor_in_iterator(u):
-                    if (m not in upset and
-                        all(u_ in upset for u_ in
-                            self.neighbor_out_iterator(m))):
+                    if m not in upset and all(
+                        u_ in upset for u_ in self.neighbor_out_iterator(m)
+                    ):
                         if meet_prime is not None:
                             return
                         meet_prime = m
@@ -2087,10 +2111,16 @@ class HasseDiagram(DiGraph):
         items = ((e, dual_isomorphism[e]) for e in range(n))
 
         # Fix following after issue #20727
-        comps = [[x for x in range(n)
-                  if mt[e, x] == 0 and jn[e, x] == n - 1 and
-                  x in orbits[orbit_number[dual_e]]]
-                 for e, dual_e in items]
+        comps = [
+            [
+                x
+                for x in range(n)
+                if mt[e, x] == 0
+                and jn[e, x] == n - 1
+                and x in orbits[orbit_number[dual_e]]
+            ]
+            for e, dual_e in items
+        ]
 
         # Fitting is done by this recursive function:
         def recursive_fit(orthocomplements, unbinded):
@@ -2098,17 +2128,25 @@ class HasseDiagram(DiGraph):
                 yield orthocomplements
             else:
                 next_to_fit = unbinded[0]
-                possible_values = [x for x in comps[next_to_fit]
-                                   if x not in orthocomplements]
+                possible_values = [
+                    x for x in comps[next_to_fit] if x not in orthocomplements
+                ]
                 for x in self.lower_covers_iterator(next_to_fit):
                     if orthocomplements[x] is not None:
-                        possible_values = [y for y in possible_values if self.has_edge(y, orthocomplements[x])]
+                        possible_values = [
+                            y
+                            for y in possible_values
+                            if self.has_edge(y, orthocomplements[x])
+                        ]
                 for x in self.upper_covers_iterator(next_to_fit):
                     if orthocomplements[x] is not None:
-                        possible_values = [y for y in possible_values if self.has_edge(orthocomplements[x], y)]
+                        possible_values = [
+                            y
+                            for y in possible_values
+                            if self.has_edge(orthocomplements[x], y)
+                        ]
 
                 for e in possible_values:
-
                     new_binded = orthocomplements[:]
                     new_binded[next_to_fit] = e
                     new_binded[e] = next_to_fit
@@ -2238,8 +2276,7 @@ class HasseDiagram(DiGraph):
             while queue:
                 x = queue.pop()
                 new_antichain = antichain + [x]
-                new_queue = [t for t in queue
-                             if not (x in leq[t] or t in leq[x])]
+                new_queue = [t for t in queue if not (x in leq[t] or t in leq[x])]
                 antichains_queues.append((new_antichain, new_queue))
 
     def are_incomparable(self, i, j) -> bool:
@@ -2329,9 +2366,10 @@ class HasseDiagram(DiGraph):
             sage: TestSuite(A).run()
         """
         from sage.combinat.subsets_pairwise import PairwiseCompatibleSubsets
-        return PairwiseCompatibleSubsets(self.vertices(sort=True),
-                                         self.are_incomparable,
-                                         element_class=element_class)
+
+        return PairwiseCompatibleSubsets(
+            self.vertices(sort=True), self.are_incomparable, element_class=element_class
+        )
 
     def chains(self, element_class=list, exclude=None, conversion=None):
         """
@@ -2503,8 +2541,7 @@ class HasseDiagram(DiGraph):
             return True
 
         # fall back to default implementation
-        it = self.all_paths_iterator([t_min], [t_max],
-                                     simple=True, trivial=True)
+        it = self.all_paths_iterator([t_min], [t_max], simple=True, trivial=True)
         try:
             next(it)
         except StopIteration:  # not comparable
@@ -2553,7 +2590,7 @@ class HasseDiagram(DiGraph):
         for w in self.vertices(sort=True):
             covers = self.neighbors_out(w)
             for i, x in enumerate(covers):
-                for y in covers[i + 1:]:
+                for y in covers[i + 1 :]:
                     zs = self.common_upper_covers([x, y])
                     if len(zs) != 1:
                         all_diamonds_completed = False
@@ -2815,8 +2852,9 @@ class HasseDiagram(DiGraph):
         if n == 1:
             return [0]
         max_sublats = self.maximal_sublattices()
-        return [e for e in range(self.cardinality()) if
-                all(e in ms for ms in max_sublats)]
+        return [
+            e for e in range(self.cardinality()) if all(e in ms for ms in max_sublats)
+        ]
 
     def kappa_dual(self, a) -> int | None:
         r"""
@@ -2860,7 +2898,14 @@ class HasseDiagram(DiGraph):
         if self.in_degree(uc) == 1:
             return uc
         lt_a = set(self.depth_first_search(a, neighbors=self.neighbor_in_iterator))
-        tmp = set(self.depth_first_search(uc, neighbors=lambda v: [v_ for v_ in self.neighbor_in_iterator(v) if v_ not in lt_a]))
+        tmp = set(
+            self.depth_first_search(
+                uc,
+                neighbors=lambda v: [
+                    v_ for v_ in self.neighbor_in_iterator(v) if v_ not in lt_a
+                ],
+            )
+        )
         result = None
         for e in tmp:
             if all(x not in tmp for x in self.neighbor_in_iterator(e)):
@@ -2989,8 +3034,12 @@ class HasseDiagram(DiGraph):
                 # Now b not in S, b > a and a in S.
 
                 def neighbors(v_):
-                    return [v for v in self.neighbor_out_iterator(v_)
-                            if v <= s_max and v not in ok]
+                    return [
+                        v
+                        for v in self.neighbor_out_iterator(v_)
+                        if v <= s_max and v not in ok
+                    ]
+
                 for c in self.depth_first_search(b, neighbors=neighbors):
                     if c in S:  # Now c in S, b not in S, a in S, a < b < c.
                         return False
@@ -3048,33 +3097,43 @@ class HasseDiagram(DiGraph):
 
         def is_neutral(a) -> bool:
             noncomp = all_elements.difference(self.depth_first_search(a))
-            noncomp.difference_update(self.depth_first_search(a, neighbors=self.neighbor_in_iterator))
+            noncomp.difference_update(
+                self.depth_first_search(a, neighbors=self.neighbor_in_iterator)
+            )
 
             for x in noncomp.intersection(todo):
                 meet_ax = mt[a, x]
                 join_ax = jn[a, x]
                 for y in todo:
-                    if (mt[mt[join_ax, jn[a, y]], jn[x, y]] !=
-                            jn[jn[meet_ax, mt[a, y]], mt[x, y]]):
+                    if (
+                        mt[mt[join_ax, jn[a, y]], jn[x, y]]
+                        != jn[jn[meet_ax, mt[a, y]], mt[x, y]]
+                    ):
                         notneutrals.add(x)
                         notneutrals.add(y)
                         return False
                 for y in notneutrals:
-                    if (mt[mt[join_ax, jn[a, y]], jn[x, y]] !=
-                            jn[jn[meet_ax, mt[a, y]], mt[x, y]]):
+                    if (
+                        mt[mt[join_ax, jn[a, y]], jn[x, y]]
+                        != jn[jn[meet_ax, mt[a, y]], mt[x, y]]
+                    ):
                         notneutrals.add(x)
                         return False
             for x in noncomp.difference(todo):
                 meet_ax = mt[a, x]
                 join_ax = jn[a, x]
                 for y in todo:
-                    if (mt[mt[join_ax, jn[a, y]], jn[x, y]] !=
-                            jn[jn[meet_ax, mt[a, y]], mt[x, y]]):
+                    if (
+                        mt[mt[join_ax, jn[a, y]], jn[x, y]]
+                        != jn[jn[meet_ax, mt[a, y]], mt[x, y]]
+                    ):
                         notneutrals.add(y)
                         return False
                 for y in notneutrals:
-                    if (mt[mt[join_ax, jn[a, y]], jn[x, y]] !=
-                            jn[jn[meet_ax, mt[a, y]], mt[x, y]]):
+                    if (
+                        mt[mt[join_ax, jn[a, y]], jn[x, y]]
+                        != jn[jn[meet_ax, mt[a, y]], mt[x, y]]
+                    ):
                         return False
             return True
 
@@ -3129,7 +3188,14 @@ class HasseDiagram(DiGraph):
         if self.out_degree(lc) == 1:
             return lc
         gt_a = set(self.depth_first_search(a))
-        tmp = set(self.depth_first_search(lc, neighbors=lambda v: [v_ for v_ in self.neighbor_out_iterator(v) if v_ not in gt_a]))
+        tmp = set(
+            self.depth_first_search(
+                lc,
+                neighbors=lambda v: [
+                    v_ for v_ in self.neighbor_out_iterator(v) if v_ not in gt_a
+                ],
+            )
+        )
         result = None
         for e in tmp:
             if all(x not in tmp for x in self.neighbor_out_iterator(e)):
@@ -3196,7 +3262,11 @@ class HasseDiagram(DiGraph):
             already_tried.append(next_pair)
             if cong is not None:
                 cong = S(cong)
-                min_congruences = [c for c in min_congruences if c != cong and not S.is_less_than(cong, c)]
+                min_congruences = [
+                    c
+                    for c in min_congruences
+                    if c != cong and not S.is_less_than(cong, c)
+                ]
                 if not any(S.is_less_than(c, cong) for c in min_congruences):
                     min_congruences.append(cong)
 
@@ -3306,7 +3376,6 @@ class HasseDiagram(DiGraph):
         todo = {cong.find(e) for part in parts for e in part}
 
         while todo:
-
             # First check if we should stop now.
             for a, b in stop_pairs:
                 if cong.find(a) == cong.find(b):
@@ -3356,8 +3425,16 @@ class HasseDiagram(DiGraph):
                 for i in self.interval(c, d):
                     cong.union(newblock, i)
                 C = cong.root_to_elements_dict()[cong.find(newblock)]
-                mins = [i for i in C if all(i_ not in C for i_ in self.neighbor_in_iterator(i))]
-                maxs = [i for i in C if all(i_ not in C for i_ in self.neighbor_out_iterator(i))]
+                mins = [
+                    i
+                    for i in C
+                    if all(i_ not in C for i_ in self.neighbor_in_iterator(i))
+                ]
+                maxs = [
+                    i
+                    for i in C
+                    if all(i_ not in C for i_ in self.neighbor_out_iterator(i))
+                ]
                 c = None  # To stop loop, if this is not changed below.
                 if len(mins) > 1 or len(maxs) > 1:
                     c = n - 1
@@ -3455,9 +3532,17 @@ class HasseDiagram(DiGraph):
 
         # Select smaller set, meet- or join-irreducibles
         if self.in_degree_sequence().count(1) > self.out_degree_sequence().count(1):
-            irr = [(e, next(self.neighbor_out_iterator(e))) for e in range(n) if self.out_degree(e) == 1]
+            irr = [
+                (e, next(self.neighbor_out_iterator(e)))
+                for e in range(n)
+                if self.out_degree(e) == 1
+            ]
         else:
-            irr = [(next(self.neighbor_in_iterator(e)), e) for e in range(n) if self.in_degree(e) == 1]
+            irr = [
+                (next(self.neighbor_in_iterator(e)), e)
+                for e in range(n)
+                if self.in_degree(e) == 1
+            ]
 
         D = {}
         P = {}
@@ -3555,14 +3640,18 @@ class HasseDiagram(DiGraph):
 
         for ji in range(n):
             if self.in_degree(ji) == 1:
-                cong = SetPartition(self.congruence([[ji, next(self.neighbor_in_iterator(ji))]]))  # type:ignore
+                cong = SetPartition(
+                    self.congruence([[ji, next(self.neighbor_in_iterator(ji))]])
+                )  # type:ignore
                 if cong not in congs_ji:
                     congs_ji[cong] = []
                 congs_ji[cong].append(ji)
 
         for mi in range(n):
             if self.out_degree(mi) == 1:
-                cong = SetPartition(self.congruence([[mi, next(self.neighbor_out_iterator(mi))]]))  # type:ignore
+                cong = SetPartition(
+                    self.congruence([[mi, next(self.neighbor_out_iterator(mi))]])
+                )  # type:ignore
                 if any(self.is_lequal(ji, mi) for ji in congs_ji[cong]):
                     return False
 
@@ -3621,7 +3710,9 @@ class HasseDiagram(DiGraph):
             for i in range(max(1, r - q), min(p, r) + 1):
                 k_val = binomial(r - 1, i - 1) * binomial(p + q - r, p - i)
                 if orientation:
-                    inner_sum = sum(b_spec[j - 1] for j in range(r - i + 1, len(b_spec) + 1))
+                    inner_sum = sum(
+                        b_spec[j - 1] for j in range(r - i + 1, len(b_spec) + 1)
+                    )
                 else:
                     inner_sum = sum(b_spec[j - 1] for j in range(1, r - i + 1))
                 new_a_spec[-1] = new_a_spec[-1] + (a_spec[i - 1] * k_val * inner_sum)
@@ -3674,7 +3765,9 @@ class HasseDiagram(DiGraph):
         split_hasse.delete_edge(a, b)
         components = split_hasse.connected_components_subgraphs()
         if not len(components) == 2:
-            raise ValueError("wrong number of connected components after the covering relation is deleted")
+            raise ValueError(
+                "wrong number of connected components after the covering relation is deleted"
+            )
 
         c1, c2 = components
         if a in c2:

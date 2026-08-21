@@ -1,6 +1,7 @@
 """
 Bindable classes
 """
+
 # ****************************************************************************
 #       Copyright (C) 2012 Nicolas M. Thiery <nthiery at users.sf.net>
 #
@@ -121,6 +122,7 @@ class BindableClass(metaclass=ClasscallMetaclass):
         sage: outer = Outer()
         sage: TestSuite(outer.Inner).run(skip=["_test_pickling"])
     """
+
     @staticmethod
     def __classget__(cls, instance, owner):
         """
@@ -210,6 +212,7 @@ class BoundClass(functools.partial):
         sage: g()
         8
     """
+
     __doc__ = None  # See warning above
 
     def __init__(self, *args):
@@ -233,6 +236,7 @@ class BoundClass(functools.partial):
 # Test classes
 ##############################################################################
 
+
 class Inner2(BindableClass):
     """
     Some documentation for Inner2
@@ -244,6 +248,7 @@ class Outer(metaclass=NestedClassMetaclass):
     """
     A class with a bindable nested class, for testing purposes
     """
+
     class Inner(BindableClass):
         """
         Some documentation for Outer.Inner

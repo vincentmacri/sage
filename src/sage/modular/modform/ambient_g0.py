@@ -28,6 +28,7 @@ class ModularFormsAmbient_g0_Q(ambient.ModularFormsAmbient):
     r"""
     A space of modular forms for `\Gamma_0(N)` over `\QQ`.
     """
+
     def __init__(self, level, weight):
         r"""
         Create a space of modular symbols for `\Gamma_0(N)` of given
@@ -41,7 +42,9 @@ class ModularFormsAmbient_g0_Q(ambient.ModularFormsAmbient):
             sage: type(m)
             <class 'sage.modular.modform.ambient_g0.ModularFormsAmbient_g0_Q_with_category'>
         """
-        ambient.ModularFormsAmbient.__init__(self, Gamma0_constructor(level), weight, QQ)
+        ambient.ModularFormsAmbient.__init__(
+            self, Gamma0_constructor(level), weight, QQ
+        )
 
     def _pari_init_(self):
         """
@@ -56,6 +59,7 @@ class ModularFormsAmbient_g0_Q(ambient.ModularFormsAmbient):
             [11, 4, 1, 4, t - 1]
         """
         from sage.libs.pari import pari
+
         return pari.mfinit([self.level(), self.weight()], 4)
 
     ####################################################################
@@ -113,5 +117,6 @@ class ModularFormsAmbient_g0_Q(ambient.ModularFormsAmbient):
         """
         if self.level() == 1:
             from sage.matrix.matrix_space import MatrixSpace
+
             return MatrixSpace(self.base_ring(), self.rank())(1)
         raise NotImplementedError

@@ -111,12 +111,12 @@ def CongruenceSubgroup_constructor(*args):
     GG = _minimize_level(G)
     if GG in ZZ:
         from .all import Gamma
+
         return Gamma(GG)
     return CongruenceSubgroupFromGroup(GG)
 
 
 class CongruenceSubgroupBase(ArithmeticSubgroup):
-
     def __init__(self, level) -> None:
         """
         Create a congruence subgroup with given level.
@@ -143,7 +143,7 @@ class CongruenceSubgroupBase(ArithmeticSubgroup):
             [ 3  4]
         """
         N = self.level()
-        return self([1-N, -N, N, 1+N])
+        return self([1 - N, -N, N, 1 + N])
 
     def is_congruence(self) -> bool:
         r"""
@@ -200,13 +200,16 @@ class CongruenceSubgroupBase(ArithmeticSubgroup):
             if self.level() == other.level() == 1:
                 return True
                 # shouldn't come up except with pickling/unpickling
-            return (self.level() == other.level() and
-                    self.index() == other.index() and
-                    self.image_mod_n() == other.image_mod_n())
+            return (
+                self.level() == other.level()
+                and self.index() == other.index()
+                and self.image_mod_n() == other.image_mod_n()
+            )
 
         from sage.modular.arithgroup.arithgroup_perm import (
             ArithmeticSubgroup_Permutation_class,
         )
+
         if isinstance(other, ArithmeticSubgroup_Permutation_class):
             return self.as_permutation_group() == other
 
@@ -351,7 +354,7 @@ class CongruenceSubgroupFromGroup(CongruenceSubgroupBase):
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 
         G = self.image_mod_n()
-        H = MatrixGroup([ g.matrix() for g in G.gens()] + [G.matrix_space()(-1)])
+        H = MatrixGroup([g.matrix() for g in G.gens()] + [G.matrix_space()(-1)])
         return CongruenceSubgroup_constructor(H)
 
     def _repr_(self):
@@ -363,7 +366,10 @@ class CongruenceSubgroupFromGroup(CongruenceSubgroupBase):
             sage: sage.modular.arithgroup.congroup_generic.CongruenceSubgroupFromGroup(MatrixGroup([matrix(Zmod(2), 2, [1,1,1,0])]))._repr_()
             'Congruence subgroup of SL(2,Z) of level 2, preimage of:\n Matrix group over Ring of integers modulo 2 with 1 generators (\n[1 1]\n[1 0]\n)'
         """
-        return "Congruence subgroup of SL(2,Z) of level %s, preimage of:\n %s" % (self.level(), self.image_mod_n())
+        return "Congruence subgroup of SL(2,Z) of level %s, preimage of:\n %s" % (
+            self.level(),
+            self.image_mod_n(),
+        )
 
     def index(self):
         r"""
@@ -376,7 +382,10 @@ class CongruenceSubgroupFromGroup(CongruenceSubgroupBase):
             sage: sage.modular.arithgroup.congroup_generic.CongruenceSubgroupFromGroup(MatrixGroup([matrix(Zmod(2), 2, [1,1,1,0])])).index()
             2
         """
-        return prod([p**(3*e-2)*(p*p-1) for (p,e) in self.level().factor()]) // self.image_mod_n().order()
+        return (
+            prod([p ** (3 * e - 2) * (p * p - 1) for (p, e) in self.level().factor()])
+            // self.image_mod_n().order()
+        )
 
     def image_mod_n(self):
         r"""
@@ -461,6 +470,7 @@ class CongruenceSubgroup(CongruenceSubgroupFromGroup):
             Modular Symbols space of dimension 3 for Gamma_0(23) of weight 2 with sign 1 over Rational Field
         """
         from sage.modular.modsym.modsym import ModularSymbols
+
         return ModularSymbols(self, sign=sign, weight=weight, base_ring=base_ring)
 
     def modular_abelian_variety(self):
@@ -478,6 +488,7 @@ class CongruenceSubgroup(CongruenceSubgroupFromGroup):
             Abelian variety JH(11,[3]) of dimension 1
         """
         from sage.modular.abvar.abvar_ambient_jacobian import ModAbVar_ambient_jacobian
+
         return ModAbVar_ambient_jacobian(self)
 
     def _new_group_from_level(self, level):
@@ -515,6 +526,7 @@ class CongruenceSubgroup(CongruenceSubgroupFromGroup):
         from .congroup_gamma0 import Gamma0_class
         from .congroup_gamma1 import Gamma1_class
         from .congroup_gammaH import GammaH_class
+
         N = self.level()
         if (level % N) and (N % level):
             raise ValueError("one level must divide the other")
@@ -526,10 +538,10 @@ class CongruenceSubgroup(CongruenceSubgroupFromGroup):
             H = self._generators_for_H()
             if level > N:
                 d = level // N
-                diffs = [ N*i for i in range(d) ]
-                newH = [ h + diff for h in H for diff in diffs ]
+                diffs = [N * i for i in range(d)]
+                newH = [h + diff for h in H for diff in diffs]
                 return GammaH(level, [x for x in newH if gcd(level, x) == 1])
-            return GammaH(level, [ h % level for h in H ])
+            return GammaH(level, [h % level for h in H])
         raise NotImplementedError
 
 

@@ -33,6 +33,7 @@ ABORT_ON_ERROR = True
 # not yet resolvable.
 WARN_LINKS = False
 
+
 class BuildOptions(argparse.Namespace):
     source_dir: Path
     output_dir: Path

@@ -40,25 +40,31 @@ def _run_msolve(ideal, options):
     """
 
     base = ideal.base_ring()
-    if not (base is QQ or isinstance(base, FiniteField) and
-            base.is_prime_field() and base.characteristic() < 2**31):
+    if not (
+        base is QQ
+        or isinstance(base, FiniteField)
+        and base.is_prime_field()
+        and base.characteristic() < 2**31
+    ):
         raise NotImplementedError(f"unsupported base field: {base}")
 
     # Run msolve
 
     drlpolring = ideal.ring().change_ring(order='degrevlex')
     polys = ideal.change_ring(drlpolring).gens()
-    with tempfile.NamedTemporaryFile(mode='w',
-                                     encoding='ascii',
-                                     delete_on_close=False) as msolve_in:
+    with tempfile.NamedTemporaryFile(
+        mode='w', encoding='ascii', delete_on_close=False
+    ) as msolve_in:
         print(",".join(drlpolring.variable_names()), file=msolve_in)
         print(base.characteristic(), file=msolve_in)
-        print(*(pol._repr_().replace(" ", "") for pol in polys),
-                sep=',\n', file=msolve_in)
+        print(
+            *(pol._repr_().replace(" ", "") for pol in polys), sep=',\n', file=msolve_in
+        )
         msolve_in.close()
         command = [msolve().absolute_filename(), "-f", msolve_in.name] + options
-        msolve_out = subprocess.run(command, capture_output=True, text=True,
-                                    check=False)
+        msolve_out = subprocess.run(
+            command, capture_output=True, text=True, check=False
+        )
         msolve_out.check_returncode()
 
     return msolve_out.stdout
@@ -104,7 +110,9 @@ def groebner_basis_degrevlex(ideal, proof=True):
         [bar^2 - 1, foo^2 - 1]
     """
 
-    if ideal.base_ring() is QQ and sage.structure.proof.proof.get_flag(proof, "polynomial"):
+    if ideal.base_ring() is QQ and sage.structure.proof.proof.get_flag(
+        proof, "polynomial"
+    ):
         raise ValueError("msolve relies on heuristics; please use proof=False")
 
     drlpolring = ideal.ring().change_ring(order='degrevlex')
@@ -229,11 +237,17 @@ def variety(ideal, ring, *, proof=True):
     if ring is None:
         ring = base
     if not ring.has_coerce_map_from(base):
-        raise ValueError(
-            f"no coercion from base field {base} to output ring {ring}")
+        raise ValueError(f"no coercion from base field {base} to output ring {ring}")
 
-    if isinstance(ring, (RealIntervalField_class, RealBallField,
-                         RealField_class, RealDoubleField_class)):
+    if isinstance(
+        ring,
+        (
+            RealIntervalField_class,
+            RealBallField,
+            RealField_class,
+            RealDoubleField_class,
+        ),
+    ):
         parameterization = False
         options = ["-p", str(ring.precision())]
     else:
@@ -263,19 +277,18 @@ def variety(ideal, ring, *, proof=True):
 
         def to_poly(p, d=1, *, upol=PolynomialRing(base, 't')):
             assert len(p[1]) == p[0] + 1 or p == [-1, [0]]
-            return upol(p[1])/d
+            return upol(p[1]) / d
 
         try:
             char, nvars, deg, vars, _, [one, [elim, den, param]] = data[1]
         except (IndexError, ValueError):
-            raise NotImplementedError(
-                f"unsupported msolve output format: {data}")
+            raise NotImplementedError(f"unsupported msolve output format: {data}")
         assert char == ideal.base_ring().characteristic()
         assert one.is_one()
         assert len(vars) == nvars
         ringvars = out_ring.variable_names()
-        assert sorted(vars[:len(ringvars)]) == sorted(ringvars)
-        vars = [out_ring(name) for name in vars[:len(ringvars)]]
+        assert sorted(vars[: len(ringvars)]) == sorted(ringvars)
+        vars = [out_ring(name) for name in vars[: len(ringvars)]]
         elim = to_poly(elim)
         # Criterion suggested by Mohab Safey El Din to avoid cases where there
         # is no rational parameterization or where the one returned by msolve
@@ -298,10 +311,8 @@ def variety(ideal, ring, *, proof=True):
             variety.append(point)
 
     else:
-
         if len(data[1]) < 2 or len(data[1]) != data[1][0] + 1:
-            raise NotImplementedError(
-                f"unsupported msolve output format: {data}")
+            raise NotImplementedError(f"unsupported msolve output format: {data}")
         if isinstance(ring, (RealIntervalField_class, RealBallField)):
             to_out_ring = ring
         else:
@@ -309,8 +320,8 @@ def variety(ideal, ring, *, proof=True):
             myRIF = RealIntervalField(ring.precision())
             to_out_ring = lambda iv: ring.coerce(myRIF(iv).center())
         vars = out_ring.gens()
-        variety = [[to_out_ring(iv) for iv in point]
-                   for l in data[1][1:]
-                   for point in l]
+        variety = [
+            [to_out_ring(iv) for iv in point] for l in data[1][1:] for point in l
+        ]
 
     return [KeyConvertingDict(out_ring, zip(vars, point)) for point in variety]

@@ -202,10 +202,12 @@ def late_import():
     global gap, gap3, libgap
     global GapElement_Integer, GapElement_Rational, GapElement_Cyclotomic
     from sage.libs.gap.libgap import libgap
-    from sage.libs.gap.element import (GapElement_Integer,
-                                       GapElement_Rational,
-                                       GapElement_Cyclotomic)
-    from sage.interfaces import (gap, gap3)
+    from sage.libs.gap.element import (
+        GapElement_Integer,
+        GapElement_Rational,
+        GapElement_Cyclotomic,
+    )
+    from sage.interfaces import gap, gap3
 
 
 def UCF_sqrt_int(N, UCF):
@@ -239,11 +241,11 @@ def UCF_sqrt_int(N, UCF):
     res = UCF.one() if N > 0 else UCF.zeta(4)
     for p, e in N.factor():
         if p == 2:
-            res *= (UCF.zeta(8) + UCF.zeta(8, 7))**e
+            res *= (UCF.zeta(8) + UCF.zeta(8, 7)) ** e
         else:
-            res *= UCF.sum(UCF.zeta(p, n**2) for n in range(p))**e
+            res *= UCF.sum(UCF.zeta(p, n**2) for n in range(p)) ** e
         if p % 4 == 3:
-            res *= (UCF.zeta(4))**e
+            res *= (UCF.zeta(4)) ** e
 
     return res
 
@@ -266,6 +268,7 @@ class UCFtoQQbar(Morphism):
         sage: complex(UCF.one()/2)
         (0.5+0j)
     """
+
     def __init__(self, UCF):
         r"""
         INPUT:
@@ -393,6 +396,7 @@ class UniversalCyclotomicFieldElement(FieldElement):
         """
         if parent(self) is not parent(other):
             from sage.structure.element import coercion_model as cm
+
             try:
                 self, other = cm.canonical_coercion(self, other)
             except TypeError:
@@ -533,6 +537,7 @@ class UniversalCyclotomicFieldElement(FieldElement):
             I + 1
         """
         from sage.symbolic.constants import pi, I
+
         k = ZZ(self._obj.Conductor())
         coeffs = self._obj.CoeffsCyc(k).sage()
         s = R.zero()
@@ -596,6 +601,7 @@ class UniversalCyclotomicFieldElement(FieldElement):
             zeta4 + 1
         """
         from sage.rings.number_field.number_field import CyclotomicField
+
         k = ZZ(self._obj.Conductor())
         Rcan = CyclotomicField(k)
         if R is None:
@@ -653,6 +659,7 @@ class UniversalCyclotomicFieldElement(FieldElement):
             1.246979603717467
         """
         from sage.rings.real_mpfr import RR
+
         return float(RR(self))
 
     def __complex__(self):
@@ -705,7 +712,7 @@ class UniversalCyclotomicFieldElement(FieldElement):
         k = ZZ(self._obj.Conductor())
         coeffs = self._obj.CoeffsCyc(k).sage()
         zeta = R.zeta(k)
-        s = sum(coeffs[i] * zeta ** i for i in range(k))
+        s = sum(coeffs[i] * zeta**i for i in range(k))
         if self.is_real():
             return R(s.real())
         return s
@@ -781,6 +788,7 @@ class UniversalCyclotomicFieldElement(FieldElement):
             o = other.imag_part()
 
         from sage.rings.real_mpfi import RealIntervalField
+
         prec = 53
         R = RealIntervalField(prec)
         sa = s._eval_real_(R)
@@ -1000,10 +1008,12 @@ class UniversalCyclotomicFieldElement(FieldElement):
             num = other.numerator()
             den = other.denominator()
             if den.is_one():
-                return self ** num
+                return self**num
             if den == 2 and self._obj.IsRat():
                 return self.sqrt() ** num
-            raise NotImplementedError("no powering implemented beyond square root of rationals")
+            raise NotImplementedError(
+                "no powering implemented beyond square root of rationals"
+            )
 
         raise NotImplementedError("no powering implemented for non-rational exponents")
 
@@ -1031,7 +1041,9 @@ class UniversalCyclotomicFieldElement(FieldElement):
         if sum(bool(x) for x in coeffs) == 1:
             return True
 
-        raise NotImplementedError("is_square() not fully implemented for elements of Universal Cyclotomic Field")
+        raise NotImplementedError(
+            "is_square() not fully implemented for elements of Universal Cyclotomic Field"
+        )
 
     def sqrt(self, extend=True, all=False):
         """
@@ -1104,8 +1116,7 @@ class UniversalCyclotomicFieldElement(FieldElement):
 
             if self._obj.IsInt():
                 return UCF_sqrt_int(D, UCF)
-            return UCF_sqrt_int(D.numerator(), UCF) / \
-                UCF_sqrt_int(D.denominator(), UCF)
+            return UCF_sqrt_int(D.numerator(), UCF) / UCF_sqrt_int(D.denominator(), UCF)
 
         # root of unity
         k = self._obj.Conductor()
@@ -1119,7 +1130,9 @@ class UniversalCyclotomicFieldElement(FieldElement):
         # no method to construct square roots yet...
         if extend:
             return QQbar(self).sqrt()
-        raise NotImplementedError("sqrt() not fully implemented for elements of Universal Cyclotomic Field")
+        raise NotImplementedError(
+            "sqrt() not fully implemented for elements of Universal Cyclotomic Field"
+        )
 
     def conjugate(self):
         r"""
@@ -1179,9 +1192,10 @@ class UniversalCyclotomicFieldElement(FieldElement):
         k = obj.Conductor().sage()
         n = k if n is None else ZZ(n)
         if not k.divides(n):
-            raise ValueError("n = {} must be a multiple of the conductor ({})".format(n, k))
-        return [P.element_class(P, obj.GaloisCyc(i))
-                for i in n.coprime_integers(n)]
+            raise ValueError(
+                "n = {} must be a multiple of the conductor ({})".format(n, k)
+            )
+        return [P.element_class(P, obj.GaloisCyc(i)) for i in n.coprime_integers(n)]
 
     def __abs__(self):
         """
@@ -1235,8 +1249,9 @@ class UniversalCyclotomicFieldElement(FieldElement):
         """
         obj = self._obj
         k = obj.Conductor().sage()
-        return libgap.Product(libgap([obj.GaloisCyc(i) for i in range(k)
-                                      if k.gcd(i) == 1])).sage()
+        return libgap.Product(
+            libgap([obj.GaloisCyc(i) for i in range(k) if k.gcd(i) == 1])
+        ).sage()
 
     def minpoly(self, var='x'):
         r"""
@@ -1278,7 +1293,9 @@ class UniversalCyclotomicFieldElement(FieldElement):
         return QQ[var](QQ['x_1'](str(gap_p)))
 
 
-class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyclotomicField):
+class UniversalCyclotomicField(
+    UniqueRepresentation, sage.rings.abc.UniversalCyclotomicField
+):
     r"""
     The universal cyclotomic field.
 
@@ -1287,6 +1304,7 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
     `\QQ` in the sense that any Abelian Galois extension of `\QQ` is also a
     subfield of the universal cyclotomic field.
     """
+
     Element = UniversalCyclotomicFieldElement
 
     @staticmethod
@@ -1315,6 +1333,7 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
             False
         """
         from sage.categories.fields import Fields
+
         Parent.__init__(self, base=QQ, category=Fields().Infinite())
         self._populate_coercion_lists_(embedding=UCFtoQQbar(self))
         late_import()
@@ -1353,9 +1372,13 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
             sage: all(parent(x) is UniversalCyclotomicField() for x in _)
             True
         """
-        return (self.zero(), self.one(), -self.one(),
-                self.gen(3, 1),
-                self.gen(7, 1) - self(2) / self(3) * self.gen(7, 2))
+        return (
+            self.zero(),
+            self.one(),
+            -self.one(),
+            self.gen(3, 1),
+            self.gen(7, 1) - self(2) / self(3) * self.gen(7, 2),
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -1441,7 +1464,7 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
             sage: UCF.zeta(6)
             -E(3)^2
         """
-        return self.element_class(self, libgap.E(n)**k)
+        return self.element_class(self, libgap.E(n) ** k)
 
     zeta = gen
 
@@ -1513,7 +1536,9 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
 
         if isinstance(elt, (Integer, Rational)):
             return self.element_class(self, libgap(elt))
-        if isinstance(elt, (GapElement_Integer, GapElement_Rational, GapElement_Cyclotomic)):
+        if isinstance(
+            elt, (GapElement_Integer, GapElement_Rational, GapElement_Cyclotomic)
+        ):
             return self.element_class(self, elt)
         if not elt:
             return self.zero()
@@ -1526,25 +1551,38 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
         elif isinstance(elt, str):
             obj = libgap.eval(elt)
         if obj is not None:
-            if not isinstance(obj, (GapElement_Integer, GapElement_Rational, GapElement_Cyclotomic)):
-                raise TypeError("{} of type {} not valid to initialize an element of the universal cyclotomic field".format(obj, type(obj)))
+            if not isinstance(
+                obj, (GapElement_Integer, GapElement_Rational, GapElement_Cyclotomic)
+            ):
+                raise TypeError(
+                    "{} of type {} not valid to initialize an element of the universal cyclotomic field".format(
+                        obj, type(obj)
+                    )
+                )
             return self.element_class(self, obj)
 
         # late import to avoid slowing down the above conversions
         import sage.rings.abc
+
         P = parent(elt)
         if isinstance(P, sage.rings.abc.NumberField_cyclotomic):
             if isinstance(elt, NumberFieldElement_base):
                 from sage.rings.number_field.number_field import CyclotomicField
+
                 n = P.gen().multiplicative_order()
                 elt = CyclotomicField(n)(elt)
-                return sum(c * self.gen(n, i)
-                           for i, c in enumerate(elt._coefficients()))
+                return sum(
+                    c * self.gen(n, i) for i, c in enumerate(elt._coefficients())
+                )
 
         if hasattr(elt, '_algebraic_'):
             return elt._algebraic_(self)
 
-        raise TypeError("{} of type {} not valid to initialize an element of the universal cyclotomic field".format(elt, type(elt)))
+        raise TypeError(
+            "{} of type {} not valid to initialize an element of the universal cyclotomic field".format(
+                elt, type(elt)
+            )
+        )
 
     def _coerce_map_from_(self, other):
         r"""
@@ -1567,6 +1605,7 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
         if other is ZZ or other is QQ:
             return True
         import sage.rings.abc
+
         if isinstance(other, sage.rings.abc.NumberField_cyclotomic):
             return True
 
@@ -1677,9 +1716,10 @@ class UniversalCyclotomicField(UniqueRepresentation, sage.rings.abc.UniversalCyc
             else:
                 m = p.is_cyclotomic(certificate=True)
                 if not m:
-                    raise NotImplementedError('no known factorization for this polynomial')
-                factors.extend((x - UCF.zeta(m, i), e)
-                               for i in m.coprime_integers(m))
+                    raise NotImplementedError(
+                        'no known factorization for this polynomial'
+                    )
+                factors.extend((x - UCF.zeta(m, i), e) for i in m.coprime_integers(m))
 
         return Factorization(factors, unit)
 

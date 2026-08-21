@@ -173,6 +173,7 @@ class HypoplacticMonoid(WordMonoid):
 
         def to_word(t):
             return self(t.to_word_by_column())
+
         return Family(quasiribbontableaux, to_word, lazy=True)
 
     class Element(WordMonoidElement):
@@ -191,6 +192,7 @@ class HypoplacticMonoid(WordMonoid):
             sage: parent(x)
             Hypoplactic monoid of rank 4
         """
+
         @cached_method
         def to_tableau(self):
             """

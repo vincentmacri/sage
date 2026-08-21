@@ -36,7 +36,7 @@ class SetSpeciesStructure(GenericSpeciesStructure):
             {'a', 'b', 'c'}
         """
         s = GenericSpeciesStructure.__repr__(self)
-        return "{"+s[1:-1]+"}"
+        return "{" + s[1:-1] + "}"
 
     def canonical_label(self):
         """
@@ -81,7 +81,8 @@ class SetSpeciesStructure(GenericSpeciesStructure):
             Symmetric group of order 3! as a permutation group
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-        return SymmetricGroup(max(1,len(self._labels)))
+
+        return SymmetricGroup(max(1, len(self._labels)))
 
 
 class SetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
@@ -129,7 +130,7 @@ class SetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [{1, 2, 3}]
         """
         n = len(labels)
-        yield structure_class(self, labels, range(1,n+1))
+        yield structure_class(self, labels, range(1, n + 1))
 
     _isotypes = _structures
 
@@ -182,6 +183,7 @@ class SetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
              1/24*p[1, 1, 1, 1] + 1/4*p[2, 1, 1] + 1/8*p[2, 2] + 1/3*p[3, 1] + 1/4*p[4]]
         """
         from .generating_series import ExponentialCycleIndexSeries
+
         res = ExponentialCycleIndexSeries(base_ring)
 
         if self.is_weighted():
@@ -190,5 +192,5 @@ class SetSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
         return res
 
 
-#Backward compatibility
+# Backward compatibility
 SetSpecies_class = SetSpecies

@@ -31,7 +31,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-
 from .number_field_ideal import NumberFieldFractionalIdeal
 from sage.misc.cachefunc import cached_method
 from sage.structure.factorization import Factorization
@@ -40,6 +39,7 @@ from sage.structure.richcmp import richcmp
 
 from sage.rings import rational_field
 from sage.rings import integer_ring
+
 QQ = rational_field.RationalField()
 ZZ = integer_ring.IntegerRing()
 
@@ -77,6 +77,7 @@ class NumberFieldFractionalIdeal_rel(NumberFieldFractionalIdeal):
         ...
         The following tests failed: _test_category
     """
+
     def _richcmp_(self, other, op):
         """
         Compare an ideal of a relative number field to something else.
@@ -198,7 +199,7 @@ class NumberFieldFractionalIdeal_rel(NumberFieldFractionalIdeal):
         except AttributeError:
             self.__absolute_ideal = {}
         L = self.number_field().absolute_field(names)
-        genlist = [L(x.polynomial() ) for x in self.gens() ]
+        genlist = [L(x.polynomial()) for x in self.gens()]
         M = L.ideal(genlist)
         self.__absolute_ideal[names] = M
         return M
@@ -436,7 +437,9 @@ class NumberFieldFractionalIdeal_rel(NumberFieldFractionalIdeal):
             NotImplementedError: For a fractional ideal in a relative number field
             you must use relative_norm or absolute_norm as appropriate
         """
-        raise NotImplementedError("For a fractional ideal in a relative number field you must use relative_norm or absolute_norm as appropriate")
+        raise NotImplementedError(
+            "For a fractional ideal in a relative number field you must use relative_norm or absolute_norm as appropriate"
+        )
 
     def ideal_below(self):
         r"""
@@ -573,7 +576,9 @@ class NumberFieldFractionalIdeal_rel(NumberFieldFractionalIdeal):
         F = self.number_field()
         abs_ideal = self.absolute_ideal()
         to_F = abs_ideal.number_field().structure()[0]
-        factor_list = [(F.ideal([to_F(_) for _ in p.gens()]), e) for p, e in abs_ideal.factor()]
+        factor_list = [
+            (F.ideal([to_F(_) for _ in p.gens()]), e) for p, e in abs_ideal.factor()
+        ]
         # sorting and simplification will already have been done
         return Factorization(factor_list, sort=False, simplify=False)
 
@@ -719,7 +724,7 @@ class NumberFieldFractionalIdeal_rel(NumberFieldFractionalIdeal):
         if self.is_prime():
             abs_index = self.absolute_ramification_index()
             base_ideal = self.ideal_below()
-            return ZZ(abs_index/base_ideal.absolute_ramification_index())
+            return ZZ(abs_index / base_ideal.absolute_ramification_index())
         raise ValueError("the fractional ideal (= %s) is not prime" % self)
 
     def ramification_index(self):
@@ -739,7 +744,9 @@ class NumberFieldFractionalIdeal_rel(NumberFieldFractionalIdeal):
             NotImplementedError: For an ideal in a relative number field you must use
             relative_ramification_index or absolute_ramification_index as appropriate
         """
-        raise NotImplementedError("For an ideal in a relative number field you must use relative_ramification_index or absolute_ramification_index as appropriate")
+        raise NotImplementedError(
+            "For an ideal in a relative number field you must use relative_ramification_index or absolute_ramification_index as appropriate"
+        )
 
     def residue_class_degree(self):
         r"""
@@ -780,8 +787,11 @@ class NumberFieldFractionalIdeal_rel(NumberFieldFractionalIdeal):
         abs_ideal = self.absolute_ideal()
         from_abs = abs_ideal.number_field().structure()[0]
         from sage.misc.mrange import xmrange_iter
+
         abs_residues = abs_ideal.residues()
-        return xmrange_iter(abs_residues.iter_list, lambda c: from_abs(abs_residues.typ(c)))
+        return xmrange_iter(
+            abs_residues.iter_list, lambda c: from_abs(abs_residues.typ(c))
+        )
 
     def element_1_mod(self, other):
         r"""

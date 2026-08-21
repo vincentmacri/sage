@@ -31,10 +31,12 @@ import subprocess
 
 def __append_to_doc(methods):
     global __doc__
-    __doc__ += ("\n.. csv-table::\n"
-                "    :class: contentstable\n"
-                "    :widths: 33, 33, 33\n"
-                "    :delim: |\n\n")
+    __doc__ += (
+        "\n.. csv-table::\n"
+        "    :class: contentstable\n"
+        "    :widths: 33, 33, 33\n"
+        "    :delim: |\n\n"
+    )
 
     h = (len(methods) + 2) // 3
     # Reorders the list of methods for horizontal reading, the only one Sphinx understands
@@ -53,7 +55,9 @@ def __append_to_doc(methods):
         a = methods.pop(0)
         b = methods.pop(0)
         c = methods.pop(0)
-        __doc__ += "    " + wrap_name(a) + " | " + wrap_name(b) + " | " + wrap_name(c) + "\n"
+        __doc__ += (
+            "    " + wrap_name(a) + " | " + wrap_name(b) + " | " + wrap_name(c) + "\n"
+        )
 
 
 __doc__ += """
@@ -61,34 +65,36 @@ __doc__ += """
 """
 
 __append_to_doc(
-    ["BullGraph",
-     "ButterflyGraph",
-     "CircularLadderGraph",
-     "ClawGraph",
-     "CycleGraph",
-     "CompleteBipartiteGraph",
-     "CompleteGraph",
-     "CompleteMultipartiteGraph",
-     "CorrelationGraph",
-     "DiamondGraph",
-     "GemGraph",
-     "DartGraph",
-     "ForkGraph",
-     "DipoleGraph",
-     "EmptyGraph",
-     "Grid2dGraph",
-     "GridGraph",
-     "HouseGraph",
-     "HouseXGraph",
-     "LadderGraph",
-     "LollipopGraph",
-     "MoebiusLadderGraph",
-     "PathGraph",
-     "StarGraph",
-     "TadpoleGraph",
-     "ToroidalGrid2dGraph",
-     "Toroidal6RegularGrid2dGraph"]
-    )
+    [
+        "BullGraph",
+        "ButterflyGraph",
+        "CircularLadderGraph",
+        "ClawGraph",
+        "CycleGraph",
+        "CompleteBipartiteGraph",
+        "CompleteGraph",
+        "CompleteMultipartiteGraph",
+        "CorrelationGraph",
+        "DiamondGraph",
+        "GemGraph",
+        "DartGraph",
+        "ForkGraph",
+        "DipoleGraph",
+        "EmptyGraph",
+        "Grid2dGraph",
+        "GridGraph",
+        "HouseGraph",
+        "HouseXGraph",
+        "LadderGraph",
+        "LollipopGraph",
+        "MoebiusLadderGraph",
+        "PathGraph",
+        "StarGraph",
+        "TadpoleGraph",
+        "ToroidalGrid2dGraph",
+        "Toroidal6RegularGrid2dGraph",
+    ]
+)
 
 __doc__ += """
 **Small Graphs**
@@ -98,126 +104,132 @@ the number of edges or vertices.
 """
 
 __append_to_doc(
-    ["Balaban10Cage",
-     "Balaban11Cage",
-     "BidiakisCube",
-     "BiggsSmithGraph",
-     "BlanusaFirstSnarkGraph",
-     "BlanusaSecondSnarkGraph",
-     "BrinkmannGraph",
-     "BrouwerHaemersGraph",
-     "BuckyBall",
-     "CameronGraph",
-     "Cell600",
-     "Cell120",
-     "ChvatalGraph",
-     "ClebschGraph",
-     "cocliques_HoffmannSingleton",
-     "ConwaySmith_for_3S7",
-     "CoxeterGraph",
-     "CubeplexGraph",
-     "DesarguesGraph",
-     "DejterGraph",
-     "distance_3_doubly_truncated_Golay_code_graph",
-     "DoubleStarSnark",
-     "DoublyTruncatedWittGraph",
-     "DurerGraph",
-     "DyckGraph",
-     "EllinghamHorton54Graph",
-     "EllinghamHorton78Graph",
-     "ErreraGraph",
-     "F26AGraph",
-     "FlowerSnark",
-     "FolkmanGraph",
-     "FosterGraph",
-     "FosterGraph3S6",
-     "FranklinGraph",
-     "FruchtGraph",
-     "GoldnerHararyGraph",
-     "GolombGraph",
-     "GossetGraph",
-     "graph_3O73",
-     "GrayGraph",
-     "GritsenkoGraph",
-     "GrotzschGraph",
-     "HallJankoGraph",
-     "HarborthGraph",
-     "HarriesGraph",
-     "HarriesWongGraph",
-     "HeawoodGraph",
-     "HerschelGraph",
-     "HigmanSimsGraph",
-     "HoffmanGraph",
-     "HoffmanSingletonGraph",
-     "HoltGraph",
-     "HortonGraph",
-     "IoninKharaghani765Graph",
-     "IvanovIvanovFaradjevGraph",
-     "J2Graph",
-     "JankoKharaghaniGraph",
-     "JankoKharaghaniTonchevGraph",
-     "KittellGraph",
-     "KrackhardtKiteGraph",
-     "Klein3RegularGraph",
-     "Klein7RegularGraph",
-     "LargeWittGraph",
-     "LeonardGraph",
-     "LjubljanaGraph",
-     "vanLintSchrijverGraph",
-     "LivingstoneGraph",
-     "locally_GQ42_distance_transitive_graph",
-     "LocalMcLaughlinGraph",
-     "M22Graph",
-     "MarkstroemGraph",
-     "MathonStronglyRegularGraph",
-     "McGeeGraph",
-     "McLaughlinGraph",
-     "MeredithGraph",
-     "MoebiusKantorGraph",
-     "MoserSpindle",
-     "MurtyGraph",
-     "NauruGraph",
-     "PappusGraph",
-     "PoussinGraph",
-     "PerkelGraph",
-     "PetersenGraph",
-     "RobertsonGraph",
-     "SchlaefliGraph",
-     "shortened_00_11_binary_Golay_code_graph",
-     "shortened_000_111_extended_binary_Golay_code_graph",
-     "ShrikhandeGraph",
-     "SimsGewirtzGraph",
-     "SousselierGraph",
-     "SylvesterGraph",
-     "SzekeresSnarkGraph",
-     "ThomsenGraph",
-     "TietzeGraph",
-     "TricornGraph",
-     "TruncatedIcosidodecahedralGraph",
-     "TruncatedTetrahedralGraph",
-     "TruncatedWittGraph",
-     "Tutte12Cage",
-     "TutteCoxeterGraph",
-     "TutteGraph",
-     "TwinplexGraph",
-     "U42Graph216",
-     "U42Graph540",
-     "WagnerGraph",
-     "WatkinsSnarkGraph",
-     "WellsGraph",
-     "WienerArayaGraph",
-     "SuzukiGraph"])
+    [
+        "Balaban10Cage",
+        "Balaban11Cage",
+        "BidiakisCube",
+        "BiggsSmithGraph",
+        "BlanusaFirstSnarkGraph",
+        "BlanusaSecondSnarkGraph",
+        "BrinkmannGraph",
+        "BrouwerHaemersGraph",
+        "BuckyBall",
+        "CameronGraph",
+        "Cell600",
+        "Cell120",
+        "ChvatalGraph",
+        "ClebschGraph",
+        "cocliques_HoffmannSingleton",
+        "ConwaySmith_for_3S7",
+        "CoxeterGraph",
+        "CubeplexGraph",
+        "DesarguesGraph",
+        "DejterGraph",
+        "distance_3_doubly_truncated_Golay_code_graph",
+        "DoubleStarSnark",
+        "DoublyTruncatedWittGraph",
+        "DurerGraph",
+        "DyckGraph",
+        "EllinghamHorton54Graph",
+        "EllinghamHorton78Graph",
+        "ErreraGraph",
+        "F26AGraph",
+        "FlowerSnark",
+        "FolkmanGraph",
+        "FosterGraph",
+        "FosterGraph3S6",
+        "FranklinGraph",
+        "FruchtGraph",
+        "GoldnerHararyGraph",
+        "GolombGraph",
+        "GossetGraph",
+        "graph_3O73",
+        "GrayGraph",
+        "GritsenkoGraph",
+        "GrotzschGraph",
+        "HallJankoGraph",
+        "HarborthGraph",
+        "HarriesGraph",
+        "HarriesWongGraph",
+        "HeawoodGraph",
+        "HerschelGraph",
+        "HigmanSimsGraph",
+        "HoffmanGraph",
+        "HoffmanSingletonGraph",
+        "HoltGraph",
+        "HortonGraph",
+        "IoninKharaghani765Graph",
+        "IvanovIvanovFaradjevGraph",
+        "J2Graph",
+        "JankoKharaghaniGraph",
+        "JankoKharaghaniTonchevGraph",
+        "KittellGraph",
+        "KrackhardtKiteGraph",
+        "Klein3RegularGraph",
+        "Klein7RegularGraph",
+        "LargeWittGraph",
+        "LeonardGraph",
+        "LjubljanaGraph",
+        "vanLintSchrijverGraph",
+        "LivingstoneGraph",
+        "locally_GQ42_distance_transitive_graph",
+        "LocalMcLaughlinGraph",
+        "M22Graph",
+        "MarkstroemGraph",
+        "MathonStronglyRegularGraph",
+        "McGeeGraph",
+        "McLaughlinGraph",
+        "MeredithGraph",
+        "MoebiusKantorGraph",
+        "MoserSpindle",
+        "MurtyGraph",
+        "NauruGraph",
+        "PappusGraph",
+        "PoussinGraph",
+        "PerkelGraph",
+        "PetersenGraph",
+        "RobertsonGraph",
+        "SchlaefliGraph",
+        "shortened_00_11_binary_Golay_code_graph",
+        "shortened_000_111_extended_binary_Golay_code_graph",
+        "ShrikhandeGraph",
+        "SimsGewirtzGraph",
+        "SousselierGraph",
+        "SylvesterGraph",
+        "SzekeresSnarkGraph",
+        "ThomsenGraph",
+        "TietzeGraph",
+        "TricornGraph",
+        "TruncatedIcosidodecahedralGraph",
+        "TruncatedTetrahedralGraph",
+        "TruncatedWittGraph",
+        "Tutte12Cage",
+        "TutteCoxeterGraph",
+        "TutteGraph",
+        "TwinplexGraph",
+        "U42Graph216",
+        "U42Graph540",
+        "WagnerGraph",
+        "WatkinsSnarkGraph",
+        "WellsGraph",
+        "WienerArayaGraph",
+        "SuzukiGraph",
+    ]
+)
 
 __doc__ += """
 **Platonic solids** (ordered ascending by number of vertices)
 """
 
 __append_to_doc(
-    ["TetrahedralGraph",
-     "OctahedralGraph",
-     "HexahedralGraph",
-     "IcosahedralGraph",
-     "DodecahedralGraph"])
+    [
+        "TetrahedralGraph",
+        "OctahedralGraph",
+        "HexahedralGraph",
+        "IcosahedralGraph",
+        "DodecahedralGraph",
+    ]
+)
 
 __doc__ += """
 **Families of graphs**
@@ -229,86 +241,85 @@ or a list of graphs or ...)
 """
 
 __append_to_doc(
-    ["AlternatingFormsGraph",
-     "AztecDiamondGraph",
-     "BarbellGraph",
-     "BilinearFormsGraph",
-     "BiwheelGraph",
-     "BubbleSortGraph",
-     "CaiFurerImmermanGraph",
-     "chang_graphs",
-     "CirculantGraph",
-     "cographs",
-     "cospectral_graphs",
-     "CubeGraph",
-     "CubeConnectedCycle",
-     "distance_regular_graph",
-     "DorogovtsevGoltsevMendesGraph",
-     "DoubleGrassmannGraph",
-     "DoubleOddGraph",
-     "EgawaGraph",
-     "FoldedCubeGraph",
-     "FriendshipGraph",
-     "fullerenes",
-     "FurerGadget",
-     "fusenes",
-     "FuzzyBallGraph",
-     "GeneralisedDodecagonGraph",
-     "GeneralisedHexagonGraph",
-     "GeneralisedOctagonGraph",
-     "GeneralizedPetersenGraph",
-     "GeneralizedSierpinskiGraph",
-     "GoethalsSeidelGraph",
-     "GrassmannGraph",
-     "HalfCube",
-     "HammingGraph",
-     "HanoiTowerGraph",
-     "HararyGraph",
-     "HermitianFormsGraph",
-     "HyperStarGraph",
-     "JohnsonGraph",
-     "KneserGraph",
-     "LCFGraph",
-     "line_graph_forbidden_subgraphs",
-     "MathonPseudocyclicMergingGraph",
-     "MathonPseudocyclicStronglyRegularGraph",
-     "MuzychukS6Graph",
-     "MycielskiGraph",
-     "MycielskiStep",
-     "nauty_geng",
-     "nauty_genbg",
-     "NKStarGraph",
-     "NStarGraph",
-     "OddGraph",
-     "PaleyGraph",
-     "PasechnikGraph",
-     "petersen_family",
-     "p2_forbidden_minors",
-     "planar_graphs",
-     "plantri_gen",
-     "quadrangulations",
-     "RingedTree",
-     "SierpinskiGasketGraph",
-     "SquaredSkewHadamardMatrixGraph",
-     "SwitchedSquaredSkewHadamardMatrixGraph",
-     "StaircaseGraph",
-     "strongly_regular_graph",
-     "TruncatedBiwheelGraph",
-     "triangulations",
-     "TuranGraph",
-     "UstimenkoGraph",
-     "WheelGraph",
-     "WindmillGraph"])
+    [
+        "AlternatingFormsGraph",
+        "AztecDiamondGraph",
+        "BarbellGraph",
+        "BilinearFormsGraph",
+        "BiwheelGraph",
+        "BubbleSortGraph",
+        "CaiFurerImmermanGraph",
+        "chang_graphs",
+        "CirculantGraph",
+        "cographs",
+        "cospectral_graphs",
+        "CubeGraph",
+        "CubeConnectedCycle",
+        "distance_regular_graph",
+        "DorogovtsevGoltsevMendesGraph",
+        "DoubleGrassmannGraph",
+        "DoubleOddGraph",
+        "EgawaGraph",
+        "FoldedCubeGraph",
+        "FriendshipGraph",
+        "fullerenes",
+        "FurerGadget",
+        "fusenes",
+        "FuzzyBallGraph",
+        "GeneralisedDodecagonGraph",
+        "GeneralisedHexagonGraph",
+        "GeneralisedOctagonGraph",
+        "GeneralizedPetersenGraph",
+        "GeneralizedSierpinskiGraph",
+        "GoethalsSeidelGraph",
+        "GrassmannGraph",
+        "HalfCube",
+        "HammingGraph",
+        "HanoiTowerGraph",
+        "HararyGraph",
+        "HermitianFormsGraph",
+        "HyperStarGraph",
+        "JohnsonGraph",
+        "KneserGraph",
+        "LCFGraph",
+        "line_graph_forbidden_subgraphs",
+        "MathonPseudocyclicMergingGraph",
+        "MathonPseudocyclicStronglyRegularGraph",
+        "MuzychukS6Graph",
+        "MycielskiGraph",
+        "MycielskiStep",
+        "nauty_geng",
+        "nauty_genbg",
+        "NKStarGraph",
+        "NStarGraph",
+        "OddGraph",
+        "PaleyGraph",
+        "PasechnikGraph",
+        "petersen_family",
+        "p2_forbidden_minors",
+        "planar_graphs",
+        "plantri_gen",
+        "quadrangulations",
+        "RingedTree",
+        "SierpinskiGasketGraph",
+        "SquaredSkewHadamardMatrixGraph",
+        "SwitchedSquaredSkewHadamardMatrixGraph",
+        "StaircaseGraph",
+        "strongly_regular_graph",
+        "TruncatedBiwheelGraph",
+        "triangulations",
+        "TuranGraph",
+        "UstimenkoGraph",
+        "WheelGraph",
+        "WindmillGraph",
+    ]
+)
 
 __doc__ += """
 **Graphs defined by systems of equations**
 """
 
-__append_to_doc(
-    ["Akq",
-     "Dkq",
-     "LUWGraph",
-     "WengerGraph"])
+__append_to_doc(["Akq", "Dkq", "LUWGraph", "WengerGraph"])
 
 
 __doc__ += """
@@ -319,33 +330,31 @@ quadrics and Hermitean varieties there.
 """
 
 __append_to_doc(
-    ["AffineOrthogonalPolarGraph",
-     "AhrensSzekeresGeneralizedQuadrangleGraph",
-     "NonisotropicOrthogonalPolarGraph",
-     "NonisotropicUnitaryPolarGraph",
-     "OrthogonalDualPolarGraph",
-     "OrthogonalPolarGraph",
-     "SymplecticDualPolarGraph",
-     "SymplecticPolarGraph",
-     "TaylorTwographDescendantSRG",
-     "TaylorTwographSRG",
-     "T2starGeneralizedQuadrangleGraph",
-     "Nowhere0WordsTwoWeightCodeGraph",
-     "HaemersGraph",
-     "CossidentePenttilaGraph",
-     "UnitaryDualPolarGraph",
-     "UnitaryPolarGraph"])
+    [
+        "AffineOrthogonalPolarGraph",
+        "AhrensSzekeresGeneralizedQuadrangleGraph",
+        "NonisotropicOrthogonalPolarGraph",
+        "NonisotropicUnitaryPolarGraph",
+        "OrthogonalDualPolarGraph",
+        "OrthogonalPolarGraph",
+        "SymplecticDualPolarGraph",
+        "SymplecticPolarGraph",
+        "TaylorTwographDescendantSRG",
+        "TaylorTwographSRG",
+        "T2starGeneralizedQuadrangleGraph",
+        "Nowhere0WordsTwoWeightCodeGraph",
+        "HaemersGraph",
+        "CossidentePenttilaGraph",
+        "UnitaryDualPolarGraph",
+        "UnitaryPolarGraph",
+    ]
+)
 
 __doc__ += """
 **Chessboard Graphs**
 """
 
-__append_to_doc(
-    ["BishopGraph",
-     "KingGraph",
-     "KnightGraph",
-     "QueenGraph",
-     "RookGraph"])
+__append_to_doc(["BishopGraph", "KingGraph", "KnightGraph", "QueenGraph", "RookGraph"])
 
 __doc__ += """
 **Intersection graphs**
@@ -356,73 +365,80 @@ of objects yield the graph edges.
 """
 
 __append_to_doc(
-    ["IntersectionGraph",
-     "IntervalGraph",
-     "OrthogonalArrayBlockGraph",
-     "PermutationGraph",
-     "ToleranceGraph"])
+    [
+        "IntersectionGraph",
+        "IntervalGraph",
+        "OrthogonalArrayBlockGraph",
+        "PermutationGraph",
+        "ToleranceGraph",
+    ]
+)
 
 __doc__ += """
 **Random graphs**
 """
 
 __append_to_doc(
-    ["RandomBarabasiAlbert",
-     "RandomBicubicPlanar",
-     "RandomBipartite",
-     "RandomRegularBipartite",
-     "RandomBlockGraph",
-     "RandomBoundedToleranceGraph",
-     "RandomChordalGraph",
-     "RandomGNM",
-     "RandomGNP",
-     "RandomHolmeKim",
-     "RandomIntervalGraph",
-     "RandomKTree",
-     "RandomPartialKTree",
-     "RandomNewmanWattsStrogatz",
-     "RandomProperIntervalGraph",
-     "RandomRegular",
-     "RandomShell",
-     "RandomToleranceGraph",
-     "RandomTriangulation",
-     "RandomUnitDiskGraph"])
+    [
+        "RandomBarabasiAlbert",
+        "RandomBicubicPlanar",
+        "RandomBipartite",
+        "RandomRegularBipartite",
+        "RandomBlockGraph",
+        "RandomBoundedToleranceGraph",
+        "RandomChordalGraph",
+        "RandomGNM",
+        "RandomGNP",
+        "RandomHolmeKim",
+        "RandomIntervalGraph",
+        "RandomKTree",
+        "RandomPartialKTree",
+        "RandomNewmanWattsStrogatz",
+        "RandomProperIntervalGraph",
+        "RandomRegular",
+        "RandomShell",
+        "RandomToleranceGraph",
+        "RandomTriangulation",
+        "RandomUnitDiskGraph",
+    ]
+)
 
 __doc__ += """
 **Trees**
 """
 
 __append_to_doc(
-    ["BalancedTree",
-     "FibonacciTree",
-     "Caterpillar",
-     "RandomLobster",
-     "RandomTree",
-     "RandomTreePowerlaw",
-     "trees",
-     "nauty_gentreeg"])
+    [
+        "BalancedTree",
+        "FibonacciTree",
+        "Caterpillar",
+        "RandomLobster",
+        "RandomTree",
+        "RandomTreePowerlaw",
+        "trees",
+        "nauty_gentreeg",
+    ]
+)
 
 __doc__ += """
 **Graphs with a given degree sequence**
 """
 
 __append_to_doc(
-    ["DegreeSequence",
-     "DegreeSequenceBipartite",
-     "DegreeSequenceConfigurationModel",
-     "DegreeSequenceExpected",
-     "DegreeSequenceTree"])
+    [
+        "DegreeSequence",
+        "DegreeSequenceBipartite",
+        "DegreeSequenceConfigurationModel",
+        "DegreeSequenceExpected",
+        "DegreeSequenceTree",
+    ]
+)
 
 __doc__ += """
 **Miscellaneous**
 """
 
-__append_to_doc(
-    ["WorldMap",
-     "EuropeMap",
-     "AfricaMap",
-     "USAMap"]
-    )
+__append_to_doc(["WorldMap", "EuropeMap", "AfricaMap", "USAMap"])
 
 __doc__ += """
 
@@ -781,13 +797,22 @@ class GraphGenerators:
       of Algorithms*, Volume 26, Issue 2, February 1998, pages 306-324.
     """
 
-###########################################################################
-#   Graph Iterators
-###########################################################################
+    ###########################################################################
+    #   Graph Iterators
+    ###########################################################################
 
-    def __call__(self, vertices=None, property=None, augment='edges', size=None,
-                 degree_sequence=None, loops=False, sparse=True, copy=True,
-                 immutable=False):
+    def __call__(
+        self,
+        vertices=None,
+        property=None,
+        augment='edges',
+        size=None,
+        degree_sequence=None,
+        loops=False,
+        sparse=True,
+        copy=True,
+        immutable=False,
+    ):
         """
         Access the generator of isomorphism class representatives.
         Iterates over distinct, exhaustive representatives. See the docstring
@@ -833,24 +858,36 @@ class GraphGenerators:
           pages 306-324.
         """
         # Use nauty for the basic case, as it is much faster.
-        if (vertices and property is None and size is None and
-                degree_sequence is None and not loops and augment == 'edges' and
-                sparse and (copy or immutable)):
+        if (
+            vertices
+            and property is None
+            and size is None
+            and degree_sequence is None
+            and not loops
+            and augment == 'edges'
+            and sparse
+            and (copy or immutable)
+        ):
             yield from graphs.nauty_geng(vertices, immutable=immutable)
             return
 
         if property is None:
+
             def property(x):
                 return True
 
         if degree_sequence is not None:
             if vertices is None:
                 raise NotImplementedError
-            if (len(degree_sequence) != vertices or sum(degree_sequence) % 2
-                    or sum(degree_sequence) > vertices * (vertices - 1)):
+            if (
+                len(degree_sequence) != vertices
+                or sum(degree_sequence) % 2
+                or sum(degree_sequence) > vertices * (vertices - 1)
+            ):
                 raise ValueError("Invalid degree sequence.")
             degree_sequence = sorted(degree_sequence)
             if augment == 'edges':
+
                 def property(x):
                     D = sorted(x.degree())
                     return all(degree_sequence[i] >= d for i, d in enumerate(D))
@@ -858,6 +895,7 @@ class GraphGenerators:
                 def extra_property(x):
                     return degree_sequence == sorted(x.degree())
             else:
+
                 def property(x):
                     D = sorted(x.degree() + [0] * (vertices - x.n_vertices()))
                     return all(degree_sequence[i] >= d for i, d in enumerate(D))
@@ -867,9 +905,11 @@ class GraphGenerators:
                         return False
                     return degree_sequence == sorted(x.degree())
         elif size is not None:
+
             def extra_property(x):
                 return x.size() == size
         else:
+
             def extra_property(x):
                 return True
 
@@ -877,12 +917,15 @@ class GraphGenerators:
             if vertices is None:
                 raise NotImplementedError
             g = graph.Graph(loops=loops, sparse=sparse)
-            for gg in canaug_traverse_vert(g, [], vertices, property, loops=loops, sparse=sparse):
+            for gg in canaug_traverse_vert(
+                g, [], vertices, property, loops=loops, sparse=sparse
+            ):
                 if extra_property(gg):
                     yield gg.copy(immutable=immutable) if copy or immutable else gg
         elif augment == 'edges':
             if vertices is None:
                 from sage.rings.integer import Integer
+
                 vertices = Integer(0)
                 while True:
                     for g in self(vertices, loops=loops, sparse=sparse):
@@ -896,7 +939,9 @@ class GraphGenerators:
                 gen.append(i)
                 gen += list(range(i + 2, vertices))
                 gens.append(gen)
-            for gg in canaug_traverse_edge(g, gens, property, loops=loops, sparse=sparse):
+            for gg in canaug_traverse_edge(
+                g, gens, property, loops=loops, sparse=sparse
+            ):
                 if extra_property(gg):
                     yield gg.copy(immutable=immutable) if copy or immutable else gg
         else:
@@ -1029,11 +1074,17 @@ class GraphGenerators:
         import shlex
 
         from sage.features.nauty import NautyExecutable
+
         geng_path = NautyExecutable("geng").absolute_filename()
-        with subprocess.Popen(shlex.quote(geng_path) + " {0}".format(options), shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True,
-                              encoding='latin-1') as sp:
+        with subprocess.Popen(
+            shlex.quote(geng_path) + " {0}".format(options),
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+            encoding='latin-1',
+        ) as sp:
             msg = sp.stderr.readline()
             if debug:
                 yield msg
@@ -1216,11 +1267,17 @@ class GraphGenerators:
         import shlex
 
         from sage.features.nauty import NautyExecutable
+
         genbg_path = NautyExecutable("genbgL").absolute_filename()
-        with subprocess.Popen(shlex.quote(genbg_path) + " {0}".format(options), shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True,
-                              encoding='latin-1') as sp:
+        with subprocess.Popen(
+            shlex.quote(genbg_path) + " {0}".format(options),
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+            encoding='latin-1',
+        ) as sp:
             msg = sp.stderr.readline()
             if debug:
                 yield msg
@@ -1232,6 +1289,7 @@ class GraphGenerators:
                 for s in msg.split(' '):
                     if s.startswith('n='):
                         from sage.rings.integer import Integer
+
                         n1, n2 = (Integer(t) for t in s[2:].split('+') if t.isdigit())
                         partition = [set(range(n1)), set(range(n1, n1 + n2))]
                         break
@@ -1244,14 +1302,16 @@ class GraphGenerators:
 
             gen = sp.stdout
             from sage.graphs.bipartite_graph import BipartiteGraph
+
             while True:
                 try:
                     s = next(gen)
                 except StopIteration:
                     # Exhausted list of bipartite graphs from nauty genbgL
                     return
-                yield BipartiteGraph(s[:-1], format='graph6', partition=partition,
-                                     immutable=immutable)
+                yield BipartiteGraph(
+                    s[:-1], format='graph6', partition=partition, immutable=immutable
+                )
 
     def nauty_genktreeg(self, options='', debug=False, immutable=False):
         r"""
@@ -1352,11 +1412,17 @@ class GraphGenerators:
         import shlex
 
         from sage.features.nauty import NautyExecutable
+
         geng_path = NautyExecutable("genktreeg").absolute_filename()
-        with subprocess.Popen(shlex.quote(geng_path) + " {0}".format(options), shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True,
-                              encoding='latin-1') as sp:
+        with subprocess.Popen(
+            shlex.quote(geng_path) + " {0}".format(options),
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+            encoding='latin-1',
+        ) as sp:
             msg = sp.stderr.readline()
             if debug:
                 yield msg
@@ -1371,8 +1437,9 @@ class GraphGenerators:
                     return
                 yield graph.Graph(s[:-1], format='graph6', immutable=immutable)
 
-    def cospectral_graphs(self, vertices, matrix_function=None, graphs=None,
-                          immutable=False):
+    def cospectral_graphs(
+        self, vertices, matrix_function=None, graphs=None, immutable=False
+    ):
         r"""
         Find all sets of graphs on ``vertices`` vertices (with
         possible restrictions) which are cospectral with respect to a
@@ -1476,15 +1543,20 @@ class GraphGenerators:
             return True
 
         from sage.graphs.graph_generators import graphs as graph_gen
+
         if graphs is None:
             graph_list = graph_gen(vertices, property=prop, immutable=immutable)
         elif callable(graphs):
-            graph_list = (g for g in graph_gen(vertices, property=prop,
-                                               immutable=immutable) if graphs(g))
+            graph_list = (
+                g
+                for g in graph_gen(vertices, property=prop, immutable=immutable)
+                if graphs(g)
+            )
         else:
             graph_list = iter(graphs)
 
         from collections import defaultdict
+
         charpolys = defaultdict(list)
         for g in graph_list:
             cp = matrix_function(g).charpoly()
@@ -1612,8 +1684,7 @@ class GraphGenerators:
             # construct graph based on g
 
             # first taking care that every edge is given twice
-            edges_g = {i + 1: [j for j in di if j < i + 1]
-                       for i, di in enumerate(g)}
+            edges_g = {i + 1: [j for j in di if j < i + 1] for i, di in enumerate(g)}
 
             # then adding half of the loops (if any)
             has_loops = False
@@ -1724,16 +1795,22 @@ class GraphGenerators:
             return
 
         from sage.features.graph_generators import Buckygen
+
         Buckygen().require()
 
         import shlex
+
         command = shlex.quote(Buckygen().absolute_filename())
         command += ' -' + ('I' if ipr else '') + 'd {0}d'.format(order)
 
-        with subprocess.Popen(command, shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True) as sp:
-
+        with subprocess.Popen(
+            command,
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+        ) as sp:
             yield from graphs._read_planar_code(sp.stdout, immutable=immutable)
 
     def fusenes(self, hexagon_count, benzenoids=False, immutable=False):
@@ -1812,16 +1889,22 @@ class GraphGenerators:
             return
 
         from sage.features.graph_generators import Benzene
+
         Benzene().require()
 
         import shlex
+
         command = shlex.quote(Benzene().absolute_filename())
         command += (' b' if benzenoids else '') + ' {0} p'.format(hexagon_count)
 
-        with subprocess.Popen(command, shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True) as sp:
-
+        with subprocess.Popen(
+            command,
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+        ) as sp:
             yield from graphs._read_planar_code(sp.stdout, immutable=immutable)
 
     def plantri_gen(self, options="", immutable=False):
@@ -1999,29 +2082,38 @@ class GraphGenerators:
             AttributeError: invalid options '6 -c=3'
         """
         from sage.features.graph_generators import Plantri
+
         Plantri().require()
 
         import shlex
-        command = '{} {}'.format(shlex.quote(Plantri().absolute_filename()),
-                                 options)
-        with subprocess.Popen(command, shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True) as sp:
 
+        command = '{} {}'.format(shlex.quote(Plantri().absolute_filename()), options)
+        with subprocess.Popen(
+            command,
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+        ) as sp:
             try:
                 yield from graphs._read_planar_code(sp.stdout, immutable=immutable)
             except (TypeError, AssertionError):
                 raise AttributeError("invalid options '{}'".format(options))
 
-    def planar_graphs(self, order, minimum_degree=None,
-                      minimum_connectivity=None,
-                      exact_connectivity=False,
-                      minimum_edges=None,
-                      maximum_edges=None,
-                      maximum_face_size=None,
-                      only_bipartite=False,
-                      dual=False,
-                      immutable=False):
+    def planar_graphs(
+        self,
+        order,
+        minimum_degree=None,
+        minimum_connectivity=None,
+        exact_connectivity=False,
+        minimum_edges=None,
+        maximum_edges=None,
+        maximum_face_size=None,
+        only_bipartite=False,
+        dual=False,
+        immutable=False,
+    ):
         r"""
         An iterator over connected planar graphs using the plantri generator.
 
@@ -2180,7 +2272,9 @@ class GraphGenerators:
             raise ValueError("number of vertices should be at most 64")
 
         if exact_connectivity and minimum_connectivity is None:
-            raise ValueError("Minimum connectivity must be specified to use the exact_connectivity option.")
+            raise ValueError(
+                "Minimum connectivity must be specified to use the exact_connectivity option."
+            )
 
         if minimum_connectivity is not None and not (1 <= minimum_connectivity <= 4):
             raise ValueError("Minimum connectivity should be a number between 1 and 4.")
@@ -2188,9 +2282,13 @@ class GraphGenerators:
         # minimum degree should be None or a number between 1 and 5
         if minimum_degree == 0:
             if order != 1:
-                raise ValueError("Minimum degree equal to 0 is only possible if the graphs have 1 vertex.")
+                raise ValueError(
+                    "Minimum degree equal to 0 is only possible if the graphs have 1 vertex."
+                )
         elif minimum_degree is not None and not (1 <= minimum_degree <= 5):
-            raise ValueError("Minimum degree should be a number between 1 and 5 if the order is greater than 1.")
+            raise ValueError(
+                "Minimum degree should be a number between 1 and 5 if the order is greater than 1."
+            )
         elif minimum_degree is None and order == 1:
             minimum_degree = 0
 
@@ -2202,22 +2300,27 @@ class GraphGenerators:
                 minimum_degree, minimum_connectivity = 1, 1
         elif minimum_degree is None:
             minimum_degree = minimum_connectivity
-        elif (minimum_degree < minimum_connectivity and
-              minimum_degree > 0):
+        elif minimum_degree < minimum_connectivity and minimum_degree > 0:
             raise ValueError("Minimum connectivity can be at most the minimum degree.")
 
         # exact connectivity is not implemented for minimum connectivity ≥ 3
         if exact_connectivity and minimum_connectivity >= 3:
-            raise NotImplementedError(f"Generation of planar graphs with connectivity exactly {minimum_connectivity} is not implemented.")
+            raise NotImplementedError(
+                f"Generation of planar graphs with connectivity exactly {minimum_connectivity} is not implemented."
+            )
 
         if only_bipartite and minimum_degree > 3:
-            raise NotImplementedError("Generation of bipartite planar graphs with minimum degree 4 or 5 is not implemented.")
+            raise NotImplementedError(
+                "Generation of bipartite planar graphs with minimum degree 4 or 5 is not implemented."
+            )
 
         edges = ''
         if minimum_edges is None:
             if maximum_edges is not None:
                 if maximum_edges < order - 1:
-                    raise ValueError("the number of edges cannot be less than order - 1")
+                    raise ValueError(
+                        "the number of edges cannot be less than order - 1"
+                    )
                 edges = '-e:{}'.format(maximum_edges)
         else:
             if minimum_edges > 3 * order - 6:
@@ -2225,8 +2328,10 @@ class GraphGenerators:
             if maximum_edges is None:
                 edges = '-e{}:'.format(minimum_edges)
             elif minimum_edges > maximum_edges:
-                raise ValueError("the maximum number of edges must be larger "
-                                 "or equal to the minimum number of edges")
+                raise ValueError(
+                    "the maximum number of edges must be larger "
+                    "or equal to the minimum number of edges"
+                )
             elif minimum_edges == maximum_edges:
                 edges = '-e{}'.format(minimum_edges)
             else:
@@ -2235,7 +2340,9 @@ class GraphGenerators:
         faces = ''
         if maximum_face_size is not None:
             if maximum_face_size < 3:
-                raise ValueError("the upper bound on the size of a face must be at least 3")
+                raise ValueError(
+                    "the upper bound on the size of a face must be at least 3"
+                )
             faces = '-f{}'.format(maximum_face_size)
 
         if order == 0:
@@ -2254,19 +2361,29 @@ class GraphGenerators:
             return
 
         cmd = '-p{}m{}c{}{}{} {} {} {}'
-        command = cmd.format('b' if only_bipartite else '',
-                             minimum_degree,
-                             minimum_connectivity,
-                             'x' if exact_connectivity else '',
-                             'd' if dual else '',
-                             edges, faces,
-                             order)
+        command = cmd.format(
+            'b' if only_bipartite else '',
+            minimum_degree,
+            minimum_connectivity,
+            'x' if exact_connectivity else '',
+            'd' if dual else '',
+            edges,
+            faces,
+            order,
+        )
 
         yield from graphs.plantri_gen(command, immutable=immutable)
 
-    def triangulations(self, order, minimum_degree=None, minimum_connectivity=None,
-                       exact_connectivity=False, only_eulerian=False, dual=False,
-                       immutable=False):
+    def triangulations(
+        self,
+        order,
+        minimum_degree=None,
+        minimum_connectivity=None,
+        exact_connectivity=False,
+        only_eulerian=False,
+        dual=False,
+        immutable=False,
+    ):
         r"""
         An iterator over connected planar triangulations using the plantri generator.
 
@@ -2407,13 +2524,19 @@ class GraphGenerators:
             raise ValueError("number of vertices should be at most 64")
 
         if exact_connectivity and minimum_connectivity is None:
-            raise ValueError("Minimum connectivity must be specified to use the exact_connectivity option.")
+            raise ValueError(
+                "Minimum connectivity must be specified to use the exact_connectivity option."
+            )
 
         if minimum_connectivity is not None and not (3 <= minimum_connectivity <= 5):
-            raise ValueError("Minimum connectivity should be None or a number between 3 and 5.")
+            raise ValueError(
+                "Minimum connectivity should be None or a number between 3 and 5."
+            )
 
         if minimum_degree is not None and not (3 <= minimum_degree <= 5):
-            raise ValueError("Minimum degree should be None or a number between 3 and 5.")
+            raise ValueError(
+                "Minimum degree should be None or a number between 3 and 5."
+            )
 
         # for Eulerian triangulations the minimum degree is set to 4 (unless it was already specifically set)
         if only_eulerian and minimum_degree is None:
@@ -2433,7 +2556,9 @@ class GraphGenerators:
         # exact connectivity is not implemented for minimum connectivity equal
         # to minimum degree
         if exact_connectivity and minimum_connectivity == minimum_degree:
-            raise NotImplementedError("Generation of triangulations with minimum connectivity equal to minimum degree is not implemented.")
+            raise NotImplementedError(
+                "Generation of triangulations with minimum connectivity equal to minimum degree is not implemented."
+            )
 
         minimum_order = {3: 4, 4: 6, 5: 12}[minimum_degree]
 
@@ -2444,18 +2569,26 @@ class GraphGenerators:
             return
 
         cmd = '-{}m{}c{}{}{} {}'
-        command = cmd.format('b' if only_eulerian else '',
-                             minimum_degree,
-                             minimum_connectivity,
-                             'x' if exact_connectivity else '',
-                             'd' if dual else '',
-                             order)
+        command = cmd.format(
+            'b' if only_eulerian else '',
+            minimum_degree,
+            minimum_connectivity,
+            'x' if exact_connectivity else '',
+            'd' if dual else '',
+            order,
+        )
 
         yield from graphs.plantri_gen(command, immutable=immutable)
 
-    def quadrangulations(self, order, minimum_degree=None, minimum_connectivity=None,
-                         no_nonfacial_quadrangles=False, dual=False,
-                         immutable=False):
+    def quadrangulations(
+        self,
+        order,
+        minimum_degree=None,
+        minimum_connectivity=None,
+        no_nonfacial_quadrangles=False,
+        dual=False,
+        immutable=False,
+    ):
         r"""
         An iterator over planar quadrangulations using the plantri generator.
 
@@ -2558,10 +2691,11 @@ class GraphGenerators:
         if minimum_degree not in {None, 2, 3}:
             raise ValueError("Minimum degree should be None, 2 or 3.")
 
-        if (no_nonfacial_quadrangles and
-                minimum_connectivity == 2):
-            raise NotImplementedError("Generation of no non-facial quadrangles "
-                                      "and minimum connectivity 2 is not implemented")
+        if no_nonfacial_quadrangles and minimum_connectivity == 2:
+            raise NotImplementedError(
+                "Generation of no non-facial quadrangles "
+                "and minimum connectivity 2 is not implemented"
+            )
 
         # check combination of values of minimum degree and minimum connectivity
         if minimum_connectivity is None:
@@ -2584,17 +2718,17 @@ class GraphGenerators:
             minimum_connectivity = 4
 
         cmd = '-qm{}c{}{} {}'
-        command = cmd.format(minimum_degree,
-                             minimum_connectivity,
-                             'd' if dual else '',
-                             order)
+        command = cmd.format(
+            minimum_degree, minimum_connectivity, 'd' if dual else '', order
+        )
 
         yield from graphs.plantri_gen(command, immutable=immutable)
 
-###########################################################################
-# Basic Graphs
-###########################################################################
+    ###########################################################################
+    # Basic Graphs
+    ###########################################################################
     from sage.graphs.generators import basic
+
     BullGraph = staticmethod(basic.BullGraph)
     ButterflyGraph = staticmethod(basic.ButterflyGraph)
     CircularLadderGraph = staticmethod(basic.CircularLadderGraph)
@@ -2620,10 +2754,11 @@ class GraphGenerators:
     Toroidal6RegularGrid2dGraph = staticmethod(basic.Toroidal6RegularGrid2dGraph)
     ToroidalGrid2dGraph = staticmethod(basic.ToroidalGrid2dGraph)
 
-###########################################################################
-# Small Graphs
-###########################################################################
+    ###########################################################################
+    # Small Graphs
+    ###########################################################################
     from sage.graphs.generators import distance_regular, smallgraphs
+
     Balaban10Cage = staticmethod(smallgraphs.Balaban10Cage)
     Balaban11Cage = staticmethod(smallgraphs.Balaban11Cage)
     BidiakisCube = staticmethod(smallgraphs.BidiakisCube)
@@ -2638,13 +2773,17 @@ class GraphGenerators:
     Cell120 = staticmethod(smallgraphs.Cell120)
     ChvatalGraph = staticmethod(smallgraphs.ChvatalGraph)
     ClebschGraph = staticmethod(smallgraphs.ClebschGraph)
-    cocliques_HoffmannSingleton = staticmethod(distance_regular.cocliques_HoffmannSingleton)
+    cocliques_HoffmannSingleton = staticmethod(
+        distance_regular.cocliques_HoffmannSingleton
+    )
     ConwaySmith_for_3S7 = staticmethod(distance_regular.ConwaySmith_for_3S7)
     CoxeterGraph = staticmethod(smallgraphs.CoxeterGraph)
     CubeplexGraph = staticmethod(smallgraphs.CubeplexGraph)
     DejterGraph = staticmethod(smallgraphs.DejterGraph)
     DesarguesGraph = staticmethod(smallgraphs.DesarguesGraph)
-    distance_3_doubly_truncated_Golay_code_graph = staticmethod(distance_regular.distance_3_doubly_truncated_Golay_code_graph)
+    distance_3_doubly_truncated_Golay_code_graph = staticmethod(
+        distance_regular.distance_3_doubly_truncated_Golay_code_graph
+    )
     DoubleStarSnark = staticmethod(smallgraphs.DoubleStarSnark)
     DoublyTruncatedWittGraph = staticmethod(distance_regular.DoublyTruncatedWittGraph)
     DurerGraph = staticmethod(smallgraphs.DurerGraph)
@@ -2692,7 +2831,9 @@ class GraphGenerators:
     LjubljanaGraph = staticmethod(smallgraphs.LjubljanaGraph)
     vanLintSchrijverGraph = staticmethod(distance_regular.vanLintSchrijverGraph)
     LivingstoneGraph = staticmethod(smallgraphs.LivingstoneGraph)
-    locally_GQ42_distance_transitive_graph = staticmethod(distance_regular.locally_GQ42_distance_transitive_graph)
+    locally_GQ42_distance_transitive_graph = staticmethod(
+        distance_regular.locally_GQ42_distance_transitive_graph
+    )
     LocalMcLaughlinGraph = staticmethod(smallgraphs.LocalMcLaughlinGraph)
     M22Graph = staticmethod(smallgraphs.M22Graph)
     MarkstroemGraph = staticmethod(smallgraphs.MarkstroemGraph)
@@ -2710,8 +2851,12 @@ class GraphGenerators:
     PetersenGraph = staticmethod(smallgraphs.PetersenGraph)
     RobertsonGraph = staticmethod(smallgraphs.RobertsonGraph)
     SchlaefliGraph = staticmethod(smallgraphs.SchlaefliGraph)
-    shortened_00_11_binary_Golay_code_graph = staticmethod(distance_regular.shortened_00_11_binary_Golay_code_graph)
-    shortened_000_111_extended_binary_Golay_code_graph = staticmethod(distance_regular.shortened_000_111_extended_binary_Golay_code_graph)
+    shortened_00_11_binary_Golay_code_graph = staticmethod(
+        distance_regular.shortened_00_11_binary_Golay_code_graph
+    )
+    shortened_000_111_extended_binary_Golay_code_graph = staticmethod(
+        distance_regular.shortened_000_111_extended_binary_Golay_code_graph
+    )
     ShrikhandeGraph = staticmethod(smallgraphs.ShrikhandeGraph)
     SimsGewirtzGraph = staticmethod(smallgraphs.SimsGewirtzGraph)
     SousselierGraph = staticmethod(smallgraphs.SousselierGraph)
@@ -2721,7 +2866,9 @@ class GraphGenerators:
     TietzeGraph = staticmethod(smallgraphs.TietzeGraph)
     TricornGraph = staticmethod(smallgraphs.TricornGraph)
     Tutte12Cage = staticmethod(smallgraphs.Tutte12Cage)
-    TruncatedIcosidodecahedralGraph = staticmethod(smallgraphs.TruncatedIcosidodecahedralGraph)
+    TruncatedIcosidodecahedralGraph = staticmethod(
+        smallgraphs.TruncatedIcosidodecahedralGraph
+    )
     TruncatedTetrahedralGraph = staticmethod(smallgraphs.TruncatedTetrahedralGraph)
     TruncatedWittGraph = staticmethod(distance_regular.TruncatedWittGraph)
     TutteCoxeterGraph = staticmethod(smallgraphs.TutteCoxeterGraph)
@@ -2734,23 +2881,25 @@ class GraphGenerators:
     WienerArayaGraph = staticmethod(smallgraphs.WienerArayaGraph)
     SuzukiGraph = staticmethod(smallgraphs.SuzukiGraph)
 
-###########################################################################
-# Platonic Solids
-###########################################################################
+    ###########################################################################
+    # Platonic Solids
+    ###########################################################################
     from sage.graphs.generators import platonic_solids
+
     DodecahedralGraph = staticmethod(platonic_solids.DodecahedralGraph)
     HexahedralGraph = staticmethod(platonic_solids.HexahedralGraph)
     IcosahedralGraph = staticmethod(platonic_solids.IcosahedralGraph)
     OctahedralGraph = staticmethod(platonic_solids.OctahedralGraph)
     TetrahedralGraph = staticmethod(platonic_solids.TetrahedralGraph)
 
-###########################################################################
-# Families
-###########################################################################
+    ###########################################################################
+    # Families
+    ###########################################################################
     from sage.graphs import cographs as cographs_module
     from sage.graphs import strongly_regular_db
     from sage.graphs.generators import luw_graphs
     from sage.graphs.generators import families
+
     Akq = staticmethod(luw_graphs.Akq)
     AlternatingFormsGraph = staticmethod(distance_regular.AlternatingFormsGraph)
     AztecDiamondGraph = staticmethod(families.AztecDiamondGraph)
@@ -2768,7 +2917,9 @@ class GraphGenerators:
     DipoleGraph = staticmethod(families.DipoleGraph)
     distance_regular_graph = staticmethod(distance_regular.distance_regular_graph)
     DorogovtsevGoltsevMendesGraph = staticmethod(families.DorogovtsevGoltsevMendesGraph)
-    DoubleGeneralizedPetersenGraph = staticmethod(families.DoubleGeneralizedPetersenGraph)
+    DoubleGeneralizedPetersenGraph = staticmethod(
+        families.DoubleGeneralizedPetersenGraph
+    )
     DoubleGrassmannGraph = staticmethod(distance_regular.DoubleGrassmannGraph)
     DoubleOddGraph = staticmethod(distance_regular.DoubleOddGraph)
     EgawaGraph = staticmethod(families.EgawaGraph)
@@ -2793,11 +2944,17 @@ class GraphGenerators:
     JohnsonGraph = staticmethod(families.JohnsonGraph)
     KneserGraph = staticmethod(families.KneserGraph)
     LCFGraph = staticmethod(families.LCFGraph)
-    line_graph_forbidden_subgraphs = staticmethod(families.line_graph_forbidden_subgraphs)
+    line_graph_forbidden_subgraphs = staticmethod(
+        families.line_graph_forbidden_subgraphs
+    )
     LollipopGraph = staticmethod(families.LollipopGraph)
     LUWGraph = staticmethod(luw_graphs.LUWGraph)
-    MathonPseudocyclicMergingGraph = staticmethod(families.MathonPseudocyclicMergingGraph)
-    MathonPseudocyclicStronglyRegularGraph = staticmethod(families.MathonPseudocyclicStronglyRegularGraph)
+    MathonPseudocyclicMergingGraph = staticmethod(
+        families.MathonPseudocyclicMergingGraph
+    )
+    MathonPseudocyclicStronglyRegularGraph = staticmethod(
+        families.MathonPseudocyclicStronglyRegularGraph
+    )
     MuzychukS6Graph = staticmethod(families.MuzychukS6Graph)
     MycielskiGraph = staticmethod(families.MycielskiGraph)
     MycielskiStep = staticmethod(families.MycielskiStep)
@@ -2811,8 +2968,12 @@ class GraphGenerators:
     RingedTree = staticmethod(families.RingedTree)
     RoseWindowGraph = staticmethod(families.RoseWindowGraph)
     SierpinskiGasketGraph = staticmethod(families.SierpinskiGasketGraph)
-    SquaredSkewHadamardMatrixGraph = staticmethod(families.SquaredSkewHadamardMatrixGraph)
-    SwitchedSquaredSkewHadamardMatrixGraph = staticmethod(families.SwitchedSquaredSkewHadamardMatrixGraph)
+    SquaredSkewHadamardMatrixGraph = staticmethod(
+        families.SquaredSkewHadamardMatrixGraph
+    )
+    SwitchedSquaredSkewHadamardMatrixGraph = staticmethod(
+        families.SwitchedSquaredSkewHadamardMatrixGraph
+    )
     StaircaseGraph = staticmethod(families.StaircaseGraph)
     strongly_regular_graph = staticmethod(strongly_regular_db.strongly_regular_graph)
     TabacjnGraph = staticmethod(families.TabacjnGraph)
@@ -2824,31 +2985,51 @@ class GraphGenerators:
     WheelGraph = staticmethod(families.WheelGraph)
     WindmillGraph = staticmethod(families.WindmillGraph)
 
-###########################################################################
-# Graphs from classical geometries over `F_q`
-###########################################################################
+    ###########################################################################
+    # Graphs from classical geometries over `F_q`
+    ###########################################################################
     from sage.graphs.generators import classical_geometries
-    AffineOrthogonalPolarGraph = staticmethod(classical_geometries.AffineOrthogonalPolarGraph)
-    AhrensSzekeresGeneralizedQuadrangleGraph = staticmethod(classical_geometries.AhrensSzekeresGeneralizedQuadrangleGraph)
-    NonisotropicOrthogonalPolarGraph = staticmethod(classical_geometries.NonisotropicOrthogonalPolarGraph)
-    NonisotropicUnitaryPolarGraph = staticmethod(classical_geometries.NonisotropicUnitaryPolarGraph)
-    OrthogonalDualPolarGraph = staticmethod(classical_geometries.OrthogonalDualPolarGraph)
+
+    AffineOrthogonalPolarGraph = staticmethod(
+        classical_geometries.AffineOrthogonalPolarGraph
+    )
+    AhrensSzekeresGeneralizedQuadrangleGraph = staticmethod(
+        classical_geometries.AhrensSzekeresGeneralizedQuadrangleGraph
+    )
+    NonisotropicOrthogonalPolarGraph = staticmethod(
+        classical_geometries.NonisotropicOrthogonalPolarGraph
+    )
+    NonisotropicUnitaryPolarGraph = staticmethod(
+        classical_geometries.NonisotropicUnitaryPolarGraph
+    )
+    OrthogonalDualPolarGraph = staticmethod(
+        classical_geometries.OrthogonalDualPolarGraph
+    )
     OrthogonalPolarGraph = staticmethod(classical_geometries.OrthogonalPolarGraph)
-    SymplecticDualPolarGraph = staticmethod(classical_geometries.SymplecticDualPolarGraph)
+    SymplecticDualPolarGraph = staticmethod(
+        classical_geometries.SymplecticDualPolarGraph
+    )
     SymplecticPolarGraph = staticmethod(classical_geometries.SymplecticPolarGraph)
-    TaylorTwographDescendantSRG = staticmethod(classical_geometries.TaylorTwographDescendantSRG)
+    TaylorTwographDescendantSRG = staticmethod(
+        classical_geometries.TaylorTwographDescendantSRG
+    )
     TaylorTwographSRG = staticmethod(classical_geometries.TaylorTwographSRG)
-    T2starGeneralizedQuadrangleGraph = staticmethod(classical_geometries.T2starGeneralizedQuadrangleGraph)
-    Nowhere0WordsTwoWeightCodeGraph = staticmethod(classical_geometries.Nowhere0WordsTwoWeightCodeGraph)
+    T2starGeneralizedQuadrangleGraph = staticmethod(
+        classical_geometries.T2starGeneralizedQuadrangleGraph
+    )
+    Nowhere0WordsTwoWeightCodeGraph = staticmethod(
+        classical_geometries.Nowhere0WordsTwoWeightCodeGraph
+    )
     HaemersGraph = staticmethod(classical_geometries.HaemersGraph)
     CossidentePenttilaGraph = staticmethod(classical_geometries.CossidentePenttilaGraph)
     UnitaryDualPolarGraph = staticmethod(classical_geometries.UnitaryDualPolarGraph)
     UnitaryPolarGraph = staticmethod(classical_geometries.UnitaryPolarGraph)
 
-###########################################################################
-# Chessboard Graphs
-###########################################################################
+    ###########################################################################
+    # Chessboard Graphs
+    ###########################################################################
     from sage.graphs.generators import chessboard
+
     ChessboardGraphGenerator = staticmethod(chessboard.ChessboardGraphGenerator)
     BishopGraph = staticmethod(chessboard.BishopGraph)
     KingGraph = staticmethod(chessboard.KingGraph)
@@ -2856,20 +3037,22 @@ class GraphGenerators:
     QueenGraph = staticmethod(chessboard.QueenGraph)
     RookGraph = staticmethod(chessboard.RookGraph)
 
-###########################################################################
-# Intersection graphs
-###########################################################################
+    ###########################################################################
+    # Intersection graphs
+    ###########################################################################
     from sage.graphs.generators import intersection
+
     IntervalGraph = staticmethod(intersection.IntervalGraph)
     IntersectionGraph = staticmethod(intersection.IntersectionGraph)
     PermutationGraph = staticmethod(intersection.PermutationGraph)
     OrthogonalArrayBlockGraph = staticmethod(intersection.OrthogonalArrayBlockGraph)
     ToleranceGraph = staticmethod(intersection.ToleranceGraph)
 
-###########################################################################
-# Random Graphs
-###########################################################################
+    ###########################################################################
+    # Random Graphs
+    ###########################################################################
     from sage.graphs.generators import random
+
     RandomBarabasiAlbert = staticmethod(random.RandomBarabasiAlbert)
     RandomBipartite = staticmethod(random.RandomBipartite)
     RandomRegularBipartite = staticmethod(random.RandomRegularBipartite)
@@ -2891,10 +3074,11 @@ class GraphGenerators:
     RandomTriangulation = staticmethod(random.RandomTriangulation)
     RandomUnitDiskGraph = staticmethod(random.RandomUnitDiskGraph)
 
-###########################################################################
-# Trees
-###########################################################################
+    ###########################################################################
+    # Trees
+    ###########################################################################
     from sage.graphs.generators import trees as gen_trees
+
     BalancedTree = staticmethod(gen_trees.BalancedTree)
     FibonacciTree = staticmethod(gen_trees.FibonacciTree)
     nauty_gentreeg = staticmethod(gen_trees.nauty_gentreeg)
@@ -2904,27 +3088,33 @@ class GraphGenerators:
     RandomTree = staticmethod(gen_trees.RandomTree)
     trees = staticmethod(gen_trees.trees)
 
-###########################################################################
-# Maps
-###########################################################################
+    ###########################################################################
+    # Maps
+    ###########################################################################
     from sage.graphs.generators import world_map
+
     WorldMap = staticmethod(world_map.WorldMap)
     EuropeMap = staticmethod(world_map.EuropeMap)
     AfricaMap = staticmethod(world_map.AfricaMap)
     USAMap = staticmethod(world_map.USAMap)
 
-###########################################################################
-# Degree Sequence
-###########################################################################
+    ###########################################################################
+    # Degree Sequence
+    ###########################################################################
     from sage.graphs.generators import degree_sequence
+
     DegreeSequence = staticmethod(degree_sequence.DegreeSequence)
     DegreeSequenceBipartite = staticmethod(degree_sequence.DegreeSequenceBipartite)
-    DegreeSequenceConfigurationModel = staticmethod(degree_sequence.DegreeSequenceConfigurationModel)
+    DegreeSequenceConfigurationModel = staticmethod(
+        degree_sequence.DegreeSequenceConfigurationModel
+    )
     DegreeSequenceTree = staticmethod(degree_sequence.DegreeSequenceTree)
     DegreeSequenceExpected = staticmethod(degree_sequence.DegreeSequenceExpected)
 
 
-def canaug_traverse_vert(g, aut_gens, max_verts, property, dig=False, loops=False, sparse=True):
+def canaug_traverse_vert(
+    g, aut_gens, max_verts, property, dig=False, loops=False, sparse=True
+):
     """
     Main function for exhaustive generation. Recursive traversal of a
     canonically generated tree of isomorph free (di)graphs satisfying a
@@ -2979,13 +3169,13 @@ def canaug_traverse_vert(g, aut_gens, max_verts, property, dig=False, loops=Fals
         Digraph on 2 vertices
     """
     from sage.groups.perm_gps.partn_ref.refinement_graphs import search_tree
+
     if not property(g):
         return
     yield g
 
     n = g.order()
     if n < max_verts:
-
         # build a list representing C(g) - the vertex to be added
         # is at the end, so only specify which edges...
         # in the case of graphs, there are n possibilities,
@@ -2995,7 +3185,7 @@ def canaug_traverse_vert(g, aut_gens, max_verts, property, dig=False, loops=Fals
         else:
             possibilities = n
         num_roots = 2**possibilities
-        children = [-1]*num_roots
+        children = [-1] * num_roots
 
         # union-find C(g) under Aut(g)
         for gen in aut_gens:
@@ -3004,9 +3194,9 @@ def canaug_traverse_vert(g, aut_gens, max_verts, property, dig=False, loops=Fals
                 for j in range(possibilities):
                     if (1 << j) & i:
                         if dig and j >= n:
-                            k += (1 << (gen[j - n] + n))
+                            k += 1 << (gen[j - n] + n)
                         else:
-                            k += (1 << gen[j])
+                            k += 1 << gen[j]
                 while children[k] != -1:
                     k = children[k]
                 while children[i] != -1:
@@ -3057,7 +3247,9 @@ def canaug_traverse_vert(g, aut_gens, max_verts, property, dig=False, loops=Fals
                 if property(z):
                     z_s.append(z)
             for z in z_s:
-                z_aut_gens, _, canonical_relabeling = search_tree(z, [z.vertices(sort=True)], certificate=True, dig=(dig or loops))
+                z_aut_gens, _, canonical_relabeling = search_tree(
+                    z, [z.vertices(sort=True)], certificate=True, dig=(dig or loops)
+                )
                 cut_vert = 0
                 while canonical_relabeling[cut_vert] != n:
                     cut_vert += 1
@@ -3065,12 +3257,35 @@ def canaug_traverse_vert(g, aut_gens, max_verts, property, dig=False, loops=Fals
                 m_z = z.subgraph(sub_verts)
 
                 if m_z == g:
-                    for a in canaug_traverse_vert(z, z_aut_gens, max_verts, property, dig=dig, loops=loops, sparse=sparse):
+                    for a in canaug_traverse_vert(
+                        z,
+                        z_aut_gens,
+                        max_verts,
+                        property,
+                        dig=dig,
+                        loops=loops,
+                        sparse=sparse,
+                    ):
                         yield a
                 else:
                     for possibility in check_aut(z_aut_gens, cut_vert, n):
-                        if m_z.relabel(dict(enumerate(possibility)), check_input=False, inplace=False) == g:
-                            for a in canaug_traverse_vert(z, z_aut_gens, max_verts, property, dig=dig, loops=loops, sparse=sparse):
+                        if (
+                            m_z.relabel(
+                                dict(enumerate(possibility)),
+                                check_input=False,
+                                inplace=False,
+                            )
+                            == g
+                        ):
+                            for a in canaug_traverse_vert(
+                                z,
+                                z_aut_gens,
+                                max_verts,
+                                property,
+                                dig=dig,
+                                loops=loops,
+                                sparse=sparse,
+                            ):
                                 yield a
                             break
 
@@ -3096,6 +3311,7 @@ def check_aut(aut_gens, cut_vert, n):
         [[1, 0, 3, 2], [1, 2, 3, 0]]
     """
     from copy import copy
+
     perm = list(range(n + 1))
     seen_perms = [perm]
     unchecked_perms = [perm]
@@ -3252,28 +3468,40 @@ def canaug_traverse_edge(g, aut_gens, property, dig=False, loops=False, sparse=T
             z.add_edge(i, j)
             if not property(z):
                 continue
-            z_aut_gens, _, canonical_relabeling = search_tree(z, [z.vertices(sort=True)], certificate=True, dig=(dig or loops))
-            relabel_inverse = [0]*n
+            z_aut_gens, _, canonical_relabeling = search_tree(
+                z, [z.vertices(sort=True)], certificate=True, dig=(dig or loops)
+            )
+            relabel_inverse = [0] * n
             for ii in range(n):
                 relabel_inverse[canonical_relabeling[ii]] = ii
             z_can = z.relabel(canonical_relabeling, inplace=False)
             cut_edge_can = z_can.edges(labels=False, sort=True)[-1]
-            cut_edge = [relabel_inverse[cut_edge_can[0]], relabel_inverse[cut_edge_can[1]]]
+            cut_edge = [
+                relabel_inverse[cut_edge_can[0]],
+                relabel_inverse[cut_edge_can[1]],
+            ]
             if dig:
                 cut_edge = tuple(cut_edge)
             else:
                 cut_edge = tuple(sorted(cut_edge))
 
             from copy import copy
+
             m_z = copy(z)
             m_z.delete_edge(cut_edge)
             if m_z == g:
-                for a in canaug_traverse_edge(z, z_aut_gens, property, dig=dig, loops=loops, sparse=sparse):
+                for a in canaug_traverse_edge(
+                    z, z_aut_gens, property, dig=dig, loops=loops, sparse=sparse
+                ):
                     yield a
             else:
-                for possibility in check_aut_edge(z_aut_gens, cut_edge, i, j, n, dig=dig):
+                for possibility in check_aut_edge(
+                    z_aut_gens, cut_edge, i, j, n, dig=dig
+                ):
                     if m_z.relabel(possibility, inplace=False) == g:
-                        for a in canaug_traverse_edge(z, z_aut_gens, property, dig=dig, loops=loops, sparse=sparse):
+                        for a in canaug_traverse_edge(
+                            z, z_aut_gens, property, dig=dig, loops=loops, sparse=sparse
+                        ):
                             yield a
                         break
 
@@ -3300,6 +3528,7 @@ def check_aut_edge(aut_gens, cut_edge, i, j, n, dig=False):
         [[1, 0, 3, 2], [1, 2, 3, 0]]
     """
     from copy import copy
+
     perm = list(range(n))
     seen_perms = [perm]
     unchecked_perms = [perm]
@@ -3314,7 +3543,11 @@ def check_aut_edge(aut_gens, cut_edge, i, j, n, dig=False):
                 unchecked_perms.append(new_perm)
                 if new_perm[cut_edge[0]] == i and new_perm[cut_edge[1]] == j:
                     yield new_perm
-                if not dig and new_perm[cut_edge[0]] == j and new_perm[cut_edge[1]] == i:
+                if (
+                    not dig
+                    and new_perm[cut_edge[0]] == j
+                    and new_perm[cut_edge[1]] == i
+                ):
                     yield new_perm
 
 

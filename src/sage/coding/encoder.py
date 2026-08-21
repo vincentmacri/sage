@@ -8,7 +8,7 @@ AUTHORS:
 
 - David Lucas (2015): initial version
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 David Lucas <david.lucas@inria.fr>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.modules.free_module_element import vector
 from sage.misc.abstract_method import abstract_method
@@ -367,7 +367,7 @@ class Encoder(SageObject):
             sage: E.message_space()
             Vector space of dimension 4 over Finite Field of size 2
         """
-        return self.code().base_field()**(self.code().dimension())
+        return self.code().base_field() ** (self.code().dimension())
 
     @abstract_method(optional=True)
     def generator_matrix(self):
@@ -398,4 +398,5 @@ class EncodingError(Exception):
     r"""
     Special exception class to indicate an error during encoding or unencoding.
     """
+
     pass

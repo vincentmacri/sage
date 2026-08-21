@@ -31,6 +31,7 @@ class Magick(Executable):
         sage: Magick().is_present()  # optional - imagemagick
         FeatureTestResult('magick', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -71,36 +72,58 @@ class Magick(Executable):
 
         # create a png file with the content
         from sage.misc.temporary_file import tmp_filename
+
         base_filename_png = tmp_filename(ext='.png')
         with open(base_filename_png, 'wb') as f:
             f.write(content)
 
         # Set up filenames
         import os
+
         base, filename_png = os.path.split(base_filename_png)
         filename, _png = os.path.splitext(filename_png)
         filename_gif = filename + '.gif'
 
         # running command magick/convert (taken from sage/plot/animate.py)
         from subprocess import run
-        cmd = [self.executable, '-dispose', 'Background', '-delay', '20',
-                '-loop', '0', filename_png, filename_gif]
+
+        cmd = [
+            self.executable,
+            '-dispose',
+            'Background',
+            '-delay',
+            '20',
+            '-loop',
+            '0',
+            filename_png,
+            filename_gif,
+        ]
 
         try:
-            result = run(cmd, cwd=base, capture_output=True, text=True,
-                         check=False)
+            result = run(cmd, cwd=base, capture_output=True, text=True, check=False)
         except OSError as e:
-            return FeatureTestResult(self, False, reason='Running command "{}" '
-                        'raised an OSError "{}" '.format(' '.join(cmd), e))
+            return FeatureTestResult(
+                self,
+                False,
+                reason='Running command "{}" raised an OSError "{}" '.format(
+                    ' '.join(cmd), e
+                ),
+            )
 
         # If an error occurred, return False
         if result.returncode:
-            return FeatureTestResult(self, False, reason='Running command "{}" '
-                        'returned nonzero exit status "{}" with stderr '
-                        '"{}" and stdout "{}".'.format(result.args,
-                                                       result.returncode,
-                                                       result.stderr.strip(),
-                                                       result.stdout.strip()))
+            return FeatureTestResult(
+                self,
+                False,
+                reason='Running command "{}" '
+                'returned nonzero exit status "{}" with stderr '
+                '"{}" and stdout "{}".'.format(
+                    result.args,
+                    result.returncode,
+                    result.stderr.strip(),
+                    result.stdout.strip(),
+                ),
+            )
 
         # If necessary, run more tests here
         # ...
@@ -122,6 +145,7 @@ class ImageMagick(JoinFeature):
         sage: ImageMagick().is_present()  # optional - imagemagick
         FeatureTestResult('imagemagick', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -130,10 +154,13 @@ class ImageMagick(JoinFeature):
             sage: isinstance(ImageMagick(), ImageMagick)
             True
         """
-        JoinFeature.__init__(self, 'imagemagick',
-                             [Magick()],
-                             spkg='imagemagick',
-                             url='https://www.imagemagick.org/')
+        JoinFeature.__init__(
+            self,
+            'imagemagick',
+            [Magick()],
+            spkg='imagemagick',
+            url='https://www.imagemagick.org/',
+        )
 
 
 def all_features():

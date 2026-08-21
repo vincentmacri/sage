@@ -113,6 +113,7 @@ class PollackStevensModularDomain(SageObject):
         ...
         TypeError: unable to coerce <class 'sage.modular.arithgroup.congroup_gamma0.Gamma0_class_with_category'> to an integer
     """
+
     def __init__(self, N, reps, indices, rels, equiv_ind):
         r"""
         INPUT:
@@ -570,6 +571,7 @@ class ManinRelations(PollackStevensModularDomain):
         ...
         ValueError: N must be a positive integer
     """
+
     def __init__(self, N):
         r"""
         Create an instance of this class.
@@ -651,11 +653,12 @@ class ManinRelations(PollackStevensModularDomain):
         # ------------------------------------------------------------------
         for r in range(len(coset_reps)):
             if not boundary_checked[r]:
-
                 # We now check if this boundary edge is glued to itself by
                 # Gamma_0(N)
 
-                if P.normalize(p1s[r][0], p1s[r][1]) == P.normalize(-p1s[r][1], p1s[r][0]):
+                if P.normalize(p1s[r][0], p1s[r][1]) == P.normalize(
+                    -p1s[r][1], p1s[r][0]
+                ):
                     # This edge is glued to itself and so coset_reps[r]
                     # needs to be added to our generator list.
 
@@ -694,8 +697,7 @@ class ManinRelations(PollackStevensModularDomain):
                     # In the following case the ideal triangle below
                     # the unimodular path described by coset_reps[r]
                     # contains a point fixed by a 3-torsion element.
-                    if (c ** 2 + d ** 2 + c * d) % N == 0:
-
+                    if (c**2 + d**2 + c * d) % N == 0:
                         # the index r is adding to our list of indexes
                         # of generators
                         gens_index.append(r)
@@ -750,7 +752,9 @@ class ManinRelations(PollackStevensModularDomain):
                         for s in range(r + 1, len(coset_reps)):
                             if boundary_checked[s]:
                                 continue
-                            if P.normalize(p1s[s][0], p1s[s][1]) == P.normalize(-p1s[r][1], p1s[r][0]):
+                            if P.normalize(p1s[s][0], p1s[s][1]) == P.normalize(
+                                -p1s[r][1], p1s[r][0]
+                            ):
                                 # the reverse of coset_reps[r] is
                                 # Gamma_0(N)-equivalent to coset_reps[s]
                                 # coset_reps[r] will now be made a generator
@@ -824,7 +828,7 @@ class ManinRelations(PollackStevensModularDomain):
                     # Similarly, this is also done for B.
 
                     # Running between the cusps between cusp1 and cusp2
-                    for rel in rels[r + 2: s + 2]:
+                    for rel in rels[r + 2 : s + 2]:
                         # Add edge relation
                         vA.append(rel[0])
                         # Add negative of edge relation
@@ -840,8 +844,9 @@ class ManinRelations(PollackStevensModularDomain):
             equiv_ind[ky] = i
 
         self.gammas = gammas
-        PollackStevensModularDomain.__init__(self, N, coset_reps, gens_index,
-                                        rels, equiv_ind)
+        PollackStevensModularDomain.__init__(
+            self, N, coset_reps, gens_index, rels, equiv_ind
+        )
 
         # A list of indices of the (geometric) coset representatives whose
         # paths are identified by some 2-torsion element (which switches the
@@ -1136,7 +1141,7 @@ class ManinRelations(PollackStevensModularDomain):
 
         # Some convenient shortcuts
         P = self.P1()
-        sP = len(P.list())   # Size of P^1(Z/NZ)
+        sP = len(P.list())  # Size of P^1(Z/NZ)
 
         # Initialize some lists
 
@@ -1146,7 +1151,7 @@ class ManinRelations(PollackStevensModularDomain):
         # The ? denotes that it has not yet been checked if more cusps need
         # to be added between the surrounding cusps.
 
-        full_domain = False     # Says that we are not done yet!
+        full_domain = False  # Says that we are not done yet!
 
         v = [False] * sP
         # This initializes a list indexed by P^1(Z/NZ) which keeps track of
@@ -1162,7 +1167,7 @@ class ManinRelations(PollackStevensModularDomain):
 
         # Main Loop -- Ideal Triangle Flipping
         # ====================================
-        while (not full_domain):
+        while not full_domain:
             full_domain = True
 
             # This loop runs through the current set of cusps
@@ -1171,7 +1176,6 @@ class ManinRelations(PollackStevensModularDomain):
             for s in range(1, len(C), 2):
                 # range over odd indices in the final list C
                 if C[s] == "?":
-
                     # Single out our two cusps (path from cusp2 to cusp1)
                     cusp1 = C[s - 1]
                     cusp2 = C[s + 1]
@@ -1192,7 +1196,7 @@ class ManinRelations(PollackStevensModularDomain):
                     # Check if we need to flip (since this P1 element has not
                     # yet been accounted for!)
                     if not v[pos]:
-                        v[pos] = True      # Say this P1 element now occurs
+                        v[pos] = True  # Say this P1 element now occurs
                         v[P.index(b1, -(b1 + b2))] = True
                         # Say that the other two ideal triangle edges
                         # also occur!
@@ -1204,8 +1208,7 @@ class ManinRelations(PollackStevensModularDomain):
                         # element is present, the fundamental domain can be
                         # extended no further.
 
-                        if (b1 ** 2 + b2 ** 2 + b1 * b2) % N != 0:
-
+                        if (b1**2 + b2**2 + b1 * b2) % N != 0:
                             # this congruence is exactly equivalent to
                             # gam * [0 -1; 1 -1] * gam^(-1) is in Gamma_0(N)
                             # where gam is the matrix corresponding to the
@@ -1229,7 +1232,7 @@ class ManinRelations(PollackStevensModularDomain):
             # This will keep the fundamental domain as flat as possible!
             # ---------------------------------------------------------------
             s = 1
-            while s < len(C):   # range over odd indices in the final list C
+            while s < len(C):  # range over odd indices in the final list C
                 if C[s] == "i":
                     C[s] = "?"
 
@@ -1475,8 +1478,14 @@ class ManinRelations(PollackStevensModularDomain):
                 gamma = basic_hecke_matrix(a, l)
                 t = gamma * gen
                 #  In the notation above this is gam_a * D_m
-                from .manin_map import unimod_matrices_to_infty, unimod_matrices_from_infty
-                v = unimod_matrices_from_infty(t[0, 0], t[1, 0]) + unimod_matrices_to_infty(t[0, 1], t[1, 1])
+                from .manin_map import (
+                    unimod_matrices_to_infty,
+                    unimod_matrices_from_infty,
+                )
+
+                v = unimod_matrices_from_infty(
+                    t[0, 0], t[1, 0]
+                ) + unimod_matrices_to_infty(t[0, 1], t[1, 1])
                 #  This expresses t as a sum of unimodular divisors
 
                 # This loop runs over each such unimodular divisor

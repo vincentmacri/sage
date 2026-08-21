@@ -29,14 +29,14 @@ from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.fraction_field import FractionField
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
 from sage.combinat.free_module import CombinatorialFreeModule
-from sage.combinat.partition import (_Partitions, Partitions,
-                                     RegularPartitions_truncated)
+from sage.combinat.partition import _Partitions, Partitions, RegularPartitions_truncated
 from sage.combinat.partition_tuple import PartitionTuples
 from sage.algebras.quantum_groups.q_numbers import q_factorial
 
 
 #############################
 #  Fock space options
+
 
 class FockSpaceOptions(GlobalOptions):
     r"""
@@ -80,19 +80,25 @@ class FockSpaceOptions(GlobalOptions):
         sage: Partitions.options._reset()
         sage: FockSpace.options._reset()
     """
+
     __name__ = 'FockSpaceOptions'
     NAME = 'FockSpace'
     module = 'sage.algebras.quantum_groups.fock_space'
 
-    display = {'default': "ket",
-               'description': 'Specifies how terms of the natural basis of Fock space should be printed',
-               'values': {'ket': 'displayed as a ket in bra-ket notation',
-                          'list': 'displayed as a list'},
-               'case_sensitive': False}
+    display = {
+        'default': "ket",
+        'description': 'Specifies how terms of the natural basis of Fock space should be printed',
+        'values': {
+            'ket': 'displayed as a ket in bra-ket notation',
+            'list': 'displayed as a list',
+        },
+        'case_sensitive': False,
+    }
 
 
 ###############################################################################
 #  Fock space
+
 
 class FockSpace(Parent, UniqueRepresentation):
     r"""
@@ -309,8 +315,11 @@ class FockSpace(Parent, UniqueRepresentation):
     - [Fayers2010]_
     - [GW1999]_
     """
+
     @staticmethod
-    def __classcall_private__(cls, n, multicharge=[0], q=None, base_ring=None, truncated=None):
+    def __classcall_private__(
+        cls, n, multicharge=[0], q=None, base_ring=None, truncated=None
+    ):
         r"""
         Standardize input to ensure a unique representation.
 
@@ -371,7 +380,8 @@ class FockSpace(Parent, UniqueRepresentation):
              of Univariate Polynomial Ring in q over Integer Ring
         """
         return "Fock space of rank {} of multicharge {} over {}".format(
-            self._n, self._multicharge, self.base_ring())
+            self._n, self._multicharge, self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -387,8 +397,10 @@ class FockSpace(Parent, UniqueRepresentation):
             \mathcal{F}_{q}^{4}\left(2, 0, 1\right)
         """
         from sage.misc.latex import latex
-        return "\\mathcal{{F}}_{{{q}}}^{{{n}}}{mc}".format(q=latex(self._q), n=self._n,
-                                                           mc=latex(self._multicharge))
+
+        return "\\mathcal{{F}}_{{{q}}}^{{{n}}}{mc}".format(
+            q=latex(self._q), n=self._n, mc=latex(self._multicharge)
+        )
 
     options = FockSpaceOptions
 
@@ -465,6 +477,7 @@ class FockSpace(Parent, UniqueRepresentation):
              in the lower global crystal basis
         """
         from sage.misc.misc import inject_variable
+
         for shorthand in ['A', 'F', 'G']:
             realization = getattr(self, shorthand)()
             if verbose:
@@ -557,6 +570,7 @@ class FockSpace(Parent, UniqueRepresentation):
             sage: x.e(2)
             |3, 1> + q*|2, 1, 1>
         """
+
         def __init__(self, F):
             """
             Initialize ``self``.
@@ -571,20 +585,30 @@ class FockSpace(Parent, UniqueRepresentation):
             if len(F._multicharge) == 1:  # For partitions
                 self._above = lambda x, y: x[0] < y[0]
             else:  # For partition tuples
-                self._above = lambda x,y: x[0] < y[0] or (x[0] == y[0] and x[1] < y[1])
-            self._addable = lambda la,i: [x for x in la.outside_corners()
-                                          if la.content(*x, multicharge=F._multicharge) == i]
-            self._removable = lambda la,i: [x for x in la.corners()
-                                            if la.content(*x, multicharge=F._multicharge) == i]
+                self._above = lambda x, y: x[0] < y[0] or (x[0] == y[0] and x[1] < y[1])
+            self._addable = lambda la, i: [
+                x
+                for x in la.outside_corners()
+                if la.content(*x, multicharge=F._multicharge) == i
+            ]
+            self._removable = lambda la, i: [
+                x
+                for x in la.corners()
+                if la.content(*x, multicharge=F._multicharge) == i
+            ]
 
             indices = PartitionTuples(level=len(F._multicharge))
-            CombinatorialFreeModule.__init__(self, F.base_ring(), indices,
-                                             prefix='F',
-                                             latex_prefix='',
-                                             bracket=False,
-                                             latex_bracket=['\\left\\lvert', '\\right\\rangle'],
-                                             sorting_reverse=True,
-                                             category=FockSpaceBases(F))
+            CombinatorialFreeModule.__init__(
+                self,
+                F.base_ring(),
+                indices,
+                prefix='F',
+                latex_prefix='',
+                bracket=False,
+                latex_bracket=['\\left\\lvert', '\\right\\rangle'],
+                sorting_reverse=True,
+                category=FockSpaceBases(F),
+            )
 
         options = FockSpaceOptions
 
@@ -609,7 +633,7 @@ class FockSpace(Parent, UniqueRepresentation):
             """
             if self.options.display != 'ket':
                 return CombinatorialFreeModule._repr_term(self, m)
-            return '|' + m._repr_list()[1:-1] + ">" # Strip the outer brackets of m
+            return '|' + m._repr_list()[1:-1] + ">"  # Strip the outer brackets of m
 
         def _ascii_art_term(self, m):
             r"""
@@ -631,13 +655,14 @@ class FockSpace(Parent, UniqueRepresentation):
             if self.options.display != 'ket':
                 return CombinatorialFreeModule._ascii_art_term(self, m)
             from sage.typeset.ascii_art import AsciiArt, ascii_art
+
             a = ascii_art(m)
             h = a.height()
-            l = AsciiArt(['|']*h)
-            r = AsciiArt([' '*i + '\\' for i in range(h//2)], baseline=0)
+            l = AsciiArt(['|'] * h)
+            r = AsciiArt([' ' * i + '\\' for i in range(h // 2)], baseline=0)
             if h % 2:
-                r *= AsciiArt([' '*(h//2) + '>'], baseline=0)
-            r *= AsciiArt([' '*i + '/' for i in reversed(range(h//2))], baseline=0)
+                r *= AsciiArt([' ' * (h // 2) + '>'], baseline=0)
+            r *= AsciiArt([' ' * i + '/' for i in reversed(range(h // 2))], baseline=0)
             ret = l + a + r
             ret._baseline = h - 1
             return ret
@@ -664,13 +689,16 @@ class FockSpace(Parent, UniqueRepresentation):
             if self.options.display != 'ket':
                 return CombinatorialFreeModule._ascii_art_term(self, m)
             from sage.typeset.unicode_art import UnicodeArt, unicode_art
+
             a = unicode_art(m)
             h = a.height()
-            l = UnicodeArt(['│']*h, baseline=0)
-            r = UnicodeArt([" "*i + '╲' for i in range(h//2)], baseline=0)
+            l = UnicodeArt(['│'] * h, baseline=0)
+            r = UnicodeArt([" " * i + '╲' for i in range(h // 2)], baseline=0)
             if h % 2:
-                r *= UnicodeArt([" "*(h//2) + '〉'], baseline=0)
-            r *= UnicodeArt([" "*i + '╱' for i in reversed(range(h//2))], baseline=0)
+                r *= UnicodeArt([" " * (h // 2) + '〉'], baseline=0)
+            r *= UnicodeArt(
+                [" " * i + '╱' for i in reversed(range(h // 2))], baseline=0
+            )
             ret = l + a + r
             ret._baseline = h - 1
             return ret
@@ -694,37 +722,52 @@ class FockSpace(Parent, UniqueRepresentation):
             q = F.q()
             n = F._n
             I = F._index_set
-            A = CartanMatrix(['A',n-1,1])
-            P = RootSystem(['A',n-1,1]).weight_lattice()
+            A = CartanMatrix(['A', n - 1, 1])
+            P = RootSystem(['A', n - 1, 1]).weight_lattice()
             al = P.simple_roots()
             ac = P.simple_coroots()
             zero = self.zero()
             for x in self.some_elements():
                 for i in I:
                     for j in I:
-                        tester.assertEqual(x.h_inverse(j).f(i).h(j), q**-al[i].scalar(ac[j]) * x.f(i))
-                        tester.assertEqual(x.h_inverse(j).e(i).h(j), q**al[i].scalar(ac[j]) * x.e(i))
+                        tester.assertEqual(
+                            x.h_inverse(j).f(i).h(j), q ** -al[i].scalar(ac[j]) * x.f(i)
+                        )
+                        tester.assertEqual(
+                            x.h_inverse(j).e(i).h(j), q ** al[i].scalar(ac[j]) * x.e(i)
+                        )
                         if i == j:
-                            tester.assertEqual(x.f(i).e(i) - x.e(i).f(i),
-                                               (x.h(i) - x.h_inverse(i)) / (q - q**-1))
+                            tester.assertEqual(
+                                x.f(i).e(i) - x.e(i).f(i),
+                                (x.h(i) - x.h_inverse(i)) / (q - q**-1),
+                            )
                             continue
                         tester.assertEqual(x.f(j).e(i) - x.e(i).f(j), zero)
-                        aij = A[i,j]
-                        tester.assertEqual(zero,
-                                           sum((-1)**k
-                                           * q_binomial(1-aij, k, q)
-                                           * x.e(*([i]*(1-aij-k) + [j] + [i]*k))
-                                           for k in range(1-aij+1)))
-                        tester.assertEqual(zero,
-                                           sum((-1)**k
-                                           * q_binomial(1-aij, k, q)
-                                           * x.f(*([i]*(1-aij-k) + [j] + [i]*k))
-                                           for k in range(1-aij+1)))
+                        aij = A[i, j]
+                        tester.assertEqual(
+                            zero,
+                            sum(
+                                (-1) ** k
+                                * q_binomial(1 - aij, k, q)
+                                * x.e(*([i] * (1 - aij - k) + [j] + [i] * k))
+                                for k in range(1 - aij + 1)
+                            ),
+                        )
+                        tester.assertEqual(
+                            zero,
+                            sum(
+                                (-1) ** k
+                                * q_binomial(1 - aij, k, q)
+                                * x.f(*([i] * (1 - aij - k) + [j] + [i] * k))
+                                for k in range(1 - aij + 1)
+                            ),
+                        )
 
         class Element(CombinatorialFreeModule.Element):
             """
             An element in the Fock space.
             """
+
             def _e(self, i):
                 r"""
                 Apply `e_i` to ``self``.
@@ -746,11 +789,16 @@ class FockSpace(Parent, UniqueRepresentation):
                 P = self.parent()
 
                 def N_left(la, x, i):
-                    return (sum(1 for y in P._addable(la, i) if P._above(x, y))
-                            - sum(1 for y in P._removable(la, i) if P._above(x, y)))
+                    return sum(1 for y in P._addable(la, i) if P._above(x, y)) - sum(
+                        1 for y in P._removable(la, i) if P._above(x, y)
+                    )
+
                 q = P.realization_of()._q
-                return P.sum_of_terms((la.remove_cell(*x), c * q**(-N_left(la, x, i)))
-                                      for la,c in self for x in P._removable(la, i))
+                return P.sum_of_terms(
+                    (la.remove_cell(*x), c * q ** (-N_left(la, x, i)))
+                    for la, c in self
+                    for x in P._removable(la, i)
+                )
 
             def e(self, *data):
                 r"""
@@ -842,11 +890,16 @@ class FockSpace(Parent, UniqueRepresentation):
                 P = self.parent()
 
                 def N_right(la, x, i):
-                    return (sum(1 for y in P._addable(la, i) if P._above(y, x))
-                            - sum(1 for y in P._removable(la, i) if P._above(y, x)))
+                    return sum(1 for y in P._addable(la, i) if P._above(y, x)) - sum(
+                        1 for y in P._removable(la, i) if P._above(y, x)
+                    )
+
                 q = P.realization_of()._q
-                return P.sum_of_terms((la.add_cell(*x), c * q**N_right(la, x, i))
-                                       for la,c in self for x in P._addable(la, i))
+                return P.sum_of_terms(
+                    (la.add_cell(*x), c * q ** N_right(la, x, i))
+                    for la, c in self
+                    for x in P._addable(la, i)
+                )
 
             def f(self, *data):
                 r"""
@@ -943,7 +996,9 @@ class FockSpace(Parent, UniqueRepresentation):
                     if i not in I:
                         raise ValueError("{} not in the index set".format(i))
                     for la in d:
-                        d[la] *= q**(len(P._addable(la, i)) - len(P._removable(la, i)))
+                        d[la] *= q ** (
+                            len(P._addable(la, i)) - len(P._removable(la, i))
+                        )
                 return P._from_dict(d, coerce=False)
 
             def h_inverse(self, *data):
@@ -979,7 +1034,9 @@ class FockSpace(Parent, UniqueRepresentation):
                     if i not in I:
                         raise ValueError("{} not in the index set".format(i))
                     for la in d:
-                        d[la] *= q**-(len(P._addable(la, i)) - len(P._removable(la, i)))
+                        d[la] *= q ** -(
+                            len(P._addable(la, i)) - len(P._removable(la, i))
+                        )
                 return P._from_dict(d, coerce=False)
 
             def d(self):
@@ -1009,8 +1066,11 @@ class FockSpace(Parent, UniqueRepresentation):
                 q = R._q
                 d = self.monomial_coefficients(copy=True)
                 for la in d:
-                    d[la] *= q**-sum(1 for x in la.cells()
-                                     if la.content(*x, multicharge=R._multicharge) == 0)
+                    d[la] *= q ** -sum(
+                        1
+                        for x in la.cells()
+                        if la.content(*x, multicharge=R._multicharge) == 0
+                    )
                 return P._from_dict(d, coerce=False)
 
     natural = F
@@ -1062,6 +1122,7 @@ class FockSpace(Parent, UniqueRepresentation):
              + q^2*|[], [4]> + q^3*|[], [3, 1]> + q^3*|[], [2, 1, 1]>
              + q^4*|[], [1, 1, 1, 1]>
         """
+
         def __init__(self, F):
             r"""
             Initialize ``self``.
@@ -1072,15 +1133,22 @@ class FockSpace(Parent, UniqueRepresentation):
                 sage: TestSuite(A).run()
             """
             self._basis_name = "approximation"
-            indices = PartitionTuples(level=len(F._multicharge),
-                                      regular=F._n)
-            CombinatorialFreeModule.__init__(self, F.base_ring(), indices,
-                                             prefix='A', bracket=False,
-                                             sorting_reverse=True,
-                                             category=FockSpaceBases(F))
-            self.module_morphism(self._A_to_fock_basis,
-                                 triangular='upper', unitriangular=True,
-                                 codomain=F.natural()).register_as_coercion()
+            indices = PartitionTuples(level=len(F._multicharge), regular=F._n)
+            CombinatorialFreeModule.__init__(
+                self,
+                F.base_ring(),
+                indices,
+                prefix='A',
+                bracket=False,
+                sorting_reverse=True,
+                category=FockSpaceBases(F),
+            )
+            self.module_morphism(
+                self._A_to_fock_basis,
+                triangular='upper',
+                unitriangular=True,
+                codomain=F.natural(),
+            ).register_as_coercion()
 
         options = FockSpaceOptions
 
@@ -1119,21 +1187,23 @@ class FockSpace(Parent, UniqueRepresentation):
 
                 # Reduce down to the lower level Fock space and do the computation
                 #   and then lift back up to us by prepending empty partitions
-                if k == len(R._multicharge): # This means we get the empty partition
+                if k == len(R._multicharge):  # This means we get the empty partition
                     cur = fock.highest_weight_vector()
                 else:
                     F = FockSpace(R._n, R._multicharge[k:], R._q, R.base_ring())
                     Gp = F.G()
                     if k + 1 == len(R._multicharge):
                         cur = Gp._G_to_fock_basis(Gp._indices(la[k]))
-                        cur = fock.sum_of_terms((fock._indices([[]]*k + [p]), c)
-                                                for p,c in cur)
+                        cur = fock.sum_of_terms(
+                            (fock._indices([[]] * k + [p]), c) for p, c in cur
+                        )
                     else:
                         cur = Gp._G_to_fock_basis(Gp._indices(la[k:]))
-                        cur = fock.sum_of_terms((fock._indices([[]]*k + list(pt)), c)
-                                                for pt,c in cur)
-                la = la[k-1]
-                r = R._multicharge[k-1]
+                        cur = fock.sum_of_terms(
+                            (fock._indices([[]] * k + list(pt)), c) for pt, c in cur
+                        )
+                la = la[k - 1]
+                r = R._multicharge[k - 1]
             else:
                 cur = fock.highest_weight_vector()
                 r = R._multicharge[0]
@@ -1142,14 +1212,14 @@ class FockSpace(Parent, UniqueRepresentation):
             corners = la.corners()
             cells = set(la.cells())
             q = R._q
-            k = R._n - 1 # This is sl_{k+1}
+            k = R._n - 1  # This is sl_{k+1}
             b = ZZ.zero()
             # While there is some cell left to count
-            while any(c[1]*k + c[0] >= b for c in corners):
+            while any(c[1] * k + c[0] >= b for c in corners):
                 power = 0
-                i = -b + r # This will be converted to a mod n number
+                i = -b + r  # This will be converted to a mod n number
                 for x in range(b // k + 1):
-                    if (b-x*k, x) in cells:
+                    if (b - x * k, x) in cells:
                         power += 1
                         cur = cur.f(i)
                 cur /= q_factorial(power, q)
@@ -1291,6 +1361,7 @@ class FockSpace(Parent, UniqueRepresentation):
              + q^2*|[], [4]> + q^3*|[], [3, 1]> + q^3*|[], [2, 1, 1]>
              + q^4*|[], [1, 1, 1, 1]>
         """
+
         def __init__(self, F):
             r"""
             Initialize ``self``.
@@ -1301,15 +1372,22 @@ class FockSpace(Parent, UniqueRepresentation):
                 sage: TestSuite(G).run()
             """
             self._basis_name = "lower global crystal"
-            indices = PartitionTuples(level=len(F._multicharge),
-                                      regular=F._n)
-            CombinatorialFreeModule.__init__(self, F.base_ring(), indices,
-                                             prefix='G', bracket=False,
-                                             sorting_reverse=True,
-                                             category=FockSpaceBases(F))
-            self.module_morphism(self._G_to_fock_basis,
-                                 triangular='upper', unitriangular=True,
-                                 codomain=F.natural()).register_as_coercion()
+            indices = PartitionTuples(level=len(F._multicharge), regular=F._n)
+            CombinatorialFreeModule.__init__(
+                self,
+                F.base_ring(),
+                indices,
+                prefix='G',
+                bracket=False,
+                sorting_reverse=True,
+                category=FockSpaceBases(F),
+            )
+            self.module_morphism(
+                self._G_to_fock_basis,
+                triangular='upper',
+                unitriangular=True,
+                codomain=F.natural(),
+            ).register_as_coercion()
 
         options = FockSpaceOptions
 
@@ -1363,9 +1441,13 @@ class FockSpace(Parent, UniqueRepresentation):
                 Gp = F.G()
                 if k + 1 == len(R._multicharge):
                     cur = Gp._G_to_fock_basis(Gp._indices(la[k]))
-                    return fock.sum_of_terms((fock._indices([[]]*k + [p]), c) for p,c in cur)
+                    return fock.sum_of_terms(
+                        (fock._indices([[]] * k + [p]), c) for p, c in cur
+                    )
                 cur = Gp._G_to_fock_basis(Gp._indices(la[k:]))
-                return fock.sum_of_terms((fock._indices([[]]*k + list(pt)), c) for pt,c in cur)
+                return fock.sum_of_terms(
+                    (fock._indices([[]] * k + list(pt)), c) for pt, c in cur
+                )
 
             cur = R.A()._A_to_fock_basis(la)
 
@@ -1374,9 +1456,9 @@ class FockSpace(Parent, UniqueRepresentation):
                 Add ``elt`` at the largest position of ``data`` such that
                 it dominants all larger entries.
                 """
-                for i in range(len(data)-1, -1, -1):
+                for i in range(len(data) - 1, -1, -1):
                     if not data[i].dominates(elt):
-                        data.insert(i+1, elt)
+                        data.insert(i + 1, elt)
                         return
                 data.insert(0, elt)
 
@@ -1405,15 +1487,22 @@ class FockSpace(Parent, UniqueRepresentation):
                 k = d.degree()
                 n = cur[mu].numerator()
                 if k != 0 or n.constant_coefficient() != 0:
-                    gamma = sum(n[i] * (q**(i-k) + q**(k-i))
-                                for i in range(min(n.degree(), k)))
+                    gamma = sum(
+                        n[i] * (q ** (i - k) + q ** (k - i))
+                        for i in range(min(n.degree(), k))
+                    )
                     gamma += n[k]
                     cur -= gamma * self._G_to_fock_basis(mu)
 
                     for x in cur.support():
                         # Add only new support elements that are (strictly) dominanted by mu
                         # and correspond to crystal basis elements.
-                        if x == mu or x in s or not mu.dominates(x) or x not in self._indices:
+                        if (
+                            x == mu
+                            or x in s
+                            or not mu.dominates(x)
+                            or x not in self._indices
+                        ):
                             continue
                         domorder_insertion(s, x)
 
@@ -1426,10 +1515,12 @@ class FockSpace(Parent, UniqueRepresentation):
 ###############################################################################
 # Bases Category
 
+
 class FockSpaceBases(Category_realization_of_parent):
     r"""
     The category of bases of a (truncated) Fock space.
     """
+
     def __init__(self, base):
         r"""
         Initialize the bases of a Fock space.
@@ -1585,7 +1676,7 @@ class FockSpaceBases(Category_realization_of_parent):
             level = len(self.realization_of()._multicharge)
             if level == 1:
                 return self.monomial(self._indices([]))
-            return self.monomial(self._indices([[]]*level))
+            return self.monomial(self._indices([[]] * level))
 
         def __getitem__(self, i):
             r"""
@@ -1644,6 +1735,7 @@ class FockSpaceBases(Category_realization_of_parent):
                 return self.highest_weight_vector()
             return self.monomial(i)
 
+
 ###############################################################################
 # Truncated Fock space
 
@@ -1691,6 +1783,7 @@ class FockSpaceTruncated(FockSpace):
 
     - [GW1999]_
     """
+
     @staticmethod
     def __classcall_private__(cls, n, k, q=None, base_ring=None):
         r"""
@@ -1741,7 +1834,9 @@ class FockSpaceTruncated(FockSpace):
             Fock space of rank 2 truncated at 3 over Fraction Field of
              Univariate Polynomial Ring in q over Integer Ring
         """
-        return "Fock space of rank {} truncated at {} over {}".format(self._n, self._k, self.base_ring())
+        return "Fock space of rank {} truncated at {} over {}".format(
+            self._n, self._k, self.base_ring()
+        )
 
     class F(CombinatorialFreeModule, BindableClass):
         r"""
@@ -1771,6 +1866,7 @@ class FockSpaceTruncated(FockSpace):
             sage: u3.f(0,3,2,1,1)
             0
         """
+
         def __init__(self, F):
             r"""
             Initialize ``self``.
@@ -1782,21 +1878,32 @@ class FockSpaceTruncated(FockSpace):
             """
             self._basis_name = "natural"
             # If the cell x is above the cell y
-            if len(F._multicharge) == 1: # For partitions
-                self._above = lambda x,y: x[0] < y[0]
-            else: # For partition tuples
-                self._above = lambda x,y: x[0] < y[0] or (x[0] == y[0] and x[1] < y[1])
-            self._addable = lambda la,i: [x for x in la.outside_corners()
-                                          if la.content(*x, multicharge=F._multicharge) == i]
-            self._removable = lambda la,i: [x for x in la.corners()
-                                            if la.content(*x, multicharge=F._multicharge) == i]
+            if len(F._multicharge) == 1:  # For partitions
+                self._above = lambda x, y: x[0] < y[0]
+            else:  # For partition tuples
+                self._above = lambda x, y: x[0] < y[0] or (x[0] == y[0] and x[1] < y[1])
+            self._addable = lambda la, i: [
+                x
+                for x in la.outside_corners()
+                if la.content(*x, multicharge=F._multicharge) == i
+            ]
+            self._removable = lambda la, i: [
+                x
+                for x in la.corners()
+                if la.content(*x, multicharge=F._multicharge) == i
+            ]
 
             indices = Partitions(max_length=F._k)
-            CombinatorialFreeModule.__init__(self, F.base_ring(), indices,
-                                             prefix='', bracket=['|', '>'],
-                                             latex_bracket=['\\lvert', '\\rangle'],
-                                             sorting_reverse=True,
-                                             category=FockSpaceBases(F))
+            CombinatorialFreeModule.__init__(
+                self,
+                F.base_ring(),
+                indices,
+                prefix='',
+                bracket=['|', '>'],
+                latex_bracket=['\\lvert', '\\rangle'],
+                sorting_reverse=True,
+                category=FockSpaceBases(F),
+            )
 
         options = FockSpaceOptions
 
@@ -1812,12 +1919,13 @@ class FockSpaceTruncated(FockSpace):
                 sage: F.highest_weight_vector()
                 |>
             """
-            return '|' + repr(m)[1:-1] + ">" # Strip the outer brackets of m
+            return '|' + repr(m)[1:-1] + ">"  # Strip the outer brackets of m
 
         class Element(FockSpace.natural.Element):
             r"""
             An element in the truncated Fock space.
             """
+
             def _f(self, i):
                 r"""
                 Apply the action of `f_i` on ``self``.
@@ -1842,13 +1950,20 @@ class FockSpaceTruncated(FockSpace):
                 P = self.parent()
 
                 def N_right(la, x, i):
-                    return (sum(1 for y in P._addable(la, i) if P._above(y, x))
-                            - sum(1 for y in P._removable(la, i) if P._above(y, x)))
+                    return sum(1 for y in P._addable(la, i) if P._above(y, x)) - sum(
+                        1 for y in P._removable(la, i) if P._above(y, x)
+                    )
+
                 q = P.realization_of()._q
                 k = P.realization_of()._k
-                return P.sum_of_terms([(la.add_cell(*x), c * q**N_right(la, x, i))
-                                       for la,c in self for x in P._addable(la, i)
-                                       if x[0] < k])
+                return P.sum_of_terms(
+                    [
+                        (la.add_cell(*x), c * q ** N_right(la, x, i))
+                        for la, c in self
+                        for x in P._addable(la, i)
+                        if x[0] < k
+                    ]
+                )
 
     natural = F
 
@@ -1891,6 +2006,7 @@ class FockSpaceTruncated(FockSpace):
             sage: G._G_to_fock_basis(Partition([12,9]), 'LLT')
             |12, 9> + q*|12, 4, 4, 1> + q*|8, 8, 5> + q^2*|8, 8, 4, 1>
         """
+
         def __init__(self, F, algorithm='GW'):
             r"""
             Initialize ``self``.
@@ -1908,13 +2024,21 @@ class FockSpaceTruncated(FockSpace):
                 raise ValueError("invalid algorithm")
             self._alg = algorithm
             indices = RegularPartitions_truncated(F._n, F._k)
-            CombinatorialFreeModule.__init__(self, F.base_ring(), indices,
-                                             prefix='A', bracket=False,
-                                             sorting_reverse=True,
-                                             category=FockSpaceBases(F))
-            self.module_morphism(self._A_to_fock_basis,
-                                 triangular='upper', unitriangular=True,
-                                 codomain=F.natural()).register_as_coercion()
+            CombinatorialFreeModule.__init__(
+                self,
+                F.base_ring(),
+                indices,
+                prefix='A',
+                bracket=False,
+                sorting_reverse=True,
+                category=FockSpaceBases(F),
+            )
+            self.module_morphism(
+                self._A_to_fock_basis,
+                triangular='upper',
+                unitriangular=True,
+                codomain=F.natural(),
+            ).register_as_coercion()
 
         options = FockSpaceOptions
 
@@ -1944,14 +2068,16 @@ class FockSpaceTruncated(FockSpace):
             corners = la.corners()
             cells = set(la.cells())
             q = R._q
-            k = R._n - 1 # This is sl_{k+1}
+            k = R._n - 1  # This is sl_{k+1}
             r = R._multicharge[0]
             b = ZZ.zero()
-            while any(c[1]*k + c[0] >= b for c in corners): # While there is some cell left to count
+            while any(
+                c[1] * k + c[0] >= b for c in corners
+            ):  # While there is some cell left to count
                 power = 0
-                i = -b + r # This will be converted to a mod n number
+                i = -b + r  # This will be converted to a mod n number
                 for x in range(b // k + 1):
-                    if (b-x*k, x) in cells:
+                    if (b - x * k, x) in cells:
                         power += 1
                         cur = cur.f(i)
                 cur /= q_factorial(power, q)
@@ -1981,7 +2107,7 @@ class FockSpaceTruncated(FockSpace):
             q = R._q
             for i in reversed(range(len(d))):
                 for dummy in range(d[i]):
-                    for j in range(i+1):
+                    for j in range(i + 1):
                         col = nu[j] if j < len(nu) else 0
                         res = nu.content(j, col, multicharge=R._multicharge)
                         if res != last:
@@ -2041,47 +2167,50 @@ class FockSpaceTruncated(FockSpace):
 
             # For critical partitions
             n = self.realization_of()._n
-            if len(la) == k-1 and all((la[i] - la[i+1] + 1) % n == 0 for i in range(k-2)) \
-                    and (la[-1] + 1) % n == 0:
+            if (
+                len(la) == k - 1
+                and all((la[i] - la[i + 1] + 1) % n == 0 for i in range(k - 2))
+                and (la[-1] + 1) % n == 0
+            ):
                 return fock.monomial(la)
 
             # For interior partitions
-            shifted = [la[i] - (n - 1)*(k - 1 - i) for i in range(len(la))]
+            shifted = [la[i] - (n - 1) * (k - 1 - i) for i in range(len(la))]
             if len(la) == k - 1 and shifted in _Partitions:
                 # Construct the d's and the critical partition
-                d = [(la[i] - la[i+1] + 1) % n for i in range(len(la)-1)]
+                d = [(la[i] - la[i + 1] + 1) % n for i in range(len(la) - 1)]
                 d.append((la[-1] + 1) % n)
                 crit = list(la)
-                for i,d_i in enumerate(d):
-                    for j in range(i+1):
+                for i, d_i in enumerate(d):
+                    for j in range(i + 1):
                         crit[j] -= d_i
                 nu = fock._indices(crit)
                 return self._skew_tableau(fock.monomial(nu), nu, d)
 
             # For non-interior partitions
             # Construct the d's and the partition ``a``
-            a = list(la) + [0]*(k - 1 - len(la)) # Add 0s to get the correct length
-            a = [a[i] + (k - 1 - i) for i in range(k-1)] # Shift the diagram
-            #shifted = list(a) # Make a copy of the shifted partition in case we need it later
-            d = [(a[i] - a[i+1]) % n for i in range(k-2)]
+            a = list(la) + [0] * (k - 1 - len(la))  # Add 0s to get the correct length
+            a = [a[i] + (k - 1 - i) for i in range(k - 1)]  # Shift the diagram
+            # shifted = list(a) # Make a copy of the shifted partition in case we need it later
+            d = [(a[i] - a[i + 1]) % n for i in range(k - 2)]
             d.append(a[-1] % n)
-            for i,d_i in enumerate(d):
-                for j in range(i+1):
+            for i, d_i in enumerate(d):
+                for j in range(i + 1):
                     a[j] -= d_i
-            if sum(a) == 0: # a is contained in the fundamental box
+            if sum(a) == 0:  # a is contained in the fundamental box
                 return self._LLT(la)
 
-            p = list(a) # Make a copy that we can change
-            for i in range(k-2):
-                if a[i] - a[i+1] == 0:
+            p = list(a)  # Make a copy that we can change
+            for i in range(k - 2):
+                if a[i] - a[i + 1] == 0:
                     d[i] -= 1
-                    for j in range(i+1):
+                    for j in range(i + 1):
                         p[j] += 1
             if a[-1] == 0:
                 d[-1] -= 1
-                for j in range(k-1):
+                for j in range(k - 1):
                     p[j] += 1
-            p = [p[i] - (k - 1 - i) for i in range(k-1)]
+            p = [p[i] - (k - 1 - i) for i in range(k - 1)]
             I = self._indices
             nu = I(p)
 
@@ -2096,11 +2225,11 @@ class FockSpaceTruncated(FockSpace):
 
             if la == nu:
                 j = -1
-                for i in range(k-2):
-                    if p[i] - p[i+1] == 0:
+                for i in range(k - 2):
+                    if p[i] - p[i + 1] == 0:
                         j = -2
                         break
-                    if p[i] > n and p[i] - p[i+1] > n:
+                    if p[i] > n and p[i] - p[i + 1] > n:
                         j = i
                 if j != -2 and p[-1] > n:
                     j = k - 1
@@ -2108,8 +2237,8 @@ class FockSpaceTruncated(FockSpace):
                     return self._LLT(la)
 
                 G = self.realization_of().G()
-                nu = I([p[i] - n if i <= j else p[i] for i in range(k-1)])
-                d = [0]*j + [n]
+                nu = I([p[i] - n if i <= j else p[i] for i in range(k - 1)])
+                d = [0] * j + [n]
                 return self._skew_tableau(G._G_to_fock_basis(nu), nu, d)
 
             G = self.realization_of().G()
@@ -2164,6 +2293,7 @@ class FockSpaceTruncated(FockSpace):
             sage: F(G[7])
             |7> + q*|3, 3, 1>
         """
+
         def __init__(self, F):
             r"""
             Initialize ``self``.
@@ -2177,13 +2307,21 @@ class FockSpaceTruncated(FockSpace):
             """
             self._basis_name = "lower global crystal"
             indices = RegularPartitions_truncated(F._n, F._k)
-            CombinatorialFreeModule.__init__(self, F.base_ring(), indices,
-                                             prefix='G', bracket=False,
-                                             sorting_reverse=True,
-                                             category=FockSpaceBases(F))
-            self.module_morphism(self._G_to_fock_basis,
-                                 triangular='upper', unitriangular=True,
-                                 codomain=F.natural()).register_as_coercion()
+            CombinatorialFreeModule.__init__(
+                self,
+                F.base_ring(),
+                indices,
+                prefix='G',
+                bracket=False,
+                sorting_reverse=True,
+                category=FockSpaceBases(F),
+            )
+            self.module_morphism(
+                self._G_to_fock_basis,
+                triangular='upper',
+                unitriangular=True,
+                codomain=F.natural(),
+            ).register_as_coercion()
 
         options = FockSpaceOptions
 
@@ -2218,13 +2356,21 @@ class FockSpaceTruncated(FockSpace):
                     mu = _Partitions([p - x for p in la])
 
                     def add_cols(nu):
-                        return _Partitions([v + x for v in list(nu) + [0]*(k - len(nu))])
-                    return fock.sum_of_terms((add_cols(nu), c) for nu,c in self._G_to_fock_basis(mu))
+                        return _Partitions(
+                            [v + x for v in list(nu) + [0] * (k - len(nu))]
+                        )
+
+                    return fock.sum_of_terms(
+                        (add_cols(nu), c) for nu, c in self._G_to_fock_basis(mu)
+                    )
 
                 # For critical partitions
                 n = self.realization_of()._n
-                if len(la) == k-1 and all((la[i] - la[i+1] + 1) % n == 0 for i in range(k-2)) \
-                        and (la[-1] + 1) % n == 0:
+                if (
+                    len(la) == k - 1
+                    and all((la[i] - la[i + 1] + 1) % n == 0 for i in range(k - 2))
+                    and (la[-1] + 1) % n == 0
+                ):
                     return fock.monomial(la)
 
             # Perform the triangular reduction
@@ -2239,18 +2385,22 @@ class FockSpaceTruncated(FockSpace):
                 k = d.degree()
                 n = cur[mu].numerator()
                 if k != 0 or n.constant_coefficient() != 0:
-                    gamma = sum(n[i] * (q**(i-k) + q**(k-i))
-                                for i in range(min(n.degree(), k)))
+                    gamma = sum(
+                        n[i] * (q ** (i - k) + q ** (k - i))
+                        for i in range(min(n.degree(), k))
+                    )
                     gamma += n[k]
                     cur -= gamma * self._G_to_fock_basis(mu, algorithm)
 
                     # Add any new support elements
                     for x in cur.support():
-                        if x == mu or not mu.dominates(x): # Add only things (strictly) dominated by mu
+                        if x == mu or not mu.dominates(
+                            x
+                        ):  # Add only things (strictly) dominated by mu
                             continue
                         for i in reversed(range(len(s))):
                             if not s[i].dominates(x):
-                                s.insert(i+1, x)
+                                s.insert(i + 1, x)
                                 break
             return cur
 

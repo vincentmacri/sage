@@ -5,6 +5,7 @@ AUTHORS:
 
 - Michael Jung (2021): initial version
 """
+
 # ****************************************************************************
 #       Copyright (C) 2021 Michael Jung <m.jung at vu.nl>
 #
@@ -132,9 +133,11 @@ class FiniteGCAlgebra(CombinatorialFreeModule):
             sage: type(A)
             <class 'sage.algebras.commutative_dga.GCAlgebra_with_category'>
     """
+
     @staticmethod
-    def __classcall_private__(cls, base, names=None, degrees=None,
-                              max_degree=None, category=None, **kwargs):
+    def __classcall_private__(
+        cls, base, names=None, degrees=None, max_degree=None, category=None, **kwargs
+    ):
         r"""
         Normalize the input for the :meth:`__init__` method and the
         unique representation.
@@ -172,12 +175,17 @@ class FiniteGCAlgebra(CombinatorialFreeModule):
         else:
             degrees = tuple(degrees)
 
-        return super().__classcall__(cls, base=base, names=names,
-                                     degrees=degrees, max_degree=max_degree,
-                                     category=category, **kwargs)
+        return super().__classcall__(
+            cls,
+            base=base,
+            names=names,
+            degrees=degrees,
+            max_degree=max_degree,
+            category=category,
+            **kwargs,
+        )
 
-    def __init__(self, base, names, degrees, max_degree,
-                 category=None, **kwargs):
+    def __init__(self, base, names, degrees, max_degree, category=None, **kwargs):
         r"""
         Construct a commutative graded algebra with finite degree.
 
@@ -204,15 +212,18 @@ class FiniteGCAlgebra(CombinatorialFreeModule):
         self._mul_symbol = kwargs.pop('mul_symbol', '*')
         self._mul_latex_symbol = kwargs.pop('mul_latex_symbol', '')
         step = gcd(degrees)
-        universe = DisjointUnionEnumeratedSets(self._weighted_vectors.subset(k)
-                                               for k in range(0, max_degree, step))
-        base_cat = Algebras(base).WithBasis().Super().Supercommutative().FiniteDimensional()
+        universe = DisjointUnionEnumeratedSets(
+            self._weighted_vectors.subset(k) for k in range(0, max_degree, step)
+        )
+        base_cat = (
+            Algebras(base).WithBasis().Super().Supercommutative().FiniteDimensional()
+        )
         category = base_cat.or_subcategory(category, join=True)
         indices = ConditionSet(universe, self._valid_index)
         sorting_key = self._weighted_vectors.grading
-        CombinatorialFreeModule.__init__(self, base, indices,
-                                         sorting_key=sorting_key,
-                                         category=category)
+        CombinatorialFreeModule.__init__(
+            self, base, indices, sorting_key=sorting_key, category=category
+        )
 
     def _valid_index(self, w) -> bool:
         r"""
@@ -340,7 +351,7 @@ class FiniteGCAlgebra(CombinatorialFreeModule):
                 if j == 0 or is_even(b):
                     continue
                 c += 1
-        return (-1)**c * self.monomial(w_tot)
+        return (-1) ** c * self.monomial(w_tot)
 
     def degree_on_basis(self, i):
         r"""
@@ -452,6 +463,7 @@ class FiniteGCAlgebra(CombinatorialFreeModule):
             Family (x, y, z)
         """
         from sage.sets.family import Family
+
         return Family(self.gens())
 
     @cached_method

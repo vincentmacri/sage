@@ -90,6 +90,7 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
 
     - [Harako2020]_
     """
+
     def __init__(self, R, g):
         r"""
         Initialize ``self``.
@@ -103,7 +104,9 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
             raise ValueError("g must be at least 4")
         cat = LieAlgebras(R).WithBasis().Graded()
         self._g = g
-        d = Family(NonNegativeIntegers(), lambda n: Partitions(n, min_length=2, max_part=2*g))
+        d = Family(
+            NonNegativeIntegers(), lambda n: Partitions(n, min_length=2, max_part=2 * g)
+        )
         indices = DisjointUnionEnumeratedSets(d)
         InfinitelyGeneratedLieAlgebra.__init__(self, R, index_set=indices, category=cat)
         IndexedGenerators.__init__(self, indices, sorting_key=self._basis_key)
@@ -138,7 +141,8 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
         g = self._g
 
         def label(i):
-            return "a{}".format(i) if i <= g else "b{}".format(i-g)
+            return "a{}".format(i) if i <= g else "b{}".format(i - g)
+
         return "*".join(label(i) for i in reversed(m))
 
     def _latex_term(self, m):
@@ -154,7 +158,8 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
         g = self._g
 
         def label(i):
-            return "a_{{{}}}".format(i) if i <= g else "b_{{{}}}".format(i-g)
+            return "a_{{{}}}".format(i) if i <= g else "b_{{{}}}".format(i - g)
+
         return " ".join(label(i) for i in reversed(m))
 
     def _unicode_art_term(self, m):
@@ -168,10 +173,16 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
             a₁·a₂·a₅·b₂
         """
         from sage.typeset.unicode_art import unicode_art, unicode_subscript
+
         g = self._g
 
         def label(i):
-            return "a{}".format(unicode_subscript(i)) if i <= g else "b{}".format(unicode_subscript(i-g))
+            return (
+                "a{}".format(unicode_subscript(i))
+                if i <= g
+                else "b{}".format(unicode_subscript(i - g))
+            )
+
         return unicode_art("·".join(label(i) for i in reversed(m)))
 
     def _repr_(self):
@@ -183,7 +194,9 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
             sage: lie_algebras.SymplecticDerivation(QQ, 5)
             Symplectic derivation Lie algebra of rank 5 over Rational Field
         """
-        return "Symplectic derivation Lie algebra of rank {} over {}".format(self._g, self.base_ring())
+        return "Symplectic derivation Lie algebra of rank {} over {}".format(
+            self._g, self.base_ring()
+        )
 
     def degree_on_basis(self, x):
         r"""
@@ -226,23 +239,27 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
         g = self._g
         ret = {}
         one = self.base_ring().one()
-        for i,xi in enumerate(x):
-            for j,yj in enumerate(y):
+        for i, xi in enumerate(x):
+            for j, yj in enumerate(y):
                 # The symplectic form will be 0
                 if (xi <= g and yj <= g) or (xi > g and yj > g):
                     continue
                 if xi <= g and yj > g:
                     if xi != yj - g:
                         continue
-                    m = _Partitions(sorted(x[:i] + x[i+1:] + y[:j] + y[j+1:], reverse=True))
+                    m = _Partitions(
+                        sorted(x[:i] + x[i + 1 :] + y[:j] + y[j + 1 :], reverse=True)
+                    )
                     if m in ret:
                         ret[m] += one
                     else:
                         ret[m] = one
-                else: # if ci > g and yj <= g:
+                else:  # if ci > g and yj <= g:
                     if xi - g != yj:
                         continue
-                    m = _Partitions(sorted(x[:i] + x[i+1:] + y[:j] + y[j+1:], reverse=True))
+                    m = _Partitions(
+                        sorted(x[:i] + x[i + 1 :] + y[:j] + y[j + 1 :], reverse=True)
+                    )
                     if m in ret:
                         ret[m] -= one
                     else:
@@ -261,10 +278,10 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
         """
         d = self.monomial
         return (
-                 d(_Partitions([2,1]))
-                 - self.base_ring().an_element() * d(_Partitions([5,2,2,1]))
-                 + d(_Partitions([2*self._g-1, self._g+1, 2, 1, 1]))
-                )
+            d(_Partitions([2, 1]))
+            - self.base_ring().an_element() * d(_Partitions([5, 2, 2, 1]))
+            + d(_Partitions([2 * self._g - 1, self._g + 1, 2, 1, 1]))
+        )
 
     def some_elements(self):
         r"""
@@ -279,9 +296,14 @@ class SymplecticDerivationLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGener
         """
         d = self.monomial
         g = self._g
-        return [d(_Partitions([2,1])), d(_Partitions([g+3,g+1])), d(_Partitions([2,1,1])),
-                d(_Partitions([2*g-1,2*g-2])), d(_Partitions([2*g-2,g-1,1])),
-                self.an_element()]
+        return [
+            d(_Partitions([2, 1])),
+            d(_Partitions([g + 3, g + 1])),
+            d(_Partitions([2, 1, 1])),
+            d(_Partitions([2 * g - 1, 2 * g - 2])),
+            d(_Partitions([2 * g - 2, g - 1, 1])),
+            self.an_element(),
+        ]
 
     class Element(LieAlgebraElement):
         pass

@@ -5,6 +5,7 @@ AUTHORS:
 
 - Frédéric Chapoton (2023-03): Initial version
 """
+
 # ***************************************************************************
 #  Copyright (C) 2013 Frédéric Chapoton
 #
@@ -75,6 +76,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
         ...
         TypeError: argument R must be a commutative ring
     """
+
     def __init__(self, R) -> None:
         """
         TESTS::
@@ -138,8 +140,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             """
             A = self.base()
             category = Algebras(A.base_ring()).Commutative().Filtered()
-            return [A.Realizations(),
-                    category.Realizations().WithBasis()]
+            return [A.Realizations(), category.Realizations().WithBasis()]
 
         class ParentMethods:
             def _repr_(self) -> str:
@@ -388,6 +389,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                     0
                 """
                 from sage.arith.misc import gcd
+
                 return gcd(self._monomial_coefficients.values())
 
     class Shifted(CombinatorialFreeModule, BindableClass):
@@ -456,6 +458,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             sage: 1 - S[2] * S[2] / 2
             S[0] - 1/2*S[2] + 3*S[3] - 3*S[4]
         """
+
         def __init__(self, A) -> None:
             r"""
             Initialize ``self``.
@@ -467,11 +470,14 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 in the shifted basis
                 sage: TestSuite(F).run()
             """
-            CombinatorialFreeModule.__init__(self, A.base_ring(),
-                                             NonNegativeIntegers(),
-                                             category=A.Bases(),
-                                             prefix='S',
-                                             latex_prefix=r"\mathbb{S}")
+            CombinatorialFreeModule.__init__(
+                self,
+                A.base_ring(),
+                NonNegativeIntegers(),
+                category=A.Bases(),
+                prefix='S',
+                latex_prefix=r"\mathbb{S}",
+            )
 
         def _realization_name(self) -> str:
             r"""
@@ -505,8 +511,12 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 j, i = i, j
 
             R = self.base_ring()
-            return self._from_dict({i + j - k: R((-1)**k * i.binomial(k) * (i + j - k).binomial(i))
-                                    for k in range(i + 1)})
+            return self._from_dict(
+                {
+                    i + j - k: R((-1) ** k * i.binomial(k) * (i + j - k).binomial(i))
+                    for k in range(i + 1)
+                }
+            )
 
         def _from_binomial_basis(self, i):
             """
@@ -528,8 +538,9 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             """
             i = ZZ(i)
             R = self.base_ring()
-            return self._from_dict({k: R((-1)**(i - k) * i.binomial(k))
-                                    for k in range(i + 1)})
+            return self._from_dict(
+                {k: R((-1) ** (i - k) * i.binomial(k)) for k in range(i + 1)}
+            )
 
         def from_h_vector(self, h):
             """
@@ -550,8 +561,9 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 S[2] + S[4]
             """
             d = len(h) - 1
-            m = matrix(QQ, d + 1, d + 1,
-                       lambda j, i: (-1)**(d - j) * binomial(d - i, d - j))
+            m = matrix(
+                QQ, d + 1, d + 1, lambda j, i: (-1) ** (d - j) * binomial(d - i, d - j)
+            )
             R = self.base_ring()
             v = vector(R, [h[i] for i in range(d + 1)])
             return self._from_dict(dict(enumerate(m * v)))
@@ -681,8 +693,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             if isinstance(R, IntegerValuedPolynomialRing.Shifted):
                 return self.base_ring().has_coerce_map_from(R.base_ring())
             if isinstance(R, IntegerValuedPolynomialRing.Binomial):
-                return R.module_morphism(self._from_binomial_basis,
-                                         codomain=self)
+                return R.module_morphism(self._from_binomial_basis, codomain=self)
             return self.base_ring().has_coerce_map_from(R)
 
         def _poly(self, i):
@@ -703,7 +714,6 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             return binomial(x + i, i)
 
         class Element(CombinatorialFreeModule.Element):
-
             def umbra(self):
                 """
                 Return the Bernoulli umbra.
@@ -783,12 +793,15 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 A = self.parent()
 
                 def on_basis(n):
-                    return {A._indices(j): binomial(k + n - 1 - j, n - j)
-                            for j in range(n + 1)}
+                    return {
+                        A._indices(j): binomial(k + n - 1 - j, n - j)
+                        for j in range(n + 1)
+                    }
 
                 mc = self._monomial_coefficients
-                ret = linear_combination((on_basis(index), coeff)
-                                         for index, coeff in mc.items())
+                ret = linear_combination(
+                    (on_basis(index), coeff) for index, coeff in mc.items()
+                )
                 return A.element_class(A, ret)
 
             def derivative_at_minus_one(self):
@@ -825,10 +838,15 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                     (0, 1, 4, 1)
                 """
                 d = ZZ(max(self.support(), default=-1))
-                m = matrix(QQ, d + 1, d + 1,
-                           lambda j, i: (-1)**(d - j) * (d - i).binomial(d - j))
-                v = vector(self.base_ring(),
-                           [self.coefficient(i) for i in range(d + 1)])
+                m = matrix(
+                    QQ,
+                    d + 1,
+                    d + 1,
+                    lambda j, i: (-1) ** (d - j) * (d - i).binomial(d - j),
+                )
+                v = vector(
+                    self.base_ring(), [self.coefficient(i) for i in range(d + 1)]
+                )
                 return m * v
 
             def h_polynomial(self):
@@ -889,7 +907,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 ring_t = PolynomialRing(self.parent().base_ring(), 't')
                 t = ring_t.gen()
                 numer = ring_t({d - 1 - i: v[i] for i in range(d)})
-                return numer / (1 - t)**d
+                return numer / (1 - t) ** d
 
     S = Shifted
 
@@ -968,6 +986,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             sage: F(4/3)
             4/3*B[0]
         """
+
         def __init__(self, A) -> None:
             r"""
             Initialize ``self``.
@@ -979,10 +998,13 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 in the binomial basis
                 sage: TestSuite(F).run()
             """
-            CombinatorialFreeModule.__init__(self, A.base_ring(),
-                                             NonNegativeIntegers(),
-                                             latex_prefix='',
-                                             category=A.Bases())
+            CombinatorialFreeModule.__init__(
+                self,
+                A.base_ring(),
+                NonNegativeIntegers(),
+                latex_prefix='',
+                category=A.Bases(),
+            )
 
         def _realization_name(self) -> str:
             r"""
@@ -1016,9 +1038,12 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 j, i = i, j
 
             R = self.base_ring()
-            return self._from_dict({i + j - k:
-                                    R(binomial(i, k) * binomial(i + j - k, i))
-                                    for k in range(i + 1)})
+            return self._from_dict(
+                {
+                    i + j - k: R(binomial(i, k) * binomial(i + j - k, i))
+                    for k in range(i + 1)
+                }
+            )
 
         def _from_shifted_basis(self, i):
             """
@@ -1040,8 +1065,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             """
             i = ZZ(i)
             R = self.base_ring()
-            return self._from_dict({k: R(i.binomial(k))
-                                    for k in range(i + 1)})
+            return self._from_dict({k: R(i.binomial(k)) for k in range(i + 1)})
 
         def _element_constructor_(self, x):
             r"""
@@ -1164,8 +1188,7 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
             if isinstance(R, IntegerValuedPolynomialRing.Binomial):
                 return self.base_ring().has_coerce_map_from(R.base_ring())
             if isinstance(R, IntegerValuedPolynomialRing.Shifted):
-                return R.module_morphism(self._from_shifted_basis,
-                                         codomain=self)
+                return R.module_morphism(self._from_shifted_basis, codomain=self)
             return self.base_ring().has_coerce_map_from(R)
 
         def _poly(self, i):
@@ -1218,12 +1241,12 @@ class IntegerValuedPolynomialRing(UniqueRepresentation, Parent):
                 A = self.parent()
 
                 def on_basis(n):
-                    return {A._indices(j): binomial(k, n - j)
-                            for j in range(n + 1)}
+                    return {A._indices(j): binomial(k, n - j) for j in range(n + 1)}
 
                 mc = self._monomial_coefficients
-                ret = linear_combination((on_basis(index), coeff)
-                                         for index, coeff in mc.items())
+                ret = linear_combination(
+                    (on_basis(index), coeff) for index, coeff in mc.items()
+                )
                 return A.element_class(A, ret)
 
     B = Binomial

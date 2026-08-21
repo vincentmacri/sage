@@ -224,8 +224,9 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
     """
 
     @staticmethod
-    def __classcall_private__(cls, starting_weight, cartan_type=None,
-                              highest_weight_crystal=None):
+    def __classcall_private__(
+        cls, starting_weight, cartan_type=None, highest_weight_crystal=None
+    ):
         """
         Classcall to mend the input.
 
@@ -250,7 +251,9 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
             sage: B1 is B2
             True
         """
-        if isinstance(cartan_type, bool):  # new style signature, optional arguments leak over
+        if isinstance(
+            cartan_type, bool
+        ):  # new style signature, optional arguments leak over
             highest_weight_crystal = cartan_type
         elif isinstance(cartan_type, (list, tuple)):  # old style signature
             # switch positional arguments
@@ -258,7 +261,9 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
 
             if highest_weight_crystal is False:
                 if not cartan_type.is_affine():
-                    raise ValueError("non-highest weight crystals only valid for affine types")
+                    raise ValueError(
+                        "non-highest weight crystals only valid for affine types"
+                    )
                 cartan_type = cartan_type.classical()
 
             if cartan_type.is_affine():
@@ -270,8 +275,9 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
             P = R.weight_space(extended=extended)
             Lambda = P.basis()
             offset = R.index_set()[Integer(0)]
-            starting_weight = P.sum(starting_weight[j - offset] * Lambda[j]
-                                    for j in R.index_set())
+            starting_weight = P.sum(
+                starting_weight[j - offset] * Lambda[j] for j in R.index_set()
+            )
 
         # set defaults
         if highest_weight_crystal is None:
@@ -280,8 +286,7 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
         if not starting_weight.is_dominant():
             raise ValueError("{0} is not a dominant weight".format(starting_weight))
 
-        return super().__classcall__(cls, starting_weight,
-                                     highest_weight_crystal)
+        return super().__classcall__(cls, starting_weight, highest_weight_crystal)
 
     def __init__(self, starting_weight, highest_weight_crystal):
         r"""
@@ -351,8 +356,14 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
             Crystal of alcove paths of type ['A', 2, 1] and weight Lambda[1]
         """
         if self._highest_weight_crystal:
-            return "Highest weight crystal of alcove paths of type %s and weight %s" % (self._cartan_type, self.weight)
-        return "Crystal of alcove paths of type %s and weight %s" % (self._cartan_type, self.weight)
+            return "Highest weight crystal of alcove paths of type %s and weight %s" % (
+                self._cartan_type,
+                self.weight,
+            )
+        return "Crystal of alcove paths of type %s and weight %s" % (
+            self._cartan_type,
+            self.weight,
+        )
 
     def _element_constructor_(self, data):
         """
@@ -369,7 +380,9 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
         if isinstance(data, list):
             lambda_chain = self._R.lambda_chain()
             # data starts indexing at 0
-            return self.element_class(self, tuple(sorted([lambda_chain[i] for i in data])))
+            return self.element_class(
+                self, tuple(sorted([lambda_chain[i] for i in data]))
+            )
 
     def vertices(self):
         r"""
@@ -436,7 +449,8 @@ class CrystalOfAlcovePaths(UniqueRepresentation, Parent):
                 suc = getattr(x[0], successors)()
                 for j in range(x[1][-1] + 1, len_lambda_chain):
                     temp = x[0] * prod(
-                            [s[k] for k in lambda_chain[j].root.associated_reflection()])
+                        [s[k] for k in lambda_chain[j].root.associated_reflection()]
+                    )
                     if temp in suc:
                         lst2.append((temp, x[1] + [j]))
                         l.append((temp, x[1] + [j]))
@@ -682,8 +696,7 @@ class CrystalOfAlcovePathsElement(ElementWrapper):
         WLR = self.parent().weight_lattice_realization()
         if self.cartan_type().is_affine() and self.parent()._highest_weight_crystal:
             # We assume that WLR is the (extended) weight lattice
-            wt = WLR._from_dict({i: Integer(c) for i, c in -weight},
-                                remove_zeros=False)
+            wt = WLR._from_dict({i: Integer(c) for i, c in -weight}, remove_zeros=False)
             return wt
         La = WLR.fundamental_weights()
         wt = WLR.sum(Integer(c) * La[i] for i, c in -weight)
@@ -713,7 +726,9 @@ class CrystalOfAlcovePathsElement(ElementWrapper):
         for i in integer_sequence:
             foldings[i] = True
         affine_ambient_space = RootSystem(ct.affine()).ambient_space()
-        return affine_ambient_space.plot() + affine_ambient_space.plot_alcove_walk(word, foldings=foldings, labels=False)
+        return affine_ambient_space.plot() + affine_ambient_space.plot_alcove_walk(
+            word, foldings=foldings, labels=False
+        )
 
     def _richcmp_(self, other, op):
         r"""
@@ -837,8 +852,7 @@ class CrystalOfAlcovePathsElement(ElementWrapper):
             for j in range(len(J)):
                 Beta = Beta.reflection(J[j].root)
                 sign_Beta = self._sign(Beta)
-                max_height_Beta = weight.scalar(
-                    (sign_Beta * Beta).associated_coroot())
+                max_height_Beta = weight.scalar((sign_Beta * Beta).associated_coroot())
 
                 # some optimization so we don't initialize too many objects
                 # range(c1,c2) can be replaced by range(max_height_Beta) but it
@@ -848,15 +862,13 @@ class CrystalOfAlcovePathsElement(ElementWrapper):
                 if j == len(J) - 1:
                     c2 = max_height_Beta
                 else:
-                    c2 = min(max_height_Beta, J[j+1]._cmp_v[0]*max_height_Beta + 1)
+                    c2 = min(max_height_Beta, J[j + 1]._cmp_v[0] * max_height_Beta + 1)
 
                 for k in range(int(c1), int(c2)):
-
                     x = R(sign_Beta * Beta, k)
 
-                    if (
-                        (j < len(J) - 1 and J[j] < x <= J[j + 1]) or
-                        (j == len(J) - 1 and J[j] < x)
+                    if (j < len(J) - 1 and J[j] < x <= J[j + 1]) or (
+                        j == len(J) - 1 and J[j] < x
                     ):
                         signs[x] = sign_Beta
 
@@ -892,12 +904,12 @@ class CrystalOfAlcovePathsElement(ElementWrapper):
         positions, gi = self._gi(i)
 
         m = max(gi)
-        m_index = len(gi)-1-list(reversed(gi)).index(m)  # last max in gi
+        m_index = len(gi) - 1 - list(reversed(gi)).index(m)  # last max in gi
 
         if finite_cartan_type and i == 0:
-            M = Integer(m)/2 + Integer(1)/2
+            M = Integer(m) / 2 + Integer(1) / 2
         else:
-            M = Integer(m)/2 - Integer(1)/2
+            M = Integer(m) / 2 - Integer(1) / 2
 
         KR_test = finite_cartan_type and i == 0 and m_index < len(gi) - 1
         KR_test = KR_test and M >= 1
@@ -981,12 +993,13 @@ class CrystalOfAlcovePathsElement(ElementWrapper):
         gi = [signs[positions[0]]]
         for j in range(1, len(positions)):
             gi.append(
-                gi[j-1] +
-                signs[positions[j-1]] * self._eps(positions[j-1]) +
-                signs[positions[j]])
-        gi.append(gi[-1] +
-                  signs[positions[-1]] * self._eps(positions[-1]) +
-                  signs['infinity'])
+                gi[j - 1]
+                + signs[positions[j - 1]] * self._eps(positions[j - 1])
+                + signs[positions[j]]
+            )
+        gi.append(
+            gi[-1] + signs[positions[-1]] * self._eps(positions[-1]) + signs['infinity']
+        )
 
         return (positions, gi)
 
@@ -1018,11 +1031,10 @@ class CrystalOfAlcovePathsElement(ElementWrapper):
         m_index = gi.index(m)
 
         if finite_cartan_type and i == 0:
-
             # python doesn't handle fractions natively
-            M = Integer(m)/2 + Integer(1)/2
+            M = Integer(m) / 2 + Integer(1) / 2
         else:
-            M = Integer(m)/2 - Integer(1)/2
+            M = Integer(m) / 2 - Integer(1) / 2
 
         # boolean determining when to move a folding in KR case
         KR_test = finite_cartan_type and i == 0
@@ -1134,6 +1146,7 @@ class InfinityCrystalOfAlcovePaths(UniqueRepresentation, Parent):
     r"""
     `\mathcal{B}(\infty)` crystal of alcove paths.
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type):
         """
@@ -1223,16 +1236,19 @@ class InfinityCrystalOfAlcovePaths(UniqueRepresentation, Parent):
                 # So we do not need to check for the shift being 0.
                 prev = y
                 shift -= 1
-                A = CrystalOfAlcovePaths(self.parent()._cartan_type, [shift]*n)
+                A = CrystalOfAlcovePaths(self.parent()._cartan_type, [shift] * n)
                 try:
-                    y = A(tuple([A._R(rt.root, rt.height - s(rt.root)) for rt in y.value]))
+                    y = A(
+                        tuple([A._R(rt.root, rt.height - s(rt.root)) for rt in y.value])
+                    )
                 except ValueError:  # Invalid height (and not admissible)
                     break
             shift += 1
-            return type(self)(self.parent(),
-                              tuple([(rt.root, rt.height - shift*s(rt.root))
-                                     for rt in prev.value]),
-                              shift)
+            return type(self)(
+                self.parent(),
+                tuple([(rt.root, rt.height - shift * s(rt.root)) for rt in prev.value]),
+                shift,
+            )
 
         def f(self, i):
             """
@@ -1258,19 +1274,26 @@ class InfinityCrystalOfAlcovePaths(UniqueRepresentation, Parent):
             s = lambda rt: int(sum(rt.associated_coroot().coefficients()))
             y = self.projection().f(i)
             if y is not None:
-                return type(self)(self.parent(),
-                                  tuple([(rt.root, rt.height - self._shift*s(rt.root))
-                                         for rt in y.value]),
-                                  self._shift)
+                return type(self)(
+                    self.parent(),
+                    tuple(
+                        [
+                            (rt.root, rt.height - self._shift * s(rt.root))
+                            for rt in y.value
+                        ]
+                    ),
+                    self._shift,
+                )
 
             shift = self._shift + 1
             n = self.parent()._cartan_type.rank()
-            A = CrystalOfAlcovePaths(self.parent()._cartan_type, [shift]*n)
-            y = A(tuple([A._R(rt, h + shift*s(rt)) for rt, h in self.value])).f(i)
-            return type(self)(self.parent(),
-                              tuple([(rt.root, rt.height - shift*s(rt.root))
-                                     for rt in y.value]),
-                              shift)
+            A = CrystalOfAlcovePaths(self.parent()._cartan_type, [shift] * n)
+            y = A(tuple([A._R(rt, h + shift * s(rt)) for rt, h in self.value])).f(i)
+            return type(self)(
+                self.parent(),
+                tuple([(rt.root, rt.height - shift * s(rt.root)) for rt in y.value]),
+                shift,
+            )
 
         def epsilon(self, i):
             r"""
@@ -1387,7 +1410,7 @@ class InfinityCrystalOfAlcovePaths(UniqueRepresentation, Parent):
             s = lambda rt: int(sum(rt.associated_coroot().coefficients()))
             n = self.parent()._cartan_type.rank()
             A = CrystalOfAlcovePaths(self.parent()._cartan_type, [k] * n)
-            return A(tuple([A._R(rt, h + k*s(rt)) for rt, h in self.value]))
+            return A(tuple([A._R(rt, h + k * s(rt)) for rt, h in self.value]))
 
 
 class RootsWithHeight(UniqueRepresentation, Parent):
@@ -1456,7 +1479,9 @@ class RootsWithHeight(UniqueRepresentation, Parent):
             P = R.weight_space()
             Lambda = P.basis()
             offset = R.index_set()[Integer(0)]
-            starting_weight = P.sum(starting_weight[j-offset]*Lambda[j] for j in R.index_set())
+            starting_weight = P.sum(
+                starting_weight[j - offset] * Lambda[j] for j in R.index_set()
+            )
 
         return super().__classcall__(cls, starting_weight)
 
@@ -1490,7 +1515,9 @@ class RootsWithHeight(UniqueRepresentation, Parent):
             Roots with height of Cartan type ['A', 2] and dominant weight 3*Lambda[1] + 2*Lambda[2]
         """
         return "Roots with height of Cartan type %s and dominant weight %s" % (
-            self._root_system.cartan_type(), self.weight)
+            self._root_system.cartan_type(),
+            self.weight,
+        )
 
     def _max_height(self, root):
         r"""
@@ -1569,10 +1596,15 @@ class RootsWithHeight(UniqueRepresentation, Parent):
             [(alpha[2], 0), (alpha[1] + alpha[2], 0), (alpha[1], 0), (alpha[1] + alpha[2], 1)]
         """
         if not self._root_lattice.cartan_type().is_finite():
-            raise ValueError("Cartan type {0} is not finite".format(self._root_lattice.cartan_type()))
+            raise ValueError(
+                "Cartan type {0} is not finite".format(self._root_lattice.cartan_type())
+            )
 
-        l = (self(i, j) for i in self._root_lattice.positive_roots()
-             for j in range(self._max_height(i)))
+        l = (
+            self(i, j)
+            for i in self._root_lattice.positive_roots()
+            for j in range(self._max_height(i))
+        )
 
         return sorted(l)
 
@@ -1650,11 +1682,12 @@ class RootsWithHeightElement(Element):
         # roots
 
         if not 0 <= height < max_height:
-            raise ValueError("%d out of allowed range [%d,%d)" % (height, 0, max_height))
+            raise ValueError(
+                "%d out of allowed range [%d,%d)" % (height, 0, max_height)
+            )
 
         v = [height / max_height]
-        v.extend(x / max_height
-                 for x in root.associated_coroot().to_vector())
+        v.extend(x / max_height for x in root.associated_coroot().to_vector())
         # v.insert(0, height/max_height)
 
         # the map from (root, height) --> _cmp_v is injective
@@ -1768,21 +1801,23 @@ def _test_some_specific_examples(clss=CrystalOfAlcovePaths):
     C = clss(['G', 2], [0, 1])
     G = C.digraph()
 
-    GT = DiGraph({
-        (): {(0): 2},
-        (0): {(0, 8): 1},
-        (0, 1): {(0, 1, 7): 2},
-        (0, 1, 2): {(0, 1, 2, 9): 1},
-        (0, 1, 2, 3): {(0, 1, 2, 3, 4): 2},
-        (0, 1, 2, 6): {(0, 1, 2, 3): 1},
-        (0, 1, 2, 9): {(0, 1, 2, 6): 1},
-        (0, 1, 7): {(0, 1, 2): 2},
-        (0, 1, 7, 9): {(0, 1, 2, 9): 2},
-        (0, 5): {(0, 1): 1, (0, 5, 7): 2},
-        (0, 5, 7): {(0, 5, 7, 9): 1},
-        (0, 5, 7, 9): {(0, 1, 7, 9): 1},
-        (0, 8): {(0, 5): 1}
-    })
+    GT = DiGraph(
+        {
+            (): {(0): 2},
+            (0): {(0, 8): 1},
+            (0, 1): {(0, 1, 7): 2},
+            (0, 1, 2): {(0, 1, 2, 9): 1},
+            (0, 1, 2, 3): {(0, 1, 2, 3, 4): 2},
+            (0, 1, 2, 6): {(0, 1, 2, 3): 1},
+            (0, 1, 2, 9): {(0, 1, 2, 6): 1},
+            (0, 1, 7): {(0, 1, 2): 2},
+            (0, 1, 7, 9): {(0, 1, 2, 9): 2},
+            (0, 5): {(0, 1): 1, (0, 5, 7): 2},
+            (0, 5, 7): {(0, 5, 7, 9): 1},
+            (0, 5, 7, 9): {(0, 1, 7, 9): 1},
+            (0, 8): {(0, 5): 1},
+        }
+    )
 
     if not G.is_isomorphic(GT):
         return False
@@ -1793,21 +1828,23 @@ def _test_some_specific_examples(clss=CrystalOfAlcovePaths):
     # type C, ex. 8.3.5, pg. 189
     C = clss(['C', 3], [0, 0, 1])
     G = C.digraph()
-    GT = DiGraph({
-        (): {(0): 3},
-        (0): {(0, 6): 2},
-        (0, 1): {(0, 1, 3): 3, (0, 1, 7): 1},
-        (0, 1, 2): {(0, 1, 2, 3): 3},
-        (0, 1, 2, 3): {(0, 1, 2, 3, 8): 2},
-        (0, 1, 2, 3, 4): {(0, 1, 2, 3, 4, 5): 3},
-        (0, 1, 2, 3, 8): {(0, 1, 2, 3, 4): 2},
-        (0, 1, 3): {(0, 1, 3, 7): 1},
-        (0, 1, 3, 7): {(0, 1, 2, 3): 1, (0, 1, 3, 7, 8): 2},
-        (0, 1, 3, 7, 8): {(0, 1, 2, 3, 8): 1},
-        (0, 1, 7): {(0, 1, 2): 1, (0, 1, 3, 7): 3},
-        (0, 6): {(0, 1): 2, (0, 6, 7): 1},
-        (0, 6, 7): {(0, 1, 7): 2}
-    })
+    GT = DiGraph(
+        {
+            (): {(0): 3},
+            (0): {(0, 6): 2},
+            (0, 1): {(0, 1, 3): 3, (0, 1, 7): 1},
+            (0, 1, 2): {(0, 1, 2, 3): 3},
+            (0, 1, 2, 3): {(0, 1, 2, 3, 8): 2},
+            (0, 1, 2, 3, 4): {(0, 1, 2, 3, 4, 5): 3},
+            (0, 1, 2, 3, 8): {(0, 1, 2, 3, 4): 2},
+            (0, 1, 3): {(0, 1, 3, 7): 1},
+            (0, 1, 3, 7): {(0, 1, 2, 3): 1, (0, 1, 3, 7, 8): 2},
+            (0, 1, 3, 7, 8): {(0, 1, 2, 3, 8): 1},
+            (0, 1, 7): {(0, 1, 2): 1, (0, 1, 3, 7): 3},
+            (0, 6): {(0, 1): 2, (0, 6, 7): 1},
+            (0, 6, 7): {(0, 1, 7): 2},
+        }
+    )
 
     if not G.is_isomorphic(GT):
         return False
@@ -1817,34 +1854,36 @@ def _test_some_specific_examples(clss=CrystalOfAlcovePaths):
     C = clss(['B', 3], [2, 0, 0])
     G = C.digraph()
 
-    GT = DiGraph({
-        (): {(6): 1},
-        (0): {(0, 7): 2},
-        (0, 1): {(0, 1, 11): 3},
-        (0, 1, 2): {(0, 1, 2, 9): 2},
-        (0, 1, 2, 3): {(0, 1, 2, 3, 10): 1},
-        (0, 1, 2, 3, 10): {(0, 1, 2, 3, 4): 1},
-        (0, 1, 2, 9): {(0, 1, 2, 3): 2, (0, 1, 2, 9, 10): 1},
-        (0, 1, 2, 9, 10): {(0, 1, 2, 3, 10): 2},
-        (0, 1, 5): {(0, 1, 2): 3, (0, 1, 5, 9): 2},
-        (0, 1, 5, 9): {(0, 1, 2, 9): 3, (0, 1, 5, 9, 10): 1},
-        (0, 1, 5, 9, 10): {(0, 1, 2, 9, 10): 3},
-        (0, 1, 8): {(0, 1, 5): 3},
-        (0, 1, 8, 9): {(0, 1, 5, 9): 3, (0, 1, 8, 9, 10): 1},
-        (0, 1, 8, 9, 10): {(0, 1, 5, 9, 10): 3},
-        (0, 1, 11): {(0, 1, 8): 3},
-        (0, 7): {(0, 1): 2, (0, 7, 11): 3},
-        (0, 7, 8): {(0, 7, 8, 9): 2},
-        (0, 7, 8, 9): {(0, 1, 8, 9): 2},
-        (0, 7, 8, 9, 10): {(0, 1, 8, 9, 10): 2},
-        (0, 7, 11): {(0, 1, 11): 2, (0, 7, 8): 3},
-        (6): {(0): 1, (6, 7): 2},
-        (6, 7): {(0, 7): 1, (6, 7, 11): 3},
-        (6, 7, 8): {(0, 7, 8): 1, (6, 7, 8, 9): 2},
-        (6, 7, 8, 9): {(6, 7, 8, 9, 10): 1},
-        (6, 7, 8, 9, 10): {(0, 7, 8, 9, 10): 1},
-        (6, 7, 11): {(0, 7, 11): 1, (6, 7, 8): 3}
-    })
+    GT = DiGraph(
+        {
+            (): {(6): 1},
+            (0): {(0, 7): 2},
+            (0, 1): {(0, 1, 11): 3},
+            (0, 1, 2): {(0, 1, 2, 9): 2},
+            (0, 1, 2, 3): {(0, 1, 2, 3, 10): 1},
+            (0, 1, 2, 3, 10): {(0, 1, 2, 3, 4): 1},
+            (0, 1, 2, 9): {(0, 1, 2, 3): 2, (0, 1, 2, 9, 10): 1},
+            (0, 1, 2, 9, 10): {(0, 1, 2, 3, 10): 2},
+            (0, 1, 5): {(0, 1, 2): 3, (0, 1, 5, 9): 2},
+            (0, 1, 5, 9): {(0, 1, 2, 9): 3, (0, 1, 5, 9, 10): 1},
+            (0, 1, 5, 9, 10): {(0, 1, 2, 9, 10): 3},
+            (0, 1, 8): {(0, 1, 5): 3},
+            (0, 1, 8, 9): {(0, 1, 5, 9): 3, (0, 1, 8, 9, 10): 1},
+            (0, 1, 8, 9, 10): {(0, 1, 5, 9, 10): 3},
+            (0, 1, 11): {(0, 1, 8): 3},
+            (0, 7): {(0, 1): 2, (0, 7, 11): 3},
+            (0, 7, 8): {(0, 7, 8, 9): 2},
+            (0, 7, 8, 9): {(0, 1, 8, 9): 2},
+            (0, 7, 8, 9, 10): {(0, 1, 8, 9, 10): 2},
+            (0, 7, 11): {(0, 1, 11): 2, (0, 7, 8): 3},
+            (6): {(0): 1, (6, 7): 2},
+            (6, 7): {(0, 7): 1, (6, 7, 11): 3},
+            (6, 7, 8): {(0, 7, 8): 1, (6, 7, 8, 9): 2},
+            (6, 7, 8, 9): {(6, 7, 8, 9, 10): 1},
+            (6, 7, 8, 9, 10): {(0, 7, 8, 9, 10): 1},
+            (6, 7, 11): {(0, 7, 11): 1, (6, 7, 8): 3},
+        }
+    )
 
     if not G.is_isomorphic(GT):
         return False
@@ -1853,28 +1892,30 @@ def _test_some_specific_examples(clss=CrystalOfAlcovePaths):
     C = clss(['B', 3], [0, 1, 0])
     G = C.digraph()
 
-    GT = DiGraph({
-        (): {(0): 2},
-        (0): {(0, 1): 1, (0, 7): 3},
-        (0, 1): {(0, 1, 7): 3},
-        (0, 1, 2): {(0, 1, 2, 8): 2},
-        (0, 1, 2, 3): {(0, 1, 2, 3, 5): 1, (0, 1, 2, 3, 9): 3},
-        (0, 1, 2, 3, 4): {(0, 1, 2, 3, 4, 5): 1},
-        (0, 1, 2, 3, 4, 5): {(0, 1, 2, 3, 4, 5, 6): 2},
-        (0, 1, 2, 3, 5): {(0, 1, 2, 3, 5, 9): 3},
-        (0, 1, 2, 3, 5, 9): {(0, 1, 2, 3, 4, 5): 3},
-        (0, 1, 2, 3, 9): {(0, 1, 2, 3, 4): 3, (0, 1, 2, 3, 5, 9): 1},
-        (0, 1, 2, 5): {(0, 1, 2, 3, 5): 2},
-        (0, 1, 2, 8): {(0, 1, 2, 3): 2},
-        (0, 1, 2, 8, 9): {(0, 1, 2, 3, 9): 2},
-        (0, 1, 7): {(0, 1, 2): 3, (0, 1, 7, 8): 2},
-        (0, 1, 7, 8): {(0, 1, 7, 8, 9): 3},
-        (0, 1, 7, 8, 9): {(0, 1, 2, 8, 9): 3},
-        (0, 2): {(0, 1, 2): 1, (0, 2, 5): 2},
-        (0, 2, 5): {(0, 2, 5, 8): 1},
-        (0, 2, 5, 8): {(0, 1, 2, 5): 1},
-        (0, 7): {(0, 1, 7): 1, (0, 2): 3}
-    })
+    GT = DiGraph(
+        {
+            (): {(0): 2},
+            (0): {(0, 1): 1, (0, 7): 3},
+            (0, 1): {(0, 1, 7): 3},
+            (0, 1, 2): {(0, 1, 2, 8): 2},
+            (0, 1, 2, 3): {(0, 1, 2, 3, 5): 1, (0, 1, 2, 3, 9): 3},
+            (0, 1, 2, 3, 4): {(0, 1, 2, 3, 4, 5): 1},
+            (0, 1, 2, 3, 4, 5): {(0, 1, 2, 3, 4, 5, 6): 2},
+            (0, 1, 2, 3, 5): {(0, 1, 2, 3, 5, 9): 3},
+            (0, 1, 2, 3, 5, 9): {(0, 1, 2, 3, 4, 5): 3},
+            (0, 1, 2, 3, 9): {(0, 1, 2, 3, 4): 3, (0, 1, 2, 3, 5, 9): 1},
+            (0, 1, 2, 5): {(0, 1, 2, 3, 5): 2},
+            (0, 1, 2, 8): {(0, 1, 2, 3): 2},
+            (0, 1, 2, 8, 9): {(0, 1, 2, 3, 9): 2},
+            (0, 1, 7): {(0, 1, 2): 3, (0, 1, 7, 8): 2},
+            (0, 1, 7, 8): {(0, 1, 7, 8, 9): 3},
+            (0, 1, 7, 8, 9): {(0, 1, 2, 8, 9): 3},
+            (0, 2): {(0, 1, 2): 1, (0, 2, 5): 2},
+            (0, 2, 5): {(0, 2, 5, 8): 1},
+            (0, 2, 5, 8): {(0, 1, 2, 5): 1},
+            (0, 7): {(0, 1, 7): 1, (0, 2): 3},
+        }
+    )
 
     if not G.is_isomorphic(GT):
         return False
@@ -1914,7 +1955,11 @@ def compare_graphs(g1, g2, node1, node2):
         for o2 in g2.outgoing_edges(node2):
             if o2[2] == out_edge[2]:
                 if matched:
-                    print("ERROR:  Two edges with the same label for ", out_edge, " exist.")
+                    print(
+                        "ERROR:  Two edges with the same label for ",
+                        out_edge,
+                        " exist.",
+                    )
                     return False
                 matched = True
                 result = compare_graphs(g1, g2, out_edge[1], o2[1])
@@ -1949,6 +1994,7 @@ def _test_against_tableaux(R, N, k, clss=CrystalOfAlcovePaths):
     """
     from sage.combinat.partition import Partitions
     from sage.combinat.crystals.tensor_product import CrystalOfTableaux
+
     shapes = Partitions(k).list()
     for shape in shapes:
         print("** Shape ", shape)
@@ -1958,8 +2004,10 @@ def _test_against_tableaux(R, N, k, clss=CrystalOfAlcovePaths):
         # T.digraph().show(edge_labels=True)
         H = T.digraph()
         weight = T.module_generators[0].weight()
-        w = [weight.scalar(RootSystem(R).ambient_space().simple_coroot(i))
-             for i in range(1, N + 1)]
+        w = [
+            weight.scalar(RootSystem(R).ambient_space().simple_coroot(i))
+            for i in range(1, N + 1)
+        ]
         print("  C weight ", w)
 
         C = clss(R, w)
@@ -1971,7 +2019,9 @@ def _test_against_tableaux(R, N, k, clss=CrystalOfAlcovePaths):
         if cc != ct:
             print("FAIL: number of nodes differ.", cc, ct)
             return
-        print("  Compare graphs: ", compare_graphs(G, H, C(()), H.vertices(sort=True)[0]))
+        print(
+            "  Compare graphs: ", compare_graphs(G, H, C(()), H.vertices(sort=True)[0])
+        )
 
 
 def _test_with_lspaths_crystal(cartan_type, weight, depth=10):
@@ -1997,6 +2047,7 @@ def _test_with_lspaths_crystal(cartan_type, weight, depth=10):
         True
     """
     from sage.combinat.crystals.littelmann_path import CrystalOfLSPaths
+
     G1 = CrystalOfAlcovePaths(cartan_type, weight).digraph(depth=depth)
     C = CrystalOfLSPaths(cartan_type, weight)
     G2 = C.digraph(subset=C.subcrystal(max_depth=depth, direction='lower'))

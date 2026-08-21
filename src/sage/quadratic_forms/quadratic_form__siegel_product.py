@@ -11,10 +11,12 @@ Siegel Products
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.arith.misc import (bernoulli,
-                             fundamental_discriminant,
-                             kronecker as kronecker_symbol,
-                             prime_divisors)
+from sage.arith.misc import (
+    bernoulli,
+    fundamental_discriminant,
+    kronecker as kronecker_symbol,
+    prime_divisors,
+)
 from sage.misc.functional import sqrt
 from sage.misc.verbose import verbose
 from sage.quadratic_forms.special_values import QuadraticBernoulliNumber
@@ -82,7 +84,7 @@ def siegel_product(self, u):
     u = ZZ(u)
 
     n = self.dim()
-    d = self.det()       # ??? Warning: This is a factor of 2^n larger than it should be!
+    d = self.det()  # ??? Warning: This is a factor of 2^n larger than it should be!
 
     # DIAGNOSTIC
     verbose("n = " + str(n))
@@ -99,7 +101,9 @@ def siegel_product(self, u):
     # Make the odd generic factors
     if n % 2:
         m = (n - 1) // 2
-        d1 = fundamental_discriminant(((-1)**m) * 2*d * u)     # Replaced d by 2d here to compensate for the determinant
+        d1 = fundamental_discriminant(
+            ((-1) ** m) * 2 * d * u
+        )  # Replaced d by 2d here to compensate for the determinant
         f = abs(d1)
         # gaining an odd power of 2 by using the matrix of 2Q instead
         # of the matrix of Q.
@@ -107,32 +111,39 @@ def siegel_product(self, u):
 
         # Make the ratio of factorials factor: [(2m)! / m!] * prod_{i=1}^m (2*i-1)
         factor1 = 1
-        for i in range(1, m+1):
-            factor1 *= 2*i - 1
-        for i in range(m+1, 2*m + 1):
+        for i in range(1, m + 1):
+            factor1 *= 2 * i - 1
+        for i in range(m + 1, 2 * m + 1):
             factor1 *= i
 
-        genericfactor = factor1 * ((u / f) ** m) \
-            * QQ(sqrt((2 ** n) * f) / (u * d)) \
-            * abs(QuadraticBernoulliNumber(m, d1) / bernoulli(2*m))
+        genericfactor = (
+            factor1
+            * ((u / f) ** m)
+            * QQ(sqrt((2**n) * f) / (u * d))
+            * abs(QuadraticBernoulliNumber(m, d1) / bernoulli(2 * m))
+        )
 
     # DIAGNOSTIC
     verbose("siegel_product Break 2. \n")
 
     # Make the even generic factor
-    if ((n % 2) == 0):
+    if (n % 2) == 0:
         m = n // 2
-        d1 = fundamental_discriminant(((-1)**m) * d)
+        d1 = fundamental_discriminant(((-1) ** m) * d)
         f = abs(d1)
 
         # DIAGNOSTIC
         # cout << " mpz_class(-1)^m = " << (mpz_class(-1)^m) << " and d = " << d << endl;
         # cout << " f = " << f << " and d1 = " << d1 << endl;
 
-        genericfactor = m / QQ(sqrt(f*d)) \
-            * ((u/2) ** (m-1)) * (f ** m) \
-            / abs(QuadraticBernoulliNumber(m, d1)) \
-            * (2 ** m)                                               # This last factor compensates for using the matrix of 2*Q
+        genericfactor = (
+            m
+            / QQ(sqrt(f * d))
+            * ((u / 2) ** (m - 1))
+            * (f**m)
+            / abs(QuadraticBernoulliNumber(m, d1))
+            * (2**m)
+        )  # This last factor compensates for using the matrix of 2*Q
 
     # return genericfactor
 
@@ -151,7 +162,17 @@ def siegel_product(self, u):
         Q_normal = self.local_normal_form(p)
 
         # DIAGNOSTIC
-        verbose(" p = " + str(p) + " and its Kronecker symbol (d1/p) = (" + str(d1) + "/" + str(p) + ") is " + str(kronecker_symbol(d1, p)) + "\n")
+        verbose(
+            " p = "
+            + str(p)
+            + " and its Kronecker symbol (d1/p) = ("
+            + str(d1)
+            + "/"
+            + str(p)
+            + ") is "
+            + str(kronecker_symbol(d1, p))
+            + "\n"
+        )
 
         omit *= 1 / (1 - (kronecker_symbol(d1, p) / (p**m)))
 

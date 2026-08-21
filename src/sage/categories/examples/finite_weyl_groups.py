@@ -1,6 +1,7 @@
 r"""
 Examples of finite Weyl groups
 """
+
 # ****************************************************************************
 #  Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
@@ -140,6 +141,7 @@ class SymmetricGroup(UniqueRepresentation, Parent):
             ['A', 3] relabelled by {1: 0, 2: 1, 3: 2}
         """
         from sage.combinat.root_system.cartan_type import CartanType
+
         C = CartanType(['A', self.n - 1])
         C = C.relabel(lambda i: i - 1)
         return C
@@ -171,7 +173,6 @@ class SymmetricGroup(UniqueRepresentation, Parent):
         return tuple(Integer(i) for i in range(2, self.n + 1))
 
     class Element(ElementWrapper):
-
         def has_right_descent(self, i) -> bool:
             """
             Implement :meth:`CoxeterGroups.ElementMethods.has_right_descent`.

@@ -26,8 +26,10 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.groups.abelian_gps.abelian_group_gap import (AbelianGroupGap,
-                                                       AbelianGroupElement_gap)
+from sage.groups.abelian_gps.abelian_group_gap import (
+    AbelianGroupGap,
+    AbelianGroupElement_gap,
+)
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
@@ -70,7 +72,7 @@ class SpinorOperator(AbelianGroupElement_gap):
         elif e[0] == 1 == e[1]:
             s += "7"
         for k in range(1, len(p)):
-            s += f", {p[k]}:{(-1)**e[k + 1]}"
+            s += f", {p[k]}:{(-1) ** e[k + 1]}"
         s += "]"
         return s
 
@@ -92,6 +94,7 @@ class SpinorOperators(AbelianGroupGap):
         sage: SpinorOperators((2, 3, 7))
         Group of SpinorOperators at primes (2, 3, 7)
     """
+
     def __init__(self, primes):
         r"""
         Initialize the group of spinor operators.
@@ -224,19 +227,16 @@ class SpinorOperators(AbelianGroupGap):
         if prime is None:
             if any(p.divides(r) for p in self._primes):
                 raise ValueError(f"r must not be divisible by {self._primes}")
-            return self.prod([self.to_square_class(r, p)
-                              for p in self._primes])
+            return self.prod([self.to_square_class(r, p) for p in self._primes])
         prime = ZZ(prime)
         if prime == -1:
             r = r.sign()
-            return self.prod([self.to_square_class(r, p)
-                              for p in self._primes])
+            return self.prod([self.to_square_class(r, p) for p in self._primes])
         if prime not in self._primes:
             raise ValueError("prime must be among %s" % self._primes)
         v, u = r.val_unit(prime)
         pv = prime**v
-        y = self.prod([self.to_square_class(pv, q)
-                       for q in self._primes if q != prime])
+        y = self.prod([self.to_square_class(pv, q) for q in self._primes if q != prime])
         if prime in self._primes:
             y *= self.to_square_class(u, p=prime)
         return y

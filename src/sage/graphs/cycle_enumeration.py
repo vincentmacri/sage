@@ -14,6 +14,7 @@ This module is meant for all functions related to cycle enumeration in graphs.
 Functions
 ---------
 """
+
 # ****************************************************************************
 # Copyright (C) 2025 Yuta Inoue <yutainoue888@gmail.com>
 #                    David Coudert <david.coudert@inria.fr>
@@ -27,11 +28,20 @@ Functions
 from copy import copy
 
 
-def _all_cycles_iterator_vertex(self, vertex, starting_vertices=None, simple=False,
-                                rooted=False, max_length=None, trivial=False,
-                                remove_acyclic_edges=True,
-                                weight_function=None, by_weight=False,
-                                check_weight=True, report_weight=False):
+def _all_cycles_iterator_vertex(
+    self,
+    vertex,
+    starting_vertices=None,
+    simple=False,
+    rooted=False,
+    max_length=None,
+    trivial=False,
+    remove_acyclic_edges=True,
+    weight_function=None,
+    by_weight=False,
+    check_weight=True,
+    report_weight=False,
+):
     r"""
     Return an iterator over the cycles of ``self`` starting with the given
     vertex in increasing length order. Each edge must have a positive weight.
@@ -192,24 +202,28 @@ def _all_cycles_iterator_vertex(self, vertex, starting_vertices=None, simple=Fal
                 for v in component:
                     d[v] = id
             h = copy(self)
-            h.delete_edges((u, v) for u, v in h.edge_iterator(labels=False) if d[u] != d[v])
+            h.delete_edges(
+                (u, v) for u, v in h.edge_iterator(labels=False) if d[u] != d[v]
+            )
     else:
         h = self
         int_to_vertex = list(h)
         vertex_to_int = {v: i for i, v in enumerate(int_to_vertex)}
 
-    by_weight, weight_function = self._get_weight_function(by_weight=by_weight,
-                                                           weight_function=weight_function,
-                                                           check_weight=check_weight)
+    by_weight, weight_function = self._get_weight_function(
+        by_weight=by_weight, weight_function=weight_function, check_weight=check_weight
+    )
     if by_weight:
         for e in h.edge_iterator():
             if weight_function(e) < 0:
                 raise ValueError("negative weight is not allowed")
 
     from heapq import heappop, heappush
+
     heap_queue = [(0, [vertex])]
     if max_length is None:
         from sage.rings.infinity import Infinity
+
         max_length = Infinity
     while heap_queue:
         length, path = heappop(heap_queue)
@@ -218,7 +232,10 @@ def _all_cycles_iterator_vertex(self, vertex, starting_vertices=None, simple=Fal
             report = True
             if not self.is_directed():
                 if simple:
-                    report = len(path) > 3 and vertex_to_int[path[1]] < vertex_to_int[path[-2]]
+                    report = (
+                        len(path) > 3
+                        and vertex_to_int[path[1]] < vertex_to_int[path[-2]]
+                    )
                 else:
                     L = len(path)
                     for i in range(1, L // 2):
@@ -234,21 +251,30 @@ def _all_cycles_iterator_vertex(self, vertex, starting_vertices=None, simple=Fal
                     yield path
         # If simple is set to True, only simple cycles are
         # allowed, Then it discards the current path
-        if (not simple or path.count(path[-1]) == 1):
+        if not simple or path.count(path[-1]) == 1:
             for e in h.edge_iterator(vertices=[path[-1]]):
                 neighbor = e[1] if e[0] == path[-1] else e[0]
                 # Makes sure that the current cycle is not too long.
                 # If cycles are not rooted, makes sure to keep only the
                 # minimum cycle according to the lexicographic order
-                if length + weight_function(e) <= max_length and \
-                   (rooted or neighbor not in starting_vertices or path[0] <= neighbor):
-                    heappush(heap_queue, (length + weight_function(e), path + [neighbor]))
+                if length + weight_function(e) <= max_length and (
+                    rooted or neighbor not in starting_vertices or path[0] <= neighbor
+                ):
+                    heappush(
+                        heap_queue, (length + weight_function(e), path + [neighbor])
+                    )
 
 
-def _all_simple_cycles_iterator_edge(self, edge, max_length=None,
-                                     remove_unnecessary_edges=True,
-                                     weight_function=None, by_weight=False,
-                                     check_weight=True, report_weight=False):
+def _all_simple_cycles_iterator_edge(
+    self,
+    edge,
+    max_length=None,
+    remove_unnecessary_edges=True,
+    weight_function=None,
+    by_weight=False,
+    check_weight=True,
+    report_weight=False,
+):
     r"""
     Return an iterator over the **simple** cycles of ``self`` starting with the
     given edge in increasing length order. Each edge must have a positive weight.
@@ -366,26 +392,30 @@ def _all_simple_cycles_iterator_edge(self, edge, max_length=None,
     # delete edge
     h.delete_edge(edge)
 
-    by_weight, weight_function = self._get_weight_function(by_weight=by_weight,
-                                                           weight_function=weight_function,
-                                                           check_weight=check_weight)
+    by_weight, weight_function = self._get_weight_function(
+        by_weight=by_weight, weight_function=weight_function, check_weight=check_weight
+    )
 
     if by_weight:
         for e in self.edge_iterator():
             if weight_function(e) < 0:
                 raise ValueError("negative weight is not allowed")
 
-    it = h.shortest_simple_paths(source=edge[1], target=edge[0],
-                                 weight_function=weight_function,
-                                 by_weight=by_weight,
-                                 check_weight=check_weight,
-                                 report_edges=False,
-                                 report_weight=True)
+    it = h.shortest_simple_paths(
+        source=edge[1],
+        target=edge[0],
+        weight_function=weight_function,
+        by_weight=by_weight,
+        check_weight=check_weight,
+        report_edges=False,
+        report_weight=True,
+    )
 
     edge_weight = weight_function(edge)
 
     if max_length is None:
         from sage.rings.infinity import Infinity
+
         max_length = Infinity
     for length, path in it:
         if length + edge_weight > max_length:
@@ -397,11 +427,19 @@ def _all_simple_cycles_iterator_edge(self, edge, max_length=None,
             yield [edge[0]] + path
 
 
-def all_cycles_iterator(self, starting_vertices=None, simple=False,
-                        rooted=False, max_length=None, trivial=False,
-                        weight_function=None, by_weight=False,
-                        check_weight=True, report_weight=False,
-                        algorithm='A'):
+def all_cycles_iterator(
+    self,
+    starting_vertices=None,
+    simple=False,
+    rooted=False,
+    max_length=None,
+    trivial=False,
+    weight_function=None,
+    by_weight=False,
+    check_weight=True,
+    report_weight=False,
+    algorithm='A',
+):
     r"""
     Return an iterator over all the cycles of ``self`` starting with one of
     the given vertices. Each edge must have a positive weight.
@@ -614,16 +652,18 @@ def all_cycles_iterator(self, starting_vertices=None, simple=False,
         if not simple:
             raise ValueError("The algorithm 'B' is unavailable when simple=False.")
         if starting_vertices:
-            raise ValueError("The algorithm 'B' is unavailable when starting_vertices is not None.")
+            raise ValueError(
+                "The algorithm 'B' is unavailable when starting_vertices is not None."
+            )
         if rooted:
             raise ValueError("The algorithm 'B' is unavailable when rooted=True.")
 
     if starting_vertices is None:
         starting_vertices = self
 
-    by_weight, weight_function = self._get_weight_function(by_weight=by_weight,
-                                                           weight_function=weight_function,
-                                                           check_weight=check_weight)
+    by_weight, weight_function = self._get_weight_function(
+        by_weight=by_weight, weight_function=weight_function, check_weight=check_weight
+    )
 
     if by_weight:
         for e in self.edge_iterator():
@@ -643,41 +683,56 @@ def all_cycles_iterator(self, starting_vertices=None, simple=False,
                     for v in component:
                         d[v] = id
                 h = copy(self)
-                h.delete_edges((u, v) for u, v in h.edge_iterator(labels=False) if d[u] != d[v])
+                h.delete_edges(
+                    (u, v) for u, v in h.edge_iterator(labels=False) if d[u] != d[v]
+                )
         else:
             h = self
 
         # We create one cycles iterator per vertex. This is necessary if we
         # want to iterate over cycles with increasing length.
         def cycle_iter(v):
-            return h._all_cycles_iterator_vertex(v,
-                                                 starting_vertices=starting_vertices,
-                                                 simple=simple,
-                                                 rooted=rooted,
-                                                 max_length=max_length,
-                                                 trivial=trivial,
-                                                 remove_acyclic_edges=False,
-                                                 weight_function=weight_function,
-                                                 by_weight=by_weight,
-                                                 check_weight=check_weight,
-                                                 report_weight=True)
+            return h._all_cycles_iterator_vertex(
+                v,
+                starting_vertices=starting_vertices,
+                simple=simple,
+                rooted=rooted,
+                max_length=max_length,
+                trivial=trivial,
+                remove_acyclic_edges=False,
+                weight_function=weight_function,
+                by_weight=by_weight,
+                check_weight=check_weight,
+                report_weight=True,
+            )
 
         iterators = {v: cycle_iter(v) for v in starting_vertices}
     elif algorithm == 'B':
+
         def simple_cycle_iter(hh, e):
-            return hh._all_simple_cycles_iterator_edge(e,
-                                                       max_length=max_length,
-                                                       remove_unnecessary_edges=False,
-                                                       weight_function=weight_function,
-                                                       by_weight=by_weight,
-                                                       check_weight=check_weight,
-                                                       report_weight=True)
+            return hh._all_simple_cycles_iterator_edge(
+                e,
+                max_length=max_length,
+                remove_unnecessary_edges=False,
+                weight_function=weight_function,
+                by_weight=by_weight,
+                check_weight=check_weight,
+                report_weight=True,
+            )
+
         if self.is_directed():
+
             def decompose(hh):
-                return [hh.subgraph(c, immutable=False) for c in hh.strongly_connected_components()]
+                return [
+                    hh.subgraph(c, immutable=False)
+                    for c in hh.strongly_connected_components()
+                ]
         else:
+
             def decompose(hh):
-                return [hh.subgraph(c, immutable=False) for c in hh.biconnected_components()]
+                return [
+                    hh.subgraph(c, immutable=False) for c in hh.biconnected_components()
+                ]
 
         components = decompose(self)
         iterators = dict()
@@ -690,8 +745,10 @@ def all_cycles_iterator(self, starting_vertices=None, simple=False,
             hh.delete_edge(e)
             components.extend(decompose(hh))
     else:
-        raise ValueError(f"The algorithm {algorithm} is not valid. \
-                            Use the algorithm 'A' or 'B'.")
+        raise ValueError(
+            f"The algorithm {algorithm} is not valid. \
+                            Use the algorithm 'A' or 'B'."
+        )
 
     cycles = []
     for key, it in iterators.items():
@@ -703,6 +760,7 @@ def all_cycles_iterator(self, starting_vertices=None, simple=False,
     # Since we always extract a shortest path, using a heap
     # can speed up the algorithm
     from heapq import heapify, heappop, heappush
+
     heapify(cycles)
     while cycles:
         # We choose the shortest available cycle
@@ -720,11 +778,18 @@ def all_cycles_iterator(self, starting_vertices=None, simple=False,
             pass
 
 
-def all_simple_cycles(self, starting_vertices=None, rooted=False,
-                      max_length=None, trivial=False,
-                      weight_function=None, by_weight=False,
-                      check_weight=True, report_weight=False,
-                      algorithm='B'):
+def all_simple_cycles(
+    self,
+    starting_vertices=None,
+    rooted=False,
+    max_length=None,
+    trivial=False,
+    weight_function=None,
+    by_weight=False,
+    check_weight=True,
+    report_weight=False,
+    algorithm='B',
+):
     r"""
     Return a list of all simple cycles of ``self``. The cycles are
     enumerated in increasing length order. Each edge must have a
@@ -915,11 +980,17 @@ def all_simple_cycles(self, starting_vertices=None, rooted=False,
         sage: g.all_simple_cycles(algorithm='A')
         [[0, 1, 2, 0]]
     """
-    return list(self.all_cycles_iterator(starting_vertices=starting_vertices,
-                                         simple=True, rooted=rooted,
-                                         max_length=max_length, trivial=trivial,
-                                         weight_function=weight_function,
-                                         by_weight=by_weight,
-                                         check_weight=check_weight,
-                                         report_weight=report_weight,
-                                         algorithm=algorithm))
+    return list(
+        self.all_cycles_iterator(
+            starting_vertices=starting_vertices,
+            simple=True,
+            rooted=rooted,
+            max_length=max_length,
+            trivial=trivial,
+            weight_function=weight_function,
+            by_weight=by_weight,
+            check_weight=check_weight,
+            report_weight=report_weight,
+            algorithm=algorithm,
+        )
+    )

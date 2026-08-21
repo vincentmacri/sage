@@ -14,7 +14,9 @@ from sage.misc.sageinspect import _extract_embedded_position
 from sage.misc.sageinspect import is_function_or_cython_function as _isfunction
 
 
-def gen_rest_table_index(obj, names=None, sort=True, only_local_functions=True, root=None):
+def gen_rest_table_index(
+    obj, names=None, sort=True, only_local_functions=True, root=None
+):
     r"""
     Return a ReST table describing a list of functions.
 
@@ -166,7 +168,8 @@ def gen_rest_table_index(obj, names=None, sort=True, only_local_functions=True, 
     # If input is a class/module, we list all its non-private and methods/functions
     if inspect.isclass(obj) or inspect.ismodule(obj):
         list_of_entries, names = list_of_subfunctions(
-            obj, only_local_functions=only_local_functions)
+            obj, only_local_functions=only_local_functions
+        )
     else:
         list_of_entries = obj
 
@@ -174,10 +177,12 @@ def gen_rest_table_index(obj, names=None, sort=True, only_local_functions=True, 
 
     assert isinstance(list_of_entries, list)
 
-    s = [".. csv-table::",
-         "   :class: contentstable",
-         "   :widths: 30, 70",
-         "   :delim: @\n"]
+    s = [
+        ".. csv-table::",
+        "   :class: contentstable",
+        "   :widths: 30, 70",
+        "   :delim: @\n",
+    ]
 
     if sort:
         list_of_entries.sort(key=fname)
@@ -195,14 +200,14 @@ def gen_rest_table_index(obj, names=None, sort=True, only_local_functions=True, 
     for e in list_of_entries:
         if inspect.ismethod(e):
             link = ":meth:`~{module}.{cls}.{func}`".format(
-                module=e.im_class.__module__, cls=e.im_class.__name__,
-                func=fname(e))
+                module=e.im_class.__module__, cls=e.im_class.__name__, func=fname(e)
+            )
         elif _isfunction(e) and obj_or_root_is_class:
             link = ":meth:`~{module}.{cls}.{func}`".format(
-                module=module_name, cls=class_name, func=fname(e))
+                module=module_name, cls=class_name, func=fname(e)
+            )
         elif _isfunction(e):
-            link = ":func:`~{module}.{func}`".format(
-                module=e.__module__, func=fname(e))
+            link = ":func:`~{module}.{func}`".format(module=e.__module__, func=fname(e))
         else:
             continue
 
@@ -214,9 +219,9 @@ def gen_rest_table_index(obj, names=None, sort=True, only_local_functions=True, 
 
         # Descriptions of the method/function
         if doc:
-            desc = doc.split('\n\n')[0]                             # first paragraph
-            desc = " ".join(x.strip() for x in desc.splitlines())   # concatenate lines
-            desc = desc.strip()                                     # remove leading spaces
+            desc = doc.split('\n\n')[0]  # first paragraph
+            desc = " ".join(x.strip() for x in desc.splitlines())  # concatenate lines
+            desc = desc.strip()  # remove leading spaces
         else:
             desc = "NO DOCSTRING"
 
@@ -284,19 +289,27 @@ def list_of_subfunctions(root, only_local_functions=True):
             return False
         return True
 
-    functions = {getattr(root, name): name for name, f in root.__dict__.items() if
-                 (not name.startswith('_') and             # private functions
-                  can_import(f) and                        # unresolved lazy imports
-                  not hasattr(f, 'issue_number') and       # deprecated functions
-                  not inspect.isclass(f) and               # classes
-                  callable(getattr(f, '__func__', f)) and  # e.g. GenericGraph.graphics_array_defaults
-                  local_filter(f, name))                   # possibly filter imported functions
-                 }
+    functions = {
+        getattr(root, name): name
+        for name, f in root.__dict__.items()
+        if (
+            not name.startswith('_')  # private functions
+            and can_import(f)  # unresolved lazy imports
+            and not hasattr(f, 'issue_number')  # deprecated functions
+            and not inspect.isclass(f)  # classes
+            and callable(
+                getattr(f, '__func__', f)
+            )  # e.g. GenericGraph.graphics_array_defaults
+            and local_filter(f, name)
+        )  # possibly filter imported functions
+    }
 
     return list(functions.keys()), functions
 
 
-def gen_thematic_rest_table_index(root, additional_categories=None, only_local_functions=True):
+def gen_thematic_rest_table_index(
+    root, additional_categories=None, only_local_functions=True
+):
     r"""
     Return a ReST string of thematically sorted functions (or methods) of a
     module (or class).
@@ -322,24 +335,30 @@ def gen_thematic_rest_table_index(root, additional_categories=None, only_local_f
         True
     """
     from collections import defaultdict
+
     if additional_categories is None:
         additional_categories = {}
 
-    functions, names = list_of_subfunctions(root,
-                                            only_local_functions=only_local_functions)
+    functions, names = list_of_subfunctions(
+        root, only_local_functions=only_local_functions
+    )
     theme_to_function = defaultdict(list)
     for f in functions:
         if hasattr(f, 'doc_index'):
             doc_ind = f.doc_index
         else:
             try:
-                doc_ind = additional_categories.get(f.__name__,
-                                                    "Unsorted")
+                doc_ind = additional_categories.get(f.__name__, "Unsorted")
             except AttributeError:
                 doc_ind = "Unsorted"
         theme_to_function[doc_ind].append(f)
-    s = ["**" + theme + "**\n\n" + gen_rest_table_index(list_of_functions, names=names, root=root)
-         for theme, list_of_functions in sorted(theme_to_function.items())]
+    s = [
+        "**"
+        + theme
+        + "**\n\n"
+        + gen_rest_table_index(list_of_functions, names=names, root=root)
+        for theme, list_of_functions in sorted(theme_to_function.items())
+    ]
     return "\n\n".join(s)
 
 
@@ -365,11 +384,16 @@ def doc_index(name):
         sage: a.doc_index
         'Wouhouuuuu'
     """
+
     def hey(f):
         setattr(f, "doc_index", name)
         return f
+
     return hey
 
 
-__doc__ = __doc__.format(INDEX_OF_FUNCTIONS=gen_rest_table_index([gen_rest_table_index,
-                                                                  gen_thematic_rest_table_index]))
+__doc__ = __doc__.format(
+    INDEX_OF_FUNCTIONS=gen_rest_table_index(
+        [gen_rest_table_index, gen_thematic_rest_table_index]
+    )
+)

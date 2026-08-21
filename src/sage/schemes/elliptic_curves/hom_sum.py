@@ -59,7 +59,6 @@ from sage.schemes.elliptic_curves.hom import EllipticCurveHom, compare_via_evalu
 
 
 class EllipticCurveHom_sum(EllipticCurveHom):
-
     _degree = None
     _phis = None
 
@@ -108,7 +107,9 @@ class EllipticCurveHom_sum(EllipticCurveHom):
             if phi.domain() != domain:
                 raise ValueError(f'summand {phi} has incorrect domain (need {domain})')
             if phi.codomain() != codomain:
-                raise ValueError(f'summand {phi} has incorrect codomain (need {codomain})')
+                raise ValueError(
+                    f'summand {phi} has incorrect codomain (need {codomain})'
+                )
 
         self._phis = phis
         self._domain = domain
@@ -160,7 +161,9 @@ class EllipticCurveHom_sum(EllipticCurveHom):
         if self._domain.defining_polynomial()(*P):
             raise ValueError(f'{P} not on {self._domain}')
         k = Sequence(P).universe()
-        return sum((phi._eval(P) for phi in self._phis), self._codomain.base_extend(k)(0))
+        return sum(
+            (phi._eval(P) for phi in self._phis), self._codomain.base_extend(k)(0)
+        )
 
     def _repr_(self):
         r"""
@@ -176,10 +179,12 @@ class EllipticCurveHom_sum(EllipticCurveHom):
               To:   Elliptic Curve defined by y^2 = x^3 + 29*x + 51 over Finite Field of size 101
               Via:  (Isogeny of degree 7 from Elliptic Curve defined by y^2 = x^3 + 5*x + 5 over Finite Field of size 101 to Elliptic Curve defined by y^2 = x^3 + 29*x + 51 over Finite Field of size 101, Isogeny of degree 7 from Elliptic Curve defined by y^2 = x^3 + 5*x + 5 over Finite Field of size 101 to Elliptic Curve defined by y^2 = x^3 + 29*x + 51 over Finite Field of size 101)
         """
-        return f'Sum morphism:' \
-                f'\n  From: {self._domain}' \
-                f'\n  To:   {self._codomain}' \
-                f'\n  Via:  {self._phis}'
+        return (
+            f'Sum morphism:'
+            f'\n  From: {self._domain}'
+            f'\n  To:   {self._codomain}'
+            f'\n  Via:  {self._phis}'
+        )
 
     def summands(self):
         r"""
@@ -268,42 +273,47 @@ class EllipticCurveHom_sum(EllipticCurveHom):
         """
         deg = self.degree()
         if deg.is_zero():
-            raise ValueError('zero morphism cannot be written as a composition of isogenies')
+            raise ValueError(
+                'zero morphism cannot be written as a composition of isogenies'
+            )
 
         p = self.base_ring().characteristic()
         insep = self.inseparable_degree().valuation(p) if p else 0
 
-        scalar = 1  #TODO Can we detect scalar factors earlier to save some extensions below?
+        scalar = 1  # TODO Can we detect scalar factors earlier to save some extensions below?
 
         ker = []
-        for l,m in deg.factor():
+        for l, m in deg.factor():
             if l == p:  # possibly inseparable
                 if insep < m:
                     # kernel of the separable p-power part is unique
-                    P = point_of_order(self.domain(), p**(m-insep))
+                    P = point_of_order(self.domain(), p ** (m - insep))
                     ker.append(P)
                 continue
 
             F = self.domain().division_field(l**m)
 
-            P,Q = self.domain().change_ring(F).torsion_basis(l**m)
+            P, Q = self.domain().change_ring(F).torsion_basis(l**m)
             if self.is_endomorphism():
-                R,S = P,Q
+                R, S = P, Q
             else:
-                R,S = self.codomain().change_ring(F).torsion_basis(l**m)
-            M = self.matrix_on_subgroup((P,Q), (R,S))
+                R, S = self.codomain().change_ring(F).torsion_basis(l**m)
+            M = self.matrix_on_subgroup((P, Q), (R, S))
             g = ZZ(gcd(M.list())).p_primary_part(l)
             if g > 1:
                 scalar *= g
                 M = (M.change_ring(ZZ) / g).change_ring(M.base_ring())
             K = M.left_kernel_matrix()
             for row in K:
-                u,v = map(ZZ, row)
-                pt = u*P + v*Q
+                u, v = map(ZZ, row)
+                pt = u * P + v * Q
                 pt.set_order(row.additive_order())
                 ker.append(pt)
 
-        from sage.schemes.elliptic_curves.hom_composite import EllipticCurveHom_composite
+        from sage.schemes.elliptic_curves.hom_composite import (
+            EllipticCurveHom_composite,
+        )
+
         phi = EllipticCurveHom_composite(self.domain(), [])
 
         if scalar != 1:
@@ -312,15 +322,16 @@ class EllipticCurveHom_sum(EllipticCurveHom):
         while ker:
             K = ker.pop(0)
 
-            (l,e), = K.order().factor()
+            ((l, e),) = K.order().factor()
             for i in reversed(range(e)):
                 Kl = l**i * K
                 Kl.set_order(l)
 
                 from sage.groups.generic import multiples
                 from sage.misc.misc_c import prod
+
                 x = polygen(Kl.base_ring())
-                poly = prod(x - T.x() for T in multiples(Kl, l//2, Kl))
+                poly = prod(x - T.x() for T in multiples(Kl, l // 2, Kl))
                 poly = poly.change_ring(self.base_ring())
 
                 psi = phi.codomain().isogeny(poly)
@@ -333,6 +344,7 @@ class EllipticCurveHom_sum(EllipticCurveHom):
             phi = frob * phi
 
         from sage.schemes.elliptic_curves.hom import find_post_isomorphism
+
         iso = find_post_isomorphism(phi, self)
         return iso * phi
 
@@ -379,8 +391,8 @@ class EllipticCurveHom_sum(EllipticCurveHom):
         lo, hi = ZZ.zero(), ZZ.zero()
         for phi in self._phis:
             m = (hi * phi.degree()).isqrt()
-            hi += phi.degree() + 2*m
-            lo += phi.degree() - 2*m
+            hi += phi.degree() + 2 * m
+            lo += phi.degree() - 2 * m
             lo = max(lo, 0)
         return lo, hi
 
@@ -426,7 +438,7 @@ class EllipticCurveHom_sum(EllipticCurveHom):
         elif len(self._phis) == 1:
             self._degree = self._phis[0].degree()
         else:
-            #TODO In some cases it would probably be faster to simply
+            # TODO In some cases it would probably be faster to simply
             # compute the kernel polynomial using the addition formulas?
             mid = (len(self._phis) + 1) // 2
             left = EllipticCurveHom_sum(self._phis[:mid])
@@ -457,6 +469,7 @@ class EllipticCurveHom_sum(EllipticCurveHom):
             True
         """
         from sage.structure.richcmp import op_EQ
+
         if op != op_EQ:
             return NotImplemented
         try:
@@ -505,7 +518,7 @@ class EllipticCurveHom_sum(EllipticCurveHom):
 
         ALGORITHM: :meth:`to_isogeny_chain`.
         """
-        #TODO In some cases it would probably be faster to compute this
+        # TODO In some cases it would probably be faster to compute this
         # directly using the addition formulas?
         return self.to_isogeny_chain().rational_maps()
 
@@ -523,7 +536,7 @@ class EllipticCurveHom_sum(EllipticCurveHom):
 
         ALGORITHM: :meth:`to_isogeny_chain`.
         """
-        #TODO In some cases it would probably be faster to compute this
+        # TODO In some cases it would probably be faster to compute this
         # directly using the addition formulas?
         return self.to_isogeny_chain().x_rational_map()
 
@@ -548,7 +561,7 @@ class EllipticCurveHom_sum(EllipticCurveHom):
 
         ALGORITHM: :meth:`to_isogeny_chain`.
         """
-        #TODO In some cases it would probably be faster to compute this
+        # TODO In some cases it would probably be faster to compute this
         # directly using the addition formulas?
         return self.to_isogeny_chain().kernel_polynomial()
 
@@ -612,8 +625,11 @@ class EllipticCurveHom_sum(EllipticCurveHom):
 
         ALGORITHM: Taking the dual distributes over addition.
         """
-        psi = EllipticCurveHom_sum((phi.dual(algorithm=algorithm) for phi in self._phis),
-                                   domain=self._codomain, codomain=self._domain)
+        psi = EllipticCurveHom_sum(
+            (phi.dual(algorithm=algorithm) for phi in self._phis),
+            domain=self._codomain,
+            codomain=self._domain,
+        )
         psi._degree = self._degree
         if self.trace.is_in_cache():
             psi.trace.set_cache(-self.trace.cache)
@@ -719,4 +735,6 @@ class EllipticCurveHom_sum(EllipticCurveHom):
             ...
             NotImplementedError: x-only evaluation not implemented for sums of isogenies (it would require taking a square root anyway)
         """
-        raise NotImplementedError('x-only evaluation not implemented for sums of isogenies (it would require taking a square root anyway)')
+        raise NotImplementedError(
+            'x-only evaluation not implemented for sums of isogenies (it would require taking a square root anyway)'
+        )

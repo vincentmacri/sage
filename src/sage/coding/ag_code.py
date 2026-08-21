@@ -94,6 +94,7 @@ class AGCode(AbstractLinearCode):
     attribute that refers to an abstract functiom field or the function field
     of the underlying curve used to construct a code of the class.
     """
+
     def base_function_field(self):
         """
         Return the function field used to construct the code.
@@ -145,6 +146,7 @@ class EvaluationAGCode(AGCode):
         sage: codes.EvaluationAGCode(pls, G)
         [8, 5] evaluation AG code over GF(4)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
@@ -176,13 +178,16 @@ class EvaluationAGCode(AGCode):
             raise ValueError("there is a nonrational place among the places")
 
         if any(p in pls for p in G.support()):
-            raise ValueError("the support of the divisor is not disjoint from the places")
+            raise ValueError(
+                "the support of the divisor is not disjoint from the places"
+            )
 
         self._registered_encoders['evaluation'] = EvaluationAGCodeEncoder
         self._registered_decoders['K'] = EvaluationAGCodeUniqueDecoder
 
-        super().__init__(K, n, default_encoder_name='evaluation',
-                               default_decoder_name='K')
+        super().__init__(
+            K, n, default_encoder_name='evaluation', default_decoder_name='K'
+        )
 
         # compute basis functions associated with a generator matrix
         basis_functions = G.basis_function_space()
@@ -195,8 +200,9 @@ class EvaluationAGCode(AGCode):
         r = M.rank()
 
         self._generator_matrix = M.submatrix(0, 0, r)
-        self._basis_functions = [sum(c * b for c, b in zip(T[i], basis_functions))
-                                     for i in range(r)]
+        self._basis_functions = [
+            sum(c * b for c, b in zip(T[i], basis_functions)) for i in range(r)
+        ]
 
         self._pls = tuple(pls)
         self._G = G
@@ -263,7 +269,8 @@ class EvaluationAGCode(AGCode):
             [8, 7] evaluation AG code over GF(4)
         """
         return "[{}, {}] evaluation AG code over GF({})".format(
-                self.length(), self.dimension(), self.base_field().cardinality())
+            self.length(), self.dimension(), self.base_field().cardinality()
+        )
 
     def _latex_(self):
         r"""
@@ -283,7 +290,8 @@ class EvaluationAGCode(AGCode):
             [8, 3]\text{ evaluation AG code over }\Bold{F}_{2^{2}}
         """
         return r"[{}, {}]\text{{ evaluation AG code over }}{}".format(
-                self.length(), self.dimension(), self.base_field()._latex_())
+            self.length(), self.dimension(), self.base_field()._latex_()
+        )
 
     def basis_functions(self):
         r"""
@@ -384,6 +392,7 @@ class DifferentialAGCode(AGCode):
         sage: codes.DifferentialAGCode(pls, G)
         [3, 1] differential AG code over GF(4)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
@@ -414,17 +423,20 @@ class DifferentialAGCode(AGCode):
             raise ValueError("there is a nonrational place among the places")
 
         if any(p in pls for p in G.support()):
-            raise ValueError("the support of the divisor is not disjoint from the places")
+            raise ValueError(
+                "the support of the divisor is not disjoint from the places"
+            )
 
         self._registered_encoders['residue'] = DifferentialAGCodeEncoder
         self._registered_decoders['K'] = DifferentialAGCodeUniqueDecoder
 
-        super().__init__(K, n, default_encoder_name='residue',
-                               default_decoder_name='K')
+        super().__init__(K, n, default_encoder_name='residue', default_decoder_name='K')
 
         # compute basis differentials associated with a generator matrix
         basis_differentials = (-sum(pls) + G).basis_differential_space()
-        m = matrix([vector(K, [w.residue(p) for p in pls]) for w in basis_differentials])
+        m = matrix(
+            [vector(K, [w.residue(p) for p in pls]) for w in basis_differentials]
+        )
         I = MatrixSpace(K, m.nrows()).identity_matrix()
         mI = m.augment(I)
         mI.echelonize()
@@ -433,8 +445,9 @@ class DifferentialAGCode(AGCode):
         r = M.rank()
 
         self._generator_matrix = M.submatrix(0, 0, r)
-        self._basis_differentials = [sum(c * w for c, w in zip(T[i], basis_differentials))
-                                     for i in range(r)]
+        self._basis_differentials = [
+            sum(c * w for c, w in zip(T[i], basis_differentials)) for i in range(r)
+        ]
 
         self._pls = tuple(pls)
         self._G = G
@@ -504,7 +517,8 @@ class DifferentialAGCode(AGCode):
             [8, 5] differential AG code over GF(4)
         """
         return "[{}, {}] differential AG code over GF({})".format(
-                self.length(), self.dimension(), self.base_field().cardinality())
+            self.length(), self.dimension(), self.base_field().cardinality()
+        )
 
     def _latex_(self):
         r"""
@@ -524,7 +538,8 @@ class DifferentialAGCode(AGCode):
             [8, 5]\text{ differential AG code over }\Bold{F}_{2^{2}}
         """
         return r"[{}, {}]\text{{ differential AG code over }}{}".format(
-                self.length(), self.dimension(), self.base_field()._latex_())
+            self.length(), self.dimension(), self.base_field()._latex_()
+        )
 
     def basis_differentials(self):
         r"""
@@ -632,6 +647,7 @@ class CartierCode(AGCode):
         sage: code.minimum_distance()           # long time
         2
     """
+
     def __init__(self, pls, G, r=1, name=None):
         """
         Initialize.
@@ -656,10 +672,14 @@ class CartierCode(AGCode):
             raise ValueError("there is a nonrational place among the places")
 
         if any(p in pls for p in G.support()):
-            raise ValueError("the support of the divisor is not disjoint from the places")
+            raise ValueError(
+                "the support of the divisor is not disjoint from the places"
+            )
 
         if K.degree() % r != 0:
-            raise ValueError("{} does not divide the degree of the constant base field".format(r))
+            raise ValueError(
+                "{} does not divide the degree of the constant base field".format(r)
+            )
 
         n = len(pls)
         D = sum(pls)
@@ -685,15 +705,15 @@ class CartierCode(AGCode):
         W, fr_W, to_W = EE.differential_space()
 
         a = K.gen()
-        field_basis = [a**i for i in range(K.degree())] # over prime subfield
+        field_basis = [a**i for i in range(K.degree())]  # over prime subfield
         basis = E.basis_differential_space()
 
         m = []
         for w in basis:
             for c in field_basis:
-                cw = F(c) * w # c does not coerce...
+                cw = F(c) * w  # c does not coerce...
                 carcw = cw
-                for i in range(r): # apply cartier r times
+                for i in range(r):  # apply cartier r times
                     carcw = carcw.cartier()
                 m.append([f for e in to_W(carcw - cw) for f in vector(e)])
 
@@ -703,7 +723,7 @@ class CartierCode(AGCode):
         s = len(field_basis)
         ncols = s * len(basis)
         for row in ker.basis():
-            v = vector([K(row[d:d+s]) for d in range(0,ncols,s)])
+            v = vector([K(row[d : d + s]) for d in range(0, ncols, s)])
             R.append(fr_V(v))
 
         # construct a generator matrix
@@ -712,8 +732,8 @@ class CartierCode(AGCode):
         for w in R:
             row = []
             for p in col_index:
-                res = w.residue(p).trace() # lies in constant base field
-                c = subfield(res) # as w is Cartier fixed
+                res = w.residue(p).trace()  # lies in constant base field
+                c = subfield(res)  # as w is Cartier fixed
                 row.append(c)
             m.append(row)
 
@@ -727,9 +747,12 @@ class CartierCode(AGCode):
         self._registered_encoders['GeneratorMatrix'] = LinearCodeGeneratorMatrixEncoder
         self._registered_decoders['Syndrome'] = LinearCodeSyndromeDecoder
 
-        super().__init__(subfield, n,
-                         default_encoder_name='GeneratorMatrix',
-                         default_decoder_name='Syndrome')
+        super().__init__(
+            subfield,
+            n,
+            default_encoder_name='GeneratorMatrix',
+            default_decoder_name='Syndrome',
+        )
 
     def __eq__(self, other):
         """
@@ -795,7 +818,8 @@ class CartierCode(AGCode):
             [9, 4] Cartier code over GF(3)
         """
         return "[{}, {}] Cartier code over GF({})".format(
-                self.length(), self.dimension(), self.base_field().cardinality())
+            self.length(), self.dimension(), self.base_field().cardinality()
+        )
 
     def _latex_(self):
         r"""
@@ -816,7 +840,8 @@ class CartierCode(AGCode):
             [9, 4]\text{ Cartier code over }\Bold{F}_{3}
         """
         return r"[{}, {}]\text{{ Cartier code over }}{}".format(
-                self.length(), self.dimension(), self.base_field()._latex_())
+            self.length(), self.dimension(), self.base_field()._latex_()
+        )
 
     def generator_matrix(self):
         r"""

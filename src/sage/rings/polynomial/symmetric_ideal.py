@@ -40,6 +40,7 @@ equal to `x_1` in ``Q``. Indeed, we have
     sage: Q(p)*x[2] == Q(p)*x[1]*x[3]*x[5]
     True
 """
+
 # ****************************************************************************
 #       Copyright (C) 2009 Simon King <king@mathematik.nuigalway.ie>
 #
@@ -220,7 +221,10 @@ class SymmetricIdeal(Ideal_generic):
             \left(x_{1} y_{2}\right)\Bold{Q}[x_{\ast}, y_{\ast}][\mathfrak{S}_{\infty}]
         """
         from sage.misc.latex import latex
-        return r'\left({}\right){}[\mathfrak{{S}}_{{\infty}}]'.format(", ".join(latex(g) for g in self.gens()), latex(self.ring()))
+
+        return r'\left({}\right){}[\mathfrak{{S}}_{{\infty}}]'.format(
+            ", ".join(latex(g) for g in self.gens()), latex(self.ring())
+        )
 
     def _contains_(self, p):
         """
@@ -272,11 +276,12 @@ class SymmetricIdeal(Ideal_generic):
         oN = max((X.max_index() for X in other.gens()), default=1)
 
         from sage.combinat.permutation import Permutation
+
         P = Permutation(list(range(2, sN + oN + 1)) + [1])
         oGen = list(other.gens())
         SymL = oGen
         for i in range(sN):
-            oGen = [X ** P for X in oGen]
+            oGen = [X**P for X in oGen]
             SymL = SymL + oGen
         # Now, SymL contains all necessary permutations of the second factor
         OUT = []
@@ -410,14 +415,16 @@ class SymmetricIdeal(Ideal_generic):
         if I in self.ring():  # we want to reduce a polynomial by self
             return self.ring()(I).reduce(self)
         from sage.rings.polynomial.symmetric_reduction import SymmetricReductionStrategy
+
         if hasattr(I, 'gens'):
             I = I.gens()
-        if (not I):
+        if not I:
             return self
         I = list(I)
         S = SymmetricReductionStrategy(self.ring(), I, tailreduce)
-        return SymmetricIdeal(self.ring(), [S.reduce(X) for X in self.gens()],
-                              coerce=False)
+        return SymmetricIdeal(
+            self.ring(), [S.reduce(X) for X in self.gens()], coerce=False
+        )
 
     def interreduction(self, tailreduce=True, sorted=False, report=None, RStrat=None):
         """
@@ -496,8 +503,9 @@ class SymmetricIdeal(Ideal_generic):
                 if P.is_unit():  # self generates all of self.ring()
                     if RStrat is not None:
                         RStrat.add_generator(PARENT(1))
-                    return SymmetricIdeal(self.ring(), [self.ring().one()],
-                                          coerce=False)
+                    return SymmetricIdeal(
+                        self.ring(), [self.ring().one()], coerce=False
+                    )
                 TODO.append(P)
         if not sorted:
             TODO = list(set(TODO))
@@ -509,8 +517,7 @@ class SymmetricIdeal(Ideal_generic):
                     if P.is_unit():  # self generates all of PARENT
                         if RStrat is not None:
                             RStrat.add_generator(PARENT.one())
-                        return SymmetricIdeal(PARENT, [PARENT.one()],
-                                              coerce=False)
+                        return SymmetricIdeal(PARENT, [PARENT.one()], coerce=False)
                     VarList = VarList.union(P._p.parent().variable_names())
             VarList = list(VarList)
             if not VarList:
@@ -520,6 +527,7 @@ class SymmetricIdeal(Ideal_generic):
         if report is not None:
             print('Symmetric interreduction')
         from sage.rings.polynomial.symmetric_reduction import SymmetricReductionStrategy
+
         if RStrat is None:
             RStrat = SymmetricReductionStrategy(self.ring(), tailreduce=tailreduce)
         GroundState = RStrat.gens()
@@ -533,8 +541,9 @@ class SymmetricIdeal(Ideal_generic):
                 p = RStrat.reduce(TODO[i], report=report)
                 if p._p != 0:
                     if p.is_unit():  # self generates all of self.ring()
-                        return SymmetricIdeal(self.ring(), [self.ring().one()],
-                                              coerce=False)
+                        return SymmetricIdeal(
+                            self.ring(), [self.ring().one()], coerce=False
+                        )
                     RStrat.add_generator(p, good_input=True)
                     DONE.append(p)
                 else:
@@ -546,6 +555,7 @@ class SymmetricIdeal(Ideal_generic):
             else:
                 if len(TODO) == len(DONE):
                     import copy
+
                     bla = copy.copy(TODO)
                     bla.sort()
                     if bla == DONE:
@@ -570,9 +580,13 @@ class SymmetricIdeal(Ideal_generic):
             sage: I.interreduced_basis()
             [-x_1^2, x_2 + x_1]
         """
-        return Sequence(self.interreduction(tailreduce=True).gens(), self.ring(), check=False)
+        return Sequence(
+            self.interreduction(tailreduce=True).gens(), self.ring(), check=False
+        )
 
-    def symmetrisation(self, N=None, tailreduce=False, report=None, use_full_group=False):
+    def symmetrisation(
+        self, N=None, tailreduce=False, report=None, use_full_group=False
+    ):
         """
         Apply permutations to the generators of ``self`` and interreduce.
 
@@ -633,10 +647,10 @@ class SymmetricIdeal(Ideal_generic):
         if hasattr(R, '_max') and R._max < N:
             R.gen()[N]
         if report is not None:
-            print("Symmetrise %d polynomials at level %d" %
-                  (len(newOUT.gens()), N))
+            print("Symmetrise %d polynomials at level %d" % (len(newOUT.gens()), N))
         if use_full_group:
             from sage.combinat.permutation import Permutations
+
             NewGens = []
             Gens = self.gens()
             for P in Permutations(N):
@@ -644,8 +658,10 @@ class SymmetricIdeal(Ideal_generic):
             return (NewGens * R).interreduction(tailreduce=tailreduce, report=report)
         from sage.combinat.permutation import Permutation
         from sage.rings.polynomial.symmetric_reduction import SymmetricReductionStrategy
-        RStrat = SymmetricReductionStrategy(self.ring(), OUT.gens(),
-                                            tailreduce=tailreduce)
+
+        RStrat = SymmetricReductionStrategy(
+            self.ring(), OUT.gens(), tailreduce=tailreduce
+        )
         while newOUT.gens() != OUT.gens():
             OUT = newOUT
             PermutedGens = list(OUT.gens())
@@ -659,8 +675,9 @@ class SymmetricIdeal(Ideal_generic):
                         if p._p != 0:
                             PermutedGens.append(p)
                             RStrat.add_generator(p, good_input=True)
-            newOUT = (PermutedGens * R).interreduction(tailreduce=tailreduce,
-                                                       report=report)
+            newOUT = (PermutedGens * R).interreduction(
+                tailreduce=tailreduce, report=report
+            )
         return OUT
 
     def symmetric_basis(self):
@@ -679,7 +696,11 @@ class SymmetricIdeal(Ideal_generic):
             sage: I.symmetric_basis()
             [x_2^2, x_1^2, x_2 + x_1]
         """
-        return Sequence(self.symmetrisation(tailreduce=True).normalisation().gens(), self.ring(), check=False)
+        return Sequence(
+            self.symmetrisation(tailreduce=True).normalisation().gens(),
+            self.ring(),
+            check=False,
+        )
 
     def normalisation(self):
         """
@@ -695,7 +716,9 @@ class SymmetricIdeal(Ideal_generic):
             Symmetric Ideal (x_2 + 3/4*x_1, x_2*x_1) of
              Infinite polynomial ring in x over Rational Field
         """
-        return SymmetricIdeal(self.ring(), [X / X.lc() for X in self.gens() if X._p != 0])
+        return SymmetricIdeal(
+            self.ring(), [X / X.lc() for X in self.gens() if X._p != 0]
+        )
 
     def squeezed(self):
         """
@@ -722,7 +745,14 @@ class SymmetricIdeal(Ideal_generic):
         return SymmetricIdeal(self.ring(), [X.squeezed() for X in self.gens()])
 
     @cached_method
-    def groebner_basis(self, tailreduce=False, reduced=True, algorithm=None, report=None, use_full_group=False):
+    def groebner_basis(
+        self,
+        tailreduce=False,
+        reduced=True,
+        algorithm=None,
+        report=None,
+        use_full_group=False,
+    ):
         """
         Return a symmetric Groebner basis (type :func:`~sage.structure.sequence.Sequence`) of ``self``.
 
@@ -928,8 +958,9 @@ class SymmetricIdeal(Ideal_generic):
         PARENT = self.ring()
         if PARENT.base_ring() not in Fields():
             raise TypeError("The base ring (= %s) must be a field" % PARENT.base_ring())
-        OUT = self.symmetrisation(tailreduce=tailreduce, report=report,
-                                  use_full_group=use_full_group)
+        OUT = self.symmetrisation(
+            tailreduce=tailreduce, report=report, use_full_group=use_full_group
+        )
         if report is not None:
             print("Symmetrisation done")
         VarList = set()
@@ -942,6 +973,7 @@ class SymmetricIdeal(Ideal_generic):
         if not VarList:
             return Sequence([PARENT(0)], PARENT, check=False)
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         N = max((int(X.split('_')[1]) for X in VarList), default=1)
 
         while True:
@@ -959,8 +991,15 @@ class SymmetricIdeal(Ideal_generic):
                 CommonR = PolynomialRing(PARENT._base, VarList, order=PARENT._order)
 
             try:  # working around one libsingular bug and one libsingular oddity
-                DenseIdeal = [CommonR(P._p) if ((CommonR is P._p.parent()) or CommonR.ngens() != P._p.parent().ngens()) else CommonR(repr(P._p))
-                              for P in OUT.gens()] * CommonR
+                DenseIdeal = [
+                    CommonR(P._p)
+                    if (
+                        (CommonR is P._p.parent())
+                        or CommonR.ngens() != P._p.parent().ngens()
+                    )
+                    else CommonR(repr(P._p))
+                    for P in OUT.gens()
+                ] * CommonR
             except Exception:
                 if report is not None:
                     print("working around a libsingular bug")
@@ -975,13 +1014,21 @@ class SymmetricIdeal(Ideal_generic):
                 print("->", len(newOUT.gens()), 'generators')
             # Symmetrise out to the next index:
             N += 1
-            newOUT = newOUT.symmetrisation(N=N, tailreduce=tailreduce,
-                                           report=report,
-                                           use_full_group=use_full_group)
+            newOUT = newOUT.symmetrisation(
+                N=N, tailreduce=tailreduce, report=report, use_full_group=use_full_group
+            )
             if [X.lm() for X in OUT.gens()] == [X.lm() for X in newOUT.gens()]:
                 if reduced:
                     if tailreduce:
-                        return Sequence(newOUT.normalisation().gens(), PARENT, check=False)
-                    return Sequence(newOUT.interreduction(tailreduce=True, report=report).normalisation().gens(), PARENT, check=False)
+                        return Sequence(
+                            newOUT.normalisation().gens(), PARENT, check=False
+                        )
+                    return Sequence(
+                        newOUT.interreduction(tailreduce=True, report=report)
+                        .normalisation()
+                        .gens(),
+                        PARENT,
+                        check=False,
+                    )
                 return Sequence(newOUT.gens(), PARENT, check=False)
             OUT = newOUT

@@ -179,17 +179,23 @@ class AsymptoticExpansionGenerators(SageObject):
         if precision < 3:
             raise ValueError("precision must be at least 3")
         log_Stirling = AsymptoticExpansionGenerators.log_Stirling(
-            var, precision=precision, skip_constant_summand=True)
+            var, precision=precision, skip_constant_summand=True
+        )
 
         P = log_Stirling.parent().change_parameter(
-            growth_group='(e^({n}*log({n})))^QQ * (e^{n})^QQ * {n}^QQ * log({n})^QQ'.format(n=var))
+            growth_group='(e^({n}*log({n})))^QQ * (e^{n})^QQ * {n}^QQ * log({n})^QQ'.format(
+                n=var
+            )
+        )
         from sage.functions.log import exp
+
         result = exp(P(log_Stirling))
 
         if not skip_constant_factor:
             from sage.symbolic.ring import SR
+
             SCR = SR.subring(no_variables=True)
-            result *= (2*SCR('pi')).sqrt()
+            result *= (2 * SCR('pi')).sqrt()
 
         return result
 
@@ -276,14 +282,19 @@ class AsymptoticExpansionGenerators(SageObject):
         """
         if not skip_constant_summand:
             from sage.symbolic.ring import SR
+
             coefficient_ring = SR.subring(no_variables=True)
         else:
             from sage.rings.rational_field import QQ
+
             coefficient_ring = QQ
 
         from .asymptotic_ring import AsymptoticRing
-        A = AsymptoticRing(growth_group='{n}^ZZ * log({n})^ZZ'.format(n=var),
-                           coefficient_ring=coefficient_ring)
+
+        A = AsymptoticRing(
+            growth_group='{n}^ZZ * log({n})^ZZ'.format(n=var),
+            coefficient_ring=coefficient_ring,
+        )
         n = A.gen()
 
         if precision is None:
@@ -298,10 +309,11 @@ class AsymptoticExpansionGenerators(SageObject):
         if precision >= 3:
             result += log(n) / 2
         if precision >= 4 and not skip_constant_summand:
-            result += log(2*coefficient_ring('pi')) / 2
+            result += log(2 * coefficient_ring('pi')) / 2
 
         result += AsymptoticExpansionGenerators._log_StirlingNegativePowers_(
-            var, precision - 4)
+            var, precision - 4
+        )
 
         if precision < 1:
             result += (n * log(n)).O()
@@ -347,8 +359,7 @@ class AsymptoticExpansionGenerators(SageObject):
         from .asymptotic_ring import AsymptoticRing
         from sage.rings.rational_field import QQ
 
-        A = AsymptoticRing(growth_group='{n}^ZZ'.format(n=var),
-                           coefficient_ring=QQ)
+        A = AsymptoticRing(growth_group='{n}^ZZ'.format(n=var), coefficient_ring=QQ)
         if precision < 0:
             return A.zero()
         n = A.gen()
@@ -356,10 +367,14 @@ class AsymptoticExpansionGenerators(SageObject):
         from sage.arith.misc import bernoulli
         from sage.arith.srange import srange
 
-        result = sum((bernoulli(k) / k / (k-1) / n**(k-1)
-                      for k in srange(2, 2*precision + 2, 2)),
-                     A.zero())
-        return result + (1 / n**(2*precision + 1)).O()
+        result = sum(
+            (
+                bernoulli(k) / k / (k - 1) / n ** (k - 1)
+                for k in srange(2, 2 * precision + 2, 2)
+            ),
+            A.zero(),
+        )
+        return result + (1 / n ** (2 * precision + 1)).O()
 
     @staticmethod
     def HarmonicNumber(var, precision=None, skip_constant_summand=False):
@@ -425,14 +440,19 @@ class AsymptoticExpansionGenerators(SageObject):
         """
         if not skip_constant_summand:
             from sage.symbolic.ring import SR
+
             coefficient_ring = SR.subring(no_variables=True)
         else:
             from sage.rings.rational_field import QQ
+
             coefficient_ring = QQ
 
         from .asymptotic_ring import AsymptoticRing
-        A = AsymptoticRing(growth_group='{n}^ZZ * log({n})^ZZ'.format(n=var),
-                           coefficient_ring=coefficient_ring)
+
+        A = AsymptoticRing(
+            growth_group='{n}^ZZ * log({n})^ZZ'.format(n=var),
+            coefficient_ring=coefficient_ring,
+        )
         n = A.gen()
 
         if precision is None:
@@ -444,13 +464,15 @@ class AsymptoticExpansionGenerators(SageObject):
             result += log(n)
         if precision >= 2 and not skip_constant_summand:
             from sage.symbolic.constants import euler_gamma
+
             result += coefficient_ring(euler_gamma)
         if precision >= 3:
             result += 1 / (2 * n)
 
         from sage.arith.srange import srange
         from sage.arith.misc import bernoulli
-        for k in srange(2, 2*precision - 4, 2):
+
+        for k in srange(2, 2 * precision - 4, 2):
             result += -bernoulli(k) / k / n**k
 
         if precision < 1:
@@ -460,7 +482,7 @@ class AsymptoticExpansionGenerators(SageObject):
         elif precision == 2:
             result += (1 / n).O()
         else:
-            result += (1 / n**(2*precision - 4)).O()
+            result += (1 / n ** (2 * precision - 4)).O()
 
         return result
 
@@ -553,42 +575,45 @@ class AsymptoticExpansionGenerators(SageObject):
             sage: set_series_precision(20)  # restore series precision default
         """
         from sage.symbolic.ring import SR
+
         SCR = SR.subring(no_variables=True)
         try:
             SCR.coerce(k)
         except TypeError as e:
             from .misc import combine_exceptions
-            raise combine_exceptions(
-                TypeError('Cannot use k={}.'.format(k)), e)
+
+            raise combine_exceptions(TypeError('Cannot use k={}.'.format(k)), e)
 
         if precision is None:
             precision = series_precision()
 
         S = AsymptoticExpansionGenerators._log_StirlingNegativePowers_(
-                var, precision=max(precision - 2,0))
+            var, precision=max(precision - 2, 0)
+        )
         n = S.parent().gen()
-        result = (S.subs(n=k*n) - S.subs(n=(k-1)*n) - S).exp()
+        result = (S.subs(n=k * n) - S.subs(n=(k - 1) * n) - S).exp()
 
         from sage.rings.rational_field import QQ
 
         P = S.parent().change_parameter(
-                growth_group='(QQ_+)^{n} * {n}^QQ'.format(n=var),
-                coefficient_ring=QQ)
+            growth_group='(QQ_+)^{n} * {n}^QQ'.format(n=var), coefficient_ring=QQ
+        )
         n = P.gen()
 
-        b = k**k / (k-1)**(k-1)
+        b = k**k / (k - 1) ** (k - 1)
         if b.parent() is SR:
             b = SCR(b).canonicalize_radical()
         result *= n.rpow(b)
-        result *= n**(-QQ((1, 2)))
+        result *= n ** (-QQ((1, 2)))
         if not skip_constant_factor:
-            result *= (k/((k-1)*2*SCR('pi'))).sqrt()
+            result *= (k / ((k - 1) * 2 * SCR('pi'))).sqrt()
 
         return result
 
     @staticmethod
-    def SingularityAnalysis(var, zeta=1, alpha=0, beta=0, delta=0,
-                            precision=None, normalized=True):
+    def SingularityAnalysis(
+        var, zeta=1, alpha=0, beta=0, delta=0, precision=None, normalized=True
+    ):
         r"""
         Return the asymptotic expansion of the coefficients of
         a power series with specified pole and logarithmic singularity.
@@ -890,8 +915,11 @@ class AsymptoticExpansionGenerators(SageObject):
         """
         from itertools import islice, count
         from .asymptotic_ring import AsymptoticRing
-        from .growth_group import ExponentialGrowthGroup, \
-                MonomialGrowthGroup, GenericNonGrowthGroup
+        from .growth_group import (
+            ExponentialGrowthGroup,
+            MonomialGrowthGroup,
+            GenericNonGrowthGroup,
+        )
         from sage.arith.misc import falling_factorial
         from sage.categories.cartesian_product import cartesian_product
         from sage.functions.other import binomial
@@ -904,7 +932,7 @@ class AsymptoticExpansionGenerators(SageObject):
 
         SCR = SR.subring(no_variables=True)
         s = SR.var('s')
-        iga = 1/gamma(alpha)
+        iga = 1 / gamma(alpha)
         if iga.parent() is SR:
             try:
                 iga = SCR(iga)
@@ -922,9 +950,9 @@ class AsymptoticExpansionGenerators(SageObject):
             at alpha-shift.
             """
             if r == 0:
-                result = iga*falling_factorial(alpha-1, shift)
+                result = iga * falling_factorial(alpha - 1, shift)
             else:
-                result = limit((1/gamma(s)).diff(s, r), s=alpha-shift)
+                result = limit((1 / gamma(s)).diff(s, r), s=alpha - shift)
 
             try:
                 return coefficient_ring(result)
@@ -949,8 +977,9 @@ class AsymptoticExpansionGenerators(SageObject):
         groups = []
         non_growth_groups = []
         if zeta != 1:
-            E = ExponentialGrowthGroup.factory((~zeta).parent(), var,
-                                               return_factors=True)
+            E = ExponentialGrowthGroup.factory(
+                (~zeta).parent(), var, return_factors=True
+            )
             for factor in E:
                 if isinstance(factor, GenericNonGrowthGroup):
                     non_growth_groups.append(factor)
@@ -961,8 +990,11 @@ class AsymptoticExpansionGenerators(SageObject):
             groups.append(MonomialGrowthGroup(beta.parent(), 'log({})'.format(var)))
         groups.extend(non_growth_groups)
         group = cartesian_product(groups)
-        A = AsymptoticRing(growth_group=group, coefficient_ring=coefficient_ring,
-                           default_prec=precision)
+        A = AsymptoticRing(
+            growth_group=group,
+            coefficient_ring=coefficient_ring,
+            default_prec=precision,
+        )
         n = A.gen()
 
         if zeta == 1:
@@ -970,7 +1002,7 @@ class AsymptoticExpansionGenerators(SageObject):
         else:
             exponential_factor = A(n.rpow(~zeta))
 
-        polynomial_factor = A(n**(alpha-1))
+        polynomial_factor = A(n ** (alpha - 1))
 
         if beta != 0:
             log_n = n.log()
@@ -982,13 +1014,10 @@ class AsymptoticExpansionGenerators(SageObject):
             logarithmic_factor = 1
 
         if beta in ZZ and beta >= 0:
-            it = ((k, r)
-                  for k in count()
-                  for r in srange(beta+1))
+            it = ((k, r) for k in count() for r in srange(beta + 1))
             k_max = precision
         else:
-            it = ((0, r)
-                  for r in count())
+            it = ((0, r) for r in count())
             k_max = 0
 
         it = reversed(list(islice(it, int(precision) + 1)))
@@ -998,22 +1027,27 @@ class AsymptoticExpansionGenerators(SageObject):
             beta_denominator = 0
         L = _sa_coefficients_lambda_(max(1, k_max), beta=beta_denominator)
         k, r = next(it)
-        result = (n**(-k) * log_n**(-r)).O()
+        result = (n ** (-k) * log_n ** (-r)).O()
 
         if alpha in ZZ and beta == 0:
             if alpha > 0 and alpha <= precision:
                 result = A(0)
             elif alpha <= 0 and precision > 0:
                 from .misc import NotImplementedOZero
+
                 raise NotImplementedOZero(A, exact_part=A.zero())
 
         for k, r in it:
-            result += binomial(beta, r) * \
-                sum(L[(k, ell)] * (-1)**ell *
-                    inverse_gamma_derivative(ell, r)
-                    for ell in srange(k, 2*k+1)
-                    if (k, ell) in L) * \
-                n**(-k) * log_n**(-r)
+            result += (
+                binomial(beta, r)
+                * sum(
+                    L[(k, ell)] * (-1) ** ell * inverse_gamma_derivative(ell, r)
+                    for ell in srange(k, 2 * k + 1)
+                    if (k, ell) in L
+                )
+                * n ** (-k)
+                * log_n ** (-r)
+            )
 
         result *= exponential_factor * polynomial_factor * logarithmic_factor
 
@@ -1138,21 +1172,24 @@ class AsymptoticExpansionGenerators(SageObject):
         from sage.rings.integer_ring import ZZ
         from sage.rings.asymptotic.asymptotic_ring import AsymptoticRing
         from sage.arith.srange import srange
+
         y, u = SR.var('y'), SR.var('u')
         one_half = QQ((1, 2))
 
-        if phi(QQ.zero()).is_zero() or phi(u) == phi(0) + u*phi(u).diff(u)(u=0):
+        if phi(QQ.zero()).is_zero() or phi(u) == phi(0) + u * phi(u).diff(u)(u=0):
             raise ValueError('the function phi does not satisfy the requirements')
 
         if tau is None:
             tau = _fundamental_constant_implicit_function_(phi=phi)
 
         def H(y):
-            return tau/phi(tau) - y/phi(y)
+            return tau / phi(tau) - y / phi(y)
 
-        A = AsymptoticRing(growth_group='{Z}^QQ'.format(Z=var),
-                           coefficient_ring=SR,
-                           default_prec=precision)
+        A = AsymptoticRing(
+            growth_group='{Z}^QQ'.format(Z=var),
+            coefficient_ring=SR,
+            default_prec=precision,
+        )
         if precision is None:
             precision = ZZ(A.default_prec)
         Z = A.gen()
@@ -1161,25 +1198,41 @@ class AsymptoticExpansionGenerators(SageObject):
             if prec < 1:
                 return A.one().O()
             if prec == 1:
-                return ((1/Z)**one_half).O()
-            return (-(2*tau/phi(tau)/H(y).diff(y, 2)(y=tau)).sqrt() * (1/Z)**one_half
-                    + sum(SR("d{}".format(j)) * (1/Z)**(j * one_half) for j in srange(2, prec))
-                    + ((1/Z)**(prec * one_half)).O())
+                return ((1 / Z) ** one_half).O()
+            return (
+                -(2 * tau / phi(tau) / H(y).diff(y, 2)(y=tau)).sqrt()
+                * (1 / Z) ** one_half
+                + sum(
+                    SR("d{}".format(j)) * (1 / Z) ** (j * one_half)
+                    for j in srange(2, prec)
+                )
+                + ((1 / Z) ** (prec * one_half)).O()
+            )
 
         # we compare coefficients between a "single" Z and the
         # following expansion, this allows us to compute the constants d_j
         z = SR.var('z')
-        z_expansion = sum(H(z).diff(z, k)(z=tau)/k.factorial() *
-                          ansatz(prec=precision+2-k)**k
-                          for k in srange(2, precision)) + ((1/Z)**(precision * one_half)).O()
+        z_expansion = (
+            sum(
+                H(z).diff(z, k)(z=tau)
+                / k.factorial()
+                * ansatz(prec=precision + 2 - k) ** k
+                for k in srange(2, precision)
+            )
+            + ((1 / Z) ** (precision * one_half)).O()
+        )
 
         solution_dict = dict()
-        for k in srange(2, precision-1):
-            coef = z_expansion.monomial_coefficient((1/Z)**((k+1) * one_half))
+        for k in srange(2, precision - 1):
+            coef = z_expansion.monomial_coefficient((1 / Z) ** ((k + 1) * one_half))
             current_var = SR.var('d{k}'.format(k=k))
-            solution_dict[current_var] = coef.subs(solution_dict).simplify_rational().solve(current_var)[0].rhs()
+            solution_dict[current_var] = (
+                coef.subs(solution_dict).simplify_rational().solve(current_var)[0].rhs()
+            )
 
-        return A(tau) + ansatz(prec=precision-1).map_coefficients(lambda term: term.subs(solution_dict).simplify_rational())
+        return A(tau) + ansatz(prec=precision - 1).map_coefficients(
+            lambda term: term.subs(solution_dict).simplify_rational()
+        )
 
     @staticmethod
     @experimental(20050)
@@ -1258,13 +1311,16 @@ class AsymptoticExpansionGenerators(SageObject):
             tau = _fundamental_constant_implicit_function_(phi=phi)
 
         tau_p = tau**period
-        aperiodic_expansion = asymptotic_expansions.ImplicitExpansion(var,
-                                            phi=lambda u: phi(u**(1/period))**period,
-                                            tau=tau_p, precision=precision)
+        aperiodic_expansion = asymptotic_expansions.ImplicitExpansion(
+            var,
+            phi=lambda u: phi(u ** (1 / period)) ** period,
+            tau=tau_p,
+            precision=precision,
+        )
 
         rho = tau / phi(tau)
         Z = aperiodic_expansion.parent().gen()
-        return 1/rho * (aperiodic_expansion/(1 - 1/Z))**(1/period)
+        return 1 / rho * (aperiodic_expansion / (1 - 1 / Z)) ** (1 / period)
 
     @staticmethod
     def InverseFunctionAnalysis(var, phi, tau=None, period=1, precision=None):
@@ -1370,14 +1426,18 @@ class AsymptoticExpansionGenerators(SageObject):
         rho = tau / phi(tau)
 
         if period == 1:
-            expansion = asymptotic_expansions.ImplicitExpansion(var=var, phi=phi,
-                                                                tau=tau, precision=precision)
+            expansion = asymptotic_expansions.ImplicitExpansion(
+                var=var, phi=phi, tau=tau, precision=precision
+            )
             return expansion._singularity_analysis_(var, zeta=rho, precision=precision)
-        expansion = asymptotic_expansions.ImplicitExpansionPeriodicPart(var=var, phi=phi,
-                                                     period=period, tau=tau, precision=precision)
-        growth = expansion._singularity_analysis_(var, zeta=rho**period, precision=precision)
+        expansion = asymptotic_expansions.ImplicitExpansionPeriodicPart(
+            var=var, phi=phi, period=period, tau=tau, precision=precision
+        )
+        growth = expansion._singularity_analysis_(
+            var, zeta=rho**period, precision=precision
+        )
         n = growth.parent().gen()
-        return growth.subs({n: (n-1)/period})
+        return growth.subs({n: (n - 1) / period})
 
 
 def _fundamental_constant_implicit_function_(phi):
@@ -1410,9 +1470,11 @@ def _fundamental_constant_implicit_function_(phi):
         1/2*sqrt(2)
     """
     from sage.symbolic.ring import SR
+
     u = SR.var('u')
-    positive_solution = [s for s in (phi(u) - u*phi(u).diff(u)).solve(u)
-                         if s.rhs() > 0]
+    positive_solution = [
+        s for s in (phi(u) - u * phi(u).diff(u)).solve(u) if s.rhs() > 0
+    ]
     if len(positive_solution) == 1:
         return positive_solution[0].rhs()
     raise ValueError('fundamental constant tau could not be determined')
@@ -1467,10 +1529,12 @@ def _sa_coefficients_lambda_(K, beta=0):
     v = V.gen()
     t = LazyPowerSeriesRing(V, names='t').gen()
 
-    S = (t - (1 + 1/v + beta) * (1 + v*t).log()).exp()
-    return {(k + L.valuation(), ell): c
-            for ell, L in enumerate(S[:2 * K - 1])
-            for k, c in enumerate(L.list())}
+    S = (t - (1 + 1 / v + beta) * (1 + v * t).log()).exp()
+    return {
+        (k + L.valuation(), ell): c
+        for ell, L in enumerate(S[: 2 * K - 1])
+        for k, c in enumerate(L.list())
+    }
 
 
 # Easy access to the asymptotic expansions generators from the command line:

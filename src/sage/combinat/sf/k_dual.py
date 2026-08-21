@@ -50,7 +50,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 
 class KBoundedQuotient(UniqueRepresentation, Parent):
-
     def __init__(self, Sym, k, t='t'):
         r"""
         Initialization of the ring of Symmetric functions modulo the ideal of monomial
@@ -130,13 +129,17 @@ class KBoundedQuotient(UniqueRepresentation, Parent):
         R = Sym.base_ring()
         self.k = k
         self.t = R(t)
-        self._base = R # Won't be needed when CategoryObject won't override anymore base_ring
+        self._base = (
+            R  # Won't be needed when CategoryObject won't override anymore base_ring
+        )
         self._sym = Sym
         if t == 1:
             self._quotient_basis = Sym.m()
         else:
             self._quotient_basis = Sym.hall_littlewood(t=self.t).P()
-        Parent.__init__(self, category=GradedHopfAlgebras(R).Quotients().WithRealizations())
+        Parent.__init__(
+            self, category=GradedHopfAlgebras(R).Quotients().WithRealizations()
+        )
         self.indices = ConstantFunction(Partitions_all_bounded(k))
 
     def ambient(self):
@@ -186,7 +189,11 @@ class KBoundedQuotient(UniqueRepresentation, Parent):
         ending = ""
         if str(self.t) != 't':
             ending = ' with t=%s' % (self.t)
-        return "%s-Bounded Quotient of Symmetric Functions over %s" % (self.k, self.base_ring())+ending
+        return (
+            "%s-Bounded Quotient of Symmetric Functions over %s"
+            % (self.k, self.base_ring())
+            + ending
+        )
 
     def kmonomial(self):
         r"""
@@ -284,7 +291,9 @@ class KBoundedQuotient(UniqueRepresentation, Parent):
             return 0
         ans = self.zero()
         for la in Partitions(m, max_part=self.k):
-            ans += g.homogeneous_basis_noncommutative_variables_zero_Hecke(la).coefficient(w) * mon(la)
+            ans += g.homogeneous_basis_noncommutative_variables_zero_Hecke(
+                la
+            ).coefficient(w) * mon(la)
         return ans
 
     def _AffineGrothendieck(self, w, m):
@@ -309,8 +318,9 @@ class KBoundedQuotient(UniqueRepresentation, Parent):
             sage: Q._AffineGrothendieck(W.an_element(), 5)
             m3[1, 1, 1, 1] - 4*m3[1, 1, 1, 1, 1]
         """
-        return sum(self._G_to_km_on_basis_single_level(w, j)
-                   for j in range(w.length(), m + 1))
+        return sum(
+            self._G_to_km_on_basis_single_level(w, j) for j in range(w.length(), m + 1)
+        )
 
     @cached_method
     def _AffineGrothendieckPolynomial(self, la, m):
@@ -450,7 +460,7 @@ class KBoundedQuotient(UniqueRepresentation, Parent):
             sage: all( rzn(m[3,2,1]).lift() == m[3,2,1] for rzn in kQ.realizations())
             True
         """
-        return [ self.km(), self.kHLP(), self.affineSchur(), self.dual_k_Schur()]
+        return [self.km(), self.kHLP(), self.affineSchur(), self.dual_k_Schur()]
 
 
 class KBoundedQuotientBases(Category_realization_of_parent):
@@ -497,7 +507,6 @@ class KBoundedQuotientBases(Category_realization_of_parent):
         return [Realizations(self.base()), category.Quotients()]
 
     class ParentMethods:
-
         def retract(self, la):
             r"""
             Give the retract map from the symmetric functions to the quotient ring of
@@ -544,17 +553,21 @@ class KBoundedQuotientBases(Category_realization_of_parent):
             """
             R = self.base_ring()
 
-            #Coerce ints to Integers
+            # Coerce ints to Integers
             if isinstance(x, int):
                 x = Integer(x)
             if x in R:
                 if x == 0:
                     return self.zero()
-                raise TypeError("do not know how to make x (= %s) an element of %s" % (x, self))
-            #x is an element of the basis enumerated set;
+                raise TypeError(
+                    "do not know how to make x (= %s) an element of %s" % (x, self)
+                )
+            # x is an element of the basis enumerated set;
             elif x in self._indices:
                 return self.monomial(self._indices(x))
-            raise TypeError("do not know how to make x (= %s) an element of self (=%s)" % (x, self))
+            raise TypeError(
+                "do not know how to make x (= %s) an element of self (=%s)" % (x, self)
+            )
 
         def ambient(self):
             r"""
@@ -606,7 +619,7 @@ class KBoundedQuotientBases(Category_realization_of_parent):
                 sage: F[3,2]    # indirect doctest
                 F3[3, 2]
             """
-            return self.prefix()+str(c)
+            return self.prefix() + str(c)
 
         @cached_method
         def one_basis(self):
@@ -759,7 +772,7 @@ class KBoundedQuotientBases(Category_realization_of_parent):
                 sage: km.product(dks[2,1],dks[1,1])
                 20*m3[1, 1, 1, 1, 1] + 9*m3[2, 1, 1, 1] + 4*m3[2, 2, 1] + 2*m3[3, 1, 1] + m3[3, 2]
             """
-            return self( x.lift() * y.lift() )
+            return self(x.lift() * y.lift())
 
         def antipode(self, element):
             r"""
@@ -841,9 +854,12 @@ class KBoundedQuotientBases(Category_realization_of_parent):
                 m3[] # m3[3, 2] + m3[2] # m3[3] + m3[3] # m3[2] + m3[3, 2] # m3[]
             """
             from sage.categories.tensor import tensor
+
             base = element.lift().parent()
-            return self.tensor_square().sum(coeff * tensor([self(base[x]), self(base[y])])
-                                            for (x, y), coeff in element.lift().coproduct())
+            return self.tensor_square().sum(
+                coeff * tensor([self(base[x]), self(base[y])])
+                for (x, y), coeff in element.lift().coproduct()
+            )
 
         def counit(self, element):
             r"""
@@ -893,10 +909,13 @@ class KBoundedQuotientBasis(CombinatorialFreeModule):
             sage: isinstance(km, sage.combinat.sf.k_dual.KBoundedQuotientBasis)
             True
         """
-        CombinatorialFreeModule.__init__(self, kBoundedRing.base_ring(),
+        CombinatorialFreeModule.__init__(
+            self,
+            kBoundedRing.base_ring(),
             kBoundedRing.indices(),
             category=KBoundedQuotientBases(kBoundedRing),
-            prefix='%s%d' % (prefix, kBoundedRing.k))
+            prefix='%s%d' % (prefix, kBoundedRing.k),
+        )
 
         self._kBoundedRing = kBoundedRing
         self.k = kBoundedRing.k
@@ -908,7 +927,9 @@ class KBoundedQuotientBasis(CombinatorialFreeModule):
     # this problem.
     __getitem__ = raw_getattr(KBoundedQuotientBases.ParentMethods, "__getitem__")
     _repr_term = raw_getattr(KBoundedQuotientBases.ParentMethods, "_repr_term")
-    _element_constructor_ = raw_getattr(KBoundedQuotientBases.ParentMethods, "_element_constructor_")
+    _element_constructor_ = raw_getattr(
+        KBoundedQuotientBases.ParentMethods, "_element_constructor_"
+    )
 
 
 class kMonomial(KBoundedQuotientBasis):
@@ -935,7 +956,9 @@ class kMonomial(KBoundedQuotientBasis):
         """
         KBoundedQuotientBasis.__init__(self, kBoundedRing, 'm')
         Sym = kBoundedRing.ambient()
-        Sym.m().module_morphism(self.retract, codomain=self).register_as_coercion() # coercion of monomial to k-bounded monomial
+        Sym.m().module_morphism(
+            self.retract, codomain=self
+        ).register_as_coercion()  # coercion of monomial to k-bounded monomial
 
     def _repr_(self):
         """
@@ -946,7 +969,9 @@ class kMonomial(KBoundedQuotientBasis):
             sage: km._repr_()
             '3-Bounded Quotient of Symmetric Functions over Rational Field with t=1 in the 3-bounded monomial basis'
         """
-        return self.realization_of()._repr_() + ' in the %s-bounded monomial basis' % (self.k)
+        return self.realization_of()._repr_() + ' in the %s-bounded monomial basis' % (
+            self.k
+        )
 
     def retract(self, la):
         r"""
@@ -1050,10 +1075,22 @@ class kbounded_HallLittlewoodP(KBoundedQuotientBasis):
         KBoundedQuotientBasis.__init__(self, kBoundedRing, 'HLP')
 
         Sym = kBoundedRing.ambient()
-        Sym.hall_littlewood(kBoundedRing.t).P().module_morphism(self.retract, codomain=self).register_as_coercion()  # morphism from HLP to k-bounded HLP
+        Sym.hall_littlewood(kBoundedRing.t).P().module_morphism(
+            self.retract, codomain=self
+        ).register_as_coercion()  # morphism from HLP to k-bounded HLP
         km = kBoundedRing.km()
-        self.module_morphism(self._HLP_to_mk_on_basis, codomain=km, triangular='lower', unitriangular=True).register_as_coercion()  # morphism from k-bounded-HLP to k-bounded-m
-        km.module_morphism(self._m_to_kHLP_on_basis, codomain=self, triangular='lower', unitriangular=True).register_as_coercion()  # morphism from k-bounded-m to k-bounded-HLP
+        self.module_morphism(
+            self._HLP_to_mk_on_basis,
+            codomain=km,
+            triangular='lower',
+            unitriangular=True,
+        ).register_as_coercion()  # morphism from k-bounded-HLP to k-bounded-m
+        km.module_morphism(
+            self._m_to_kHLP_on_basis,
+            codomain=self,
+            triangular='lower',
+            unitriangular=True,
+        ).register_as_coercion()  # morphism from k-bounded-m to k-bounded-HLP
 
     def _repr_(self):
         """
@@ -1064,7 +1101,10 @@ class kbounded_HallLittlewoodP(KBoundedQuotientBasis):
             sage: kHLP._repr_()
             '3-Bounded Quotient of Symmetric Functions over Fraction Field of Univariate Polynomial Ring in t over Rational Field in the 3-bounded Hall-Littlewood P basis'
         """
-        return self.realization_of()._repr_() + ' in the %s-bounded Hall-Littlewood P basis' % (self.k)
+        return (
+            self.realization_of()._repr_()
+            + ' in the %s-bounded Hall-Littlewood P basis' % (self.k)
+        )
 
     def _m_to_kHLP_on_basis(self, la):
         r"""
@@ -1109,8 +1149,9 @@ class kbounded_HallLittlewoodP(KBoundedQuotientBasis):
             return self.zero()
         HLP = self._kBoundedRing._quotient_basis
         m = self._kBoundedRing._sym.m()
-        elt = dict(x for x in dict(HLP(m(la))).items()
-                   if x[0] in self._kbounded_partitions)
+        elt = dict(
+            x for x in dict(HLP(m(la))).items() if x[0] in self._kbounded_partitions
+        )
         return self._from_dict(elt)
 
     def _HLP_to_mk_on_basis(self, la):
@@ -1182,7 +1223,11 @@ class kbounded_HallLittlewoodP(KBoundedQuotientBasis):
             return self.zero()
         hlp = self._kBoundedRing.ambient().hall_littlewood(self.t).P()
         f = hlp(la)
-        return sum(self(x)*f.coefficient(x) for x in f.support() if x in self._kbounded_partitions)
+        return sum(
+            self(x) * f.coefficient(x)
+            for x in f.support()
+            if x in self._kbounded_partitions
+        )
 
     def lift(self, la):
         r"""
@@ -1246,8 +1291,12 @@ class DualkSchurFunctions(KBoundedQuotientBasis):
         KBoundedQuotientBasis.__init__(self, kBoundedRing, 'dks')
 
         kHLP = kBoundedRing.kHallLittlewoodP()
-        self.module_morphism(self._dks_to_khlp_on_basis, codomain=kHLP).register_as_coercion()  # morphism from dual-k-Schurs to k-bounded-HLP
-        kHLP.module_morphism(self._khlp_to_dks_on_basis, codomain=self).register_as_coercion()  # morphism from k-bounded-HLP to dual-k-Schurs
+        self.module_morphism(
+            self._dks_to_khlp_on_basis, codomain=kHLP
+        ).register_as_coercion()  # morphism from dual-k-Schurs to k-bounded-HLP
+        kHLP.module_morphism(
+            self._khlp_to_dks_on_basis, codomain=self
+        ).register_as_coercion()  # morphism from k-bounded-HLP to dual-k-Schurs
 
     def _repr_(self):
         """
@@ -1288,7 +1337,10 @@ class DualkSchurFunctions(KBoundedQuotientBasis):
         Qp = Sym.hall_littlewood(t=self.t).Qp()
         ks = kB.kschur()
         kHLP = self._kBoundedRing.kHallLittlewoodP()
-        return sum( ks(Qp(x)).coefficient(la) * kHLP(x) for x in PartitionsGreatestLE(sum(la), self.k))
+        return sum(
+            ks(Qp(x)).coefficient(la) * kHLP(x)
+            for x in PartitionsGreatestLE(sum(la), self.k)
+        )
 
     def _khlp_to_dks_on_basis(self, la):
         r"""
@@ -1329,7 +1381,10 @@ class DualkSchurFunctions(KBoundedQuotientBasis):
         kB = Sym.kBoundedSubspace(self.k, t=self.t)
         Qp = Sym.hall_littlewood(t=self.t).Qp()
         ks = kB.kschur()
-        return sum( Qp(ks(x)).coefficient(la) * self(x) for x in PartitionsGreatestLE(sum(la), self.k))
+        return sum(
+            Qp(ks(x)).coefficient(la) * self(x)
+            for x in PartitionsGreatestLE(sum(la), self.k)
+        )
 
 
 class AffineSchurFunctions(KBoundedQuotientBasis):
@@ -1362,11 +1417,16 @@ class AffineSchurFunctions(KBoundedQuotientBasis):
         KBoundedQuotientBasis.__init__(self, kBoundedRing, 'F')
 
         from sage.combinat.root_system.weyl_group import WeylGroup
+
         self._weyl = WeylGroup(['A', kBoundedRing.k, 1])
 
         km = kBoundedRing.km()
-        self.module_morphism(self._F_to_m_on_basis, codomain=km).register_as_coercion()  # morphism from affine Schur functions to k-bounded-m
-        km.module_morphism(self._m_to_F_on_basis, codomain=self).register_as_coercion()  # morphism from k-bounded-m basis to affine-Schur basis
+        self.module_morphism(
+            self._F_to_m_on_basis, codomain=km
+        ).register_as_coercion()  # morphism from affine Schur functions to k-bounded-m
+        km.module_morphism(
+            self._m_to_F_on_basis, codomain=self
+        ).register_as_coercion()  # morphism from k-bounded-m basis to affine-Schur basis
 
     def _repr_(self):
         """
@@ -1377,7 +1437,10 @@ class AffineSchurFunctions(KBoundedQuotientBasis):
             sage: F._repr_()
             '3-Bounded Quotient of Symmetric Functions over Rational Field with t=1 in the 3-bounded affine Schur basis'
         """
-        return self.realization_of()._repr_() + ' in the %s-bounded affine Schur basis' % (self.k)
+        return (
+            self.realization_of()._repr_()
+            + ' in the %s-bounded affine Schur basis' % (self.k)
+        )
 
     def _F_to_m_on_basis(self, la):
         r"""
@@ -1405,7 +1468,9 @@ class AffineSchurFunctions(KBoundedQuotientBasis):
             ...
             ValueError: the partition must be 3-bounded
         """
-        return self._weyl.from_reduced_word(Partition(la).from_kbounded_to_reduced_word(self.k)).stanley_symmetric_function()
+        return self._weyl.from_reduced_word(
+            Partition(la).from_kbounded_to_reduced_word(self.k)
+        ).stanley_symmetric_function()
 
     def _m_to_F_on_basis(self, la):
         r"""
@@ -1436,4 +1501,7 @@ class AffineSchurFunctions(KBoundedQuotientBasis):
         kB = Sym.kBoundedSubspace(self.k, t=1)
         h = kB.khomogeneous()
         ks = kB.kschur()
-        return sum( h(ks(x)).coefficient(la) * self(x) for x in PartitionsGreatestLE(sum(la), self.k))
+        return sum(
+            h(ks(x)).coefficient(la) * self(x)
+            for x in PartitionsGreatestLE(sum(la), self.k)
+        )

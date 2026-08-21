@@ -37,8 +37,12 @@ TESTS::
 # ****************************************************************************
 
 from sage.combinat.rigged_configurations.bij_type_A import KRTToRCBijectionTypeA
-from sage.combinat.rigged_configurations.bij_type_A2_even import KRTToRCBijectionTypeA2Even
-from sage.combinat.rigged_configurations.bij_type_A2_even import RCToKRTBijectionTypeA2Even
+from sage.combinat.rigged_configurations.bij_type_A2_even import (
+    KRTToRCBijectionTypeA2Even,
+)
+from sage.combinat.rigged_configurations.bij_type_A2_even import (
+    RCToKRTBijectionTypeA2Even,
+)
 from sage.combinat.rigged_configurations.bij_type_D import KRTToRCBijectionTypeD
 from sage.combinat.rigged_configurations.bij_type_D import RCToKRTBijectionTypeD
 
@@ -78,20 +82,29 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
             <BLANKLINE>
         """
         if verbose:
-            from sage.combinat.rigged_configurations.tensor_product_kr_tableaux_element \
-              import TensorProductOfKirillovReshetikhinTableauxElement
+            from sage.combinat.rigged_configurations.tensor_product_kr_tableaux_element import (
+                TensorProductOfKirillovReshetikhinTableauxElement,
+            )
 
         for cur_crystal in reversed(self.tp_krt):
             r = cur_crystal.parent().r()
             # Iterate through the columns
-            for col_number, cur_column in enumerate(reversed(cur_crystal.to_array(False))):
+            for col_number, cur_column in enumerate(
+                reversed(cur_crystal.to_array(False))
+            ):
                 self.cur_path.insert(0, [])  # Prepend an empty list
 
                 # Check to see if we are a spinor column
                 if r == self.n:
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -106,7 +119,13 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
 
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -119,7 +138,13 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
                 if r == self.n:
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -173,14 +198,14 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
 
         if pos_val == 0:
             if len(self.ret_rig_con[pos_val - 1]) > 0:
-                max_width = self.ret_rig_con[n-1][0]
+                max_width = self.ret_rig_con[n - 1][0]
             else:
                 max_width = 1
-            max_width = self.ret_rig_con[n-1].insert_cell(max_width)
+            max_width = self.ret_rig_con[n - 1].insert_cell(max_width)
             width_n = max_width + 1
 
             # Follow regular A_n rules
-            for a in reversed(range(tableau_height, n-1)):
+            for a in reversed(range(tableau_height, n - 1)):
                 max_width = self.ret_rig_con[a].insert_cell(max_width)
                 self._update_vacancy_nums(a + 1)
                 self._update_partition_values(a + 1)
@@ -189,19 +214,22 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
                 self._correct_vacancy_nums()
             self._update_partition_values(tableau_height)
             if tableau_height > 0:
-                self._update_vacancy_nums(tableau_height-1)
-                self._update_partition_values(tableau_height-1)
+                self._update_vacancy_nums(tableau_height - 1)
+                self._update_partition_values(tableau_height - 1)
 
             # Make the new string at n quasi-singular
-            p = self.ret_rig_con[n-1]
+            p = self.ret_rig_con[n - 1]
             num_rows = len(p)
             for i in range(num_rows):
                 if p._list[i] == width_n:
-                    j = i+1
-                    while j < num_rows and p._list[j] == width_n \
-                      and p.vacancy_numbers[j] == p.rigging[j]:
+                    j = i + 1
+                    while (
+                        j < num_rows
+                        and p._list[j] == width_n
+                        and p.vacancy_numbers[j] == p.rigging[j]
+                    ):
                         j += 1
-                    p.rigging[j-1] -= 1
+                    p.rigging[j - 1] -= 1
                     break
             return
 
@@ -217,14 +245,14 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
 
         # Add cells similar to type A_n but we move to the right until we
         #   reach the value of n-1
-        for a in range(pos_val - 1, n-1):
+        for a in range(pos_val - 1, n - 1):
             max_width = self.ret_rig_con[a].insert_cell(max_width)
             case_S[a] = max_width
 
         # Special case for n
         # If we find a quasi-singular string first, then we are in case (Q, S)
         #   otherwise we will find a singular string and insert 2 cells
-        partition = self.ret_rig_con[n-1]
+        partition = self.ret_rig_con[n - 1]
         num_rows = len(partition)
         case_QS = False
         for i in range(num_rows + 1):
@@ -244,9 +272,9 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
                     j = len(partition._list) - 1
                     while j >= 0 and partition._list[j] <= 2:
                         j -= 1
-                    partition._list.insert(j+1, 2)
-                    partition.vacancy_numbers.insert(j+1, None)
-                    partition.rigging.insert(j+1, None)
+                    partition._list.insert(j + 1, 2)
+                    partition.vacancy_numbers.insert(j + 1, None)
+                    partition.rigging.insert(j + 1, None)
                 break
             elif partition._list[i] <= max_width:
                 if partition.vacancy_numbers[i] == partition.rigging[i]:
@@ -258,20 +286,25 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
                     else:
                         j = i - 1
                         while j >= 0 and partition._list[j] <= max_width + 2:
-                            partition.rigging[j+1] = partition.rigging[j] # Shuffle it along
+                            partition.rigging[j + 1] = partition.rigging[
+                                j
+                            ]  # Shuffle it along
                             j -= 1
                         partition._list.pop(i)
-                        partition._list.insert(j+1, max_width + 2)
-                        partition.rigging[j+1] = None
+                        partition._list.insert(j + 1, max_width + 2)
+                        partition.rigging[j + 1] = None
                     break
-                elif partition.vacancy_numbers[i] - 1 == partition.rigging[i] and not case_QS:
+                elif (
+                    partition.vacancy_numbers[i] - 1 == partition.rigging[i]
+                    and not case_QS
+                ):
                     case_QS = True
                     partition._list[i] += 1
                     partition.rigging[i] = None
                     # No need to set max_width here since we will find a singular string
 
         # Now go back following the regular C_n (ish) rules
-        for a in reversed(range(tableau_height, n-1)):
+        for a in reversed(range(tableau_height, n - 1)):
             if case_S[a] == max_width:
                 self._insert_cell_case_S(self.ret_rig_con[a])
             else:
@@ -286,7 +319,7 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
         self._update_partition_values(tableau_height)
 
         if pos_val <= tableau_height:
-            for a in range(pos_val-1, tableau_height):
+            for a in range(pos_val - 1, tableau_height):
                 self._update_vacancy_nums(a)
                 self._update_partition_values(a)
             if pos_val > 1:
@@ -301,11 +334,14 @@ class KRTToRCBijectionTypeDTwisted(KRTToRCBijectionTypeD, KRTToRCBijectionTypeA2
             num_rows = len(partition)
             for i in range(num_rows):
                 if partition._list[i] == width_n:
-                    j = i+1
-                    while j < num_rows and partition._list[j] == width_n \
-                      and partition.vacancy_numbers[j] == partition.rigging[j]:
+                    j = i + 1
+                    while (
+                        j < num_rows
+                        and partition._list[j] == width_n
+                        and partition.vacancy_numbers[j] == partition.rigging[j]
+                    ):
                         j += 1
-                    partition.rigging[j-1] -= 1
+                    partition.rigging[j - 1] -= 1
                     break
 
 
@@ -341,6 +377,7 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
             Digraph on 6 vertices
         """
         from sage.combinat.crystals.letters import CrystalOfLetters
+
         letters = CrystalOfLetters(self.rigged_con.parent()._cartan_type.classical())
 
         # This is technically bad, but because the first thing we do is append
@@ -365,14 +402,25 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
                         self._update_vacancy_numbers(a)
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), 'ls'])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), 'ls']
+                        )
 
                 # Check to see if we are a spinor
                 if dim[0] == self.n:
                     if verbose:
                         print("====================")
-                        print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                        print(
+                            repr(
+                                self.rigged_con.parent()(
+                                    *self.cur_partitions, use_vacancy_numbers=True
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(ret_crystal_path)
                         print("--------------------\n")
@@ -380,28 +428,44 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
                     self.doubling_map()
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), '2x'])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), '2x']
+                        )
 
                 while self.cur_dims[0][0] > 0:
                     if verbose:
                         print("====================")
-                        print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                        print(
+                            repr(
+                                self.rigged_con.parent()(
+                                    *self.cur_partitions, use_vacancy_numbers=True
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(ret_crystal_path)
                         print("--------------------\n")
 
-                    self.cur_dims[0][0] -= 1 # This takes care of the indexing
+                    self.cur_dims[0][0] -= 1  # This takes care of the indexing
                     b = self.next_state(self.cur_dims[0][0])
 
                     # Make sure we have a crystal letter
-                    ret_crystal_path[-1].append(letters(b)) # Append the rank
+                    ret_crystal_path[-1].append(letters(b))  # Append the rank
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), letters(b)])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), letters(b)]
+                        )
 
-                self.cur_dims.pop(0) # Pop off the leading column
+                self.cur_dims.pop(0)  # Pop off the leading column
 
                 # Check to see if we were a spinor
                 if dim[0] == self.n:
@@ -415,13 +479,19 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
                     self.halving_map()
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), '1/2x'])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), '1/2x']
+                        )
 
         if build_graph:
-            self._graph.pop(0) # Remove the dummy at the start
+            self._graph.pop(0)  # Remove the dummy at the start
             from sage.graphs.digraph import DiGraph
             from sage.graphs.dot2tex_utils import have_dot2tex
+
             self._graph = DiGraph(self._graph)
             if have_dot2tex():
                 self._graph.set_latex_options(format='dot2tex', edge_labels=True)
@@ -441,7 +511,7 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
             -1
         """
         n = self.n
-        ell = [None] * (2*n)
+        ell = [None] * (2 * n)
         case_S = [False] * n
         case_Q = False
         b = None
@@ -449,7 +519,7 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
         # Calculate the rank and ell values
 
         last_size = 0
-        for a in range(height, n-1):
+        for a in range(height, n - 1):
             ell[a] = self._find_singular_string(self.cur_partitions[a], last_size)
 
             if ell[a] is None:
@@ -459,7 +529,7 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
                 last_size = self.cur_partitions[a][ell[a]]
 
         if b is None:
-            partition = self.cur_partitions[n-1]
+            partition = self.cur_partitions[n - 1]
             # Modified version of _find_singular_string()
             for i in reversed(range(len(partition))):
                 if partition[i] >= last_size:
@@ -468,10 +538,13 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
                             b = 'E'
                         else:
                             last_size = partition[i]
-                        case_S[n-1] = True
-                        ell[2*n-1] = i
+                        case_S[n - 1] = True
+                        ell[2 * n - 1] = i
                         break
-                    elif partition.vacancy_numbers[i] - 1 == partition.rigging[i] and not case_Q:
+                    elif (
+                        partition.vacancy_numbers[i] - 1 == partition.rigging[i]
+                        and not case_Q
+                    ):
                         case_Q = True
                         # Check if it is singular as well
                         block_size = partition[i]
@@ -483,9 +556,9 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
                                 break
                         if case_Q:
                             last_size = partition[i] + 1
-                            ell[n-1] = i
+                            ell[n - 1] = i
 
-            if ell[2*n-1] is None:
+            if ell[2 * n - 1] is None:
                 if not case_Q:
                     b = n
                 else:
@@ -493,12 +566,14 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
 
         if b is None:
             # Now go back
-            for a in reversed(range(n-1)):
+            for a in reversed(range(n - 1)):
                 if a >= height and self.cur_partitions[a][ell[a]] == last_size:
-                    ell[n+a] = ell[a]
+                    ell[n + a] = ell[a]
                     case_S[a] = True
                 else:
-                    ell[n+a] = self._find_singular_string(self.cur_partitions[a], last_size)
+                    ell[n + a] = self._find_singular_string(
+                        self.cur_partitions[a], last_size
+                    )
 
                     if ell[n + a] is None:
                         b = -(a + 2)
@@ -517,59 +592,76 @@ class RCToKRTBijectionTypeDTwisted(RCToKRTBijectionTypeD, RCToKRTBijectionTypeA2
         else:
             row_num = self.cur_partitions[0].remove_cell(ell[0])
             row_num_bar = self.cur_partitions[0].remove_cell(ell[n])
-        for a in range(1, n-1):
+        for a in range(1, n - 1):
             if case_S[a]:
                 row_num_next = None
-                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n+a], 2)
+                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n + a], 2)
             else:
                 row_num_next = self.cur_partitions[a].remove_cell(ell[a])
-                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n+a])
+                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n + a])
 
             self._update_vacancy_numbers(a - 1)
             if row_num is not None:
-                self.cur_partitions[a-1].rigging[row_num] = self.cur_partitions[a-1].vacancy_numbers[row_num]
+                self.cur_partitions[a - 1].rigging[row_num] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num]
             if row_num_bar is not None:
-                self.cur_partitions[a-1].rigging[row_num_bar] = self.cur_partitions[a-1].vacancy_numbers[row_num_bar]
+                self.cur_partitions[a - 1].rigging[row_num_bar] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num_bar]
             row_num = row_num_next
             row_num_bar = row_num_bar_next
 
         if case_Q:
-            row_num_next = self.cur_partitions[n-1].remove_cell(ell[n-1])
-            if case_S[n-1]:
-                row_num_bar_next = self.cur_partitions[n-1].remove_cell(ell[2*n-1])
+            row_num_next = self.cur_partitions[n - 1].remove_cell(ell[n - 1])
+            if case_S[n - 1]:
+                row_num_bar_next = self.cur_partitions[n - 1].remove_cell(
+                    ell[2 * n - 1]
+                )
             else:
                 row_num_bar_next = None
-        elif case_S[n-1]:
+        elif case_S[n - 1]:
             row_num_next = None
-            row_num_bar_next = self.cur_partitions[n-1].remove_cell(ell[2*n-1], 2)
+            row_num_bar_next = self.cur_partitions[n - 1].remove_cell(ell[2 * n - 1], 2)
         else:
             row_num_next = None
             row_num_bar_next = None
 
         self._update_vacancy_numbers(n - 2)
         if row_num is not None:
-            self.cur_partitions[n-2].rigging[row_num] = self.cur_partitions[n-2].vacancy_numbers[row_num]
+            self.cur_partitions[n - 2].rigging[row_num] = self.cur_partitions[
+                n - 2
+            ].vacancy_numbers[row_num]
         if row_num_bar is not None:
-            self.cur_partitions[n-2].rigging[row_num_bar] = self.cur_partitions[n-2].vacancy_numbers[row_num_bar]
+            self.cur_partitions[n - 2].rigging[row_num_bar] = self.cur_partitions[
+                n - 2
+            ].vacancy_numbers[row_num_bar]
 
         self._update_vacancy_numbers(n - 1)
         if height == n:
             self._correct_vacancy_nums()
         if row_num_next is not None:
-            self.cur_partitions[n-1].rigging[row_num_next] = self.cur_partitions[n-1].vacancy_numbers[row_num_next]
+            self.cur_partitions[n - 1].rigging[row_num_next] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[row_num_next]
         if row_num_bar_next is not None:
             if case_Q:
-                vac_num = self.cur_partitions[n-1].vacancy_numbers[row_num_bar_next]
-                self.cur_partitions[n-1].rigging[row_num_bar_next] = vac_num
-                block_len = self.cur_partitions[n-1][row_num_bar_next]
+                vac_num = self.cur_partitions[n - 1].vacancy_numbers[row_num_bar_next]
+                self.cur_partitions[n - 1].rigging[row_num_bar_next] = vac_num
+                block_len = self.cur_partitions[n - 1][row_num_bar_next]
                 j = row_num_bar_next + 1
-                length = len(self.cur_partitions[n-1])
+                length = len(self.cur_partitions[n - 1])
                 # Find the place for the quasisingular rigging
-                while j < length and self.cur_partitions[n-1][j] == block_len \
-                  and self.cur_partitions[n-1].rigging[j] == vac_num:
+                while (
+                    j < length
+                    and self.cur_partitions[n - 1][j] == block_len
+                    and self.cur_partitions[n - 1].rigging[j] == vac_num
+                ):
                     j += 1
-                self.cur_partitions[n-1].rigging[j-1] = vac_num - 1
+                self.cur_partitions[n - 1].rigging[j - 1] = vac_num - 1
             else:
-                self.cur_partitions[n-1].rigging[row_num_bar_next] = self.cur_partitions[n-1].vacancy_numbers[row_num_bar_next]
+                self.cur_partitions[n - 1].rigging[row_num_bar_next] = (
+                    self.cur_partitions[n - 1].vacancy_numbers[row_num_bar_next]
+                )
 
         return b

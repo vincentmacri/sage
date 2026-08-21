@@ -59,8 +59,9 @@ from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 
 
-class TamariBlossomingTree(Element, UniqueRepresentation,
-                           metaclass=InheritComparisonClasscallMetaclass):
+class TamariBlossomingTree(
+    Element, UniqueRepresentation, metaclass=InheritComparisonClasscallMetaclass
+):
     r"""
     The class of bicolored blossoming trees, which are in bijection with
     intervals in the Tamari lattice.
@@ -159,6 +160,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
         - Legs are represented by the label of both its ends, and 1, 2 as the
           order of legs of the same node.
         """
+
         def aux(tree, budleg, budcnt):
             """
             This auxiliary function computes recursively a list of buds and legs
@@ -307,6 +309,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             ...
             ValueError: not a blossoming tree, bad matching
         """
+
         def matching_word(tree):
             """
             Internal function. Return an iterator of the matching word with
@@ -512,6 +515,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             sage: B4
             [[., [[., [., .]], .]], [., [[., .], .]]]
         """
+
         def from_dual_bracket_vector(dvec):
             """
             This function converts dual bracket vectors to binary trees
@@ -522,7 +526,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             while ridx != dvec[ridx]:
                 ridx -= 1
             ltree = from_dual_bracket_vector(dvec[:ridx])
-            rtree = from_dual_bracket_vector(dvec[ridx + 1:])
+            rtree = from_dual_bracket_vector(dvec[ridx + 1 :])
             return BinaryTree([ltree, rtree])
 
         # get the orders of nodes and edges
@@ -575,6 +579,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             ...
             ValueError: not a Tamari interval
         """
+
         def traversal(node, parent, cycord):
             # internal function, which go through the tree given by cycord
             # we provide parent to know where to cut
@@ -583,7 +588,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             children = cycord[node]
             if parent in cycord[node]:
                 pidx = children.index(parent)
-                children = children[pidx + 1:] + children[:pidx]
+                children = children[pidx + 1 :] + children[:pidx]
             return [traversal(x, node, cycord) for x in children]
 
         # initialization and verification
@@ -698,6 +703,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             g = TamariBlossomingTree.binary_tree_plot(B3)
             sphinx_plot(g)
         """
+
         # auxiliary function to compute coordinates of internal nodes
         def aux(t, a, b, points):
             if t.is_empty():
@@ -795,21 +801,31 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             g = TamariBlossomingTree(Tl).plot_meandric()
             sphinx_plot(g)
         """
+
         def sqnode(x, y):
             """
             Draw a white square node (middle of segments) at position (x, y).
             """
             diam = 0.1
-            return polygon2d([[x - diam, y - diam], [x + diam, y - diam],
-                              [x + diam, y + diam], [x - diam, y + diam]],
-                             edgecolor='black', rgbcolor='white', zorder=2)
+            return polygon2d(
+                [
+                    [x - diam, y - diam],
+                    [x + diam, y - diam],
+                    [x + diam, y + diam],
+                    [x - diam, y + diam],
+                ],
+                edgecolor='black',
+                rgbcolor='white',
+                zorder=2,
+            )
 
         def cirnode(x, y):
             """
             Draw a black circle node at position (x, y).
             """
-            return circle([x, y], 0.15, fill=True, edgecolor='black',
-                          facecolor='black', zorder=2)
+            return circle(
+                [x, y], 0.15, fill=True, edgecolor='black', facecolor='black', zorder=2
+            )
 
         def semicir(x1, x2, isupper):
             """
@@ -818,8 +834,9 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             """
             sec = (0, pi) if isupper else (pi, 2 * pi)
             color = 'blue' if isupper else 'red'
-            return arc([(x1 + x2) / 2, 0], (x2 - x1) / 2, sector=sec, zorder=1,
-                       rgbcolor=color)
+            return arc(
+                [(x1 + x2) / 2, 0], (x2 - x1) / 2, sector=sec, zorder=1, rgbcolor=color
+            )
 
         def bezierarc(x1, x2, isupper):
             """
@@ -833,8 +850,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             cp1 = tuple(cp1)
             cp2 = tuple(cp2)
             color = 'blue' if isupper else 'red'
-            return bezier_path([[(x1, 0), cp1, cp2, (x2, 0)]], zorder=1,
-                               rgbcolor=color)
+            return bezier_path([[(x1, 0), cp1, cp2, (x2, 0)]], zorder=1, rgbcolor=color)
 
         # initialization
         G = Graphics()
@@ -847,10 +863,12 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             if i % 2 == 0:
                 G += cirnode(i, 0)
                 if arrow:
-                    G += arrow2d((i, 0), (i + 0.6, 0), rgbcolor='black',
-                                 width=1, arrowsize=2)
-                    G += arrow2d((i, 0), (i - 0.6, 0), rgbcolor='black',
-                                 width=1, arrowsize=2)
+                    G += arrow2d(
+                        (i, 0), (i + 0.6, 0), rgbcolor='black', width=1, arrowsize=2
+                    )
+                    G += arrow2d(
+                        (i, 0), (i - 0.6, 0), rgbcolor='black', width=1, arrowsize=2
+                    )
                 else:
                     G += line([(i, 0), (i + 0.6, 0)], rgbcolor='black')
                     G += line([(i, 0), (i - 0.6, 0)], rgbcolor='black')
@@ -862,7 +880,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
         for i in range(n):
             nidx1, nidx2 = eorder[i]
             k, m = sorted((norder.index(nidx1), norder.index(nidx2)))
-            G += arcfct(k * 2, i * 2 + 1, True)   # upper arc
+            G += arcfct(k * 2, i * 2 + 1, True)  # upper arc
             G += arcfct(i * 2 + 1, m * 2, False)  # lower arc
         G.axes(show=False)
         return G
@@ -886,10 +904,14 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
         tikz.append('\\begin{tikzpicture}\n')
         # zorder=0
         # arrows
-        tikz.append(f'\\foreach \\x in {{0, 2, ..., {2 * n}}} '
-                    '\\draw[-latex, thick] (\\x, 0) -- ++(-0.6, 0);\n')
-        tikz.append(f'\\foreach \\x in {{0, 2, ..., {2 * n}}} '
-                    '\\draw[-latex, thick] (\\x, 0) -- ++(0.6, 0);\n')
+        tikz.append(
+            f'\\foreach \\x in {{0, 2, ..., {2 * n}}} '
+            '\\draw[-latex, thick] (\\x, 0) -- ++(-0.6, 0);\n'
+        )
+        tikz.append(
+            f'\\foreach \\x in {{0, 2, ..., {2 * n}}} '
+            '\\draw[-latex, thick] (\\x, 0) -- ++(0.6, 0);\n'
+        )
         # zorder=1
         # tree edges
         norder, eorder = self._node_order, self._edge_order
@@ -897,20 +919,26 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             nidx1, nidx2 = eorder[i]
             k, m = sorted((norder.index(nidx1), norder.index(nidx2)))
             # upper arc
-            tikz.append(f'\\draw[blue, very thick] ({k * 2}, 0) arc '
-                        f'(180:0:{i - k + 0.5});\n')
+            tikz.append(
+                f'\\draw[blue, very thick] ({k * 2}, 0) arc (180:0:{i - k + 0.5});\n'
+            )
             # lower arc
-            tikz.append(f'\\draw[red, very thick] ({m * 2}, 0) arc '
-                        f'(0:-180:{m - i - 0.5});\n')
+            tikz.append(
+                f'\\draw[red, very thick] ({m * 2}, 0) arc (0:-180:{m - i - 0.5});\n'
+            )
         # zorder=2
         # trees nodes, which are circles
-        tikz.append(f'\\foreach \\x in {{0,  2, ..., {2 * n}}} \\filldraw[black]'
-                    ' (\\x, 0) circle (0.15);\n')
+        tikz.append(
+            f'\\foreach \\x in {{0,  2, ..., {2 * n}}} \\filldraw[black]'
+            ' (\\x, 0) circle (0.15);\n'
+        )
         # square nodes for edges, which are squares
-        tikz.append(f'\\foreach \\x in {{1, 3, ..., {2 * n - 1}}}'
-                    '\\node[draw=black, fill=white, '
-                    'very thick, minimum size=0.2] '
-                    '(square) at (\\x, 0) {};\n')
+        tikz.append(
+            f'\\foreach \\x in {{1, 3, ..., {2 * n - 1}}}'
+            '\\node[draw=black, fill=white, '
+            'very thick, minimum size=0.2] '
+            '(square) at (\\x, 0) {};\n'
+        )
         # ending
         tikz.append('\\end{tikzpicture}\n')
         return ''.join(tikz)
@@ -934,6 +962,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             sage: T1 == T2
             True
         """
+
         def aux(t, buds, dyck):
             for st in t:
                 if not st:  # bud
@@ -980,6 +1009,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
         counterclockwise order. The root bud is labeled 0, under the assumption
         that 0 is not present in the canonical labeling.
         """
+
         def aux(tree, parent, cycord):
             cycord[tree.label()] = [parent] + [st.label() for st in tree]
             for st in tree:
@@ -1101,13 +1131,14 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             sage: len(res)
             2
         """
+
         def traverse(node, parent, cycord):
             """
             Internal function, construct a plane tree out of the cycle order.
             The parameter ``parent`` is for knowing where to cut.
             """
             pidx = cycord[node].index(parent)
-            stnodes = cycord[node][pidx + 1:] + cycord[node][:pidx]
+            stnodes = cycord[node][pidx + 1 :] + cycord[node][:pidx]
             return [traverse(stn, node, cycord) for stn in stnodes]
 
         # check buds
@@ -1134,7 +1165,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
                 prevpos = curpos
                 curpos = cycord[curpos][0]
                 pidx = cycord[curpos].index(prevpos)
-                for sibling in cycord[curpos][pidx + 1:]:
+                for sibling in cycord[curpos][pidx + 1 :]:
                     if len(cycord[sibling]) == 1:  # a bud
                         color = 1 - color
                 color = 1 - color  # going to the opposite half-edge
@@ -1206,6 +1237,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             g = TamariBlossomingTree(Tl).plot_blossoming()
             sphinx_plot(g)
         """
+
         def euclid_dist(p1, p2):
             return sum([(p1[i] - p2[i]) ** 2 for i in range(2)]) ** 0.5
 
@@ -1299,8 +1331,9 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
                 # trisection of angle
                 rbuds = [rad1 + (rad2 - rad1) / 3 * (1 + i) for i in range(2)]
                 for i in range(2):
-                    G += plot_bud(pos[rn], rbuds[i], budlen,
-                                  cycord[rn][budidx[i]], dbuds)
+                    G += plot_bud(
+                        pos[rn], rbuds[i], budlen, cycord[rn][budidx[i]], dbuds
+                    )
             else:  # two non-consecutive buds, we put each one in the middle
                 for i in range(2):
                     rad1 = rad_dir(pos[rn], pos[cycord[rn][budidx[i] - 1]])
@@ -1309,8 +1342,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
                     if rad2 <= rad1:
                         rad2 += pi * 2
                     rbud = (rad1 + rad2) / 2
-                    G += plot_bud(pos[rn], rbud, budlen,
-                                  cycord[rn][budidx[i]], dbuds)
+                    G += plot_bud(pos[rn], rbud, budlen, cycord[rn][budidx[i]], dbuds)
 
         # output
         G.axes(show=False)
@@ -1339,6 +1371,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             sage: sorted(TamariBlossomingTree._binary_tree_arcs(B))
             [(0, 3), (0, 4), (0, 7), (0, 8), (1, 3), (2, 3), (5, 6), (5, 7)]
         """
+
         def aux(bt, offset, arcs):
             if not bt:
                 return
@@ -1387,8 +1420,12 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
 
         # plot the arcs
         for e in TamariBlossomingTree._binary_tree_arcs(bt):
-            G += arc([(e[0] + e[1]) / 2, 0], (e[1] - e[0]) / 2, sector=(0, pi),
-                     rgbcolor=color)
+            G += arc(
+                [(e[0] + e[1]) / 2, 0],
+                (e[1] - e[0]) / 2,
+                sector=(0, pi),
+                rgbcolor=color,
+            )
         G.axes(show=False)
         return G
 
@@ -1416,15 +1453,18 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             g = TamariBlossomingTree(Tl).smooth_drawing()
             sphinx_plot(g)
         """
+
         def cirnode(x, y):
-            return circle([x, y], 0.1, fill=True, edgecolor='black',
-                          facecolor='black', zorder=2)
+            return circle(
+                [x, y], 0.1, fill=True, edgecolor='black', facecolor='black', zorder=2
+            )
 
         def semicir(x1, x2, isupper):
             sec = (0, pi) if isupper else (pi, 2 * pi)
             color = 'blue' if isupper else 'red'
-            return arc([(x1 + x2) / 2, 0], (x2 - x1) / 2, sector=sec, zorder=1,
-                       rgbcolor=color)
+            return arc(
+                [(x1 + x2) / 2, 0], (x2 - x1) / 2, sector=sec, zorder=1, rgbcolor=color
+            )
 
         # initialization
         G = Graphics()
@@ -1461,6 +1501,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
             sage: TamariBlossomingTree.from_plane_tree(T2).is_synchronized()
             False
         """
+
         def aux(tree, isroot=False):
             """
             Check synchronized condition on subtree
@@ -1479,6 +1520,7 @@ class TamariBlossomingTree(Element, UniqueRepresentation,
                 if st and not aux(st):  # an internal node failing the test
                     return False
             return True
+
         return aux(self._tree, isroot=True)
 
     def is_modern(self) -> bool:
@@ -1550,7 +1592,7 @@ class _RandomPath:
         # get a random set with each element appearing with prob 1/k
         # the size of the set is close to n, with sqrt(n) standard deviation
         # better than unranking in terms of performance
-        s: list[int] = []   # the random set
+        s: list[int] = []  # the random set
         cs: list[int] = []  # its complement
         for i in range(k * n + 1):
             if randrange(k) == 1:
@@ -1793,8 +1835,7 @@ class TamariBlossomingTrees(UniqueRepresentation, Parent):
         return TamariBlossomingTrees_size(size)
 
 
-class TamariBlossomingTrees_all(DisjointUnionEnumeratedSets,
-                                TamariBlossomingTrees):
+class TamariBlossomingTrees_all(DisjointUnionEnumeratedSets, TamariBlossomingTrees):
     """
     The enumerated set of all Tamari blossoming trees.
     """
@@ -1821,8 +1862,10 @@ class TamariBlossomingTrees_all(DisjointUnionEnumeratedSets,
             sage: TestSuite(TBTA).run()  # long time (5s)
         """
         DisjointUnionEnumeratedSets.__init__(
-            self, Family(PositiveIntegers(), TamariBlossomingTrees_size),
-            facade=True, keepkey=False
+            self,
+            Family(PositiveIntegers(), TamariBlossomingTrees_size),
+            facade=True,
+            keepkey=False,
         )
 
     def _repr_(self) -> str:
@@ -1943,8 +1986,7 @@ class TamariBlossomingTrees_size(TamariBlossomingTrees):
             sage: TBT4.random_element() in TamariBlossomingTrees(5)
             False
         """
-        return (isinstance(elem, self.element_class)
-                and elem.size() == self._size)
+        return isinstance(elem, self.element_class) and elem.size() == self._size
 
     def cardinality(self) -> Integer:
         r"""
@@ -2086,8 +2128,9 @@ class TamariBlossomingTrees_size(TamariBlossomingTrees):
         path = [3] + p1 + [-1] + p2 + [-1, -1]
         # convert lattice path to blossoming tree
         tree = TamariBlossomingTrees_size.__path_to_tree(path)
-        return TamariBlossomingTree._from_plane_tree(tree, skip_check=True,
-                                                     random_bud=True)
+        return TamariBlossomingTree._from_plane_tree(
+            tree, skip_check=True, random_bud=True
+        )
 
     def __iter__(self) -> Iterator[TamariBlossomingTree]:
         """
@@ -2116,13 +2159,18 @@ class TamariBlossomingTrees_size(TamariBlossomingTrees):
             ....:     for n in range(1, 6))
             True
         """
+
         def ballot(m):
             if m == 0:
                 yield []
                 return
-            for ss in IntegerListsLex(length=m * 3, floor=lambda x: x // 3 + 1,
-                                      ceiling=lambda x: m, min_slope=0,
-                                      check=False):
+            for ss in IntegerListsLex(
+                length=m * 3,
+                floor=lambda x: x // 3 + 1,
+                ceiling=lambda x: m,
+                min_slope=0,
+                check=False,
+            ):
                 accu = [3] * ss[0] + [-1]
                 for i in range(1, len(ss)):
                     accu.extend([3] * (ss[i] - ss[i - 1]))
@@ -2317,8 +2365,9 @@ class SynchronizedBlossomingTreeFactory(SageObject, UniqueRepresentation):
                 stack[-1][1].append(subtree)
         tree = stack[-1][1]
         tree.append([])  # add the extra bud besides the root
-        return TamariBlossomingTree._from_plane_tree(tree, skip_check=True,
-                                                     random_bud=True)
+        return TamariBlossomingTree._from_plane_tree(
+            tree, skip_check=True, random_bud=True
+        )
 
 
 class ModernBlossomingTreeFactory(SageObject, UniqueRepresentation):
@@ -2392,8 +2441,7 @@ class ModernBlossomingTreeFactory(SageObject, UniqueRepresentation):
             sage: ModernBlossomingTreeFactory(16)
             Random generator of modern blossoming trees of size 16
         """
-        return (f'Random generator of modern blossoming trees'
-                f' of size {self._size}')
+        return f'Random generator of modern blossoming trees of size {self._size}'
 
     def random_element(self) -> TamariBlossomingTree:
         r"""
@@ -2441,6 +2489,7 @@ class ModernBlossomingTreeFactory(SageObject, UniqueRepresentation):
             sage: B.is_modern()
             True
         """
+
         def genC(dtree: OrderedTree) -> list[OrderedTree]:
             r"""
             Generate a forest counted by the series `1 + C(z)`, which
@@ -2519,5 +2568,6 @@ class ModernBlossomingTreeFactory(SageObject, UniqueRepresentation):
         l2 = genC(DyckWords(s2).random_element().to_ordered_tree())
         l1.extend(l2)
         tree = OrderedTree(l1)
-        return TamariBlossomingTree._from_plane_tree(tree, skip_check=True,
-                                                     random_bud=True)
+        return TamariBlossomingTree._from_plane_tree(
+            tree, skip_check=True, random_bud=True
+        )

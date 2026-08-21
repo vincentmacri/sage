@@ -33,6 +33,7 @@ Check that sphinx is not imported at Sage start-up::
     sage: os.system(f"python3 -m sage.cli -c '{cmd}'")
     0
 """
+
 # ****************************************************************************
 #       Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -97,7 +98,7 @@ math_substitutes = [
     (r'\\rvert', '|'),
     (r'\\mid', '|'),
     (r' \\circ', ' o'),
-    (r'\\circ', ' o')
+    (r'\\circ', ' o'),
 ]
 nonmath_substitutes = [
     ('\\_', '_'),
@@ -163,9 +164,10 @@ def _rmcmd(s, cmd, left='', right=''):
             j += 1
         j -= 1  # j is position of closing '}'
         if j < len(s):
-            s = s[:i] + left + s[i + len(c):j] + right + s[j + 1:]
+            s = s[:i] + left + s[i + len(c) : j] + right + s[j + 1 :]
         else:
             return s
+
 
 # I wanted to be cool and use regexp's, but they aren't really
 # useful, since really this is a parsing problem, because of
@@ -456,6 +458,7 @@ def process_dollars(s):
     if s.find("$") == -1:
         return s
     from sage.misc.superseded import deprecation
+
     # find how much leading whitespace s has, for later comparison:
     # ignore all $ on lines which start with more whitespace.
     whitespace = re.match(r'\s*\S', s.lstrip('\n'))
@@ -492,13 +495,15 @@ def process_dollars(s):
     for start, end in indices:
         while dollar.search(s, start, end):
             m = dollar.search(s, start, end)
-            s = s[:m.end() - 1] + "`" + s[m.end():]
-            deprecation(33973,
-                        "using dollar signs to mark up math in Sage docstrings "
-                        "is deprecated; use backticks instead")
+            s = s[: m.end() - 1] + "`" + s[m.end() :]
+            deprecation(
+                33973,
+                "using dollar signs to mark up math in Sage docstrings "
+                "is deprecated; use backticks instead",
+            )
         while slashdollar.search(s, start, end):
             m = slashdollar.search(s, start, end)
-            s = s[:m.start()] + "$" + s[m.end():]
+            s = s[: m.start()] + "$" + s[m.end() :]
     return s
 
 
@@ -517,16 +522,34 @@ extlinks = {
     'doi': ('https://doi.org/%s', 'doi:%s'),
     'pari': ('https://pari.math.u-bordeaux.fr/dochtml/help/%s', 'pari:%s'),
     'mathscinet': ('https://www.ams.org/mathscinet-getitem?mr=%s', 'MathSciNet %s'),
-    'common_lisp': ('https://www.lispworks.com/documentation/lw50/CLHS/Body/%s.htm', 'Common Lisp: %s'),
+    'common_lisp': (
+        'https://www.lispworks.com/documentation/lw50/CLHS/Body/%s.htm',
+        'Common Lisp: %s',
+    ),
     'ecl': ('https://ecl.common-lisp.dev/static/manual/%s.html', 'ECL: %s'),
     'gap': ('https://docs.gap-system.org/doc/ref/%s_mj.html', 'GAP: %s'),
     'gap_package': ('https://docs.gap-system.org/pkg/%s', 'GAP package %s'),
-    'giac_cascmd': ('https://www-fourier.ujf-grenoble.fr/~parisse/giac/doc/en/cascmd_en/%s.html', 'Giac: %s'),
-    'giac_us': ('https://www-fourier.ujf-grenoble.fr/~parisse/giac_us.html#%s', 'Giac API: %s'),
-    'maxima': ('https://maxima.sourceforge.io/docs/manual/maxima_singlepage.html#%s', 'Maxima: %s'),
+    'giac_cascmd': (
+        'https://www-fourier.ujf-grenoble.fr/~parisse/giac/doc/en/cascmd_en/%s.html',
+        'Giac: %s',
+    ),
+    'giac_us': (
+        'https://www-fourier.ujf-grenoble.fr/~parisse/giac_us.html#%s',
+        'Giac API: %s',
+    ),
+    'maxima': (
+        'https://maxima.sourceforge.io/docs/manual/maxima_singlepage.html#%s',
+        'Maxima: %s',
+    ),
     'meson': ('https://mesonbuild.com/%s', 'Meson: %s'),
-    'polymake': ('https://polymake.org/doku.php/documentation/latest/%s', 'polymake: %s'),
-    'ppl': ('https://www.bugseng.com/products/ppl/documentation/user/ppl-user-1.2-html/%s.html', 'PPL: %s'),
+    'polymake': (
+        'https://polymake.org/doku.php/documentation/latest/%s',
+        'polymake: %s',
+    ),
+    'ppl': (
+        'https://www.bugseng.com/products/ppl/documentation/user/ppl-user-1.2-html/%s.html',
+        'PPL: %s',
+    ),
     'qepcad': ('https://www.usna.edu/CS/qepcadweb/B/%s.html', 'QEPCAD: %s'),
     'scip': ('https://scipopt.org/doc/html/%s.php', 'SCIP: %s'),
     'singular': ('https://www.singular.uni-kl.de/Manual/4-3-2/%s.htm', 'Singular: %s'),
@@ -576,9 +599,9 @@ def process_extlinks(s, embedded=False):
             m = re.search('.*<([^>]*)>', link)
             if m:
                 link = m.group(1)
-            s = re.sub(':%s:`([^`]*)`' % key,
-                       extlinks[key][0].replace('%s', link),
-                       s, count=1)
+            s = re.sub(
+                ':%s:`([^`]*)`' % key, extlinks[key][0].replace('%s', link), s, count=1
+            )
     return s
 
 
@@ -603,7 +626,7 @@ def process_mathtt(s):
         end = s.find("}", start)
         if start == -1 or end == -1:
             break
-        s = s[:start] + s[start + 8:end] + s[end + 1:]
+        s = s[:start] + s[start + 8 : end] + s[end + 1 :]
     return s
 
 
@@ -624,10 +647,13 @@ def process_optional_doctest_tags(s):
     start = 0
     with io.StringIO() as output:
         for m in re.finditer('( *sage: *.*#.*)\n', s):
-            output.write(s[start:m.start(0)])
+            output.write(s[start : m.start(0)])
             line = m.group(1)
-            tags = [tag for tag in parse_optional_tags(line)
-                    if tag not in available_software]
+            tags = [
+                tag
+                for tag in parse_optional_tags(line)
+                if tag not in available_software
+            ]
             line = update_optional_tags(line, tags=tags)
             if not re.fullmatch(' *sage: *', line):
                 print(line, file=output)
@@ -766,7 +792,7 @@ def format(s, embedded=False):
     directives = [d.strip().lower() for d in first_line.split(',')]
 
     if 'noreplace' in directives or 'nodetex' in directives:
-        s = s[first_newline + len(os.linesep):]
+        s = s[first_newline + len(os.linesep) :]
 
     try:
         import sage.all
@@ -780,10 +806,10 @@ def format(s, embedded=False):
             i = s[i_0:].find("<<<")
             if i == -1:
                 break
-            j = s[i_0 + i + 3:].find('>>>')
+            j = s[i_0 + i + 3 :].find('>>>')
             if j == -1:
                 break
-            obj = s[i_0 + i + 3:i_0 + i + 3 + j]
+            obj = s[i_0 + i + 3 : i_0 + i + 3 + j]
             if obj in docs:
                 t = ''
             else:
@@ -802,7 +828,7 @@ def format(s, embedded=False):
                 t1 = sage.misc.sageinspect.sage_getdoc(x)
                 t = 'Definition: ' + t0 + '\n\n' + t1
                 docs.add(obj)
-            s = s[:i_0 + i] + '\n' + t + s[i_0 + i + 6 + j:]
+            s = s[: i_0 + i] + '\n' + t + s[i_0 + i + 6 + j :]
             i_0 += i
 
     if 'nodetex' not in directives:
@@ -853,10 +879,10 @@ def format_src(s):
         i = s.find("<<<")
         if i == -1:
             break
-        j = s[i + 3:].find('>>>')
+        j = s[i + 3 :].find('>>>')
         if j == -1:
             break
-        obj = s[i + 3:i + 3 + j]
+        obj = s[i + 3 : i + 3 + j]
         if obj in docs:
             t = ''
         else:
@@ -866,15 +892,17 @@ def format_src(s):
         if t is None:
             print(x)
             t = ''
-        s = s[:i] + '\n' + t + s[i + 6 + j:]
+        s = s[:i] + '\n' + t + s[i + 6 + j :]
 
     return s
 
 
 ###############################
 
-def _search_src_or_doc(what, string, extra1='', extra2='', extra3='',
-                       extra4='', extra5='', **kwargs):
+
+def _search_src_or_doc(
+    what, string, extra1='', extra2='', extra3='', extra4='', extra5='', **kwargs
+):
     r"""
     Search the Sage library or documentation for lines containing
     ``string`` and possibly some other terms. This function is used by
@@ -1007,16 +1035,24 @@ def _search_src_or_doc(what, string, extra1='', extra2='', extra3='',
                             results.append(filename[strip:].lstrip("/") + '\n')
                     else:
                         with open(filename) as fobj:
-                            match_list = [(lineno, line)
-                                          for lineno, line in enumerate(fobj)
-                                          if re.search(regexp, line, flags)]
+                            match_list = [
+                                (lineno, line)
+                                for lineno, line in enumerate(fobj)
+                                if re.search(regexp, line, flags)
+                            ]
                         for extra in extra_regexps:
                             if extra:
-                                match_list = [s for s in match_list
-                                              if re.search(extra, s[1], re.MULTILINE | flags)]
+                                match_list = [
+                                    s
+                                    for s in match_list
+                                    if re.search(extra, s[1], re.MULTILINE | flags)
+                                ]
                         for num, line in match_list:
-                            results.append('{}:{}:{}'.format(
-                                filename[strip:].lstrip('/'), num + 1, line))
+                            results.append(
+                                '{}:{}:{}'.format(
+                                    filename[strip:].lstrip('/'), num + 1, line
+                                )
+                            )
 
     text_results = ''.join(results).rstrip()
 
@@ -1025,19 +1061,21 @@ def _search_src_or_doc(what, string, extra1='', extra2='', extra3='',
 
     # Pass through the IPython pager in a mime bundle
     from IPython.core.page import page
+
     if not isinstance(text_results, str):
         text_results = text_results.decode('utf-8', 'replace')
 
-    page({
-        'text/plain': text_results,
-        # 'text/html': html_results
-        # don't return HTML results since they currently are not
-        # correctly formatted for Jupyter use
-    })
+    page(
+        {
+            'text/plain': text_results,
+            # 'text/html': html_results
+            # don't return HTML results since they currently are not
+            # correctly formatted for Jupyter use
+        }
+    )
 
 
-def search_src(string, extra1='', extra2='', extra3='', extra4='',
-               extra5='', **kwds):
+def search_src(string, extra1='', extra2='', extra3='', extra4='', extra5='', **kwds):
     r"""
     Search Sage library source code for lines containing ``string``.
     The search is case-insensitive by default.
@@ -1212,13 +1250,19 @@ def search_src(string, extra1='', extra2='', extra3='', extra4='',
         matrix/matrix0.pyx:924:        Set the 2 x 2 submatrix of M, starting at row index and column
         matrix/matrix0.pyx:933:        Set the 2 x 3 submatrix of M starting at row index and column
     """
-    return _search_src_or_doc('src', string, extra1=extra1, extra2=extra2,
-                              extra3=extra3, extra4=extra4, extra5=extra5,
-                              **kwds)
+    return _search_src_or_doc(
+        'src',
+        string,
+        extra1=extra1,
+        extra2=extra2,
+        extra3=extra3,
+        extra4=extra4,
+        extra5=extra5,
+        **kwds,
+    )
 
 
-def search_doc(string, extra1='', extra2='', extra3='', extra4='',
-               extra5='', **kwds):
+def search_doc(string, extra1='', extra2='', extra3='', extra4='', extra5='', **kwds):
     r"""
     Search Sage HTML documentation for lines containing ``string``. The
     search is case-insensitive by default.
@@ -1255,13 +1299,19 @@ def search_doc(string, extra1='', extra2='', extra3='', extra4='',
         sage: all(tree_re.search(l) for l in L)
         True
     """
-    return _search_src_or_doc('doc', string, extra1=extra1, extra2=extra2,
-                              extra3=extra3, extra4=extra4, extra5=extra5,
-                              **kwds)
+    return _search_src_or_doc(
+        'doc',
+        string,
+        extra1=extra1,
+        extra2=extra2,
+        extra3=extra3,
+        extra4=extra4,
+        extra5=extra5,
+        **kwds,
+    )
 
 
-def search_def(name, extra1='', extra2='', extra3='', extra4='',
-               extra5='', **kwds):
+def search_def(name, extra1='', extra2='', extra3='', extra4='', extra5='', **kwds):
     r"""
     Search Sage library source code for function definitions containing
     ``name``. The search is case-insensitive by default.
@@ -1305,9 +1355,16 @@ def search_def(name, extra1='', extra2='', extra3='', extra4='',
             extra5 = r'\b' + extra5 + r'\b'
         kwds['whole_word'] = False
 
-    return _search_src_or_doc('src', '^ *[c]?def.*%s' % name, extra1=extra1,
-                              extra2=extra2, extra3=extra3, extra4=extra4,
-                              extra5=extra5, **kwds)
+    return _search_src_or_doc(
+        'src',
+        '^ *[c]?def.*%s' % name,
+        extra1=extra1,
+        extra2=extra2,
+        extra3=extra3,
+        extra4=extra4,
+        extra5=extra5,
+        **kwds,
+    )
 
 
 def format_search_as_html(what, results, search):
@@ -1358,10 +1415,11 @@ def format_search_as_html(what, results, search):
         '<html>',
         '<font color="black">',
         '<h2>Search {}: {}</h2>'.format(
-            what, ', '.join('"{}"'.format(s) for s in search if s.strip())),
+            what, ', '.join('"{}"'.format(s) for s in search if s.strip())
+        ),
         '</font>',
         '<font color="darkpurple">',
-        '<ol>'
+        '<ol>',
     ]
 
     append = s.append
@@ -1454,6 +1512,7 @@ class _sage_doc:
         sage: browse_sage_doc(identity_matrix, 'rst')[-374:-215]                        # needs sage.modules
         '...Full MatrixSpace of 3 by 3 sparse matrices...'
     """
+
     def __init__(self):
         """
         EXAMPLES::
@@ -1527,6 +1586,7 @@ class _sage_doc:
                 from .sphinxify import sphinxify
             except ImportError:
                 from html import escape
+
                 html = escape(s)
             else:
                 html = sphinxify(s)
@@ -1536,7 +1596,9 @@ class _sage_doc:
 
                 static_path = os.path.join(SAGE_DOC, "html", "en", "_static")
                 if os.path.exists(static_path):
-                    title = obj_name + ' - Sage ' + sage.version.version + ' Documentation'
+                    title = (
+                        obj_name + ' - Sage ' + sage.version.version + ' Documentation'
+                    )
                     template = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -1583,10 +1645,12 @@ class _sage_doc:
     </div>
   </body>
 </html>"""
-                    html = template % {'html': html,
-                                       'static_path': static_path,
-                                       'title': title,
-                                       'version': sage.version.version}
+                    html = template % {
+                        'html': html,
+                        'static_path': static_path,
+                        'title': title,
+                        'version': sage.version.version,
+                    }
 
                 filed.write(html)
                 filed.close()
@@ -1629,8 +1693,10 @@ class _sage_doc:
         url = self._base_url + os.path.join(name, "index.html")
         path = os.path.join(self._base_path, name, "index.html")
         if not os.path.exists(path):
-            raise OSError("""The document '{0}' does not exist.  Please build it
-with 'sage -docbuild {0} html' and try again.""".format(name))
+            raise OSError(
+                """The document '{0}' does not exist.  Please build it
+with 'sage -docbuild {0} html' and try again.""".format(name)
+            )
 
         if testing:
             return (url, path)
@@ -1706,7 +1772,8 @@ def help(module=None):
     if module is not None:
         python_help(module)
     else:
-        print("""Welcome to Sage {}!
+        print(
+            """Welcome to Sage {}!
 
 To view the Sage tutorial in your web browser, type "tutorial()", and
 to view the (very detailed) Sage reference manual, type "manual()".
@@ -1728,4 +1795,5 @@ or type "license()".
 
 To enter Python's interactive online help utility, type "python_help()".
 To get help on a Python function, module or package, type "help(MODULE)" or
-"python_help(MODULE)".""".format(sage.version.version))
+"python_help(MODULE)".""".format(sage.version.version)
+        )

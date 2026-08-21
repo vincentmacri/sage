@@ -6,7 +6,7 @@ AUTHORS:
 - Reimundo Heluani (2019-10-05): Initial implementation.
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2019 Reimundo Heluani <heluani@potuz.net>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.graded_modules import GradedModulesCategory
 from sage.categories.super_modules import SuperModulesCategory
@@ -40,6 +40,7 @@ class SuperLieConformalAlgebras(SuperModulesCategory):
         sage: [g.is_even_odd() for g in R.gens()]                                       # needs sage.combinat sage.modules
         [0, 0]
     """
+
     def extra_super_categories(self):
         """
         The extra super categories of ``self``.
@@ -61,12 +62,13 @@ class SuperLieConformalAlgebras(SuperModulesCategory):
             sage: LieConformalAlgebras(QQ).Super().example()                            # needs sage.combinat sage.modules
             The Neveu-Schwarz super Lie conformal algebra over Rational Field
         """
-        from sage.algebras.lie_conformal_algebras.neveu_schwarz_lie_conformal_algebra\
-                                      import NeveuSchwarzLieConformalAlgebra
+        from sage.algebras.lie_conformal_algebras.neveu_schwarz_lie_conformal_algebra import (
+            NeveuSchwarzLieConformalAlgebra,
+        )
+
         return NeveuSchwarzLieConformalAlgebra(self.base_ring())
 
     class ParentMethods:
-
         def _test_jacobi(self, **options):
             """
             Test the Jacobi axiom of this super Lie conformal algebra.
@@ -125,8 +127,9 @@ class SuperLieConformalAlgebras(SuperModulesCategory):
             S = elements
             from sage.misc.misc import some_tuples
             from sage.arith.misc import binomial
+
             pz = tester._instance.zero()
-            for x,y,z in some_tuples(S, 3, tester._max_runs):
+            for x, y, z in some_tuples(S, 3, tester._max_runs):
                 if x.is_zero() or y.is_zero():
                     sgn = 1
                 elif x.is_even_odd() * y.is_even_odd():
@@ -136,26 +139,26 @@ class SuperLieConformalAlgebras(SuperModulesCategory):
                 brxy = x.bracket(y)
                 brxz = x.bracket(z)
                 bryz = y.bracket(z)
-                br1 = {k: x.bracket(v) for k,v in bryz.items()}
-                br2 = {k: v.bracket(z) for k,v in brxy.items()}
-                br3 = {k: y.bracket(v) for k,v in brxz.items()}
-                jac1 = {(j,k): v for k in br1 for j,v in br1[k].items()}
-                jac3 = {(k,j): v for k in br3 for j,v in br3[k].items()}
+                br1 = {k: x.bracket(v) for k, v in bryz.items()}
+                br2 = {k: v.bracket(z) for k, v in brxy.items()}
+                br3 = {k: y.bracket(v) for k, v in brxz.items()}
+                jac1 = {(j, k): v for k in br1 for j, v in br1[k].items()}
+                jac3 = {(k, j): v for k in br3 for j, v in br3[k].items()}
                 jac2 = {}
-                for k,br in br2.items():
-                    for j,v in br.items():
-                        for r in range(j+1):
-                            jac2[(k+r, j-r)] = (jac2.get((k+r, j-r), pz)
-                                                + binomial(k+r, r)*v)
-                for k,v in jac2.items():
+                for k, br in br2.items():
+                    for j, v in br.items():
+                        for r in range(j + 1):
+                            jac2[(k + r, j - r)] = (
+                                jac2.get((k + r, j - r), pz) + binomial(k + r, r) * v
+                            )
+                for k, v in jac2.items():
                     jac1[k] = jac1.get(k, pz) - v
-                for k,v in jac3.items():
-                    jac1[k] = jac1.get(k, pz) - sgn*v
-                jacobiator = {k: v for k,v in jac1.items() if v}
+                for k, v in jac3.items():
+                    jac1[k] = jac1.get(k, pz) - sgn * v
+                jacobiator = {k: v for k, v in jac1.items() if v}
                 tester.assertDictEqual(jacobiator, {})
 
     class ElementMethods:
-
         @abstract_method
         def is_even_odd(self):
             """
@@ -180,6 +183,7 @@ class SuperLieConformalAlgebras(SuperModulesCategory):
             sage: LieConformalAlgebras(AA).Super().Graded()                             # needs sage.rings.number_field
             Category of H-graded super Lie conformal algebras over Algebraic Real Field
         """
+
         def _repr_object_names(self):
             """
             The names of the objects of this category.

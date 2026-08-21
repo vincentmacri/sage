@@ -1,12 +1,12 @@
 r"""
 Super modules with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.super_modules import SuperModulesCategory
 
@@ -34,6 +34,7 @@ class SuperModulesWithBasis(SuperModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     class ParentMethods:
         def _even_odd_on_basis(self, m):
             """
@@ -162,9 +163,9 @@ class SuperModulesWithBasis(SuperModulesCategory):
                 True
             """
             even_odd = self.parent()._even_odd_on_basis
-            return self.parent().sum_of_terms((i, c)
-                                              for (i, c) in self
-                                              if even_odd(i) == 0)
+            return self.parent().sum_of_terms(
+                (i, c) for (i, c) in self if even_odd(i) == 0
+            )
 
         def odd_component(self):
             """
@@ -188,6 +189,6 @@ class SuperModulesWithBasis(SuperModulesCategory):
                 True
             """
             even_odd = self.parent()._even_odd_on_basis
-            return self.parent().sum_of_terms((i, c)
-                                              for (i, c) in self
-                                              if even_odd(i) == 1)
+            return self.parent().sum_of_terms(
+                (i, c) for (i, c) in self if even_odd(i) == 1
+            )

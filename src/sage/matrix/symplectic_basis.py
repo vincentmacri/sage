@@ -99,42 +99,42 @@ def _inplace_move_to_positive_pivot(G, row, col, B, pivot):
     """
     v = G[row, col]
 
-    if (row, col) == (pivot, pivot+1):
+    if (row, col) == (pivot, pivot + 1):
         pass
-    elif (row, col) == (pivot+1, pivot):
-        B.swap_rows(pivot, pivot+1)
-        G.swap_rows(pivot, pivot+1)
-        G.swap_columns(pivot, pivot+1)
-    elif row != pivot and row != pivot+1 and col != pivot and col != pivot+1:
+    elif (row, col) == (pivot + 1, pivot):
+        B.swap_rows(pivot, pivot + 1)
+        G.swap_rows(pivot, pivot + 1)
+        G.swap_columns(pivot, pivot + 1)
+    elif row != pivot and row != pivot + 1 and col != pivot and col != pivot + 1:
         B.swap_rows(pivot, row)
-        B.swap_rows(pivot+1, col)
+        B.swap_rows(pivot + 1, col)
 
         G.swap_rows(pivot, row)
-        G.swap_rows(pivot+1, col)
+        G.swap_rows(pivot + 1, col)
         G.swap_columns(pivot, row)
-        G.swap_columns(pivot+1, col)
+        G.swap_columns(pivot + 1, col)
     elif row == pivot:
-        B.swap_rows(pivot+1, col)
-        G.swap_rows(pivot+1, col)
-        G.swap_columns(pivot+1, col)
-    elif row == pivot+1:
+        B.swap_rows(pivot + 1, col)
+        G.swap_rows(pivot + 1, col)
+        G.swap_columns(pivot + 1, col)
+    elif row == pivot + 1:
         B.swap_rows(pivot, col)
         G.swap_rows(pivot, col)
         G.swap_columns(pivot, col)
     elif col == pivot:
-        B.swap_rows(pivot+1, row)
-        G.swap_rows(pivot+1, row)
-        G.swap_columns(pivot+1, row)
-    elif col == pivot+1:
+        B.swap_rows(pivot + 1, row)
+        G.swap_rows(pivot + 1, row)
+        G.swap_columns(pivot + 1, row)
+    elif col == pivot + 1:
         B.swap_rows(pivot, row)
         G.swap_rows(pivot, row)
         G.swap_columns(pivot, row)
 
     # all that swapping can switch the sign of a row
-    if G[pivot, pivot+1] != v:
-        B.swap_rows(pivot, pivot+1)
-        G.swap_rows(pivot, pivot+1)
-        G.swap_columns(pivot, pivot+1)
+    if G[pivot, pivot + 1] != v:
+        B.swap_rows(pivot, pivot + 1)
+        G.swap_rows(pivot, pivot + 1)
+        G.swap_columns(pivot, pivot + 1)
 
 
 def symplectic_basis_over_field(M):
@@ -307,22 +307,22 @@ def symplectic_basis_over_field(M):
         _inplace_move_to_positive_pivot(E, pivot, found_i, B, pivot)
 
         # scale row and col
-        v = ZZ(1)/E[pivot, pivot+1]
+        v = ZZ(1) / E[pivot, pivot + 1]
         E.rescale_row(pivot, v)
         E.rescale_col(pivot, v)
         B.rescale_row(pivot, v)
 
         # use nonzero element to clean row pivot
-        for i in range(pivot+2, n):
-            v = - E[i, pivot] / E[pivot+1, pivot]
+        for i in range(pivot + 2, n):
+            v = -E[i, pivot] / E[pivot + 1, pivot]
             if v != 0:
-                E.add_multiple_of_row(i, pivot+1, v)
-                E.add_multiple_of_column(i, pivot+1, v)
-                B.add_multiple_of_row(i, pivot+1, v)
+                E.add_multiple_of_row(i, pivot + 1, v)
+                E.add_multiple_of_column(i, pivot + 1, v)
+                B.add_multiple_of_row(i, pivot + 1, v)
 
         # use nonzero element to clean row pivot+1
-        for i in range(pivot+2, n):
-            v = - E[i, pivot+1] / E[pivot, pivot+1]
+        for i in range(pivot + 2, n):
+            v = -E[i, pivot + 1] / E[pivot, pivot + 1]
             if v != 0:
                 E.add_multiple_of_row(i, pivot, v)
                 E.add_multiple_of_column(i, pivot, v)
@@ -330,7 +330,7 @@ def symplectic_basis_over_field(M):
 
         # record for basis reconstruction
         es.append(pivot)
-        fs.append(pivot+1)
+        fs.append(pivot + 1)
         pivot += 2
 
     C = B.matrix_from_rows(es + fs + zeroes)
@@ -508,19 +508,19 @@ def symplectic_basis_over_ZZ(M):
 
         # use nonzero element to clean row pivot
         all_zero = True
-        u = E[pivot+1, pivot]
-        for i in range(pivot+2, n):
+        u = E[pivot + 1, pivot]
+        for i in range(pivot + 2, n):
             v, r = (-E[i, pivot]).quo_rem(u)
             if v != 0:
                 all_zero = False
-                E.add_multiple_of_row(i, pivot+1, v)
-                E.add_multiple_of_column(i, pivot+1, v)
-                B.add_multiple_of_row(i, pivot+1, v)
+                E.add_multiple_of_row(i, pivot + 1, v)
+                E.add_multiple_of_column(i, pivot + 1, v)
+                B.add_multiple_of_row(i, pivot + 1, v)
 
         # use nonzero element to clean row pivot+1
-        u = E[pivot, pivot+1]
-        for i in range(pivot+2, n):
-            v, r = (-E[i, pivot+1]).quo_rem(u)
+        u = E[pivot, pivot + 1]
+        for i in range(pivot + 2, n):
+            v, r = (-E[i, pivot + 1]).quo_rem(u)
             if v != 0:
                 all_zero = False
                 E.add_multiple_of_row(i, pivot, v)
@@ -529,7 +529,7 @@ def symplectic_basis_over_ZZ(M):
 
         if all_zero:
             # record for basis reconstruction
-            ps.append((E[pivot, pivot+1], pivot))
+            ps.append((E[pivot, pivot + 1], pivot))
             pivot += 2
 
     ps.sort()

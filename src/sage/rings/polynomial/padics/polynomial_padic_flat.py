@@ -8,7 +8,10 @@
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
-from sage.rings.polynomial.polynomial_element import Polynomial_generic_dense, Polynomial
+from sage.rings.polynomial.polynomial_element import (
+    Polynomial_generic_dense,
+    Polynomial,
+)
 from sage.rings.polynomial.padics.polynomial_padic import Polynomial_padic
 from sage.rings.infinity import infinity
 from cypari2.gen import Gen as pari_gen
@@ -16,7 +19,9 @@ import sage.rings.padics.misc
 
 
 class Polynomial_padic_flat(Polynomial_generic_dense, Polynomial_padic):
-    def __init__(self, parent, x=None, check=True, is_gen=False, construct=False, absprec=None):
+    def __init__(
+        self, parent, x=None, check=True, is_gen=False, construct=False, absprec=None
+    ):
         """
         TESTS:
 
@@ -55,8 +60,9 @@ class Polynomial_padic_flat(Polynomial_generic_dense, Polynomial_padic):
                     m = min(m, v[i].precision_absolute())
                 x = v
             else:
-                m = sage.rings.padics.misc.min(a.precision_absolute()
-                                               for a in x.values())
+                m = sage.rings.padics.misc.min(
+                    a.precision_absolute() for a in x.values()
+                )
             if absprec is not None:
                 m = min(m, absprec)
             Polynomial_generic_dense.__init__(self, parent, x, absprec=m)

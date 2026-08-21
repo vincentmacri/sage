@@ -20,6 +20,7 @@ from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
 from sage.rings.polynomial.polynomial_ring import polygen
 from sage.structure.element import parent
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.symbolic.ring', 'SymbolicRing')
 
 
@@ -80,7 +81,7 @@ def q_int(n, q=None):
         return parent(q)(0)
     if n > 0:
         return sum(q**i for i in range(n))
-    return -q**n * sum(q**i for i in range(-n))
+    return -(q**n) * sum(q**i for i in range(-n))
 
 
 def q_factorial(n, q=None):
@@ -337,10 +338,13 @@ def q_binomial(n, k, q=None, algorithm='auto'):
             q = LaurentPolynomialRing(ZZ, 'q').gen()
     else:
         from sage.rings.polynomial.polynomial_element import Polynomial
+
         is_polynomial = isinstance(q, Polynomial)
 
     if n < 0:
-        return (-1)**k * q**(k * n - (k * k - k) // 2) * q_binomial(-n + k - 1, k, q=q)
+        return (
+            (-1) ** k * q ** (k * n - (k * k - k) // 2) * q_binomial(-n + k - 1, k, q=q)
+        )
 
     k = min(n - k, k)  # Pick the smallest k
 
@@ -383,9 +387,12 @@ def q_binomial(n, k, q=None, algorithm='auto'):
                 return q_binomial(n, k)(q)
     if algorithm == 'cyclotomic':
         from sage.rings.polynomial.cyclotomic import cyclotomic_value
-        return prod(cyclotomic_value(d, q)
-                    for d in range(2, n + 1)
-                    if (n//d) != (k//d) + ((n-k)//d))
+
+        return prod(
+            cyclotomic_value(d, q)
+            for d in range(2, n + 1)
+            if (n // d) != (k // d) + ((n - k) // d)
+        )
     raise ValueError("unknown algorithm {!r}".format(algorithm))
 
 
@@ -456,7 +463,9 @@ def q_multinomial(seq, q=None, binomial_algorithm='auto'):
     partial_sum = 0
     for elem in seq:
         partial_sum += elem
-        binomials.append(q_binomial(partial_sum, elem, q=q, algorithm=binomial_algorithm))
+        binomials.append(
+            q_binomial(partial_sum, elem, q=q, algorithm=binomial_algorithm)
+        )
     return prod(binomials)
 
 
@@ -511,10 +520,9 @@ def q_catalan_number(n, q=None, m=1):
         if n in {0, 1}:
             return q_int(1, q)
         if n >= 2:
-            return (prod(q_int(j, q)
-                         for j in range(m * n + 2, (m + 1) * n + 1)) //
-                    prod(q_int(j, q)
-                         for j in range(2, n + 1)))
+            return prod(q_int(j, q) for j in range(m * n + 2, (m + 1) * n + 1)) // prod(
+                q_int(j, q) for j in range(2, n + 1)
+            )
     raise ValueError(f"argument ({n}) must be a nonnegative integer")
 
 
@@ -619,8 +627,8 @@ def q_pochhammer(n, a, q=None):
     R = parent(q)
     one = R(1)
     if n < 0:
-        return R.prod(one / (one - a/q**k) for k in range(1, -n+1))
-    return R.prod((one - a*q**k) for k in range(n))
+        return R.prod(one / (one - a / q**k) for k in range(1, -n + 1))
+    return R.prod((one - a * q**k) for k in range(n))
 
 
 @cached_function(key=lambda t, q: (_Partitions(t), q))
@@ -842,17 +850,21 @@ def q_subgroups_of_abelian_group(la, mu, q=None, algorithm='birkhoff'):
         return parent(q)(0)
 
     if algorithm == 'delsarte':
-        def F(args):
-            prd = lambda j: prod(args[j]-q**i for i in range(mu_c[j+1], mu_c[j]))
-            F1 = prod(args[i]**mu_c[i+1] * prd(i) for i in range(k-1))
-            return F1 * prod(args[k-1]-q**i for i in range(mu_c[k-1]))
 
-        return F([q**ss for ss in la_c[:k]])//F([q**rr for rr in mu_c])
+        def F(args):
+            prd = lambda j: prod(args[j] - q**i for i in range(mu_c[j + 1], mu_c[j]))
+            F1 = prod(args[i] ** mu_c[i + 1] * prd(i) for i in range(k - 1))
+            return F1 * prod(args[k - 1] - q**i for i in range(mu_c[k - 1]))
+
+        return F([q**ss for ss in la_c[:k]]) // F([q**rr for rr in mu_c])
 
     if algorithm == 'birkhoff':
-        fac1 = q**(sum(mu_c[i+1] * (la_c[i]-mu_c[i]) for i in range(k-1)))
-        fac2 = prod(q_binomial(la_c[i]-mu_c[i+1], mu_c[i]-mu_c[i+1], q=q) for i in range(k-1))
-        fac3 = q_binomial(la_c[k-1], mu_c[k-1], q=q)
+        fac1 = q ** (sum(mu_c[i + 1] * (la_c[i] - mu_c[i]) for i in range(k - 1)))
+        fac2 = prod(
+            q_binomial(la_c[i] - mu_c[i + 1], mu_c[i] - mu_c[i + 1], q=q)
+            for i in range(k - 1)
+        )
+        fac3 = q_binomial(la_c[k - 1], mu_c[k - 1], q=q)
 
         return prod([fac1, fac2, fac3])
 
@@ -921,8 +933,9 @@ def q_stirling_number1(n, k, q=None):
         return parent(q)(1)
     if k > n or k < 1:
         return parent(q)(0)
-    return (q_stirling_number1(n - 1, k - 1, q=q) +
-            q_int(n - 1, q=q) * q_stirling_number1(n - 1, k, q=q))
+    return q_stirling_number1(n - 1, k - 1, q=q) + q_int(
+        n - 1, q=q
+    ) * q_stirling_number1(n - 1, k, q=q)
 
 
 @cached_function
@@ -983,8 +996,9 @@ def q_stirling_number2(n, k, q=None):
         return parent(q)(1)
     if k > n or k <= 0:
         return parent(q)(0)
-    return (q**(k-1)*q_stirling_number2(n - 1, k - 1, q=q) +
-            q_int(k, q=q) * q_stirling_number2(n - 1, k, q=q))
+    return q ** (k - 1) * q_stirling_number2(n - 1, k - 1, q=q) + q_int(
+        k, q=q
+    ) * q_stirling_number2(n - 1, k, q=q)
 
 
 def number_of_irreducible_polynomials(n, q=None, m=1):
@@ -1047,11 +1061,15 @@ def number_of_irreducible_polynomials(n, q=None, m=1):
 
     if q is None:
         from sage.rings.rational_field import QQ
-        q = QQ['q'].gen()  # we produce an integer-valued polynomial in q, but it does not necessarily have integer coefficients
+
+        q = QQ[
+            'q'
+        ].gen()  # we produce an integer-valued polynomial in q, but it does not necessarily have integer coefficients
 
     if m == 1:
         from sage.arith.misc import moebius
-        r = sum((moebius(n//d) * q**d for d in n.divisors()), parent(q).zero())
+
+        r = sum((moebius(n // d) * q**d for d in n.divisors()), parent(q).zero())
         return r // n
 
     from sage.functions.other import binomial
@@ -1063,13 +1081,15 @@ def number_of_irreducible_polynomials(n, q=None, m=1):
         given the numbers of irreducible polynomials up to degree `d-1`.
         """
         res = 0
-        for p in Partitions(d+1, max_part=d):
-            res += prod(binomial(r+t-1, t) for r, t in zip(irreducible, p.to_exp(d)))
+        for p in Partitions(d + 1, max_part=d):
+            res += prod(
+                binomial(r + t - 1, t) for r, t in zip(irreducible, p.to_exp(d))
+            )
         return res
 
     r = []
     for d in range(n):
-        monic = (q**binomial(d + m, m - 1) - 1) * q**binomial(d + m, m) // (q - 1)
+        monic = (q ** binomial(d + m, m - 1) - 1) * q ** binomial(d + m, m) // (q - 1)
         reducible = monic_reducible(r, d)
         r.append(monic - reducible)
 

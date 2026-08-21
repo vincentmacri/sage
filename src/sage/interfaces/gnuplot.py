@@ -26,6 +26,7 @@ class Gnuplot(SageObject):
     """
     Interface to the Gnuplot interpreter.
     """
+
     def _quit_string(self):
         return 'quit'
 
@@ -35,6 +36,7 @@ class Gnuplot(SageObject):
         except AttributeError:
             try:
                 import Gnuplot as GP
+
                 self._gnuplot = GP.Gnuplot()
                 return self._gnuplot
             except ImportError:
@@ -100,10 +102,22 @@ class Gnuplot(SageObject):
             time.sleep(0.1)
         self('set terminal x11')
 
-    def plot3d(self, f, xmin=-1, xmax=1, ymin=-1, ymax=1, zmin=-1, zmax=1,
-               title=None,
-               samples=25, isosamples=20, xlabel='x', ylabel='y',
-               interact=True):
+    def plot3d(
+        self,
+        f,
+        xmin=-1,
+        xmax=1,
+        ymin=-1,
+        ymax=1,
+        zmin=-1,
+        zmax=1,
+        title=None,
+        samples=25,
+        isosamples=20,
+        xlabel='x',
+        ylabel='y',
+        interact=True,
+    ):
         if title is None:
             title = str(f)
         f = f.replace('^', '**')
@@ -122,19 +136,32 @@ class Gnuplot(SageObject):
         #show pm3d
         #show palette
         splot %s
-        """ % (xlabel, ylabel,
-             xmin, xmax, ymin, ymax,  # zmin, zmax,
-             samples, isosamples,
-             title, f)
+        """ % (
+            xlabel,
+            ylabel,
+            xmin,
+            xmax,
+            ymin,
+            ymax,  # zmin, zmax,
+            samples,
+            isosamples,
+            title,
+            f,
+        )
         if interact:
             self.interact(cmd)
         else:
             self(cmd)
 
-    def plot3d_parametric(self, f='cos(u)*(3 + v*cos(u/2)), sin(u)*(3 + v*cos(u/2)), v*sin(u/2)',
-                          range1='[u=-pi:pi]',
-                          range2='[v=-0.2:0.2]', samples=50, title=None,
-                          interact=True):
+    def plot3d_parametric(
+        self,
+        f='cos(u)*(3 + v*cos(u/2)), sin(u)*(3 + v*cos(u/2)), v*sin(u/2)',
+        range1='[u=-pi:pi]',
+        range2='[v=-0.2:0.2]',
+        samples=50,
+        title=None,
+        interact=True,
+    ):
         r"""
         Draw a parametric 3d surface and rotate it interactively.
 
@@ -176,8 +203,12 @@ class Gnuplot(SageObject):
 
     def interact(self, cmd):
         import tempfile
+
         with tempfile.NamedTemporaryFile(mode='w+t') as f:
-            f.write(cmd + '\n pause -1 "Press return to continue (no further rotation possible)"')
+            f.write(
+                cmd
+                + '\n pause -1 "Press return to continue (no further rotation possible)"'
+            )
             os.system(f'gnuplot -persist {f.name}')
 
     def console(self):
@@ -190,6 +221,9 @@ gnuplot = Gnuplot()
 
 def gnuplot_console():
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%gnuplot magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%gnuplot magics instead.'
+        )
     os.system('gnuplot')

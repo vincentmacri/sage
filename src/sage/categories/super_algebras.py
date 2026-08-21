@@ -40,6 +40,7 @@ class SuperAlgebras(SuperModulesCategory):
 
         sage: TestSuite(Algebras(ZZ).Super()).run()
     """
+
     def extra_super_categories(self):
         """
         EXAMPLES::
@@ -50,8 +51,9 @@ class SuperAlgebras(SuperModulesCategory):
         """
         return [self.base_category().Graded()]
 
-    Supercommutative = LazyImport('sage.categories.supercommutative_algebras',
-                                  'SupercommutativeAlgebras')
+    Supercommutative = LazyImport(
+        'sage.categories.supercommutative_algebras', 'SupercommutativeAlgebras'
+    )
 
     class ParentMethods:
         def graded_algebra(self):

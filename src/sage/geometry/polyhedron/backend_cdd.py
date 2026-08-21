@@ -13,7 +13,6 @@ The cdd backend for polyhedral computations
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from subprocess import Popen, PIPE
 from sage.rings.integer_ring import ZZ
 from sage.matrix.constructor import matrix
@@ -27,6 +26,7 @@ class Polyhedron_cdd(Polyhedron_base):
     r"""
     Base class for the cdd backend.
     """
+
     def _init_from_Vrepresentation(self, vertices, rays, lines, verbose=False):
         """
         Construct polyhedron from V-representation data.
@@ -56,6 +56,7 @@ class Polyhedron_cdd(Polyhedron_base):
             convex hull of 1 vertex, 1 ray, 1 line
         """
         from .cdd_file_format import cdd_Vrepresentation
+
         s = cdd_Vrepresentation(self._cdd_type, vertices, rays, lines)
         s = self._run_cdd(s, '--redcheck', verbose=verbose)
         s = self._run_cdd(s, '--repall', verbose=verbose)
@@ -64,7 +65,7 @@ class Polyhedron_cdd(Polyhedron_base):
             # cdd's parser cannot handle the full output of --repall, so we
             # need to extract the first block before we feed it back into cdd
             s = s.splitlines()
-            s = s[:s.index('end')+1]
+            s = s[: s.index('end') + 1]
             s = '\n'.join(s)
             t = self._run_cdd(s, '--rep', verbose=verbose)
 
@@ -80,7 +81,11 @@ class Polyhedron_cdd(Polyhedron_base):
                     # expert in that field by any means.) See also
                     # https://github.com/cddlib/cddlib/pull/7.
                     from warnings import warn
-                    warn("This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies.")
+
+                    warn(
+                        "This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies."
+                    )
+
             Polyhedron_cdd._parse_block(t.splitlines(), 'V-representation', parse)
 
     def _init_from_Hrepresentation(self, ieqs, eqns, verbose=False):
@@ -116,6 +121,7 @@ class Polyhedron_cdd(Polyhedron_base):
             A 5-dimensional polyhedron in QQ^5 defined as the convex hull of 1 vertex and 5 lines
         """
         from .cdd_file_format import cdd_Hrepresentation
+
         # We have to add a trivial inequality, in case the polyhedron is the universe.
         ieqs = tuple(ieqs) + ((1,) + tuple(0 for _ in range(self.ambient_dim())),)
         s = cdd_Hrepresentation(self._cdd_type, ieqs, eqns)
@@ -130,13 +136,19 @@ class Polyhedron_cdd(Polyhedron_base):
             # cdd's parser cannot handle the full output of --repall, so we
             # need to extract the first block before we feed it back into cdd
             s = s.splitlines()
-            s = s[:s.index('end')+1]
+            s = s[: s.index('end') + 1]
             s = '\n'.join(s)
             t = self._run_cdd(s, '--rep', verbose=verbose)
 
             def parse(intro, data):
                 count = int(data[0][0])
-                infinite_count = len([d for d in data[1:] if d[0] == '1' and all(c == '0' for c in d[1:])])
+                infinite_count = len(
+                    [
+                        d
+                        for d in data[1:]
+                        if d[0] == '1' and all(c == '0' for c in d[1:])
+                    ]
+                )
                 if count - infinite_count != len(self._Hrepresentation):
                     # Upstream claims that nothing can be done about these
                     # cases/that they are features not bugs. Imho, cddlib is
@@ -146,7 +158,11 @@ class Polyhedron_cdd(Polyhedron_base):
                     # somewhat random numerical choices. (But I am not an
                     # expert in that field by any means.)
                     from warnings import warn
-                    warn("This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies.")
+
+                    warn(
+                        "This polyhedron data is numerically complicated; cdd could not convert between the inexact V and H representation without loss of data. The resulting object might show inconsistencies."
+                    )
+
             Polyhedron_cdd._parse_block(t.splitlines(), 'H-representation', parse)
 
     def _run_cdd(self, cdd_input_string, cmdline_arg, verbose=False):
@@ -154,9 +170,13 @@ class Polyhedron_cdd(Polyhedron_base):
             print('---- CDD input -----')
             print(cdd_input_string)
 
-        cdd_proc = Popen([CddExecutable(self._cdd_executable).absolute_filename(), cmdline_arg],
-                         stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                         encoding='latin-1')
+        cdd_proc = Popen(
+            [CddExecutable(self._cdd_executable).absolute_filename(), cmdline_arg],
+            stdin=PIPE,
+            stdout=PIPE,
+            stderr=PIPE,
+            encoding='latin-1',
+        )
         ans, err = cdd_proc.communicate(input=cdd_input_string)
 
         if verbose:
@@ -195,14 +215,14 @@ class Polyhedron_cdd(Polyhedron_base):
             DATA: [['data', '0', '1', '2'], ['data', '3', '4', '5']]
         """
         try:
-            block = cddout[cddout.index(header)+1:]
+            block = cddout[cddout.index(header) + 1 :]
         except ValueError:
             # section is missing in the cdd output
             return
 
-        intro = block[:block.index('begin')]
+        intro = block[: block.index('begin')]
         intro = [i.strip().split() for i in intro]
-        data = block[block.index('begin')+1:block.index('end')]
+        data = block[block.index('begin') + 1 : block.index('end')]
         data = [d.strip().split() for d in data]
         parser(intro, data)
 
@@ -258,14 +278,22 @@ class Polyhedron_cdd(Polyhedron_base):
         def parse_indices(count, cdd_indices, cdd_indices_to_sage_indices=None):
             cdd_indices = [int(x) for x in cdd_indices]
             if cdd_indices_to_sage_indices is None:
-                cdd_indices_to_sage_indices = {i: i-1 for i in cdd_indices}
+                cdd_indices_to_sage_indices = {i: i - 1 for i in cdd_indices}
             if count < 0:
-                assert cdd_indices_to_sage_indices is not None, "Did not expect negative counts here"
+                assert cdd_indices_to_sage_indices is not None, (
+                    "Did not expect negative counts here"
+                )
                 count = -count
-                cdd_indices = list(set(cdd_indices_to_sage_indices.keys()) - set(cdd_indices))
+                cdd_indices = list(
+                    set(cdd_indices_to_sage_indices.keys()) - set(cdd_indices)
+                )
                 assert count in [len(cdd_indices), len(cdd_indices) - 1]
             assert count == len(cdd_indices)
-            return [cdd_indices_to_sage_indices[i] for i in cdd_indices if cdd_indices_to_sage_indices[i] is not None]
+            return [
+                cdd_indices_to_sage_indices[i]
+                for i in cdd_indices
+                if cdd_indices_to_sage_indices[i] is not None
+            ]
 
         def parse_linearities(intro):
             for entries in intro:
@@ -275,7 +303,9 @@ class Polyhedron_cdd(Polyhedron_base):
 
         def parse_H_representation(intro, data):
             if '_Hrepresentation' in self.__dict__:
-                raise NotImplementedError("cannot replace internal representation as this breaks caching")
+                raise NotImplementedError(
+                    "cannot replace internal representation as this breaks caching"
+                )
             self._Hrepresentation = []
             # we drop some entries in cdd's output and this changes the numbering; this dict keeps track of that
             self._cdd_H_to_sage_H = {}
@@ -286,19 +316,20 @@ class Polyhedron_cdd(Polyhedron_base):
             assert len(data) == count, "Unexpected number of lines"
             R = self.base_ring()
             from itertools import chain
+
             # We add equations to the end of the Hrepresentation.
             for i in chain(
-                    (j for j in range(len(data)) if j not in equations),
-                    equations):
+                (j for j in range(len(data)) if j not in equations), equations
+            ):
                 line = data[i]
                 coefficients = [R(x) for x in line]
                 if coefficients[0] != 0 and all(e == 0 for e in coefficients[1:]):
                     # cddlib sometimes includes an implicit plane at infinity: 1 0 0 ... 0
                     # We do not care about this entry.
-                    self._cdd_H_to_sage_H[i+1] = None
+                    self._cdd_H_to_sage_H[i + 1] = None
                     continue
 
-                self._cdd_H_to_sage_H[i+1] = len(self._Hrepresentation)
+                self._cdd_H_to_sage_H[i + 1] = len(self._Hrepresentation)
                 if i in equations:
                     self.parent()._make_Equation(self, coefficients)
                 else:
@@ -308,7 +339,9 @@ class Polyhedron_cdd(Polyhedron_base):
 
         def parse_V_representation(intro, data):
             if '_Vrepresentation' in self.__dict__:
-                raise NotImplementedError("cannot replace internal representation as this breaks caching")
+                raise NotImplementedError(
+                    "cannot replace internal representation as this breaks caching"
+                )
             self._Vrepresentation = []
             # we drop some entries in cdd's output and this changes the numbering; this dict keeps track of that
             self._cdd_V_to_sage_V = {}
@@ -321,7 +354,7 @@ class Polyhedron_cdd(Polyhedron_base):
             for i, line in enumerate(data):
                 kind = line.pop(0)
                 coefficients = map(self.base_ring(), line)
-                self._cdd_V_to_sage_V[i+1] = len(self._Vrepresentation)
+                self._cdd_V_to_sage_V[i + 1] = len(self._Vrepresentation)
                 if i in lines:
                     self.parent()._make_Line(self, coefficients)
                 elif kind == '0':
@@ -334,10 +367,19 @@ class Polyhedron_cdd(Polyhedron_base):
                 # origin, cddlib does not output the single vertex at the
                 # origin so we have to add it here as the Polyhedron class
                 # expects it to be there.
-                self.parent()._make_Vertex(self, [self.base_ring().zero()] * self.ambient_dim())
+                self.parent()._make_Vertex(
+                    self, [self.base_ring().zero()] * self.ambient_dim()
+                )
             self._Vrepresentation = tuple(self._Vrepresentation)
 
-        def parse_adjacency(intro, data, M, N, cdd_indices_to_sage_indices, cdd_indices_to_sage_indices2=None):
+        def parse_adjacency(
+            intro,
+            data,
+            M,
+            N,
+            cdd_indices_to_sage_indices,
+            cdd_indices_to_sage_indices2=None,
+        ):
             # This function is also used to parse the incidence matrix.
             if cdd_indices_to_sage_indices2 is None:
                 cdd_indices_to_sage_indices2 = cdd_indices_to_sage_indices
@@ -358,7 +400,9 @@ class Polyhedron_cdd(Polyhedron_base):
                 v = cdd_indices_to_sage_indices[cdd_vertex]
                 if v is None:
                     continue
-                for w in parse_indices(count, adjacencies[3:], cdd_indices_to_sage_indices2):
+                for w in parse_indices(
+                    count, adjacencies[3:], cdd_indices_to_sage_indices2
+                ):
                     if w is None:
                         continue
                     ret[v, w] = 1
@@ -366,34 +410,46 @@ class Polyhedron_cdd(Polyhedron_base):
 
         def parse_vertex_adjacency(intro, data):
             if '_V_adjacency_matrix' in self.__dict__:
-                raise NotImplementedError("cannot replace internal representation as this breaks caching")
+                raise NotImplementedError(
+                    "cannot replace internal representation as this breaks caching"
+                )
             N = len(self._Vrepresentation)
-            self._V_adjacency_matrix = parse_adjacency(intro, data, N, N, self._cdd_V_to_sage_V)
+            self._V_adjacency_matrix = parse_adjacency(
+                intro, data, N, N, self._cdd_V_to_sage_V
+            )
             for i, v in enumerate(self._Vrepresentation):
                 # cdd reports that lines are never adjacent to anything.
                 # we disagree, they are adjacent to everything.
                 if v.is_line():
                     for j in range(len(self._Vrepresentation)):
-                        self._V_adjacency_matrix[i ,j] = 1
+                        self._V_adjacency_matrix[i, j] = 1
                         self._V_adjacency_matrix[j, i] = 1
-                self._V_adjacency_matrix[i,i] = 0
+                self._V_adjacency_matrix[i, i] = 0
             self._V_adjacency_matrix.set_immutable()
             self.vertex_adjacency_matrix.set_cache(self._V_adjacency_matrix)
 
         def parse_facet_adjacency(intro, data):
             if '_H_adjacency_matrix' in self.__dict__:
-                raise NotImplementedError("cannot replace internal representation as this breaks caching")
+                raise NotImplementedError(
+                    "cannot replace internal representation as this breaks caching"
+                )
             N = len(self._Hrepresentation)
-            self._H_adjacency_matrix = parse_adjacency(intro, data, N, N, self._cdd_H_to_sage_H)
+            self._H_adjacency_matrix = parse_adjacency(
+                intro, data, N, N, self._cdd_H_to_sage_H
+            )
             self._H_adjacency_matrix.set_immutable()
             self.facet_adjacency_matrix.set_cache(self._H_adjacency_matrix)
 
         def parse_incidence_matrix(intro, data):
             if 'incidence_matrix' in self.__dict__:
-                raise NotImplementedError("cannot replace internal representation as this breaks caching")
+                raise NotImplementedError(
+                    "cannot replace internal representation as this breaks caching"
+                )
             N = len(self._Hrepresentation)
             M = len(self._Vrepresentation)
-            inc_mat = parse_adjacency(intro, data, M, N, self._cdd_V_to_sage_V, self._cdd_H_to_sage_H)
+            inc_mat = parse_adjacency(
+                intro, data, M, N, self._cdd_V_to_sage_V, self._cdd_H_to_sage_H
+            )
             inc_mat.set_immutable()
             self.incidence_matrix.set_cache(inc_mat)
 

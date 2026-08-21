@@ -1,4 +1,3 @@
-
 import sage.libs.ntl.all as ntl
 
 from sage.libs.pari.all import pari, pari_gen, PariError
@@ -6,6 +5,7 @@ from sage.libs.pari.all import pari, pari_gen, PariError
 import sage.libs.symmetrica.all as symmetrica
 
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.libs.gap.libgap', 'libgap')
 
 lazy_import('sage.libs.eclib.constructor', 'CremonaModularSymbols')

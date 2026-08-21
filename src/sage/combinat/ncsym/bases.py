@@ -78,10 +78,15 @@ class NCSymOrNCSymDualBases(Category_realization_of_parent):
               and Category of graded coalgebras over Rational Field]
         """
         R = self.base().base_ring()
-        from sage.categories.graded_hopf_algebras_with_basis import GradedHopfAlgebrasWithBasis
-        return [self.base().Realizations(),
-                GradedHopfAlgebrasWithBasis(R),
-                GradedHopfAlgebras(R).Realizations()]
+        from sage.categories.graded_hopf_algebras_with_basis import (
+            GradedHopfAlgebrasWithBasis,
+        )
+
+        return [
+            self.base().Realizations(),
+            GradedHopfAlgebrasWithBasis(R),
+            GradedHopfAlgebras(R).Realizations(),
+        ]
 
     def _repr_(self):
         r"""
@@ -94,7 +99,9 @@ class NCSymOrNCSymDualBases(Category_realization_of_parent):
             sage: NCSymOrNCSymDualBases(NCSym)
             Category of bases of NCSym or NCSym^* over the Rational Field
         """
-        return "Category of bases of NCSym or NCSym^* over the {}".format(self.base().base_ring())
+        return "Category of bases of NCSym or NCSym^* over the {}".format(
+            self.base().base_ring()
+        )
 
     class ParentMethods:
         def _repr_(self):
@@ -113,7 +120,9 @@ class NCSymOrNCSymDualBases(Category_realization_of_parent):
                  of Univariate Polynomial Ring in q over Rational Field in the
                  deformed_coarse_powersum basis with parameter q
             """
-            str = "{} in the {} basis".format(self.realization_of(), self._realization_name())
+            str = "{} in the {} basis".format(
+                self.realization_of(), self._realization_name()
+            )
             if hasattr(self, '_q'):
                 str += " with parameter q"
                 if repr(self._q) != 'q':
@@ -296,11 +305,18 @@ class NCSymOrNCSymDualBases(Category_realization_of_parent):
                 [1]
             """
             from sage.matrix.constructor import matrix
+
             # TODO: generalize to keys indexing the basis of the graded component
-            return matrix(self.base_ring(),
-                    [[self.duality_pairing(self[I], basis[J])
-                      for J in SetPartitions(degree)]
-                     for I in SetPartitions(degree)])
+            return matrix(
+                self.base_ring(),
+                [
+                    [
+                        self.duality_pairing(self[I], basis[J])
+                        for J in SetPartitions(degree)
+                    ]
+                    for I in SetPartitions(degree)
+                ],
+            )
 
     class ElementMethods:
         def duality_pairing(self, other):
@@ -365,8 +381,10 @@ class NCSymBases(Category_realization_of_parent):
             sage: NCSymBases(NCSym)
             Category of bases of symmetric functions in non-commuting variables over the Rational Field
         """
-        return "Category of bases of symmetric functions in non-commuting"\
-               " variables over the {}".format(self.base().base_ring())
+        return (
+            "Category of bases of symmetric functions in non-commuting"
+            " variables over the {}".format(self.base().base_ring())
+        )
 
     class ParentMethods:
         def from_symmetric_function(self, f):
@@ -489,8 +507,9 @@ class NCSymBases(Category_realization_of_parent):
                  + cp{{1, 3}, {2}} # cp{{1, 3}, {2}}
             """
             if self.internal_coproduct_on_basis is not NotImplemented:
-                return Hom(self, tensor([self, self]),
-                           ModulesWithBasis(self.base_ring()))(on_basis=self.internal_coproduct_on_basis)
+                return Hom(
+                    self, tensor([self, self]), ModulesWithBasis(self.base_ring())
+                )(on_basis=self.internal_coproduct_on_basis)
             if hasattr(self, "internal_coproduct_by_coercion"):
                 return self.internal_coproduct_by_coercion
 
@@ -512,8 +531,10 @@ class NCSymBases(Category_realization_of_parent):
                  - h{{1, 3}, {2}} # h{{1}, {2}, {3}} + h{{1, 3}, {2}} # h{{1, 3}, {2}}
             """
             R = self.realization_of().a_realization()
-            return self.tensor_square().sum(coeff * tensor([self(R[A]), self(R[B])])
-                                            for ((A, B), coeff) in R(x).internal_coproduct())
+            return self.tensor_square().sum(
+                coeff * tensor([self(R[A]), self(R[B])])
+                for ((A, B), coeff) in R(x).internal_coproduct()
+            )
 
     class ElementMethods:
         def expand(self, n, alphabet='x'):
@@ -636,19 +657,24 @@ class NCSymBases(Category_realization_of_parent):
             R = parent.base_ring()
             m = NCSym.monomial()
             from sage.combinat.chas.wqsym import WordQuasiSymmetricFunctions
+
             M = WordQuasiSymmetricFunctions(R).M()
             from itertools import permutations
+
             OSP = M.basis().keys()
 
             def to_wqsym_on_m_basis(A):
                 # Return the image of `\mathbf{m}_A` under the inclusion
                 # map `NCSym \to WQSym`.
                 l = len(A)
-                return M.sum_of_terms(((OSP([A[ui] for ui in u]), 1)
-                                       for u in permutations(range(l))),
-                                      distinct=True)
-            return M.linear_combination((to_wqsym_on_m_basis(A), coeff)
-                                        for A, coeff in m(self))
+                return M.sum_of_terms(
+                    ((OSP([A[ui] for ui in u]), 1) for u in permutations(range(l))),
+                    distinct=True,
+                )
+
+            return M.linear_combination(
+                (to_wqsym_on_m_basis(A), coeff) for A, coeff in m(self)
+            )
 
         def internal_coproduct(self):
             r"""
@@ -752,8 +778,10 @@ class MultiplicativeNCSymBases(Category_realization_of_parent):
             sage: MultiplicativeNCSymBases(NCSym)
             Category of multiplicative bases of symmetric functions in non-commuting variables over the Rational Field
         """
-        return "Category of multiplicative bases of symmetric functions in non-commuting"\
-               " variables over the {}".format(self.base().base_ring())
+        return (
+            "Category of multiplicative bases of symmetric functions in non-commuting"
+            " variables over the {}".format(self.base().base_ring())
+        )
 
     class ParentMethods:
         def product_on_basis(self, A, B):
@@ -853,5 +881,7 @@ class NCSymDualBases(Category_realization_of_parent):
             sage: NCSymDualBases(DNCSym)
             Category of bases of dual symmetric functions in non-commuting variables over the Rational Field
         """
-        return "Category of bases of dual symmetric functions in non-commuting"\
-               " variables over the {}".format(self.base().base_ring())
+        return (
+            "Category of bases of dual symmetric functions in non-commuting"
+            " variables over the {}".format(self.base().base_ring())
+        )

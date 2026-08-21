@@ -52,6 +52,7 @@ class Curve_generic(AlgebraicScheme_subscheme):
         sage: loads(C.dumps()) == C
         True
     """
+
     def _repr_(self):
         """
         Return a string representation of this curve.
@@ -71,8 +72,9 @@ class Curve_generic(AlgebraicScheme_subscheme):
         if self.defining_ideal().is_zero() and self.ambient_space().dimension() == 1:
             return "{} Line over {}".format(self._repr_type(), self.base_ring())
         polys = ', '.join(str(x) for x in self.defining_polynomials())
-        return "{} Curve over {} defined by {}".format(self._repr_type(),
-                                                       self.base_ring(), polys)
+        return "{} Curve over {} defined by {}".format(
+            self._repr_type(), self.base_ring(), polys
+        )
 
     def _repr_type(self) -> str:
         r"""
@@ -107,13 +109,12 @@ class Curve_generic(AlgebraicScheme_subscheme):
             \text{Affine Plane curve over $\Bold{Q}$
             defined by $-x^{3} + y^{2} - 17 x + y$}
         """
-        if (self.defining_ideal().is_zero()
-                and self.ambient_space().dimension() == 1):
+        if self.defining_ideal().is_zero() and self.ambient_space().dimension() == 1:
             ambient_type, ring = self._repr_type(), latex(self.base_ring())
-            return fr"\text{{{ambient_type} line over ${ring}$}}"
+            return rf"\text{{{ambient_type} line over ${ring}$}}"
         ambient_type, ring = self._repr_type(), latex(self.base_ring())
         polys = ', '.join(f'${latex(p)}$' for p in self.defining_polynomials())
-        return fr"\text{{{ambient_type} curve over ${ring}$ defined by {polys}}}"
+        return rf"\text{{{ambient_type} curve over ${ring}$ defined by {polys}}}"
 
     def dimension(self):
         r"""
@@ -188,7 +189,9 @@ class Curve_generic(AlgebraicScheme_subscheme):
             sage: C.divisor([(1, p1), (-1, p2), (2, p3)])
             (x, y + z) - (x, y) + 2*(x, z)
         """
-        return Divisor_curve(v, check=check, reduce=reduce, parent=self.divisor_group(base_ring))
+        return Divisor_curve(
+            v, check=check, reduce=reduce, parent=self.divisor_group(base_ring)
+        )
 
     def genus(self):
         """
@@ -266,6 +269,7 @@ class Curve_generic(AlgebraicScheme_subscheme):
             x^2 - x*y - x*z + y*z
         """
         from .constructor import Curve
+
         return Curve(AlgebraicScheme_subscheme.union(self, other))
 
     __add__ = union
@@ -421,13 +425,17 @@ class Curve_generic(AlgebraicScheme_subscheme):
             False
         """
         if C.ambient_space() != self.ambient_space():
-            raise TypeError("(=%s) must be a curve in the same ambient space as (=%s)" % (C, self))
+            raise TypeError(
+                "(=%s) must be a curve in the same ambient space as (=%s)" % (C, self)
+            )
         if not isinstance(C, Curve_generic):
             raise TypeError("(=%s) must be a curve" % C)
         try:
             P = self.ambient_space()(P)
         except TypeError:
-            raise TypeError("(=%s) must be a point in the ambient space of this curve" % P)
+            raise TypeError(
+                "(=%s) must be a point in the ambient space of this curve" % P
+            )
         try:
             P = self(P)
             P = C(P)
@@ -485,7 +493,9 @@ class Curve_generic(AlgebraicScheme_subscheme):
             (=Rational Field) must be a finite field
         """
         if C.ambient_space() != self.ambient_space():
-            raise TypeError("(=%s) must be a curve in the same ambient space as (=%s)" % (C, self))
+            raise TypeError(
+                "(=%s) must be a curve in the same ambient space as (=%s)" % (C, self)
+            )
         if not isinstance(C, Curve_generic):
             raise TypeError("(=%s) must be a curve" % C)
         X = self.intersection(C)
@@ -493,8 +503,10 @@ class Curve_generic(AlgebraicScheme_subscheme):
             F = self.base_ring()
         if X.dimension() == 0 or F in FiniteFields():
             return X.rational_points(F=F)
-        raise NotImplementedError("the intersection must have dimension "
-                                  "zero or (={}) must be a finite field".format(F))
+        raise NotImplementedError(
+            "the intersection must have dimension "
+            "zero or (={}) must be a finite field".format(F)
+        )
 
     def change_ring(self, R):
         r"""

@@ -1,14 +1,14 @@
 r"""
 Lie Groups
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
-#from sage.misc.abstract_method import abstract_method
+# from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.groups import Groups
@@ -31,6 +31,7 @@ class LieGroups(Category_over_base_ring):
 
         sage: TestSuite(C).run(skip='_test_category_over_bases')
     """
+
     @cached_method
     def super_categories(self):
         """

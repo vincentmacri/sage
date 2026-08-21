@@ -81,6 +81,7 @@ class GenericCellComplex(SageObject):
         sage: from sage.topology.cell_complex import GenericCellComplex
         sage: A = GenericCellComplex()
     """
+
     def __eq__(self, right):
         """
         Comparisons of cell complexes are not implemented.
@@ -295,7 +296,9 @@ class GenericCellComplex(SageObject):
             sage: cubical_complexes.KleinBottle().euler_characteristic()
             0
         """
-        return sum((-1)**n * self.f_vector()[n + 1] for n in range(self.dimension() + 1))
+        return sum(
+            (-1) ** n * self.f_vector()[n + 1] for n in range(self.dimension() + 1)
+        )
 
     ############################################################
     # end of methods using self.cells()
@@ -422,9 +425,16 @@ class GenericCellComplex(SageObject):
     ############################################################
 
     @abstract_method
-    def chain_complex(self, subcomplex=None, augmented=False,
-                      verbose=False, check=True, dimensions=None,
-                      base_ring=ZZ, cochain=False):
+    def chain_complex(
+        self,
+        subcomplex=None,
+        augmented=False,
+        verbose=False,
+        check=True,
+        dimensions=None,
+        base_ring=ZZ,
+        cochain=False,
+    ):
         """
         This is not implemented for general cell complexes.
 
@@ -456,9 +466,18 @@ class GenericCellComplex(SageObject):
             NotImplementedError: <abstract method chain_complex at ...>
         """
 
-    def homology(self, dim=None, base_ring=ZZ, subcomplex=None,
-                 generators=False, cohomology=False, algorithm='pari',
-                 verbose=False, reduced=True, **kwds):
+    def homology(
+        self,
+        dim=None,
+        base_ring=ZZ,
+        subcomplex=None,
+        generators=False,
+        cohomology=False,
+        algorithm='pari',
+        verbose=False,
+        reduced=True,
+        **kwds,
+    ):
         r"""
         The (reduced) homology of this cell complex.
 
@@ -569,17 +588,32 @@ class GenericCellComplex(SageObject):
         # _homology_ method.  See SimplicialComplex for one example.
         # Those may allow for other arguments, so we pass **kwds.
         if hasattr(self, '_homology_'):
-            return self._homology_(dim, subcomplex=subcomplex,
-                                   cohomology=cohomology, base_ring=base_ring,
-                                   verbose=verbose, algorithm=algorithm,
-                                   reduced=reduced, generators=generators,
-                                   **kwds)
+            return self._homology_(
+                dim,
+                subcomplex=subcomplex,
+                cohomology=cohomology,
+                base_ring=base_ring,
+                verbose=verbose,
+                algorithm=algorithm,
+                reduced=reduced,
+                generators=generators,
+                **kwds,
+            )
 
-        C = self.chain_complex(cochain=cohomology, augmented=reduced,
-                               dimensions=dims, subcomplex=subcomplex,
-                               base_ring=base_ring, verbose=verbose)
-        answer = C.homology(base_ring=base_ring, generators=generators,
-                            verbose=verbose, algorithm=algorithm)
+        C = self.chain_complex(
+            cochain=cohomology,
+            augmented=reduced,
+            dimensions=dims,
+            subcomplex=subcomplex,
+            base_ring=base_ring,
+            verbose=verbose,
+        )
+        answer = C.homology(
+            base_ring=base_ring,
+            generators=generators,
+            verbose=verbose,
+            algorithm=algorithm,
+        )
 
         if generators:
             # Try to convert chain complex information to topological
@@ -589,10 +623,10 @@ class GenericCellComplex(SageObject):
                 if H_with_gens:
                     chains = self.n_chains(i, base_ring=base_ring)
                     new_H = []
-                    for (H, gen) in H_with_gens:
+                    for H, gen in H_with_gens:
                         v = gen.vector(i)
                         new_gen = chains.zero()
-                        for (coeff, chain) in zip(v, chains.gens()):
+                        for coeff, chain in zip(v, chains.gens()):
                             new_gen += coeff * chain
                         new_H.append((H, new_gen))
                     answer[i] = new_H
@@ -604,9 +638,16 @@ class GenericCellComplex(SageObject):
             return dict([d, answer.get(d, zero)] for d in dim)
         return answer.get(dim, zero)
 
-    def cohomology(self, dim=None, base_ring=ZZ, subcomplex=None,
-                   generators=False, algorithm='pari',
-                   verbose=False, reduced=True):
+    def cohomology(
+        self,
+        dim=None,
+        base_ring=ZZ,
+        subcomplex=None,
+        generators=False,
+        algorithm='pari',
+        verbose=False,
+        reduced=True,
+    ):
         r"""
         The reduced cohomology of this cell complex.
 
@@ -661,10 +702,16 @@ class GenericCellComplex(SageObject):
             sage: s5.cohomology(base_ring=GF(7))[5]                                     # needs sage.modules
             Vector space of dimension 1 over Finite Field of size 7
         """
-        return self.homology(dim=dim, cohomology=True, base_ring=base_ring,
-                             subcomplex=subcomplex, generators=generators,
-                             algorithm=algorithm, verbose=verbose,
-                             reduced=reduced)
+        return self.homology(
+            dim=dim,
+            cohomology=True,
+            base_ring=base_ring,
+            subcomplex=subcomplex,
+            generators=generators,
+            algorithm=algorithm,
+            verbose=verbose,
+            reduced=reduced,
+        )
 
     def betti(self, dim=None, subcomplex=None):
         r"""
@@ -874,9 +921,11 @@ class GenericCellComplex(SageObject):
             sage: list(H.basis(3))                                                      # needs sage.modules
             [h^{3,0}]
         """
-        from sage.homology.homology_vector_space_with_basis import \
-            HomologyVectorSpaceWithBasis, HomologyVectorSpaceWithBasis_mod2, \
-            is_GF2
+        from sage.homology.homology_vector_space_with_basis import (
+            HomologyVectorSpaceWithBasis,
+            HomologyVectorSpaceWithBasis_mod2,
+            is_GF2,
+        )
 
         if cohomology:
             return self.cohomology_ring(base_ring)
@@ -988,8 +1037,11 @@ class GenericCellComplex(SageObject):
             Cohomology ring of Simplicial complex with 9 vertices and
              18 facets over Rational Field
         """
-        from sage.homology.homology_vector_space_with_basis import CohomologyRing, \
-            CohomologyRing_mod2, is_GF2
+        from sage.homology.homology_vector_space_with_basis import (
+            CohomologyRing,
+            CohomologyRing_mod2,
+            is_GF2,
+        )
 
         if is_GF2(base_ring):
             return CohomologyRing_mod2(base_ring, self)
@@ -1073,6 +1125,7 @@ class GenericCellComplex(SageObject):
         """
         from sage.combinat.posets.posets import Poset
         from sage.misc.flatten import flatten
+
         covers = {}
         # The code for posets seems to work better if each cell is
         # converted to a tuple.

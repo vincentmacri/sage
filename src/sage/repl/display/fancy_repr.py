@@ -87,6 +87,7 @@ class ObjectReprABC:
             'Error: ObjectReprABC.__call__ is abstract'
         """
         from sage.repl.display.pretty_print import SagePrettyPrinter
+
         stream = StringIO()
         p = SagePrettyPrinter(stream, 79, '\n')
         ok = self(obj, p, False)
@@ -97,7 +98,6 @@ class ObjectReprABC:
 
 
 class SomeIPythonRepr(ObjectReprABC):
-
     def __init__(self):
         """
         Some selected representers from IPython.
@@ -205,14 +205,14 @@ class LargeMatrixHelpRepr(ObjectReprABC):
             # Do not print the help for matrices inside containers
             return False
         from sage.structure.element import Matrix
+
         if not isinstance(obj, Matrix):
             return False
         from sage.matrix.constructor import options
+
         if obj.nrows() <= options.max_rows() and obj.ncols() <= options.max_cols():
             return False
-        p.text(
-            repr(obj) + " (use the '.str()' method to see the entries)"
-        )
+        p.text(repr(obj) + " (use the '.str()' method to see the entries)")
         return True
 
 
@@ -277,8 +277,11 @@ class PlainPythonRepr(ObjectReprABC):
             except Exception:
                 import sys
                 import traceback
+
                 objrepr = object.__repr__(obj).replace("object at", "at")
-                exc = traceback.format_exception_only(sys.exc_info()[0], sys.exc_info()[1])
+                exc = traceback.format_exception_only(
+                    sys.exc_info()[0], sys.exc_info()[1]
+                )
                 exc = (''.join(exc)).strip()
                 output = "<repr({}) failed: {}>".format(objrepr, exc)
             for idx, output_line in enumerate(output.split('\n')):
@@ -349,7 +352,9 @@ class TallListRepr(ObjectReprABC):
             except (AttributeError, TypeError):
                 pass
             try:
-                ascii_art_repr = ascii_art_repr or o.parent()._repr_option('element_ascii_art')
+                ascii_art_repr = ascii_art_repr or o.parent()._repr_option(
+                    'element_ascii_art'
+                )
             except (AttributeError, TypeError):
                 pass
         if not ascii_art_repr:

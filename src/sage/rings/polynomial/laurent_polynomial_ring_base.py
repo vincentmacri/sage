@@ -48,6 +48,7 @@ class LaurentPolynomialRing_generic(Parent):
             and Category of infinite sets
         sage: TestSuite(R).run()
     """
+
     def __init__(self, R) -> None:
         """
         EXAMPLES::
@@ -60,16 +61,16 @@ class LaurentPolynomialRing_generic(Parent):
         self._R = R
         names = R.variable_names()
         self._one_element = self.element_class(self, R.one())
-        Parent.__init__(self, base=R.base_ring(), names=names,
-                        category=R.category())
+        Parent.__init__(self, base=R.base_ring(), names=names, category=R.category())
         ernames = []
         for n in names:
             ernames.append(n)
             ernames.append(n + "inv")
         ER = PolynomialRing(R.base_ring(), ernames)
         self._extended_ring = ER
-        self._extended_ring_ideal = ER.ideal([ER.gen(2*i) * ER.gen(2*i+1) - 1
-                                              for i in range(self._n)])
+        self._extended_ring_ideal = ER.ideal(
+            [ER.gen(2 * i) * ER.gen(2 * i + 1) - 1 for i in range(self._n)]
+        )
 
     def ngens(self):
         """
@@ -151,7 +152,10 @@ class LaurentPolynomialRing_generic(Parent):
             return self.variable_names()
         my_vars = self.variable_names()
         try:
-            return self.base_ring().variable_names_recursive(depth - len(my_vars)) + my_vars
+            return (
+                self.base_ring().variable_names_recursive(depth - len(my_vars))
+                + my_vars
+            )
         except AttributeError:
             return my_vars
 
@@ -200,7 +204,9 @@ class LaurentPolynomialRing_generic(Parent):
         vars = self.variable_names()
         if len(vars) == 1:
             return LaurentPolynomialFunctor(vars[0], False), self.base_ring()
-        return LaurentPolynomialFunctor(vars[-1], True), LaurentPolynomialRing(self.base_ring(), vars[:-1])
+        return LaurentPolynomialFunctor(vars[-1], True), LaurentPolynomialRing(
+            self.base_ring(), vars[:-1]
+        )
 
     def completion(self, p=None, prec=20, extras=None):
         r"""
@@ -246,9 +252,13 @@ class LaurentPolynomialRing_generic(Parent):
         if p is None or str(p) == self._names[0] and self._n == 1:
             if prec == float('inf'):
                 from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
+
                 sparse = self.polynomial_ring().is_sparse()
-                return LazyLaurentSeriesRing(self.base_ring(), names=(self._names[0],), sparse=sparse)
+                return LazyLaurentSeriesRing(
+                    self.base_ring(), names=(self._names[0],), sparse=sparse
+                )
             from sage.rings.laurent_series_ring import LaurentSeriesRing
+
             R = self.polynomial_ring().completion(self._names[0], prec)
             return LaurentSeriesRing(R)
 
@@ -293,8 +303,9 @@ class LaurentPolynomialRing_generic(Parent):
         f = self._coerce_map_via([self._R], R)
         if f is not None:
             return f
-        if (isinstance(R, LaurentPolynomialRing_generic)
-                and self._R.has_coerce_map_from(R._R)):
+        if isinstance(R, LaurentPolynomialRing_generic) and self._R.has_coerce_map_from(
+            R._R
+        ):
             return self._generic_coerce_map(R)
 
     def __eq__(self, right) -> bool:
@@ -397,7 +408,10 @@ class LaurentPolynomialRing_generic(Parent):
             sage: p.content_ideal()    # indirect doctest
             Ideal (-t, 1) of Univariate Laurent Polynomial Ring in t over Integer Ring
         """
-        from sage.rings.polynomial.laurent_polynomial_ideal import LaurentPolynomialIdeal
+        from sage.rings.polynomial.laurent_polynomial_ideal import (
+            LaurentPolynomialIdeal,
+        )
+
         return LaurentPolynomialIdeal(self, *args, **kwds)
 
     def _is_valid_homomorphism_(self, codomain, im_gens, base_map=None) -> bool:
@@ -618,10 +632,12 @@ class LaurentPolynomialRing_generic(Parent):
         """
         # Ensure the degree parameters are sensible
         if max_degree < min_valuation:
-            raise ValueError("`max_degree` must be greater than or equal to `min_valuation`")
+            raise ValueError(
+                "`max_degree` must be greater than or equal to `min_valuation`"
+            )
 
         # Sample a polynomial in the base ring of degree `max_degree - min_valuation`
-        abs_deg = (max_degree - min_valuation)
+        abs_deg = max_degree - min_valuation
         f_rand = self._R.random_element(degree=abs_deg, *args, **kwds)
 
         # Cast this polynomial back the ``self``
@@ -678,7 +694,10 @@ class LaurentPolynomialRing_generic(Parent):
             Multivariate Laurent Polynomial Ring in x over
              Cyclotomic Field of order 4 and degree 2
         """
-        from .laurent_polynomial_ring import LaurentPolynomialRing, LaurentPolynomialRing_univariate
+        from .laurent_polynomial_ring import (
+            LaurentPolynomialRing,
+            LaurentPolynomialRing_univariate,
+        )
 
         if base_ring is None:
             base_ring = self.base_ring()

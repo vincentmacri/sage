@@ -16,6 +16,7 @@ Features for testing the presence of ``bliss``
 from sage.config import bliss_enabled
 from sage.features.build_feature import BuildModule
 
+
 class Bliss(BuildModule):
     r"""
     A :class:`~sage.features.Feature` which describes whether the
@@ -40,6 +41,7 @@ class Bliss(BuildModule):
         FeatureTestResult('bliss', True)
 
     """
+
     _enabled_in_build = bliss_enabled
 
     def __init__(self):
@@ -52,9 +54,10 @@ class Bliss(BuildModule):
 
         """
         module_name = "sage.graphs.bliss"
-        super().__init__("bliss",
-                         module_name,
-                         url='http://www.tcs.hut.fi/Software/bliss/')
+        super().__init__(
+            "bliss", module_name, url='http://www.tcs.hut.fi/Software/bliss/'
+        )
+
 
 def all_features():
     return [Bliss()]

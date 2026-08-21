@@ -27,8 +27,9 @@ from sage.modular.dirichlet import DirichletGroup, DirichletCharacter
 from .element import ModularFormElement
 
 
-def hecke_operator_on_qexp(f, n, k, eps=None,
-                           prec=None, check=True, _return_list=False):
+def hecke_operator_on_qexp(
+    f, n, k, eps=None, prec=None, check=True, _return_list=False
+):
     r"""
     Given the `q`-expansion `f` of a modular form with character
     `\varepsilon`, this function computes the image of `f` under the
@@ -100,8 +101,8 @@ def hecke_operator_on_qexp(f, n, k, eps=None,
         if isinstance(f, ModularFormElement):
             # always want at least three coefficients, but not too many, unless
             # requested
-            pr = max(f.prec(), f.parent().prec(), (n+1)*3)
-            pr = min(pr, 100*(n+1))
+            pr = max(f.prec(), f.parent().prec(), (n + 1) * 3)
+            pr = min(pr, 100 * (n + 1))
             prec = pr // n + 1
         else:
             prec = (f.prec() / ZZ(n)).ceil()
@@ -115,12 +116,17 @@ def hecke_operator_on_qexp(f, n, k, eps=None,
     if k != 1 and p.is_prime() and n.is_power_of(p):
         # if computing T_{p^a} in characteristic p, use the simpler (and faster)
         # formula
-        v = [f[m*n] for m in range(prec)]
+        v = [f[m * n] for m in range(prec)]
     else:
         l = k - 1
         for m in range(prec):
-            am = sum([eps(d) * d**l * f[m*n//(d*d)]
-                      for d in divisors(gcd(n, m)) if (m*n) % (d*d) == 0])
+            am = sum(
+                [
+                    eps(d) * d**l * f[m * n // (d * d)]
+                    for d in divisors(gcd(n, m))
+                    if (m * n) % (d * d) == 0
+                ]
+            )
             v.append(am)
     if _return_list:
         return v
@@ -152,8 +158,10 @@ def _hecke_operator_on_basis(B, V, n, k, eps):
         ValueError: the given basis vectors must be linearly independent
     """
     prec = V.degree()
-    TB = [hecke_operator_on_qexp(f, n, k, eps, prec, check=False, _return_list=True)
-                for f in B]
+    TB = [
+        hecke_operator_on_qexp(f, n, k, eps, prec, check=False, _return_list=True)
+        for f in B
+    ]
     TB = [V.coordinate_vector(w) for w in TB]
     return matrix(V.base_ring(), len(B), len(B), TB, sparse=False)
 
@@ -241,6 +249,7 @@ def hecke_operator_on_basis(B, n, k, eps=None, already_echelonized=False):
     k = Integer(k)
     prec = (f.prec() - 1) // n
     A = R**prec
-    V = A.span_of_basis([g.padded_list(prec) for g in B],
-                        already_echelonized=already_echelonized)
+    V = A.span_of_basis(
+        [g.padded_list(prec) for g in B], already_echelonized=already_echelonized
+    )
     return _hecke_operator_on_basis(B, V, n, k, eps)

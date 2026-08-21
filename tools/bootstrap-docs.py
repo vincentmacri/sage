@@ -182,9 +182,7 @@ def _file_mode() -> int:
     descriptor = None
     probe = directory / "probe"
     try:
-        descriptor = os.open(
-            probe, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666
-        )
+        descriptor = os.open(probe, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
         return stat.S_IMODE(os.fstat(descriptor).st_mode)
     finally:
         if descriptor is not None:
@@ -299,9 +297,9 @@ def write_text(path: Path, content: str) -> None:
         info = path.lstat()
     except FileNotFoundError:
         info = None
-    if (info is not None
-            and not (stat.S_ISREG(info.st_mode)
-                     or stat.S_ISLNK(info.st_mode))):
+    if info is not None and not (
+        stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode)
+    ):
         raise OSError(f"refusing to replace non-file generated path: {path}")
     if info is not None and stat.S_ISREG(info.st_mode):
         unchanged = path.read_bytes() == encoded
@@ -310,8 +308,9 @@ def write_text(path: Path, content: str) -> None:
                 path.chmod(mode)
             return
 
-    handle, temporary = tempfile.mkstemp(dir=path.parent, prefix=path.name,
-                                         suffix=".tmp")
+    handle, temporary = tempfile.mkstemp(
+        dir=path.parent, prefix=path.name, suffix=".tmp"
+    )
     try:
         with os.fdopen(handle, "w", encoding="utf-8") as file:
             file.write(content)
@@ -629,9 +628,7 @@ def generate_spkg_indexes(base_dir: Path) -> None:
     )
 
     sagemath_packages = [
-        name
-        for name in documented_names
-        if name.startswith("sagemath_")
+        name for name in documented_names if name.startswith("sagemath_")
     ]
     write_index("sagemath", write_bullet_list, sagemath_packages)
 
@@ -665,11 +662,11 @@ def generate_spkg_indexes(base_dir: Path) -> None:
         documented_names,
     )
 
-    unwritten = [name for name in SPKG_INDEXES
-                 if name not in written]
+    unwritten = [name for name in SPKG_INDEXES if name not in written]
     if unwritten:
         raise AssertionError(
-            f"SPKG_INDEXES names indexes that nothing writes: {unwritten}")
+            f"SPKG_INDEXES names indexes that nothing writes: {unwritten}"
+        )
 
 
 ISSUE_RE = re.compile(r"https://github.com/sagemath/sage/issues/([0-9]+)")
@@ -798,9 +795,7 @@ def build_additional_sections(pkg: Package) -> str:
     distros_info = _input_status(distros_dir)
     if distros_info is not None:
         if not stat.S_ISDIR(distros_info.st_mode):
-            raise OSError(
-                f"package distro metadata is not a directory: {distros_dir}"
-            )
+            raise OSError(f"package distro metadata is not a directory: {distros_dir}")
         system_files = []
         for path in sorted(distros_dir.iterdir()):
             if path.suffix != ".txt":
@@ -943,10 +938,7 @@ def expected_targets(target_dir: Path) -> list[Path]:
         for suffix, _ in INSTALLATION_CATEGORIES
     ]
     targets += [spkg_index_path(spkg, name) for name in SPKG_INDEXES]
-    targets += [
-        spkg / f"{name}.rst"
-        for name in _documented_package_names()
-    ]
+    targets += [spkg / f"{name}.rst" for name in _documented_package_names()]
     return targets
 
 
@@ -968,14 +960,13 @@ def _read_regular_file_stably(path: Path) -> tuple[bytes, tuple[int, ...]]:
         raise OSError(f"not a regular file: {path}")
     with path.open("rb") as file:
         opened_before = os.fstat(file.fileno())
-        if (_stat_identity(opened_before) != _stat_identity(before)):
+        if _stat_identity(opened_before) != _stat_identity(before):
             raise OSError(f"file changed before it could be read: {path}")
         content = file.read()
         opened_after = os.fstat(file.fileno())
     after = path.lstat()
     identity = _stat_identity(before)
-    if (_stat_identity(opened_after) != identity
-            or _stat_identity(after) != identity):
+    if _stat_identity(opened_after) != identity or _stat_identity(after) != identity:
         raise OSError(f"file changed while it was read: {path}")
     return content, identity
 
@@ -1020,9 +1011,7 @@ def _add_input(content_digest, race_digest, label: str, path: Path) -> None:
     elif stat.S_ISDIR(before.st_mode):
         content_digest.update(b"directory")
     else:
-        content_digest.update(
-            f"mode:{stat.S_IFMT(before.st_mode)}".encode("ascii")
-        )
+        content_digest.update(f"mode:{stat.S_IFMT(before.st_mode)}".encode("ascii"))
     content_digest.update(b"\0")
 
     after = path.lstat()
@@ -1033,10 +1022,10 @@ def _add_input(content_digest, race_digest, label: str, path: Path) -> None:
             target_after = path.stat()
         except FileNotFoundError:
             target_after = None
-        if ((target_before is None) != (target_after is None)
-                or (target_before is not None
-                    and _stat_identity(target_after)
-                    != _stat_identity(target_before))):
+        if (target_before is None) != (target_after is None) or (
+            target_before is not None
+            and _stat_identity(target_after) != _stat_identity(target_before)
+        ):
             raise RuntimeError(f"input link target changed while it was read: {path}")
 
 
@@ -1094,9 +1083,7 @@ def _input_state() -> tuple[str, str]:
         distros_info = _input_status(distros)
         if distros_info is not None:
             if not stat.S_ISDIR(distros_info.st_mode):
-                raise OSError(
-                    f"package distro metadata is not a directory: {distros}"
-                )
+                raise OSError(f"package distro metadata is not a directory: {distros}")
             _add_input(content, race, f"{label}/distros", distros)
             for path in sorted(distros.iterdir()):
                 if path.suffix != ".txt":
@@ -1114,9 +1101,7 @@ def input_digest() -> str:
 def manifest_path(target_dir: Path) -> Path:
     """Return the ignored metadata file describing generated sources."""
 
-    return (
-        target_dir / "en" / "installation" / "__pycache__" / MANIFEST_NAME
-    )
+    return target_dir / "en" / "installation" / "__pycache__" / MANIFEST_NAME
 
 
 def _read_manifest(target_dir: Path) -> dict:
@@ -1138,8 +1123,9 @@ def _read_manifest(target_dir: Path) -> dict:
     return manifest
 
 
-def write_manifest(target_dir: Path, inputs: str,
-                   targets: Sequence[Path] | None = None) -> None:
+def write_manifest(
+    target_dir: Path, inputs: str, targets: Sequence[Path] | None = None
+) -> None:
     """Record exact digests of the inputs and generated regular files."""
 
     outputs = {}
@@ -1166,8 +1152,9 @@ def write_manifest(target_dir: Path, inputs: str,
     )
 
 
-def complaints_about(target_dir: Path,
-                     preserved: list[Path] | None = None) -> list[str]:
+def complaints_about(
+    target_dir: Path, preserved: list[Path] | None = None
+) -> list[str]:
     """Return what keeps ``target_dir`` from being a tree Sphinx can read.
 
     A file that is missing, that an interrupted run left truncated, that the
@@ -1235,8 +1222,7 @@ def _warn_preserved(paths: Sequence[Path]) -> None:
 
     for path in paths:
         print(
-            f"warning: unrecognized entry in generated directory "
-            f"(preserved): {path}",
+            f"warning: unrecognized entry in generated directory (preserved): {path}",
             file=sys.stderr,
         )
 
@@ -1250,8 +1236,9 @@ class _RemovalProof:
     digest: str
 
 
-def _generated_candidates(directory: Path, suffix: str,
-                          *, exclude: str | None = None) -> list[Path]:
+def _generated_candidates(
+    directory: Path, suffix: str, *, exclude: str | None = None
+) -> list[Path]:
     """List generated-directory candidates without hiding access errors."""
 
     info = _input_status(directory)
@@ -1259,8 +1246,11 @@ def _generated_candidates(directory: Path, suffix: str,
         return []
     if not stat.S_ISDIR(info.st_mode):
         raise OSError(f"generated path is not a directory: {directory}")
-    return [path for path in sorted(directory.iterdir())
-            if path.suffix == suffix and path.name != exclude]
+    return [
+        path
+        for path in sorted(directory.iterdir())
+        if path.suffix == suffix and path.name != exclude
+    ]
 
 
 def _generated_extras(
@@ -1312,9 +1302,12 @@ def _generated_extras(
         # The label is only a migration proof for a page predating manifests.
         # Once a manifest names the path, a digest mismatch instead proves
         # that somebody changed it and it must be preserved.
-        legacy_page = (legacy_proof_allowed and recorded_digest is None
-                       and path.parent == spkg
-                       and first_line == f".. _spkg_{path.stem}:")
+        legacy_page = (
+            legacy_proof_allowed
+            and recorded_digest is None
+            and path.parent == spkg
+            and first_line == f".. _spkg_{path.stem}:"
+        )
         if unchanged_recorded_output or legacy_page:
             obsolete.append(_RemovalProof(path, identity, digest))
         else:
@@ -1329,8 +1322,7 @@ def _remove_proven_path(proof: _RemovalProof) -> None:
     digest = hashlib.sha256(content).hexdigest()
     if identity != proof.identity or digest != proof.digest:
         raise OSError(
-            f"refusing to remove generated file changed after inspection: "
-            f"{proof.path}"
+            f"refusing to remove generated file changed after inspection: {proof.path}"
         )
     # Keep the check adjacent to unlink.  Holding the generator lock prevents
     # another generator from replacing the path between the proof and here.

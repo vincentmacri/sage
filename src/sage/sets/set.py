@@ -339,10 +339,13 @@ class Set_base:
         set_self = Set(self)
         if set_self is not self:
             from sage.misc.sage_unittest import TestSuite
+
             tester.info("\n  Running the test suite of Set(self)")
-            TestSuite(set_self).run(skip='_test_pickling',  # see Issue #32025
-                                    verbose=tester._verbose,
-                                    prefix=tester._prefix + "  ")
+            TestSuite(set_self).run(
+                skip='_test_pickling',  # see Issue #32025
+                verbose=tester._verbose,
+                prefix=tester._prefix + "  ",
+            )
             tester.info(tester._prefix + " ", newline=False)
 
 
@@ -490,6 +493,7 @@ class Set_object(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_opera
             and 'Integer Ring'
         """
         from sage.rings.integer import Integer
+
         if isinstance(X, (int, Integer)):
             # The coercion model will try to call Set_object(0)
             raise ValueError('underlying object cannot be an integer')
@@ -577,7 +581,9 @@ class Set_object(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_opera
         """
         return iter(self.__object)
 
-    _an_element_from_iterator = EnumeratedSets.ParentMethods.__dict__['_an_element_from_iterator']
+    _an_element_from_iterator = EnumeratedSets.ParentMethods.__dict__[
+        '_an_element_from_iterator'
+    ]
 
     def _an_element_(self):
         """
@@ -691,6 +697,7 @@ class Set_object(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_opera
             except (AttributeError, NotImplementedError):
                 pass
             from sage.rings.integer import Integer
+
             try:
                 return Integer(len(self.__object))
             except TypeError:
@@ -788,6 +795,7 @@ class Set_object(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_opera
             [{1, 2}, {1, 3}, {2, 3}]
         """
         from sage.combinat.subset import Subsets
+
         return Subsets(self, size)
 
     def subsets_lattice(self):
@@ -804,24 +812,30 @@ class Set_object(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_opera
             Finite lattice containing 1 elements
         """
         if not self.is_finite():
-            raise NotImplementedError(
-                "this method is only implemented for finite sets")
+            raise NotImplementedError("this method is only implemented for finite sets")
         from sage.combinat.posets.lattices import FiniteLatticePoset
         from sage.graphs.digraph import DiGraph
         from sage.rings.integer import Integer
+
         n = self.cardinality()
         # list, contains at position 0 <= i < 2^n
         # the i-th subset of self
-        subset_of_index = [Set([self[i] for i in range(n) if v & (1 << i)])
-                           for v in range(2**n)]
+        subset_of_index = [
+            Set([self[i] for i in range(n) if v & (1 << i)]) for v in range(2**n)
+        ]
         # list, contains at position 0 <= i < 2^n
         # the list of indices of all immediate supersets
-        upper_covers = [[Integer(x | (1 << y)) for y in range(n) if not x & (1 << y)]
-                        for x in range(2**n)]
+        upper_covers = [
+            [Integer(x | (1 << y)) for y in range(n) if not x & (1 << y)]
+            for x in range(2**n)
+        ]
         # DiGraph, every subset points to all immediate supersets
-        D = DiGraph({subset_of_index[v]:
-                     [subset_of_index[w] for w in upper_covers[v]]
-                     for v in range(2**n)})
+        D = DiGraph(
+            {
+                subset_of_index[v]: [subset_of_index[w] for w in upper_covers[v]]
+                for v in range(2**n)
+            }
+        )
         # Lattice poset, defined by hasse diagram D
         L = FiniteLatticePoset(hasse_diagram=D)
         return L
@@ -839,6 +853,7 @@ class Set_object(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_opera
             Integers
         """
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         return self.__object._sympy_()
 
@@ -847,6 +862,7 @@ class Set_object_enumerated(Set_object):
     """
     A finite enumerated set.
     """
+
     def __init__(self, X, category=None):
         r"""
         Initialize ``self``.
@@ -879,7 +895,9 @@ class Set_object_enumerated(Set_object):
         """
         if isinstance(X, Iterator):
             X = tuple(X)
-        Set_object.__init__(self, X, category=FiniteEnumeratedSets().or_subcategory(category))
+        Set_object.__init__(
+            self, X, category=FiniteEnumeratedSets().or_subcategory(category)
+        )
 
     def random_element(self):
         r"""
@@ -919,6 +937,7 @@ class Set_object_enumerated(Set_object):
             998244353
         """
         from sage.rings.integer import Integer
+
         o = self.object()
         if o is self:
             return Integer(len(self.set()))
@@ -990,11 +1009,14 @@ class Set_object_enumerated(Set_object):
         try:
             if self.cardinality() > 20:
                 from itertools import islice
+
                 o = self.object()
                 l = list(islice(o, 0, 20))
                 s = "{" + ", ".join(map(repr, l)) + ", …}"
-                assert len(l) == 20, (f"incorrect cardinality {self.cardinality()} "
-                                      f"reported for object type {type(self)} containing {l}")
+                assert len(l) == 20, (
+                    f"incorrect cardinality {self.cardinality()} "
+                    f"reported for object type {type(self)} containing {l}"
+                )
                 if o is not self:  # safeguard infinite loop if subclass is weird
                     s = f"Set of elements of {o!r} = {s}"
                 return s
@@ -1314,6 +1336,7 @@ class Set_object_enumerated(Set_object):
         from sympy import EmptySet, Set
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         if self.is_empty():
             return EmptySet
@@ -1438,6 +1461,7 @@ class Set_object_union(Set_object_binary):
     """
     A formal union of two sets.
     """
+
     def __init__(self, X, Y, category=None):
         r"""
         Initialize ``self``.
@@ -1516,8 +1540,12 @@ class Set_object_union(Set_object_binary):
             return rich_to_bool(op, -1)
         if not isinstance(other, Set_object_union):
             return rich_to_bool(op, -1)
-        if self._X == other._X and self._Y == other._Y or \
-           self._X == other._Y and self._Y == other._X:
+        if (
+            self._X == other._X
+            and self._Y == other._Y
+            or self._X == other._Y
+            and self._Y == other._X
+        ):
             return rich_to_bool(op, 0)
         return rich_to_bool(op, -1)
 
@@ -1585,6 +1613,7 @@ class Set_object_union(Set_object_binary):
         from sympy import Union
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         return Union(self._X._sympy_(), self._Y._sympy_())
 
@@ -1625,6 +1654,7 @@ class Set_object_intersection(Set_object_binary):
     """
     Formal intersection of two sets.
     """
+
     def __init__(self, X, Y, category=None):
         r"""
         Initialize ``self``.
@@ -1663,7 +1693,9 @@ class Set_object_intersection(Set_object_binary):
             category = category.Finite()
         if any(S in Sets().Enumerated() for S in (X, Y)):
             category = category.Enumerated()
-        Set_object_binary.__init__(self, X, Y, "intersection", "\\cap", category=category)
+        Set_object_binary.__init__(
+            self, X, Y, "intersection", "\\cap", category=category
+        )
 
     def is_finite(self):
         r"""
@@ -1720,8 +1752,12 @@ class Set_object_intersection(Set_object_binary):
             return rich_to_bool(op, -1)
         if not isinstance(other, Set_object_intersection):
             return rich_to_bool(op, -1)
-        if self._X == other._X and self._Y == other._Y or \
-           self._X == other._Y and self._Y == other._X:
+        if (
+            self._X == other._X
+            and self._Y == other._Y
+            or self._X == other._Y
+            and self._Y == other._X
+        ):
             return rich_to_bool(op, 0)
         return rich_to_bool(op, -1)
 
@@ -1800,6 +1836,7 @@ class Set_object_intersection(Set_object_binary):
         from sympy import Intersection
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         return Intersection(self._X._sympy_(), self._Y._sympy_())
 
@@ -1808,6 +1845,7 @@ class Set_object_difference(Set_object_binary):
     """
     Formal difference of two sets.
     """
+
     def __init__(self, X, Y, category=None):
         r"""
         Initialize ``self``.
@@ -1981,6 +2019,7 @@ class Set_object_difference(Set_object_binary):
         from sympy import Complement
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         return Complement(self._X._sympy_(), self._Y._sympy_())
 
@@ -1989,6 +2028,7 @@ class Set_object_symmetric_difference(Set_object_binary):
     """
     Formal symmetric difference of two sets.
     """
+
     def __init__(self, X, Y, category=None):
         r"""
         Initialize ``self``.
@@ -2012,7 +2052,9 @@ class Set_object_symmetric_difference(Set_object_binary):
             category = category.Finite()
         if all(S in Sets().Enumerated() for S in (X, Y)):
             category = category.Enumerated()
-        Set_object_binary.__init__(self, X, Y, "symmetric difference", "\\bigtriangleup", category=category)
+        Set_object_binary.__init__(
+            self, X, Y, "symmetric difference", "\\bigtriangleup", category=category
+        )
 
     def is_finite(self):
         r"""
@@ -2065,8 +2107,12 @@ class Set_object_symmetric_difference(Set_object_binary):
             return rich_to_bool(op, -1)
         if not isinstance(other, Set_object_symmetric_difference):
             return rich_to_bool(op, -1)
-        if self._X == other._X and self._Y == other._Y or \
-           self._X == other._Y and self._Y == other._X:
+        if (
+            self._X == other._X
+            and self._Y == other._Y
+            or self._X == other._Y
+            and self._Y == other._X
+        ):
             return rich_to_bool(op, 0)
         return rich_to_bool(op, -1)
 
@@ -2128,8 +2174,9 @@ class Set_object_symmetric_difference(Set_object_binary):
             sage: 3 in X
             False
         """
-        return ((x in self._X and x not in self._Y)
-                or (x in self._Y and x not in self._X))
+        return (x in self._X and x not in self._Y) or (
+            x in self._Y and x not in self._X
+        )
 
     @cached_method
     def _sympy_(self):
@@ -2149,5 +2196,6 @@ class Set_object_symmetric_difference(Set_object_binary):
         from sympy import SymmetricDifference
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         return SymmetricDifference(self._X._sympy_(), self._Y._sympy_())

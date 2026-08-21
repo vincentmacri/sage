@@ -96,7 +96,7 @@ def exists_conway_polynomial(p, n):
         False
     """
     try:
-        return ConwayPolynomials().has_polynomial(p,n)
+        return ConwayPolynomials().has_polynomial(p, n)
     except ImportError:
         return False
 
@@ -158,6 +158,7 @@ class PseudoConwayLattice(WithEqualityById, SageObject):
         sage: P != P
         False
     """
+
     def __init__(self, p, use_database=True):
         """
         TESTS::
@@ -177,6 +178,7 @@ class PseudoConwayLattice(WithEqualityById, SageObject):
         """
         self.p = p
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         self.ring = PolynomialRing(FiniteField(p), 'x')
         if use_database:
             try:
@@ -184,8 +186,7 @@ class PseudoConwayLattice(WithEqualityById, SageObject):
             except ImportError:
                 self.nodes = {}
             else:
-                self.nodes = {n: self.ring(C.polynomial(p, n))
-                              for n in C.degrees(p)}
+                self.nodes = {n: self.ring(C.polynomial(p, n)) for n in C.degrees(p)}
         else:
             self.nodes = {}
 
@@ -235,8 +236,12 @@ class PseudoConwayLattice(WithEqualityById, SageObject):
         # TODO: something like the following
         # gcds = [n.gcd(d) for d in self.nodes.keys()]
         # xi = { m: (...) for m in gcds }
-        xi = {q: self.polynomial(n//q).any_root(K, n//q, assume_squarefree=True, assume_equal_deg=True)
-              for q in n.prime_divisors()}
+        xi = {
+            q: self.polynomial(n // q).any_root(
+                K, n // q, assume_squarefree=True, assume_equal_deg=True
+            )
+            for q in n.prime_divisors()
+        }
 
         # The following is needed to ensure that in the concrete instantiation
         # of the "new" extension all previous choices are compatible.
@@ -244,9 +249,9 @@ class PseudoConwayLattice(WithEqualityById, SageObject):
 
         # Construct a compatible element having order the lcm of orders
         q, x = xi.popitem()
-        v = p**(n//q) - 1
+        v = p ** (n // q) - 1
         for q, xitem in xi.items():
-            w = p**(n//q) - 1
+            w = p ** (n // q) - 1
             g, alpha, beta = v.xgcd(w)
             x = x**beta * xitem**alpha
             v = v.lcm(w)
@@ -256,13 +261,13 @@ class PseudoConwayLattice(WithEqualityById, SageObject):
         g = r // v
         # Iterate through g-th roots of x until a primitive one is found
         z = x.nth_root(g)
-        root = K.multiplicative_generator()**v
+        root = K.multiplicative_generator() ** v
         while z.multiplicative_order() != r:
             z *= root
         # The following should work but tries to create a huge list
         # whose length overflows Python's ints for large parameters
-        #Z = x.nth_root(g, all=True)
-        #for z in Z:
+        # Z = x.nth_root(g, all=True)
+        # for z in Z:
         #    if z.multiplicative_order() == r:
         #         break
         f = z.minimal_polynomial()
@@ -286,7 +291,9 @@ class PseudoConwayLattice(WithEqualityById, SageObject):
         K = FiniteField(p**n, modulus=self.polynomial(n), names='a')
         a = K.gen()
         for m in n.divisors():
-            assert (a**((p**n-1)//(p**m-1))).minimal_polynomial() == self.polynomial(m)
+            assert (
+                a ** ((p**n - 1) // (p**m - 1))
+            ).minimal_polynomial() == self.polynomial(m)
 
 
 def _find_pow_of_frobenius(p, n, x, y):
@@ -316,6 +323,7 @@ def _find_pow_of_frobenius(p, n, x, y):
         11
     """
     from .integer_mod import mod
+
     for i in range(n):
         if x == y:
             break
@@ -410,11 +418,12 @@ def _frobenius_shift(K, generators, check_only=False):
     n = K.degree()
     compatible = {}
     from .integer_mod import mod
+
     for m in n.divisors():
         compatible[m] = {}
     for q, x in generators.items():
-        for m in (n//q).divisors():
-            compatible[m][q] = x**((p**(n//q)-1)//(p**m-1))
+        for m in (n // q).divisors():
+            compatible[m][q] = x ** ((p ** (n // q) - 1) // (p**m - 1))
     if check_only:
         for m in n.divisors():
             try:
@@ -431,18 +440,27 @@ def _frobenius_shift(K, generators, check_only=False):
             crt[(i, j)] = []
     for m in n.divisors():
         mqlist = sorted(compatible[m].keys())
-        for k in range(1,len(mqlist)):
+        for k in range(1, len(mqlist)):
             j = qlist.index(mqlist[k])
-            i = qlist.index(mqlist[k-1])
-            crt[(i,j)].append(_find_pow_of_frobenius(p, m, compatible[m][qlist[j]], compatible[m][qlist[i]]))
+            i = qlist.index(mqlist[k - 1])
+            crt[(i, j)].append(
+                _find_pow_of_frobenius(
+                    p, m, compatible[m][qlist[j]], compatible[m][qlist[i]]
+                )
+            )
     for i, j in list(crt):
-        L = crt[(i,j)]
+        L = crt[(i, j)]
         running = mod(0, 1)
         for a in L:
             running = _crt_non_coprime(running, a)
-        crt[(i,j)] = [(mod(running, qq**(running.modulus().valuation(qq))),
-                       running.modulus().valuation(qq)) for qq in qlist]
-        crt[(j,i)] = [(-a, level) for a, level in crt[(i,j)]]
+        crt[(i, j)] = [
+            (
+                mod(running, qq ** (running.modulus().valuation(qq))),
+                running.modulus().valuation(qq),
+            )
+            for qq in qlist
+        ]
+        crt[(j, i)] = [(-a, level) for a, level in crt[(i, j)]]
     # Let x_j be the power of Frobenius we apply to generators[qlist[j]], for 0 < j < len(qlist)
     # We have some direct conditions on the x_j: x_j reduces to each entry in crt[(0,j)].
     # But we also have the equations x_j - x_i reduces to each entry in crt[(i,j)].
@@ -453,15 +471,16 @@ def _frobenius_shift(K, generators, check_only=False):
     # We can set x_0=0 everywhere, can get an initial setting of x_j from the c_0j.
     # We go through prime by prime.
     import bisect
+
     frob_powers = [mod(0, 1) for _ in qlist]
 
     def find_leveller(qindex, level, x, xleveled, searched, i):
         searched[i] = True
         crt_possibles = []
-        for j in range(1,len(qlist)):
+        for j in range(1, len(qlist)):
             if i == j:
                 continue
-            if crt[(i,j)][qindex][1] >= level:
+            if crt[(i, j)][qindex][1] >= level:
                 if xleveled[j]:
                     return [j]
                 if j not in searched:
@@ -477,16 +496,16 @@ def _frobenius_shift(K, generators, check_only=False):
         for j in range(1, len(qlist)):
             if i == j:
                 continue
-            if not xleveled[j] and crt[(i,j)][qindex][1] >= level:
-                newxj = x[i][0] + crt[(i,j)][qindex][0]
-                x[j] = (newxj, min(x[i][1], crt[(i,j)][qindex][1]))
+            if not xleveled[j] and crt[(i, j)][qindex][1] >= level:
+                newxj = x[i][0] + crt[(i, j)][qindex][0]
+                x[j] = (newxj, min(x[i][1], crt[(i, j)][qindex][1]))
                 xleveled[j] = True
                 propagate_levelling(qindex, level, x, xleveled, j)
 
     for qindex in range(len(qlist)):
         q = qlist[qindex]
         # We include the initial 0 to match up our indexing with crt.
-        x = [0] + [crt[(0,j)][qindex] for j in range(1,len(qlist))]
+        x = [0] + [crt[(0, j)][qindex] for j in range(1, len(qlist))]
         # We first check that our equations are consistent and
         # determine which powers of q occur as moduli.
         levels = []
@@ -494,21 +513,23 @@ def _frobenius_shift(K, generators, check_only=False):
             for i in range(j):
                 # we need crt[(0,j)] = crt[(0,i)] + crt[(i,j)]
                 if i != 0:
-                    assert x[j][0] == x[i][0] + crt[(i,j)][qindex][0]
-                level = crt[(i,j)][qindex][1]
+                    assert x[j][0] == x[i][0] + crt[(i, j)][qindex][0]
+                level = crt[(i, j)][qindex][1]
                 if level > 0:
-                    ins = bisect.bisect_left(levels,level)
+                    ins = bisect.bisect_left(levels, level)
                     if ins == len(levels):
                         levels.append(level)
                     elif levels[ins] != level:
                         levels.insert(ins, level)
         for level in levels:
-            xleveled = [0] + [x[i][1] >= level for i in range(1,len(qlist))]
+            xleveled = [0] + [x[i][1] >= level for i in range(1, len(qlist))]
             while True:
                 try:
                     i = xleveled.index(False, 1)
                     searched = {}
-                    levelling_path = find_leveller(qindex, level, x, xleveled, searched, i)
+                    levelling_path = find_leveller(
+                        qindex, level, x, xleveled, searched, i
+                    )
                     if levelling_path is None:
                         # Any lift will work, since there are no constraints.
                         x[i] = (mod(x[i][0].lift(), q**level), level)
@@ -516,18 +537,27 @@ def _frobenius_shift(K, generators, check_only=False):
                         propagate_levelling(qindex, level, x, xleveled, i)
                     else:
                         levelling_path.append(i)
-                        for m in range(1,len(path)):
+                        for m in range(1, len(path)):
                             # This point on the path may have already
                             # been leveled in a previous propagation.
                             if not xleveled[path[m]]:
-                                newx = x[path[m-1]][0] + crt[(path[m-1],path[m])][qindex][0]
-                                x[path[m]] = (newx, min(x[path[m-1]][1], crt[(path[m-1],path[m])][qindex][1]))
+                                newx = (
+                                    x[path[m - 1]][0]
+                                    + crt[(path[m - 1], path[m])][qindex][0]
+                                )
+                                x[path[m]] = (
+                                    newx,
+                                    min(
+                                        x[path[m - 1]][1],
+                                        crt[(path[m - 1], path[m])][qindex][1],
+                                    ),
+                                )
                                 xleveled[path[m]] = True
                                 propagate_levelling(qindex, level, x, xleveled, path[m])
                 except ValueError:
                     break
-        for j in range(1,len(qlist)):
+        for j in range(1, len(qlist)):
             frob_powers[j] = frob_powers[j].crt(x[j][0])
     for j in range(1, len(qlist)):
-        generators[qlist[j]] = generators[qlist[j]]**(p**(-frob_powers[j]).lift())
+        generators[qlist[j]] = generators[qlist[j]] ** (p ** (-frob_powers[j]).lift())
     _frobenius_shift(K, generators, check_only=True)

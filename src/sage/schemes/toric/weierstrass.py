@@ -177,7 +177,7 @@ def Discriminant(polynomial, variables=None):
         -1/16
     """
     f, g = WeierstrassForm(polynomial, variables)
-    return 4*f**3 + 27*g**2
+    return 4 * f**3 + 27 * g**2
 
 
 ######################################################################
@@ -221,7 +221,7 @@ def j_invariant(polynomial, variables=None):
         ValueError: curve is singular and has no well-defined j-invariant
     """
     f, g = WeierstrassForm(polynomial, variables)
-    disc = 4*f**3 + 27*g**2
+    disc = 4 * f**3 + 27 * g**2
     if disc != 0:
         return 1728 * 4 * f**3 / disc
     if f != 0:
@@ -286,7 +286,7 @@ def Newton_polytope_vars_coeffs(polynomial, variables):
         e = m.exponents()[0]
         v = tuple([e[i] for i in var_indices])
         m_red = m // prod(x**i for x, i in zip(variables, v))
-        result[v] = result.get(v, R.zero()) + c*m_red
+        result[v] = result.get(v, R.zero()) + c * m_red
     return result
 
 
@@ -343,7 +343,7 @@ def Newton_polygon_embedded(polynomial, variables):
     embedded_polynomial = polynomial.parent().zero()
     for e, c in p_dict.items():
         e_embed = embedding[e]
-        embedded_polynomial += c * x**(e_embed[0]) * y**(e_embed[1])
+        embedded_polynomial += c * x ** (e_embed[0]) * y ** (e_embed[1])
     return newton_polytope, embedded_polynomial, (x, y)
 
 
@@ -478,16 +478,25 @@ def WeierstrassForm(polynomial, variables=None, transformation=False):
     """
     if isinstance(polynomial, (list, tuple)):
         from sage.schemes.toric.weierstrass_higher import WeierstrassForm2
-        return WeierstrassForm2(polynomial, variables=variables, transformation=transformation)
+
+        return WeierstrassForm2(
+            polynomial, variables=variables, transformation=transformation
+        )
     if transformation:
         from sage.schemes.toric.weierstrass_covering import WeierstrassMap
+
         return WeierstrassMap(polynomial, variables=variables)
     if variables is None:
         variables = polynomial.variables()
     from sage.geometry.polyhedron.ppl_lattice_polygon import (
-        polar_P2_polytope, polar_P1xP1_polytope, polar_P2_112_polytope)
-    newton_polytope, polynomial, variables = \
-        Newton_polygon_embedded(polynomial, variables)
+        polar_P2_polytope,
+        polar_P1xP1_polytope,
+        polar_P2_112_polytope,
+    )
+
+    newton_polytope, polynomial, variables = Newton_polygon_embedded(
+        polynomial, variables
+    )
     polygon = newton_polytope.embed_in_reflexive_polytope('polytope')
     if polygon is polar_P2_polytope():
         return WeierstrassForm_P2(polynomial, variables)
@@ -596,10 +605,11 @@ def _extract_coefficients(polynomial, monomials, variables):
             return tuple(0 for i in indices)
         e = monomial.exponents()[0]
         return tuple(e[i] for i in indices)
+
     coeffs = {}
     for c, m in polynomial:
         i = index(m)
-        coeffs[i] = c*m + coeffs.pop(i, R.zero())
+        coeffs[i] = c * m + coeffs.pop(i, R.zero())
     result = tuple(coeffs.pop(index(m), R.zero()) // m for m in monomials)
     if coeffs:
         msg = f'the polynomial contains more monomials than given: {coeffs}'
@@ -854,7 +864,7 @@ def _partial_discriminant(quadric, y0, y1=None):
         monomials = (y1**2, y0 * y1, y0**2)
         variables = [y0, y1]
     c = _extract_coefficients(quadric, monomials, variables)
-    return c[1]**2 - 4*c[0]*c[2]
+    return c[1] ** 2 - 4 * c[0] * c[2]
 
 
 ######################################################################

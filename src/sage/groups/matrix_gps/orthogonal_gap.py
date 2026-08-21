@@ -17,13 +17,19 @@ Orthogonal Linear Groups with GAP
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.matrix_gps.orthogonal import OrthogonalMatrixGroup_generic
 from sage.misc.cachefunc import cached_method
 
 
-class OrthogonalMatrixGroup_gap(OrthogonalMatrixGroup_generic, NamedMatrixGroup_gap, FinitelyGeneratedMatrixGroup_gap):
+class OrthogonalMatrixGroup_gap(
+    OrthogonalMatrixGroup_generic,
+    NamedMatrixGroup_gap,
+    FinitelyGeneratedMatrixGroup_gap,
+):
     r"""
     The general or special orthogonal group in GAP.
 
@@ -36,6 +42,7 @@ class OrthogonalMatrixGroup_gap(OrthogonalMatrixGroup_generic, NamedMatrixGroup_
         sage: isinstance(G, FinitelyGeneratedMatrixGroup_gap)
         True
     """
+
     @cached_method
     def invariant_bilinear_form(self):
         """
@@ -83,7 +90,9 @@ class OrthogonalMatrixGroup_gap(OrthogonalMatrixGroup_generic, NamedMatrixGroup_
         m.set_immutable()
         return m
 
-    invariant_form = invariant_bilinear_form # alias (analogues to symplectic and unitary cases)
+    invariant_form = (
+        invariant_bilinear_form  # alias (analogues to symplectic and unitary cases)
+    )
 
     @cached_method
     def invariant_quadratic_form(self):

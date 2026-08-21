@@ -48,6 +48,7 @@ from sage.schemes.generic.homset import SchemeHomset_points, SchemeHomset_generi
 #  Affine varieties
 # *******************************************************************
 
+
 class SchemeHomset_points_spec(SchemeHomset_generic):
     """
     Set of rational points of an affine variety.
@@ -62,6 +63,7 @@ class SchemeHomset_points_spec(SchemeHomset_generic):
         sage: SchemeHomset_points_spec(Spec(QQ), Spec(QQ))
         Set of rational points of Spectrum of Rational Field
     """
+
     def _element_constructor_(self, *args, **kwds):
         """
         The element constructor.
@@ -115,6 +117,7 @@ class SchemeHomset_polynomial_affine_space(SchemeHomset_generic):
           From: Affine Space of dimension 2 over Rational Field
           To:   Affine Space of dimension 2 over Rational Field
     """
+
     def identity(self):
         """
         The identity morphism of this homset.
@@ -132,6 +135,7 @@ class SchemeHomset_polynomial_affine_space(SchemeHomset_generic):
         """
         if self.is_endomorphism_set():
             from sage.schemes.generic.morphism import SchemeMorphism_polynomial_id
+
             return SchemeMorphism_polynomial_id(self.domain())
         raise TypeError("identity map is only defined for endomorphisms")
 
@@ -139,6 +143,7 @@ class SchemeHomset_polynomial_affine_space(SchemeHomset_generic):
 # *******************************************************************
 #  Affine varieties
 # *******************************************************************
+
 
 class SchemeHomset_points_affine(SchemeHomset_points):
     """
@@ -261,9 +266,13 @@ class SchemeHomset_points_affine(SchemeHomset_points):
         if not isinstance(X, AffineSpace_generic) and X.base_ring() in Fields():
             if hasattr(X.base_ring(), 'precision'):
                 numerical = True
-                verbose("Warning: computations in the numerical fields are inexact;points may be computed partially or incorrectly.", level=0)
+                verbose(
+                    "Warning: computations in the numerical fields are inexact;points may be computed partially or incorrectly.",
+                    level=0,
+                )
                 from sage.rings.real_mpfr import RR
-                zero_tol = RR(kwds.pop('zero_tolerance', 10**(-10)))
+
+                zero_tol = RR(kwds.pop('zero_tolerance', 10 ** (-10)))
                 if zero_tol <= 0:
                     raise ValueError("tolerance must be positive")
             else:
@@ -299,7 +308,9 @@ class SchemeHomset_points_affine(SchemeHomset_points):
                             L = G[i].substitute(P)
                             if R(L).degree() > 0:
                                 if numerical:
-                                    for pol in L.univariate_polynomial().roots(multiplicities=False):
+                                    for pol in L.univariate_polynomial().roots(
+                                        multiplicities=False
+                                    ):
                                         r = L.variables()[0]
                                         varindex = R.gens().index(r)
                                         P.update({R.gen(varindex): pol})
@@ -307,17 +318,26 @@ class SchemeHomset_points_affine(SchemeHomset_points):
                                         good = 1
                                 else:
                                     L = L.factor()
-                                # the linear factors give the possible rational values of
-                                # this coordinate
+                                    # the linear factors give the possible rational values of
+                                    # this coordinate
                                     for pol, pow in L:
-                                        if pol.degree() == 1 and len(pol.variables()) == 1:
+                                        if (
+                                            pol.degree() == 1
+                                            and len(pol.variables()) == 1
+                                        ):
                                             good = 1
                                             r = pol.variables()[0]
                                             varindex = R.gens().index(r)
                                             # add this coordinates information to
                                             # each dictionary entry
-                                            P.update({R.gen(varindex):
-                                                      -pol.constant_coefficient() / pol.monomial_coefficient(r)})
+                                            P.update(
+                                                {
+                                                    R.gen(
+                                                        varindex
+                                                    ): -pol.constant_coefficient()
+                                                    / pol.monomial_coefficient(r)
+                                                }
+                                            )
                                             new_points.append(copy(P))
                             else:
                                 new_points.append(P)
@@ -331,7 +351,10 @@ class SchemeHomset_points_affine(SchemeHomset_points):
                         if numerical:
                             if len(points[i]) == N:
                                 S = AS([points[i][R.gen(j)] for j in range(N)])
-                                if all(g(list(S)) < zero_tol for g in X.defining_polynomials()):
+                                if all(
+                                    g(list(S)) < zero_tol
+                                    for g in X.defining_polynomials()
+                                ):
                                     rat_points.append(S)
                         else:
                             if len(points[i]) == N and I.subs(points[i]) == I0:
@@ -347,15 +370,26 @@ class SchemeHomset_points_affine(SchemeHomset_points):
         if isinstance(R, RationalField) or R == ZZ:
             if not B > 0:
                 raise TypeError("a positive bound B (= %s) must be specified" % B)
-            from sage.schemes.affine.affine_rational_point import enum_affine_rational_field
+            from sage.schemes.affine.affine_rational_point import (
+                enum_affine_rational_field,
+            )
+
             return enum_affine_rational_field(self, B)
         if R in NumberFields():
             if not B > 0:
                 raise TypeError("a positive bound B (= %s) must be specified" % B)
-            from sage.schemes.affine.affine_rational_point import enum_affine_number_field
-            return enum_affine_number_field(self, bound=B, tolerance=tol, precision=prec)
+            from sage.schemes.affine.affine_rational_point import (
+                enum_affine_number_field,
+            )
+
+            return enum_affine_number_field(
+                self, bound=B, tolerance=tol, precision=prec
+            )
         if isinstance(R, FiniteField):
-            from sage.schemes.affine.affine_rational_point import enum_affine_finite_field
+            from sage.schemes.affine.affine_rational_point import (
+                enum_affine_finite_field,
+            )
+
             return enum_affine_finite_field(self)
         raise TypeError("unable to enumerate points over %s" % R)
 
@@ -431,6 +465,7 @@ class SchemeHomset_points_affine(SchemeHomset_points):
             ValueError: tolerance must be positive
         """
         from sage.schemes.affine.affine_space import AffineSpace_generic
+
         if F is None:
             from sage.rings.cc import CC as F
         if F not in Fields() or not hasattr(F, 'precision'):
@@ -450,7 +485,8 @@ class SchemeHomset_points_affine(SchemeHomset_points):
 
         # if X zero-dimensional
         from sage.rings.real_mpfr import RR
-        zero_tol = RR(kwds.pop('zero_tolerance', 10**(-10)))
+
+        zero_tol = RR(kwds.pop('zero_tolerance', 10 ** (-10)))
         if zero_tol <= 0:
             raise ValueError("tolerance must be positive")
         rat_points = []
@@ -482,8 +518,9 @@ class SchemeHomset_points_affine(SchemeHomset_points):
                         r = L.variables()[0]
                         var = RF.gen(RF.gens().index(r))
 
-                        for pol in L.univariate_polynomial().roots(ring=F,
-                                multiplicities=False):
+                        for pol in L.univariate_polynomial().roots(
+                            ring=F, multiplicities=False
+                        ):
                             P[var] = pol
                             new_points.append(copy(P))
                             good = True

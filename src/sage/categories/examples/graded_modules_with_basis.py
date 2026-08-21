@@ -95,6 +95,7 @@ class GradedPartitionModule(CombinatorialFreeModule):
           sage: p.degree()                                                              # needs sage.modules
           6
     """
+
     def __init__(self, base_ring):
         """
         EXAMPLES::
@@ -103,8 +104,9 @@ class GradedPartitionModule(CombinatorialFreeModule):
             An example of a graded module with basis: the free module on partitions over Rational Field
             sage: TestSuite(A).run()                                                    # needs sage.modules
         """
-        CombinatorialFreeModule.__init__(self, base_ring, Partitions(),
-                                         category=GradedModulesWithBasis(base_ring))
+        CombinatorialFreeModule.__init__(
+            self, base_ring, Partitions(), category=GradedModulesWithBasis(base_ring)
+        )
 
     # FIXME: this is currently required, because the implementation of ``basis``
     # in CombinatorialFreeModule overrides that of GradedModulesWithBasis
@@ -145,7 +147,10 @@ class GradedPartitionModule(CombinatorialFreeModule):
             sage: GradedModulesWithBasis(QQ).example()  # indirect doctest              # needs sage.modules
             An example of a graded module with basis: the free module on partitions over Rational Field
         """
-        return "An example of a graded module with basis: the free module on partitions over %s" % self.base_ring()
+        return (
+            "An example of a graded module with basis: the free module on partitions over %s"
+            % self.base_ring()
+        )
 
     def _repr_term(self, t):
         """

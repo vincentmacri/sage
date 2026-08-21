@@ -23,14 +23,14 @@ REFERENCES:
 - Chap. 3 of [Lee2013]_
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.manifolds.differentiable.diff_map import DiffMap
 from sage.manifolds.point import ManifoldPoint
@@ -346,8 +346,16 @@ class DifferentiableCurve(DiffMap):
         sage: tau
         1/9*sqrt(5)
     """
-    def __init__(self, parent, coord_expression=None, name=None,
-                 latex_name=None, is_isomorphism=False, is_identity=False):
+
+    def __init__(
+        self,
+        parent,
+        coord_expression=None,
+        name=None,
+        latex_name=None,
+        is_isomorphism=False,
+        is_identity=False,
+    ):
         r"""
         Construct a curve.
 
@@ -371,8 +379,7 @@ class DifferentiableCurve(DiffMap):
             coord_functions = None
         else:
             if not isinstance(coord_expression, dict):
-                raise TypeError("{} is not a dictionary".format(
-                                                             coord_expression))
+                raise TypeError("{} is not a dictionary".format(coord_expression))
             param_chart = parent.domain().canonical_chart()
             coord_functions = {}
             for chart, expr in coord_expression.items():
@@ -381,10 +388,15 @@ class DifferentiableCurve(DiffMap):
                     coord_functions[chart] = expr
                 else:
                     coord_functions[(param_chart, chart)] = expr
-        DiffMap.__init__(self, parent, coord_functions=coord_functions,
-                         name=name, latex_name=latex_name,
-                         is_isomorphism=is_isomorphism,
-                         is_identity=is_identity)
+        DiffMap.__init__(
+            self,
+            parent,
+            coord_functions=coord_functions,
+            name=name,
+            latex_name=latex_name,
+            is_isomorphism=is_isomorphism,
+            is_identity=is_identity,
+        )
 
     def _repr_(self):
         r"""
@@ -434,8 +446,17 @@ class DifferentiableCurve(DiffMap):
             sage: loads(dumps(c))
             Curve in the 2-dimensional differentiable manifold M
         """
-        return (type(self), (self.parent(), None, self._name, self._latex_name,
-                             self._is_isomorphism, self._is_identity))
+        return (
+            type(self),
+            (
+                self.parent(),
+                None,
+                self._name,
+                self._latex_name,
+                self._is_isomorphism,
+                self._is_identity,
+            ),
+        )
 
     def coord_expr(self, chart=None):
         r"""
@@ -534,8 +555,7 @@ class DifferentiableCurve(DiffMap):
         coord_functions = self._coord_expression[chart_pair]._functions
         n = codom._dim
         dict_subs = {canon_coord: t}
-        coords = [coord_functions[i].expr().substitute(dict_subs)
-                  for i in range(n)]
+        coords = [coord_functions[i].expr().substitute(dict_subs) for i in range(n)]
         if simplify:
             coords = [chart_pair[0].simplify(coords[i]) for i in range(n)]
         if self._name is not None:
@@ -546,9 +566,14 @@ class DifferentiableCurve(DiffMap):
             latex_name = r"{}\left({}\right)".format(self._latex_name, latex(t))
         else:
             latex_name = None
-        return codom.element_class(codom, coords=coords, chart=chart_pair[1],
-                                   name=name, latex_name=latex_name,
-                                   check_coords=False)
+        return codom.element_class(
+            codom,
+            coords=coords,
+            chart=chart_pair[1],
+            name=name,
+            latex_name=latex_name,
+            check_coords=False,
+        )
 
     def tangent_vector_field(self, name=None, latex_name=None):
         r"""
@@ -654,21 +679,34 @@ class DifferentiableCurve(DiffMap):
         for chart in codom_top_charts:
             try:
                 jacob = self.differential_functions(canon_chart, chart)
-                restrict = self.restrict(canon_chart.domain(),
-                                     subcodomain=chart.domain())
+                restrict = self.restrict(
+                    canon_chart.domain(), subcodomain=chart.domain()
+                )
                 fmodule = restrict._domain.vector_field_module(dest_map=restrict)
                 frame = fmodule.basis(from_frame=chart.frame())
                 resu_rest = resu.restrict(canon_chart.domain(), dest_map=restrict)
-                resu_rest.add_comp(frame)[:, canon_chart] = [jacob[i][0]
-                                                             for i in range(dim)]
+                resu_rest.add_comp(frame)[:, canon_chart] = [
+                    jacob[i][0] for i in range(dim)
+                ]
             except ValueError:
                 pass
         return resu
 
     @options(thickness=1, plot_points=75, max_range=8, aspect_ratio='automatic')
-    def plot(self, chart=None, ambient_coords=None, mapping=None, prange=None,
-             include_end_point=(True, True), end_point_offset=(0.001, 0.001),
-             parameters=None, color='red', style='-', label_axes=True, **kwds):
+    def plot(
+        self,
+        chart=None,
+        ambient_coords=None,
+        mapping=None,
+        prange=None,
+        include_end_point=(True, True),
+        end_point_offset=(0.001, 0.001),
+        parameters=None,
+        color='red',
+        style='-',
+        label_axes=True,
+        **kwds,
+    ):
         r"""
         Plot the current curve in a Cartesian graph based on the
         coordinates of some ambient chart.
@@ -903,8 +941,10 @@ class DifferentiableCurve(DiffMap):
             ambient_coords = chart[:]  # all chart coordinates are used
         n_pc = len(ambient_coords)
         if n_pc != 2 and n_pc != 3:
-            raise ValueError("the number of coordinates involved in the " +
-                             "plot must be either 2 or 3, not {}".format(n_pc))
+            raise ValueError(
+                "the number of coordinates involved in the "
+                + "plot must be either 2 or 3, not {}".format(n_pc)
+            )
         # indices of plot coordinates
         ind_pc = [chart[:].index(pc) for pc in ambient_coords]
         #
@@ -915,8 +955,9 @@ class DifferentiableCurve(DiffMap):
         elif not isinstance(prange, (tuple, list)):
             raise TypeError("{} is neither a tuple nor a list".format(prange))
         elif len(prange) != 2:
-            raise ValueError("the argument prange must be a tuple/list " +
-                             "of 2 elements")
+            raise ValueError(
+                "the argument prange must be a tuple/list " + "of 2 elements"
+            )
         tmin = prange[0]
         tmax = prange[1]
         if tmin == -Infinity:
@@ -932,8 +973,9 @@ class DifferentiableCurve(DiffMap):
         #
         # The coordinate expression of the effective curve
         #
-        transf = eff_curve.coord_functions(chart1=self._domain.canonical_chart(),
-                                           chart2=chart)
+        transf = eff_curve.coord_functions(
+            chart1=self._domain.canonical_chart(), chart2=chart
+        )
         #
         # List of points for the plot curve
         #
@@ -943,24 +985,36 @@ class DifferentiableCurve(DiffMap):
         if parameters is None:
             for i in range(plot_points):
                 x = transf(t, simplify=False)
-                plot_curve.append( [numerical_approx(x[j]) for j in ind_pc] )
+                plot_curve.append([numerical_approx(x[j]) for j in ind_pc])
                 t += dt
         else:
             for i in range(plot_points):
                 x = transf(t, simplify=False)
                 plot_curve.append(
-                               [numerical_approx( x[j].substitute(parameters) )
-                                for j in ind_pc] )
+                    [numerical_approx(x[j].substitute(parameters)) for j in ind_pc]
+                )
                 t += dt
 
-        return self._graphics(plot_curve, ambient_coords,
-                              thickness=thickness,
-                              aspect_ratio=aspect_ratio, color=color,
-                              style=style, label_axes=label_axes)
+        return self._graphics(
+            plot_curve,
+            ambient_coords,
+            thickness=thickness,
+            aspect_ratio=aspect_ratio,
+            color=color,
+            style=style,
+            label_axes=label_axes,
+        )
 
-    def _graphics(self, plot_curve, ambient_coords, thickness=1,
-                  aspect_ratio='automatic', color='red', style='-',
-                  label_axes=True):
+    def _graphics(
+        self,
+        plot_curve,
+        ambient_coords,
+        thickness=1,
+        aspect_ratio='automatic',
+        color='red',
+        style='-',
+        label_axes=True,
+    ):
         r"""
         Plot a 2D or 3D curve in a Cartesian graph with axes labeled by
         the ambient coordinates; it is invoked by the methods
@@ -1004,8 +1058,7 @@ class DifferentiableCurve(DiffMap):
         #
         n_pc = len(ambient_coords)
         resu = Graphics()
-        resu += line(plot_curve, color=color, linestyle=style,
-                     thickness=thickness)
+        resu += line(plot_curve, color=color, linestyle=style, thickness=thickness)
         if n_pc == 2:  # 2D graphic
             resu.set_aspect_ratio(aspect_ratio)
             if label_axes:
@@ -1013,9 +1066,10 @@ class DifferentiableCurve(DiffMap):
                 # to show()), instead of using the method
                 # Graphics.axes_labels() since the latter is not robust w.r.t.
                 # graph addition
-                resu._extra_kwds['axes_labels'] = [r'$'+latex(pc)+r'$'
-                                                   for pc in ambient_coords]
-        else: # 3D graphic
+                resu._extra_kwds['axes_labels'] = [
+                    r'$' + latex(pc) + r'$' for pc in ambient_coords
+                ]
+        else:  # 3D graphic
             if aspect_ratio == 'automatic':
                 aspect_ratio = 1
             resu.aspect_ratio(aspect_ratio)

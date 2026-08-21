@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2013-05-03): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013-2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,25 +14,31 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
-#from sage.misc.lazy_attribute import lazy_attribute
-from sage.structure.indexed_generators import (IndexedGenerators,
-                                               standardize_names_index_set)
+
+# from sage.misc.lazy_attribute import lazy_attribute
+from sage.structure.indexed_generators import (
+    IndexedGenerators,
+    standardize_names_index_set,
+)
 
 from sage.categories.lie_algebras import LieAlgebras
 
 from sage.algebras.lie_algebras.lie_algebra_element import StructureCoefficientsElement
 from sage.algebras.lie_algebras.lie_algebra import FinitelyGeneratedLieAlgebra
-#from sage.algebras.lie_algebras.subalgebra import LieSubalgebra
-#from sage.algebras.lie_algebras.ideal import LieAlgebraIdeal
-#from sage.algebras.lie_algebras.quotient import QuotientLieAlgebra
+
+# from sage.algebras.lie_algebras.subalgebra import LieSubalgebra
+# from sage.algebras.lie_algebras.ideal import LieAlgebraIdeal
+# from sage.algebras.lie_algebras.quotient import QuotientLieAlgebra
 from sage.modules.free_module import FreeModule
 from sage.sets.family import Family
 
 
-class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGenerators):
+class LieAlgebraWithStructureCoefficients(
+    FinitelyGeneratedLieAlgebra, IndexedGenerators
+):
     r"""
     A Lie algebra with a set of specified structure coefficients.
 
@@ -97,6 +103,7 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
         sage: L.basis()
         Finite family {'x': x, 'y': y}
     """
+
     @staticmethod
     def __classcall_private__(cls, R, s_coeff, names=None, index_set=None, **kwds):
         """
@@ -120,22 +127,30 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
 
         # Make sure the structure coefficients are given by the index set
         if names is not None and names != tuple(index_set):
-            d = {x: index_set[i] for i,x in enumerate(names)}
+            d = {x: index_set[i] for i, x in enumerate(names)}
             get_pairs = lambda X: X.items() if isinstance(X, dict) else X
             try:
-                s_coeff = {(d[k[0]], d[k[1]]): [(d[x], y) for x,y in get_pairs(s_coeff[k])]
-                           for k in s_coeff}
+                s_coeff = {
+                    (d[k[0]], d[k[1]]): [(d[x], y) for x, y in get_pairs(s_coeff[k])]
+                    for k in s_coeff
+                }
             except (KeyError, ValueError):
                 # At this point we assume they are given by the index set
                 pass
 
-        s_coeff = LieAlgebraWithStructureCoefficients._standardize_s_coeff(s_coeff, index_set)
+        s_coeff = LieAlgebraWithStructureCoefficients._standardize_s_coeff(
+            s_coeff, index_set
+        )
         if s_coeff.cardinality() == 0:
             from sage.algebras.lie_algebras.abelian import AbelianLieAlgebra
+
             return AbelianLieAlgebra(R, names, index_set, **kwds)
 
-        if (names is None and len(index_set) <= 1) or (names is not None and len(names) <= 1):
+        if (names is None and len(index_set) <= 1) or (
+            names is not None and len(names) <= 1
+        ):
             from sage.algebras.lie_algebras.abelian import AbelianLieAlgebra
+
             return AbelianLieAlgebra(R, names, index_set, **kwds)
 
         return super().__classcall__(cls, R, s_coeff, names, index_set, **kwds)
@@ -157,10 +172,10 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
             Finite family {('x', 'y'): (('x', 1),)}
         """
         # Try to handle infinite basis (once/if supported)
-        #if isinstance(s_coeff, AbstractFamily) and s_coeff.cardinality() == infinity:
+        # if isinstance(s_coeff, AbstractFamily) and s_coeff.cardinality() == infinity:
         #    return s_coeff
 
-        index_to_pos = {k: i for i,k in enumerate(index_set)}
+        index_to_pos = {k: i for i, k in enumerate(index_set)}
 
         sc = {}
         # Make sure the first gen is smaller than the second in each key
@@ -176,20 +191,37 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
                 if not index_to_pos[k[0]] < index_to_pos[k[1]]:
                     if k[0] == k[1]:
                         if not all(val == 0 for g, val in v):
-                            raise ValueError("elements {} are equal but their bracket is not set to 0".format(k))
+                            raise ValueError(
+                                "elements {} are equal but their bracket is not set to 0".format(
+                                    k
+                                )
+                            )
                         continue
                 key = tuple(k)
                 vals = tuple((g, val) for g, val in v if val != 0)
 
             if key in sc.keys() and sorted(sc[key]) != sorted(vals):
-                raise ValueError("two distinct values given for one and the same bracket")
+                raise ValueError(
+                    "two distinct values given for one and the same bracket"
+                )
 
             if vals:
                 sc[key] = vals
         return Family(sc)
 
-    def __init__(self, R, s_coeff, names, index_set, category=None, prefix=None,
-                 bracket=None, latex_bracket=None, string_quotes=None, **kwds):
+    def __init__(
+        self,
+        R,
+        s_coeff,
+        names,
+        index_set,
+        category=None,
+        prefix=None,
+        bracket=None,
+        latex_bracket=None,
+        string_quotes=None,
+        **kwds,
+    ):
         """
         Initialize ``self``.
 
@@ -198,7 +230,7 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
             sage: L = LieAlgebra(QQ, 'x,y', {('x','y'): {'x':1}})
             sage: TestSuite(L).run()
         """
-        default = (names != tuple(index_set))
+        default = names != tuple(index_set)
         if prefix is None:
             if default:
                 prefix = 'L'
@@ -211,30 +243,38 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
         if string_quotes is None:
             string_quotes = default
 
-        #self._pos_to_index = dict(enumerate(index_set))
-        self._index_to_pos = {k: i for i,k in enumerate(index_set)}
+        # self._pos_to_index = dict(enumerate(index_set))
+        self._index_to_pos = {k: i for i, k in enumerate(index_set)}
         if "sorting_key" not in kwds:
             kwds["sorting_key"] = self._index_to_pos.__getitem__
 
         cat = LieAlgebras(R).WithBasis().FiniteDimensional().or_subcategory(category)
         FinitelyGeneratedLieAlgebra.__init__(self, R, names, index_set, cat)
-        IndexedGenerators.__init__(self, self._indices, prefix=prefix,
-                                   bracket=bracket, latex_bracket=latex_bracket,
-                                   string_quotes=string_quotes, **kwds)
+        IndexedGenerators.__init__(
+            self,
+            self._indices,
+            prefix=prefix,
+            bracket=bracket,
+            latex_bracket=latex_bracket,
+            string_quotes=string_quotes,
+            **kwds,
+        )
 
         self._M = FreeModule(R, len(index_set))
 
         # Transform the values in the structure coefficients to elements
         def to_vector(tuples):
-            vec = [R.zero()]*len(index_set)
-            for k,c in tuples:
+            vec = [R.zero()] * len(index_set)
+            for k, c in tuples:
                 vec[self._index_to_pos[k]] = c
             vec = self._M(vec)
             vec.set_immutable()
             return vec
-        self._s_coeff = {(self._index_to_pos[k[0]], self._index_to_pos[k[1]]):
-                         to_vector(s_coeff[k])
-                         for k in s_coeff.keys()}
+
+        self._s_coeff = {
+            (self._index_to_pos[k[0]], self._index_to_pos[k[1]]): to_vector(s_coeff[k])
+            for k in s_coeff.keys()
+        }
 
     # For compatibility with CombinatorialFreeModuleElement
     _repr_term = IndexedGenerators._repr_generator
@@ -264,20 +304,25 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
         """
         if not include_zeros:
             pos_to_index = dict(enumerate(self._indices))
-            return Family({(pos_to_index[k[0]], pos_to_index[k[1]]):
-                           self.element_class(self, self._s_coeff[k])
-                           for k in self._s_coeff})
+            return Family(
+                {
+                    (pos_to_index[k[0]], pos_to_index[k[1]]): self.element_class(
+                        self, self._s_coeff[k]
+                    )
+                    for k in self._s_coeff
+                }
+            )
         ret = {}
         zero = self._M.zero()
-        for i,x in enumerate(self._indices):
-            for j, y in enumerate(self._indices[i+1:]):
-                if (i, j+i+1) in self._s_coeff:
-                    elt = self._s_coeff[i, j+i+1]
-                elif (j+i+1, i) in self._s_coeff:
-                    elt = -self._s_coeff[j+i+1, i]
+        for i, x in enumerate(self._indices):
+            for j, y in enumerate(self._indices[i + 1 :]):
+                if (i, j + i + 1) in self._s_coeff:
+                    elt = self._s_coeff[i, j + i + 1]
+                elif (j + i + 1, i) in self._s_coeff:
+                    elt = -self._s_coeff[j + i + 1, i]
                 else:
                     elt = zero
-                ret[x,y] = self.element_class(self, elt) # +i+1 for offset
+                ret[x, y] = self.element_class(self, elt)  # +i+1 for offset
         return Family(ret)
 
     def dimension(self):
@@ -417,8 +462,11 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
             Finite family {('x', 'y'): z}
         """
         return LieAlgebraWithStructureCoefficients(
-            R, self.structure_coefficients(),
-            names=self.variable_names(), index_set=self.indices())
+            R,
+            self.structure_coefficients(),
+            names=self.variable_names(),
+            index_set=self.indices(),
+        )
 
     class Element(StructureCoefficientsElement):
         def _sorted_items_for_printing(self):
@@ -449,9 +497,14 @@ class LieAlgebraWithStructureCoefficients(FinitelyGeneratedLieAlgebra, IndexedGe
             pos_to_index = dict(enumerate(self.parent()._indices))
             v = [(pos_to_index[k], c) for k, c in self.value.items()]
             try:
-                v.sort(key=lambda monomial_coeff:
-                            print_options['sorting_key'](monomial_coeff[0]),
-                       reverse=print_options['sorting_reverse'])
-            except Exception: # Sorting the output is a plus, but if we can't, no big deal
+                v.sort(
+                    key=lambda monomial_coeff: print_options['sorting_key'](
+                        monomial_coeff[0]
+                    ),
+                    reverse=print_options['sorting_reverse'],
+                )
+            except (
+                Exception
+            ):  # Sorting the output is a plus, but if we can't, no big deal
                 pass
             return v

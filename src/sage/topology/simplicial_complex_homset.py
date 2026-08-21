@@ -114,8 +114,9 @@ class SimplicialComplexHomset(sage.categories.homset.Homset):
         """
         # Preserve whether the codomain is mutable when renaming the vertices.
         immutable = self._codomain.is_immutable()
-        X = self._domain.product(self._domain, rename_vertices=rename_vertices,
-                                 immutable=immutable)
+        X = self._domain.product(
+            self._domain, rename_vertices=rename_vertices, immutable=immutable
+        )
         if self._codomain != X:
             raise TypeError("diagonal morphism is only defined for Hom(X,XxX)")
         f = {}
@@ -172,6 +173,8 @@ class SimplicialComplexHomset(sage.categories.homset.Homset):
         except StopIteration:
             if not X_vertices:
                 return {}
-            raise TypeError("there are no morphisms from a non-empty simplicial complex to an empty simplicial complex")
+            raise TypeError(
+                "there are no morphisms from a non-empty simplicial complex to an empty simplicial complex"
+            )
         f = {x: i for x in X_vertices}
         return SimplicialComplexMorphism(f, self._domain, self._codomain)

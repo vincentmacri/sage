@@ -146,8 +146,9 @@ def _preprocess_args(ambient_dim, lattice):
     from sage.geometry.toric_lattice import ToricLattice
 
     if ambient_dim is None and lattice is None:
-        raise ValueError("either the ambient dimension or the lattice "
-                         "must be specified")
+        raise ValueError(
+            "either the ambient dimension or the lattice must be specified"
+        )
 
     if ambient_dim is None:
         ambient_dim = lattice.rank()
@@ -156,8 +157,10 @@ def _preprocess_args(ambient_dim, lattice):
         lattice = ToricLattice(ambient_dim)
 
     if lattice.rank() != ambient_dim:
-        raise ValueError("lattice rank=%d and ambient_dim=%d "
-                         "are incompatible" % (lattice.rank(), ambient_dim))
+        raise ValueError(
+            "lattice rank=%d and ambient_dim=%d "
+            "are incompatible" % (lattice.rank(), ambient_dim)
+        )
 
     return (ambient_dim, lattice)
 
@@ -230,11 +233,13 @@ def barker_foran(lattice=None):
 
     one = ZZ.one()
     zero = ZZ.zero()
-    ext = [( one,   one,  one),
-           ( zero,  one,  one),
-           (-one,   zero, one),
-           ( zero, -one,  one),
-           ( one,  -one,  one)]  # noqa: E221
+    ext = [
+        (one, one, one),
+        (zero, one, one),
+        (-one, zero, one),
+        (zero, -one, one),
+        (one, -one, one),
+    ]  # noqa: E221
 
     return Cone(ext, lattice, check=False)
 
@@ -371,7 +376,7 @@ def downward_monotone(ambient_dim=None, lattice=None):
 
     if G.nrows() > 0:
         # Special case for when the ambient space is trivial.
-        G = G.insert_row(ambient_dim, -1*G.row(-1))
+        G = G.insert_row(ambient_dim, -1 * G.row(-1))
 
     return Cone(G.rows(), lattice)
 
@@ -693,8 +698,10 @@ def rearrangement(p, ambient_dim=None, lattice=None):
     ambient_dim, lattice = _preprocess_args(ambient_dim, lattice)
 
     if p < 1 or p > ambient_dim or p not in ZZ:
-        raise ValueError("order p=%s should be an integer between 1 "
-                         "and ambient_dim=%d, inclusive" % (p, ambient_dim))
+        raise ValueError(
+            "order p=%s should be an integer between 1 "
+            "and ambient_dim=%d, inclusive" % (p, ambient_dim)
+        )
 
     I = matrix.identity(ZZ, ambient_dim)
     M = matrix.ones(ZZ, ambient_dim) - p * I
@@ -840,7 +847,7 @@ def schur(ambient_dim=None, lattice=None):
         return 0
 
     # The "max" below catches the trivial case where ambient_dim == 0.
-    S = matrix(ZZ, max(0, ambient_dim-1), ambient_dim, _f)
+    S = matrix(ZZ, max(0, ambient_dim - 1), ambient_dim, _f)
 
     return Cone(S.rows(), lattice)
 

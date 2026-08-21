@@ -136,15 +136,18 @@ AUTHORS:
 from . import booleval
 from . import logictable
 from . import logicparser
+
 # import boolopt
 from sage.misc.flatten import flatten
 
-latex_operators = [('&', '\\wedge '),
-                   ('|', '\\vee '),
-                   ('~', '\\neg '),
-                   ('^', '\\oplus '),
-                   ('<->', '\\leftrightarrow '),
-                   ('->', '\\rightarrow ')]
+latex_operators = [
+    ('&', '\\wedge '),
+    ('|', '\\vee '),
+    ('~', '\\neg '),
+    ('^', '\\oplus '),
+    ('<->', '\\leftrightarrow '),
+    ('->', '\\rightarrow '),
+]
 
 
 class BooleanFormula:
@@ -163,6 +166,7 @@ class BooleanFormula:
     - ``vo`` -- list; this contains the variables in the expression, in the
       order that they appear; each variable only occurs once in the list
     """
+
     __expression = ""
     __tree = []
     __vars_order = []
@@ -772,7 +776,9 @@ class BooleanFormula:
         # make sure every argument is an instance of :class:`BooleanFormula`
         for formula in (self,) + hypotheses:
             if not isinstance(formula, BooleanFormula):
-                raise TypeError("is_consequence only takes instances of BooleanFormula() class as input")
+                raise TypeError(
+                    "is_consequence only takes instances of BooleanFormula() class as input"
+                )
 
         if not hypotheses:
             # if there are no hypotheses, then we just want to know whether self is a tautology
@@ -823,7 +829,9 @@ class BooleanFormula:
         """
         # input validation
         if not isinstance(other, BooleanFormula):
-            raise TypeError("implies() takes an instance of the BooleanFormula() class as input")
+            raise TypeError(
+                "implies() takes an instance of the BooleanFormula() class as input"
+            )
 
         conditional = self.ifthen(other)
         return (conditional).is_tautology()
@@ -907,7 +915,9 @@ class BooleanFormula:
         self.__expression = str[:-1]
         # in case of tautology
         if len(self.__expression) == 0:
-            self.__expression = '(' + self.__vars_order[0] + '|~' + self.__vars_order[0] + ')'
+            self.__expression = (
+                '(' + self.__vars_order[0] + '|~' + self.__vars_order[0] + ')'
+            )
         self.__tree, self.__vars_order = logicparser.parse(self.__expression)
 
     convert_cnf = convert_cnf_table
@@ -1009,70 +1019,70 @@ class BooleanFormula:
         s = 'p cnf ' + str(len(self.__vars_order)) + ' ' + str(clauses) + '\n' + s
         return s[:-1]
 
-#    def simplify(self):
-#        r"""
-#        This function uses the propcalc package to simplify an expression to
-#        its minimal form.
-#
-#        OUTPUT: a simplified expression
-#
-#        EXAMPLES::
+    #    def simplify(self):
+    #        r"""
+    #        This function uses the propcalc package to simplify an expression to
+    #        its minimal form.
+    #
+    #        OUTPUT: a simplified expression
+    #
+    #        EXAMPLES::
 
-#            sage: import sage.logic.propcalc as propcalc
-#            sage: f = propcalc.formula("a&((b|c)^a->c)<->b")
-#            sage: f.truthtable()
-#            a      b      c      value
-#            False  False  False  True
-#            False  False  True   True
-#            False  True   False  False
-#            False  True   True   False
-#            True   False  False  True
-#            True   False  True   False
-#            True   True   False  True
-#            True   True   True   True
-#            sage: f.simplify()
-#            (~a&~b)|(a&~b&~c)|(a&b)
-#            sage: f.truthtable()
-#            a      b      c      value
-#            False  False  False  True
-#            False  False  True   True
-#            False  True   False  False
-#            False  True   True   False
-#            True   False  False  True
-#            True   False  True   False
-#            True   True   False  True
-#            True   True   True   True
-#
-#        .. NOTE::
-#
-#            If the instance of boolean formula has not been converted to
-#            cnf form by a call to convert_cnf() or convert_cnf_recur()
-#            satformat() will call convert_cnf().  Please see the notes for
-#            convert_cnf() and convert_cnf_recur() for performance issues.
-#        """
-#        exp = ''
-#        self.__tree = logicparser.apply_func(self.__tree, self.reduce_op)
-#        plf = logicparser.apply_func(self.__tree, self.convert_opt)
-#        wff = boolopt.PLFtoWFF()(plf) # convert to positive-normal form
-#        wtd = boolopt.WFFtoDNF()
-#        dnf = wtd(wff)
-#        dnf = wtd.clean(dnf)
-#        if dnf == [] or dnf == [[]]:
-#            exp = self.__vars_order[0] + '&~' + self.__vars_order[0] + ' '
-#        opt = boolopt.optimize(dnf)
-#        if exp == '' and (opt == [] or opt == [[]]):
-#            exp = self.__vars_order[0] + '|~' + self.__vars_order[0] + ' '
-#        if exp == '':
-#            for con in opt:
-#                s = '('
-#                for prop in con:
-#                    if prop[0] == 'notprop':
-#                       s += '~'
-#                    s += prop[1] + '&'
-#                exp += s[:-1] + ')|'
-#        self.__expression = exp[:-1]
-#        self.__tree, self.__vars_order = logicparser.parse(self.__expression)
-#        return BooleanFormula(self.__expression, self.__tree, self.__vars_order)
+    #            sage: import sage.logic.propcalc as propcalc
+    #            sage: f = propcalc.formula("a&((b|c)^a->c)<->b")
+    #            sage: f.truthtable()
+    #            a      b      c      value
+    #            False  False  False  True
+    #            False  False  True   True
+    #            False  True   False  False
+    #            False  True   True   False
+    #            True   False  False  True
+    #            True   False  True   False
+    #            True   True   False  True
+    #            True   True   True   True
+    #            sage: f.simplify()
+    #            (~a&~b)|(a&~b&~c)|(a&b)
+    #            sage: f.truthtable()
+    #            a      b      c      value
+    #            False  False  False  True
+    #            False  False  True   True
+    #            False  True   False  False
+    #            False  True   True   False
+    #            True   False  False  True
+    #            True   False  True   False
+    #            True   True   False  True
+    #            True   True   True   True
+    #
+    #        .. NOTE::
+    #
+    #            If the instance of boolean formula has not been converted to
+    #            cnf form by a call to convert_cnf() or convert_cnf_recur()
+    #            satformat() will call convert_cnf().  Please see the notes for
+    #            convert_cnf() and convert_cnf_recur() for performance issues.
+    #        """
+    #        exp = ''
+    #        self.__tree = logicparser.apply_func(self.__tree, self.reduce_op)
+    #        plf = logicparser.apply_func(self.__tree, self.convert_opt)
+    #        wff = boolopt.PLFtoWFF()(plf) # convert to positive-normal form
+    #        wtd = boolopt.WFFtoDNF()
+    #        dnf = wtd(wff)
+    #        dnf = wtd.clean(dnf)
+    #        if dnf == [] or dnf == [[]]:
+    #            exp = self.__vars_order[0] + '&~' + self.__vars_order[0] + ' '
+    #        opt = boolopt.optimize(dnf)
+    #        if exp == '' and (opt == [] or opt == [[]]):
+    #            exp = self.__vars_order[0] + '|~' + self.__vars_order[0] + ' '
+    #        if exp == '':
+    #            for con in opt:
+    #                s = '('
+    #                for prop in con:
+    #                    if prop[0] == 'notprop':
+    #                       s += '~'
+    #                    s += prop[1] + '&'
+    #                exp += s[:-1] + ')|'
+    #        self.__expression = exp[:-1]
+    #        self.__tree, self.__vars_order = logicparser.parse(self.__expression)
+    #        return BooleanFormula(self.__expression, self.__tree, self.__vars_order)
 
     def convert_opt(self, tree):
         r"""
@@ -1245,12 +1255,18 @@ class BooleanFormula:
         """
         if tree[0] == '<->':
             # parse tree for (~tree[1]|tree[2])&(~tree[2]|tree[1])
-            new_tree = ['&', ['|', ['~', tree[1], None], tree[2]],
-                        ['|', ['~', tree[2], None], tree[1]]]
+            new_tree = [
+                '&',
+                ['|', ['~', tree[1], None], tree[2]],
+                ['|', ['~', tree[2], None], tree[1]],
+            ]
         elif tree[0] == '^':
             # parse tree for (tree[1]|tree[2])&~(tree[1]&tree[2])
-            new_tree = ['&', ['|', tree[1], tree[2]],
-                        ['~', ['&', tree[1], tree[2]], None]]
+            new_tree = [
+                '&',
+                ['|', tree[1], tree[2]],
+                ['~', ['&', tree[1], tree[2]], None],
+            ]
         elif tree[0] == '->':
             # parse tree for ~tree[1]|tree[2]
             new_tree = ['|', ['~', tree[1], None], tree[2]]
@@ -1325,12 +1341,10 @@ class BooleanFormula:
             in :mod:`~sage.logic.logicparser`.
         """
         if tree[0] == '|' and isinstance(tree[2], list) and tree[2][0] == '&':
-            new_tree = ['&', ['|', tree[1], tree[2][1]],
-                        ['|', tree[1], tree[2][2]]]
+            new_tree = ['&', ['|', tree[1], tree[2][1]], ['|', tree[1], tree[2][2]]]
             return logicparser.apply_func(new_tree, self.dist_ors)
         if tree[0] == '|' and isinstance(tree[1], list) and tree[1][0] == '&':
-            new_tree = ['&', ['|', tree[1][1], tree[2]],
-                        ['|', tree[1][2], tree[2]]]
+            new_tree = ['&', ['|', tree[1][1], tree[2]], ['|', tree[1][2], tree[2]]]
             return logicparser.apply_func(new_tree, self.dist_ors)
         return tree
 
@@ -1394,7 +1408,7 @@ class BooleanFormula:
             if i < len(str_tree) - 2 and str_tree[i + 1] == '&' and open_flag:
                 open_flag = False
                 self.__expression += ')'
-            if str_tree[i:i + 4] == 'None':
+            if str_tree[i : i + 4] == 'None':
                 i += 4
             if i < len(str_tree) and str_tree[i] not in ' \',[]':
                 self.__expression += str_tree[i]

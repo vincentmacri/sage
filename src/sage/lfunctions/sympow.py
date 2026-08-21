@@ -66,6 +66,7 @@ class Sympow(SageObject):
     this class. Type ``sympow.help()`` for a list of
     commands and how to call them.
     """
+
     def _repr_(self):
         """
         Return a string describing this calculator module
@@ -86,11 +87,13 @@ class Sympow(SageObject):
         w = err
         j = w.rfind('./sympow')
         if j != -1:
-            w = w[:j - 1] + "sympow('" + w[j + 9:] + ')'
+            w = w[: j - 1] + "sympow('" + w[j + 9 :] + ')'
         return w
 
     def _curve_str(self, E):
-        return '-curve "%s"' % (str(list(E.minimal_model().a_invariants())).replace(' ', ''))
+        return '-curve "%s"' % (
+            str(list(E.minimal_model().a_invariants())).replace(' ', '')
+        )
 
     def L(self, E, n, prec):
         r"""
@@ -144,7 +147,7 @@ class Sympow(SageObject):
         if i == -1:
             print(self._fix_err(v))
             raise RuntimeError("failed to compute symmetric power")
-        x = v[i + 2:]
+        x = v[i + 2 :]
         return x
 
     def Lderivs(self, E, n, prec, d):
@@ -224,7 +227,7 @@ class Sympow(SageObject):
         if i == -1:
             print(self._fix_err(v))
             raise RuntimeError("failed to compute modular degree")
-        return Integer(v[i + len(s):])
+        return Integer(v[i + len(s) :])
 
     def analytic_rank(self, E):
         r"""
@@ -279,9 +282,9 @@ class Sympow(SageObject):
             print(self._fix_err(v))
             raise RuntimeError("failed to compute analytic rank")
         j = v.rfind(':')
-        r = Integer(v[i + len(s):j])
+        r = Integer(v[i + len(s) : j])
         i = v.rfind(' ')
-        L = v[i + 1:]
+        L = v[i + 1 :]
         return r, L
 
     def new_data(self, n):

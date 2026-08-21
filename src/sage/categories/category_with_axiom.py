@@ -1676,29 +1676,54 @@ from sage.categories.category_cy_helper import AxiomContainer, canonicalize_axio
 # ``Category of commutative unital magmas''
 
 all_axioms = AxiomContainer()
-all_axioms += ("Flying", "Blue",
-               "Compact",
-               "Differentiable", "Smooth", "Analytic", "AlmostComplex",
-               "FinitelyGeneratedAsMagma",
-               "WellGenerated",
-               "Bounded",
-               "Facade", "Finite", "Infinite", "Enumerated",
-               "Complete",
-               "Nilpotent",
-               "FiniteDimensional", "FinitelyPresented", "Connected",
-               "FinitelyGeneratedAsLambdaBracketAlgebra",
-               "WithBasis",
-               "Irreducible",
-               "Supercommutative", "Supercocommutative",
-               "Commutative", "Cocommutative", "Associative",
-               "Inverse", "Unital", "Division", "NoZeroDivisors", "Cellular",
-               "AdditiveCommutative", "AdditiveAssociative", "AdditiveInverse", "AdditiveUnital",
-               "Extremal", "Trim", "Semidistributive", "CongruenceUniform",
-               "ChainGraded", "Distributive", "Stone",
-               "Endset",
-               "Pointed",
-               "Stratified"
-               )
+all_axioms += (
+    "Flying",
+    "Blue",
+    "Compact",
+    "Differentiable",
+    "Smooth",
+    "Analytic",
+    "AlmostComplex",
+    "FinitelyGeneratedAsMagma",
+    "WellGenerated",
+    "Bounded",
+    "Facade",
+    "Finite",
+    "Infinite",
+    "Enumerated",
+    "Complete",
+    "Nilpotent",
+    "FiniteDimensional",
+    "FinitelyPresented",
+    "Connected",
+    "FinitelyGeneratedAsLambdaBracketAlgebra",
+    "WithBasis",
+    "Irreducible",
+    "Supercommutative",
+    "Supercocommutative",
+    "Commutative",
+    "Cocommutative",
+    "Associative",
+    "Inverse",
+    "Unital",
+    "Division",
+    "NoZeroDivisors",
+    "Cellular",
+    "AdditiveCommutative",
+    "AdditiveAssociative",
+    "AdditiveInverse",
+    "AdditiveUnital",
+    "Extremal",
+    "Trim",
+    "Semidistributive",
+    "CongruenceUniform",
+    "ChainGraded",
+    "Distributive",
+    "Stone",
+    "Endset",
+    "Pointed",
+    "Stratified",
+)
 
 
 def uncamelcase(s, separator=" "):
@@ -1712,7 +1737,8 @@ def uncamelcase(s, separator=" "):
         sage: sage.categories.category_with_axiom.uncamelcase("FiniteDimensionalAlgebras", "_")
         'finite_dimensional_algebras'
     """
-    return re.sub("(?!^)[A-Z]", lambda match: separator+match.group()[0], s).lower()
+    return re.sub("(?!^)[A-Z]", lambda match: separator + match.group()[0], s).lower()
+
 
 def base_category_class_and_axiom(cls):
     """
@@ -1789,26 +1815,33 @@ def base_category_class_and_axiom(cls):
         name = cls.__name__
         for axiom in all_axioms:
             if axiom == "WithBasis" and name.endswith(axiom):
-                base_name = name[:-len(axiom)]
+                base_name = name[: -len(axiom)]
             elif name.startswith(axiom):
-                base_name = name[len(axiom):]
+                base_name = name[len(axiom) :]
             else:
                 continue
-            if base_name == "Sets": # Special case for Sets which is in sets_cat
+            if base_name == "Sets":  # Special case for Sets which is in sets_cat
                 base_module_name = "sets_cat"
             else:
                 base_module_name = uncamelcase(base_name, "_")
             try:
-                base_module = importlib.import_module("sage.categories."+base_module_name)
+                base_module = importlib.import_module(
+                    "sage.categories." + base_module_name
+                )
                 base_category_class = getattr(base_module, base_name)
-                assert getattr(base_category_class, axiom, None) is cls, \
-                    "Missing (lazy import) link for {} to {} for axiom {}?".format(base_category_class, cls, axiom)
+                assert getattr(base_category_class, axiom, None) is cls, (
+                    "Missing (lazy import) link for {} to {} for axiom {}?".format(
+                        base_category_class, cls, axiom
+                    )
+                )
                 return base_category_class, axiom
-            except (ImportError,AttributeError):
+            except (ImportError, AttributeError):
                 pass
-    raise TypeError("""Could not retrieve the base category class and axiom for {}.
+    raise TypeError(
+        """Could not retrieve the base category class and axiom for {}.
 Please specify it explicitly using the attribute _base_category_class_and_axiom.
-See CategoryWithAxiom for details.""".format(cls))
+See CategoryWithAxiom for details.""".format(cls)
+    )
 
 
 @cached_function
@@ -1851,15 +1884,23 @@ def axiom_of_nested_class(cls, nested_cls):
         else:
             cls_name = cls.__name__.split(".")[-1]
             if nested_cls_name.startswith(cls_name):
-                axiom = nested_cls_name[len(cls_name):]
+                axiom = nested_cls_name[len(cls_name) :]
             elif nested_cls_name.endswith(cls_name):
-                axiom = nested_cls_name[:-len(cls_name)]
+                axiom = nested_cls_name[: -len(cls_name)]
             else:
-                raise ValueError("could not infer axiom for the nested class {} of {}".format(nested_cls, cls))
-    assert axiom in all_axioms, \
-        "Incorrect deduction ({}) for the name of the axiom for the nested class {} of {}".format(axiom, nested_cls, cls)
-    assert axiom in cls.__dict__ and cls.__dict__[axiom] == nested_cls, \
+                raise ValueError(
+                    "could not infer axiom for the nested class {} of {}".format(
+                        nested_cls, cls
+                    )
+                )
+    assert axiom in all_axioms, (
+        "Incorrect deduction ({}) for the name of the axiom for the nested class {} of {}".format(
+            axiom, nested_cls, cls
+        )
+    )
+    assert axiom in cls.__dict__ and cls.__dict__[axiom] == nested_cls, (
         "{} not a nested axiom class of {} for axiom {}".format(nested_cls, cls, axiom)
+    )
     return axiom
 
 
@@ -1947,7 +1988,9 @@ class CategoryWithAxiom(Category):
             ``Monoids._base_category_class``.
         """
         base_category_class, axiom = base_category_class_and_axiom(cls)
-        cls._base_category_class_and_axiom_origin = "deduced by base_category_class_and_axiom"
+        cls._base_category_class_and_axiom_origin = (
+            "deduced by base_category_class_and_axiom"
+        )
         return (base_category_class, axiom)
 
     _base_category_class_and_axiom_origin = "hardcoded"
@@ -2070,12 +2113,17 @@ class CategoryWithAxiom(Category):
         if isinstance(base_category_class, DynamicMetaclass):
             base_category_class = base_category_class.__base__
         if "_base_category_class_and_axiom" not in cls.__dict__:
-            cls._base_category_class_and_axiom = (base_category_class, axiom_of_nested_class(base_category_class, cls))
+            cls._base_category_class_and_axiom = (
+                base_category_class,
+                axiom_of_nested_class(base_category_class, cls),
+            )
             cls._base_category_class_and_axiom_origin = "set by __classget__"
         else:
-            assert cls._base_category_class_and_axiom[0] is base_category_class, \
+            assert cls._base_category_class_and_axiom[0] is base_category_class, (
                 "base category class for {} mismatch; expected {}, got {}".format(
-                 cls, cls._base_category_class_and_axiom[0], base_category_class)
+                    cls, cls._base_category_class_and_axiom[0], base_category_class
+                )
+            )
 
         # Workaround #15648: if Rings.Finite is a LazyImport object,
         # this forces the substitution of the object back into Rings
@@ -2087,7 +2135,9 @@ class CategoryWithAxiom(Category):
             return cls
         # For Rings().Finite, this returns the method
         # Sets.SubcategoryMethods.Finite, with its first argument bound to Rings()
-        return getattr(super(base_category.__class__.__base__, base_category), cls._axiom)
+        return getattr(
+            super(base_category.__class__.__base__, base_category), cls._axiom
+        )
 
     def __init__(self, base_category):
         """
@@ -2104,10 +2154,12 @@ class CategoryWithAxiom(Category):
         """
         # A hack to upgrade axiom categories of singleton categories
         # to be singleton categories themselves
-        if isinstance(base_category, Category_singleton) and not isinstance(self, CategoryWithAxiom_singleton):
+        if isinstance(base_category, Category_singleton) and not isinstance(
+            self, CategoryWithAxiom_singleton
+        ):
             cls = self.__class__
             assert cls.__base__ == CategoryWithAxiom
-            cls.__bases__ = (CategoryWithAxiom_singleton,)+cls.__bases__[1:]
+            cls.__bases__ = (CategoryWithAxiom_singleton,) + cls.__bases__[1:]
 
         self._base_category = base_category
         Category.__init__(self)
@@ -2186,13 +2238,17 @@ class CategoryWithAxiom(Category):
         """
         base_category = self._base_category
         axiom = self._axiom
-        return Category.join((base_category,) +
-                             tuple(cat
-                                   for category in base_category._super_categories
-                                   for cat in category._with_axiom_as_tuple(axiom)) +
-                             tuple(self.extra_super_categories()),
-                             ignore_axioms=((base_category, axiom),),
-                             as_list=True)
+        return Category.join(
+            (base_category,)
+            + tuple(
+                cat
+                for category in base_category._super_categories
+                for cat in category._with_axiom_as_tuple(axiom)
+            )
+            + tuple(self.extra_super_categories()),
+            ignore_axioms=((base_category, axiom),),
+            as_list=True,
+        )
 
     def additional_structure(self):
         r"""
@@ -2265,9 +2321,10 @@ class CategoryWithAxiom(Category):
             'finitely generated as magma rings'
         """
         from sage.categories.additive_magmas import AdditiveMagmas
-        axioms = canonicalize_axioms(all_axioms,axioms)
+
+        axioms = canonicalize_axioms(all_axioms, axioms)
         base_category = category._without_axioms(named=True)
-        if isinstance(base_category, CategoryWithAxiom): # Smelly runtime type checking
+        if isinstance(base_category, CategoryWithAxiom):  # Smelly runtime type checking
             result = super(CategoryWithAxiom, base_category)._repr_object_names()
         else:
             result = base_category._repr_object_names()
@@ -2292,12 +2349,16 @@ class CategoryWithAxiom(Category):
                 #   axioms ordering so we do not (unnecessarily) display
                 #   'nilpotent' in 'finite dimensional nilpotent stratified'.
                 # So we need to swap the order here.
-                result = result.replace("finite dimensional ", "finite dimensional nilpotent ", 1)
+                result = result.replace(
+                    "finite dimensional ", "finite dimensional nilpotent ", 1
+                )
             elif axiom == "Endset" and "homsets" in result:
                 # Without the space at the end to handle Homsets().Endset()
                 result = result.replace("homsets", "endsets", 1)
-            elif axiom == "FinitelyGeneratedAsMagma" and \
-                 not base_category.is_subcategory(AdditiveMagmas()):
+            elif (
+                axiom == "FinitelyGeneratedAsMagma"
+                and not base_category.is_subcategory(AdditiveMagmas())
+            ):
                 result = "finitely generated " + result
             elif axiom == "FinitelyGeneratedAsLambdaBracketAlgebra":
                 result = "finitely generated " + result
@@ -2500,13 +2561,12 @@ class CategoryWithAxiom(Category):
         #     return super(CategoryWithAxiom, self).axioms() | {self._axiom}
         # However one currently can't use super to call a cached
         # method in a super class. So we dup the code from there ...
-        return frozenset(axiom
-                         for category in self._super_categories
-                         for axiom in category.axioms()) | {self._axiom}
+        return frozenset(
+            axiom for category in self._super_categories for axiom in category.axioms()
+        ) | {self._axiom}
 
 
 class CategoryWithAxiom_over_base_ring(CategoryWithAxiom, Category_over_base_ring):
-
     def __init__(self, base_category):
         """
         TESTS::
@@ -2529,7 +2589,9 @@ class CategoryWithAxiom_over_base_ring(CategoryWithAxiom, Category_over_base_rin
         Category_over_base_ring.__init__(self, base_category.base_ring())
 
 
-class CategoryWithAxiom_singleton(Category_singleton, CategoryWithAxiom):  # Category_singleton, FastHashable_class):
+class CategoryWithAxiom_singleton(
+    Category_singleton, CategoryWithAxiom
+):  # Category_singleton, FastHashable_class):
     pass
 
 
@@ -2593,8 +2655,10 @@ def axiom(axiom):
         sage: As().Finite()
         (<__main__.As ... at ...>, 'Finite')
     """
+
     def with_axiom(self):
         return self._with_axiom(axiom)
+
     with_axiom.__name__ = axiom
     return with_axiom
 
@@ -2621,6 +2685,7 @@ class Blahs(Category_singleton):
              sage: TestSuite(Blahs()).run()
         """
         from sage.categories.sets_cat import Sets
+
         return [Sets()]
 
     class SubcategoryMethods:

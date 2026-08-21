@@ -93,6 +93,7 @@ class HyperellipticJacobian_generic(Jacobian_generic):
             True
         """
         from sage.structure.element import parent as get_parent
+
         p = get_parent(element)
         return p == self or p == self.point_homset()
 
@@ -243,7 +244,11 @@ class HyperellipticJacobian_generic(Jacobian_generic):
             sage: all(elt in J for elt in elts)
             True
         """
-        return [self.zero()] + [self.random_element(), self.random_element(), self.random_element()]
+        return [self.zero()] + [
+            self.random_element(),
+            self.random_element(),
+            self.random_element(),
+        ]
 
     def points(self, *args, **kwds):
         r"""

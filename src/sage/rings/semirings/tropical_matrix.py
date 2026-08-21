@@ -34,6 +34,7 @@ class Matrix_tropical_dense(Matrix_generic_dense):
         sage: isinstance(M, Matrix_tropical_dense)
         True
     """
+
     def extremum_cycle_mean(self):
         r"""
         Return the extremal (that is, minimal if the addition is max
@@ -87,24 +88,29 @@ class Matrix_tropical_dense(Matrix_generic_dense):
         """
         T = self.base_ring()
         if not T._base.is_subring(RR):
-            raise NotImplementedError("extremum cycle mean is only implemented for subrings of RR")
+            raise NotImplementedError(
+                "extremum cycle mean is only implemented for subrings of RR"
+            )
         n = self.ncols()
         if self.nrows() != n:
             raise TypeError("matrix must be square")
         if self.is_zero():
             return T.zero()
-        v = matrix(1, n, n*[T.one()])
+        v = matrix(1, n, n * [T.one()])
         vs = [v]
         for _ in range(n):
             v = v * self
             vs.append(v)
-        w = [vs[n][0,j].lift() for j in range(n)]
+        w = [vs[n][0, j].lift() for j in range(n)]
         if T._use_min:
             f, fp = max, min
         else:
             f, fp = min, max
-        ans = fp(f((w[j] - vs[k][0,j].lift()) / (n-k) for k in range(n))
-                 for j in range(n) if w[j] is not infinity)
+        ans = fp(
+            f((w[j] - vs[k][0, j].lift()) / (n - k) for k in range(n))
+            for j in range(n)
+            if w[j] is not infinity
+        )
         return T(ans)
 
     def weak_transitive_closure(self):
@@ -171,7 +177,9 @@ class Matrix_tropical_dense(Matrix_generic_dense):
         """
         T = self.base_ring()
         if not T._base.is_subring(RR):
-            raise NotImplementedError("extremum cycle mean is only implemented for subrings of RR")
+            raise NotImplementedError(
+                "extremum cycle mean is only implemented for subrings of RR"
+            )
         n = self.ncols()
         if self.nrows() != n:
             raise TypeError("matrix must be square")
@@ -183,11 +191,11 @@ class Matrix_tropical_dense(Matrix_generic_dense):
                 for j in range(n):
                     if j == p:
                         continue
-                    G[i,j] += G[i,p] * G[p,j]
+                    G[i, j] += G[i, p] * G[p, j]
                     if i == j:
-                        if T._use_min and G[i,i].lift() < 0:
+                        if T._use_min and G[i, i].lift() < 0:
                             raise ValueError("negative cycle exists")
-                        if not T._use_min and G[i,i].lift() > 0:
+                        if not T._use_min and G[i, i].lift() > 0:
                             raise ValueError("positive cycle exists")
         return G
 

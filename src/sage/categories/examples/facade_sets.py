@@ -1,12 +1,12 @@
 r"""
 Example of facade set
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2010 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.sets_cat import Sets
 from sage.categories.monoids import Monoids
@@ -60,6 +60,7 @@ class PositiveIntegerMonoid(UniqueRepresentation, Parent):
         running ._test_prod() . . . pass
         running ._test_some_elements() . . . pass
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -158,6 +159,7 @@ class IntegersCompletion(UniqueRepresentation, Parent):
         running ._test_pickling() . . . pass
         running ._test_some_elements() . . . pass
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -173,7 +175,11 @@ class IntegersCompletion(UniqueRepresentation, Parent):
         # We can't use InfinityRing, because this ring contains 3
         # elements besides +-infinity. We can not use Set either for the
         # moment, because Set([1,2])(1) raises an error
-        Parent.__init__(self, facade=(ZZ, FiniteEnumeratedSet([-infinity, +infinity])), category=Sets())
+        Parent.__init__(
+            self,
+            facade=(ZZ, FiniteEnumeratedSet([-infinity, +infinity])),
+            category=Sets(),
+        )
 
     def _repr_(self):
         r"""

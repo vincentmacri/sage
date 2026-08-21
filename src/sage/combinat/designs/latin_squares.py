@@ -122,6 +122,7 @@ REFERENCES:
 Functions
 ---------
 """
+
 from itertools import repeat
 from sage.rings.integer import Integer
 from sage.categories.sets_cat import EmptySetError
@@ -190,7 +191,7 @@ def are_mutually_orthogonal_latin_squares(l, verbose=False):
         return False
 
     # Check that all matrices are latin squares
-    for i,M in enumerate(l):
+    for i, M in enumerate(l):
         if any(len(set(R)) != n for R in M):
             if verbose:
                 print("Matrix {} is not row latin".format(i))
@@ -201,7 +202,14 @@ def are_mutually_orthogonal_latin_squares(l, verbose=False):
             return False
 
     from .designs_pyx import is_orthogonal_array
-    return is_orthogonal_array(list(zip(*[[x for R in M for x in R] for M in l])),k,n, verbose=verbose, terminology='MOLS')
+
+    return is_orthogonal_array(
+        list(zip(*[[x for R in M for x in R] for M in l])),
+        k,
+        n,
+        verbose=verbose,
+        terminology='MOLS',
+    )
 
 
 def mutually_orthogonal_latin_squares(k, n, partitions=False, check=True):
@@ -393,18 +401,22 @@ def mutually_orthogonal_latin_squares(k, n, partitions=False, check=True):
         assert F[0] == 0
 
         # This dictionary is used to convert from field elements to integers
-        conv = {F[i] : i for i in range(n)}
+        conv = {F[i]: i for i in range(n)}
 
         # Make the matrices
-        matrices = [Matrix([[conv[F[i] + F[r]*F[j]] for i in range(n)]
-                 for j in range(n)]) for r in range(1, k+1)]
+        matrices = [
+            Matrix([[conv[F[i] + F[r] * F[j]] for i in range(n)] for j in range(n)])
+            for r in range(1, k + 1)
+        ]
 
     elif orthogonal_array(k + 2, n, existence=True) is not Unknown:
         # Forwarding non-existence results
         if orthogonal_array(k + 2, n, existence=True):
             pass
         else:
-            raise EmptySetError("there does not exist {} MOLS of order {}!".format(k, n))
+            raise EmptySetError(
+                "there does not exist {} MOLS of order {}!".format(k, n)
+            )
 
         # make sure that the first two columns are "11, 12, ..., 1n, 21, 22, ..."
         OA = sorted(orthogonal_array(k + 2, n, check=False))
@@ -413,27 +425,31 @@ def mutually_orthogonal_latin_squares(k, n, partitions=False, check=True):
         matrices = [[] for _ in repeat(None, k)]
         for L in OA:
             for i in range(2, k + 2):
-                matrices[i-2].append(L[i])
+                matrices[i - 2].append(L[i])
 
         # The real matrices
-        matrices = [[M[i*n:(i+1)*n] for i in range(n)] for M in matrices]
+        matrices = [[M[i * n : (i + 1) * n] for i in range(n)] for M in matrices]
         matrices = [Matrix(M) for M in matrices]
 
     else:
-        raise NotImplementedError("I don't know how to build {} MOLS of order {}".format(k, n))
+        raise NotImplementedError(
+            "I don't know how to build {} MOLS of order {}".format(k, n)
+        )
 
     if check:
         assert are_mutually_orthogonal_latin_squares(matrices)
 
     # partitions have been requested but have not been computed yet
     if partitions is True:
-        partitions = [[[i*n+j for j in range(n)] for i in range(n)],
-                      [[j*n+i for j in range(n)] for i in range(n)]]
+        partitions = [
+            [[i * n + j for j in range(n)] for i in range(n)],
+            [[j * n + i for j in range(n)] for i in range(n)],
+        ]
         for m in matrices:
             partition = [[] for _ in repeat(None, n)]
             for i in range(n):
                 for j in range(n):
-                    partition[m[i,j]].append(i*n+j)
+                    partition[m[i, j]].append(i * n + j)
             partitions.append(partition)
 
     if partitions:
@@ -467,14 +483,17 @@ def latin_square_product(M, N, *others):
         64 x 64 sparse matrix over Integer Ring (use the '.str()' method to see the entries)
     """
     from sage.matrix.constructor import Matrix
+
     m = M.nrows()
     n = N.nrows()
 
-    D = {((i,j),(ii,jj)):(M[i,ii],N[j,jj])
-         for i in range(m)
-         for ii in range(m)
-         for j in range(n)
-         for jj in range(n)}
+    D = {
+        ((i, j), (ii, jj)): (M[i, ii], N[j, jj])
+        for i in range(m)
+        for ii in range(m)
+        for j in range(n)
+        for jj in range(n)
+    }
 
     L = lambda i_j: i_j[0] * n + i_j[1]
     D = {(L(c[0]), L(c[1])): L(v) for c, v in D.items()}
@@ -540,29 +559,33 @@ def MOLS_table(start, stop=None, compare=False, width=None):
          80|
     """
     from .orthogonal_arrays import largest_available_k
+
     if stop is None:
-        start,stop = 0,start
+        start, stop = 0, start
     # make start and stop be congruent to 0 mod 20
     start = start - (start % 20)
-    stop = stop-1
-    stop = stop + (20-(stop % 20))
+    stop = stop - 1
+    stop = stop + (20 - (stop % 20))
     assert start % 20 == 0 and stop % 20 == 0
     if stop <= start:
         return
 
     # choose an appropriate width (needs to be >= 3 because "+oo" should fit)
     if width is None:
-        width = max(3, Integer(stop-1).ndigits(10))
+        width = max(3, Integer(stop - 1).ndigits(10))
 
-    print(" " * (width + 2) + " ".join("{i:>{width}}".format(i=i,width=width)
-                                       for i in range(20)))
+    print(
+        " " * (width + 2)
+        + " ".join("{i:>{width}}".format(i=i, width=width) for i in range(20))
+    )
     print(" " * (width + 1) + "_" * ((width + 1) * 20), end="")
-    for i in range(start,stop):
+    for i in range(start, stop):
         if i % 20 == 0:
             print("\n{:>{width}}|".format(i, width=width), end="")
-        k = largest_available_k(i)-2
+        k = largest_available_k(i) - 2
         if compare:
             from . import MOLS_handbook_data
+
             lower_bound = MOLS_handbook_data.lower_bound(i)
             if i < 2 or lower_bound == k:
                 c = ""

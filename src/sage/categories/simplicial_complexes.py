@@ -1,18 +1,19 @@
 """
 Simplicial Complexes
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_singleton import Category_singleton
 from sage.categories.category_with_axiom import CategoryWithAxiom
-#from sage.categories.cw_complexes import CWComplexes
+
+# from sage.categories.cw_complexes import CWComplexes
 from sage.categories.sets_cat import Sets
 
 
@@ -43,6 +44,7 @@ class SimplicialComplexes(Category_singleton):
 
         sage: TestSuite(C).run()
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -60,6 +62,7 @@ class SimplicialComplexes(Category_singleton):
         """
         Category of finite simplicial complexes.
         """
+
         class ParentMethods:
             @cached_method
             def dimension(self):

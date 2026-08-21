@@ -324,7 +324,15 @@ class Giac(Expect):
         sage: g.n()
         0.577215664901533
     """
-    def __init__(self, maxread=None, script_subdirectory=None, server=None, server_tmpdir=None, logfile=None):
+
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        server=None,
+        server_tmpdir=None,
+        logfile=None,
+    ):
         """
         Create an instance of the Giac interpreter.
 
@@ -334,19 +342,21 @@ class Giac(Expect):
             sage: giac == loads(dumps(giac))
             True
         """
-        Expect.__init__(self,
-                        name='giac',
-                        prompt='[0-9]*>> ',
-                        command="giac --sage",
-                        env={"LANG": "C"},
-                        init_code=['maple_mode(0);I:=i;'],  # coercion could be broken in maple_mode
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=1000)
+        Expect.__init__(
+            self,
+            name='giac',
+            prompt='[0-9]*>> ',
+            command="giac --sage",
+            env={"LANG": "C"},
+            init_code=['maple_mode(0);I:=i;'],  # coercion could be broken in maple_mode
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=1000,
+        )
 
     def _function_class(self):
         """
@@ -369,7 +379,7 @@ class Giac(Expect):
         print("Interrupting %s..." % self)
         self._expect.sendline(chr(3))  # send ctrl-c
         self._expect.expect(self._prompt)
-#        self._expect.expect(self._prompt)
+        #        self._expect.expect(self._prompt)
         raise RuntimeError("Ctrl-c pressed while running %s" % self)
 
     def __reduce__(self):
@@ -530,8 +540,9 @@ If you got giac from the spkg then ``$PREFIX`` is ``$SAGE_LOCAL``
             True
         """
         try:
-            v = sum([self.completions(chr(65 + n)) for n in range(26)], []) + \
-                sum([self.completions(chr(97 + n)) for n in range(26)], [])
+            v = sum([self.completions(chr(65 + n)) for n in range(26)], []) + sum(
+                [self.completions(chr(97 + n)) for n in range(26)], []
+            )
         except RuntimeError:
             print("\n" * 3)
             print("*" * 70)
@@ -558,6 +569,7 @@ If you got giac from the spkg then ``$PREFIX`` is ``$SAGE_LOCAL``
             return self.__tab_completion
         except AttributeError:
             import sage.misc.persist
+
             if use_disk_cache:
                 try:
                     self.__tab_completion = sage.misc.persist.load(COMMANDS_CACHE)
@@ -597,7 +609,9 @@ If you got giac from the spkg then ``$PREFIX`` is ``$SAGE_LOCAL``
             return float(self('time()'))
         return float(self('time() - %s' % float(t)))
 
-    def _eval_line(self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False):
+    def _eval_line(
+        self, line, allow_use_file=True, wait_for_prompt=True, restart_if_needed=False
+    ):
         """
         EXAMPLES::
 
@@ -616,12 +630,20 @@ If you got giac from the spkg then ``$PREFIX`` is ``$SAGE_LOCAL``
             True
         """
         with gc_disabled():
-            z = Expect._eval_line(self, line, allow_use_file=allow_use_file,
-                                  wait_for_prompt=wait_for_prompt)
+            z = Expect._eval_line(
+                self,
+                line,
+                allow_use_file=allow_use_file,
+                wait_for_prompt=wait_for_prompt,
+            )
             if z.lower().find("error") != -1:
-                raise RuntimeError("an error occurred running a Giac command:\nINPUT:\n%s\nOUTPUT:\n%s" % (line, z))
-        lines = (line for line in z.splitlines()
-                 if not line.startswith('Evaluation time:'))
+                raise RuntimeError(
+                    "an error occurred running a Giac command:\nINPUT:\n%s\nOUTPUT:\n%s"
+                    % (line, z)
+                )
+        lines = (
+            line for line in z.splitlines() if not line.startswith('Evaluation time:')
+        )
         return "\n".join(lines)
 
     def eval(self, code, strip=True, **kwds):
@@ -666,7 +688,10 @@ If you got giac from the spkg then ``$PREFIX`` is ``$SAGE_LOCAL``
         cmd = '%s:=%s:;' % (var, value)  # if giac is not in maple mode ( maple_mode(0))
         out = self.eval(cmd)
         if out.find("error") != -1:
-            raise TypeError("error executing code in Giac\nCODE:\n\t%s\nGiac ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "error executing code in Giac\nCODE:\n\t%s\nGiac ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -923,24 +948,38 @@ class GiacElement(ExpectElement):
             False
         """
         P = self.parent()
-        if P.eval("evalb(%s %s %s)" % (self.name(), P._equality_symbol(),
-                                       other.name())) == P._true_symbol():
+        if (
+            P.eval(
+                "evalb(%s %s %s)" % (self.name(), P._equality_symbol(), other.name())
+            )
+            == P._true_symbol()
+        ):
             return rich_to_bool(op, 0)
         # (to be tested with giac). Maple  does not allow comparing objects
         # of different types and it raises an error in this case.
         # We catch the error, and return True for <
         try:
-            if P.eval("evalb(%s %s %s)" % (self.name(), P._lessthan_symbol(),
-                                           other.name())) == P._true_symbol():
+            if (
+                P.eval(
+                    "evalb(%s %s %s)"
+                    % (self.name(), P._lessthan_symbol(), other.name())
+                )
+                == P._true_symbol()
+            ):
                 return rich_to_bool(op, -1)
         except RuntimeError as e:
             msg = str(e)
             if 'is not valid' in msg and 'to < or <=' in msg:
-                if (hash(str(self)) < hash(str(other))):
+                if hash(str(self)) < hash(str(other)):
                     return rich_to_bool(op, -1)
                 return rich_to_bool(op, 1)
             raise RuntimeError(e)
-        if P.eval("evalb(%s %s %s)" % (self.name(), P._greaterthan_symbol(), other.name())) == P._true_symbol():
+        if (
+            P.eval(
+                "evalb(%s %s %s)" % (self.name(), P._greaterthan_symbol(), other.name())
+            )
+            == P._true_symbol()
+        ):
             return rich_to_bool(op, 1)
 
         return NotImplemented
@@ -1045,6 +1084,7 @@ class GiacElement(ExpectElement):
         m = int(v[1])
 
         from sage.matrix.matrix_space import MatrixSpace
+
         M = MatrixSpace(R, n, m)
         entries = [[R(self[r, c]) for c in range(m)] for r in range(n)]
         return M(entries)
@@ -1128,16 +1168,15 @@ class GiacElement(ExpectElement):
         result = repr(self)  # string representation
 
         if str(self.type()) not in ['DOM_LIST', 'vector', 'vecteur']:
-
             # Merge the user-specified locals dictionary and the symbol_table
             # (locals takes priority)
             lsymbols = symbol_table['giac'].copy()
             lsymbols.update(locals)
 
             try:
-                return symbolic_expression_from_string(result, lsymbols,
-                                                       accept_sequence=True,
-                                                       parser=SR_parser_giac)
+                return symbolic_expression_from_string(
+                    result, lsymbols, accept_sequence=True, parser=SR_parser_giac
+                )
             except Exception:
                 raise NotImplementedError("unable to parse Giac output: %s" % result)
         else:
@@ -1176,8 +1215,7 @@ class GiacElement(ExpectElement):
             return giac('int(%s,%s)' % (self.name(), var))
         if max is None:
             raise ValueError("neither or both of min/max must be specified")
-        return giac('int(%s,%s,%s,%s)' % (self.name(), var,
-                                          giac(min), giac(max)))
+        return giac('int(%s,%s,%s,%s)' % (self.name(), var, giac(min), giac(max)))
 
     integrate = integral
 
@@ -1205,8 +1243,7 @@ class GiacElement(ExpectElement):
             return giac('sum(%s,%s)' % (self.name(), var))
         if max is None:
             raise ValueError("neither or both of min/max must be specified")
-        return giac('sum(%s,%s,%s,%s)' % (self.name(), var,
-                                          giac(min), giac(max)))
+        return giac('sum(%s,%s,%s,%s)' % (self.name(), var, giac(min), giac(max)))
 
 
 # An instance
@@ -1242,8 +1279,11 @@ def giac_console():
         Type ?commandname for help
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%giac magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%giac magics instead.'
+        )
     os.system('giac')
 
 
@@ -1260,4 +1300,5 @@ def __doctest_cleanup():
         False
     """
     import sage.interfaces.quit
+
     sage.interfaces.quit.expect_quitall()

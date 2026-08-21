@@ -48,13 +48,16 @@ from sage.misc.latex import latex
 from sage.misc.cachefunc import cached_method
 from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.groups.matrix_gps.named_group import (
-    normalize_args_vectorspace, normalize_args_invariant_form,
-    NamedMatrixGroup_generic)
+    normalize_args_vectorspace,
+    normalize_args_invariant_form,
+    NamedMatrixGroup_generic,
+)
 
 
 ###############################################################################
 # Symplectic Group
 ###############################################################################
+
 
 def Sp(n, R, var='a', invariant_form=None):
     r"""
@@ -150,16 +153,20 @@ def Sp(n, R, var='a', invariant_form=None):
 
     if invariant_form is not None:
         if isinstance(ring, FiniteField):
-            raise NotImplementedError("invariant_form for finite groups is fixed by GAP")
+            raise NotImplementedError(
+                "invariant_form for finite groups is fixed by GAP"
+            )
 
         invariant_form = normalize_args_invariant_form(ring, degree, invariant_form)
         if not invariant_form.is_alternating():
             raise ValueError("invariant_form must be alternating")
 
         name = 'Symplectic Group of degree {0} over {1} with respect to alternating bilinear form\n{2}'.format(
-                                                degree, ring, invariant_form)
+            degree, ring, invariant_form
+        )
         ltx = r'\text{{Sp}}_{{{0}}}({1})\text{{ with respect to alternating bilinear form}}{2}'.format(
-                                    degree, latex(ring), latex(invariant_form))
+            degree, latex(ring), latex(invariant_form)
+        )
     else:
         name = 'Symplectic Group of degree {0} over {1}'.format(degree, ring)
         ltx = r'\text{{Sp}}_{{{0}}}({1})'.format(degree, latex(ring))
@@ -175,7 +182,9 @@ def Sp(n, R, var='a', invariant_form=None):
         except ValueError:
             pass
 
-    return SymplecticMatrixGroup_generic(degree, ring, True, name, ltx, invariant_form=invariant_form)
+    return SymplecticMatrixGroup_generic(
+        degree, ring, True, name, ltx, invariant_form=invariant_form
+    )
 
 
 class SymplecticMatrixGroup_generic(NamedMatrixGroup_generic):
@@ -227,9 +236,10 @@ class SymplecticMatrixGroup_generic(NamedMatrixGroup_generic):
         R = self.base_ring()
         d = self.degree()
         from sage.matrix.constructor import zero_matrix
+
         m = zero_matrix(R, d)
         for i in range(d):
-            m[i, d-i-1] = 1 if i < d/2 else -1
+            m[i, d - i - 1] = 1 if i < d / 2 else -1
         m.set_immutable()
         return m
 
@@ -247,4 +257,8 @@ class SymplecticMatrixGroup_generic(NamedMatrixGroup_generic):
         """
         F = self.invariant_form()
         if x * F * x.transpose() != F:
-            raise TypeError('matrix must be symplectic with respect to the alternating form\n{}'.format(F))
+            raise TypeError(
+                'matrix must be symplectic with respect to the alternating form\n{}'.format(
+                    F
+                )
+            )

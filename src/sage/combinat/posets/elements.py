@@ -2,6 +2,7 @@
 r"""
 Elements of posets, lattices, semilattices, etc.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Peter Jipsen <jipsen@chapman.edu>,
 #                          Franco Saliola <saliola@gmail.com>
@@ -22,7 +23,6 @@ from sage.structure.element import Element, have_same_parent
 
 
 class PosetElement(Element):
-
     def __init__(self, poset, element, vertex) -> None:
         r"""
         Establish the parent-child relationship between ``poset``
@@ -125,8 +125,7 @@ class PosetElement(Element):
         # This should instead exploit unique representation, using
         # self is other, or best inherit __eq__ from there. But there
         # are issues around pickling and rich comparison functions.
-        return have_same_parent(self, other) \
-            and self.vertex == other.vertex
+        return have_same_parent(self, other) and self.vertex == other.vertex
 
     def __ne__(self, other):
         r"""

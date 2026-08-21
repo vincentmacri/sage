@@ -121,6 +121,7 @@ class HeckeCharacter(SymmetricFunctionAlgebra_multiplicative):
     - [Ram1991]_
     - [RR1997]_
     """
+
     @staticmethod
     def __classcall__(cls, Sym, q='q'):
         """
@@ -174,17 +175,22 @@ class HeckeCharacter(SymmetricFunctionAlgebra_multiplicative):
             True
         """
         self.q = q
-        SymmetricFunctionAlgebra_multiplicative.__init__(self, sym,
+        SymmetricFunctionAlgebra_multiplicative.__init__(
+            self,
+            sym,
             basis_name="Hecke character with q={}".format(self.q),
-            prefix='qbar')
+            prefix='qbar',
+        )
         self._p = sym.power()
 
         # temporary until Hom(GradedHopfAlgebrasWithBasis work better)
         # category = ModulesWithBasis(self._sym.base_ring())
-        self.register_coercion(self._p._module_morphism(self._p_to_qbar_on_basis,
-                                                           codomain=self))
-        self._p.register_coercion(self._module_morphism(self._qbar_to_p_on_basis,
-                                                        codomain=self._p))
+        self.register_coercion(
+            self._p._module_morphism(self._p_to_qbar_on_basis, codomain=self)
+        )
+        self._p.register_coercion(
+            self._module_morphism(self._qbar_to_p_on_basis, codomain=self._p)
+        )
 
     def construction(self):
         """
@@ -201,8 +207,11 @@ class HeckeCharacter(SymmetricFunctionAlgebra_multiplicative):
         """
 
         from sage.combinat.sf.sfa import SymmetricFunctionsFunctor
-        return (SymmetricFunctionsFunctor(self, self.basis_name(), self.q),
-                self.base_ring())
+
+        return (
+            SymmetricFunctionsFunctor(self, self.basis_name(), self.q),
+            self.base_ring(),
+        )
 
     def _p_to_qbar_on_generator(self, n):
         r"""
@@ -227,10 +236,15 @@ class HeckeCharacter(SymmetricFunctionAlgebra_multiplicative):
             return self([1])
         q = self.q
         if q**n == self.base_ring().one():
-            raise ValueError("the parameter q=%s must not be a %s root of unity" % (q, n))
-        out = n * self([n]) - sum((q**i-1) * self._p_to_qbar_on_generator(i)
-                                  * self([n-i]) for i in range(1, n) if q**i != 1)
-        return out*(q-1) / (q**n-1)
+            raise ValueError(
+                "the parameter q=%s must not be a %s root of unity" % (q, n)
+            )
+        out = n * self([n]) - sum(
+            (q**i - 1) * self._p_to_qbar_on_generator(i) * self([n - i])
+            for i in range(1, n)
+            if q**i != 1
+        )
+        return out * (q - 1) / (q**n - 1)
 
     def _p_to_qbar_on_basis(self, mu):
         r"""
@@ -277,11 +291,14 @@ class HeckeCharacter(SymmetricFunctionAlgebra_multiplicative):
             return self._p([1])
         q = self.q
         BR = self.base_ring()
-        return q**(n-1) * self._p.sum(sum(q**(-i) for i in range(mu[0]))
-                                      * BR.prod(1 - q**(-p) for p in mu[1:])
-                                      * self._p(mu) / mu.centralizer_size()
-                                      for mu in Partitions(n)
-                                      if not any(q**p == 1 for p in mu[1:]))
+        return q ** (n - 1) * self._p.sum(
+            sum(q ** (-i) for i in range(mu[0]))
+            * BR.prod(1 - q ** (-p) for p in mu[1:])
+            * self._p(mu)
+            / mu.centralizer_size()
+            for mu in Partitions(n)
+            if not any(q**p == 1 for p in mu[1:])
+        )
 
     def _qbar_to_p_on_basis(self, mu):
         r"""
@@ -326,10 +343,13 @@ class HeckeCharacter(SymmetricFunctionAlgebra_multiplicative):
             sage: qbar[2].coproduct()
             qbar[] # qbar[2] + (q-1)*qbar[1] # qbar[1] + qbar[2] # qbar[]
         """
+
         def P(i):
             return _Partitions([i]) if i else _Partitions([])
+
         T = self.tensor_square()
         one = self.base_ring().one()
         q = self.q
-        return T.sum_of_terms(((P(j), P(r-j)), one if j in [0, r] else q-one)
-                              for j in range(r+1))
+        return T.sum_of_terms(
+            ((P(j), P(r - j)), one if j in [0, r] else q - one) for j in range(r + 1)
+        )

@@ -24,6 +24,7 @@ class FFmpeg(Executable):
         sage: FFmpeg().is_present()  # optional - ffmpeg
         FeatureTestResult('ffmpeg', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -32,9 +33,13 @@ class FFmpeg(Executable):
             sage: isinstance(FFmpeg(), FFmpeg)
             True
         """
-        Executable.__init__(self, 'ffmpeg', executable='ffmpeg',
-                            spkg='ffmpeg',
-                            url='https://www.ffmpeg.org/')
+        Executable.__init__(
+            self,
+            'ffmpeg',
+            executable='ffmpeg',
+            spkg='ffmpeg',
+            url='https://www.ffmpeg.org/',
+        )
 
     def is_functional(self):
         r"""
@@ -62,12 +67,14 @@ class FFmpeg(Executable):
 
         # create a png file with the content
         from sage.misc.temporary_file import tmp_filename
+
         base_filename_png = tmp_filename(ext='.png')
         with open(base_filename_png, 'wb') as f:
             f.write(content)
 
         # Set up filenames
         import os
+
         base, filename_png = os.path.split(base_filename_png)
         filename, _png = os.path.splitext(filename_png)
 
@@ -75,39 +82,90 @@ class FFmpeg(Executable):
         # The `-nostdin` is needed to avoid the command to hang, see
         # https://stackoverflow.com/questions/16523746/ffmpeg-hangs-when-run-in-background
         commands = []
-        for ext in ['.avi', '.flv', '.gif', '.mkv', '.mov',
-                    '.mp4', '.ogg', '.ogv', '.webm', '.wmv']:
-
-            cmd = ['ffmpeg', '-nostdin', '-y', '-f', 'image2', '-r', '5',
-                   '-i', filename_png, '-pix_fmt', 'rgb24', '-loop', '0',
-                   filename + ext]
+        for ext in [
+            '.avi',
+            '.flv',
+            '.gif',
+            '.mkv',
+            '.mov',
+            '.mp4',
+            '.ogg',
+            '.ogv',
+            '.webm',
+            '.wmv',
+        ]:
+            cmd = [
+                'ffmpeg',
+                '-nostdin',
+                '-y',
+                '-f',
+                'image2',
+                '-r',
+                '5',
+                '-i',
+                filename_png,
+                '-pix_fmt',
+                'rgb24',
+                '-loop',
+                '0',
+                filename + ext,
+            ]
             commands.append(cmd)
 
-        for ext in ['.avi', '.flv', '.gif', '.mkv', '.mov', '.mpg',
-                    '.mp4', '.ogg', '.ogv', '.webm', '.wmv']:
-
-            cmd = ['ffmpeg', '-nostdin', '-y', '-f', 'image2', '-i',
-                   filename_png, filename + ext]
+        for ext in [
+            '.avi',
+            '.flv',
+            '.gif',
+            '.mkv',
+            '.mov',
+            '.mpg',
+            '.mp4',
+            '.ogg',
+            '.ogv',
+            '.webm',
+            '.wmv',
+        ]:
+            cmd = [
+                'ffmpeg',
+                '-nostdin',
+                '-y',
+                '-f',
+                'image2',
+                '-i',
+                filename_png,
+                filename + ext,
+            ]
             commands.append(cmd)
 
         # Running the commands and reporting any issue encountered
         from subprocess import run
+
         for cmd in commands:
             try:
-                result = run(cmd, cwd=base, capture_output=True, text=True,
-                             check=False)
+                result = run(cmd, cwd=base, capture_output=True, text=True, check=False)
             except OSError as e:
-                return FeatureTestResult(self, False, reason='Running command "{}" '
-                            'raised an OSError "{}" '.format(' '.join(cmd), e))
+                return FeatureTestResult(
+                    self,
+                    False,
+                    reason='Running command "{}" raised an OSError "{}" '.format(
+                        ' '.join(cmd), e
+                    ),
+                )
 
             # If an error occurred, return False
             if result.returncode:
-                return FeatureTestResult(self, False, reason='Running command "{}" '
-                            'returned nonzero exit status "{}" with stderr '
-                            '"{}" and stdout "{}".'.format(result.args,
-                                                            result.returncode,
-                                                            result.stderr.strip(),
-                                                            result.stdout.strip()))
+                return FeatureTestResult(
+                    self,
+                    False,
+                    reason='Running command "{}" '
+                    'returned nonzero exit status "{}" with stderr '
+                    '"{}" and stdout "{}".'.format(
+                        result.args,
+                        result.returncode,
+                        result.stderr.strip(),
+                        result.stdout.strip(),
+                    ),
+                )
 
         # If necessary, run more tests here
         # ...

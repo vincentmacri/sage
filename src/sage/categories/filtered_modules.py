@@ -31,10 +31,14 @@ of the given module `M`.
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
-from sage.categories.covariant_functorial_construction import RegressiveCovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    RegressiveCovariantConstructionCategory,
+)
 
 
-class FilteredModulesCategory(RegressiveCovariantConstructionCategory, Category_over_base_ring):
+class FilteredModulesCategory(
+    RegressiveCovariantConstructionCategory, Category_over_base_ring
+):
     def __init__(self, base_category):
         """
         EXAMPLES::
@@ -141,6 +145,7 @@ class FilteredModules(FilteredModulesCategory):
 
     - :wikipedia:`Filtration_(mathematics)`
     """
+
     def extra_super_categories(self):
         r"""
         Add :class:`VectorSpaces` to the super categories of ``self`` if
@@ -170,13 +175,15 @@ class FilteredModules(FilteredModulesCategory):
         from sage.categories.modules import Modules
         from sage.categories.fields import Fields
         from sage.categories.category import Category
+
         base_ring = self.base_ring()
-        if base_ring in Fields() or (isinstance(base_ring, Category) and base_ring.is_subcategory(Fields())):
+        if base_ring in Fields() or (
+            isinstance(base_ring, Category) and base_ring.is_subcategory(Fields())
+        ):
             return [Modules(base_ring)]
         return []
 
     class SubcategoryMethods:
-
         @cached_method
         def Connected(self):
             r"""

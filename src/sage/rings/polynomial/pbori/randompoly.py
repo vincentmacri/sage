@@ -42,14 +42,16 @@ def gen_random_poly(ring, l, deg, vars_set, seed=123):
             return Polynomial(m)
         assert samples >= 2
         return helper(samples // 2) + helper(samples - samples // 2)
+
     p = Polynomial(ring.zero())
     while len(p) < l:
         p = Polynomial(p.set().union(helper(l - len(p)).set()))
     return p
 
 
-def sparse_random_system(ring, number_of_polynomials, variables_per_polynomial,
-                         degree, random_seed=None):
+def sparse_random_system(
+    ring, number_of_polynomials, variables_per_polynomial, degree, random_seed=None
+):
     r"""
     Generate a sparse random system.
 
@@ -81,12 +83,11 @@ def sparse_random_system(ring, number_of_polynomials, variables_per_polynomial,
     res = []
     while len(res) < number_of_polynomials:
         variables_as_monomial = Monomial(
-            random_generator.sample(
-                variables,
-                variables_per_polynomial)
+            random_generator.sample(variables, variables_per_polynomial)
         )
-        p = Polynomial(random_set(variables_as_monomial, 2 ** (
-            variables_per_polynomial - 1)))
+        p = Polynomial(
+            random_set(variables_as_monomial, 2 ** (variables_per_polynomial - 1))
+        )
         p = sum([p.graded_part(i) for i in range(degree + 1)])
         if p.deg() == degree:
             res.append(p)
@@ -104,9 +105,9 @@ def sparse_random_system_data_file_content(number_of_variables, **kwds):
         "declare_ring(['x'+str(i) for in range(10)])\nideal=\\\n[...]\n\n"
     """
     dummy_dict = {}
-    r = declare_ring(['x' + str(i) for i in range(number_of_variables)],
-                     dummy_dict)
+    r = declare_ring(['x' + str(i) for i in range(number_of_variables)], dummy_dict)
     polynomials = sparse_random_system(r, **kwds)
     polynomials = pformat(polynomials)
     return "declare_ring(['x'+str(i) for in range({})])\nideal=\\\n{}\n\n".format(
-        number_of_variables, polynomials)
+        number_of_variables, polynomials
+    )

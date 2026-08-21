@@ -1023,9 +1023,7 @@ class Chart(UniqueRepresentation, SageObject):
             A = self._restrict_set(universe, coord_restrictions[0])
             if len(coord_restrictions) == 1:
                 return A
-            return A.intersection(
-                self._restrict_set(universe, coord_restrictions[1:])
-            )
+            return A.intersection(self._restrict_set(universe, coord_restrictions[1:]))
         # Case of a single condition:
         from sage.sets.condition_set import ConditionSet
 
@@ -2328,9 +2326,7 @@ class RealChart(Chart):
         new_restrictions = []
         for restrict in self._restrictions:
             restrict_used = False  # determines whether restrict is used to set some coordinate bound
-            if not isinstance(
-                restrict, (tuple, list, set, frozenset)
-            ):
+            if not isinstance(restrict, (tuple, list, set, frozenset)):
                 # case of combined
                 # conditions excluded
                 operands = restrict.operands()

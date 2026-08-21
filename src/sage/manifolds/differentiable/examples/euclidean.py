@@ -399,14 +399,14 @@ REFERENCES:
 - \M. Berger: *Geometry I* [Ber1987]_
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2018 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.manifolds import Manifolds
 from sage.categories.metric_spaces import MetricSpaces
@@ -642,11 +642,21 @@ class EuclideanSpace(PseudoRiemannianManifold):
         sage: g.display()
         g = dx1⊗dx1 + dx2⊗dx2 + dx3⊗dx3 + dx4⊗dx4
     """
+
     @staticmethod
-    def __classcall_private__(cls, n=None, name=None, latex_name=None,
-                              coordinates='Cartesian', symbols=None,
-                              metric_name='g', metric_latex_name=None,
-                              start_index=1, names=None, unique_tag=None):
+    def __classcall_private__(
+        cls,
+        n=None,
+        name=None,
+        latex_name=None,
+        coordinates='Cartesian',
+        symbols=None,
+        metric_name='g',
+        metric_latex_name=None,
+        start_index=1,
+        names=None,
+        unique_tag=None,
+    ):
         r"""
         Determine the correct class to return based upon the input.
 
@@ -698,37 +708,61 @@ class EuclideanSpace(PseudoRiemannianManifold):
         from time import time
 
         from sage.misc.prandom import getrandbits
+
         if unique_tag is None:
             unique_tag = getrandbits(128) * time()
 
         if n == 2:
-            return EuclideanPlane(name=name, latex_name=latex_name,
-                                  coordinates=coordinates, symbols=symbols,
-                                  metric_name=metric_name,
-                                  metric_latex_name=metric_latex_name,
-                                  start_index=start_index,
-                                  unique_tag=unique_tag)
+            return EuclideanPlane(
+                name=name,
+                latex_name=latex_name,
+                coordinates=coordinates,
+                symbols=symbols,
+                metric_name=metric_name,
+                metric_latex_name=metric_latex_name,
+                start_index=start_index,
+                unique_tag=unique_tag,
+            )
         if n == 3:
-            return Euclidean3dimSpace(name=name, latex_name=latex_name,
-                                      coordinates=coordinates, symbols=symbols,
-                                      metric_name=metric_name,
-                                      metric_latex_name=metric_latex_name,
-                                      start_index=start_index,
-                                      unique_tag=unique_tag)
+            return Euclidean3dimSpace(
+                name=name,
+                latex_name=latex_name,
+                coordinates=coordinates,
+                symbols=symbols,
+                metric_name=metric_name,
+                metric_latex_name=metric_latex_name,
+                start_index=start_index,
+                unique_tag=unique_tag,
+            )
 
-        return super().__classcall__(cls,
-                                     n, name=name, latex_name=latex_name,
-                                     coordinates=coordinates, symbols=symbols,
-                                     metric_name=metric_name,
-                                     metric_latex_name=metric_latex_name,
-                                     start_index=start_index,
-                                     unique_tag=unique_tag)
+        return super().__classcall__(
+            cls,
+            n,
+            name=name,
+            latex_name=latex_name,
+            coordinates=coordinates,
+            symbols=symbols,
+            metric_name=metric_name,
+            metric_latex_name=metric_latex_name,
+            start_index=start_index,
+            unique_tag=unique_tag,
+        )
 
-    def __init__(self, n, name=None, latex_name=None,
-                 coordinates='Cartesian', symbols=None, metric_name='g',
-                 metric_latex_name=None, start_index=1, base_manifold=None,
-                 category=None, init_coord_methods=None,
-                 unique_tag=None):
+    def __init__(
+        self,
+        n,
+        name=None,
+        latex_name=None,
+        coordinates='Cartesian',
+        symbols=None,
+        metric_name='g',
+        metric_latex_name=None,
+        start_index=1,
+        base_manifold=None,
+        category=None,
+        init_coord_methods=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a Euclidean space.
 
@@ -771,12 +805,18 @@ class EuclideanSpace(PseudoRiemannianManifold):
             category = Manifolds(RR).Smooth().Connected() & MetricSpaces().Complete()
             # NB: RR is a proxy for the field of real numbers, until
             #     Issue #24456 is ready
-        PseudoRiemannianManifold.__init__(self, n, name, metric_name=metric_name,
-                                          signature=n, base_manifold=base_manifold,
-                                          latex_name=latex_name,
-                                          metric_latex_name=metric_latex_name,
-                                          start_index=start_index,
-                                          category=category)
+        PseudoRiemannianManifold.__init__(
+            self,
+            n,
+            name,
+            metric_name=metric_name,
+            signature=n,
+            base_manifold=base_manifold,
+            latex_name=latex_name,
+            metric_latex_name=metric_latex_name,
+            start_index=start_index,
+            category=category,
+        )
         if symbols is None:
             if n == 1:
                 if coordinates == 'Cartesian':
@@ -850,9 +890,11 @@ class EuclideanSpace(PseudoRiemannianManifold):
         frame = chart.frame()
         # Renaming (∂/∂x, ∂/∂y, ...) to (e_x, e_y, ...):
         coords = chart[:]
-        frame.set_name('e',
-                       indices=tuple(str(x) for x in coords),
-                       latex_indices=tuple(latex(x) for x in coords))
+        frame.set_name(
+            'e',
+            indices=tuple(str(x) for x in coords),
+            latex_indices=tuple(latex(x) for x in coords),
+        )
         g = self.metric()
         gc = g.add_comp(frame)
         for i in self.irange():
@@ -969,11 +1011,18 @@ class EuclideanSpace(PseudoRiemannianManifold):
         d2 = 0
         for xp, xq in zip(coords_p, coords_q):
             dx = xp - xq
-            d2 += dx*dx
+            d2 += dx * dx
         return sqrt(d2)
 
-    def sphere(self, radius=1, center=None, name=None, latex_name=None,
-               coordinates='spherical', names=None):
+    def sphere(
+        self,
+        radius=1,
+        center=None,
+        name=None,
+        latex_name=None,
+        coordinates='spherical',
+        names=None,
+    ):
         r"""
         Return an `(n-1)`-sphere smoothly embedded in ``self``.
 
@@ -1036,9 +1085,18 @@ class EuclideanSpace(PseudoRiemannianManifold):
         if n == 1:
             raise ValueError('Euclidean space must have dimension of at least 2')
         from sage.manifolds.differentiable.examples.sphere import Sphere
-        return Sphere(n-1, radius=radius, ambient_space=self,
-                      center=center, name=name, latex_name=latex_name,
-                      coordinates=coordinates, names=names)
+
+        return Sphere(
+            n - 1,
+            radius=radius,
+            ambient_space=self,
+            center=center,
+            name=name,
+            latex_name=latex_name,
+            coordinates=coordinates,
+            names=names,
+        )
+
 
 ###############################################################################
 
@@ -1163,9 +1221,20 @@ class EuclideanPlane(EuclideanSpace):
 
         :ref:`EuclideanSpace_example1`
     """
-    def __init__(self, name=None, latex_name=None, coordinates='Cartesian',
-                 symbols=None, metric_name='g', metric_latex_name=None,
-                 start_index=1, base_manifold=None, category=None, unique_tag=None):
+
+    def __init__(
+        self,
+        name=None,
+        latex_name=None,
+        coordinates='Cartesian',
+        symbols=None,
+        metric_name='g',
+        metric_latex_name=None,
+        start_index=1,
+        base_manifold=None,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a Euclidean plane.
 
@@ -1186,17 +1255,24 @@ class EuclideanPlane(EuclideanSpace):
                 symbols = 'r ph:\\phi'
         self._polar_chart = None  # to be constructed later if necessary
         self._polar_frame = None  # orthonormal frame associated to polar coord
-        init_coord_methods = {'Cartesian': self._init_cartesian,
-                              'polar': self._init_polar}
-        EuclideanSpace.__init__(self, 2, name=name,
-                                latex_name=latex_name,
-                                coordinates=coordinates,
-                                symbols=symbols,
-                                metric_name=metric_name,
-                                metric_latex_name=metric_latex_name,
-                                start_index=start_index,
-                                base_manifold=base_manifold, category=category,
-                                init_coord_methods=init_coord_methods)
+        init_coord_methods = {
+            'Cartesian': self._init_cartesian,
+            'polar': self._init_polar,
+        }
+        EuclideanSpace.__init__(
+            self,
+            2,
+            name=name,
+            latex_name=latex_name,
+            coordinates=coordinates,
+            symbols=symbols,
+            metric_name=metric_name,
+            metric_latex_name=metric_latex_name,
+            start_index=start_index,
+            base_manifold=base_manifold,
+            category=category,
+            init_coord_methods=init_coord_methods,
+        )
         if coordinates == 'polar':
             # The default frame is the polar coordinate frame; we change it
             # to the orthonormal polar frame
@@ -1235,8 +1311,7 @@ class EuclideanPlane(EuclideanSpace):
         """
         coords = symbols.split()  # list of strings, one per coordinate
         # Adding the coordinate ranges:
-        coordinates = (coords[0] + ':(0,+oo) ' + coords[1]
-                       + ':(0,2*pi):periodic')
+        coordinates = coords[0] + ':(0,+oo) ' + coords[1] + ':(0,2*pi):periodic'
         chart = self.chart(coordinates=coordinates)
         self._polar_chart = chart
         frame = chart.frame()
@@ -1253,9 +1328,12 @@ class EuclideanPlane(EuclideanSpace):
         to_orthonormal = self.automorphism_field()
         to_orthonormal[frame, i1, i1, chart] = 1
         to_orthonormal[frame, i2, i2, chart] = 1 / r
-        oframe = frame.new_frame(to_orthonormal, 'e',
-                                 indices=(str(r), str(ph)),
-                                 latex_indices=(latex(r), latex(ph)))
+        oframe = frame.new_frame(
+            to_orthonormal,
+            'e',
+            indices=(str(r), str(ph)),
+            latex_indices=(latex(r), latex(ph)),
+        )
         self._polar_frame = oframe
         g.comp(oframe)
 
@@ -1292,9 +1370,8 @@ class EuclideanPlane(EuclideanSpace):
         chart_pol = self._polar_chart
         x, y = chart_cart[:]
         r, ph = chart_pol[:]
-        pol_to_cart = chart_pol.transition_map(chart_cart,
-                                               [r*cos(ph), r*sin(ph)])
-        pol_to_cart.set_inverse(sqrt(x**2+y**2), atan2(y,x), check=False)
+        pol_to_cart = chart_pol.transition_map(chart_cart, [r * cos(ph), r * sin(ph)])
+        pol_to_cart.set_inverse(sqrt(x**2 + y**2), atan2(y, x), check=False)
         # Automorphism Cartesian frame → orthonormal polar frame:
         oframe = self._polar_frame
         cframe = chart_cart.frame()
@@ -1309,7 +1386,7 @@ class EuclideanPlane(EuclideanSpace):
         cmp_cf = cframe_to_oframe.add_comp(cframe)
         for i in self.irange():
             for j in self.irange():
-                cmp_cf[[i,j]] = cmp_of[[i,j]]
+                cmp_cf[[i, j]] = cmp_of[[i, j]]
         # Automorphism orthonormal polar frame → Cartesian frame:
         oframe_to_cframe = chg[(sframe, cframe)] * chg[(oframe, sframe)]
         # oframe_to_cframe has been computed only in sframe;
@@ -1320,15 +1397,17 @@ class EuclideanPlane(EuclideanSpace):
         cmp_cf = oframe_to_cframe.add_comp(cframe)
         for i in self.irange():
             for j in self.irange():
-                cmp_cf[[i,j]] = cmp_of[[i,j]]
+                cmp_cf[[i, j]] = cmp_of[[i, j]]
         # Storage of the results:
         chg[(cframe, oframe)] = cframe_to_oframe
         chg[(oframe, cframe)] = oframe_to_cframe
         vmodule = self.vector_field_module()
-        vmodule.set_change_of_basis(cframe, oframe, cframe_to_oframe,
-                                    compute_inverse=False)
-        vmodule.set_change_of_basis(oframe, cframe, oframe_to_cframe,
-                                    compute_inverse=False)
+        vmodule.set_change_of_basis(
+            cframe, oframe, cframe_to_oframe, compute_inverse=False
+        )
+        vmodule.set_change_of_basis(
+            oframe, cframe, oframe_to_cframe, compute_inverse=False
+        )
 
     def cartesian_coordinates(self, symbols=None, names=None):
         r"""
@@ -1554,6 +1633,7 @@ class EuclideanPlane(EuclideanSpace):
 
 ###############################################################################
 
+
 class Euclidean3dimSpace(EuclideanSpace):
     r"""
     3-dimensional Euclidean space.
@@ -1684,9 +1764,20 @@ class Euclidean3dimSpace(EuclideanSpace):
 
         :ref:`EuclideanSpace_example2`
     """
-    def __init__(self, name=None, latex_name=None, coordinates='Cartesian',
-                 symbols=None, metric_name='g', metric_latex_name=None,
-                 start_index=1, base_manifold=None, category=None, unique_tag=None):
+
+    def __init__(
+        self,
+        name=None,
+        latex_name=None,
+        coordinates='Cartesian',
+        symbols=None,
+        metric_name='g',
+        metric_latex_name=None,
+        start_index=1,
+        base_manifold=None,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a Euclidean 3-space.
 
@@ -1707,22 +1798,29 @@ class Euclidean3dimSpace(EuclideanSpace):
                 symbols = 'r th:\\theta ph:\\phi'
             elif coordinates == 'cylindrical':
                 symbols = 'r ph:\\phi z'
-        self._spherical_chart = None    # to be constructed later if necessary
-        self._spherical_frame = None    # orthonormal frame
+        self._spherical_chart = None  # to be constructed later if necessary
+        self._spherical_frame = None  # orthonormal frame
         self._cylindrical_chart = None
         self._cylindrical_frame = None  # orthonormal frame
-        init_coord_methods = {'Cartesian': self._init_cartesian,
-                              'spherical': self._init_spherical,
-                              'cylindrical': self._init_cylindrical}
-        EuclideanSpace.__init__(self, 3, name=name,
-                                latex_name=latex_name,
-                                coordinates=coordinates,
-                                symbols=symbols,
-                                metric_name=metric_name,
-                                metric_latex_name=metric_latex_name,
-                                start_index=start_index,
-                                base_manifold=base_manifold, category=category,
-                                init_coord_methods=init_coord_methods)
+        init_coord_methods = {
+            'Cartesian': self._init_cartesian,
+            'spherical': self._init_spherical,
+            'cylindrical': self._init_cylindrical,
+        }
+        EuclideanSpace.__init__(
+            self,
+            3,
+            name=name,
+            latex_name=latex_name,
+            coordinates=coordinates,
+            symbols=symbols,
+            metric_name=metric_name,
+            metric_latex_name=metric_latex_name,
+            start_index=start_index,
+            base_manifold=base_manifold,
+            category=category,
+            init_coord_methods=init_coord_methods,
+        )
         if coordinates == 'spherical':
             # The default frame is the spherical coordinate frame; we change it
             # to the orthonormal spherical frame
@@ -1765,8 +1863,14 @@ class Euclidean3dimSpace(EuclideanSpace):
         """
         coords = symbols.split()  # list of strings, one per coordinate
         # Adding the coordinate ranges:
-        coordinates = (coords[0] + ':(0,+oo) ' + coords[1] + ':(0,pi) '
-                       + coords[2] + ':(0,2*pi):periodic')
+        coordinates = (
+            coords[0]
+            + ':(0,+oo) '
+            + coords[1]
+            + ':(0,pi) '
+            + coords[2]
+            + ':(0,2*pi):periodic'
+        )
         chart = self.chart(coordinates=coordinates)
         self._spherical_chart = chart
         frame = chart.frame()
@@ -1780,15 +1884,18 @@ class Euclidean3dimSpace(EuclideanSpace):
         r, th, ph = chart[:]
         gc[i1, i1, chart] = 1
         gc[i2, i2, chart] = r**2
-        gc[i3, i3, chart] = (r*sin(th))**2
+        gc[i3, i3, chart] = (r * sin(th)) ** 2
         # Orthonormal frame associated with spherical coordinates:
         to_orthonormal = self.automorphism_field()
         to_orthonormal[frame, i1, i1, chart] = 1
-        to_orthonormal[frame, i2, i2, chart] = 1/r
-        to_orthonormal[frame, i3, i3, chart] = 1/(r*sin(th))
-        oframe = frame.new_frame(to_orthonormal, 'e',
-                                 indices=(str(r), str(th), str(ph)),
-                                 latex_indices=(latex(r), latex(th), latex(ph)))
+        to_orthonormal[frame, i2, i2, chart] = 1 / r
+        to_orthonormal[frame, i3, i3, chart] = 1 / (r * sin(th))
+        oframe = frame.new_frame(
+            to_orthonormal,
+            'e',
+            indices=(str(r), str(th), str(ph)),
+            latex_indices=(latex(r), latex(th), latex(ph)),
+        )
         self._spherical_frame = oframe
         g.comp(oframe)
 
@@ -1808,8 +1915,9 @@ class Euclidean3dimSpace(EuclideanSpace):
         """
         coords = symbols.split()  # list of strings, one per coordinate
         # Adding the coordinate ranges:
-        coordinates = (coords[0] + ':(0,+oo) ' + coords[1]
-                       + ':(0,2*pi):periodic ' + coords[2])
+        coordinates = (
+            coords[0] + ':(0,+oo) ' + coords[1] + ':(0,2*pi):periodic ' + coords[2]
+        )
         chart = self.chart(coordinates=coordinates)
         self._cylindrical_chart = chart
         frame = chart.frame()
@@ -1829,9 +1937,12 @@ class Euclidean3dimSpace(EuclideanSpace):
         to_orthonormal[frame, i1, i1, chart] = 1
         to_orthonormal[frame, i2, i2, chart] = 1 / rh
         to_orthonormal[frame, i3, i3, chart] = 1
-        oframe = frame.new_frame(to_orthonormal, 'e',
-                                 indices=(str(rh), str(ph), str(z)),
-                                 latex_indices=(latex(rh), latex(ph), latex(z)))
+        oframe = frame.new_frame(
+            to_orthonormal,
+            'e',
+            indices=(str(rh), str(ph), str(z)),
+            latex_indices=(latex(rh), latex(ph), latex(z)),
+        )
         self._cylindrical_frame = oframe
         g.comp(oframe)
 
@@ -1874,11 +1985,15 @@ class Euclidean3dimSpace(EuclideanSpace):
         chart_spher = self._spherical_chart
         x, y, z = chart_cart[:]
         r, th, ph = chart_spher[:]
-        spher_to_cart = chart_spher.transition_map(chart_cart,
-                             [r*sin(th)*cos(ph), r*sin(th)*sin(ph), r*cos(th)])
-        spher_to_cart.set_inverse(sqrt(x**2+y**2+z**2),
-                                  atan2(sqrt(x**2+y**2),z), atan2(y, x),
-                                  check=False)
+        spher_to_cart = chart_spher.transition_map(
+            chart_cart, [r * sin(th) * cos(ph), r * sin(th) * sin(ph), r * cos(th)]
+        )
+        spher_to_cart.set_inverse(
+            sqrt(x**2 + y**2 + z**2),
+            atan2(sqrt(x**2 + y**2), z),
+            atan2(y, x),
+            check=False,
+        )
         # Automorphism Cartesian frame → orthonormal spherical frame:
         oframe = self._spherical_frame
         cframe = chart_cart.frame()
@@ -1893,7 +2008,7 @@ class Euclidean3dimSpace(EuclideanSpace):
         cmp_cf = cframe_to_oframe.add_comp(cframe)
         for i in self.irange():
             for j in self.irange():
-                cmp_cf[[i,j]] = cmp_of[[i,j]]
+                cmp_cf[[i, j]] = cmp_of[[i, j]]
         # Automorphism orthonormal spherical frame → Cartesian frame:
         oframe_to_cframe = chg[(sframe, cframe)] * chg[(oframe, sframe)]
         # oframe_to_cframe has been computed only in sframe;
@@ -1904,15 +2019,17 @@ class Euclidean3dimSpace(EuclideanSpace):
         cmp_cf = oframe_to_cframe.add_comp(cframe)
         for i in self.irange():
             for j in self.irange():
-                cmp_cf[[i,j]] = cmp_of[[i,j]]
+                cmp_cf[[i, j]] = cmp_of[[i, j]]
         # Storage of the results:
         chg[(cframe, oframe)] = cframe_to_oframe
         chg[(oframe, cframe)] = oframe_to_cframe
         vmodule = self.vector_field_module()
-        vmodule.set_change_of_basis(cframe, oframe, cframe_to_oframe,
-                                    compute_inverse=False)
-        vmodule.set_change_of_basis(oframe, cframe, oframe_to_cframe,
-                                    compute_inverse=False)
+        vmodule.set_change_of_basis(
+            cframe, oframe, cframe_to_oframe, compute_inverse=False
+        )
+        vmodule.set_change_of_basis(
+            oframe, cframe, oframe_to_cframe, compute_inverse=False
+        )
 
     def _transition_cylindrical_cartesian(self):
         r"""
@@ -1953,9 +2070,10 @@ class Euclidean3dimSpace(EuclideanSpace):
         chart_cylind = self._cylindrical_chart
         x, y, z = chart_cart[:]
         rh, ph, z = chart_cylind[:]
-        cylind_to_cart = chart_cylind.transition_map(chart_cart,
-                                                     [rh*cos(ph), rh*sin(ph), z])
-        cylind_to_cart.set_inverse(sqrt(x**2+y**2), atan2(y, x), z, check=False)
+        cylind_to_cart = chart_cylind.transition_map(
+            chart_cart, [rh * cos(ph), rh * sin(ph), z]
+        )
+        cylind_to_cart.set_inverse(sqrt(x**2 + y**2), atan2(y, x), z, check=False)
         # Automorphism Cartesian frame → orthonormal cylindrical frame:
         oframe = self._cylindrical_frame
         cframe = chart_cart.frame()
@@ -1970,7 +2088,7 @@ class Euclidean3dimSpace(EuclideanSpace):
         cmp_cf = cframe_to_oframe.add_comp(cframe)
         for i in self.irange():
             for j in self.irange():
-                cmp_cf[[i,j]] = cmp_of[[i,j]]
+                cmp_cf[[i, j]] = cmp_of[[i, j]]
         # Automorphism orthonormal cylindrical frame → Cartesian frame:
         oframe_to_cframe = chg[(sframe, cframe)] * chg[(oframe, sframe)]
         # oframe_to_cframe has been computed only in sframe;
@@ -1981,15 +2099,17 @@ class Euclidean3dimSpace(EuclideanSpace):
         cmp_cf = oframe_to_cframe.add_comp(cframe)
         for i in self.irange():
             for j in self.irange():
-                cmp_cf[[i,j]] = cmp_of[[i,j]]
+                cmp_cf[[i, j]] = cmp_of[[i, j]]
         # Storage of the results:
         chg[(cframe, oframe)] = cframe_to_oframe
         chg[(oframe, cframe)] = oframe_to_cframe
         vmodule = self.vector_field_module()
-        vmodule.set_change_of_basis(cframe, oframe, cframe_to_oframe,
-                                    compute_inverse=False)
-        vmodule.set_change_of_basis(oframe, cframe, oframe_to_cframe,
-                                    compute_inverse=False)
+        vmodule.set_change_of_basis(
+            cframe, oframe, cframe_to_oframe, compute_inverse=False
+        )
+        vmodule.set_change_of_basis(
+            oframe, cframe, oframe_to_cframe, compute_inverse=False
+        )
 
     def _transition_spherical_cylindrical(self):
         r"""
@@ -2030,15 +2150,13 @@ class Euclidean3dimSpace(EuclideanSpace):
         spher = self._spherical_chart
         rh, ph, z = cylind[:]
         r, th, ph = spher[:]
-        spher_to_cylind = spher.transition_map(cylind,
-                                               [r*sin(th), ph, r*cos(th)])
-        spher_to_cylind.set_inverse(sqrt(rh**2 + z**2), atan2(rh,z), ph,
-                                    check=False)
+        spher_to_cylind = spher.transition_map(cylind, [r * sin(th), ph, r * cos(th)])
+        spher_to_cylind.set_inverse(sqrt(rh**2 + z**2), atan2(rh, z), ph, check=False)
         # Automorphism orthon. cylindrical frame -> orthon. spherical frame
-        cf = cylind.frame() # coordinate cylindrical frame
+        cf = cylind.frame()  # coordinate cylindrical frame
         sf = spher.frame()  # coordinate spherical frame
-        ocf = self._cylindrical_frame # orthonormal cylindrical frame
-        osf = self._spherical_frame   # orthonormal spherical frame
+        ocf = self._cylindrical_frame  # orthonormal cylindrical frame
+        osf = self._spherical_frame  # orthonormal spherical frame
         chg = self._frame_changes
         oc_to_os = chg[(sf, osf)] * chg[(cf, sf)] * chg[(ocf, cf)]
         # oc_to_os has been computed only in sf frame; its components in osf
@@ -2049,7 +2167,7 @@ class Euclidean3dimSpace(EuclideanSpace):
         cmp_ocf = oc_to_os.add_comp(ocf)
         for i in self.irange():
             for j in self.irange():
-                cmp_ocf[[i,j]] = cmp_osf[[i,j]]
+                cmp_ocf[[i, j]] = cmp_osf[[i, j]]
         # Automorphism orthon. spherical frame -> orthon. cylindrical frame
         os_to_oc = chg[(cf, ocf)] * chg[(sf, cf)] * chg[(osf, sf)]
         # oc_to_os has been computed only in cf frame; its components in ocf
@@ -2060,7 +2178,7 @@ class Euclidean3dimSpace(EuclideanSpace):
         cmp_osf = os_to_oc.add_comp(osf)
         for i in self.irange():
             for j in self.irange():
-                cmp_osf[[i,j]] = cmp_ocf[[i,j]]
+                cmp_osf[[i, j]] = cmp_ocf[[i, j]]
         # Storage of the results:
         chg[(ocf, osf)] = oc_to_os
         chg[(osf, ocf)] = os_to_oc

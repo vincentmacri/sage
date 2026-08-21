@@ -8,15 +8,17 @@ With Realizations Covariant Functorial Construction
     - :mod:`sage.categories.covariant_functorial_construction`
       for an introduction to covariant functorial constructions.
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2010-2012 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category import Category
-from sage.categories.covariant_functorial_construction import RegressiveCovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    RegressiveCovariantConstructionCategory,
+)
 
 
 def WithRealizations(self):

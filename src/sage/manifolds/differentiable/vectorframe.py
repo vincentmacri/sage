@@ -296,8 +296,10 @@ class CoFrame(FreeModuleCoBasis):
         sage: e[3](v[1]).expr(), e[3](v[2]).expr(), e[3](v[3]).expr()
         (0, 0, 1)
     """
-    def __init__(self, frame, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None):
+
+    def __init__(
+        self, frame, symbol, latex_symbol=None, indices=None, latex_indices=None
+    ):
         r"""
         Construct a coframe, dual to a given vector frame.
 
@@ -312,9 +314,14 @@ class CoFrame(FreeModuleCoBasis):
         """
         self._domain = frame._domain
         self._manifold = self._domain.manifold()
-        FreeModuleCoBasis.__init__(self, frame, symbol,
-                                   latex_symbol=latex_symbol, indices=indices,
-                                   latex_indices=latex_indices)
+        FreeModuleCoBasis.__init__(
+            self,
+            frame,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+        )
         # The coframe is added to the domain's set of coframes, as well as to
         # all the superdomains' sets of coframes
         for sd in self._domain.open_supersets():
@@ -393,9 +400,15 @@ class CoFrame(FreeModuleCoBasis):
         """
         return self._basis.at(point).dual_basis()
 
-    def set_name(self, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None, index_position='up',
-                 include_domain=True):
+    def set_name(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        index_position='up',
+        include_domain=True,
+    ):
         r"""
         Set (or change) the text name and LaTeX name of ``self``.
 
@@ -445,15 +458,20 @@ class CoFrame(FreeModuleCoBasis):
             sage: latex(e)
             \left(M, \left(e^{\xi},e^{\zeta}\right)\right)
         """
-        super().set_name(symbol, latex_symbol=latex_symbol,
-                         indices=indices,
-                         latex_indices=latex_indices,
-                         index_position=index_position)
+        super().set_name(
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            index_position=index_position,
+        )
         if include_domain:
             # Redefinition of the name and the LaTeX name to include the domain
             self._name = "({}, {})".format(self._domain._name, self._name)
             self._latex_name = r"\left({}, {}\right)".format(
-                                    self._domain._latex_name, self._latex_name)
+                self._domain._latex_name, self._latex_name
+            )
+
 
 # ******************************************************************************
 
@@ -631,10 +649,17 @@ class VectorFrame(FreeModuleBasis):
     _cobasis_class = CoFrame
 
     @staticmethod
-    def __classcall_private__(cls, vector_field_module, symbol,
-                              latex_symbol=None, from_frame=None, indices=None,
-                              latex_indices=None, symbol_dual=None,
-                              latex_symbol_dual=None):
+    def __classcall_private__(
+        cls,
+        vector_field_module,
+        symbol,
+        latex_symbol=None,
+        from_frame=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         """
         Transform input lists into tuples for the unique representation of
         VectorFrame.
@@ -663,16 +688,29 @@ class VectorFrame(FreeModuleBasis):
             symbol_dual = tuple(symbol_dual)
         if isinstance(latex_symbol_dual, list):
             latex_symbol_dual = tuple(latex_symbol_dual)
-        return super().__classcall__(cls, vector_field_module,
-                                     symbol, latex_symbol=latex_symbol,
-                                     from_frame=from_frame, indices=indices,
-                                     latex_indices=latex_indices,
-                                     symbol_dual=symbol_dual,
-                                     latex_symbol_dual=latex_symbol_dual)
+        return super().__classcall__(
+            cls,
+            vector_field_module,
+            symbol,
+            latex_symbol=latex_symbol,
+            from_frame=from_frame,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
-    def __init__(self, vector_field_module, symbol, latex_symbol=None,
-                 from_frame=None, indices=None, latex_indices=None,
-                 symbol_dual=None, latex_symbol_dual=None):
+    def __init__(
+        self,
+        vector_field_module,
+        symbol,
+        latex_symbol=None,
+        from_frame=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Construct a vector frame on a parallelizable manifold.
 
@@ -686,11 +724,14 @@ class VectorFrame(FreeModuleBasis):
             sage: TestSuite(e).run()
         """
         from sage.manifolds.differentiable.manifold import DifferentiableManifold
+
         # Some sanity check:
         if not isinstance(vector_field_module, FiniteRankFreeModule):
-            raise ValueError("the {} has already been constructed as a "
-                             "non-free module and therefore cannot have "
-                             "a basis".format(vector_field_module))
+            raise ValueError(
+                "the {} has already been constructed as a "
+                "non-free module and therefore cannot have "
+                "a basis".format(vector_field_module)
+            )
         self._domain = vector_field_module._domain
         self._ambient_domain = vector_field_module._ambient_domain
         self._dest_map = vector_field_module._dest_map
@@ -698,9 +739,11 @@ class VectorFrame(FreeModuleBasis):
         self._manifold = self._domain.manifold()
         if from_frame is not None:
             if not from_frame._domain.is_subset(self._dest_map._codomain):
-                raise ValueError("the domain of the frame 'from_frame' is " +
-                                 "not included in the codomain of the " +
-                                 "destination map")
+                raise ValueError(
+                    "the domain of the frame 'from_frame' is "
+                    + "not included in the codomain of the "
+                    + "destination map"
+                )
         if symbol is None:
             if from_frame is None:
                 raise TypeError("some frame symbol must be provided")
@@ -710,11 +753,16 @@ class VectorFrame(FreeModuleBasis):
             latex_indices = from_frame._latex_indices
             symbol_dual = from_frame._symbol_dual
             latex_symbol_dual = from_frame._latex_symbol_dual
-        FreeModuleBasis.__init__(self, vector_field_module,
-                                 symbol, latex_symbol=latex_symbol,
-                                 indices=indices, latex_indices=latex_indices,
-                                 symbol_dual=symbol_dual,
-                                 latex_symbol_dual=latex_symbol_dual)
+        FreeModuleBasis.__init__(
+            self,
+            vector_field_module,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         # The frame is added to the domain's set of frames, as well as to all
         # the superdomains' sets of frames; moreover the first defined frame
         # is considered as the default one
@@ -738,7 +786,7 @@ class VectorFrame(FreeModuleBasis):
 
         # Dual coframe
         self._coframe = self.dual_basis()  # self._coframe = a shortcut for
-                                           # self._dual_basis
+        # self._dual_basis
 
         # Derived quantities:
         # Initialization of the set of frames that are restrictions of the
@@ -748,9 +796,9 @@ class VectorFrame(FreeModuleBasis):
         # restriction of:
         self._superframes = set([self])
 
-        self._restrictions = {} # dict. of the restrictions of self to
-                               # subdomains of self._domain, with the
-                               # subdomains as keys
+        self._restrictions = {}  # dict. of the restrictions of self to
+        # subdomains of self._domain, with the
+        # subdomains as keys
         # NB: set(self._restrictions.values()) is identical to
         #     self._subframes
 
@@ -785,9 +833,15 @@ class VectorFrame(FreeModuleBasis):
             description += " with values on the {}".format(self._dest_map.codomain())
         return description
 
-    def _new_instance(self, symbol, latex_symbol=None, indices=None,
-                      latex_indices=None, symbol_dual=None,
-                      latex_symbol_dual=None):
+    def _new_instance(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Construct a new vector frame on the same vector field module
         as ``self``.
@@ -830,10 +884,15 @@ class VectorFrame(FreeModuleBasis):
             sage: e._new_instance('f')
             Vector frame (M, (f_0,f_1))
         """
-        return VectorFrame(self._fmodule, symbol, latex_symbol=latex_symbol,
-                           indices=indices, latex_indices=latex_indices,
-                           symbol_dual=symbol_dual,
-                           latex_symbol_dual=latex_symbol_dual)
+        return VectorFrame(
+            self._fmodule,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
     ###### End of methods to be redefined by derived classes ######
 
@@ -956,9 +1015,16 @@ class VectorFrame(FreeModuleBasis):
         """
         return self._coframe
 
-    def new_frame(self, change_of_frame, symbol, latex_symbol=None,
-                  indices=None, latex_indices=None, symbol_dual=None,
-                  latex_symbol_dual=None):
+    def new_frame(
+        self,
+        change_of_frame,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Define a new vector frame from ``self``.
 
@@ -1044,17 +1110,22 @@ class VectorFrame(FreeModuleBasis):
             sage: e[1].comp(n)[:]
             [1/2, 1/2*sqrt(3)]
         """
-        the_new_frame = self.new_basis(change_of_frame, symbol,
-                                       latex_symbol=latex_symbol,
-                                       indices=indices,
-                                       latex_indices=latex_indices,
-                                       symbol_dual=symbol_dual,
-                                       latex_symbol_dual=latex_symbol_dual)
+        the_new_frame = self.new_basis(
+            change_of_frame,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         for sdom in self._domain.open_supersets():
-            sdom._frame_changes[(self, the_new_frame)] = \
-                            self._fmodule._basis_changes[(self, the_new_frame)]
-            sdom._frame_changes[(the_new_frame, self)] = \
-                            self._fmodule._basis_changes[(the_new_frame, self)]
+            sdom._frame_changes[(self, the_new_frame)] = self._fmodule._basis_changes[
+                (self, the_new_frame)
+            ]
+            sdom._frame_changes[(the_new_frame, self)] = self._fmodule._basis_changes[
+                (the_new_frame, self)
+            ]
         return the_new_frame
 
     def restrict(self, subdomain):
@@ -1102,8 +1173,10 @@ class VectorFrame(FreeModuleBasis):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subdomain of " +
-                                 "the current frame's domain")
+                raise ValueError(
+                    "the provided domain is not a subdomain of "
+                    + "the current frame's domain"
+                )
             # First one tries to get the restriction from a tighter domain:
             for dom, rst in self._restrictions.items():
                 if subdomain.is_subset(dom) and subdomain in rst._restrictions:
@@ -1126,25 +1199,27 @@ class VectorFrame(FreeModuleBasis):
             # If this point is reached, the restriction has to be created
             # from scratch
             sdest_map = self._dest_map.restrict(subdomain)
-            resmodule = subdomain.vector_field_module(sdest_map,
-                                                      force_free=True)
+            resmodule = subdomain.vector_field_module(sdest_map, force_free=True)
             if subdomain in self._restrictions:
                 # the restriction has been generated during the creation of
                 # resmodule (which may happen if sdest_map is not trivial)
                 return self._restrictions[subdomain]
-            res = VectorFrame(resmodule,
-                              self._symbol, latex_symbol=self._latex_symbol,
-                              indices=self._indices,
-                              latex_indices=self._latex_indices,
-                              symbol_dual=self._symbol_dual,
-                              latex_symbol_dual=self._latex_symbol_dual)
+            res = VectorFrame(
+                resmodule,
+                self._symbol,
+                latex_symbol=self._latex_symbol,
+                indices=self._indices,
+                latex_indices=self._latex_indices,
+                symbol_dual=self._symbol_dual,
+                latex_symbol_dual=self._latex_symbol_dual,
+            )
 
             res._from_frame = self._from_frame
 
             for dom in subdomain.open_supersets():
                 if dom is not subdomain:
                     dom._top_frames.remove(res)  # since it was added by
-                                                 # VectorFrame constructor
+                    # VectorFrame constructor
             new_vectors = list()
             for i in self._fmodule.irange():
                 vrest = self[i].restrict(subdomain)
@@ -1159,7 +1234,7 @@ class VectorFrame(FreeModuleBasis):
                     res._superframes.update(sframe._superframes)
             for sframe in res._superframes:
                 sframe._subframes.add(res)
-                sframe._restrictions[subdomain] = res # includes sframe = self
+                sframe._restrictions[subdomain] = res  # includes sframe = self
             for dom, rst in self._restrictions.items():
                 if dom.is_subset(subdomain):
                     res._restrictions.update(rst._restrictions)
@@ -1222,19 +1297,23 @@ class VectorFrame(FreeModuleBasis):
         from sage.tensor.modules.comp import CompWithSym
 
         fmodule = self._fmodule
-        structure_coeff = CompWithSym(self._fmodule._ring, self, 3,
-                                      start_index=fmodule._sindex,
-                                      output_formatter=fmodule._output_formatter,
-                                      antisym=(1,2))
+        structure_coeff = CompWithSym(
+            self._fmodule._ring,
+            self,
+            3,
+            start_index=fmodule._sindex,
+            output_formatter=fmodule._output_formatter,
+            antisym=(1, 2),
+        )
         si = fmodule._sindex
         nsi = si + fmodule.rank()
         for k in range(si, nsi):
-            ce_k = self._coframe._vec[k-si]
+            ce_k = self._coframe._vec[k - si]
             for i in range(si, nsi):
-                e_i = self._vec[i-si]
-                for j in range(i+1, nsi):
-                    e_j = self._vec[j-si]
-                    structure_coeff[[k,i,j]] = ce_k(e_j.lie_der(e_i))
+                e_i = self._vec[i - si]
+                for j in range(i + 1, nsi):
+                    e_j = self._vec[j - si]
+                    structure_coeff[[k, i, j]] = ce_k(e_j.lie_der(e_i))
         return structure_coeff
 
     def along(self, mapping):
@@ -1300,8 +1379,10 @@ class VectorFrame(FreeModuleBasis):
                     rmapping = rest
                     break
             else:
-                raise ValueError("the codomain of {} is not ".format(mapping) +
-                                 " included in the domain of {}".format(self))
+                raise ValueError(
+                    "the codomain of {} is not ".format(mapping)
+                    + " included in the domain of {}".format(self)
+                )
         vmodule = rmapping.domain().vector_field_module(dest_map=rmapping)
         return vmodule.basis(from_frame=self)
 
@@ -1411,8 +1492,10 @@ class VectorFrame(FreeModuleBasis):
 
         # Determination of the tangent space:
         if point not in self._domain:
-            raise ValueError("the {} is not a point in the ".format(point) +
-                             "domain of {}".format(self))
+            raise ValueError(
+                "the {} is not a point in the ".format(point)
+                + "domain of {}".format(self)
+            )
 
         if self._dest_map.is_identity():
             ambient_point = point
@@ -1432,11 +1515,14 @@ class VectorFrame(FreeModuleBasis):
         # scratch.
         # The names of the basis vectors set to those of the frame vector
         # fields:
-        basis = ts.basis(self._symbol, latex_symbol=self._latex_symbol,
-                         indices=self._indices,
-                         latex_indices=self._latex_indices,
-                         symbol_dual=self._symbol_dual,
-                         latex_symbol_dual=self._latex_symbol_dual)
+        basis = ts.basis(
+            self._symbol,
+            latex_symbol=self._latex_symbol,
+            indices=self._indices,
+            latex_indices=self._latex_indices,
+            symbol_dual=self._symbol_dual,
+            latex_symbol_dual=self._latex_symbol_dual,
+        )
         ts_frame_bases[self] = basis
         # Update of the change of bases in the tangent space:
         for frame_pair, automorph in self._domain._frame_changes.items():
@@ -1486,9 +1572,15 @@ class VectorFrame(FreeModuleBasis):
                     ts._basis_changes[(basis1, basis2)] = auto
         return basis
 
-    def set_name(self, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None, index_position='down',
-                 include_domain=True):
+    def set_name(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        index_position='down',
+        include_domain=True,
+    ):
         r"""
         Set (or change) the text name and LaTeX name of ``self``.
 
@@ -1541,17 +1633,22 @@ class VectorFrame(FreeModuleBasis):
             sage: latex(e)
             \left(M, \left(E_{\alpha},E_{\beta}\right)\right)
         """
-        super().set_name(symbol, latex_symbol=latex_symbol,
-                         indices=indices,
-                         latex_indices=latex_indices,
-                         index_position=index_position)
+        super().set_name(
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            index_position=index_position,
+        )
         if include_domain:
             # Redefinition of the name and the LaTeX name to include the domain
             self._name = "({}, {})".format(self._domain._name, self._name)
             self._latex_name = r"\left({}, {}\right)".format(
-                                    self._domain._latex_name, self._latex_name)
+                self._domain._latex_name, self._latex_name
+            )
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class CoordCoFrame(CoFrame):
@@ -1627,8 +1724,10 @@ class CoordCoFrame(CoFrame):
         sage: dX[1].exterior_derivative() == 0
         True
     """
-    def __init__(self, coord_frame, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None):
+
+    def __init__(
+        self, coord_frame, symbol, latex_symbol=None, indices=None, latex_indices=None
+    ):
         r"""
         Construct a coordinate coframe.
 
@@ -1643,8 +1742,14 @@ class CoordCoFrame(CoFrame):
         """
         if not isinstance(coord_frame, CoordFrame):
             raise TypeError("the first argument must be a coordinate frame")
-        CoFrame.__init__(self, coord_frame, symbol, latex_symbol=latex_symbol,
-                         indices=indices, latex_indices=latex_indices)
+        CoFrame.__init__(
+            self,
+            coord_frame,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+        )
         self._chart = coord_frame._chart
 
     def _repr_(self):
@@ -1665,7 +1770,8 @@ class CoordCoFrame(CoFrame):
         """
         return "Coordinate coframe " + self._name
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class CoordFrame(VectorFrame):
@@ -1717,30 +1823,35 @@ class CoordFrame(VectorFrame):
         from sage.manifolds.differentiable.chart import DiffChart
         from sage.misc.latex import latex
         from sage.typeset.unicode_characters import unicode_partial
+
         if not isinstance(chart, DiffChart):
             raise TypeError("the first argument must be a chart")
         dom = chart.domain()
         # Some sanity check:
         vmodule = dom._vector_field_modules.get(dom.identity_map())
         if vmodule and not isinstance(vmodule, FiniteRankFreeModule):
-            raise ValueError("the {} has already been constructed as a "
-                             "non-free module, which implies that the {} is "
-                             "not parallelizable and hence cannot be the "
-                             "domain of a coordinate chart".format(vmodule,
-                             dom))
+            raise ValueError(
+                "the {} has already been constructed as a "
+                "non-free module, which implies that the {} is "
+                "not parallelizable and hence cannot be the "
+                "domain of a coordinate chart".format(vmodule, dom)
+            )
         self._chart = chart
-        coords = chart[:] # list of all coordinates
-        symbol = tuple(f"{unicode_partial}/{unicode_partial}{x!s}"
-                       for x in coords)
-        latex_symbol = tuple(r"\frac{\partial}{\partial" + latex(x) + "}"
-                             for x in coords)
+        coords = chart[:]  # list of all coordinates
+        symbol = tuple(f"{unicode_partial}/{unicode_partial}{x!s}" for x in coords)
+        latex_symbol = tuple(
+            r"\frac{\partial}{\partial" + latex(x) + "}" for x in coords
+        )
         symbol_dual = tuple("d" + str(x) for x in coords)
         latex_symbol_dual = tuple(r"\mathrm{d}" + latex(x) for x in coords)
-        VectorFrame.__init__(self,
-                             dom.vector_field_module(force_free=True),
-                             symbol=symbol, latex_symbol=latex_symbol,
-                             symbol_dual=symbol_dual,
-                             latex_symbol_dual=latex_symbol_dual)
+        VectorFrame.__init__(
+            self,
+            dom.vector_field_module(force_free=True),
+            symbol=symbol,
+            latex_symbol=latex_symbol,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         # In the above:
         # - force_free=True ensures that a free module is constructed in case
         #   it is the first call to the vector field module on chart.domain()
@@ -1824,8 +1935,13 @@ class CoordFrame(VectorFrame):
             True
         """
         from sage.tensor.modules.comp import CompWithSym
+
         # A zero CompWithSym
-        return CompWithSym(self._fmodule._ring, self, 3,
-                           start_index=self._fmodule._sindex,
-                           output_formatter=self._fmodule._output_formatter,
-                           antisym=(1,2))
+        return CompWithSym(
+            self._fmodule._ring,
+            self,
+            3,
+            start_index=self._fmodule._sindex,
+            output_formatter=self._fmodule._output_formatter,
+            antisym=(1, 2),
+        )

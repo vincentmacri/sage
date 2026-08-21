@@ -89,9 +89,9 @@ class ManifoldSubsetClosure(ManifoldSubset):
             name = 'cl_' + subset._name
         ManifoldSubset.__init__(self, base_manifold, name, latex_name=latex_name)
         self.declare_superset(subset)
-        self.declare_subset(superset
-                            for superset in subset.supersets()
-                            if superset.is_closed())
+        self.declare_subset(
+            superset for superset in subset.supersets() if superset.is_closed()
+        )
 
     def _repr_(self):
         r"""

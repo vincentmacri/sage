@@ -32,6 +32,7 @@ class TriangularKacMoodyAlgebras(Category_over_base_ring):
     We require that the grading group is the root lattice of the
     appropriate Cartan type.
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -117,12 +118,19 @@ class TriangularKacMoodyAlgebras(Category_over_base_ring):
             P = self._cartan_type.root_system().root_lattice()
             ali = P.simple_roots().inverse_family()
             if positive:
-                d = {ali[g.degree()]: g for g in self.lie_algebra_generators()
-                     if self._part(g) > 0}
+                d = {
+                    ali[g.degree()]: g
+                    for g in self.lie_algebra_generators()
+                    if self._part(g) > 0
+                }
             if not positive:
-                d = {ali[-g.degree()]: g for g in self.lie_algebra_generators()
-                     if self._part(g) < 0}
+                d = {
+                    ali[-g.degree()]: g
+                    for g in self.lie_algebra_generators()
+                    if self._part(g) < 0
+                }
             from sage.sets.family import Family
+
             return Family(I, d.__getitem__)
 
         def e(self, i=None):
@@ -253,6 +261,7 @@ class TriangularKacMoodyAlgebras(Category_over_base_ring):
                  of Lie algebra of ['A', 2] in the Chevalley basis
             """
             from sage.algebras.lie_algebras.verma_module import VermaModule
+
             return VermaModule(self, la, basis_key=basis_key, **kwds)
 
         def simple_module(self, la, basis_key=None, **kwds):
@@ -293,9 +302,11 @@ class TriangularKacMoodyAlgebras(Category_over_base_ring):
             """
             if la.is_verma_dominant(positive=False):
                 from sage.algebras.lie_algebras.verma_module import VermaModule
+
                 return VermaModule(self, la, basis_key=basis_key, **kwds)
 
             from sage.algebras.lie_algebras.bgg_dual_module import SimpleModule
+
             return SimpleModule(self, la, basis_key=basis_key, **kwds)
 
     class ElementMethods:
@@ -344,6 +355,7 @@ class TriangularKacMoodyAlgebras(Category_over_base_ring):
         to semisimple Lie algebras) with a distinguished basis that
         respects the triangular decomposition.
         """
+
         class ParentMethods:
             @lazy_attribute
             def _transpose_basis_mapping(self):

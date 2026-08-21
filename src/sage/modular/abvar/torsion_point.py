@@ -46,6 +46,7 @@ class TorsionPoint(ModuleElement):
         sage: type(G.0)
         <class 'sage.modular.abvar.finite_subgroup.FiniteSubgroup_lattice_with_category.element_class'>
     """
+
     def __init__(self, parent, element, check=True):
         """
         Initialize ``self``.
@@ -59,7 +60,9 @@ class TorsionPoint(ModuleElement):
         ModuleElement.__init__(self, parent)
         if check:
             if element not in parent.abelian_variety().vector_space():
-                raise TypeError("element must be a vector in the abelian variety's rational homology (embedded in the ambient Jacobian product)")
+                raise TypeError(
+                    "element must be a vector in the abelian variety's rational homology (embedded in the ambient Jacobian product)"
+                )
         if element.denominator() == 1:
             element = element.parent().zero_vector()
         self.__element = element
@@ -226,7 +229,11 @@ class TorsionPoint(ModuleElement):
         """
         A = self.parent().abelian_variety()
         from sage.rings.rational_field import QQ
-        if self.__element.change_ring(QQ) - other.__element.change_ring(QQ) in A.lattice():
+
+        if (
+            self.__element.change_ring(QQ) - other.__element.change_ring(QQ)
+            in A.lattice()
+        ):
             return rich_to_bool(op, 0)
         return richcmp(self.__element, other.__element, op)
 
@@ -270,4 +277,9 @@ class TorsionPoint(ModuleElement):
         """
         # check=False prevents testing that the element is really in
         # the lattice, not just in the corresponding QQ-vector space.
-        return self.parent().abelian_variety().lattice().coordinate_vector(self.__element, check=False)
+        return (
+            self.parent()
+            .abelian_variety()
+            .lattice()
+            .coordinate_vector(self.__element, check=False)
+        )

@@ -26,7 +26,7 @@ AUTHORS:
   version
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2017 David Lucas <david.lucas@inria.fr>
 #                          Johan Rosenkilde <jsrn@jsrn.dk>
 #                          Yann Laigle-Chapuy
@@ -37,7 +37,7 @@ AUTHORS:
 # (at your option) any later version.
 #
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.arith.misc import binomial
 from sage.rings.integer_ring import ZZ
@@ -294,11 +294,16 @@ class InformationSetAlgorithm(SageObject):
             sage: A2 == LeeBrickellISDAlgorithm(C, (0,4), search_size=A.parameters()['search_size'])
             True
         """
-        return isinstance(other, self.__class__)\
-                and self.code() == other.code()\
-                and self.decoding_interval() == other.decoding_interval()\
-                and self._parameters_specified == other._parameters_specified\
-                and (not self._parameters_specified or self.parameters() == other.parameters())
+        return (
+            isinstance(other, self.__class__)
+            and self.code() == other.code()
+            and self.decoding_interval() == other.decoding_interval()
+            and self._parameters_specified == other._parameters_specified
+            and (
+                not self._parameters_specified
+                or self.parameters() == other.parameters()
+            )
+        )
 
     def __hash__(self):
         r"""
@@ -330,7 +335,11 @@ class InformationSetAlgorithm(SageObject):
             sage: A
             ISD Algorithm (Lee-Brickell) for [24, 12, 8] Extended Golay code over GF(2) decoding up to 4 errors
         """
-        return "ISD Algorithm ({}) for {} decoding {} errors ".format(self._algorithm_name, self.code(), _format_decoding_interval(self.decoding_interval()))
+        return "ISD Algorithm ({}) for {} decoding {} errors ".format(
+            self._algorithm_name,
+            self.code(),
+            _format_decoding_interval(self.decoding_interval()),
+        )
 
     def _latex_(self):
         r"""
@@ -344,7 +353,11 @@ class InformationSetAlgorithm(SageObject):
             sage: latex(A)
             \textnormal{ISD Algorithm (Lee-Brickell) for }[24, 12, 8] \textnormal{ Extended Golay Code over } \Bold{F}_{2} \textnormal{decoding up to 4 errors}
         """
-        return "\\textnormal{{ISD Algorithm ({}) for }}{} \\textnormal{{decoding {} errors}}".format(self._algorithm_name, self.code()._latex_(), _format_decoding_interval(self.decoding_interval()))
+        return "\\textnormal{{ISD Algorithm ({}) for }}{} \\textnormal{{decoding {} errors}}".format(
+            self._algorithm_name,
+            self.code()._latex_(),
+            _format_decoding_interval(self.decoding_interval()),
+        )
 
 
 class LeeBrickellISDAlgorithm(InformationSetAlgorithm):
@@ -398,6 +411,7 @@ class LeeBrickellISDAlgorithm(InformationSetAlgorithm):
         ISD Algorithm (Lee-Brickell) for [24, 12, 8] Extended Golay code over GF(2)
          decoding between 2 and 3 errors
     """
+
     def __init__(self, code, decoding_interval, search_size=None):
         r"""
         TESTS:
@@ -419,12 +433,20 @@ class LeeBrickellISDAlgorithm(InformationSetAlgorithm):
         """
         if search_size is not None:
             if not isinstance(search_size, (Integer, int)) or search_size < 0:
-                raise ValueError("The search size parameter has to be a positive integer")
+                raise ValueError(
+                    "The search size parameter has to be a positive integer"
+                )
             if search_size > decoding_interval[1]:
-                raise ValueError("The search size parameter has to be at most"
-                                 " the maximal number of allowed errors")
-            super().__init__(code, decoding_interval, "Lee-Brickell",
-                             parameters={'search_size': search_size})
+                raise ValueError(
+                    "The search size parameter has to be at most"
+                    " the maximal number of allowed errors"
+                )
+            super().__init__(
+                code,
+                decoding_interval,
+                "Lee-Brickell",
+                parameters={'search_size': search_size},
+            )
             self._parameters_specified = True
         else:
             self._parameters_specified = False
@@ -464,6 +486,7 @@ class LeeBrickellISDAlgorithm(InformationSetAlgorithm):
         """
         import itertools
         from sage.misc.prandom import sample
+
         C = self.code()
         n, k = C.length(), C.dimension()
         tau = self.decoding_interval()
@@ -577,26 +600,30 @@ class LeeBrickellISDAlgorithm(InformationSetAlgorithm):
         def time_search_loop(p):
             y = random_vector(F, n)
             g = random_matrix(F, p, n).rows()
-            scalars = [  [ Fstar[randint(0,q-2)] for i in range(p) ]
-                             for s in range(100) ]
+            scalars = [[Fstar[randint(0, q - 2)] for i in range(p)] for s in range(100)]
             before = process_time()
             for m in scalars:
-                _ = y - sum(m[i]*g[i] for i in range(p))
-            return (process_time() - before) / 100.
-        T = sum([ time_information_set_steps() for s in range(5) ]) / 5.
-        P = [ time_search_loop(p) for p in range(tau+1) ]
+                _ = y - sum(m[i] * g[i] for i in range(p))
+            return (process_time() - before) / 100.0
+
+        T = sum([time_information_set_steps() for s in range(5)]) / 5.0
+        P = [time_search_loop(p) for p in range(tau + 1)]
 
         def compute_estimate(p):
-            iters = 1. * binomial(n, k) / \
-                sum( binomial(n-tau, k-i)*binomial(tau,i) for i in range(p+1) )
-            estimate = iters*(T +
-                sum(P[pi] * (q-1)**pi * binomial(k, pi) for pi in range(p+1) ))
+            iters = (
+                1.0
+                * binomial(n, k)
+                / sum(binomial(n - tau, k - i) * binomial(tau, i) for i in range(p + 1))
+            )
+            estimate = iters * (
+                T + sum(P[pi] * (q - 1) ** pi * binomial(k, pi) for pi in range(p + 1))
+            )
             return estimate
 
         if self._parameters_specified:
             self._time_estimate = compute_estimate(self._parameters['search_size'])
         else:
-            self._calibrate_select([ compute_estimate(p) for p in range(tau+1) ])
+            self._calibrate_select([compute_estimate(p) for p in range(tau + 1)])
 
     def _calibrate_select(self, estimates):
         r"""
@@ -629,7 +656,7 @@ class LeeBrickellISDAlgorithm(InformationSetAlgorithm):
         for p in range(1, len(estimates)):
             if estimates[p] < estimates[search_size]:
                 search_size = p
-        self._parameters = { 'search_size': search_size }
+        self._parameters = {'search_size': search_size}
         self._time_estimate = estimates[search_size]
 
 
@@ -759,6 +786,7 @@ class LinearCodeInformationSetDecoder(Decoder):
         Information-set decoder (Lee-Brickell) for [12, 6, 6] Extended Golay code over GF(3)
          decoding up to 2 errors
     """
+
     def __init__(self, code, number_errors, algorithm=None, **kwargs):
         r"""
         TESTS:
@@ -824,15 +852,21 @@ class LinearCodeInformationSetDecoder(Decoder):
         """
         if isinstance(number_errors, (Integer, int)):
             number_errors = (0, number_errors)
-        if isinstance(number_errors, (tuple, list)) and len(number_errors) == 2 \
-            and number_errors[0] in ZZ and number_errors[1] in ZZ:
+        if (
+            isinstance(number_errors, (tuple, list))
+            and len(number_errors) == 2
+            and number_errors[0] in ZZ
+            and number_errors[1] in ZZ
+        ):
             if 0 > number_errors[0] or number_errors[0] > number_errors[1]:
                 raise ValueError(
-                        "number_errors should be a positive integer or"
-                        " a valid interval within the positive integers")
+                    "number_errors should be a positive integer or"
+                    " a valid interval within the positive integers"
+                )
             if number_errors[1] > code.length():
-                raise ValueError("The provided number of errors should be at"
-                                 " most the code's length")
+                raise ValueError(
+                    "The provided number of errors should be at most the code's length"
+                )
         else:
             raise ValueError("number_errors should be an integer or a pair of integers")
 
@@ -842,31 +876,38 @@ class LinearCodeInformationSetDecoder(Decoder):
 
         if algorithm is None:
             if kwargs:
-                raise ValueError("Additional arguments to an information-set decoder"
-                                " algorithm are only allowed if a specific"
-                                " algorithm is selected by setting the algorithm"
-                                " keyword")
+                raise ValueError(
+                    "Additional arguments to an information-set decoder"
+                    " algorithm are only allowed if a specific"
+                    " algorithm is selected by setting the algorithm"
+                    " keyword"
+                )
             algorithm = "Lee-Brickell"
-        algorithm_names = LinearCodeInformationSetDecoder.known_algorithms(dictionary=True)
+        algorithm_names = LinearCodeInformationSetDecoder.known_algorithms(
+            dictionary=True
+        )
 
         if isinstance(algorithm, InformationSetAlgorithm):
             if kwargs:
-                raise ValueError("ISD algorithm arguments are not allowed when"
-                                " supplying a constructed ISD algorithm")
+                raise ValueError(
+                    "ISD algorithm arguments are not allowed when"
+                    " supplying a constructed ISD algorithm"
+                )
             if number_errors != algorithm.decoding_interval():
-                raise ValueError("number_errors must match that of the passed"
-                                " ISD algorithm")
+                raise ValueError(
+                    "number_errors must match that of the passed ISD algorithm"
+                )
             self._algorithm = algorithm
         elif algorithm in algorithm_names:
             self._algorithm = algorithm_names[algorithm](code, number_errors, **kwargs)
         else:
-            raise ValueError("Unknown ISD algorithm '{}'."
-                            " The known algorithms are {}."
-                            .format(algorithm, sorted(algorithm_names)))
+            raise ValueError(
+                "Unknown ISD algorithm '{}'. The known algorithms are {}.".format(
+                    algorithm, sorted(algorithm_names)
+                )
+            )
 
-    _known_algorithms = {
-        "Lee-Brickell": LeeBrickellISDAlgorithm
-        }
+    _known_algorithms = {"Lee-Brickell": LeeBrickellISDAlgorithm}
 
     @staticmethod
     def known_algorithms(dictionary=False):
@@ -1010,7 +1051,11 @@ class LinearCodeInformationSetDecoder(Decoder):
             sage: D
             Information-set decoder (Lee-Brickell) for [24, 12, 8] Extended Golay code over GF(2) decoding up to 2 errors
         """
-        return "Information-set decoder ({}) for {} decoding {} errors ".format(self.algorithm().name(), self.code(), _format_decoding_interval(self.decoding_interval()))
+        return "Information-set decoder ({}) for {} decoding {} errors ".format(
+            self.algorithm().name(),
+            self.code(),
+            _format_decoding_interval(self.decoding_interval()),
+        )
 
     def _latex_(self):
         r"""
@@ -1024,8 +1069,17 @@ class LinearCodeInformationSetDecoder(Decoder):
             sage: latex(D)
             \textnormal{Information-set decoder (Lee-Brickell) for }[24, 12, 8] \textnormal{ Extended Golay Code over } \Bold{F}_{2} \textnormal{decoding up to 2 errors}
         """
-        return "\\textnormal{{Information-set decoder ({}) for }}{} \\textnormal{{decoding {} errors}}".format(self.algorithm().name(), self.code()._latex_(), _format_decoding_interval(self.decoding_interval()))
+        return "\\textnormal{{Information-set decoder ({}) for }}{} \\textnormal{{decoding {} errors}}".format(
+            self.algorithm().name(),
+            self.code()._latex_(),
+            _format_decoding_interval(self.decoding_interval()),
+        )
 
 
-LinearCodeInformationSetDecoder._decoder_type = {"hard-decision",
-    "probabilistic", "not-always-closest", "bounded-distance", "might-fail"}
+LinearCodeInformationSetDecoder._decoder_type = {
+    "hard-decision",
+    "probabilistic",
+    "not-always-closest",
+    "bounded-distance",
+    "might-fail",
+}

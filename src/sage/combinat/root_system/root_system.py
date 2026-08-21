@@ -4,6 +4,7 @@ Root systems
 
 See :ref:`sage.combinat.root_system.all` for an overview.
 """
+
 # ***************************************************************************
 #       Copyright (C) 2007      Mike Hansen <mhansen@gmail.com>,
 #                               Justin Walker <justin at mac.com>
@@ -331,8 +332,7 @@ class RootSystem(UniqueRepresentation, SageObject):
             self.dual_side = False
             # still fails for CartanType G2xA1
             try:
-                self.dual = RootSystem(self._cartan_type.dual(),
-                                       as_dual_of=self)
+                self.dual = RootSystem(self._cartan_type.dual(), as_dual_of=self)
             except Exception:
                 pass
         else:
@@ -352,6 +352,7 @@ class RootSystem(UniqueRepresentation, SageObject):
         """
         options.pop('tester', None)
         from sage.misc.sage_unittest import TestSuite
+
         TestSuite(self.root_lattice()).run(**options)
         TestSuite(self.root_space()).run(**options)
         TestSuite(self.weight_lattice()).run(**options)
@@ -748,10 +749,12 @@ class RootSystem(UniqueRepresentation, SageObject):
             ------------------------------------------------------------
             The following tests failed: _test_root_lattice_realization
         """
-        if not hasattr(self.cartan_type(),"AmbientSpace"):
+        if not hasattr(self.cartan_type(), "AmbientSpace"):
             return None
         AmbientSpace = self.cartan_type().AmbientSpace
-        if not base_ring.has_coerce_map_from(AmbientSpace.smallest_base_ring(self.cartan_type())):
+        if not base_ring.has_coerce_map_from(
+            AmbientSpace.smallest_base_ring(self.cartan_type())
+        ):
             return None
         return AmbientSpace(self, base_ring)
 
@@ -802,7 +805,9 @@ class RootSystem(UniqueRepresentation, SageObject):
         """
         # Check if RootSystem is finite and irreducible
         if not (self.is_finite() and self.is_irreducible()):
-            raise ValueError("the Coxeter number is defined only for finite and irreducible root systems")
+            raise ValueError(
+                "the Coxeter number is defined only for finite and irreducible root systems"
+            )
         # Hand over to CartanType method
         return self._cartan_type.coxeter_number()
 
@@ -831,7 +836,9 @@ class RootSystem(UniqueRepresentation, SageObject):
         """
         # Check if RootSystem is finite and irreducible
         if not (self.is_finite() and self.is_irreducible()):
-            raise ValueError("the dual Coxeter number is defined only for finite and irreducible root systems")
+            raise ValueError(
+                "the dual Coxeter number is defined only for finite and irreducible root systems"
+            )
         # Hand over to CartanType method
         return self._cartan_type.dual_coxeter_number()
 
@@ -876,5 +883,5 @@ def WeylDim(ct, coeffs):
     lattice = RootSystem(ct).ambient_space()
     rank = ct.rank()
     fw = lattice.fundamental_weights()
-    hwv = lattice.sum(coeffs[i]*fw[i+1] for i in range(min(rank, len(coeffs))))
+    hwv = lattice.sum(coeffs[i] * fw[i + 1] for i in range(min(rank, len(coeffs))))
     return lattice.weyl_dimension(hwv)

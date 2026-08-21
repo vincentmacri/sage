@@ -26,8 +26,10 @@ AUTHORS:
 # ############################################################################
 
 from sage.knots.knotinfo import SymmetryMutant
-from sage.monoids.indexed_free_monoid import (IndexedFreeAbelianMonoid,
-                                              IndexedFreeAbelianMonoidElement)
+from sage.monoids.indexed_free_monoid import (
+    IndexedFreeAbelianMonoid,
+    IndexedFreeAbelianMonoidElement,
+)
 from sage.misc.cachefunc import cached_method
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -36,6 +38,7 @@ class FreeKnotInfoMonoidElement(IndexedFreeAbelianMonoidElement):
     """
     An element of an indexed free abelian monoid.
     """
+
     def as_knot(self):
         r"""
         Return the knot represented by ``self``.
@@ -64,6 +67,7 @@ class FreeKnotInfoMonoidElement(IndexedFreeAbelianMonoidElement):
                 return L.mirror_image().reverse()
             return L
         from sage.misc.misc_c import prod
+
         return prod(P.gen(wl[i]).as_knot() for i in range(len(wl)))
 
     def to_knotinfo(self):
@@ -93,7 +97,6 @@ class FreeKnotInfoMonoidElement(IndexedFreeAbelianMonoidElement):
 
 
 class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
-
     Element = FreeKnotInfoMonoidElement
 
     @staticmethod
@@ -112,8 +115,9 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
         if not prefix:
             prefix = 'KnotInfo'
         # We skip the IndexedMonoid__classcall__
-        return UniqueRepresentation.__classcall__(cls, max_crossing_number,
-                                                  prefix=prefix, **kwds)
+        return UniqueRepresentation.__classcall__(
+            cls, max_crossing_number, prefix=prefix, **kwds
+        )
 
     def __init__(self, max_crossing_number, category=None, prefix=None, **kwds):
         r"""
@@ -131,6 +135,7 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
         self._max_crossing_number = None
         self._set_index_dictionary(max_crossing_number=max_crossing_number)
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
         indices = FiniteEnumeratedSet(self._index_dict)
         super().__init__(indices, prefix)
 
@@ -178,11 +183,12 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
         """
         if max_crossing_number > 6:
             from sage.features.databases import DatabaseKnotInfo
+
             DatabaseKnotInfo().require()
 
         current_max_crossing_number = self._max_crossing_number
         if not current_max_crossing_number:
-            current_max_crossing_number = - 1
+            current_max_crossing_number = -1
             self._index_dict = {}
         self._max_crossing_number = max_crossing_number
 
@@ -190,6 +196,7 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
             self._index_dict[self._from_knotinfo(ki, sym)] = (ki, sym)
 
         from sage.knots.knotinfo import KnotInfo
+
         for K in KnotInfo:
             ncr = K.crossing_number()
             if ncr <= current_max_crossing_number:
@@ -201,6 +208,7 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
                     add_index(K, sym)
         if current_max_crossing_number > 0:
             from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
             self._indices = FiniteEnumeratedSet(self._index_dict)
 
     def _repr_(self):
@@ -213,7 +221,10 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
           sage: FreeKnotInfoMonoid(4)
           Free abelian monoid of knots with at most 4 crossings
         """
-        return "Free abelian monoid of knots with at most %s crossings" % self._max_crossing_number
+        return (
+            "Free abelian monoid of knots with at most %s crossings"
+            % self._max_crossing_number
+        )
 
     def _element_constructor_(self, x=None):
         """
@@ -232,6 +243,7 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
             if len(x) == 2:
                 ki, sym = x
                 from sage.knots.knotinfo import KnotInfoBase
+
                 if isinstance(ki, KnotInfoBase) and isinstance(sym, SymmetryMutant):
                     mcr = ki.crossing_number()
                     if mcr > self._max_crossing_number:
@@ -242,6 +254,7 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
 
         from sage.knots.knot import Knot
         from sage.knots.link import Link
+
         if not isinstance(x, Knot):
             if isinstance(x, Link):
                 x = Knot(x.pd_code())
@@ -439,8 +452,13 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
             return sorted(set(res))
         if unique and len(res) > 1:
             non_unique_hint = '\nuse keyword argument `unique` to obtain more details'
-            raise NotImplementedError('this (possibly non prime) knot cannot be identified uniquely by KnotInfo%s' % non_unique_hint)
-        raise NotImplementedError('this (possibly non prime) knot cannot be identified by KnotInfo')
+            raise NotImplementedError(
+                'this (possibly non prime) knot cannot be identified uniquely by KnotInfo%s'
+                % non_unique_hint
+            )
+        raise NotImplementedError(
+            'this (possibly non prime) knot cannot be identified by KnotInfo'
+        )
 
     def inject_variables(self, select=None, verbose=True):
         """
@@ -475,6 +493,7 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
         """
         from sage.knots.knotinfo import KnotInfoBase, KnotInfoSeries
         from sage.rings.integer import Integer
+
         gen_list = []
         idx_dict = self._index_dict
         max_crn = self._max_crossing_number
@@ -493,14 +512,16 @@ class FreeKnotInfoMonoid(IndexedFreeAbelianMonoid):
                 crn = select
                 if crn > max_crn:
                     self._set_index_dictionary(max_crossing_number=crn)
-                gen_list += [k for k, v in idx_dict.items()
-                             if v[0].crossing_number() == crn]
+                gen_list += [
+                    k for k, v in idx_dict.items() if v[0].crossing_number() == crn
+                ]
             else:
                 raise TypeError('cannot select generators by %s' % select)
         else:
             gen_list = list(idx_dict.keys())
 
         from sage.repl.user_globals import set_global, get_globals
+
         for name in gen_list:
             if name not in get_globals().keys():
                 set_global(name, gens[name])

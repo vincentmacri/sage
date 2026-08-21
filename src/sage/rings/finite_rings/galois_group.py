@@ -6,7 +6,10 @@ Galois groups of Finite Fields
 from sage.groups.abelian_gps.abelian_group_element import AbelianGroupElement
 from sage.groups.galois_group import GaloisGroup_cyc
 from sage.rings.integer_ring import ZZ
-from sage.rings.finite_rings.hom_finite_field import FiniteFieldHomomorphism_generic, FrobeniusEndomorphism_finite_field
+from sage.rings.finite_rings.hom_finite_field import (
+    FiniteFieldHomomorphism_generic,
+    FrobeniusEndomorphism_finite_field,
+)
 
 
 class GaloisGroup_GFElement(AbelianGroupElement):
@@ -58,6 +61,7 @@ class GaloisGroup_GF(GaloisGroup_cyc):
     r"""
     The Galois group of a finite field.
     """
+
     Element = GaloisGroup_GFElement
 
     def __init__(self, field):
@@ -79,7 +83,9 @@ class GaloisGroup_GF(GaloisGroup_cyc):
             sage: GF(9).galois_group()
             Galois group C2 of GF(3^2)
         """
-        return "Galois group C{0} of GF({1}^{0})".format(self._field.degree(), self._field.characteristic())
+        return "Galois group C{0} of GF({1}^{0})".format(
+            self._field.degree(), self._field.characteristic()
+        )
 
     def _element_constructor_(self, x, check=True):
         r"""

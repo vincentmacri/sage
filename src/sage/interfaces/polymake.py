@@ -49,8 +49,8 @@ _available_polymake_answers = {
     5: "issues warning",
     6: "shows additional information",
     7: "lost connection",
-    8: "fails to respond timely"
-        }
+    8: "fails to respond timely",
+}
 
 
 class PolymakeError(RuntimeError):
@@ -64,6 +64,7 @@ class PolymakeError(RuntimeError):
         ...
         PolymakeError: Unquoted string "foo" may clash with future reserved word...
     """
+
     pass
 
 
@@ -91,8 +92,11 @@ def polymake_console(command=''):
         polytope >
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%polymake magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%polymake magics instead.'
+        )
     os.system(command or os.getenv('SAGE_POLYMAKE_COMMAND') or 'polymake')
 
 
@@ -127,6 +131,7 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
         sage: p.F_VECTOR                                    # optional - jupymake
         20 94 148 74
     """
+
     def __init__(self, seed=None):
         """
         TESTS::
@@ -223,9 +228,11 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
         """
         args, kwds = self._convert_args_kwds(args, kwds)
         self._check_valid_function_name(function)
-        s = self._function_call_string(function,
-                                       [s.name() for s in args],
-                                       ['{}=>{}'.format(key, value.name()) for key, value in kwds.items()])
+        s = self._function_call_string(
+            function,
+            [s.name() for s in args],
+            ['{}=>{}'.format(key, value.name()) for key, value in kwds.items()],
+        )
         return self(s)
 
     def _function_call_string(self, function, args, kwds):
@@ -248,7 +255,9 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
         """
         if kwds:
             if args:
-                call_str = "{}({}, {});".format(function, ",".join(list(args)), ",".join(list(kwds)))
+                call_str = "{}({}, {});".format(
+                    function, ",".join(list(args)), ",".join(list(kwds))
+                )
                 return call_str
             return "{}({});".format(function, ",".join(list(kwds)))
         return "{}({});".format(function, ",".join(list(args)))
@@ -345,7 +354,9 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
             ...
             NotImplementedError: Please use polymake_console() function or the .interact() method
         """
-        raise NotImplementedError("Please use polymake_console() function or the .interact() method")
+        raise NotImplementedError(
+            "Please use polymake_console() function or the .interact() method"
+        )
 
     # Methods concerning interface communication
 
@@ -358,7 +369,13 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
             or install polymake system-wide
             (use the shell command 'sage --info polymake' for more information)
         """
-        return "Please install the optional polymake package for sage" + os.linesep + "or install polymake system-wide" + os.linesep + "(use the shell command 'sage --info polymake' for more information)"
+        return (
+            "Please install the optional polymake package for sage"
+            + os.linesep
+            + "or install polymake system-wide"
+            + os.linesep
+            + "(use the shell command 'sage --info polymake' for more information)"
+        )
 
     def _start(self):
         """
@@ -506,8 +523,8 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
         # the name returned by _create so that it can be used to
         # access the wrapped value.
         if self.eval('print scalar @{};'.format(name)).strip() == '1':
-            return '$'+name+'[0]'
-        return '@'+name
+            return '$' + name + '[0]'
+        return '@' + name
 
     def set(self, var, value):
         """
@@ -658,6 +675,7 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
             raise PolymakeError("unknown help topic '{}'".format(topic))
         if pager:
             from IPython.core.page import page
+
             page(H, start=0)
         else:
             return H
@@ -705,9 +723,11 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
         s = self.eval("apropos '';").split('\n')
         out = []
         for name in s:
-            if (name.startswith("/common/functions/")
+            if (
+                name.startswith("/common/functions/")
                 or name.startswith("/core/functions")
-                or name.startswith("/" + self._application + "/functions/")):
+                or name.startswith("/" + self._application + "/functions/")
+            ):
                 out.append(name.split("/")[-1])
         self.__tab_completion[self._application] = sorted(out)
         return self.__tab_completion[self._application]
@@ -801,7 +821,18 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
             ...
             PolymakeError: Unknown application killerapp
         """
-        if app not in ["common", "fulton", "group", "matroid", "topaz", "fan", "graph", "ideal", "polytope", "tropical"]:
+        if app not in [
+            "common",
+            "fulton",
+            "group",
+            "matroid",
+            "topaz",
+            "fan",
+            "graph",
+            "ideal",
+            "polytope",
+            "tropical",
+        ]:
             raise ValueError("Unknown polymake application '{}'".format(app))
         self._application = app
         self.eval('application "{}";'.format(app))
@@ -845,6 +876,7 @@ class PolymakeAbstract(ExtraTabCompletion, Interface):
 # Elements
 # --------
 
+
 class PolymakeElement(ExtraTabCompletion, InterfaceElement):
     """
     Elements in the polymake interface.
@@ -865,6 +897,7 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
         sage: p.VERTICES[2][2]                                  # optional - jupymake
         1450479926727001/2251799813685248
     """
+
     def _repr_(self):
         """
         String representation of polymake elements.
@@ -968,7 +1001,10 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
                 out = ''
         if not out:
             if "Polytope" == T1:
-                out = "{}[{}]".format(P.get("{}->type->full_name".format(name)) or "PolymakeElement", _name_pattern.search(name).group())
+                out = "{}[{}]".format(
+                    P.get("{}->type->full_name".format(name)) or "PolymakeElement",
+                    _name_pattern.search(name).group(),
+                )
             elif T1 == '' and T2 == 'ARRAY':
                 out = P.eval('print join(", ", @{});'.format(name)).strip()
             elif T1 == '' and T2 == 'HASH':
@@ -1009,11 +1045,32 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
             False
         """
         P = self._check_valid()
-        if P.eval("print {} {} {};".format(self.name(), P._equality_symbol(), other.name())).strip() == P._true_symbol():
+        if (
+            P.eval(
+                "print {} {} {};".format(
+                    self.name(), P._equality_symbol(), other.name()
+                )
+            ).strip()
+            == P._true_symbol()
+        ):
             return rich_to_bool(op, 0)
-        if P.eval("print {} {} {};".format(self.name(), P._lessthan_symbol(), other.name())).strip() == P._true_symbol():
+        if (
+            P.eval(
+                "print {} {} {};".format(
+                    self.name(), P._lessthan_symbol(), other.name()
+                )
+            ).strip()
+            == P._true_symbol()
+        ):
             return rich_to_bool(op, -1)
-        if P.eval("print {} {} {};".format(self.name(), P._greaterthan_symbol(), other.name())).strip() == P._true_symbol():
+        if (
+            P.eval(
+                "print {} {} {};".format(
+                    self.name(), P._greaterthan_symbol(), other.name()
+                )
+            ).strip()
+            == P._true_symbol()
+        ):
             return rich_to_bool(op, 1)
         return NotImplemented
 
@@ -1074,7 +1131,9 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
         """
         P = self._check_valid()
         try:
-            return sorted(P.get('join(", ", {}->list_properties)'.format(self._name)).split(', '))
+            return sorted(
+                P.get('join(", ", {}->list_properties)'.format(self._name)).split(', ')
+            )
         except PolymakeError:
             return []
 
@@ -1099,7 +1158,10 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
         try:
             cmd = '$SAGETMP = ' + self._name + ' -> type;'
             P.eval(cmd)
-        except (TypeError, PolymakeError):  # this happens for a perl type that isn't a Polymake type
+        except (
+            TypeError,
+            PolymakeError,
+        ):  # this happens for a perl type that isn't a Polymake type
             return []
         cmd = 'print join(", ", sorted_uniq(sort { $a cmp $b } map { keys %{$_->properties} }$SAGETMP, @{$SAGETMP->super}));'
         try:
@@ -1186,7 +1248,7 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
              'zonotope_tiling_lattice',
              'zonotope_vertices_fukuda']
         """
-        return sorted(self._member_list()+self.parent()._tab_completion())
+        return sorted(self._member_list() + self.parent()._tab_completion())
 
     def __getattr__(self, attrname):
         """
@@ -1252,7 +1314,9 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
                 except (TypeError, PolymakeError):
                     raise AttributeError
             else:
-                return P._function_element_class()(self, '{}->{}'.format(self._name, attrname), memberfunction=True)
+                return P._function_element_class()(
+                    self, '{}->{}'.format(self._name, attrname), memberfunction=True
+                )
         return P._function_element_class()(self, attrname, memberfunction=False)
 
     def get_member_function(self, attrname):
@@ -1287,7 +1351,9 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
             TypeError: Can't locate object method "foo" via package "Polymake::polytope::Polytope__Rational"
         """
         P = self._check_valid()
-        return P._function_element_class()(self, '{}->{}'.format(self._name, attrname), memberfunction=True)
+        return P._function_element_class()(
+            self, '{}->{}'.format(self._name, attrname), memberfunction=True
+        )
 
     def get_member(self, attrname):
         """
@@ -1407,7 +1473,9 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
         if T2 == 'HASH':
             return int(P.eval('print scalar keys %' + ('{+%s};' % name)))
         if T1:
-            raise TypeError("Don't know how to compute the length of {} object".format(T1))
+            raise TypeError(
+                "Don't know how to compute the length of {} object".format(T1)
+            )
         return int(P.eval('print scalar {};'.format(name)))
 
     @cached_method
@@ -1440,8 +1508,11 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
         """
         P = self._check_valid()
         name = self._name
-        T1, T2 = P.eval('print ref({});'.format(name)), P.eval('print reftype({});'.format(name))
-        if T1 == 'false':                 # Polymake 3.4 returns this
+        T1, T2 = (
+            P.eval('print ref({});'.format(name)),
+            P.eval('print reftype({});'.format(name)),
+        )
+        if T1 == 'false':  # Polymake 3.4 returns this
             T1 = ''
         return T1, T2
 
@@ -1509,13 +1580,15 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
             r = self._repr_()
             if 'Float' in T1:
                 from sage.rings.real_double import RDF
+
                 base_ring = RDF
                 str_to_base_ring = RDF
             elif 'QuadraticExtension' in T1 and 'r' in r:
                 i = r.find('r')
-                i1 = min((r[i:]+' ').find(' '), (r[i:]+'\n').find('\n'))
-                d = int(r[i+1:i+i1])
+                i1 = min((r[i:] + ' ').find(' '), (r[i:] + '\n').find('\n'))
+                d = int(r[i + 1 : i + i1])
                 from sage.rings.number_field.number_field import QuadraticField
+
                 base_ring = QuadraticField(d)
 
                 def str_to_base_ring(s):
@@ -1525,6 +1598,7 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
 
             elif 'Rational' in T1:
                 from sage.rings.rational_field import QQ
+
                 base_ring = QQ
                 str_to_base_ring = QQ
             else:
@@ -1532,14 +1606,22 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
 
             if 'Vector' in T1:
                 from sage.modules.free_module_element import vector
+
                 if r == '':
                     return vector(base_ring)
                 return vector(base_ring, [str_to_base_ring(s) for s in r.split(' ')])
             if 'Matrix' in T1:
                 from sage.matrix.constructor import matrix
+
                 if r == '':
                     return matrix(base_ring)
-                return matrix(base_ring, [[str_to_base_ring(s) for s in t.split(' ')] for t in r.split('\n')])
+                return matrix(
+                    base_ring,
+                    [
+                        [str_to_base_ring(s) for s in t.split(' ')]
+                        for t in r.split('\n')
+                    ],
+                )
         except Exception:
             pass
 
@@ -1551,23 +1633,30 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
             # We can't seem to access a, b, r by method calls, so let's parse.
             m = re.match(r'(-?[0-9/]+)[+]?((-?[0-9/]+)r([0-9/]+))?', repr(self))
             if m is None:
-                raise NotImplementedError("Cannot parse QuadraticExtension element: {}".format(self))
+                raise NotImplementedError(
+                    "Cannot parse QuadraticExtension element: {}".format(self)
+                )
             a, b, r = m.group(1), m.group(3), m.group(4)
             from sage.rings.rational_field import QQ
+
             if r is None:
                 # Prints like a rational, so we can't know the extension. Coerce to rational.
                 return QQ(a)
             from sage.rings.number_field.number_field import QuadraticField
+
             K = QuadraticField(r)
             return QQ(a) + QQ(b) * K.gen()
         if T1 == 'Vector' or T1 == 'SparseVector':
             from sage.modules.free_module_element import vector
+
             return vector([x.sage() for x in self])
         if T1 == 'Matrix' or T1 == 'SparseMatrix':
             from sage.matrix.constructor import matrix
+
             return matrix([x.sage() for x in self])
         if T1 == 'Polytope':
             from sage.geometry.polyhedron.backend_polymake import Polyhedron_polymake
+
             return Polyhedron_polymake._from_polymake_polytope(None, self)
         return super()._sage_()
 
@@ -1624,7 +1713,7 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
                 doc2 = ''
             if doc:
                 if doc2:
-                    doc = doc+os.linesep+doc2
+                    doc = doc + os.linesep + doc2
             else:
                 doc = doc2
         try:
@@ -1633,7 +1722,7 @@ class PolymakeElement(ExtraTabCompletion, InterfaceElement):
             doc3 = ''
         if doc:
             if doc3:
-                doc = doc+os.linesep+doc3
+                doc = doc + os.linesep + doc3
         else:
             doc = doc3
         if doc:
@@ -1657,6 +1746,7 @@ class PolymakeFunctionElement(InterfaceFunctionElement):
         sage: c.contains(V)
         true
     """
+
     def __init__(self, obj, name, memberfunction=False):
         """
         INPUT:
@@ -1692,7 +1782,9 @@ class PolymakeFunctionElement(InterfaceFunctionElement):
             Member function 'contains' of Polymake::polytope::Polytope__Rational object
         """
         if self._is_memberfunc:
-            return "Member function '{}' of {} object".format(self._name.split("->")[-1], self._obj.typeof()[0])
+            return "Member function '{}' of {} object".format(
+                self._name.split("->")[-1], self._obj.typeof()[0]
+            )
         return "{} (bound to {} object)".format(self._name, self._obj.typeof()[0])
 
     def __call__(self, *args, **kwds):
@@ -1711,7 +1803,9 @@ class PolymakeFunctionElement(InterfaceFunctionElement):
         """
         if self._is_memberfunc:
             return self._obj._check_valid().function_call(self._name, list(args), kwds)
-        return self._obj._check_valid().function_call(self._name, [self._obj] + list(args), kwds)
+        return self._obj._check_valid().function_call(
+            self._name, [self._obj] + list(args), kwds
+        )
 
     def _sage_doc_(self):
         """
@@ -1851,7 +1945,7 @@ class PolymakeJuPyMake(PolymakeAbstract):
         self._verbose = verbose
         PolymakeAbstract.__init__(self, seed=seed)
 
-    _is_running = False    # class variable
+    _is_running = False  # class variable
 
     def is_running(self):
         """
@@ -1888,12 +1982,13 @@ class PolymakeJuPyMake(PolymakeAbstract):
             True
         """
         from JuPyMake import InitializePolymake
+
         if not self.is_running():
-            InitializePolymake()          # Can only be called once
+            InitializePolymake()  # Can only be called once
             PolymakeJuPyMake._is_running = True
         PolymakeAbstract._start(self)
         self.eval("sub Polymake::Core::Shell::Mock::fill_history {}")
-        self._tab_completion()   # Run it here already because it causes a segfault when invoked in actual tab completion situation?!
+        self._tab_completion()  # Run it here already because it causes a segfault when invoked in actual tab completion situation?!
 
     def eval(self, code, **kwds):
         r"""
@@ -1994,6 +2089,7 @@ class PolymakeJuPyMake(PolymakeAbstract):
         if not self.is_running():
             self._start()
         from JuPyMake import ExecuteCommand
+
         if self._verbose:
             print("## eval: {}".format(code))
         parsed, stdout, stderr, error = ExecuteCommand(code)

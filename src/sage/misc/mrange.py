@@ -85,6 +85,7 @@ def _is_finite(L, fallback=True):
         return fallback
 
     from sage.rings.infinity import infinity
+
     return n is not infinity
 
 
@@ -316,6 +317,7 @@ class xmrange_iter:
 
     - Joel B. Mohler
     """
+
     def __init__(self, iter_list, typ=list):
         self.iter_list = iter_list
         self.typ = typ
@@ -374,6 +376,7 @@ class xmrange_iter:
         """
         from sage.rings.integer import Integer
         from sage.rings.infinity import infinity
+
         ans = Integer(1)
         found_infinity = False
         for L in self.iter_list:
@@ -400,7 +403,7 @@ def _xmrange(sizes, typ=list):
     for i in sizes:
         if i <= 0:
             return
-    v = [0] * n    # make a list of n 0's.
+    v = [0] * n  # make a list of n 0's.
     v[-1] = -1
     ptr_max = n - 1
     ptr = ptr_max
@@ -415,7 +418,7 @@ def _xmrange(sizes, typ=list):
                 ptr -= 1
             else:
                 return
-        yield typ(v)   # make a copy of v!
+        yield typ(v)  # make a copy of v!
 
 
 def mrange(sizes, typ=list):
@@ -567,6 +570,7 @@ class xmrange:
 
     - William Stein
     """
+
     def __init__(self, sizes, typ=list):
         self.sizes = [int(x) for x in sizes]
         self.typ = typ
@@ -715,10 +719,10 @@ def cantor_product(*args, **kwds):
     from itertools import count
     from sage.combinat.integer_lists import IntegerListsLex
 
-    m = len(args)                         # numer of factors
-    lengths = [None] * m                  # None or length of factors
-    data = [[] for _ in range(m)]         # the initial slice of each factor
-    iterators = [iter(a) for a in args]   # the iterators
+    m = len(args)  # numer of factors
+    lengths = [None] * m  # None or length of factors
+    data = [[] for _ in range(m)]  # the initial slice of each factor
+    iterators = [iter(a) for a in args]  # the iterators
     repeat = int(kwds.pop('repeat', 1))
     if repeat == 0:
         yield ()
@@ -740,10 +744,14 @@ def cantor_product(*args, **kwds):
                     lengths[i] = n
 
         # iterate through what we have
-        ceiling = [n if lengths[i] is None else lengths[i] - 1
-                   for i in range(m)] * repeat
+        ceiling = [
+            n if lengths[i] is None else lengths[i] - 1 for i in range(m)
+        ] * repeat
         for v in IntegerListsLex(n, length=mm, ceiling=ceiling, **kwds):
             yield tuple(data[i % m][v[i]] for i in range(mm))
 
-        if all(l is not None for l in lengths) and repeat * sum(l - 1 for l in lengths) <= n:
+        if (
+            all(l is not None for l in lengths)
+            and repeat * sum(l - 1 for l in lengths) <= n
+        ):
             return

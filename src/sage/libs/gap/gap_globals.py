@@ -12,7 +12,6 @@ Common globals defined by GAP.
 #                   https://www.gnu.org/licenses/
 ###############################################################################
 
-
 from .gap_functions import common_gap_functions
 
 
@@ -46,5 +45,5 @@ common_gap_globals = {
     'NiceBasisFiltersInfo',
     'Primes',
     'Rationals',
-    'TableOfMarksComponents'
+    'TableOfMarksComponents',
 } | common_gap_functions

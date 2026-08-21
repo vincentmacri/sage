@@ -2,7 +2,7 @@
 r"""
 Regular Crystals
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2013    Anne Schilling <anne at math.ucdavis.edu>
 #                        Travis Scrimshaw <tscrim at ucdavis.edu>
 #
@@ -16,7 +16,7 @@ Regular Crystals
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_singleton import Category_singleton
@@ -108,6 +108,7 @@ class RegularCrystals(Category_singleton):
             Highest weight crystal of type A_3 of highest weight omega_1
         """
         from sage.categories.crystals import Crystals
+
         return Crystals().example(n)
 
     def additional_structure(self):
@@ -157,12 +158,13 @@ class RegularCrystals(Category_singleton):
                 sage: psi.is_isomorphism()
                 True
             """
-            return (self.is_strict()
-                    and self.domain().number_of_connected_components() ==
-                        self.codomain().number_of_connected_components())
+            return (
+                self.is_strict()
+                and self.domain().number_of_connected_components()
+                == self.codomain().number_of_connected_components()
+            )
 
     class ParentMethods:
-
         # TODO: this could be a method in Crystals.Algebras.ElementMethods, so that
         # one could do:
         #
@@ -213,8 +215,9 @@ class RegularCrystals(Category_singleton):
             """
             M = element.parent()
             for i in reversed(reduced_word):
-                element = M.linear_combination((c.demazure_operator_simple(i), coeff)
-                                               for c, coeff in element)
+                element = M.linear_combination(
+                    (c.demazure_operator_simple(i), coeff) for c, coeff in element
+                )
             return element
 
         def demazure_subcrystal(self, element, reduced_word, only_support=True):
@@ -264,16 +267,20 @@ class RegularCrystals(Category_singleton):
             """
             from sage.combinat.free_module import CombinatorialFreeModule
             from sage.rings.rational_field import QQ
+
             C = CombinatorialFreeModule(QQ, self)
             D = self.demazure_operator(C(element), reduced_word)
             if only_support:
                 index_set = tuple(frozenset(reduced_word))
             else:
                 index_set = self.cartan_type().index_set()
-            return self.subcrystal(contained=D.support(), generators=[element],
-                                   index_set=index_set)
+            return self.subcrystal(
+                contained=D.support(), generators=[element], index_set=index_set
+            )
 
-        def _test_stembridge_local_axioms(self, index_set=None, verbose=False, complete=False, **options):
+        def _test_stembridge_local_axioms(
+            self, index_set=None, verbose=False, complete=False, **options
+        ):
             r"""
             This implements tests for the Stembridge local characterization
             on the finite crystal ``self``.
@@ -446,15 +453,19 @@ class RegularCrystals(Category_singleton):
                         if checker(y):
                             edges.append([x, y, i])
             from sage.graphs.digraph import DiGraph
+
             G = DiGraph([X, edges], format='vertices_and_edges', immutable=True)
             from sage.graphs.dot2tex_utils import have_dot2tex
+
             if have_dot2tex():
-                G.set_latex_options(format='dot2tex', edge_labels=True,
-                                    color_by_label=self.cartan_type()._index_set_coloring)
+                G.set_latex_options(
+                    format='dot2tex',
+                    edge_labels=True,
+                    color_by_label=self.cartan_type()._index_set_coloring,
+                )
             return G
 
     class ElementMethods:
-
         def epsilon(self, i):
             r"""
             Return `\varepsilon_i` of ``self``.
@@ -565,6 +576,7 @@ class RegularCrystals(Category_singleton):
                         over Rational Field
             """
             from sage.rings.integer_ring import ZZ
+
             if ring is None:
                 ring = ZZ
             C = self.parent().algebra(ring)
@@ -578,10 +590,10 @@ class RegularCrystals(Category_singleton):
                 return C.sum_of_monomials(l)
             l = []
             element = self
-            for k in range(-r-1):
+            for k in range(-r - 1):
                 element = element.e(i)
                 l.append(element)
-            return - C.sum_of_monomials(l)
+            return -C.sum_of_monomials(l)
 
         def stembridgeDelta_depth(self, i, j):
             r"""
@@ -673,7 +685,7 @@ class RegularCrystals(Category_singleton):
             """
             if self.f(i) is None:
                 return 0
-            return self.phi(j)-self.f(i).phi(j)
+            return self.phi(j) - self.f(i).phi(j)
 
         def stembridgeTriple(self, i, j):
             r"""
@@ -709,13 +721,15 @@ class RegularCrystals(Category_singleton):
             """
             if self.e(i) is None:
                 return None
-            b = self.stembridgeDelta_depth(i,j)
-            c = self.stembridgeDelta_rise(i,j)
+            b = self.stembridgeDelta_depth(i, j)
+            c = self.stembridgeDelta_rise(i, j)
             dd = self.cartan_type().dynkin_diagram()
-            a = dd[j,i]
+            a = dd[j, i]
             return (a, b, c)
 
-        def _test_stembridge_local_axioms(self, index_set=None, verbose=False, **options):
+        def _test_stembridge_local_axioms(
+            self, index_set=None, verbose=False, **options
+        ):
             r"""
             This implements tests for the Stembridge local characterization
             on the element of a crystal ``self``.
@@ -752,33 +766,67 @@ class RegularCrystals(Category_singleton):
 
             from sage.combinat.subset import Subsets
 
-            for (i,j) in Subsets(index_set, 2):
+            for i, j in Subsets(index_set, 2):
                 if self.e(i) is not None and self.e(j) is not None:
-                    triple = self.stembridgeTriple(i,j)
-                    #Test axioms P3 and P4.
-                    if not triple[0] == triple[1]+triple[2] or triple[1] > 0 or triple[2] > 0:
+                    triple = self.stembridgeTriple(i, j)
+                    # Test axioms P3 and P4.
+                    if (
+                        not triple[0] == triple[1] + triple[2]
+                        or triple[1] > 0
+                        or triple[2] > 0
+                    ):
                         if verbose:
-                            print('Warning: Failed axiom P3 or P4 at vector ', self, 'i,j=', i, j, 'Stembridge triple:', self.stembridgeTriple(i, j))
+                            print(
+                                'Warning: Failed axiom P3 or P4 at vector ',
+                                self,
+                                'i,j=',
+                                i,
+                                j,
+                                'Stembridge triple:',
+                                self.stembridgeTriple(i, j),
+                            )
                             goodness = False
                         else:
                             tester.fail()
-                    if self.stembridgeDelta_depth(i,j) == 0:
-                        #check E_i E_j(x)= E_j E_i(x)
-                        if self.e(i).e(j) != self.e(j).e(i) or self.e(i).e(j).stembridgeDel_rise(j, i) != 0:
+                    if self.stembridgeDelta_depth(i, j) == 0:
+                        # check E_i E_j(x)= E_j E_i(x)
+                        if (
+                            self.e(i).e(j) != self.e(j).e(i)
+                            or self.e(i).e(j).stembridgeDel_rise(j, i) != 0
+                        ):
                             if verbose:
-                                print('Warning: Failed axiom P5 at: vector ', self, 'i,j=', i, j, 'Stembridge triple:', self.stembridgeTriple(i, j))
+                                print(
+                                    'Warning: Failed axiom P5 at: vector ',
+                                    self,
+                                    'i,j=',
+                                    i,
+                                    j,
+                                    'Stembridge triple:',
+                                    self.stembridgeTriple(i, j),
+                                )
                                 goodness = False
                             else:
                                 tester.fail()
-                    if self.stembridgeDelta_depth(i,j) == -1 and self.stembridgeDelta_depth(j,i) == -1:
-                        #check E_i E_j^2 E_i (x)= E_j E_i^2 E_j (x)
+                    if (
+                        self.stembridgeDelta_depth(i, j) == -1
+                        and self.stembridgeDelta_depth(j, i) == -1
+                    ):
+                        # check E_i E_j^2 E_i (x)= E_j E_i^2 E_j (x)
                         y1 = self.e(j).e(i).e(i).e(j)
                         y2 = self.e(j).e(i).e(i).e(j)
                         a = y1.stembridgeDel_rise(j, i)
                         b = y2.stembridgeDel_rise(i, j)
                         if y1 != y2 or a != -1 or b != -1:
                             if verbose:
-                                print('Warning: Failed axiom P6 at: vector ', self, 'i,j=', i, j, 'Stembridge triple:', self.stembridgeTriple(i, j))
+                                print(
+                                    'Warning: Failed axiom P6 at: vector ',
+                                    self,
+                                    'i,j=',
+                                    i,
+                                    j,
+                                    'Stembridge triple:',
+                                    self.stembridgeTriple(i, j),
+                                )
                                 goodness = False
                             else:
                                 tester.fail()
@@ -870,12 +918,21 @@ class RegularCrystals(Category_singleton):
                         if y not in visited:
                             todo.add(y)
             from sage.graphs.graph import Graph
-            G = Graph([visited, edges], format='vertices_and_edges',
-                      immutable=True, multiedges=True)
+
+            G = Graph(
+                [visited, edges],
+                format='vertices_and_edges',
+                immutable=True,
+                multiedges=True,
+            )
             from sage.graphs.dot2tex_utils import have_dot2tex
+
             if have_dot2tex():
-                G.set_latex_options(format='dot2tex', edge_labels=True,
-                                    color_by_label=self.cartan_type()._index_set_coloring)
+                G.set_latex_options(
+                    format='dot2tex',
+                    edge_labels=True,
+                    color_by_label=self.cartan_type()._index_set_coloring,
+                )
             return G
 
     class TensorProducts(TensorProductsCategory):
@@ -883,6 +940,7 @@ class RegularCrystals(Category_singleton):
         The category of regular crystals constructed by tensor
         product of regular crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """

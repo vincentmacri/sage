@@ -74,12 +74,18 @@ class JacobianPoint(JacobianPoint_base):
     of this class are hashable.
     """
 
-    def __init__(self, parent: JacobianGroup, finite_ideal: FunctionFieldIdeal,
-                 infinite_ideal: FunctionFieldIdealInfinite) -> None:
+    def __init__(
+        self,
+        parent: JacobianGroup,
+        finite_ideal: FunctionFieldIdeal,
+        infinite_ideal: FunctionFieldIdealInfinite,
+    ) -> None:
         super().__init__(parent)
         # self._r is determined by the two ideals, but it is computed during
         # reduction and is useful in a few utility methods so we store it.
-        self._finite_ideal, self._infinite_ideal, self._r = parent._reduce(finite_ideal, infinite_ideal)
+        self._finite_ideal, self._infinite_ideal, self._r = parent._reduce(
+            finite_ideal, infinite_ideal
+        )
 
     def __hash__(self) -> int:
         r"""
@@ -103,7 +109,9 @@ class JacobianPoint(JacobianPoint_base):
         """
         G = self.parent()
         finite_ideal = self._finite_ideal * other._finite_ideal
-        infinite_ideal = G._infinite_ideal_mult(self._infinite_ideal, other._infinite_ideal)
+        infinite_ideal = G._infinite_ideal_mult(
+            self._infinite_ideal, other._infinite_ideal
+        )
         return G.element_class(G, finite_ideal, infinite_ideal)
 
     def _neg_(self) -> Self:
@@ -181,7 +189,9 @@ class JacobianPoint_finite_field(JacobianPoint, JacobianPoint_finite_field_base)
 class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
     Element = JacobianPoint
 
-    def __init__(self, parent, function_field: FunctionField, base_div: FunctionFieldDivisor) -> None:
+    def __init__(
+        self, parent, function_field: FunctionField, base_div: FunctionFieldDivisor
+    ) -> None:
         r"""
         TESTS::
 
@@ -205,7 +215,9 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         self._A_g_minus_1 = self._A ** (self._genus - 1)
 
         # For faster/more convenient access from the JacobianPoint class
-        self._vector_space, self._from_vector_space, self._to_vector_space = self._function_field.free_module(map=True)
+        self._vector_space, self._from_vector_space, self._to_vector_space = (
+            self._function_field.free_module(map=True)
+        )
         self._A_is_infinite = A.is_infinite_place()
         self._function_field_degree = self._function_field.degree()
         self._maximal_order_finite = self._function_field.maximal_order()
@@ -213,7 +225,9 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
 
         self._cache_infinite_ideals = parent._cache_infinite_ideals
         self._noncaching_infinite_ideal_mult = lambda J1, J2: J1 * J2
-        self._noncaching_inverse_infinite_matrix = lambda J: matrix([self._to_vector_space(b) for b in J.gens_over_base()]).inverse()
+        self._noncaching_inverse_infinite_matrix = lambda J: matrix(
+            [self._to_vector_space(b) for b in J.gens_over_base()]
+        ).inverse()
 
         if self._cache_infinite_ideals:
             self._infinite_ideal_mult = self._cached_ideal_mult
@@ -225,7 +239,10 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         # Ideal multiplication is expensive, so we want to avoid unnecessary multiplication by identity.
         # We define functions to handle this so that we don't need to complicate our reduction logic with branching.
         if self._A_is_infinite:
-            self._multiply_pair_by_A = lambda I, J, A: (I, self._infinite_ideal_mult(J, A))
+            self._multiply_pair_by_A = lambda I, J, A: (
+                I,
+                self._infinite_ideal_mult(J, A),
+            )
         else:
             self._multiply_pair_by_A = lambda I, J, A: (I * A, J)
 
@@ -256,26 +273,44 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         def matrices_and_riemann_roch(C, B_inv, tilde_I, tilde_J):
             if self._A_is_infinite:
                 B_inv = self._inverse_infinite_matrix(tilde_J)
-                return C, B_inv, riemann_roch._short_circuit_riemann_roch_matrices(degree, C, B_inv, tilde_I.gens_over_base())
+                return (
+                    C,
+                    B_inv,
+                    riemann_roch._short_circuit_riemann_roch_matrices(
+                        degree, C, B_inv, tilde_I.gens_over_base()
+                    ),
+                )
             C = matrix([to(v) for v in tilde_I.gens_over_base()])
-            return C, B_inv, riemann_roch._short_circuit_riemann_roch_matrices(degree, C, B_inv, tilde_I.gens_over_base())
+            return (
+                C,
+                B_inv,
+                riemann_roch._short_circuit_riemann_roch_matrices(
+                    degree, C, B_inv, tilde_I.gens_over_base()
+                ),
+            )
 
         tilde_I, tilde_J = self._multiply_pair_by_A(I, J, self._A_g_minus_1)
         C = matrix([to(v) for v in tilde_I.gens_over_base()])
         B_inv = self._inverse_infinite_matrix(tilde_J)
 
-        last_basis = riemann_roch._short_circuit_riemann_roch_matrices(degree, C, B_inv, tilde_I.gens_over_base())
+        last_basis = riemann_roch._short_circuit_riemann_roch_matrices(
+            degree, C, B_inv, tilde_I.gens_over_base()
+        )
         basis = last_basis  # Needed to ensure basis is defined in the g = 1 case
 
         if last_basis is None:  # ell(D + (g - 1) A) = 0
             r = self._genus
-            tilde_I, tilde_J = self._multiply_pair_by_A(tilde_I, tilde_J, self._A)  # D + gA
+            tilde_I, tilde_J = self._multiply_pair_by_A(
+                tilde_I, tilde_J, self._A
+            )  # D + gA
             C, B_inv, basis = matrices_and_riemann_roch(C, B_inv, tilde_I, tilde_J)
         else:
             r = 0
             last_tilde_I, last_tilde_J = tilde_I, tilde_J
             for n in range(self._genus - 2, -1, -1):
-                tilde_I, tilde_J = self._multiply_pair_by_A(tilde_I, tilde_J, self._A_inv)  # D + nA
+                tilde_I, tilde_J = self._multiply_pair_by_A(
+                    tilde_I, tilde_J, self._A_inv
+                )  # D + nA
                 C, B_inv, basis = matrices_and_riemann_roch(C, B_inv, tilde_I, tilde_J)
                 if basis is None:
                     # ℓ(D + nA) = 0, hence ℓ(D + (n + 1) A) = 1
@@ -371,7 +406,9 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         return matrix([self._to_vector_space(b) for b in J.gens_over_base()]).inverse()
 
     @cached_method(key=lambda self, J1, J2: frozenset((J1, J2)))
-    def _cached_ideal_mult(self, J1: FunctionFieldIdealInfinite, J2: FunctionFieldIdealInfinite):  # noqa: PLR6301 - this is a method so the cache is deleted when the Jacobian instance is
+    def _cached_ideal_mult(
+        self, J1: FunctionFieldIdealInfinite, J2: FunctionFieldIdealInfinite
+    ):  # noqa: PLR6301 - this is a method so the cache is deleted when the Jacobian instance is
         r"""
         Cached wrapper around multiplication of infinite ideals.
         Because ideal multiplication is commutative, we use a frozenset as the
@@ -392,7 +429,10 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         if isinstance(x, FunctionFieldPlace):
             x = x.divisor()
 
-        if isinstance(x, FunctionFieldDivisor) and x in self._function_field.divisor_group():
+        if (
+            isinstance(x, FunctionFieldDivisor)
+            and x in self._function_field.divisor_group()
+        ):
             return self.point(x)
 
         raise ValueError(f'cannot construct a point from {x}')
@@ -443,8 +483,13 @@ class JacobianGroup_finite_field(JacobianGroup, JacobianGroup_finite_field_base)
 
 
 class Jacobian(Jacobian_base, UniqueRepresentation):
-
-    def __init__(self, function_field: FunctionField, base_div: FunctionFieldDivisor | FunctionFieldPlace, cache_infinite_ideals: bool = True, **kwds) -> None:
+    def __init__(
+        self,
+        function_field: FunctionField,
+        base_div: FunctionFieldDivisor | FunctionFieldPlace,
+        cache_infinite_ideals: bool = True,
+        **kwds,
+    ) -> None:
         r"""
         TESTS::
 
@@ -468,7 +513,9 @@ class Jacobian(Jacobian_base, UniqueRepresentation):
         if isinstance(base_div, FunctionFieldPlace):
             super().__init__(function_field, base_div.divisor(), **kwds)
             self._A = base_div
-        elif isinstance(base_div, FunctionFieldDivisor):  # Allowed for compatibility with other Jacobian models
+        elif isinstance(
+            base_div, FunctionFieldDivisor
+        ):  # Allowed for compatibility with other Jacobian models
             if not base_div.is_prime():
                 raise ValueError('base_div must be a prime divisor')
             super().__init__(function_field, base_div, **kwds)
@@ -476,7 +523,7 @@ class Jacobian(Jacobian_base, UniqueRepresentation):
         else:
             raise TypeError('base_div must be a divisor or a place')
 
-        #reveal_type(self._A)
+        # reveal_type(self._A)
 
         self._cache_infinite_ideals = cache_infinite_ideals
 
@@ -504,6 +551,11 @@ class Jacobian(Jacobian_base, UniqueRepresentation):
         Raise an error if ``k_ext is not self.function_field().constant_base_field()``,
         otherwise call :meth:`Jacobian_base.group`.
         """
-        if k_ext is not None and k_ext is not self._function_field.constant_base_field():
-            raise NotImplementedError('Embeddings are not yet supported for the Unique Hess Jacobian model')
+        if (
+            k_ext is not None
+            and k_ext is not self._function_field.constant_base_field()
+        ):
+            raise NotImplementedError(
+                'Embeddings are not yet supported for the Unique Hess Jacobian model'
+            )
         return super().group(k_ext)

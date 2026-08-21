@@ -20,7 +20,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.categories.finite_fields import FiniteFields
 from sage.categories.homset import Hom
@@ -40,6 +39,7 @@ class Gamma0Element(MultiplicativeGroupElement):
     r"""
     An element in a congruence subgroup.
     """
+
     def __init__(self, parent, elt):
         r"""
         Initialize this element of the congruence subgroup.
@@ -80,7 +80,7 @@ class Gamma0Element(MultiplicativeGroupElement):
             mat = MS(elt)
         if not mat.is_invertible():
             raise ValueError("not in Gamma0(%s)" % level)
-        if mat[1,0] % level != 0:
+        if mat[1, 0] % level != 0:
             raise ValueError("not in Gamma0(%s)" % level)
         self._mat = mat
 
@@ -199,6 +199,7 @@ class Gamma0_drinfeld(Group, UniqueRepresentation):
     r"""
     A congruence subgroup.
     """
+
     Element = Gamma0Element
 
     @staticmethod
@@ -383,7 +384,7 @@ class Gamma0_drinfeld(Group, UniqueRepresentation):
             [  T^4 + 2*T + 3   T^4 + 2*T + 4]
         """
         N = self.level()
-        return self([1-N, -N, N, 1+N])
+        return self([1 - N, -N, N, 1 + N])
 
     def matrix_space(self):
         r"""
@@ -399,7 +400,7 @@ class Gamma0_drinfeld(Group, UniqueRepresentation):
         return self._matrix_space
 
     def genus(self):
-        r""""
+        r""" "
         Return the genus of this congruence subgroup, i.e. the genus of
         the attached Drinfeld modular curve.
 
@@ -451,11 +452,15 @@ class Gamma0_drinfeld(Group, UniqueRepresentation):
         epsilon = kappa = r = 1
         for P, mult in L:
             d = P.degree()
-            epsilon *= q**(d*(mult-1)) * (1 + q**d)
-            kappa *= q**(d * (mult // 2)) + q**(d * ((mult-1) // 2))
+            epsilon *= q ** (d * (mult - 1)) * (1 + q**d)
+            kappa *= q ** (d * (mult // 2)) + q ** (d * ((mult - 1) // 2))
             if d % 2 == 1:
                 r = 0
-        g = 1 + (epsilon - (q+1)*kappa - 2**(s-1) * (r*q*(q-1) + (q+1)*(q-2))) // (q**2 - 1)
+        g = 1 + (
+            epsilon
+            - (q + 1) * kappa
+            - 2 ** (s - 1) * (r * q * (q - 1) + (q + 1) * (q - 2))
+        ) // (q**2 - 1)
         return ZZ(g)
 
     def ncusps(self):
@@ -500,7 +505,7 @@ class Gamma0_drinfeld(Group, UniqueRepresentation):
         kappa = 1
         for P, mult in L:
             d = P.degree()
-            kappa *= q**(d * (mult // 2)) + q**(d * ((mult-1) // 2))
+            kappa *= q ** (d * (mult // 2)) + q ** (d * ((mult - 1) // 2))
         h = 2**s + (kappa - 2**s) // (q - 1)
         return ZZ(h)
 
@@ -527,7 +532,7 @@ class Gamma0_drinfeld(Group, UniqueRepresentation):
         """
         q = self._q
         ind = q ** self._level.degree()
-        ind *= prod(1 + q**(-P.degree()) for P, _ in self._level_factorized)
+        ind *= prod(1 + q ** (-P.degree()) for P, _ in self._level_factorized)
         return ZZ(ind)
 
 
@@ -535,6 +540,7 @@ class InclusionIntoMatrixSpace(Map):
     r"""
     Inclusion of a congruence subgroup into the corresponding matrix space.
     """
+
     def __init__(self, parent):
         r"""
         Initialize this morphism.

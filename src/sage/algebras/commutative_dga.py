@@ -139,8 +139,9 @@ def sorting_keys(element):
     return list(CR(V(x.basis_coefficients())))
 
 
-class Differential(UniqueRepresentation, Morphism,
-                   metaclass=InheritComparisonClasscallMetaclass):
+class Differential(
+    UniqueRepresentation, Morphism, metaclass=InheritComparisonClasscallMetaclass
+):
     r"""
     Differential of a commutative graded algebra.
 
@@ -163,6 +164,7 @@ class Differential(UniqueRepresentation, Morphism,
         sage: B.differential()(x)
         x*y
     """
+
     @staticmethod
     def __classcall__(cls, A, im_gens):
         r"""
@@ -216,7 +218,7 @@ class Differential(UniqueRepresentation, Morphism,
                 cexp[i] -= 1
                 b = A.prod(A.gen(j) ** cexp[j] for j in range(len(cexp)))
                 db = image_monomial(cexp)
-                im = da * b + (-1)**A._degrees[i] * a * db
+                im = da * b + (-1) ** A._degrees[i] * a * db
                 return A(im)
             return A.zero()
 
@@ -228,11 +230,13 @@ class Differential(UniqueRepresentation, Morphism,
 
         for i in im_gens:
             x = im_gens[i]
-            if (not x.is_zero()
-                    and (not x.is_homogeneous()
-                         or total_degree(x.degree())
-                         != total_degree(i.degree()) + 1)):
-                raise ValueError("the given dictionary does not determine a degree 1 map")
+            if not x.is_zero() and (
+                not x.is_homogeneous()
+                or total_degree(x.degree()) != total_degree(i.degree()) + 1
+            ):
+                raise ValueError(
+                    "the given dictionary does not determine a degree 1 map"
+                )
 
         im_gens = tuple(im_gens.get(x, A.zero()) for x in A.gens())
         return super().__classcall__(cls, A, im_gens)
@@ -274,7 +278,9 @@ class Differential(UniqueRepresentation, Morphism,
 
         for i in A.gens():
             if not self(self(i)).is_zero():
-                raise ValueError("the given dictionary does not determine a valid differential")
+                raise ValueError(
+                    "the given dictionary does not determine a valid differential"
+                )
 
     def _call_(self, x):
         r"""
@@ -310,13 +316,18 @@ class Differential(UniqueRepresentation, Morphism,
             while keyl:
                 exp = keyl.pop(0)
                 if exp > 0:
-                    v1 = (exp * self._dic_[x.parent().gen(idx)]
-                          * x.parent().gen(idx)**(exp - 1))
-                    v2 = prod(x.parent().gen(i + idx + 1)**keyl[i] for i in
-                              range(len(keyl)))
+                    v1 = (
+                        exp
+                        * self._dic_[x.parent().gen(idx)]
+                        * x.parent().gen(idx) ** (exp - 1)
+                    )
+                    v2 = prod(
+                        x.parent().gen(i + idx + 1) ** keyl[i] for i in range(len(keyl))
+                    )
                     res += coef * v1 * v2
-                    coef *= ((-1) ** total_degree(x.parent()._degrees[idx])
-                             * x.parent().gen(idx)**exp)
+                    coef *= (-1) ** total_degree(
+                        x.parent()._degrees[idx]
+                    ) * x.parent().gen(idx) ** exp
                 idx += 1
         return res
 
@@ -558,14 +569,15 @@ class Differential(UniqueRepresentation, Morphism,
         H_basis_raw = (H.lift(H.basis()[i]) for i in range(H.dimension()))
         A = self.domain()
         B = A.basis(n)
-        H_basis = (sum(c * b for (c, b) in zip(coeffs, B))
-                   for coeffs in H_basis_raw)
+        H_basis = (sum(c * b for (c, b) in zip(coeffs, B)) for coeffs in H_basis_raw)
         # Put brackets around classes.
         H_basis_brackets = [CohomologyClass(b, A) for b in H_basis]
-        return CombinatorialFreeModule(A.base_ring(),
-                                       H_basis_brackets,
-                                       sorting_key=sorting_keys,
-                                       monomial_reverse=True)
+        return CombinatorialFreeModule(
+            A.base_ring(),
+            H_basis_brackets,
+            sorting_key=sorting_keys,
+            monomial_reverse=True,
+        )
 
     homology = cohomology
 
@@ -598,6 +610,7 @@ class Differential_multigraded(Differential):
     """
     Differential of a commutative multi-graded algebra.
     """
+
     def __init__(self, A, im_gens):
         """
         Initialize ``self``.
@@ -852,20 +865,22 @@ class Differential_multigraded(Differential):
         H_basis_raw = (H.lift(H.basis()[i]) for i in range(H.dimension()))
         A = self.domain()
         B = A.basis(n, total)
-        H_basis = (sum(c * b for (c, b) in zip(coeffs, B))
-                   for coeffs in H_basis_raw)
+        H_basis = (sum(c * b for (c, b) in zip(coeffs, B)) for coeffs in H_basis_raw)
         # Put brackets around classes.
         H_basis_brackets = [CohomologyClass(b, A) for b in H_basis]
-        return CombinatorialFreeModule(A.base_ring(),
-                                       H_basis_brackets,
-                                       sorting_key=sorting_keys,
-                                       monomial_reverse=True)
+        return CombinatorialFreeModule(
+            A.base_ring(),
+            H_basis_brackets,
+            sorting_key=sorting_keys,
+            monomial_reverse=True,
+        )
 
     homology = cohomology
 
 
 ###########################################################
 #  Commutative graded algebras
+
 
 class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
     r"""
@@ -921,9 +936,12 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
     Note that the function :func:`GradedCommutativeAlgebra` can also be used to
     construct these algebras.
     """
+
     # TODO: This should be a __classcall_private__?
     @staticmethod
-    def __classcall__(cls, base, names=None, degrees=None, R=None, I=None, category=None):
+    def __classcall__(
+        cls, base, names=None, degrees=None, R=None, I=None, category=None
+    ):
         r"""
         Normalize the input for the :meth:`__init__` method and the
         unique representation.
@@ -1000,22 +1018,24 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
             tot_degs = [total_degree(d) for d in degrees]
             for i in range(len(gens) - 1):
                 for j in range(i + 1, len(gens)):
-                    rels[gens[j] * gens[i]] = ((-1)**(tot_degs[i] * tot_degs[j])
-                                               * gens[i] * gens[j])
+                    rels[gens[j] * gens[i]] = (
+                        (-1) ** (tot_degs[i] * tot_degs[j]) * gens[i] * gens[j]
+                    )
             if n > 1:
                 R = F.g_algebra(rels, order=TermOrder('wdegrevlex', tot_degs))
-            else:   # n = 1
+            else:  # n = 1
                 R = F.quotient(rels)
             if base.characteristic() == 2:
                 I = R.ideal(0, side='twosided')
             else:
-                I = R.ideal([R.gen(i)**2
-                             for i in range(n) if is_odd(tot_degs[i])],
-                            side='twosided')
+                I = R.ideal(
+                    [R.gen(i) ** 2 for i in range(n) if is_odd(tot_degs[i])],
+                    side='twosided',
+                )
 
-        return super().__classcall__(cls, base=base, names=names,
-                                     degrees=degrees, R=R, I=I,
-                                     category=category)
+        return super().__classcall__(
+            cls, base=base, names=names, degrees=degrees, R=R, I=I, category=category
+        )
 
     def __init__(self, base, R=None, I=None, names=None, degrees=None, category=None):
         """
@@ -1062,14 +1082,15 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
             sage: A.quotient(A.ideal(3*x*t - 2*y*z))
             Graded Commutative Algebra with generators ('x', 'y', 'z', 't') in degrees (1, 2, 3, 4) with relations [-2*y*z + 3*x*t] over Rational Field
         """
-        s = "Graded Commutative Algebra with generators {} in degrees {}".format(self._names, self._degrees)
+        s = "Graded Commutative Algebra with generators {} in degrees {}".format(
+            self._names, self._degrees
+        )
         # Find any nontrivial relations.
         I = self.defining_ideal()
         R = self.cover_ring()
         degrees = self._degrees
         if self.base().characteristic() != 2:
-            squares = [R.gen(i)**2
-                       for i in range(len(degrees)) if is_odd(degrees[i])]
+            squares = [R.gen(i) ** 2 for i in range(len(degrees)) if is_odd(degrees[i])]
         else:
             squares = [R.zero()]
         relns = [g for g in I.gens() if g not in squares]
@@ -1126,11 +1147,9 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
                 odd_degrees.append(a)
 
         if not even_degrees:  # No even generators.
-            return [tuple(_)
-                    for _ in exterior_algebra_basis(n, tuple(odd_degrees))]
+            return [tuple(_) for _ in exterior_algebra_basis(n, tuple(odd_degrees))]
         if not odd_degrees:  # No odd generators.
-            return [tuple(_)
-                    for _ in WeightedIntegerVectors(n, tuple(even_degrees))]
+            return [tuple(_) for _ in WeightedIntegerVectors(n, tuple(even_degrees))]
 
         # General case: both even and odd generators.
         result = []
@@ -1180,10 +1199,10 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
         free_basis = (tuple(reversed(e)) for e in fb_reversed_entries)
         basis = []
         for v in free_basis:
-            el = prod([self.gen(i)**v[i] for i in range(len(v))])
+            el = prod([self.gen(i) ** v[i] for i in range(len(v))])
             di = el.monomial_coefficients()
             if len(di) == 1:
-                k, = di.keys()
+                (k,) = di.keys()
                 if tuple(k) == v:
                     basis.append(el)
         return basis
@@ -1245,9 +1264,7 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
         if isinstance(other, GCAlgebra):
             if self._names != other._names or self._degrees != other._degrees:
                 return False
-            if set(self.defining_ideal().gens()) != set(other
-                                                        .defining_ideal()
-                                                        .gens()):
+            if set(self.defining_ideal().gens()) != set(other.defining_ideal().gens()):
                 return False
             return self.cover_ring().has_coerce_map_from(other.cover_ring())
         return super()._coerce_map_from_(other)
@@ -1276,7 +1293,7 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
         if isinstance(x, dict):
             res = self.zero()
             for i in x.keys():
-                mon = prod(self.gen(j)**i[j] for j in range(len(i)))
+                mon = prod(self.gen(j) ** i[j] for j in range(len(i)))
                 res += x[i] * mon
             return res
         if coerce:
@@ -1350,13 +1367,16 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
         # categories for self and B, which might be the category of
         # rings).
         if R != B.base_ring():
-            raise NotImplementedError('homomorphisms of graded commutative '
-                                      'algebras have only been implemented '
-                                      'when the base rings are the same')
+            raise NotImplementedError(
+                'homomorphisms of graded commutative '
+                'algebras have only been implemented '
+                'when the base rings are the same'
+            )
         cat = Algebras(R).Graded()
         if category is not None and not category.is_subcategory(cat):
-            raise TypeError("{} is not a subcategory of graded algebras"
-                            .format(category))
+            raise TypeError(
+                "{} is not a subcategory of graded algebras".format(category)
+            )
         return GCAlgebraHomset(self, B, category=category)
 
     def differential(self, diff):
@@ -1441,6 +1461,7 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
         r"""
         An element of a graded commutative algebra.
         """
+
         def __init__(self, A, rep):
             r"""
             Initialize ``self``.
@@ -1653,26 +1674,28 @@ class GCAlgebra(UniqueRepresentation, QuotientRing_nc):
             gens = self.parent().gens()
             images = list(gens)
             if values and not isinstance(values[0], dict):
-                for (i, p) in enumerate(values):
+                for i, p in enumerate(values):
                     images[i] = p
             if len(values) == 1 and isinstance(values[0], dict):
                 images = list(gens)
-                for (i, g) in enumerate(gens):
+                for i, g in enumerate(gens):
                     if g in values[0]:
                         images[i] = values[0][g]
             elif len(values) == len(gens):
                 images = list(values)
             elif values:
-                raise ValueError("number of arguments does not match number of variables in parent")
+                raise ValueError(
+                    "number of arguments does not match number of variables in parent"
+                )
             else:
                 images = list(gens)
-                for (i, g) in enumerate(gens):
+                for i, g in enumerate(gens):
                     gstr = str(g)
                     if gstr in kwargs:
                         images[i] = kwargs[gstr]
             res = 0
             for m, c in self.monomial_coefficients().items():
-                term = prod((gen ** y for y, gen in zip(m, images)), c)
+                term = prod((gen**y for y, gen in zip(m, images)), c)
                 res += term
             return res
 
@@ -1788,6 +1811,7 @@ class GCAlgebra_multigraded(GCAlgebra):
         sage: c.degree(total=True)
         2
     """
+
     def __init__(self, base, degrees, names=None, R=None, I=None, category=None):
         """
         Initialize ``self``.
@@ -1802,8 +1826,9 @@ class GCAlgebra_multigraded(GCAlgebra):
             sage: TestSuite(C).run()
         """
         total_degs = [total_degree(d) for d in degrees]
-        GCAlgebra.__init__(self, base, R=R, I=I, names=names,
-                           degrees=total_degs, category=category)
+        GCAlgebra.__init__(
+            self, base, R=R, I=I, names=names, degrees=total_degs, category=category
+        )
         self._degrees_multi = degrees
         self._grading_rank = len(list(degrees[0]))
 
@@ -1859,8 +1884,9 @@ class GCAlgebra_multigraded(GCAlgebra):
         gens2 = [i.lift() for i in I.gens()]
         gens = [g for g in gens1 + gens2 if g != NCR.zero()]
         J = NCR.ideal(gens, side='twosided')
-        return GCAlgebra_multigraded(self.base_ring(), self._names,
-                                     self._degrees_multi, NCR, J)
+        return GCAlgebra_multigraded(
+            self.base_ring(), self._names, self._degrees_multi, NCR, J
+        )
 
     def _coerce_map_from_(self, other):
         r"""
@@ -1880,7 +1906,7 @@ class GCAlgebra_multigraded(GCAlgebra):
         if isinstance(other, GCAlgebra_multigraded):
             if self._degrees_multi != other._degrees_multi:
                 return False
-        elif isinstance(other, GCAlgebra):   # Not multigraded
+        elif isinstance(other, GCAlgebra):  # Not multigraded
             return False
         return super()._coerce_map_from_(other)
 
@@ -2036,6 +2062,7 @@ class GCAlgebra_multigraded(GCAlgebra):
 ###########################################################
 #  Differential algebras
 
+
 class DifferentialGCAlgebra(GCAlgebra):
     """
     A commutative differential graded algebra.
@@ -2084,6 +2111,7 @@ class DifferentialGCAlgebra(GCAlgebra):
 
     See the function :func:`GradedCommutativeAlgebra` for more examples.
     """
+
     @staticmethod
     def __classcall__(cls, A, differential):
         """
@@ -2139,9 +2167,15 @@ class DifferentialGCAlgebra(GCAlgebra):
             ValueError: the given dictionary does not determine a valid differential
         """
         cat = Algebras(A.base()).Graded() & ChainComplexes(A.base())
-        GCAlgebra.__init__(self, A.base(), names=A._names,
-                           degrees=A._degrees, R=A.cover_ring(),
-                           I=A.defining_ideal(), category=cat)
+        GCAlgebra.__init__(
+            self,
+            A.base(),
+            names=A._names,
+            degrees=A._degrees,
+            R=A.cover_ring(),
+            I=A.defining_ideal(),
+            category=cat,
+        )
         self._differential = Differential(self, differential._dic_)
         self._minimalmodels = {}
         self._numerical_invariants = {}
@@ -2203,8 +2237,13 @@ class DifferentialGCAlgebra(GCAlgebra):
             sage: D.graded_commutative_algebra() == A
             True
         """
-        return GCAlgebra(self.base(), names=self._names, degrees=self._degrees,
-                         R=self.cover_ring(), I=self.defining_ideal())
+        return GCAlgebra(
+            self.base(),
+            names=self._names,
+            degrees=self._degrees,
+            R=self.cover_ring(),
+            I=self.defining_ideal(),
+        )
 
     def _base_repr(self):
         """
@@ -2216,7 +2255,9 @@ class DifferentialGCAlgebra(GCAlgebra):
             sage: A.cdg_algebra({x:y, z:t})._base_repr()
             "Commutative Differential Graded Algebra with generators ('x', 'y', 'z', 't') in degrees (1, 2, 3, 4) over Rational Field"
         """
-        return GCAlgebra._repr_(self).replace('Graded Commutative', 'Commutative Differential Graded')
+        return GCAlgebra._repr_(self).replace(
+            'Graded Commutative', 'Commutative Differential Graded'
+        )
 
     def _repr_(self) -> str:
         """
@@ -2518,8 +2559,7 @@ class DifferentialGCAlgebra(GCAlgebra):
             {1: [e1 - e2, e3, e4], 2: [e1*e3, e1*e4]}
         """
         if not (max_degree in ZZ and max_degree > 0):
-            raise ValueError('the given maximal degree must be a '
-                             'positive integer')
+            raise ValueError('the given maximal degree must be a positive integer')
 
         def vector_to_element(v, deg):
             """
@@ -2528,28 +2568,36 @@ class DifferentialGCAlgebra(GCAlgebra):
             algebra again.
             """
             return sum(c * b for (c, b) in zip(v, self.basis(deg)))
+
         if max_degree == 1:
             cohom1 = self.cohomology(1).basis().keys()
             if not cohom1:
                 return {}
             return {1: [g.representative() for g in cohom1]}
-        smaller_degree = {i: [g.representative() for g in
-                              self.cohomology(i).basis().keys()] for i in
-                          range(1, max_degree)}
+        smaller_degree = {
+            i: [g.representative() for g in self.cohomology(i).basis().keys()]
+            for i in range(1, max_degree)
+        }
         already_generated = []
         for i in range(1, max_degree):
-            already_generated += [a * b for a in smaller_degree[i] for b in
-                                  smaller_degree[max_degree - i]]
+            already_generated += [
+                a * b for a in smaller_degree[i] for b in smaller_degree[max_degree - i]
+            ]
         CR = self.cohomology_raw(max_degree)
         V = CR.V()
-        S = CR.submodule([CR(V(g.basis_coefficients(total=True))) for g in
-                          already_generated if not g.is_zero()])
+        S = CR.submodule(
+            [
+                CR(V(g.basis_coefficients(total=True)))
+                for g in already_generated
+                if not g.is_zero()
+            ]
+        )
         Q = CR.quotient(S)
         res = self.cohomology_generators(max_degree - 1)
         if Q.basis():
-            res[max_degree] = [vector_to_element(CR.lift(Q.lift(g)),
-                                                 max_degree)
-                               for g in Q.basis()]
+            res[max_degree] = [
+                vector_to_element(CR.lift(Q.lift(g)), max_degree) for g in Q.basis()
+            ]
         return res
 
     def minimal_model(self, i=3, max_iterations=3, partial_result=False):
@@ -2774,21 +2822,23 @@ class DifferentialGCAlgebra(GCAlgebra):
             B = phi.domain()
             names = [str(g) for g in B.gens()]
             degrees = [g.degree() for g in B.gens()]
-            A = GradedCommutativeAlgebra(B.base_ring(), names=names + nnames,
-                                         degrees=degrees + ndegrees)
-            h = B.hom(A.gens()[:B.ngens()], check=False)
+            A = GradedCommutativeAlgebra(
+                B.base_ring(), names=names + nnames, degrees=degrees + ndegrees
+            )
+            h = B.hom(A.gens()[: B.ngens()], check=False)
             d = B.differential()
             diff = {h(g): h(d(g)) for g in B.gens()}
             cndifs = copy(ndifs)
-            for g in A.gens()[B.ngens():]:
+            for g in A.gens()[B.ngens() :]:
                 diff[g] = h(cndifs.pop(0))
             NB = A.cdg_algebra(diff)
             return NB.hom([phi(g) for g in B.gens()] + nimags, check=False)
 
         def extendx(phi, degree):
             B = phi.domain()
-            imagesbcohom = [phi(g.representative())
-                            for g in B.cohomology(degree).basis().keys()]
+            imagesbcohom = [
+                phi(g.representative()) for g in B.cohomology(degree).basis().keys()
+            ]
             CS = self.cohomology_raw(degree)
             VS = CS.V()
             CB = B.cohomology_raw(degree)
@@ -2811,16 +2861,16 @@ class DifferentialGCAlgebra(GCAlgebra):
                     nbasis.append(g)
                 nimags = nbasis
                 ndegrees = [degree for _ in nbasis]
-                return extend(phi, ndegrees, [B.zero() for _ in nimags],
-                              nimags, nnames)
+                return extend(phi, ndegrees, [B.zero() for _ in nimags], nimags, nnames)
             return phi
 
         def extendy(phi, degree):
             nnamesy = 0
             for iteration in range(max_iterations):
                 B = phi.domain()
-                imagesbcohom = [phi(g.representative())
-                                for g in B.cohomology(degree).basis().keys()]
+                imagesbcohom = [
+                    phi(g.representative()) for g in B.cohomology(degree).basis().keys()
+                ]
                 CS = self.cohomology_raw(degree)
                 VS = CS.V()
                 CB = B.cohomology_raw(degree)
@@ -2839,21 +2889,30 @@ class DifferentialGCAlgebra(GCAlgebra):
                     return (phi,)
                 ndifs = [CB.lift(g) for g in K.basis()]
                 basisdegree = B.basis(degree)
-                ndifs = [sum(basisdegree[j] * g[j] for j in
-                             range(len(basisdegree))) for g in ndifs]
+                ndifs = [
+                    sum(basisdegree[j] * g[j] for j in range(len(basisdegree)))
+                    for g in ndifs
+                ]
                 MS = self.differential().differential_matrix(degree - 1)
                 nimags = []
                 for g in ndifs:
                     if phi(g).is_zero():
                         nimags.append(vector(MS.nrows() * [0]))
                     else:
-                        nimags.append(MS.solve_left(vector(phi(g).basis_coefficients())))
-                nimags = [sum(self.basis(degree - 1)[j] * g[j]
-                              for j in range(len(self.basis(degree - 1)))
-                              ) for g in nimags]
+                        nimags.append(
+                            MS.solve_left(vector(phi(g).basis_coefficients()))
+                        )
+                nimags = [
+                    sum(
+                        self.basis(degree - 1)[j] * g[j]
+                        for j in range(len(self.basis(degree - 1)))
+                    )
+                    for g in nimags
+                ]
                 ndegrees = [degree - 1 for g in nimags]
-                nnames = ['y{}_{}'.format(degree - 1, j + nnamesy)
-                          for j in range(len(nimags))]
+                nnames = [
+                    'y{}_{}'.format(degree - 1, j + nnamesy) for j in range(len(nimags))
+                ]
                 nnamesy += len(nimags)
                 phi = extend(phi, ndegrees, ndifs, nimags, nnames)
 
@@ -2864,20 +2923,25 @@ class DifferentialGCAlgebra(GCAlgebra):
                 degnzero += 1
                 if degnzero > max_degree:
                     raise ValueError("cohomology is trivial up to max_degree")
-            gens = [g.representative()
-                    for g in self.cohomology(degnzero).basis().keys()]
+            gens = [
+                g.representative() for g in self.cohomology(degnzero).basis().keys()
+            ]
             self._numerical_invariants[degnzero] = [len(gens)]
             names = ['x{}_{}'.format(degnzero, j) for j in range(len(gens))]
-            A = GradedCommutativeAlgebra(self.base_ring(),
-                                         names,
-                                         degrees=[degnzero for _ in names])
+            A = GradedCommutativeAlgebra(
+                self.base_ring(), names, degrees=[degnzero for _ in names]
+            )
             B = A.cdg_algebra(A.differential({}))
             # Solve case that fails with one generator return B,gens
             phi = B.hom(gens)
             phiext = extendy(phi, degnzero + 1)
             if isinstance(phiext, tuple):
                 if not partial_result:
-                    raise ValueError("could not cover all relations in max iterations in degree {}".format(degnzero + 1))
+                    raise ValueError(
+                        "could not cover all relations in max iterations in degree {}".format(
+                            degnzero + 1
+                        )
+                    )
                 return phiext[0]
             phi = phiext
             self._minimalmodels[degnzero] = phi
@@ -2891,7 +2955,11 @@ class DifferentialGCAlgebra(GCAlgebra):
             if isinstance(phiext, tuple):
                 if partial_result:
                     return phiext[0]
-                raise ValueError("could not cover all relations in max iterations in degree {}".format(degree + 1))
+                raise ValueError(
+                    "could not cover all relations in max iterations in degree {}".format(
+                        degree + 1
+                    )
+                )
             phi = phiext
             self._minimalmodels[degree] = phi
         return phi
@@ -2940,9 +3008,9 @@ class DifferentialGCAlgebra(GCAlgebra):
             for g in cohomgens[d]:
                 degrees.append(d)
                 chgens.append(g)
-        A = GradedCommutativeAlgebra(self.base_ring(),
-                                     [f'x{i}' for i in range(len(chgens))],
-                                     degrees)
+        A = GradedCommutativeAlgebra(
+            self.base_ring(), [f'x{i}' for i in range(len(chgens))], degrees
+        )
         rels = []
         for d in range(1, max_degree + 1):
             B1 = A.basis(d)
@@ -2954,7 +3022,7 @@ class DifferentialGCAlgebra(GCAlgebra):
                     images.append(V2.zero())
                 else:
                     images.append(V2(V2.V()(ig.basis_coefficients())))
-            V1 = self.base_ring()**len(B1)
+            V1 = self.base_ring() ** len(B1)
             h = V1.hom(images, codomain=V2)
             K = h.kernel()
             for g in K.basis():
@@ -3020,8 +3088,7 @@ class DifferentialGCAlgebra(GCAlgebra):
         For a precise definition and properties, see [Man2019]_ .
         """
         self.minimal_model(max_degree, max_iterations)
-        return {i: self._numerical_invariants[i]
-                for i in range(1, max_degree + 1)}
+        return {i: self._numerical_invariants[i] for i in range(1, max_degree + 1)}
 
     def is_formal(self, i, max_iterations=3) -> bool:
         r"""
@@ -3074,15 +3141,15 @@ class DifferentialGCAlgebra(GCAlgebra):
         try:
             H.minimal_model(i, max_iterations)
         except ValueError:  # If we could compute the minimal model in max_iterations
-            return False    # but not for the cohomology, the invariants are distinct
+            return False  # but not for the cohomology, the invariants are distinct
         N1 = self.numerical_invariants(i, max_iterations)
         N2 = H.numerical_invariants(i, max_iterations)
         if any(N1[n] != N2[n] for n in range(1, i + 1)):
-            return False    # numerical invariants don't match
+            return False  # numerical invariants don't match
         subsdict = {y.lift(): 0 for y in M.gens() if not y.differential().is_zero()}
         tocheck = [M(g.differential().lift().subs(subsdict)) for g in M.gens()]
         if all(c.is_coboundary() for c in tocheck):
-            return True     # the morphism xi->[xi], yi->0 is i-quasi-iso
+            return True  # the morphism xi->[xi], yi->0 is i-quasi-iso
         raise NotImplementedError("the implemented criteria cannot determine formality")
 
     class Element(GCAlgebra.Element):
@@ -3167,8 +3234,10 @@ class DifferentialGCAlgebra(GCAlgebra):
             """
             if other.is_zero():
                 return self.is_coboundary()
-            if (not isinstance(other, DifferentialGCAlgebra.Element)
-               or self.parent() is not other.parent()):
+            if (
+                not isinstance(other, DifferentialGCAlgebra.Element)
+                or self.parent() is not other.parent()
+            ):
                 raise ValueError(f'the element {other} does not lie in this DGA')
             if (self - other).is_homogeneous():
                 return (self - other).is_coboundary()
@@ -3247,6 +3316,7 @@ class DifferentialGCAlgebra(GCAlgebra):
                 [x0, x1, x2, x3, x4, x5, x6, x7, x8]
             """
             from sage.misc.flatten import flatten
+
             if not self.differential().is_zero():
                 raise ValueError("the element is not closed")
             if not self.is_homogeneous():
@@ -3257,16 +3327,15 @@ class DifferentialGCAlgebra(GCAlgebra):
             d = self.degree()
             gens = flatten(self.parent().cohomology_generators(d).values())
             ebasis = exterior_algebra_basis(d, tuple(g.degree() for g in gens))
-            gensd = [prod([gens[i]**b[i]
-                           for i in range(len(b))]) for b in ebasis]
+            gensd = [prod([gens[i] ** b[i] for i in range(len(b))]) for b in ebasis]
             m = matrix([g.cohomology_class()._vector_() for g in gensd])
             coeffs = m.solve_left(self.cohomology_class()._vector_())
-            return {tuple(ebasis[i]): coeffs[i]
-                    for i in range(len(ebasis)) if coeffs[i]}
+            return {
+                tuple(ebasis[i]): coeffs[i] for i in range(len(ebasis)) if coeffs[i]
+            }
 
 
-class DifferentialGCAlgebra_multigraded(DifferentialGCAlgebra,
-                                        GCAlgebra_multigraded):
+class DifferentialGCAlgebra_multigraded(DifferentialGCAlgebra, GCAlgebra_multigraded):
     """
     A commutative differential multi-graded algebras.
 
@@ -3289,6 +3358,7 @@ class DifferentialGCAlgebra_multigraded(DifferentialGCAlgebra,
         sage: B.cohomology(1, total=True)
         Free module generated by {[b]} over Rational Field
     """
+
     def __init__(self, A, differential):
         """
         Initialize ``self``.
@@ -3314,10 +3384,15 @@ class DifferentialGCAlgebra_multigraded(DifferentialGCAlgebra,
             ValueError: the differential does not have a well-defined degree
         """
         cat = Algebras(A.base()).Graded() & ChainComplexes(A.base())
-        GCAlgebra_multigraded.__init__(self, A.base(), names=A._names,
-                                       degrees=A._degrees_multi,
-                                       R=A.cover_ring(), I=A.defining_ideal(),
-                                       category=cat)
+        GCAlgebra_multigraded.__init__(
+            self,
+            A.base(),
+            names=A._names,
+            degrees=A._degrees_multi,
+            R=A.cover_ring(),
+            I=A.defining_ideal(),
+            category=cat,
+        )
         self._differential = Differential_multigraded(self, differential._dic_)
 
     def _base_repr(self):
@@ -3480,12 +3555,12 @@ class DifferentialGCAlgebra_multigraded(DifferentialGCAlgebra,
         Element class of a commutative differential multi-graded algebra.
         """
 
+
 ################################################
 # Main entry point
 
 
-def GradedCommutativeAlgebra(ring, names=None, degrees=None, max_degree=None,
-                             **kwargs):
+def GradedCommutativeAlgebra(ring, names=None, degrees=None, max_degree=None, **kwargs):
     r"""
     A graded commutative algebra.
 
@@ -3674,8 +3749,10 @@ def GradedCommutativeAlgebra(ring, names=None, degrees=None, max_degree=None,
     """
     if max_degree:
         from sage.algebras.finite_gca import FiniteGCAlgebra
-        return FiniteGCAlgebra(ring, names=names, degrees=degrees,
-                               max_degree=max_degree, **kwargs)
+
+        return FiniteGCAlgebra(
+            ring, names=names, degrees=degrees, max_degree=max_degree, **kwargs
+        )
     multi = False
     if degrees:
         try:
@@ -3692,6 +3769,7 @@ def GradedCommutativeAlgebra(ring, names=None, degrees=None, max_degree=None,
 
 ################################################
 # Morphisms
+
 
 class GCAlgebraMorphism(RingHomomorphism_im_gens):
     """
@@ -3721,6 +3799,7 @@ class GCAlgebraMorphism(RingHomomorphism_im_gens):
         sage: f(x*y)
         -x*y
     """
+
     def __init__(self, parent, im_gens, check=True):
         r"""
         TESTS:
@@ -3817,15 +3896,14 @@ class GCAlgebraMorphism(RingHomomorphism_im_gens):
         # We use check=False here because checking of nc-relations is
         # not implemented in RingHomomorphism_im_gens.__init__.
         # We check these relations below.
-        RingHomomorphism_im_gens.__init__(self, parent=parent,
-                                          im_gens=im_gens,
-                                          check=False)
+        RingHomomorphism_im_gens.__init__(
+            self, parent=parent, im_gens=im_gens, check=False
+        )
         self._im_gens = tuple(im_gens)
         # Now check that the relations are respected.
         if check:
             if any(x not in codomain for x in im_gens):
-                raise ValueError('not all elements of im_gens are in '
-                                 'the codomain')
+                raise ValueError('not all elements of im_gens are in the codomain')
             R = domain.cover_ring()
             from_R = dict(zip(R.gens(), im_gens))
             if hasattr(R, 'free_algebra'):
@@ -3836,26 +3914,29 @@ class GCAlgebraMorphism(RingHomomorphism_im_gens):
                 for left in R.relations():
                     zero = left.subs(from_free) - R.relations()[left].subs(from_R)
                     if zero:
-                        raise ValueError('the proposed morphism does not respect '
-                                         'the nc-relations')
+                        raise ValueError(
+                            'the proposed morphism does not respect the nc-relations'
+                        )
             # Now check any extra relations, including x**2=0 for x in
             # odd degree. These are defined by a list of generators of
             # the defining ideal.
             for g in domain.defining_ideal().gens():
                 zero = g.subs(from_R)
                 if zero:
-                    raise ValueError('the proposed morphism does not respect '
-                                     'the relations')
+                    raise ValueError(
+                        'the proposed morphism does not respect the relations'
+                    )
             # If the domain and codomain have differentials, check
             # those, too.
-            if (isinstance(domain, DifferentialGCAlgebra)
-                    and isinstance(codomain, DifferentialGCAlgebra)):
+            if isinstance(domain, DifferentialGCAlgebra) and isinstance(
+                codomain, DifferentialGCAlgebra
+            ):
                 dom_diff = domain.differential()
                 cod_diff = codomain.differential()
-                if any(cod_diff(self(g)) != self(dom_diff(g))
-                       for g in domain.gens()):
-                    raise ValueError('the proposed morphism does not respect '
-                                     'the differentials')
+                if any(cod_diff(self(g)) != self(dom_diff(g)) for g in domain.gens()):
+                    raise ValueError(
+                        'the proposed morphism does not respect the differentials'
+                    )
 
     def _call_(self, x):
         """
@@ -3890,8 +3971,9 @@ class GCAlgebraMorphism(RingHomomorphism_im_gens):
         codomain = self.codomain()
         result = codomain.zero()
         for mono, coeff in x.monomial_coefficients().items():
-            term = prod([gen**y for (y, gen) in zip(mono, self.im_gens())],
-                        codomain.one())
+            term = prod(
+                [gen**y for (y, gen) in zip(mono, self.im_gens())], codomain.one()
+            )
             result += coeff * term
         return result
 
@@ -3928,10 +4010,11 @@ class GCAlgebraMorphism(RingHomomorphism_im_gens):
             sage: H([z,z]).is_graded(total=True)
             True
         """
-        return all(not y   # zero is always allowed as an image
-                   or (y.is_homogeneous()
-                       and x.degree(total=total) == y.degree(total=total))
-                   for (x, y) in zip(self.domain().gens(), self.im_gens()))
+        return all(
+            not y  # zero is always allowed as an image
+            or (y.is_homogeneous() and x.degree(total=total) == y.degree(total=total))
+            for (x, y) in zip(self.domain().gens(), self.im_gens())
+        )
 
     def _repr_type(self) -> str:
         """
@@ -3946,8 +4029,9 @@ class GCAlgebraMorphism(RingHomomorphism_im_gens):
             sage: Hom(C,C)([x,0,0])._repr_type()
             'Commutative Differential Graded Algebra'
         """
-        if (isinstance(self.domain(), DifferentialGCAlgebra)
-                and isinstance(self.codomain(), DifferentialGCAlgebra)):
+        if isinstance(self.domain(), DifferentialGCAlgebra) and isinstance(
+            self.codomain(), DifferentialGCAlgebra
+        ):
             return "Commutative Differential Graded Algebra"
         return "Graded Commutative Algebra"
 
@@ -3965,6 +4049,7 @@ class GCAlgebraMorphism(RingHomomorphism_im_gens):
 
 ################################################
 # Homsets
+
 
 class GCAlgebraHomset(RingHomset_generic):
     """
@@ -4017,8 +4102,7 @@ class GCAlgebraHomset(RingHomset_generic):
             sage: zero(x) == zero(y) == 0
             True
         """
-        return GCAlgebraMorphism(self, [self.codomain().zero()]
-                                 * self.domain().ngens())
+        return GCAlgebraMorphism(self, [self.codomain().zero()] * self.domain().ngens())
 
     @cached_method
     def identity(self):
@@ -4035,8 +4119,7 @@ class GCAlgebraHomset(RingHomset_generic):
             False
         """
         if self.domain() != self.codomain():
-            raise TypeError('identity map is only defined for '
-                            'endomorphism sets')
+            raise TypeError('identity map is only defined for endomorphism sets')
         return GCAlgebraMorphism(self, self.domain().gens())
 
     def __call__(self, im_gens, check=True):
@@ -4064,6 +4147,7 @@ class GCAlgebraHomset(RingHomset_generic):
               Defn: (w, x) --> (y, y*z)
         """
         from sage.categories.map import Map
+
         if isinstance(im_gens, Map):
             return self._coerce_impl(im_gens)
         return GCAlgebraMorphism(self, im_gens, check=check)
@@ -4071,6 +4155,7 @@ class GCAlgebraHomset(RingHomset_generic):
 
 ################################################
 # Miscellaneous utility classes and functions
+
 
 class CohomologyClass(SageObject, CachedRepresentation):
     """
@@ -4131,6 +4216,7 @@ class CohomologyClass(SageObject, CachedRepresentation):
            e6 --> e1*e2 + e3*e4
           Defn: (x1_0, x1_1, x1_2, x1_3, y1_0, y1_1) --> (e1, e2, e3, e4, e5, -e5 + e6)
     """
+
     def __init__(self, x, cdga=None):
         """
         EXAMPLES::
@@ -4173,6 +4259,7 @@ class CohomologyClass(SageObject, CachedRepresentation):
             \left[ x^{2} \right]
         """
         from sage.misc.latex import latex
+
         return '\\left[ {} \\right]'.format(latex(self._x))
 
     def representative(self):

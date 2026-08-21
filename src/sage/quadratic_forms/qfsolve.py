@@ -228,6 +228,7 @@ def solve(self, c=0):
         ...
         ArithmeticError: no solution found (local obstruction at some prime factor of det(self.matrix()))
     """
+
     def check_obstruction(x):
         """
         Local helper. ``x`` is the return value of ``qfsolve``.
@@ -258,7 +259,7 @@ def solve(self, c=0):
 
     # If c != 0, define a new quadratic form Q = self - c*z^2
     d = self.dim()
-    N = matrix(self.base_ring(), d+1, d+1)
+    N = matrix(self.base_ring(), d + 1, d + 1)
     for i in range(d):
         for j in range(d):
             N[i, j] = M[i, j]
@@ -274,7 +275,7 @@ def solve(self, c=0):
     x = x[:-1]
     # If z != 0, then Q(x/z) = c
     if z:
-        return x * (1/z)
+        return x * (1 / z)
 
     # Case 2: We found a solution self(x) = 0. Let e be any vector such
     # that B(x,e) != 0, where B is the bilinear form corresponding to self.
@@ -282,7 +283,7 @@ def solve(self, c=0):
     # Let a = (c - self(e))/(2B(x,e)) and let y = e + a*x.
     # Then self(y) = B(e + a*x, e + a*x) = self(e) + 2B(e, a*x)
     #              = self(e) + 2([c - self(e)]/[2B(x,e)]) * B(x,e) = c.
-    e = vector([1] + [0] * (d-1))
+    e = vector([1] + [0] * (d - 1))
     i = 0
     while self.bilinear_map(x, e) == 0:
         e[i] = 0
@@ -293,9 +294,12 @@ def solve(self, c=0):
             # subspace with respect to self, which is not what we want
             i = next(i for i in range(d) if x[i])
             from sage.quadratic_forms.quadratic_form import QuadraticForm
-            x = QuadraticForm(self.matrix().delete_rows([0]).delete_columns([0])).solve(c)
+
+            x = QuadraticForm(self.matrix().delete_rows([0]).delete_columns([0])).solve(
+                c
+            )
             return vector([*x[:i], 0, *x[i:]])
         e[i] = 1
 
     a = (c - self(e)) / (2 * self.bilinear_map(x, e))
-    return e + a*x
+    return e + a * x

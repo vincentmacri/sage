@@ -1,14 +1,14 @@
 r"""
 Commutative algebra ideals
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.algebra_ideals import AlgebraIdeals
 from sage.categories.category_types import Category_ideal, Category_in_ambient
@@ -27,6 +27,7 @@ class CommutativeAlgebraIdeals(Category_ideal):
         Category of commutative algebra ideals in
          Univariate Polynomial Ring in x over Rational Field
     """
+
     def __init__(self, A):
         """
         EXAMPLES::
@@ -61,7 +62,9 @@ class CommutativeAlgebraIdeals(Category_ideal):
         except AttributeError:
             raise TypeError(f"A (={A}) must be a commutative algebra")
         else:
-            if base_ring not in CommutativeRings() or A not in CommutativeAlgebras(base_ring.category()):
+            if base_ring not in CommutativeRings() or A not in CommutativeAlgebras(
+                base_ring.category()
+            ):
                 raise TypeError(f"A (={A}) must be a commutative algebra")
 
         Category_in_ambient.__init__(self, A)

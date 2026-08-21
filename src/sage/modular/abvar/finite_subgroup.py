@@ -161,6 +161,7 @@ class FiniteSubgroup(Module):
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
         from sage.categories.modules import Modules
         from .abvar import ModularAbelianVariety_abstract
+
         if field_of_definition not in Fields():
             raise TypeError("field_of_definition must be a field")
         if not isinstance(abvar, ModularAbelianVariety_abstract):
@@ -315,17 +316,18 @@ class FiniteSubgroup(Module):
         A = self.abelian_variety()
         B = other.abelian_variety()
         if not A.in_same_ambient_variety(B):
-            raise ValueError("self and other must be in the same "
-                             "ambient Jacobian")
-        K = coercion_model.common_parent(self.field_of_definition(),
-                                         other.field_of_definition())
+            raise ValueError("self and other must be in the same ambient Jacobian")
+        K = coercion_model.common_parent(
+            self.field_of_definition(), other.field_of_definition()
+        )
         lattice = self.lattice() + other.lattice()
         if A != B:
             C = A + B
             lattice += C.lattice()
             return FiniteSubgroup_lattice(C, lattice, field_of_definition=K)
-        return FiniteSubgroup_lattice(self.abelian_variety(),
-                                      lattice, field_of_definition=K)
+        return FiniteSubgroup_lattice(
+            self.abelian_variety(), lattice, field_of_definition=K
+        )
 
     @cached_method
     def exponent(self):
@@ -408,25 +410,31 @@ class FiniteSubgroup(Module):
              Abelian subvariety of dimension 2 of J0(33)
         """
         from .abvar import ModularAbelianVariety_abstract
+
         A = self.abelian_variety()
         if isinstance(other, ModularAbelianVariety_abstract):
             amb = other
             B = other
-            M = B.lattice().scale(Integer(1)/self.exponent())
-            K = coercion_model.common_parent(self.field_of_definition(),
-                                             other.base_field())
+            M = B.lattice().scale(Integer(1) / self.exponent())
+            K = coercion_model.common_parent(
+                self.field_of_definition(), other.base_field()
+            )
         else:
             amb = A
             if not isinstance(other, FiniteSubgroup):
-                raise TypeError("only intersection with a finite subgroup or "
-                                "modular abelian variety is defined")
+                raise TypeError(
+                    "only intersection with a finite subgroup or "
+                    "modular abelian variety is defined"
+                )
             B = other.abelian_variety()
             if A.ambient_variety() != B.ambient_variety():
-                raise TypeError("finite subgroups must be in the same "
-                                "ambient product Jacobian")
+                raise TypeError(
+                    "finite subgroups must be in the same ambient product Jacobian"
+                )
             M = other.lattice()
-            K = coercion_model.common_parent(self.field_of_definition(),
-                                             other.field_of_definition())
+            K = coercion_model.common_parent(
+                self.field_of_definition(), other.field_of_definition()
+            )
 
         L = self.lattice()
         if A != B:
@@ -477,8 +485,9 @@ class FiniteSubgroup(Module):
         """
         lattice = self.lattice().scale(right)
         return FiniteSubgroup_lattice(
-            self.abelian_variety(), lattice,
-            field_of_definition=self.field_of_definition()
+            self.abelian_variety(),
+            lattice,
+            field_of_definition=self.field_of_definition(),
         )
 
     def __rmul__(self, left):
@@ -547,8 +556,11 @@ class FiniteSubgroup(Module):
             field = "QQ"
         else:
             field = str(K)
-        return "Finite subgroup %sover %s of %s" % (self._invariants_repr(),
-                                                    field, self.__abvar)
+        return "Finite subgroup %sover %s of %s" % (
+            self._invariants_repr(),
+            field,
+            self.__abvar,
+        )
 
     def _invariants_repr(self) -> str:
         """
@@ -607,8 +619,13 @@ class FiniteSubgroup(Module):
             ([(1/6, 0, 0, 0)], [(0, 1/6, 0, 0)], [(0, 0, 1/6, 0)],
              [(0, 0, 0, 1/6)])
         """
-        return tuple([self.element_class(self, v)
-                      for v in self.lattice().basis() if v.denominator() > 1])
+        return tuple(
+            [
+                self.element_class(self, v)
+                for v in self.lattice().basis()
+                if v.denominator() > 1
+            ]
+        )
 
     def gen(self, n):
         r"""
@@ -779,8 +796,9 @@ class FiniteSubgroup(Module):
             raise TypeError("gens must be a list or tuple")
         A = self.abelian_variety()
         lattice = A._ambient_lattice().span([self(g).element() for g in gens])
-        return FiniteSubgroup_lattice(self.abelian_variety(),
-                                      lattice, field_of_definition=QQbar)
+        return FiniteSubgroup_lattice(
+            self.abelian_variety(), lattice, field_of_definition=QQbar
+        )
 
     @cached_method
     def invariants(self) -> Sequence:
@@ -880,8 +898,7 @@ class FiniteSubgroup(Module):
 
 
 class FiniteSubgroup_lattice(FiniteSubgroup):
-    def __init__(self, abvar, lattice,
-                 field_of_definition=None, check=True) -> None:
+    def __init__(self, abvar, lattice, field_of_definition=None, check=True) -> None:
         """
         A finite subgroup of a modular abelian variety that is defined by a
         given lattice.
@@ -909,16 +926,17 @@ class FiniteSubgroup_lattice(FiniteSubgroup):
             from sage.rings.qqbar import QQbar as field_of_definition
         if check:
             from .abvar import ModularAbelianVariety_abstract
-            if (not isinstance(lattice, FreeModule_generic)
-                    or lattice.base_ring() != ZZ):
+
+            if not isinstance(lattice, FreeModule_generic) or lattice.base_ring() != ZZ:
                 raise TypeError("lattice must be a free module over ZZ")
             if not isinstance(abvar, ModularAbelianVariety_abstract):
                 raise TypeError("abvar must be a modular abelian variety")
             if not abvar.lattice().is_submodule(lattice):
                 lattice += abvar.lattice()
             if lattice.rank() != abvar.lattice().rank():
-                raise ValueError("lattice must contain the lattice "
-                                 "of abvar with finite index")
+                raise ValueError(
+                    "lattice must contain the lattice of abvar with finite index"
+                )
         FiniteSubgroup.__init__(self, abvar, field_of_definition)
         self.__lattice = lattice
 

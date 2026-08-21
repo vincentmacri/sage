@@ -27,6 +27,7 @@ class AmbientSpace(Scheme):
 
     - ``R`` -- ring
     """
+
     def __init__(self, n, R=ZZ):
         """
         TESTS::
@@ -134,8 +135,7 @@ class AmbientSpace(Scheme):
             ...
             NotImplementedError: ambient spaces must override "_validate" method!
         """
-        raise NotImplementedError('ambient spaces must override "_validate" '
-                                  'method!')
+        raise NotImplementedError('ambient spaces must override "_validate" method!')
 
     def change_ring(self, R):
         r"""
@@ -162,8 +162,7 @@ class AmbientSpace(Scheme):
             ...
             NotImplementedError: ambient spaces must override "change_ring" method!
         """
-        raise NotImplementedError(
-            'ambient spaces must override "change_ring" method!')
+        raise NotImplementedError('ambient spaces must override "change_ring" method!')
 
     #######################################################################
     # End overloads
@@ -216,11 +215,13 @@ class AmbientSpace(Scheme):
             if not R.has_coerce_map_from(self.base_ring()):
                 raise ValueError(
                     "no natural map from the base ring (=%s) to R (=%s)!"
-                    % (self.base_ring(), R))
+                    % (self.base_ring(), R)
+                )
             return self.change_ring(R)
         raise NotImplementedError(
-                    "extension of spaces over %s to %s is not implemented!"
-                    % (self.base_ring(), R))
+            "extension of spaces over %s to %s is not implemented!"
+            % (self.base_ring(), R)
+        )
 
     def ambient_space(self):
         """
@@ -272,6 +273,7 @@ class AmbientSpace(Scheme):
               Defn: Identity map
         """
         from sage.schemes.generic.morphism import SchemeMorphism_polynomial_id
+
         return SchemeMorphism_polynomial_id(self)
 
     ######################################################################
@@ -322,18 +324,18 @@ class AmbientSpace(Scheme):
         """
         return len(self.gens())
 
-##     def assign_names(self, names=None):
-##         """
-##         EXAMPLES::
+    ##     def assign_names(self, names=None):
+    ##         """
+    ##         EXAMPLES::
 
-##             sage: A = AffineSpace(2, QQ, 'ab'); A
-##             Affine Space of dimension 2 over Rational Field
-##             sage: A.coordinate_ring()
-##             Polynomial Ring in a, b over Rational Field
-##             sage: A._assign_names('xy'); A.coordinate_ring()
-##             Polynomial Ring in x, y over Rational Field
-##         """
-##         self.coordinate_ring()._assign_names(names)
+    ##             sage: A = AffineSpace(2, QQ, 'ab'); A
+    ##             Affine Space of dimension 2 over Rational Field
+    ##             sage: A.coordinate_ring()
+    ##             Polynomial Ring in a, b over Rational Field
+    ##             sage: A._assign_names('xy'); A.coordinate_ring()
+    ##             Polynomial Ring in x, y over Rational Field
+    ##         """
+    ##         self.coordinate_ring()._assign_names(names)
 
     def dimension_absolute(self):
         """

@@ -117,9 +117,13 @@ def simplify(mat):
     d = mat.dict()
     if isinstance(B, CubicHeckeExtensionRing):
         # Laurent polynomial cannot be reconstructed from string
-        res = {k: {tuple(j): u.monomial_coefficients()
-                   for j, u in v.monomial_coefficients().items()}
-               for k, v in d.items()}
+        res = {
+            k: {
+                tuple(j): u.monomial_coefficients()
+                for j, u in v.monomial_coefficients().items()
+            }
+            for k, v in d.items()
+        }
     else:
         res = {k: str(v) for k, v in d.items()}
     return res
@@ -144,6 +148,7 @@ class CubicHeckeDataSection(Enum):
         sage: cha_db.section
         <enum 'CubicHeckeDataSection'>
     """
+
     basis = 'basis'
     regular_left = 'regular_left'
     regular_right = 'regular_right'
@@ -177,6 +182,7 @@ class CubicHeckeDataBase(SageObject):
         sage: cha_db._feature
         Feature('database_cubic_hecke')
     """
+
     section = CubicHeckeDataSection
 
     def __init__(self):
@@ -191,6 +197,7 @@ class CubicHeckeDataBase(SageObject):
             {}
         """
         from sage.features.databases import DatabaseCubicHecke
+
         self._feature = DatabaseCubicHecke()
         self._data_library = {}
         self._demo = None
@@ -208,6 +215,7 @@ class CubicHeckeDataBase(SageObject):
         """
         self._feature.require()
         from database_cubic_hecke import version
+
         return version()
 
     def demo_version(self):
@@ -252,7 +260,9 @@ class CubicHeckeDataBase(SageObject):
             24
         """
         if not isinstance(section, CubicHeckeDataSection):
-            raise TypeError('section must be an instance of enum %s' % CubicHeckeDataBase.section)
+            raise TypeError(
+                'section must be an instance of enum %s' % CubicHeckeDataBase.section
+            )
 
         data_lib = self._data_library
 
@@ -260,14 +270,22 @@ class CubicHeckeDataBase(SageObject):
         if (section, nstrands) in data_lib.keys():
             return data_lib[(section, nstrands)]
 
-        verbose('loading data library %s for %s strands ...' % (section.value, nstrands))
+        verbose(
+            'loading data library %s for %s strands ...' % (section.value, nstrands)
+        )
 
         from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import GenSign
 
         if self.demo_version():
             if nstrands >= 4:
                 self._feature.require()
-            from .cubic_hecke_db import read_basis, read_irr, read_regl, read_regr, read_markov
+            from .cubic_hecke_db import (
+                read_basis,
+                read_irr,
+                read_regl,
+                read_regr,
+                read_markov,
+            )
         else:
             from database_cubic_hecke import read_basis, read_irr, read_reg
             from database_cubic_hecke.markov_trace_coeffs import read_markov
@@ -282,17 +300,25 @@ class CubicHeckeDataBase(SageObject):
             data_lib[(section, nstrands)] = read_basis(nstrands)
         elif section == CubicHeckeDataSection.markov_tr_cfs:
             keys = [k for k in MarkovTraceModuleBasis if k.strands() <= nstrands]
-            res = {k: read_markov(k.name, variables, num_strands=nstrands) for k in keys}
+            res = {
+                k: read_markov(k.name, variables, num_strands=nstrands) for k in keys
+            }
             data_lib[(section, nstrands)] = res
         elif section == CubicHeckeDataSection.split_irred:
             dim_list, repr_list, repr_list_inv = read_irr(variables, nstrands)
-            data_lib[(section, nstrands)] = {GenSign.pos: repr_list, GenSign.neg: repr_list_inv}
+            data_lib[(section, nstrands)] = {
+                GenSign.pos: repr_list,
+                GenSign.neg: repr_list_inv,
+            }
         else:
             if section == CubicHeckeDataSection.regular_right:
                 dim_list, repr_list, repr_list_inv = read_regr(variables, nstrands)
             else:
                 dim_list, repr_list, repr_list_inv = read_regl(variables, nstrands)
-            data_lib[(section, nstrands)] = {GenSign.pos: repr_list, GenSign.neg: repr_list_inv}
+            data_lib[(section, nstrands)] = {
+                GenSign.pos: repr_list,
+                GenSign.neg: repr_list_inv,
+            }
 
         verbose('... finished!')
         return data_lib[(section, nstrands)]
@@ -300,7 +326,9 @@ class CubicHeckeDataBase(SageObject):
     # --------------------------------------------------------------------------
     # matrix_reprs_from_file_cache_
     # --------------------------------------------------------------------------
-    def read_matrix_representation(self, representation_type, gen_ind, nstrands, ring_of_definition):
+    def read_matrix_representation(
+        self, representation_type, gen_ind, nstrands, ring_of_definition
+    ):
         r"""
         Return the matrix representations from the database.
 
@@ -325,9 +353,16 @@ class CubicHeckeDataBase(SageObject):
             sage: m1rl[0].dimensions()
             (24, 24)
         """
-        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import RepresentationType, GenSign
+        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import (
+            RepresentationType,
+            GenSign,
+        )
+
         if not isinstance(representation_type, RepresentationType):
-            raise TypeError('representation_type must be an instance of enum %s' % RepresentationType)
+            raise TypeError(
+                'representation_type must be an instance of enum %s'
+                % RepresentationType
+            )
 
         td = ring_of_definition.gens_dict_recursive()
         if 'e3' in td.keys():
@@ -336,14 +371,22 @@ class CubicHeckeDataBase(SageObject):
         v = tuple(td.values())
 
         num_rep = representation_type.number_of_representations(nstrands)
-        rep_list = self.read(representation_type.data_section(), variables=v, nstrands=nstrands)
+        rep_list = self.read(
+            representation_type.data_section(), variables=v, nstrands=nstrands
+        )
         if gen_ind > 0:
             rep_list = [rep_list[GenSign.pos][i] for i in range(num_rep)]
-            matrix_list = [matrix(ring_of_definition, rep[gen_ind-1], sparse=True) for rep in rep_list]
+            matrix_list = [
+                matrix(ring_of_definition, rep[gen_ind - 1], sparse=True)
+                for rep in rep_list
+            ]
         else:
             # data of inverse of generators is stored under negative strand-index
             rep_list = [rep_list[GenSign.neg][i] for i in range(num_rep)]
-            matrix_list = [matrix(ring_of_definition, rep[-gen_ind-1], sparse=True) for rep in rep_list]
+            matrix_list = [
+                matrix(ring_of_definition, rep[-gen_ind - 1], sparse=True)
+                for rep in rep_list
+            ]
         for m in matrix_list:
             m.set_immutable()
         return matrix_list
@@ -365,6 +408,7 @@ class MarkovTraceModuleBasis(Enum):
         sage: MarkovTraceModuleBasis.K92.description()
         'knot 9_34'
     """
+
     def __repr__(self):
         r"""
         Return a string representation of ``self``.
@@ -430,7 +474,7 @@ class MarkovTraceModuleBasis(Enum):
             strands_embed = self.strands()
 
         if strands_embed > self.strands():
-            last_gen = strands_embed-1
+            last_gen = strands_embed - 1
             return self.braid_tietze(strands_embed=last_gen) + (last_gen,)
 
         return self.value[2]
@@ -448,6 +492,7 @@ class MarkovTraceModuleBasis(Enum):
             1
         """
         from sage.functions.generalized import sign
+
         return sum(sign(t) for t in self.braid_tietze())
 
     def description(self):
@@ -478,12 +523,14 @@ class MarkovTraceModuleBasis(Enum):
             Link with 1 component represented by 4 crossings
         """
         from sage.knots.link import Link
+
         pd_code = self.value[3]
         if pd_code is not None:
             # since :class:`Link` does not construct disjoint union of unlinks
             # from the braid representation, we need a pd_code here
             return Link(pd_code)
         from sage.groups.braid import BraidGroup
+
         B = BraidGroup(self.strands())
         return Link(B(self.braid_tietze()))
 
@@ -510,7 +557,7 @@ class MarkovTraceModuleBasis(Enum):
         """
         H = self.link().homfly_polynomial()
         L, M = H.parent().gens()
-        return H * L**self.writhe()
+        return H * L ** self.writhe()
 
     def regular_kauffman_polynomial(self):
         r"""
@@ -533,11 +580,12 @@ class MarkovTraceModuleBasis(Enum):
             True
         """
         from sage.knots.knotinfo import KnotInfo
+
         K = KnotInfo.L2a1_1.kauffman_polynomial().parent()
         a, z = K.gens()
         d = kauffman[self.name]
         if d:
-            return K(d)*a**self.writhe()
+            return K(d) * a ** self.writhe()
         U2rkp = MarkovTraceModuleBasis.U2.regular_kauffman_polynomial()
         if self.name == 'K4U':
             K4rkp = MarkovTraceModuleBasis.K4.regular_kauffman_polynomial()
@@ -562,86 +610,329 @@ class MarkovTraceModuleBasis(Enum):
             - 3*t1^-1 - 3*t0^-1 + 2*t0^-1*t1^-1
         """
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+
         R = LaurentPolynomialRing(ZZ, 't0, t1')
         return R(links_gould[self.name])
 
-    U1 = ['one unlink',    1, (), []]
-    U2 = ['two unlinks',   2, (), [[3, 1, 4, 2], [4, 1, 3, 2]]]
-    U3 = ['three unlinks', 3, (), [[3, 7, 4, 8], [4, 7, 5, 8],
-                                   [5, 1, 6, 2], [6, 1, 3, 2]]]
-    U4 = ['four unlinks',  4, (), [[3, 9, 4, 10], [4, 9, 5, 10], [5, 11, 6, 12],
-                                   [6, 11, 7, 12], [7, 1, 8, 2], [8, 1, 3, 2]]]
-    K4U = ['knot 4_1 plus one unlink', 4, (1, -2, 1, -2),
-           [[3, 8, 4, 9], [9, 7, 10, 6], [7, 4, 8, 5], [5, 11, 6, 10],
-           [11, 1, 12, 2], [12, 1, 3, 2]]]
-    K4 = ['knot 4_1',  3, (1, -2, 1, -2), None]
-    K6 = ['knot 6_1',  4, (1, 1, 2, -1, -3, 2, -3), None]
-    K7 = ['knot 7_4',  4, (1, 1, 2, -1, 2, 2, 3, -2, 3), None]
+    U1 = ['one unlink', 1, (), []]
+    U2 = ['two unlinks', 2, (), [[3, 1, 4, 2], [4, 1, 3, 2]]]
+    U3 = [
+        'three unlinks',
+        3,
+        (),
+        [[3, 7, 4, 8], [4, 7, 5, 8], [5, 1, 6, 2], [6, 1, 3, 2]],
+    ]
+    U4 = [
+        'four unlinks',
+        4,
+        (),
+        [
+            [3, 9, 4, 10],
+            [4, 9, 5, 10],
+            [5, 11, 6, 12],
+            [6, 11, 7, 12],
+            [7, 1, 8, 2],
+            [8, 1, 3, 2],
+        ],
+    ]
+    K4U = [
+        'knot 4_1 plus one unlink',
+        4,
+        (1, -2, 1, -2),
+        [
+            [3, 8, 4, 9],
+            [9, 7, 10, 6],
+            [7, 4, 8, 5],
+            [5, 11, 6, 10],
+            [11, 1, 12, 2],
+            [12, 1, 3, 2],
+        ],
+    ]
+    K4 = ['knot 4_1', 3, (1, -2, 1, -2), None]
+    K6 = ['knot 6_1', 4, (1, 1, 2, -1, -3, 2, -3), None]
+    K7 = ['knot 7_4', 4, (1, 1, 2, -1, 2, 2, 3, -2, 3), None]
     K91 = ['knot 9_29', 4, (1, -2, -2, 3, -2, 1, -2, 3, -2), None]
     K92 = ['knot 9_34', 4, (-1, 2, -1, 2, -3, 2, -1, 2, -3), None]
 
 
 kauffman = {
- 'U1': 1,
- 'U2': {(1, -1): 1, (0, 0): -1, (-1, -1): 1},
- 'U3': None,
- 'U4': None,
- 'K4U': None,
- 'K4': {(2, 2): 1, (1, 3): 1, (2, 0): -1, (1, 1): -1, (0, 2): 2, (-1, 3): 1,
-        (0, 0): -1, (-1, 1): -1, (-2, 2): 1, (-2, 0): -1},
- 'K6': {(2, 2): 1, (1, 3): 1, (0, 4): 1, (-1, 5): 1, (2, 0): -1, (-1, 3): -2,
-        (-2, 4): 2, (-3, 5): 1, (-1, 1): 2, (-2, 2): -4, (-3, 3): -3, (-4, 4): 1,
-        (-2, 0): 1, (-3, 1): 2, (-4, 2): -3, (-4, 0): 1},
- 'K7': {(-2, 2): 1, (-3, 3): 2, (-4, 4): 3, (-5, 5): 2, (-6, 6): 1, (-4, 2): -4,
-        (-5, 3): -2, (-7, 5): 3, (-8, 6): 1, (-4, 0): 2, (-6, 2): -3, (-7, 3): -8,
-        (-8, 4): -3, (-9, 5): 1, (-7, 1): 4, (-8, 2): 2, (-9, 3): -4, (-8, 0): -1,
-        (-9, 1): 4},
- 'K91': {(7, 3): 1, (6, 4): 3, (5, 5): 6, (4, 6): 8, (3, 7): 6, (2, 8): 2,
-         (5, 3): -5, (4, 4): -13, (3, 5): -8, (2, 6): 6, (1, 7): 9, (0, 8): 2,
-         (5, 1): 2, (4, 2): 8, (3, 3): -1, (2, 4): -24, (1, 5): -24, (0, 6): -1,
-         (-1, 7): 3, (4, 0): -2, (3, 1): 2, (2, 2): 17, (1, 3): 14, (0, 4): -11,
-         (-1, 5): -10, (-2, 6): 1, (2, 0): -5, (1, 1): -1, (0, 2): 12, (-1, 3): 9,
-         (-2, 4): -3, (0, 0): -3, (-1, 1): -1, (-2, 2): 3, (-2, 0): -1},
- 'K92': {(5, 5): 1, (4, 6): 4, (3, 7): 6, (2, 8): 3, (5, 3): -1, (4, 4): -7,
-         (3, 5): -11, (2, 6): 5, (1, 7): 14, (0, 8): 3, (4, 2): 3, (3, 3): 5,
-         (2, 4): -19, (1, 5): -26, (0, 6): 9, (-1, 7): 8, (2, 2): 10, (1, 3): 12,
-         (0, 4): -23, (-1, 5): -10, (-2, 6): 8, (2, 0): -1, (1, 1): -1,
-         (0, 2): 11, (-1, 3): 4, (-2, 4): -10, (-3, 5): 4, (0, 0): -1,
-         (-1, 1): -1, (-2, 2): 4, (-3, 3): -2, (-4, 4): 1, (-2, 0): -1}}
+    'U1': 1,
+    'U2': {(1, -1): 1, (0, 0): -1, (-1, -1): 1},
+    'U3': None,
+    'U4': None,
+    'K4U': None,
+    'K4': {
+        (2, 2): 1,
+        (1, 3): 1,
+        (2, 0): -1,
+        (1, 1): -1,
+        (0, 2): 2,
+        (-1, 3): 1,
+        (0, 0): -1,
+        (-1, 1): -1,
+        (-2, 2): 1,
+        (-2, 0): -1,
+    },
+    'K6': {
+        (2, 2): 1,
+        (1, 3): 1,
+        (0, 4): 1,
+        (-1, 5): 1,
+        (2, 0): -1,
+        (-1, 3): -2,
+        (-2, 4): 2,
+        (-3, 5): 1,
+        (-1, 1): 2,
+        (-2, 2): -4,
+        (-3, 3): -3,
+        (-4, 4): 1,
+        (-2, 0): 1,
+        (-3, 1): 2,
+        (-4, 2): -3,
+        (-4, 0): 1,
+    },
+    'K7': {
+        (-2, 2): 1,
+        (-3, 3): 2,
+        (-4, 4): 3,
+        (-5, 5): 2,
+        (-6, 6): 1,
+        (-4, 2): -4,
+        (-5, 3): -2,
+        (-7, 5): 3,
+        (-8, 6): 1,
+        (-4, 0): 2,
+        (-6, 2): -3,
+        (-7, 3): -8,
+        (-8, 4): -3,
+        (-9, 5): 1,
+        (-7, 1): 4,
+        (-8, 2): 2,
+        (-9, 3): -4,
+        (-8, 0): -1,
+        (-9, 1): 4,
+    },
+    'K91': {
+        (7, 3): 1,
+        (6, 4): 3,
+        (5, 5): 6,
+        (4, 6): 8,
+        (3, 7): 6,
+        (2, 8): 2,
+        (5, 3): -5,
+        (4, 4): -13,
+        (3, 5): -8,
+        (2, 6): 6,
+        (1, 7): 9,
+        (0, 8): 2,
+        (5, 1): 2,
+        (4, 2): 8,
+        (3, 3): -1,
+        (2, 4): -24,
+        (1, 5): -24,
+        (0, 6): -1,
+        (-1, 7): 3,
+        (4, 0): -2,
+        (3, 1): 2,
+        (2, 2): 17,
+        (1, 3): 14,
+        (0, 4): -11,
+        (-1, 5): -10,
+        (-2, 6): 1,
+        (2, 0): -5,
+        (1, 1): -1,
+        (0, 2): 12,
+        (-1, 3): 9,
+        (-2, 4): -3,
+        (0, 0): -3,
+        (-1, 1): -1,
+        (-2, 2): 3,
+        (-2, 0): -1,
+    },
+    'K92': {
+        (5, 5): 1,
+        (4, 6): 4,
+        (3, 7): 6,
+        (2, 8): 3,
+        (5, 3): -1,
+        (4, 4): -7,
+        (3, 5): -11,
+        (2, 6): 5,
+        (1, 7): 14,
+        (0, 8): 3,
+        (4, 2): 3,
+        (3, 3): 5,
+        (2, 4): -19,
+        (1, 5): -26,
+        (0, 6): 9,
+        (-1, 7): 8,
+        (2, 2): 10,
+        (1, 3): 12,
+        (0, 4): -23,
+        (-1, 5): -10,
+        (-2, 6): 8,
+        (2, 0): -1,
+        (1, 1): -1,
+        (0, 2): 11,
+        (-1, 3): 4,
+        (-2, 4): -10,
+        (-3, 5): 4,
+        (0, 0): -1,
+        (-1, 1): -1,
+        (-2, 2): 4,
+        (-3, 3): -2,
+        (-4, 4): 1,
+        (-2, 0): -1,
+    },
+}
 
 
 links_gould = {
- 'U1': 1,
- 'U2': 0,
- 'U3': 0,
- 'U4': 0,
- 'K4U': 0,
- 'K4': {(1, 1): 2, (1, 0): -3, (0, 1): -3, (1, -1): 1, (0, 0): 7, (-1, 1): 1,
-        (0, -1): -3, (-1, 0): -3, (-1, -1): 2},
- 'K6': {(2, 2): 2, (2, 1): -3, (1, 2): -3, (2, 0): 1, (1, 1): 10, (0, 2): 1,
-        (1, 0): -10, (0, 1): -10, (1, -1): 3, (0, 0): 17, (-1, 1): 3, (0, -1): -7,
-        (-1, 0): -7, (-1, -1): 4},
- 'K7': {(4, 3): -1, (3, 4): -1, (4, 2): 1, (3, 3): 6, (2, 4): 1, (3, 2): -11,
-        (2, 3): -11, (3, 1): 6, (2, 2): 28, (1, 3): 6, (2, 1): -27, (1, 2): -27,
-        (2, 0): 9, (1, 1): 38, (0, 2): 9, (1, 0): -17, (0, 1): -17, (0, 0): 9},
- 'K91': {(2, 2): 6, (2, 1): -20, (1, 2): -20, (2, 0): 29, (1, 1): 76, (0, 2): 29,
-         (2, -1): -25, (1, 0): -123, (0, 1): -123, (-1, 2): -25, (2, -2): 14,
-         (1, -1): 116, (0, 0): 217, (-1, 1): 116, (-2, 2): 14, (2, -3): -5,
-         (1, -2): -71, (0, -1): -216, (-1, 0): -216, (-2, 1): -71, (-3, 2): -5,
-         (2, -4): 1, (1, -3): 27, (0, -2): 136, (-1, -1): 214, (-2, 0): 136,
-         (-3, 1): 27, (-4, 2): 1, (1, -4): -5, (0, -3): -50, (-1, -2): -122,
-         (-2, -1): -122, (-3, 0): -50, (-4, 1): -5, (0, -4): 8, (-1, -3): 37,
-         (-2, -2): 52, (-3, -1): 37, (-4, 0): 8, (-1, -4): -4, (-2, -3): -9,
-         (-3, -2): -9, (-4, -1): -4},
- 'K92': {(3, 1): 6, (2, 2): 12, (1, 3): 6, (3, 0): -15, (2, 1): -63, (1, 2): -63,
-         (0, 3): -15, (3, -1): 14, (2, 0): 112, (1, 1): 216, (0, 2): 112,
-         (-1, 3): 14, (3, -2): -6, (2, -1): -92, (1, 0): -334, (0, 1): -334,
-         (-1, 2): -92, (-2, 3): -6, (3, -3): 1, (2, -2): 37, (1, -1): 262,
-         (0, 0): 503, (-1, 1): 262, (-2, 2): 37, (-3, 3): 1, (2, -3): -6,
-         (1, -2): -104, (0, -1): -400, (-1, 0): -400, (-2, 1): -104, (-3, 2): -6,
-         (1, -3): 17, (0, -2): 162, (-1, -1): 330, (-2, 0): 162, (-3, 1): 17,
-         (0, -3): -27, (-1, -2): -136, (-2, -1): -136, (-3, 0): -27, (-1, -3): 22,
-         (-2, -2): 54, (-3, -1): 22, (-2, -3): -7, (-3, -2): -7}}
+    'U1': 1,
+    'U2': 0,
+    'U3': 0,
+    'U4': 0,
+    'K4U': 0,
+    'K4': {
+        (1, 1): 2,
+        (1, 0): -3,
+        (0, 1): -3,
+        (1, -1): 1,
+        (0, 0): 7,
+        (-1, 1): 1,
+        (0, -1): -3,
+        (-1, 0): -3,
+        (-1, -1): 2,
+    },
+    'K6': {
+        (2, 2): 2,
+        (2, 1): -3,
+        (1, 2): -3,
+        (2, 0): 1,
+        (1, 1): 10,
+        (0, 2): 1,
+        (1, 0): -10,
+        (0, 1): -10,
+        (1, -1): 3,
+        (0, 0): 17,
+        (-1, 1): 3,
+        (0, -1): -7,
+        (-1, 0): -7,
+        (-1, -1): 4,
+    },
+    'K7': {
+        (4, 3): -1,
+        (3, 4): -1,
+        (4, 2): 1,
+        (3, 3): 6,
+        (2, 4): 1,
+        (3, 2): -11,
+        (2, 3): -11,
+        (3, 1): 6,
+        (2, 2): 28,
+        (1, 3): 6,
+        (2, 1): -27,
+        (1, 2): -27,
+        (2, 0): 9,
+        (1, 1): 38,
+        (0, 2): 9,
+        (1, 0): -17,
+        (0, 1): -17,
+        (0, 0): 9,
+    },
+    'K91': {
+        (2, 2): 6,
+        (2, 1): -20,
+        (1, 2): -20,
+        (2, 0): 29,
+        (1, 1): 76,
+        (0, 2): 29,
+        (2, -1): -25,
+        (1, 0): -123,
+        (0, 1): -123,
+        (-1, 2): -25,
+        (2, -2): 14,
+        (1, -1): 116,
+        (0, 0): 217,
+        (-1, 1): 116,
+        (-2, 2): 14,
+        (2, -3): -5,
+        (1, -2): -71,
+        (0, -1): -216,
+        (-1, 0): -216,
+        (-2, 1): -71,
+        (-3, 2): -5,
+        (2, -4): 1,
+        (1, -3): 27,
+        (0, -2): 136,
+        (-1, -1): 214,
+        (-2, 0): 136,
+        (-3, 1): 27,
+        (-4, 2): 1,
+        (1, -4): -5,
+        (0, -3): -50,
+        (-1, -2): -122,
+        (-2, -1): -122,
+        (-3, 0): -50,
+        (-4, 1): -5,
+        (0, -4): 8,
+        (-1, -3): 37,
+        (-2, -2): 52,
+        (-3, -1): 37,
+        (-4, 0): 8,
+        (-1, -4): -4,
+        (-2, -3): -9,
+        (-3, -2): -9,
+        (-4, -1): -4,
+    },
+    'K92': {
+        (3, 1): 6,
+        (2, 2): 12,
+        (1, 3): 6,
+        (3, 0): -15,
+        (2, 1): -63,
+        (1, 2): -63,
+        (0, 3): -15,
+        (3, -1): 14,
+        (2, 0): 112,
+        (1, 1): 216,
+        (0, 2): 112,
+        (-1, 3): 14,
+        (3, -2): -6,
+        (2, -1): -92,
+        (1, 0): -334,
+        (0, 1): -334,
+        (-1, 2): -92,
+        (-2, 3): -6,
+        (3, -3): 1,
+        (2, -2): 37,
+        (1, -1): 262,
+        (0, 0): 503,
+        (-1, 1): 262,
+        (-2, 2): 37,
+        (-3, 3): 1,
+        (2, -3): -6,
+        (1, -2): -104,
+        (0, -1): -400,
+        (-1, 0): -400,
+        (-2, 1): -104,
+        (-3, 2): -6,
+        (1, -3): 17,
+        (0, -2): 162,
+        (-1, -1): 330,
+        (-2, 0): 162,
+        (-3, 1): 17,
+        (0, -3): -27,
+        (-1, -2): -136,
+        (-2, -1): -136,
+        (-3, 0): -27,
+        (-1, -3): 22,
+        (-2, -2): 54,
+        (-3, -1): 22,
+        (-2, -3): -7,
+        (-3, -2): -7,
+    },
+}
 
 
 class CubicHeckeFileCache(SageObject):
@@ -675,6 +966,7 @@ class CubicHeckeFileCache(SageObject):
             sage: cha_fc.section
             <enum 'section'>
         """
+
         def filename(self, nstrands=None):
             r"""
             Return the file name under which the data of this file cache section
@@ -723,6 +1015,7 @@ class CubicHeckeFileCache(SageObject):
         self._nstrands = num_strands
 
         from sage.env import DOT_SAGE
+
         self._file_cache_path = os.path.join(DOT_SAGE, 'cubic_hecke')
         self._data_library = {}
         os.makedirs(self._file_cache_path, exist_ok=True)
@@ -746,6 +1039,7 @@ class CubicHeckeFileCache(SageObject):
         """
         from warnings import warn
         from datetime import date
+
         today = date.today()
         new_fname = '%s_%s' % (fname, today)
         os.rename(fname, new_fname)
@@ -780,9 +1074,14 @@ class CubicHeckeFileCache(SageObject):
             return
 
         if not isinstance(section, CubicHeckeFileCache.section):
-            raise TypeError('section must be an instance of enum %s' % CubicHeckeFileCache.section)
+            raise TypeError(
+                'section must be an instance of enum %s' % CubicHeckeFileCache.section
+            )
 
-        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import RepresentationType
+        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import (
+            RepresentationType,
+        )
+
         data_lib = self._data_library
         empty_dict = {}
         if section == self.section.matrix_representations:
@@ -815,11 +1114,16 @@ class CubicHeckeFileCache(SageObject):
             return all(self.is_empty(section=sec) for sec in self.section)
 
         if not isinstance(section, CubicHeckeFileCache.section):
-            raise TypeError('section must be an instance of enum %s' % CubicHeckeFileCache.section)
+            raise TypeError(
+                'section must be an instance of enum %s' % CubicHeckeFileCache.section
+            )
 
         self.read(section)
         data_lib = self._data_library[section]
-        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import RepresentationType
+        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import (
+            RepresentationType,
+        )
+
         if section == self.section.matrix_representations:
             for rep_type in RepresentationType:
                 if len(data_lib[rep_type.name]) > 0:
@@ -829,7 +1133,7 @@ class CubicHeckeFileCache(SageObject):
         if section == self.section.basis_extensions and self._nstrands > 4:
             # the new generators and their inverses are not counted
             # since they are added during initialization
-            return len(data_lib) <= 2*(self._nstrands - 4)
+            return len(data_lib) <= 2 * (self._nstrands - 4)
         return not data_lib
 
     # --------------------------------------------------------------------------
@@ -862,7 +1166,9 @@ class CubicHeckeFileCache(SageObject):
             return
 
         if not isinstance(section, CubicHeckeFileCache.section):
-            raise TypeError('section must be an instance of enum %s' % CubicHeckeFileCache.section)
+            raise TypeError(
+                'section must be an instance of enum %s' % CubicHeckeFileCache.section
+            )
 
         if section not in data_lib.keys():
             raise ValueError("No data for file %s in memory" % section)
@@ -899,7 +1205,9 @@ class CubicHeckeFileCache(SageObject):
             {}
         """
         if not isinstance(section, CubicHeckeFileCache.section):
-            raise TypeError('section must be an instance of enum %s' % CubicHeckeFileCache.section)
+            raise TypeError(
+                'section must be an instance of enum %s' % CubicHeckeFileCache.section
+            )
 
         data_lib = self._data_library
         lib_path = self._file_cache_path
@@ -924,7 +1232,9 @@ class CubicHeckeFileCache(SageObject):
     # --------------------------------------------------------------------------
     # read matrix representation from file cache
     # --------------------------------------------------------------------------
-    def read_matrix_representation(self, representation_type, monomial_tietze, ring_of_definition):
+    def read_matrix_representation(
+        self, representation_type, monomial_tietze, ring_of_definition
+    ):
         r"""
         Return the matrix representations of the given monomial (in Tietze form)
         if it has been stored in the file cache before.
@@ -964,14 +1274,25 @@ class CubicHeckeFileCache(SageObject):
             sage: cha_fc.read_matrix_representation(rt.RegularLeft, gt, R) == None
             True
         """
-        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import RepresentationType
-        if not isinstance(representation_type, RepresentationType):
-            raise TypeError('representation_type must be an instance of enum %s' % RepresentationType)
+        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import (
+            RepresentationType,
+        )
 
-        matrix_representations = self.read(self.section.matrix_representations)[representation_type.name]
+        if not isinstance(representation_type, RepresentationType):
+            raise TypeError(
+                'representation_type must be an instance of enum %s'
+                % RepresentationType
+            )
+
+        matrix_representations = self.read(self.section.matrix_representations)[
+            representation_type.name
+        ]
         if monomial_tietze in matrix_representations.keys():
             matrix_list_dict = matrix_representations[monomial_tietze]
-            matrix_list = [matrix(ring_of_definition, mat_dict, sparse=True) for mat_dict in matrix_list_dict]
+            matrix_list = [
+                matrix(ring_of_definition, mat_dict, sparse=True)
+                for mat_dict in matrix_list_dict
+            ]
             for m in matrix_list:
                 m.set_immutable()
             return matrix_list
@@ -980,7 +1301,9 @@ class CubicHeckeFileCache(SageObject):
     # --------------------------------------------------------------------------
     # matrix_representation to file cache
     # --------------------------------------------------------------------------
-    def write_matrix_representation(self, representation_type, monomial_tietze, matrix_list):
+    def write_matrix_representation(
+        self, representation_type, monomial_tietze, matrix_list
+    ):
         r"""
         Write the matrix representation of a monomial to the file cache.
 
@@ -1014,9 +1337,15 @@ class CubicHeckeFileCache(SageObject):
             sage: [m] == cha_fc.read_matrix_representation(rt.RegularRight, git, R)
             True
         """
-        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import RepresentationType
+        from sage.algebras.hecke_algebras.cubic_hecke_matrix_rep import (
+            RepresentationType,
+        )
+
         if not isinstance(representation_type, RepresentationType):
-            raise TypeError('representation_type must be an instance of enum %s' % RepresentationType)
+            raise TypeError(
+                'representation_type must be an instance of enum %s'
+                % RepresentationType
+            )
 
         sec = self.section.matrix_representations
         all_matrix_representations = self.read(sec)
@@ -1077,6 +1406,7 @@ class CubicHeckeFileCache(SageObject):
             braid_image = braid_images[braid_tietze]
             result_list = [ring_of_definition(cf) for cf in list(braid_image)]
             from sage.modules.free_module_element import vector
+
             return vector(ring_of_definition, result_list)
         return None
 
@@ -1162,7 +1492,9 @@ class CubicHeckeFileCache(SageObject):
 func_name = 'read_%s'
 
 var_decl = "\n    %s = variables"
-var_doc_input = "\n    - ``variables`` -- tuple containing the indeterminates of the representation"
+var_doc_input = (
+    "\n    - ``variables`` -- tuple containing the indeterminates of the representation"
+)
 var_doc_decl = "\n        sage: L.<%s> = LaurentPolynomialRing(ZZ)"
 
 template = """def %s(%snum_strands=3):
@@ -1188,7 +1520,9 @@ doc = r"""{}
         {}age: from sage.databases.cubic_hecke_db import %s%s
         {}age: %s(%s2)
     {}
-""".format('r"""', 's', 's', '"""')  # s in the middle to hide these lines from _test_enough_doctests
+""".format(
+    'r"""', 's', 's', '"""'
+)  # s in the middle to hide these lines from _test_enough_doctests
 
 
 def create_demo_data(filename='demo_data.py'):
@@ -1204,6 +1538,7 @@ def create_demo_data(filename='demo_data.py'):
         sage: from sage.databases.cubic_hecke_db import create_demo_data
         sage: create_demo_data()   # not tested
     """
+
     # ---------------------------------------------------------------
     # preparations
     # ---------------------------------------------------------------
@@ -1213,12 +1548,12 @@ def create_demo_data(filename='demo_data.py'):
             v = str(variables)
             vars2 = v + ', '
             decl = var_decl % v
-            doc_dec = var_doc_decl % v[1: len(v)-1]
-            doc_str = doc % (var_doc_input, fname,  doc_dec, fname, vars2)
-            res = template % (fname, 'variables, ', doc_str, decl, data2,  data3)
+            doc_dec = var_doc_decl % v[1 : len(v) - 1]
+            doc_str = doc % (var_doc_input, fname, doc_dec, fname, vars2)
+            res = template % (fname, 'variables, ', doc_str, decl, data2, data3)
         else:
             doc_str = doc % ('', fname, '', fname, '')
-            res = template % (fname, '', doc_str, '', data2,  data3)
+            res = template % (fname, '', doc_str, '', data2, data3)
         return res
 
     from textwrap import fill
@@ -1250,10 +1585,10 @@ def create_demo_data(filename='demo_data.py'):
     # ---------------------------------------------------------------
     # create functions and write them to file
     # ---------------------------------------------------------------
-    bas = create_repr_func('basis',  '',   bas2,  bas3)
-    irr = create_repr_func('irr',    vari, irr2,  irr3)
-    regl = create_repr_func('regl',   varr, regl2, regl3)
-    regr = create_repr_func('regr',   varr, regr2, regr3)
+    bas = create_repr_func('basis', '', bas2, bas3)
+    irr = create_repr_func('irr', vari, irr2, irr3)
+    regl = create_repr_func('regl', varr, regl2, regl3)
+    regr = create_repr_func('regr', varr, regr2, regr3)
 
     with open(filename, 'w') as f:
         f.write(bas)
@@ -1280,10 +1615,32 @@ def read_basis(num_strands=3):
     """
     data = {}
     data[2] = [[], [1], [-1]]
-    data[3] = [[], [1], [-1], [2], [-2], [1, 2], [1, -2], [-1, 2], [-1, -2], [1, 2,
-        1], [1, 2, -1], [-1, 2, 1], [-1, 2, -1], [1, -2, 1], [-1, -2,
-        1], [2, 1], [-2, 1], [2, -1], [-2, -1], [1, -2, -1], [-1, -2,
-        -1], [2, -1, 2], [1, 2, -1, 2], [-1, 2, -1, 2]]
+    data[3] = [
+        [],
+        [1],
+        [-1],
+        [2],
+        [-2],
+        [1, 2],
+        [1, -2],
+        [-1, 2],
+        [-1, -2],
+        [1, 2, 1],
+        [1, 2, -1],
+        [-1, 2, 1],
+        [-1, 2, -1],
+        [1, -2, 1],
+        [-1, -2, 1],
+        [2, 1],
+        [-2, 1],
+        [2, -1],
+        [-2, -1],
+        [1, -2, -1],
+        [-1, -2, -1],
+        [2, -1, 2],
+        [1, 2, -1, 2],
+        [-1, 2, -1, 2],
+    ]
     return data[num_strands]
 
 
@@ -1309,25 +1666,75 @@ def read_irr(variables, num_strands=3):
     """
     (a, b, c, j) = variables
     data = {}
-    data[2] = ([1, 1, 1], [[{(0, 0): a}], [{(0, 0): c}], [{(0, 0): b}]], [[{(0, 0):
-        1/a}], [{(0, 0): 1/c}], [{(0, 0): 1/b}]])
-    data[3] = ([1, 1, 1, 2, 2, 2, 3], [[{(0, 0): a}, {(0, 0): a}], [{(0, 0): c},
-        {(0, 0): c}], [{(0, 0): b}, {(0, 0): b}], [{(0, 0): b, (1, 0):
-        b*c, (1, 1): c}, {(0, 0): c, (0, 1): -1, (1, 1): b}], [{(0,
-        0): a, (1, 0): a*b, (1, 1): b}, {(0, 0): b, (0, 1): -1, (1,
-        1): a}], [{(0, 0): a, (1, 0): a*c, (1, 1): c}, {(0, 0): c, (0,
-        1): -1, (1, 1): a}], [{(0, 0): c, (1, 0): a*c + b**2, (1, 1):
-        b, (2, 0): b, (2, 1): 1, (2, 2): a}, {(0, 0): a, (0, 1): -1,
-        (0, 2): b, (1, 1): b, (1, 2): -a*c - b**2, (2, 2): c}]],
-        [[{(0, 0): 1/a}, {(0, 0): 1/a}], [{(0, 0): 1/c}, {(0, 0):
-        1/c}], [{(0, 0): 1/b}, {(0, 0): 1/b}], [{(0, 0): 1/b, (1, 0):
-        -1, (1, 1): 1/c}, {(0, 0): 1/c, (0, 1): 1/(b*c), (1, 1):
-        1/b}], [{(0, 0): 1/a, (1, 0): -1, (1, 1): 1/b}, {(0, 0): 1/b,
-        (0, 1): 1/(a*b), (1, 1): 1/a}], [{(0, 0): 1/a, (1, 0): -1, (1,
-        1): 1/c}, {(0, 0): 1/c, (0, 1): 1/(a*c), (1, 1): 1/a}], [{(0,
-        0): 1/c, (1, 0): -a/b - b/c, (1, 1): 1/b, (2, 0): 1/b, (2, 1):
-        -1/(a*b), (2, 2): 1/a}, {(0, 0): 1/a, (0, 1): 1/(a*b), (0, 2):
-        1/b, (1, 1): 1/b, (1, 2): a/b + b/c, (2, 2): 1/c}]])
+    data[2] = (
+        [1, 1, 1],
+        [[{(0, 0): a}], [{(0, 0): c}], [{(0, 0): b}]],
+        [[{(0, 0): 1 / a}], [{(0, 0): 1 / c}], [{(0, 0): 1 / b}]],
+    )
+    data[3] = (
+        [1, 1, 1, 2, 2, 2, 3],
+        [
+            [{(0, 0): a}, {(0, 0): a}],
+            [{(0, 0): c}, {(0, 0): c}],
+            [{(0, 0): b}, {(0, 0): b}],
+            [{(0, 0): b, (1, 0): b * c, (1, 1): c}, {(0, 0): c, (0, 1): -1, (1, 1): b}],
+            [{(0, 0): a, (1, 0): a * b, (1, 1): b}, {(0, 0): b, (0, 1): -1, (1, 1): a}],
+            [{(0, 0): a, (1, 0): a * c, (1, 1): c}, {(0, 0): c, (0, 1): -1, (1, 1): a}],
+            [
+                {
+                    (0, 0): c,
+                    (1, 0): a * c + b**2,
+                    (1, 1): b,
+                    (2, 0): b,
+                    (2, 1): 1,
+                    (2, 2): a,
+                },
+                {
+                    (0, 0): a,
+                    (0, 1): -1,
+                    (0, 2): b,
+                    (1, 1): b,
+                    (1, 2): -a * c - b**2,
+                    (2, 2): c,
+                },
+            ],
+        ],
+        [
+            [{(0, 0): 1 / a}, {(0, 0): 1 / a}],
+            [{(0, 0): 1 / c}, {(0, 0): 1 / c}],
+            [{(0, 0): 1 / b}, {(0, 0): 1 / b}],
+            [
+                {(0, 0): 1 / b, (1, 0): -1, (1, 1): 1 / c},
+                {(0, 0): 1 / c, (0, 1): 1 / (b * c), (1, 1): 1 / b},
+            ],
+            [
+                {(0, 0): 1 / a, (1, 0): -1, (1, 1): 1 / b},
+                {(0, 0): 1 / b, (0, 1): 1 / (a * b), (1, 1): 1 / a},
+            ],
+            [
+                {(0, 0): 1 / a, (1, 0): -1, (1, 1): 1 / c},
+                {(0, 0): 1 / c, (0, 1): 1 / (a * c), (1, 1): 1 / a},
+            ],
+            [
+                {
+                    (0, 0): 1 / c,
+                    (1, 0): -a / b - b / c,
+                    (1, 1): 1 / b,
+                    (2, 0): 1 / b,
+                    (2, 1): -1 / (a * b),
+                    (2, 2): 1 / a,
+                },
+                {
+                    (0, 0): 1 / a,
+                    (0, 1): 1 / (a * b),
+                    (0, 2): 1 / b,
+                    (1, 1): 1 / b,
+                    (1, 2): a / b + b / c,
+                    (2, 2): 1 / c,
+                },
+            ],
+        ],
+    )
     return data[num_strands]
 
 
@@ -1353,55 +1760,237 @@ def read_regl(variables, num_strands=3):
     """
     (u, v, w) = variables
     data = {}
-    data[2] = ([3], [[{(0, 1): -v, (0, 2): 1, (1, 0): 1, (1, 1): u, (2, 1): w}]],
-        [[{(0, 1): 1, (0, 2): -u/w, (1, 2): 1/w, (2, 0): 1, (2, 2):
-        v/w}]])
-    data[3] = ([24], [[{(0, 1): -v, (0, 2): 1, (1, 0): 1, (1, 1): u, (2, 1): w, (3,
-        5): -v, (3, 7): 1, (4, 6): -v, (4, 8): 1, (5, 3): 1, (5, 5):
-        u, (6, 4): 1, (6, 6): u, (7, 5): w, (8, 6): w, (9, 9): u, (9,
-        15): 1, (10, 10): u, (10, 17): 1, (11, 9): w, (12, 10): w,
-        (13, 13): u, (13, 16): 1, (14, 13): w, (15, 9): -v, (15, 11):
-        1, (16, 13): -v, (16, 14): 1, (17, 10): -v, (17, 12): 1, (18,
-        19): -v, (18, 20): 1, (19, 18): 1, (19, 19): u, (20, 19): w,
-        (21, 22): -v, (21, 23): 1, (22, 21): 1, (22, 22): u, (23, 22):
-        w}, {(0, 3): -v, (0, 4): 1, (1, 15): -v, (1, 16): 1, (1, 22):
-        -v, (1, 23): u*v/w, (2, 17): -v, (2, 18): 1, (2, 23): v*(u*v -
-        w)/w, (3, 0): 1, (3, 3): u, (4, 3): w, (5, 9): -v, (5, 10): 1,
-        (5, 12): -u/w, (5, 22): u, (5, 23): -u**2/w, (6, 11): -v, (6,
-        22): w, (6, 23): -u, (7, 12): -u*v/w, (7, 13): -v, (7, 19): 1,
-        (7, 21): -v, (7, 23): -u**2*v/w, (8, 12): -v, (8, 14): -v, (8,
-        20): 1, (8, 23): -u*v, (9, 5): 1, (9, 9): u, (9, 23): u/w,
-        (10, 9): w, (10, 11): -u, (11, 6): 1, (11, 11): u, (11, 13):
-        u, (12, 13): w, (12, 23): -v, (13, 23): 1, (14, 8): 1, (14,
-        14): u, (14, 23): v, (15, 1): 1, (15, 12): u/w, (15, 15): u,
-        (16, 11): v, (16, 15): w, (16, 23): -u, (17, 2): 1, (17, 12):
-        u*v/w, (17, 17): u, (18, 12): v, (18, 17): w, (19, 21): w,
-        (19, 23): v, (20, 14): w, (21, 7): 1, (21, 21): u, (21, 23):
-        u*v/w, (22, 11): 1, (23, 12): 1, (23, 23): u}]], [[{(0, 1): 1,
-        (0, 2): -u/w, (1, 2): 1/w, (2, 0): 1, (2, 2): v/w, (3, 5): 1,
-        (3, 7): -u/w, (4, 6): 1, (4, 8): -u/w, (5, 7): 1/w, (6, 8):
-        1/w, (7, 3): 1, (7, 7): v/w, (8, 4): 1, (8, 8): v/w, (9, 11):
-        1/w, (10, 12): 1/w, (11, 11): v/w, (11, 15): 1, (12, 12): v/w,
-        (12, 17): 1, (13, 14): 1/w, (14, 14): v/w, (14, 16): 1, (15,
-        9): 1, (15, 11): -u/w, (16, 13): 1, (16, 14): -u/w, (17, 10):
-        1, (17, 12): -u/w, (18, 19): 1, (18, 20): -u/w, (19, 20): 1/w,
-        (20, 18): 1, (20, 20): v/w, (21, 22): 1, (21, 23): -u/w, (22,
-        23): 1/w, (23, 21): 1, (23, 23): v/w}, {(0, 3): 1, (0, 4):
-        -u/w, (1, 15): 1, (1, 16): -u/w, (1, 22): u*v/w, (1, 23):
-        -u/w, (2, 17): 1, (2, 18): -u/w, (3, 4): 1/w, (4, 0): 1, (4,
-        4): v/w, (5, 9): 1, (5, 10): -u/w, (5, 13): -u/w, (5, 22):
-        -u**2/w, (6, 11): 1, (6, 12): -u/w, (6, 13): -u*v/w, (6, 22):
-        -u, (7, 19): -u/w, (7, 21): 1, (8, 13): -v, (8, 14): 1, (8,
-        20): -u/w, (9, 10): 1/w, (9, 22): u/w, (10, 5): 1, (10, 6):
-        -u/w, (10, 10): v/w, (10, 13): -u**2/w, (10, 23): u/w, (11,
-        22): 1, (12, 13): -u, (12, 23): 1, (13, 12): 1/w, (13, 13):
-        v/w, (14, 20): 1/w, (15, 13): u/w, (15, 16): 1/w, (15, 22):
-        -v/w, (16, 1): 1, (16, 6): v/w, (16, 13): u*v/w, (16, 16):
-        v/w, (17, 13): u*v/w, (17, 18): 1/w, (17, 23): -v/w, (18, 2):
-        1, (18, 13): v, (18, 18): v/w, (18, 23): -v**2/w, (19, 7): 1,
-        (19, 12): v/w, (19, 19): v/w, (19, 23): u*v/w, (20, 8): 1,
-        (20, 20): v/w, (20, 23): v, (21, 13): -v/w, (21, 19): 1/w,
-        (22, 6): 1/w, (22, 13): u/w, (22, 22): v/w, (23, 13): 1}]])
+    data[2] = (
+        [3],
+        [[{(0, 1): -v, (0, 2): 1, (1, 0): 1, (1, 1): u, (2, 1): w}]],
+        [[{(0, 1): 1, (0, 2): -u / w, (1, 2): 1 / w, (2, 0): 1, (2, 2): v / w}]],
+    )
+    data[3] = (
+        [24],
+        [
+            [
+                {
+                    (0, 1): -v,
+                    (0, 2): 1,
+                    (1, 0): 1,
+                    (1, 1): u,
+                    (2, 1): w,
+                    (3, 5): -v,
+                    (3, 7): 1,
+                    (4, 6): -v,
+                    (4, 8): 1,
+                    (5, 3): 1,
+                    (5, 5): u,
+                    (6, 4): 1,
+                    (6, 6): u,
+                    (7, 5): w,
+                    (8, 6): w,
+                    (9, 9): u,
+                    (9, 15): 1,
+                    (10, 10): u,
+                    (10, 17): 1,
+                    (11, 9): w,
+                    (12, 10): w,
+                    (13, 13): u,
+                    (13, 16): 1,
+                    (14, 13): w,
+                    (15, 9): -v,
+                    (15, 11): 1,
+                    (16, 13): -v,
+                    (16, 14): 1,
+                    (17, 10): -v,
+                    (17, 12): 1,
+                    (18, 19): -v,
+                    (18, 20): 1,
+                    (19, 18): 1,
+                    (19, 19): u,
+                    (20, 19): w,
+                    (21, 22): -v,
+                    (21, 23): 1,
+                    (22, 21): 1,
+                    (22, 22): u,
+                    (23, 22): w,
+                },
+                {
+                    (0, 3): -v,
+                    (0, 4): 1,
+                    (1, 15): -v,
+                    (1, 16): 1,
+                    (1, 22): -v,
+                    (1, 23): u * v / w,
+                    (2, 17): -v,
+                    (2, 18): 1,
+                    (2, 23): v * (u * v - w) / w,
+                    (3, 0): 1,
+                    (3, 3): u,
+                    (4, 3): w,
+                    (5, 9): -v,
+                    (5, 10): 1,
+                    (5, 12): -u / w,
+                    (5, 22): u,
+                    (5, 23): -(u**2) / w,
+                    (6, 11): -v,
+                    (6, 22): w,
+                    (6, 23): -u,
+                    (7, 12): -u * v / w,
+                    (7, 13): -v,
+                    (7, 19): 1,
+                    (7, 21): -v,
+                    (7, 23): -(u**2) * v / w,
+                    (8, 12): -v,
+                    (8, 14): -v,
+                    (8, 20): 1,
+                    (8, 23): -u * v,
+                    (9, 5): 1,
+                    (9, 9): u,
+                    (9, 23): u / w,
+                    (10, 9): w,
+                    (10, 11): -u,
+                    (11, 6): 1,
+                    (11, 11): u,
+                    (11, 13): u,
+                    (12, 13): w,
+                    (12, 23): -v,
+                    (13, 23): 1,
+                    (14, 8): 1,
+                    (14, 14): u,
+                    (14, 23): v,
+                    (15, 1): 1,
+                    (15, 12): u / w,
+                    (15, 15): u,
+                    (16, 11): v,
+                    (16, 15): w,
+                    (16, 23): -u,
+                    (17, 2): 1,
+                    (17, 12): u * v / w,
+                    (17, 17): u,
+                    (18, 12): v,
+                    (18, 17): w,
+                    (19, 21): w,
+                    (19, 23): v,
+                    (20, 14): w,
+                    (21, 7): 1,
+                    (21, 21): u,
+                    (21, 23): u * v / w,
+                    (22, 11): 1,
+                    (23, 12): 1,
+                    (23, 23): u,
+                },
+            ]
+        ],
+        [
+            [
+                {
+                    (0, 1): 1,
+                    (0, 2): -u / w,
+                    (1, 2): 1 / w,
+                    (2, 0): 1,
+                    (2, 2): v / w,
+                    (3, 5): 1,
+                    (3, 7): -u / w,
+                    (4, 6): 1,
+                    (4, 8): -u / w,
+                    (5, 7): 1 / w,
+                    (6, 8): 1 / w,
+                    (7, 3): 1,
+                    (7, 7): v / w,
+                    (8, 4): 1,
+                    (8, 8): v / w,
+                    (9, 11): 1 / w,
+                    (10, 12): 1 / w,
+                    (11, 11): v / w,
+                    (11, 15): 1,
+                    (12, 12): v / w,
+                    (12, 17): 1,
+                    (13, 14): 1 / w,
+                    (14, 14): v / w,
+                    (14, 16): 1,
+                    (15, 9): 1,
+                    (15, 11): -u / w,
+                    (16, 13): 1,
+                    (16, 14): -u / w,
+                    (17, 10): 1,
+                    (17, 12): -u / w,
+                    (18, 19): 1,
+                    (18, 20): -u / w,
+                    (19, 20): 1 / w,
+                    (20, 18): 1,
+                    (20, 20): v / w,
+                    (21, 22): 1,
+                    (21, 23): -u / w,
+                    (22, 23): 1 / w,
+                    (23, 21): 1,
+                    (23, 23): v / w,
+                },
+                {
+                    (0, 3): 1,
+                    (0, 4): -u / w,
+                    (1, 15): 1,
+                    (1, 16): -u / w,
+                    (1, 22): u * v / w,
+                    (1, 23): -u / w,
+                    (2, 17): 1,
+                    (2, 18): -u / w,
+                    (3, 4): 1 / w,
+                    (4, 0): 1,
+                    (4, 4): v / w,
+                    (5, 9): 1,
+                    (5, 10): -u / w,
+                    (5, 13): -u / w,
+                    (5, 22): -(u**2) / w,
+                    (6, 11): 1,
+                    (6, 12): -u / w,
+                    (6, 13): -u * v / w,
+                    (6, 22): -u,
+                    (7, 19): -u / w,
+                    (7, 21): 1,
+                    (8, 13): -v,
+                    (8, 14): 1,
+                    (8, 20): -u / w,
+                    (9, 10): 1 / w,
+                    (9, 22): u / w,
+                    (10, 5): 1,
+                    (10, 6): -u / w,
+                    (10, 10): v / w,
+                    (10, 13): -(u**2) / w,
+                    (10, 23): u / w,
+                    (11, 22): 1,
+                    (12, 13): -u,
+                    (12, 23): 1,
+                    (13, 12): 1 / w,
+                    (13, 13): v / w,
+                    (14, 20): 1 / w,
+                    (15, 13): u / w,
+                    (15, 16): 1 / w,
+                    (15, 22): -v / w,
+                    (16, 1): 1,
+                    (16, 6): v / w,
+                    (16, 13): u * v / w,
+                    (16, 16): v / w,
+                    (17, 13): u * v / w,
+                    (17, 18): 1 / w,
+                    (17, 23): -v / w,
+                    (18, 2): 1,
+                    (18, 13): v,
+                    (18, 18): v / w,
+                    (18, 23): -(v**2) / w,
+                    (19, 7): 1,
+                    (19, 12): v / w,
+                    (19, 19): v / w,
+                    (19, 23): u * v / w,
+                    (20, 8): 1,
+                    (20, 20): v / w,
+                    (20, 23): v,
+                    (21, 13): -v / w,
+                    (21, 19): 1 / w,
+                    (22, 6): 1 / w,
+                    (22, 13): u / w,
+                    (22, 22): v / w,
+                    (23, 13): 1,
+                },
+            ]
+        ],
+    )
     return data[num_strands]
 
 
@@ -1427,56 +2016,239 @@ def read_regr(variables, num_strands=3):
     """
     (u, v, w) = variables
     data = {}
-    data[2] = ([3], [[{(0, 1): -v, (0, 2): 1, (1, 0): 1, (1, 1): u, (2, 1): w}]],
-        [[{(0, 1): 1, (0, 2): -u/w, (1, 2): 1/w, (2, 0): 1, (2, 2):
-        v/w}]])
-    data[3] = ([24], [[{(0, 1): -v, (0, 2): 1, (1, 0): 1, (1, 1): u, (2, 1): w, (3,
-        15): -v, (3, 17): 1, (4, 16): -v, (4, 18): 1, (4, 22): v**2,
-        (4, 23): -v, (5, 9): -v, (5, 10): 1, (6, 13): -v, (6, 19): 1,
-        (6, 21): -v, (6, 22): -u*v, (7, 11): -v, (7, 12): 1, (8, 14):
-        -v, (8, 20): 1, (8, 22): -v*w, (9, 5): 1, (9, 9): u, (9, 23):
-        u/w, (10, 9): w, (10, 21): -u, (10, 22): -u**2, (11, 7): 1,
-        (11, 11): u, (11, 21): u, (11, 23): u*v/w, (12, 11): w, (12,
-        22): -u*w, (13, 6): 1, (13, 13): u, (13, 22): v, (14, 8): 1,
-        (14, 14): u, (14, 23): v, (15, 3): 1, (15, 15): u, (15, 22):
-        u, (15, 23): -u**2/w, (16, 4): 1, (16, 16): u, (16, 21): v,
-        (17, 15): w, (17, 22): u*v, (17, 23): -u, (18, 16): w, (19,
-        13): w, (20, 14): w, (21, 22): -v, (21, 23): 1, (22, 21): 1,
-        (22, 22): u, (23, 22): w}, {(0, 3): -v, (0, 4): 1, (1, 5): -v,
-        (1, 6): 1, (2, 7): -v, (2, 8): 1, (3, 0): 1, (3, 3): u, (4,
-        3): w, (5, 1): 1, (5, 5): u, (6, 5): w, (7, 2): 1, (7, 7): u,
-        (8, 7): w, (9, 9): u, (9, 15): 1, (10, 13): u, (10, 16): 1,
-        (10, 22): -v, (11, 9): w, (12, 13): w, (12, 23): -v, (13, 23):
-        1, (14, 21): w, (14, 23): v, (15, 9): -v, (15, 11): 1, (16,
-        22): w, (16, 23): -u, (17, 13): -v, (17, 14): 1, (17, 21): -v,
-        (18, 19): -v, (18, 20): 1, (19, 18): 1, (19, 19): u, (20, 19):
-        w, (21, 17): 1, (21, 21): u, (22, 10): 1, (22, 22): u, (23,
-        12): 1, (23, 23): u}]], [[{(0, 1): 1, (0, 2): -u/w, (1, 2):
-        1/w, (2, 0): 1, (2, 2): v/w, (3, 15): 1, (3, 17): -u/w, (3,
-        23): u*(u*v - w)/w**2, (4, 16): 1, (4, 18): -u/w, (4, 22): -v,
-        (4, 23): u*v/w, (5, 9): 1, (5, 10): -u/w, (5, 21): -u/w, (5,
-        22): -u**2/w, (5, 23): -u*v/w**2, (6, 13): 1, (6, 19): -u/w,
-        (6, 23): -v/w, (7, 11): 1, (7, 12): -u/w, (7, 21): -u*v/w, (7,
-        22): -u, (7, 23): -u*v**2/w**2, (8, 14): 1, (8, 20): -u/w, (8,
-        21): -v, (8, 23): -v**2/w, (9, 10): 1/w, (9, 22): u/w, (10,
-        5): 1, (10, 10): v/w, (10, 22): u*v/w, (11, 12): 1/w, (11,
-        23): u/w, (12, 7): 1, (12, 12): v/w, (12, 23): u*v/w, (13,
-        19): 1/w, (14, 20): 1/w, (15, 17): 1/w, (15, 21): u/w, (16,
-        18): 1/w, (17, 3): 1, (17, 17): v/w, (17, 21): u*v/w, (18, 4):
-        1, (18, 18): v/w, (18, 21): v, (19, 6): 1, (19, 19): v/w, (19,
-        22): v, (20, 8): 1, (20, 20): v/w, (20, 23): v, (21, 22): 1,
-        (21, 23): -u/w, (22, 23): 1/w, (23, 21): 1, (23, 23): v/w},
-        {(0, 3): 1, (0, 4): -u/w, (1, 5): 1, (1, 6): -u/w, (2, 7): 1,
-        (2, 8): -u/w, (3, 4): 1/w, (4, 0): 1, (4, 4): v/w, (5, 6):
-        1/w, (6, 1): 1, (6, 6): v/w, (7, 8): 1/w, (8, 2): 1, (8, 8):
-        v/w, (9, 11): 1/w, (10, 13): -u**2/w, (10, 16): -u/w, (10,
-        22): 1, (11, 11): v/w, (11, 15): 1, (12, 13): -u, (12, 23): 1,
-        (13, 12): 1/w, (13, 13): v/w, (14, 12): v/w, (14, 14): v/w,
-        (14, 17): 1, (15, 9): 1, (15, 11): -u/w, (16, 10): 1, (16,
-        12): -u/w, (16, 16): v/w, (17, 13): u*v/w, (17, 14): -u/w,
-        (17, 21): 1, (18, 19): 1, (18, 20): -u/w, (19, 20): 1/w, (20,
-        18): 1, (20, 20): v/w, (21, 13): -v/w, (21, 14): 1/w, (22,
-        13): u/w, (22, 16): 1/w, (23, 13): 1}]])
+    data[2] = (
+        [3],
+        [[{(0, 1): -v, (0, 2): 1, (1, 0): 1, (1, 1): u, (2, 1): w}]],
+        [[{(0, 1): 1, (0, 2): -u / w, (1, 2): 1 / w, (2, 0): 1, (2, 2): v / w}]],
+    )
+    data[3] = (
+        [24],
+        [
+            [
+                {
+                    (0, 1): -v,
+                    (0, 2): 1,
+                    (1, 0): 1,
+                    (1, 1): u,
+                    (2, 1): w,
+                    (3, 15): -v,
+                    (3, 17): 1,
+                    (4, 16): -v,
+                    (4, 18): 1,
+                    (4, 22): v**2,
+                    (4, 23): -v,
+                    (5, 9): -v,
+                    (5, 10): 1,
+                    (6, 13): -v,
+                    (6, 19): 1,
+                    (6, 21): -v,
+                    (6, 22): -u * v,
+                    (7, 11): -v,
+                    (7, 12): 1,
+                    (8, 14): -v,
+                    (8, 20): 1,
+                    (8, 22): -v * w,
+                    (9, 5): 1,
+                    (9, 9): u,
+                    (9, 23): u / w,
+                    (10, 9): w,
+                    (10, 21): -u,
+                    (10, 22): -(u**2),
+                    (11, 7): 1,
+                    (11, 11): u,
+                    (11, 21): u,
+                    (11, 23): u * v / w,
+                    (12, 11): w,
+                    (12, 22): -u * w,
+                    (13, 6): 1,
+                    (13, 13): u,
+                    (13, 22): v,
+                    (14, 8): 1,
+                    (14, 14): u,
+                    (14, 23): v,
+                    (15, 3): 1,
+                    (15, 15): u,
+                    (15, 22): u,
+                    (15, 23): -(u**2) / w,
+                    (16, 4): 1,
+                    (16, 16): u,
+                    (16, 21): v,
+                    (17, 15): w,
+                    (17, 22): u * v,
+                    (17, 23): -u,
+                    (18, 16): w,
+                    (19, 13): w,
+                    (20, 14): w,
+                    (21, 22): -v,
+                    (21, 23): 1,
+                    (22, 21): 1,
+                    (22, 22): u,
+                    (23, 22): w,
+                },
+                {
+                    (0, 3): -v,
+                    (0, 4): 1,
+                    (1, 5): -v,
+                    (1, 6): 1,
+                    (2, 7): -v,
+                    (2, 8): 1,
+                    (3, 0): 1,
+                    (3, 3): u,
+                    (4, 3): w,
+                    (5, 1): 1,
+                    (5, 5): u,
+                    (6, 5): w,
+                    (7, 2): 1,
+                    (7, 7): u,
+                    (8, 7): w,
+                    (9, 9): u,
+                    (9, 15): 1,
+                    (10, 13): u,
+                    (10, 16): 1,
+                    (10, 22): -v,
+                    (11, 9): w,
+                    (12, 13): w,
+                    (12, 23): -v,
+                    (13, 23): 1,
+                    (14, 21): w,
+                    (14, 23): v,
+                    (15, 9): -v,
+                    (15, 11): 1,
+                    (16, 22): w,
+                    (16, 23): -u,
+                    (17, 13): -v,
+                    (17, 14): 1,
+                    (17, 21): -v,
+                    (18, 19): -v,
+                    (18, 20): 1,
+                    (19, 18): 1,
+                    (19, 19): u,
+                    (20, 19): w,
+                    (21, 17): 1,
+                    (21, 21): u,
+                    (22, 10): 1,
+                    (22, 22): u,
+                    (23, 12): 1,
+                    (23, 23): u,
+                },
+            ]
+        ],
+        [
+            [
+                {
+                    (0, 1): 1,
+                    (0, 2): -u / w,
+                    (1, 2): 1 / w,
+                    (2, 0): 1,
+                    (2, 2): v / w,
+                    (3, 15): 1,
+                    (3, 17): -u / w,
+                    (3, 23): u * (u * v - w) / w**2,
+                    (4, 16): 1,
+                    (4, 18): -u / w,
+                    (4, 22): -v,
+                    (4, 23): u * v / w,
+                    (5, 9): 1,
+                    (5, 10): -u / w,
+                    (5, 21): -u / w,
+                    (5, 22): -(u**2) / w,
+                    (5, 23): -u * v / w**2,
+                    (6, 13): 1,
+                    (6, 19): -u / w,
+                    (6, 23): -v / w,
+                    (7, 11): 1,
+                    (7, 12): -u / w,
+                    (7, 21): -u * v / w,
+                    (7, 22): -u,
+                    (7, 23): -u * v**2 / w**2,
+                    (8, 14): 1,
+                    (8, 20): -u / w,
+                    (8, 21): -v,
+                    (8, 23): -(v**2) / w,
+                    (9, 10): 1 / w,
+                    (9, 22): u / w,
+                    (10, 5): 1,
+                    (10, 10): v / w,
+                    (10, 22): u * v / w,
+                    (11, 12): 1 / w,
+                    (11, 23): u / w,
+                    (12, 7): 1,
+                    (12, 12): v / w,
+                    (12, 23): u * v / w,
+                    (13, 19): 1 / w,
+                    (14, 20): 1 / w,
+                    (15, 17): 1 / w,
+                    (15, 21): u / w,
+                    (16, 18): 1 / w,
+                    (17, 3): 1,
+                    (17, 17): v / w,
+                    (17, 21): u * v / w,
+                    (18, 4): 1,
+                    (18, 18): v / w,
+                    (18, 21): v,
+                    (19, 6): 1,
+                    (19, 19): v / w,
+                    (19, 22): v,
+                    (20, 8): 1,
+                    (20, 20): v / w,
+                    (20, 23): v,
+                    (21, 22): 1,
+                    (21, 23): -u / w,
+                    (22, 23): 1 / w,
+                    (23, 21): 1,
+                    (23, 23): v / w,
+                },
+                {
+                    (0, 3): 1,
+                    (0, 4): -u / w,
+                    (1, 5): 1,
+                    (1, 6): -u / w,
+                    (2, 7): 1,
+                    (2, 8): -u / w,
+                    (3, 4): 1 / w,
+                    (4, 0): 1,
+                    (4, 4): v / w,
+                    (5, 6): 1 / w,
+                    (6, 1): 1,
+                    (6, 6): v / w,
+                    (7, 8): 1 / w,
+                    (8, 2): 1,
+                    (8, 8): v / w,
+                    (9, 11): 1 / w,
+                    (10, 13): -(u**2) / w,
+                    (10, 16): -u / w,
+                    (10, 22): 1,
+                    (11, 11): v / w,
+                    (11, 15): 1,
+                    (12, 13): -u,
+                    (12, 23): 1,
+                    (13, 12): 1 / w,
+                    (13, 13): v / w,
+                    (14, 12): v / w,
+                    (14, 14): v / w,
+                    (14, 17): 1,
+                    (15, 9): 1,
+                    (15, 11): -u / w,
+                    (16, 10): 1,
+                    (16, 12): -u / w,
+                    (16, 16): v / w,
+                    (17, 13): u * v / w,
+                    (17, 14): -u / w,
+                    (17, 21): 1,
+                    (18, 19): 1,
+                    (18, 20): -u / w,
+                    (19, 20): 1 / w,
+                    (20, 18): 1,
+                    (20, 20): v / w,
+                    (21, 13): -v / w,
+                    (21, 14): 1 / w,
+                    (22, 13): u / w,
+                    (22, 16): 1 / w,
+                    (23, 13): 1,
+                },
+            ]
+        ],
+    )
     return data[num_strands]
 
 
@@ -1513,14 +2285,62 @@ def read_markov(bas_ele, variables, num_strands=4):
     """
     u, v, w, s = variables
     data = {}
-    data[2] = {'U1': [0, s, 1/s], 'U2': [1, 0, 0]}
-    data[3] = {'U1': [0, 0, 0, 0, 0, s**2, 1, 1, 1/s**2, u*s**2 + w, 0, 0, (s**2 +
-        v)/w, (u*s**2 + w)/s**2, 0, s**2, 1, 1, 1/s**2, 0, (s**2 +
-        v)/(w*s**2), (u*s**2 + w)/s**2, s**2, 0], 'U2': [0, s, 1/s, s,
-        1/s, 0, 0, 0, 0, -v*s, s, s, (-u*s)/w, (-v)/s, 1/s, 0, 0, 0,
-        0, 1/s, (-u)/(w*s), (-v)/s, 0, 0], 'U3': [1, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 'K4': [0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 1]}
+    data[2] = {'U1': [0, s, 1 / s], 'U2': [1, 0, 0]}
+    data[3] = {
+        'U1': [
+            0,
+            0,
+            0,
+            0,
+            0,
+            s**2,
+            1,
+            1,
+            1 / s**2,
+            u * s**2 + w,
+            0,
+            0,
+            (s**2 + v) / w,
+            (u * s**2 + w) / s**2,
+            0,
+            s**2,
+            1,
+            1,
+            1 / s**2,
+            0,
+            (s**2 + v) / (w * s**2),
+            (u * s**2 + w) / s**2,
+            s**2,
+            0,
+        ],
+        'U2': [
+            0,
+            s,
+            1 / s,
+            s,
+            1 / s,
+            0,
+            0,
+            0,
+            0,
+            -v * s,
+            s,
+            s,
+            (-u * s) / w,
+            (-v) / s,
+            1 / s,
+            0,
+            0,
+            0,
+            0,
+            1 / s,
+            (-u) / (w * s),
+            (-v) / s,
+            0,
+            0,
+        ],
+        'U3': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        'K4': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    }
 
     return data[num_strands][bas_ele]

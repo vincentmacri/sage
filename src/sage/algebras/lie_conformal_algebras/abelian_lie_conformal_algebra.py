@@ -76,8 +76,10 @@ class AbelianLieConformalAlgebra(GradedLieConformalAlgebra):
         implement its own class to speed up arithmetics in this
         case.
     """
-    def __init__(self, R, ngens=1, weights=None,
-                 parity=None, names=None, index_set=None) -> None:
+
+    def __init__(
+        self, R, ngens=1, weights=None, parity=None, names=None, index_set=None
+    ) -> None:
         """
         Initialize ``self``.
 
@@ -90,15 +92,20 @@ class AbelianLieConformalAlgebra(GradedLieConformalAlgebra):
             names = 'a'
             self._latex_names = tuple(r'a_{%d}' % i for i in range(ngens))
 
-        names, index_set = standardize_names_index_set(names=names,
-                                                       index_set=index_set,
-                                                       ngens=ngens)
+        names, index_set = standardize_names_index_set(
+            names=names, index_set=index_set, ngens=ngens
+        )
         abeliandict = {}
 
-        GradedLieConformalAlgebra.__init__(self, R, abeliandict, names=names,
-                                           index_set=index_set,
-                                           weights=weights,
-                                           parity=parity)
+        GradedLieConformalAlgebra.__init__(
+            self,
+            R,
+            abeliandict,
+            names=names,
+            index_set=index_set,
+            weights=weights,
+            parity=parity,
+        )
 
     def _repr_(self) -> str:
         """
@@ -109,5 +116,6 @@ class AbelianLieConformalAlgebra(GradedLieConformalAlgebra):
             sage: lie_conformal_algebras.Abelian(QQ)
             The Abelian Lie conformal algebra with generators (a,) over Rational Field
         """
-        return "The Abelian Lie conformal algebra with generators {} over {}"\
-            .format(self.gens(), self.base_ring())
+        return "The Abelian Lie conformal algebra with generators {} over {}".format(
+            self.gens(), self.base_ring()
+        )

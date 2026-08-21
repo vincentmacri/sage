@@ -5,6 +5,7 @@ AUTHORS:
 
 - Chris Berg, Jeff Ferreira (2012-9): initial version
 """
+
 from collections import Counter
 from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
 from sage.sets.non_negative_integers import NonNegativeIntegers
@@ -50,6 +51,7 @@ class CompositionTableau(CombinatorialElement, metaclass=ClasscallMetaclass):
         sage: CompositionTableau([])
         []
     """
+
     @staticmethod
     def __classcall_private__(self, t):
         r"""
@@ -108,16 +110,18 @@ class CompositionTableau(CombinatorialElement, metaclass=ClasscallMetaclass):
         # Verify leftmost column strictly increases from top to bottom
         first_col = [row[0] for row in t if t != [[]]]
         if any(first_col[i] >= first_col[i + 1] for i in range(len(t) - 1)):
-            raise ValueError("leftmost column must strictly increase from top to bottom")
+            raise ValueError(
+                "leftmost column must strictly increase from top to bottom"
+            )
 
         # Verify triple condition
         l = len(t)
         m = max((len(r) for r in t), default=0)
-        TT = [row+[0]*(m-len(row)) for row in t]
+        TT = [row + [0] * (m - len(row)) for row in t]
         for i in range(l):
-            for j in range(i+1, l):
+            for j in range(i + 1, l):
                 for k in range(1, m):
-                    if TT[j][k] and TT[i][k] <= TT[j][k] <= TT[i][k-1]:
+                    if TT[j][k] and TT[i][k] <= TT[j][k] <= TT[i][k - 1]:
                         raise ValueError("triple condition must be satisfied")
 
         CombinatorialElement.__init__(self, parent, t)
@@ -134,8 +138,7 @@ class CompositionTableau(CombinatorialElement, metaclass=ClasscallMetaclass):
               3  2
               4  4
         """
-        return '\n'.join("".join("%3s" % str(x) for x in row)
-                         for row in self)
+        return '\n'.join("".join("%3s" % str(x) for x in row) for row in self)
 
     def __call__(self, *cell):
         r"""
@@ -338,6 +341,7 @@ class CompositionTableaux(UniqueRepresentation, Parent):
         sage: list(CT)
         [[]]
     """
+
     @staticmethod
     def __classcall_private__(cls, *args, **kwargs):
         r"""
@@ -417,10 +421,10 @@ class CompositionTableaux(UniqueRepresentation, Parent):
                 raise ValueError("max_entry must be positive")
 
         # Dispatch to appropriate class
-        if (shape is not None):
+        if shape is not None:
             return CompositionTableaux_shape(shape, max_entry)
 
-        if (size is not None):
+        if size is not None:
             return CompositionTableaux_size(size, max_entry)
 
         return CompositionTableaux_all(max_entry)
@@ -490,21 +494,25 @@ class CompositionTableaux(UniqueRepresentation, Parent):
 
         # leftmost column of T strictly increases from top to bottom
         first_col = [row[0] for row in T]
-        if any(first_col[i] >= first_col[i+1] for i in range(len(T)-1)):
+        if any(first_col[i] >= first_col[i + 1] for i in range(len(T) - 1)):
             return False
         # rows of T weakly decrease from left to right
         for row in T:
-            if any(row[i] < row[i+1] for i in range(len(row)-1)):
+            if any(row[i] < row[i + 1] for i in range(len(row) - 1)):
                 return False
         # for 1 <= i < j <= len(comp), for 2 <= k <= m,
         #   T[j,k] \neq 0 and T[j,k] >= T[i,k] ==> T[j,k] > T[i,k-1]
         l = len(T)
         m = max((len(r) for r in T), default=0)
-        TT = [row+[0]*(m-len(row)) for row in T]
+        TT = [row + [0] * (m - len(row)) for row in T]
         for i in range(l):
-            for j in range(i+1, l):
+            for j in range(i + 1, l):
                 for k in range(1, m):
-                    if TT[j][k] != 0 and TT[j][k] >= TT[i][k] and TT[j][k] <= TT[i][k-1]:
+                    if (
+                        TT[j][k] != 0
+                        and TT[j][k] >= TT[i][k]
+                        and TT[j][k] <= TT[i][k - 1]
+                    ):
                         return False
         return True
 
@@ -525,9 +533,9 @@ class CompositionTableaux_all(CompositionTableaux, DisjointUnionEnumeratedSets):
         """
         self.max_entry = max_entry
         CT_n = lambda n: CompositionTableaux_size(n, max_entry)
-        DisjointUnionEnumeratedSets.__init__(self,
-            Family(NonNegativeIntegers(), CT_n),
-            facade=True, keepkey=False)
+        DisjointUnionEnumeratedSets.__init__(
+            self, Family(NonNegativeIntegers(), CT_n), facade=True, keepkey=False
+        )
 
     def _repr_(self):
         r"""
@@ -579,8 +587,7 @@ class CompositionTableaux_size(CompositionTableaux):
         """
         if max_entry is None:
             max_entry = n
-        super().__init__(max_entry=max_entry,
-                         category=FiniteEnumeratedSets())
+        super().__init__(max_entry=max_entry, category=FiniteEnumeratedSets())
         self.size = n
 
     def __contains__(self, x):
@@ -592,7 +599,9 @@ class CompositionTableaux_size(CompositionTableaux):
             sage: [[1],[2,2]] in CompositionTableaux(4)
             False
         """
-        return CompositionTableaux.__contains__(self, x) and sum(map(len, x)) == self.size
+        return (
+            CompositionTableaux.__contains__(self, x) and sum(map(len, x)) == self.size
+        )
 
     def __iter__(self):
         r"""
@@ -633,7 +642,10 @@ class CompositionTableaux_size(CompositionTableaux):
             sage: CompositionTableaux(3)
             Composition Tableaux of size 3 and maximum entry 3
         """
-        return "Composition Tableaux of size %s and maximum entry %s" % (str(self.size), str(self.max_entry))
+        return "Composition Tableaux of size %s and maximum entry %s" % (
+            str(self.size),
+            str(self.max_entry),
+        )
 
     def _an_element_(self):
         r"""
@@ -665,6 +677,7 @@ class CompositionTableaux_shape(CompositionTableaux):
     - ``comp`` -- a composition
     - ``max_entry`` -- nonnegative integer (default: size of ``comp``)
     """
+
     def __init__(self, comp, max_entry=None):
         """
         Initialize ``self``.
@@ -679,8 +692,7 @@ class CompositionTableaux_shape(CompositionTableaux):
         """
         if max_entry is None:
             max_entry = sum(comp)
-        super().__init__(max_entry=max_entry,
-                         category=FiniteEnumeratedSets())
+        super().__init__(max_entry=max_entry, category=FiniteEnumeratedSets())
         self.shape = comp
 
     def __iter__(self):
@@ -718,7 +730,10 @@ class CompositionTableaux_shape(CompositionTableaux):
             sage: [[2],[3,2]] in CompositionTableaux([1,2])
             False
         """
-        return CompositionTableaux.__contains__(self, x) and [len(r) for r in x] == self.shape
+        return (
+            CompositionTableaux.__contains__(self, x)
+            and [len(r) for r in x] == self.shape
+        )
 
     def _repr_(self):
         r"""
@@ -729,7 +744,10 @@ class CompositionTableaux_shape(CompositionTableaux):
             sage: CompositionTableaux([1,2,1],max_entry=3)
             Composition tableaux of shape [1, 2, 1] and maximum entry 3
         """
-        return "Composition tableaux of shape %s and maximum entry %s" % (str(self.shape), str(self.max_entry))
+        return "Composition tableaux of shape %s and maximum entry %s" % (
+            str(self.shape),
+            str(self.max_entry),
+        )
 
     def _an_element_(self):
         r"""
@@ -779,7 +797,9 @@ class CompositionTableauxBacktracker(GenericBacktracker):
         starting_row = 0
         starting_col = 0
 
-        GenericBacktracker.__init__(self, self._initial_data, (starting_row, starting_col))
+        GenericBacktracker.__init__(
+            self, self._initial_data, (starting_row, starting_col)
+        )
 
     def _rec(self, obj, state):
         r"""
@@ -822,8 +842,11 @@ class CompositionTableauxBacktracker(GenericBacktracker):
             # We check to make sure that k does not violate the Triple Rule
             if j != 0 and i != 0 and any(k == obj_copy[m][j] for m in range(i)):
                 continue
-            if j != 0 and i != 0 and any(obj_copy[m][j] < k <= obj_copy[m][j - 1]
-                                         for m in range(i)):
+            if (
+                j != 0
+                and i != 0
+                and any(obj_copy[m][j] < k <= obj_copy[m][j - 1] for m in range(i))
+            ):
                 continue
 
             # Fill in the in the i,j box with k

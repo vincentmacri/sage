@@ -32,6 +32,7 @@ class msolve(Executable):
         sage: msolve().is_present()  # optional - msolve
         FeatureTestResult('msolve', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -40,8 +41,9 @@ class msolve(Executable):
             sage: isinstance(msolve(), msolve)
             True
         """
-        Executable.__init__(self, "msolve", executable='msolve',
-                            url='https://msolve.lip6.fr/')
+        Executable.__init__(
+            self, "msolve", executable='msolve', url='https://msolve.lip6.fr/'
+        )
 
     def is_functional(self):
         r"""
@@ -53,16 +55,15 @@ class msolve(Executable):
             sage: msolve().is_functional()  # optional - msolve
             FeatureTestResult('msolve', True)
         """
-        msolve_out = subprocess.run(["msolve", "-h"], capture_output=True,
-                                    check=False)
+        msolve_out = subprocess.run(["msolve", "-h"], capture_output=True, check=False)
 
-#        if msolve_out.returncode != 0:
-#            return FeatureTestResult(self, False, reason="msolve -h returned "
-#                                f"nonzero exit status {msolve_out.returncode}")
-        if (msolve_out.stdout[:45] !=
-              b'\nmsolve library for polynomial system solving'):
-            return FeatureTestResult(self, False,
-                                     reason="output of msolve -h not recognized")
+        #        if msolve_out.returncode != 0:
+        #            return FeatureTestResult(self, False, reason="msolve -h returned "
+        #                                f"nonzero exit status {msolve_out.returncode}")
+        if msolve_out.stdout[:45] != b'\nmsolve library for polynomial system solving':
+            return FeatureTestResult(
+                self, False, reason="output of msolve -h not recognized"
+            )
         return FeatureTestResult(self, True)
 
 

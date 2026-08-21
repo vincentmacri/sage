@@ -47,7 +47,6 @@ from . import sfa
 
 
 class SymmetricFunctionAlgebra_orthotriang(sfa.SymmetricFunctionAlgebra_generic):
-
     class Element(sfa.SymmetricFunctionAlgebra_generic.Element):
         pass
 
@@ -67,7 +66,9 @@ class SymmetricFunctionAlgebra_orthotriang(sfa.SymmetricFunctionAlgebra_generic)
             sage: B1 is B2
             True
         """
-        return super().__classcall__(cls, Sym, base, scalar, prefix, basis_name, leading_coeff)
+        return super().__classcall__(
+            cls, Sym, base, scalar, prefix, basis_name, leading_coeff
+        )
 
     def __init__(self, Sym, base, scalar, prefix, basis_name, leading_coeff):
         r"""
@@ -114,7 +115,9 @@ class SymmetricFunctionAlgebra_orthotriang(sfa.SymmetricFunctionAlgebra_generic)
         self._sf_base = base
         self._scalar = scalar
         self._leading_coeff = leading_coeff
-        sfa.SymmetricFunctionAlgebra_generic.__init__(self, Sym, prefix=prefix, basis_name=basis_name)
+        sfa.SymmetricFunctionAlgebra_generic.__init__(
+            self, Sym, prefix=prefix, basis_name=basis_name
+        )
 
         self._self_to_base_cache = {}
         self._base_to_self_cache = {}
@@ -213,13 +216,21 @@ class SymmetricFunctionAlgebra_orthotriang(sfa.SymmetricFunctionAlgebra_generic)
             return
         self._self_to_base_cache[n] = {}
 
-        self._gram_schmidt(n, self._sf_base, self._scalar,
-                           self._self_to_base_cache,
-                           leading_coeff=self._leading_coeff,
-                           upper_triangular=True)
-        self._invert_morphism(n, self.base_ring(), self._self_to_base_cache,
-                              self._base_to_self_cache,
-                              to_other_function=self._to_base)
+        self._gram_schmidt(
+            n,
+            self._sf_base,
+            self._scalar,
+            self._self_to_base_cache,
+            leading_coeff=self._leading_coeff,
+            upper_triangular=True,
+        )
+        self._invert_morphism(
+            n,
+            self.base_ring(),
+            self._self_to_base_cache,
+            self._base_to_self_cache,
+            to_other_function=self._to_base,
+        )
 
     def _to_base(self, part):
         r"""
@@ -300,6 +311,7 @@ class OrthotriangBasisFunctor(SymmetricFunctionsFunctor):
         sage: s.construction()
         (SymmetricFunctionsFunctor[Schur], Rational Field)
     """
+
     def __init__(self, basis):
         r"""
         Initialize the functor.
@@ -341,12 +353,22 @@ class OrthotriangBasisFunctor(SymmetricFunctionsFunctor):
             Symmetric Functions over Algebraic Field in the Schur functions basis
         """
         from sage.combinat.sf.sf import SymmetricFunctions
-        return self._basis(SymmetricFunctions(R), self._sf_base.change_ring(R),
-                           self._scalar, self._prefix, self._basis_name,
-                           self._leading_coeff)
+
+        return self._basis(
+            SymmetricFunctions(R),
+            self._sf_base.change_ring(R),
+            self._scalar,
+            self._prefix,
+            self._basis_name,
+            self._leading_coeff,
+        )
 
 
 # Backward compatibility for unpickling
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.combinat.sf.orthotriang', 'SymmetricFunctionAlgebraElement_orthotriang', SymmetricFunctionAlgebra_orthotriang.Element)
+register_unpickle_override(
+    'sage.combinat.sf.orthotriang',
+    'SymmetricFunctionAlgebraElement_orthotriang',
+    SymmetricFunctionAlgebra_orthotriang.Element,
+)

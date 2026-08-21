@@ -72,9 +72,12 @@ class Monoids(CategoryWithAxiom):
         sage: R.submonoid([R.one()]).list()                                             # needs sage.combinat
         [1]
     """
+
     _base_category_class_and_axiom = (Semigroups, "Unital")
 
-    Finite = LazyImport('sage.categories.finite_monoids', 'FiniteMonoids', at_startup=True)
+    Finite = LazyImport(
+        'sage.categories.finite_monoids', 'FiniteMonoids', at_startup=True
+    )
     Inverse = LazyImport('sage.categories.groups', 'Groups', at_startup=True)
 
     @staticmethod
@@ -108,6 +111,7 @@ class Monoids(CategoryWithAxiom):
         if names is not None:
             if isinstance(names, str):
                 from sage.rings.integer_ring import ZZ
+
                 if ',' not in names and index_set in ZZ:
                     names = [names + repr(i) for i in range(index_set)]
                 else:
@@ -117,10 +121,10 @@ class Monoids(CategoryWithAxiom):
                 index_set = names
 
         from sage.monoids.indexed_free_monoid import IndexedFreeMonoid
+
         return IndexedFreeMonoid(index_set, names=names, **kwds)
 
     class ParentMethods:
-
         def semigroup_generators(self):
             """
             Return the generators of ``self`` as a semigroup.
@@ -136,9 +140,13 @@ class Monoids(CategoryWithAxiom):
             """
             G = self.monoid_generators()
             from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+
             if G not in FiniteEnumeratedSets():
-                raise NotImplementedError("currently only implemented for finitely generated monoids")
+                raise NotImplementedError(
+                    "currently only implemented for finitely generated monoids"
+                )
             from sage.sets.family import Family
+
             return Family((self.one(),) + tuple(G))
 
         def prod(self, args):
@@ -159,6 +167,7 @@ class Monoids(CategoryWithAxiom):
                 'ab'
             """
             from sage.misc.misc_c import prod
+
             return prod(args, self.one())
 
         def _test_prod(self, **options):
@@ -394,6 +403,7 @@ class Monoids(CategoryWithAxiom):
 
         A monoid `M` is *commutative* if `xy = yx` for all `x,y \in M`.
         """
+
         @staticmethod
         def free(index_set=None, names=None, **kwds):
             r"""
@@ -425,6 +435,7 @@ class Monoids(CategoryWithAxiom):
             if names is not None:
                 if isinstance(names, str):
                     from sage.rings.integer_ring import ZZ
+
                     if ',' not in names and index_set in ZZ:
                         names = [names + repr(i) for i in range(index_set)]
                     else:
@@ -434,12 +445,11 @@ class Monoids(CategoryWithAxiom):
                     index_set = names
 
             from sage.monoids.indexed_free_monoid import IndexedFreeAbelianMonoid
+
             return IndexedFreeAbelianMonoid(index_set, names=names, **kwds)
 
     class WithRealizations(WithRealizationsCategory):
-
         class ParentMethods:
-
             def one(self):
                 r"""
                 Return the unit of this monoid.
@@ -466,9 +476,7 @@ class Monoids(CategoryWithAxiom):
                 return self.a_realization().one()
 
     class Subquotients(SubquotientsCategory):
-
         class ParentMethods:
-
             def one(self):
                 """
                 Return the multiplicative unit of this monoid,
@@ -482,7 +490,6 @@ class Monoids(CategoryWithAxiom):
                 return self.retract(self.ambient().one())
 
     class Algebras(AlgebrasCategory):
-
         def extra_super_categories(self):
             """
             The algebra of a monoid is a bialgebra and a monoid.
@@ -499,10 +506,10 @@ class Monoids(CategoryWithAxiom):
                  Category of unital magma algebras over Rational Field]
             """
             from sage.categories.bialgebras import Bialgebras
+
             return [Bialgebras(self.base_ring()), Monoids()]
 
         class ParentMethods:
-
             def is_field(self, proof=True) -> bool:
                 r"""
                 Return ``True`` if ``self`` is a field.
@@ -600,7 +607,6 @@ class Monoids(CategoryWithAxiom):
                 return generators.map(self.monomial)
 
         class ElementMethods:
-
             def is_central(self) -> bool:
                 r"""
                 Return whether the element ``self`` is central.
@@ -619,8 +625,9 @@ class Monoids(CategoryWithAxiom):
                     sage: sum(A.basis()).is_central()                                   # needs sage.groups sage.modules
                     True
                 """
-                return all(i * self == self * i
-                           for i in self.parent().algebra_generators())
+                return all(
+                    i * self == self * i for i in self.parent().algebra_generators()
+                )
 
     class CartesianProducts(CartesianProductsCategory):
         """
@@ -629,6 +636,7 @@ class Monoids(CategoryWithAxiom):
         This construction gives the direct product of monoids. See
         :wikipedia:`Direct_product` for more information.
         """
+
         def extra_super_categories(self):
             """
             A Cartesian product of monoids is endowed with a natural
@@ -677,24 +685,34 @@ class Monoids(CategoryWithAxiom):
                     cur = list(ids)
                     cur[i] = gen
                     return self._cartesian_product_of_elements(cur)
+
                 from sage.sets.family import Family
 
                 # Finitely generated
                 cat = FiniteEnumeratedSets()
-                if all(M.monoid_generators() in cat or
-                       isinstance(M.monoid_generators(), (tuple, list))
-                       for M in F):
-                    ret = [lift(i, gen) for i, M in enumerate(F)
-                           for gen in M.monoid_generators()]
+                if all(
+                    M.monoid_generators() in cat
+                    or isinstance(M.monoid_generators(), (tuple, list))
+                    for M in F
+                ):
+                    ret = [
+                        lift(i, gen)
+                        for i, M in enumerate(F)
+                        for gen in M.monoid_generators()
+                    ]
                     return Family(ret)
 
                 # Infinitely generated
                 # This does not return a good output, but it is "correct"
                 # TODO: Figure out a better way to do things
                 from sage.categories.cartesian_product import cartesian_product
-                gens_prod = cartesian_product([Family(M.monoid_generators(),
-                                                      lambda g: (i, g))
-                                               for i, M in enumerate(F)])
+
+                gens_prod = cartesian_product(
+                    [
+                        Family(M.monoid_generators(), lambda g: (i, g))
+                        for i, M in enumerate(F)
+                    ]
+                )
                 return Family(gens_prod, lift, name='gen')
 
         class ElementMethods:
@@ -712,10 +730,12 @@ class Monoids(CategoryWithAxiom):
                     12
                 """
                 from sage.rings.infinity import Infinity
+
                 orders = [x.multiplicative_order() for x in self.cartesian_factors()]
                 if any(o is Infinity for o in orders):
                     return Infinity
                 from sage.arith.functions import LCM_list
+
                 return LCM_list(orders)
 
             def __invert__(self):

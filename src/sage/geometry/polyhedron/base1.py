@@ -107,16 +107,20 @@ class Polyhedron_base1(Polyhedron_base0, ConvexSet_closed):
             True
         """
         # TODO: find something better *but* fast
-        return hash((self.dim(),
-                     self.ambient_dim(),
-                     self.n_Hrepresentation(),
-                     self.n_Vrepresentation(),
-                     self.n_equations(),
-                     self.n_facets(),
-                     self.n_inequalities(),
-                     self.n_lines(),
-                     self.n_rays(),
-                     self.n_vertices()))
+        return hash(
+            (
+                self.dim(),
+                self.ambient_dim(),
+                self.n_Hrepresentation(),
+                self.n_Vrepresentation(),
+                self.n_equations(),
+                self.n_facets(),
+                self.n_inequalities(),
+                self.n_lines(),
+                self.n_rays(),
+                self.n_vertices(),
+            )
+        )
 
     def _repr_(self):
         """
@@ -253,9 +257,11 @@ class Polyhedron_base1(Polyhedron_base0, ConvexSet_closed):
             sage: Q._is_subpolyhedron(P)
             True
         """
-        return all(other_H.contains(self_V)
-                   for other_H in other.Hrepresentation()
-                   for self_V in self.Vrepresentation())
+        return all(
+            other_H.contains(self_V)
+            for other_H in other.Hrepresentation()
+            for self_V in self.Vrepresentation()
+        )
 
     def is_empty(self):
         """
@@ -332,7 +338,7 @@ class Polyhedron_base1(Polyhedron_base0, ConvexSet_closed):
             -1
         """
         if self.n_Vrepresentation() == 0:
-            return -1   # the empty set
+            return -1  # the empty set
         return self.ambient_dim() - self.n_equations()
 
     dimension = dim
@@ -470,7 +476,7 @@ class Polyhedron_base1(Polyhedron_base0, ConvexSet_closed):
                 basis_indices.extend(face[:])
                 continue
 
-            prev_face = chain_indices[dim-1]
+            prev_face = chain_indices[dim - 1]
             for i in range(len(prev_face)):
                 if prev_face[i] != face[i]:
                     # We found a Vrep that ``face`` has, but its facet does not.
@@ -487,8 +493,10 @@ class Polyhedron_base1(Polyhedron_base0, ConvexSet_closed):
         for vrep in Vreps:
             if vrep.is_vertex():
                 vertex = vrep
-        return [vrep if vrep.is_vertex() else vertex.vector() + vrep.vector()
-                for vrep in Vreps]
+        return [
+            vrep if vrep.is_vertex() else vertex.vector() + vrep.vector()
+            for vrep in Vreps
+        ]
 
     @abstract_method
     def a_maximal_chain(self):
@@ -533,7 +541,7 @@ class Polyhedron_base1(Polyhedron_base0, ConvexSet_closed):
             sage: Polyhedron(vertices=[(3,2)]).representative_point()
             (3, 2)
         """
-        accumulator = vector(self.base_ring(), [0]*self.ambient_dim())
+        accumulator = vector(self.base_ring(), [0] * self.ambient_dim())
         for v in self.vertex_generator():
             accumulator += v.vector()
         accumulator /= self.n_vertices()

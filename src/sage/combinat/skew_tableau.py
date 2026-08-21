@@ -54,8 +54,7 @@ lazy_import('sage.matrix.special', 'zero_matrix')
 lazy_import('sage.groups.perm_gps.permgroup', 'PermutationGroup')
 
 
-class SkewTableau(ClonableList,
-                  metaclass=InheritComparisonClasscallMetaclass):
+class SkewTableau(ClonableList, metaclass=InheritComparisonClasscallMetaclass):
     r"""
     A skew tableau.
 
@@ -84,6 +83,7 @@ class SkewTableau(ClonableList,
         sage: SkewTableau(chain=[[2], [2, 1], [3, 1], [4, 3, 2, 1]])
         [[None, None, 2, 3], [1, 3, 3], [3, 3], [3]]
     """
+
     @staticmethod
     def __classcall_private__(cls, st=None, expr=None, chain=None):
         """
@@ -282,8 +282,10 @@ class SkewTableau(ClonableList,
               .  4
               5
         """
+
         def none_str(x):
             return "  ." if x is None else "%3s" % str(x)
+
         if self.parent().options('convention') == "French":
             new_rows = ["".join(map(none_str, row)) for row in reversed(self)]
         else:
@@ -306,6 +308,7 @@ class SkewTableau(ClonableList,
 
         def str_rep(x):
             return '%s' % x if x is not None else '.'
+
         return '/'.join(','.join(str_rep(r) for r in row) for row in self)
 
     def pp(self):
@@ -335,6 +338,7 @@ class SkewTableau(ClonableList,
             [   5      ,   4  5    ]
         """
         from sage.typeset.ascii_art import AsciiArt
+
         return AsciiArt(self._repr_diagram().splitlines())
 
     def _unicode_art_(self):
@@ -359,6 +363,7 @@ class SkewTableau(ClonableList,
         """
         from sage.combinat.output import ascii_art_table
         from sage.typeset.unicode_art import UnicodeArt
+
         return UnicodeArt(ascii_art_table(self, use_unicode=True).splitlines())
 
     def _latex_(self):
@@ -377,6 +382,7 @@ class SkewTableau(ClonableList,
             }
         """
         from sage.combinat.output import tex_from_array
+
         return tex_from_array(self)
 
     def outer_shape(self):
@@ -556,6 +562,7 @@ class SkewTableau(ClonableList,
             []
         """
         from sage.combinat.permutation import Permutation
+
         perm = [i for row in reversed(self) for i in row if i is not None]
         return Permutation(perm)
 
@@ -671,8 +678,9 @@ class SkewTableau(ClonableList,
 
         # Is it weakly increasing along the rows?
         for row in self:
-            if any(row[c] is not None and row[c] > row[c + 1]
-                   for c in range(len(row) - 1)):
+            if any(
+                row[c] is not None and row[c] > row[c + 1] for c in range(len(row) - 1)
+            ):
                 return False
 
         # Is it strictly increasing down columns?
@@ -696,6 +704,7 @@ class SkewTableau(ClonableList,
         if self.inner_size() != 0:
             raise ValueError("the inner size of the skew tableau must be 0")
         from sage.combinat.tableau import Tableau
+
         return Tableau(self[:])
 
     def restrict(self, n):
@@ -754,6 +763,7 @@ class SkewTableau(ClonableList,
             [4, 3, 1]
         """
         from sage.combinat.partition import _Partitions
+
         one = ZZ.one()
         res = [sum(one for y in row if y is None or y <= n) for row in self]
         return _Partitions(res)
@@ -1006,8 +1016,7 @@ class SkewTableau(ClonableList,
         outer_outisde_corners = self.outer_shape().outside_corners()
         if corner is not None:
             if tuple(corner) not in outer_outisde_corners:
-                raise ValueError("corner must be an outside corner"
-                                 " of the outer shape")
+                raise ValueError("corner must be an outside corner of the outer shape")
         else:
             if not outer_outisde_corners:
                 return self
@@ -1026,14 +1035,14 @@ class SkewTableau(ClonableList,
             # get the value of the cell above the temporarily empty cell (if
             # it exists)
             if i > 0:
-                P_up = new_st[i-1][j]
+                P_up = new_st[i - 1][j]
             else:
                 P_up = -1  # a dummy value less than all positive numbers
 
             # get the value of the cell to the left of the temp. empty cell
             # (if it exists)
             if j > 0:
-                P_left = new_st[i][j-1]
+                P_left = new_st[i][j - 1]
             else:
                 P_left = -1  # a dummy value less than all positive numbers
 
@@ -1100,7 +1109,7 @@ class SkewTableau(ClonableList,
         if algorithm is None:
             la = self.outer_shape()
             la_size = la.size()
-            if mu_size ** 2 < len(la) * (la_size - mu_size):
+            if mu_size**2 < len(la) * (la_size - mu_size):
                 algorithm = 'jdt'
             else:
                 algorithm = 'schensted'
@@ -1110,8 +1119,7 @@ class SkewTableau(ClonableList,
             for _ in range(mu_size):
                 rect = rect.slide()
         elif algorithm == 'schensted':
-            w = [x for row in reversed(self) for x in row
-                 if x is not None]
+            w = [x for row in reversed(self) for x in row if x is not None]
             rect = Tableau([]).insert_word(w)
         else:
             raise ValueError("algorithm must be 'jdt', 'schensted', or None")
@@ -1209,25 +1217,31 @@ class SkewTableau(ClonableList,
         except IndexError:
             if r > len(tab):
                 if c < len(tab[-1]) and tab[-1][c] is None:
-                    tab += [[None]*(c+1) for i in range(r - len(tab))]
-                    tab.append([None]*(c) + [m])
+                    tab += [[None] * (c + 1) for i in range(r - len(tab))]
+                    tab.append([None] * (c) + [m])
                 else:
-                    raise IndexError('%s is not an addable cell of the tableau' % ((r, c),))
+                    raise IndexError(
+                        '%s is not an addable cell of the tableau' % ((r, c),)
+                    )
             elif r == len(tab):
                 # a cell in the row directly below tab is addable if and only if
                 # c = 0 or the cell directly northwest is empty
                 if c == 0:
                     tab.append([m])
-                elif c < len(tab[-1]) and tab[-1][c-1] is None:
-                    tab.append([None]*(c) + [m])
+                elif c < len(tab[-1]) and tab[-1][c - 1] is None:
+                    tab.append([None] * (c) + [m])
                 else:
-                    raise IndexError('%s is not an addable cell of the tableau' % ((r, c),))
+                    raise IndexError(
+                        '%s is not an addable cell of the tableau' % ((r, c),)
+                    )
             else:
                 tab_r = tab[r]
-                if c == len(tab_r) and (r == 0 or len(tab_r) < len(tab[r-1])):
+                if c == len(tab_r) and (r == 0 or len(tab_r) < len(tab[r - 1])):
                     tab_r.append(m)
                 else:
-                    raise IndexError('%s is not an addable cell of the tableau' % ((r, c),))
+                    raise IndexError(
+                        '%s is not an addable cell of the tableau' % ((r, c),)
+                    )
 
         # attempt to return a skew tableau of the same type as self
         if tab in self.parent():
@@ -1313,10 +1327,12 @@ class SkewTableau(ClonableList,
         # tableau, by including the identity permutation on the set [1..k].
         k = self.size()
         gens = [list(range(1, k + 1))]
-        gens.extend((row[j], row[j + 1])
-                    for row in self
-                    for j in range(len(row) - 1)
-                    if row[j] is not None)
+        gens.extend(
+            (row[j], row[j + 1])
+            for row in self
+            for j in range(len(row) - 1)
+            if row[j] is not None
+        )
         return PermutationGroup(gens)
 
     def column_stabilizer(self):
@@ -1346,7 +1362,7 @@ class SkewTableau(ClonableList,
         while ell > 1:
             ell -= 1
             for i, val in enumerate(self[ell]):
-                top_neighbor = self[ell-1][i]
+                top_neighbor = self[ell - 1][i]
                 if top_neighbor is not None:
                     gens.append((val, top_neighbor))
         return PermutationGroup(gens)
@@ -1527,7 +1543,9 @@ class SkewTableau(ClonableList,
         if check and not self.is_semistandard():
             raise ValueError("the skew tableau must be semistandard")
         # This should be a SkewStandardTableau
-        return StandardSkewTableaux().from_shape_and_word(self.shape(), self.to_word_by_row().standard_permutation())
+        return StandardSkewTableaux().from_shape_and_word(
+            self.shape(), self.to_word_by_row().standard_permutation()
+        )
 
     def bender_knuth_involution(self, k, rows=None, check=True):
         r"""
@@ -1649,7 +1667,7 @@ class SkewTableau(ClonableList,
         """
         if check and not self.is_semistandard():
             raise ValueError("the skew tableau must be semistandard")
-        l = len(self)    # l is the number of rows of self.
+        l = len(self)  # l is the number of rows of self.
         # Sanitizing the rows input so that it always becomes a list of
         # nonnegative integers. We also subtract 1 from these integers
         # because the i-th row of a tableau T is T[i - 1].
@@ -1675,7 +1693,9 @@ class SkewTableau(ClonableList,
             if i == l - 1:
                 next_row = [None] * len(result_tab[i])
             else:
-                next_row = result_tab[i + 1] + [None] * (len(result_tab[i]) - len(result_tab[i + 1]))
+                next_row = result_tab[i + 1] + [None] * (
+                    len(result_tab[i]) - len(result_tab[i + 1])
+                )
             a = 0
             b = 0
             sk = None  # The first entry of k
@@ -1831,6 +1851,7 @@ class SkewTableau(ClonableList,
         if check_input and not self.is_ribbon():
             raise ValueError("self must be a ribbon")
         from sage.combinat.ribbon_shaped_tableau import RibbonShapedTableau
+
         r = [[i for i in row if i is not None] for row in self]
         return RibbonShapedTableau(r)
 
@@ -1916,10 +1937,12 @@ class SkewTableau(ClonableList,
             sage: s.cells()
             [(0, 1), (0, 2), (1, 0), (2, 0)]
         """
-        return [(i, j)
-                for i, selfi in enumerate(self)
-                for j in range(len(selfi))
-                if selfi[j] is not None]
+        return [
+            (i, j)
+            for i, selfi in enumerate(self)
+            for j in range(len(selfi))
+            if selfi[j] is not None
+        ]
 
     def cells_containing(self, i):
         r"""
@@ -1978,8 +2001,7 @@ class SkewTableau(ClonableList,
         """
         shapes = self.to_chain()
         kshapes = [la.k_conjugate(k) for la in shapes]
-        return all(kshapes[i + 1].contains(kshapes[i])
-                   for i in range(len(shapes) - 1))
+        return all(kshapes[i + 1].contains(kshapes[i]) for i in range(len(shapes) - 1))
 
 
 def _label_skew(list_of_cells, sk):
@@ -2088,8 +2110,7 @@ class SkewTableaux(UniqueRepresentation, Parent):
         outer = expr[1]
         inner = expr[0] + [0] * (len(outer) - len(expr[0]))
 
-        skp = [[None] * (inner[i]) + outer[-(i + 1)]
-               for i in range(len(outer))]
+        skp = [[None] * (inner[i]) + outer[-(i + 1)] for i in range(len(outer))]
 
         return self.element_class(self, skp)
 
@@ -2103,7 +2124,7 @@ class SkewTableaux(UniqueRepresentation, Parent):
             [[None, 1, 2], [None, 3, 4], [5]]
         """
         shape = chain[-1]
-        T = [[None]*r for r in shape]
+        T = [[None] * r for r in shape]
         for i in range(1, len(chain)):
             la = chain[i]
             mu = chain[i - 1]
@@ -2174,6 +2195,7 @@ class StandardSkewTableaux(SkewTableaux):
          [[None, 1, 3], [None, 2], [4]],
          [[None, 2, 4], [None, 3], [1]]]
     """
+
     @staticmethod
     def __classcall_private__(cls, skp=None):
         """
@@ -2341,6 +2363,7 @@ class StandardSkewTableaux_shape(StandardSkewTableaux):
     r"""
     Standard skew tableaux of a fixed skew shape `\lambda / \mu`.
     """
+
     @staticmethod
     def __classcall_private__(cls, skp):
         """
@@ -2531,6 +2554,7 @@ class SemistandardSkewTableaux(SkewTableaux):
             sage: SkewTableau([[None]]) in SemistandardSkewTableaux(2)
             True
     """
+
     @staticmethod
     def __classcall_private__(cls, p=None, mu=None, max_entry=None):
         """
@@ -2701,7 +2725,10 @@ class SemistandardSkewTableaux_size(SemistandardSkewTableaux):
             sage: SemistandardSkewTableaux(3, max_entry=8)
             Semistandard skew tableaux of size 3 and maximum entry 8
         """
-        return "Semistandard skew tableaux of size %s and maximum entry %s" % (repr(self.n), repr(self.max_entry))
+        return "Semistandard skew tableaux of size %s and maximum entry %s" % (
+            repr(self.n),
+            repr(self.max_entry),
+        )
 
     def cardinality(self):
         """
@@ -2738,6 +2765,7 @@ class SemistandardSkewTableaux_size_weight(SemistandardSkewTableaux):
     r"""
     Class of semistandard tableaux of a fixed size `n` and weight `\mu`.
     """
+
     @staticmethod
     def __classcall_private__(cls, n, mu):
         """
@@ -2770,7 +2798,10 @@ class SemistandardSkewTableaux_size_weight(SemistandardSkewTableaux):
             sage: SemistandardSkewTableaux(3,[2,1])
             Semistandard skew tableaux of size 3 and weight [2, 1]
         """
-        return "Semistandard skew tableaux of size %s and weight %s" % (repr(self.n), list(self.mu))
+        return "Semistandard skew tableaux of size %s and weight %s" % (
+            repr(self.n),
+            list(self.mu),
+        )
 
     def cardinality(self):
         """
@@ -2816,6 +2847,7 @@ class SemistandardSkewTableaux_shape(SemistandardSkewTableaux):
         Input is not checked; please use :class:`SemistandardSkewTableaux` to
         ensure the options are properly parsed.
     """
+
     @staticmethod
     def __classcall_private__(cls, p, max_entry=None):
         """
@@ -2852,7 +2884,10 @@ class SemistandardSkewTableaux_shape(SemistandardSkewTableaux):
             sage: SemistandardSkewTableaux([[2,1],[]])
             Semistandard skew tableaux of shape [2, 1] / [] and maximum entry 3
         """
-        return "Semistandard skew tableaux of shape %s and maximum entry %s" % (repr(self.p), repr(self.max_entry))
+        return "Semistandard skew tableaux of shape %s and maximum entry %s" % (
+            repr(self.p),
+            repr(self.max_entry),
+        )
 
     def cardinality(self):
         """
@@ -2895,6 +2930,7 @@ class SemistandardSkewTableaux_shape_weight(SemistandardSkewTableaux):
     Class of semistandard skew tableaux of a fixed skew shape `\lambda / \nu`
     and weight `\mu`.
     """
+
     @staticmethod
     def __classcall_private__(cls, p, mu):
         """
@@ -2931,7 +2967,10 @@ class SemistandardSkewTableaux_shape_weight(SemistandardSkewTableaux):
             sage: SemistandardSkewTableaux([[2,1],[]],[2,1])
             Semistandard skew tableaux of shape [2, 1] / [] and weight [2, 1]
         """
-        return "Semistandard skew tableaux of shape %s and weight %s" % (repr(self.p), list(self.mu))
+        return "Semistandard skew tableaux of shape %s and weight %s" % (
+            repr(self.p),
+            list(self.mu),
+        )
 
     def __iter__(self):
         """
@@ -2943,5 +2982,6 @@ class SemistandardSkewTableaux_shape_weight(SemistandardSkewTableaux):
             [[[1, 1], [2]]]
         """
         from .ribbon_tableau import RibbonTableaux_shape_weight_length
+
         for x in RibbonTableaux_shape_weight_length(self.p, self.mu, 1):
             yield self.element_class(self, x)

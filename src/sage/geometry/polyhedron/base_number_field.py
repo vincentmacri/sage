@@ -41,18 +41,20 @@ def _number_field_elements_from_algebraics_list_of_lists_of_lists(listss, **kwds
         [[[-a^3 + 3*a], [1]], [[a^2 - 2]], [[1], []]]
     """
     from sage.rings.qqbar import number_field_elements_from_algebraics
+
     numbers = []
     for lists in listss:
         for list in lists:
             numbers.extend(list)
     K, K_numbers, hom = number_field_elements_from_algebraics(numbers, **kwds)
     g = iter(K_numbers)
-    return K, [ [ [ next(g) for _ in list ] for list in lists ] for lists in listss ], hom
+    return K, [[[next(g) for _ in list] for list in lists] for lists in listss], hom
 
 
 class Polyhedron_base_number_field(Polyhedron_base):
-
-    def _compute_data_lists_and_internal_base_ring(self, data_lists, convert_QQ, convert_NF):
+    def _compute_data_lists_and_internal_base_ring(
+        self, data_lists, convert_QQ, convert_NF
+    ):
         r"""
         Compute data lists in Normaliz or ``number_field`` backend format and the internal base ring of the data.
 
@@ -109,13 +111,22 @@ class Polyhedron_base_number_field(Polyhedron_base):
             internal_data_lists = convert_NF(*data_lists)
             if self.base_ring() in NumberFields():
                 if not RDF.has_coerce_map_from(self.base_ring()):
-                    raise ValueError("invalid base ring: {} is a number field that is not real embedded".format(self.base_ring()))
+                    raise ValueError(
+                        "invalid base ring: {} is a number field that is not real embedded".format(
+                            self.base_ring()
+                        )
+                    )
                 internal_base_ring = self.base_ring()
             else:
-                K, internal_data_lists, hom = _number_field_elements_from_algebraics_list_of_lists_of_lists(internal_data_lists, embedded=True)
+                K, internal_data_lists, hom = (
+                    _number_field_elements_from_algebraics_list_of_lists_of_lists(
+                        internal_data_lists, embedded=True
+                    )
+                )
                 internal_base_ring = K
                 if K is QQ:
                     # Compute it with Normaliz, not QNormaliz
-                    internal_data_lists = convert_QQ(*[ [ [ QQ(x) for x in v ] for v in l]
-                                                   for l in data_lists ])
+                    internal_data_lists = convert_QQ(
+                        *[[[QQ(x) for x in v] for v in l] for l in data_lists]
+                    )
         return internal_data_lists, internal_base_ring

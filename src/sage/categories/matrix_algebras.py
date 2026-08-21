@@ -1,14 +1,14 @@
 r"""
 Matrix algebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.algebras import Algebras
 from sage.categories.category_types import Category_over_base_ring

@@ -38,6 +38,7 @@ class BarChart(GraphicPrimitive):
         sage: type(g)
         <class 'sage.plot.bar_chart.BarChart'>
     """
+
     def __init__(self, ind, datalist, options):
         """
         Initialize a ``BarChart`` primitive.
@@ -80,11 +81,13 @@ class BarChart(GraphicPrimitive):
             sage: list(sorted(g._allowed_options().items()))
             [('hue', 'The color given as a hue.'), ('legend_label', 'The label for this item in the legend.'), ('rgbcolor', 'The color as an RGB tuple.'), ('width', 'The width of the bars'), ('zorder', 'The layer level in which to draw')]
         """
-        return {'rgbcolor': 'The color as an RGB tuple.',
-                'hue': 'The color given as a hue.',
-                'legend_label': 'The label for this item in the legend.',
-                'width': 'The width of the bars',
-                'zorder': 'The layer level in which to draw'}
+        return {
+            'rgbcolor': 'The color as an RGB tuple.',
+            'hue': 'The color given as a hue.',
+            'legend_label': 'The label for this item in the legend.',
+            'width': 'The width of the bars',
+            'zorder': 'The layer level in which to draw',
+        }
 
     def _repr_(self):
         """
@@ -118,11 +121,17 @@ class BarChart(GraphicPrimitive):
         # it is critical to make NumPy arrays of type float below,
         # or bar will go boom:
         import numpy
+
         ind = numpy.array(self.ind, dtype=float)
         datalist = numpy.array(self.datalist, dtype=float)
-        subplot.bar(ind, datalist, color=color, width=width,
-                    label=options['legend_label'],
-                    zorder=options.get('zorder', None))
+        subplot.bar(
+            ind,
+            datalist,
+            color=color,
+            width=width,
+            label=options['legend_label'],
+            zorder=options.get('zorder', None),
+        )
 
 
 @rename_keyword(color='rgbcolor')
@@ -191,9 +200,9 @@ def bar_chart(datalist, **options):
     # bardata = []
     # cnt = 1
     # for pnts in datalist:
-        # ind = [i+cnt/dl for i in range(len(pnts))]
-        # bardata.append([ind, pnts, xrange, yrange])
-        # cnt += 1
+    # ind = [i+cnt/dl for i in range(len(pnts))]
+    # bardata.append([ind, pnts, xrange, yrange])
+    # cnt += 1
 
     g = Graphics()
     g._set_extra_kwds(Graphics._extract_kwds_for_show(options))

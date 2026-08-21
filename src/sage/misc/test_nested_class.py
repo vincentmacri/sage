@@ -62,6 +62,7 @@ class TestParent1(Parent):
             <sage.misc.test_nested_class.TestParent1_with_category object at ...>
         """
         from sage.categories.sets_cat import Sets
+
         Parent.__init__(self, category=Sets())
 
     class Element(ElementWrapper):
@@ -79,6 +80,7 @@ class TestParent2(Parent, metaclass=NestedClassMetaclass):
             TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases
         """
         from sage.categories.sets_cat import Sets
+
         Parent.__init__(self, category=Sets())
 
     class Element(ElementWrapper):
@@ -86,7 +88,6 @@ class TestParent2(Parent, metaclass=NestedClassMetaclass):
 
 
 class TestParent3(UniqueRepresentation, Parent):
-
     def __init__(self):
         """
         EXAMPLES::
@@ -95,6 +96,7 @@ class TestParent3(UniqueRepresentation, Parent):
             <sage.misc.test_nested_class.TestParent3_with_category object at ...>
         """
         from sage.categories.sets_cat import Sets
+
         Parent.__init__(self, category=Sets())
 
     class Element(ElementWrapper):
@@ -110,6 +112,7 @@ class TestParent4(Parent, metaclass=ClasscallMetaclass):
             <sage.misc.test_nested_class.TestParent4_with_category object at ...>
         """
         from sage.categories.sets_cat import Sets
+
         Parent.__init__(self, category=Sets())
 
     def __eq__(self, other):
@@ -153,6 +156,7 @@ class B:
     """
     A normal external class.
     """
+
     pass
 
 
@@ -162,6 +166,7 @@ class ABB:
         This class is broken and cannot be pickled.
         A warning is emitted during compilation.
         """
+
         pass
 
 
@@ -169,6 +174,7 @@ class ABL:
     """
     There is no problem here.
     """
+
     B = B
 
 
@@ -176,6 +182,7 @@ class ALB:
     """
     There is a nested class just below. Which can't be properly sphinxed.
     """
+
     class C:
         """
         Internal C class.
@@ -183,6 +190,7 @@ class ALB:
         Thanks to the links below this class is pickled ok.
         But it is sphinxed wrong: It is typeset as a link to an outer class.
         """
+
         pass
 
 
@@ -194,6 +202,7 @@ class ABBMeta(metaclass=NestedClassMetaclass):
         """
         B interne
         """
+
         pass
 
 
@@ -205,10 +214,12 @@ class ALBMeta(metaclass=NestedClassMetaclass):
     """
     There is a nested class just below which is properly sphinxed.
     """
+
     class CMeta:
         """
         B interne
         """
+
         pass
 
 
@@ -224,4 +235,5 @@ class TestNestedParent(UniqueRepresentation, Parent):
 
     class Element:
         "This is a dummy element class"
+
         pass

@@ -39,7 +39,10 @@ EXAMPLES::
     Fractional ideal (1/2*a - 3/2)
 """
 
-from sage.groups.abelian_gps.values import AbelianGroupWithValues_class, AbelianGroupWithValuesElement
+from sage.groups.abelian_gps.values import (
+    AbelianGroupWithValues_class,
+    AbelianGroupWithValuesElement,
+)
 from sage.groups.abelian_gps.abelian_group_element import AbelianGroupElement
 from sage.structure.element import MonoidElement
 from sage.rings.integer_ring import ZZ
@@ -69,6 +72,7 @@ class FractionalIdealClass(AbelianGroupWithValuesElement):
         sage: c.gens()
         (2, 1/2*w - 1/2)
     """
+
     def __init__(self, parent, element, ideal=None):
         """
         Return the ideal class of this fractional ideal.
@@ -298,10 +302,13 @@ class FractionalIdealClass(AbelianGroupWithValuesElement):
         Cl = self.parent()
         K = Cl.number_field()
         from sage.rings.real_mpfr import RR
+
         for P in K.primes_of_bounded_norm_iter(RR(norm_bound)):
             if Cl(P) == c:
                 return P
-        raise RuntimeError("No prime of norm less than %s found in class %s" % (norm_bound, c))
+        raise RuntimeError(
+            "No prime of norm less than %s found in class %s" % (norm_bound, c)
+        )
 
     def gens(self) -> tuple:
         r"""
@@ -433,6 +440,7 @@ class ClassGroup(AbelianGroupWithValues_class):
         sage: c.exponents()
         (1, 0)
     """
+
     Element = FractionalIdealClass
 
     def __init__(self, gens_orders, names, number_field, gens, proof=True):
@@ -446,8 +454,9 @@ class ClassGroup(AbelianGroupWithValues_class):
             sage: G = K.class_group()
             sage: TestSuite(G).run()
         """
-        AbelianGroupWithValues_class.__init__(self, gens_orders, names, gens,
-                                              values_group=number_field.ideal_monoid())
+        AbelianGroupWithValues_class.__init__(
+            self, gens_orders, names, gens, values_group=number_field.ideal_monoid()
+        )
         self._proof_flag = proof
         self._number_field = number_field
 
@@ -479,7 +488,9 @@ class ClassGroup(AbelianGroupWithValues_class):
             [(0,), (2,), (4,)]
         """
         if isinstance(args[0], FractionalIdealClass):
-            return self.element_class(self, None, self._number_field.ideal(args[0].ideal()))
+            return self.element_class(
+                self, None, self._number_field.ideal(args[0].ideal())
+            )
         I = self._number_field.ideal(*args, **kwds)
         if I.is_zero():
             raise TypeError("The zero ideal is not a fractional ideal")
@@ -502,7 +513,9 @@ class ClassGroup(AbelianGroupWithValues_class):
             sage: g.exponents()
             (1,)
         """
-        return tuple(ZZ(order) for order in ideal.ideal_class_log(proof=self._proof_flag))
+        return tuple(
+            ZZ(order) for order in ideal.ideal_class_log(proof=self._proof_flag)
+        )
 
     def gens_ideals(self):
         r"""
@@ -648,6 +661,7 @@ class SClassGroup(ClassGroup):
         sage: CS.gen(1) # random
         Fractional S-ideal class (31, a + 24)
     """
+
     Element = SFractionalIdealClass
 
     def __init__(self, gens_orders, names, number_field, gens, S, proof=True):
@@ -665,8 +679,9 @@ class SClassGroup(ClassGroup):
             sage: K.S_class_group([K.ideal(13, a + 8)])
             S-class group of order 4 with structure C2 x C2 of Number Field in a with defining polynomial x^2 + 105 with a = 10.24695076595960?*I
         """
-        AbelianGroupWithValues_class.__init__(self, gens_orders, names, gens,
-                                              values_group=number_field.ideal_monoid())
+        AbelianGroupWithValues_class.__init__(
+            self, gens_orders, names, gens, values_group=number_field.ideal_monoid()
+        )
         self._proof_flag = proof
         self._number_field = number_field
         self._S = S

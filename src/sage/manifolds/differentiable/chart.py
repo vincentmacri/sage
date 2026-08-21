@@ -273,7 +273,15 @@ class DiffChart(Chart):
         :class:`~sage.manifolds.differentiable.chart.RealDiffChart` for charts
         on differentiable manifolds over `\RR`.
     """
-    def __init__(self, domain, coordinates, calc_method=None, periods=None, coord_restrictions=None):
+
+    def __init__(
+        self,
+        domain,
+        coordinates,
+        calc_method=None,
+        periods=None,
+        coord_restrictions=None,
+    ):
         r"""
         Construct a chart.
 
@@ -289,14 +297,25 @@ class DiffChart(Chart):
             []
             sage: TestSuite(X).run()
         """
-        super().__init__(domain, coordinates, calc_method=calc_method,
-                         periods=periods, coord_restrictions=coord_restrictions)
+        super().__init__(
+            domain,
+            coordinates,
+            calc_method=calc_method,
+            periods=periods,
+            coord_restrictions=coord_restrictions,
+        )
         # Construction of the coordinate frame associated to the chart:
         self._frame = CoordFrame(self)
         self._coframe = self._frame._coframe
 
-    def transition_map(self, other, transformations, intersection_name=None,
-                       restrictions1=None, restrictions2=None):
+    def transition_map(
+        self,
+        other,
+        transformations,
+        intersection_name=None,
+        restrictions1=None,
+        restrictions2=None,
+    ):
         r"""
         Construct the transition map between the current chart,
         `(U,\varphi)` say, and another one, `(V,\psi)` say.
@@ -641,10 +660,10 @@ class DiffChart(Chart):
         # string (of the type ['Dt']), which causes error in 'symbol'.
         # This might be corrected.
         if len(self[:]) == 1:
-            string_vel = left + format(self[:][0]) # will raise an error
+            string_vel = left + format(self[:][0])  # will raise an error
             # in case left is not a string
             if right is not None:
-                string_vel += right # will raise an error in case right
+                string_vel += right  # will raise an error in case right
                 # is not a string
 
             # If the argument of 'var' contains only one word, for
@@ -656,19 +675,22 @@ class DiffChart(Chart):
             # containing one symbolic expression.
             return [var(string_vel)]
 
-        list_strings_velocities = [left + format(coord_func)
-                                   for coord_func in self[:]] # will
+        list_strings_velocities = [
+            left + format(coord_func) for coord_func in self[:]
+        ]  # will
         # raise an error in case left is not a string
 
         if right is not None:
-            list_strings_velocities = [str_vel + right for str_vel
-                                       in list_strings_velocities] # will
+            list_strings_velocities = [
+                str_vel + right for str_vel in list_strings_velocities
+            ]  # will
             # raise an error in case right is not a string
 
         return list(var(list_strings_velocities))
 
 
-#*****************************************************************************
+# *****************************************************************************
+
 
 class RealDiffChart(DiffChart, RealChart):
     r"""
@@ -962,8 +984,16 @@ class RealDiffChart(DiffChart, RealChart):
     Chart grids can be drawn in 2D or 3D graphics thanks to the method
     :meth:`~sage.manifolds.chart.RealChart.plot`.
     """
-    def __init__(self, domain, coordinates, calc_method=None,
-                 bounds=None, periods=None, coord_restrictions=None):
+
+    def __init__(
+        self,
+        domain,
+        coordinates,
+        calc_method=None,
+        bounds=None,
+        periods=None,
+        coord_restrictions=None,
+    ):
         r"""
         Construct a chart on a real differentiable manifold.
 
@@ -980,8 +1010,15 @@ class RealDiffChart(DiffChart, RealChart):
             [x is real, y is real]
             sage: TestSuite(X).run()
         """
-        RealChart.__init__(self, domain, coordinates, calc_method=calc_method,
-                           bounds=bounds, periods=periods, coord_restrictions=coord_restrictions)
+        RealChart.__init__(
+            self,
+            domain,
+            coordinates,
+            calc_method=calc_method,
+            bounds=bounds,
+            periods=periods,
+            coord_restrictions=coord_restrictions,
+        )
         # Construction of the coordinate frame associated to the chart:
         self._frame = CoordFrame(self)
         self._coframe = self._frame._coframe
@@ -1067,7 +1104,8 @@ class RealDiffChart(DiffChart, RealChart):
                     dom._top_frames.remove(resu._frame)
         return self._dom_restrict[subset]
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class DiffCoordChange(CoordChange):
@@ -1117,6 +1155,7 @@ class DiffCoordChange(CoordChange):
         u = x + y
         v = x - y
     """
+
     def __init__(self, chart1, chart2, *transformations):
         r"""
         Construct a transition map.

@@ -45,9 +45,9 @@ def coefficients_to_power_sums(n, m, a):
         sage: coefficients_to_power_sums(5,4,[1,5,7,9,8])
         [5, -8, 46, -317, 2158]
     """
-    S = [n] + [0]*m
-    for k in range(1,m+1):
-        S[k] = -sum([a[n-i]*S[k-i] for i in range(1,k)])-k*a[n-k]
+    S = [n] + [0] * m
+    for k in range(1, m + 1):
+        S[k] = -sum([a[n - i] * S[k - i] for i in range(1, k)]) - k * a[n - k]
     return S
 
 
@@ -88,7 +88,7 @@ def __lagrange_bounds_phc(n, m, a, tmpfile=None):
     """
 
     # Compute power sums.
-    S = coefficients_to_power_sums(n,m,a)
+    S = coefficients_to_power_sums(n, m, a)
 
     # Look for phc.
     fi, fo = os.popen2('which phc')
@@ -111,13 +111,13 @@ def __lagrange_bounds_phc(n, m, a, tmpfile=None):
     # then there are at most m-1 distinct values amongst the x_i.
     # Therefore we must solve the implied equations for each partition of n-1
     # into m-1 parts.
-    for P in sage.combinat.partition.Partitions(n-1,length=m-1):
+    for P in sage.combinat.partition.Partitions(n - 1, length=m - 1):
         f = open(tmpfile, 'w')
         # First line: number of variables/equations
         f.write('%d' % m + '\n')
         # In the next m-1 lines, write the equation S_j(x) = S[j]
-        for j in range(1,m+1):
-            for i in range(m-1):
+        for j in range(1, m + 1):
+            for i in range(m - 1):
                 f.write('%d' % P[i] + '*x%d' % i + '**%d' % j + ' + ')
             f.write('xn**%d' % j + ' - (%d' % S[j] + ');\n')
         f.close()
@@ -132,7 +132,7 @@ def __lagrange_bounds_phc(n, m, a, tmpfile=None):
             posl = f_str.rfind('xn', 0, pos)
             f_str_split = f_str[posl:pos].split()
             crits += [float(f_str_split[2])]
-            pos = f_str.find('= real ', pos+1)
+            pos = f_str.find('= real ', pos + 1)
 
         if len(crits) > 0:
             output_data += [[P, min(crits), max(crits)]]

@@ -114,6 +114,7 @@ class FilteredSimplicialComplex(SageObject):
         Filtered complex on vertex set (0, 1, 2) and with simplices
          ((0,) : 0), ((1,) : 0), ((2,) : 1), ((0, 1) : 2.27000000000000)
     """
+
     def __init__(self, simplices=[], verbose=False):
         """
         Initialize ``self``.
@@ -164,9 +165,11 @@ class FilteredSimplicialComplex(SageObject):
             sage: X == Y
             False
         """
-        return (isinstance(other, FilteredSimplicialComplex)
-                and self._vertices == other._vertices
-                and self._filtration_dict == other._filtration_dict)
+        return (
+            isinstance(other, FilteredSimplicialComplex)
+            and self._vertices == other._vertices
+            and self._filtration_dict == other._filtration_dict
+        )
 
     def __ne__(self, other):
         """
@@ -256,7 +259,11 @@ class FilteredSimplicialComplex(SageObject):
         if simplex.dimension() > 0:
             for f in faces:
                 if self._verbose:
-                    print("Also inserting face {} with value {}".format(f, filtration_value))
+                    print(
+                        "Also inserting face {} with value {}".format(
+                            f, filtration_value
+                        )
+                    )
                 self._insert(f, filtration_value)
 
         self._filtration_dict[simplex] = filtration_value
@@ -426,12 +433,14 @@ class FilteredSimplicialComplex(SageObject):
             sage: X.persistence_intervals(0, strict=False)                              # needs sage.modules
             [(0, 1), (1, 1), (1, 2), (0, +Infinity)]
         """
+
         # first, order the simplices in lexico order
         # on dimension, value and then arbitrary order
         # defined by the Simplex class.
         def key(s):
             d = self._get_value(s)
             return (s.dimension(), d, s)
+
         simplices = list(self._filtration_dict)
         simplices.sort(key=key)
 
@@ -570,7 +579,7 @@ class FilteredSimplicialComplex(SageObject):
 
         # Initialize the boundary chain
         for i, f in enumerate(s.faces()):
-            d += (-1)**i * self._chaingroup(f)
+            d += (-1) ** i * self._chaingroup(f)
 
         # Remove all unmarked elements
         for s, x_s in d:
@@ -590,7 +599,7 @@ class FilteredSimplicialComplex(SageObject):
 
             c = self._T[max_index][1]
             q = c[t]
-            d = d - ((q**(-1)) * c)
+            d = d - ((q ** (-1)) * c)
 
         return d
 
@@ -689,8 +698,9 @@ class FilteredSimplicialComplex(SageObject):
         if verbose is None:
             verbose = self._verbose
         intervals = self._persistent_homology(field, strict, verbose=verbose)
-        return Integer(sum(1 for i, j in intervals[k]
-                           if (i <= a and a + b < j) and a >= 0))
+        return Integer(
+            sum(1 for i, j in intervals[k] if (i <= a and a + b < j) and a >= 0)
+        )
 
     def _repr_(self):
         """
@@ -716,7 +726,10 @@ class FilteredSimplicialComplex(SageObject):
         else:
             vertex_string = "on vertex set {}".format(tuple(sorted(self._vertices)))
             simplex_string = "with simplices "
-            simplex_list = ["({} : {})".format(s, self._filtration_dict[s]) for s in self._filtration_dict]
+            simplex_list = [
+                "({} : {})".format(s, self._filtration_dict[s])
+                for s in self._filtration_dict
+            ]
             simplex_string += ", ".join(simplex_list)
 
         return "Filtered complex " + vertex_string + " and " + simplex_string

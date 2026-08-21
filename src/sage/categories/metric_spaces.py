@@ -12,13 +12,14 @@ from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.cartesian_product import CartesianProductsCategory
-from sage.categories.covariant_functorial_construction import RegressiveCovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    RegressiveCovariantConstructionCategory,
+)
 from sage.categories.with_realizations import WithRealizationsCategory
 from sage.categories.homsets import HomsetsCategory
 
 
 class MetricSpacesCategory(RegressiveCovariantConstructionCategory):
-
     _functor_category = "Metric"
 
     @classmethod
@@ -59,8 +60,9 @@ class MetricSpacesCategory(RegressiveCovariantConstructionCategory):
             sage: sage.categories.metric_spaces.MetricSpacesCategory.default_super_categories(Groups())
             Join of Category of topological groups and Category of metric spaces
         """
-        return Category.join([category.Topological(),
-                              super().default_super_categories(category)])
+        return Category.join(
+            [category.Topological(), super().default_super_categories(category)]
+        )
 
     # We currently don't have a use for this, but we probably will
     def _repr_object_names(self):
@@ -107,6 +109,7 @@ class MetricSpaces(MetricSpacesCategory):
         Category of metric spaces
         sage: TestSuite(C).run()
     """
+
     def _repr_object_names(self):
         """
         EXAMPLES::
@@ -230,7 +233,6 @@ class MetricSpaces(MetricSpacesCategory):
         """
 
         class ElementMethods:
-
             def _test_metric_map(self, **options):
                 r"""
                 Test that this metric space morphism is a metric map,
@@ -301,7 +303,6 @@ class MetricSpaces(MetricSpacesCategory):
             return [MetricSpaces()]
 
         class ParentMethods:
-
             def dist(self, a, b):
                 r"""
                 Return the distance between ``a`` and ``b`` in ``self``.
@@ -322,8 +323,12 @@ class MetricSpaces(MetricSpacesCategory):
                     sage: Q2.dist((0, 0), (2, 3))
                     3
                 """
-                return max(x.dist(y) for x, y in zip(self(a).cartesian_factors(),
-                                                     self(b).cartesian_factors()))
+                return max(
+                    x.dist(y)
+                    for x, y in zip(
+                        self(a).cartesian_factors(), self(b).cartesian_factors()
+                    )
+                )
 
     class SubcategoryMethods:
         @cached_method
@@ -350,7 +355,6 @@ class MetricSpaces(MetricSpacesCategory):
         """
 
         class CartesianProducts(CartesianProductsCategory):
-
             def extra_super_categories(self):
                 r"""
                 Implement the fact that a (finite) Cartesian product of complete

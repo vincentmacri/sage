@@ -1,14 +1,14 @@
 """
 Root system data for type BC affine
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2009 Justin Walker
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .cartan_type import CartanType_standard_affine
 from sage.rings.integer_ring import ZZ
@@ -105,15 +105,16 @@ class CartanType(CartanType_standard_affine):
             [(0, 1, 1), (1, 0, 4)]
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         n = self.n
         g = DynkinDiagram_class(self)
         if n == 1:
-            g.add_edge(1,0,4)
+            g.add_edge(1, 0, 4)
             return g
-        g.add_edge(1,0,2)
-        for i in range(1, n-1):
-            g.add_edge(i, i+1)
-        g.add_edge(n,n-1,2)
+        g.add_edge(1, 0, 2)
+        for i in range(1, n - 1):
+            g.add_edge(i, i + 1)
+        g.add_edge(n, n - 1, 2)
         return g
 
     def _latex_(self):
@@ -188,9 +189,9 @@ class CartanType(CartanType_standard_affine):
             ret += "\\draw (0, 0.15 cm) -- +(%s cm,0);\n" % node_dist
             ret += "\\draw (0, -0.15 cm) -- +(%s cm,0);\n" % node_dist
             if dual:
-                ret += self._latex_draw_arrow_tip(0.5*node_dist+0.2, 0, 0)
+                ret += self._latex_draw_arrow_tip(0.5 * node_dist + 0.2, 0, 0)
             else:
-                ret += self._latex_draw_arrow_tip(0.5*node_dist-0.2, 0, 180)
+                ret += self._latex_draw_arrow_tip(0.5 * node_dist - 0.2, 0, 180)
             ret += node(0, 0, label(0))
             ret += node(node_dist, 0, label(1))
             return ret
@@ -198,9 +199,9 @@ class CartanType(CartanType_standard_affine):
         ret = "\\draw (0, 0.1 cm) -- +(%s cm,0);\n" % node_dist
         ret += "\\draw (0, -0.1 cm) -- +(%s cm,0);\n" % node_dist
         if dual:
-            ret += self._latex_draw_arrow_tip(0.5*node_dist+0.2, 0, 0)
+            ret += self._latex_draw_arrow_tip(0.5 * node_dist + 0.2, 0, 0)
         else:
-            ret += self._latex_draw_arrow_tip(0.5*node_dist-0.2, 0, 180)
+            ret += self._latex_draw_arrow_tip(0.5 * node_dist - 0.2, 0, 180)
         ret += "{\n\\pgftransformxshift{%s cm}\n" % node_dist
         ret += self.classical()._latex_dynkin_diagram(label, node, node_dist, dual=dual)
         ret += "}\n" + node(0, 0, label(0))
@@ -233,10 +234,12 @@ class CartanType(CartanType_standard_affine):
             node = self._ascii_art_node
         n = self.n
         if n == 1:
-            return "  4\n{}=<={}\n{!s:4}{!s:4}".format(node(label(0)), node(label(1)), label(0), label(1))
-        ret = node(label(0)) + "=<=" + "---".join(node(label(i)) for i in range(1,n))
+            return "  4\n{}=<={}\n{!s:4}{!s:4}".format(
+                node(label(0)), node(label(1)), label(0), label(1)
+            )
+        ret = node(label(0)) + "=<=" + "---".join(node(label(i)) for i in range(1, n))
         ret += "=<=" + node(label(n)) + '\n'
-        ret += "".join("{!s:4}".format(label(i)) for i in range(n+1))
+        ret += "".join("{!s:4}".format(label(i)) for i in range(n + 1))
         return ret
 
     def classical(self):
@@ -247,6 +250,7 @@ class CartanType(CartanType_standard_affine):
             ['C', 3]
         """
         from . import cartan_type
+
         return cartan_type.CartanType(["C", self.n])
 
     def basic_untwisted(self):
@@ -268,7 +272,8 @@ class CartanType(CartanType_standard_affine):
             ['A', 8]
         """
         from . import cartan_type
-        return cartan_type.CartanType(["A", 2*self.n])
+
+        return cartan_type.CartanType(["A", 2 * self.n])
 
     def _default_folded_cartan_type(self):
         """
@@ -280,6 +285,10 @@ class CartanType(CartanType_standard_affine):
             ['BC', 3, 2] as a folding of ['A', 5, 1]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         n = self.n
-        return CartanTypeFolded(self, ['A', 2*n - 1, 1],
-            [[0]] + [[i, 2*n-i] for i in range(1, n)] + [[n]])
+        return CartanTypeFolded(
+            self,
+            ['A', 2 * n - 1, 1],
+            [[0]] + [[i, 2 * n - i] for i in range(1, n)] + [[n]],
+        )

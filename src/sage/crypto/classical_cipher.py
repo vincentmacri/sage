@@ -2,6 +2,7 @@
 """
 Classical Ciphers
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 David Kohel <kohel@maths.usyd.edu.au>
 #
@@ -72,7 +73,11 @@ class AffineCipher(SymmetricKeyCipher):
             sage: aff1(1, 2) == aff2(1, 2)
             True
         """
-        return type(self) is type(other) and self.parent() == other.parent() and self.key() == other.key()
+        return (
+            type(self) is type(other)
+            and self.parent() == other.parent()
+            and self.key() == other.key()
+        )
 
     def __call__(self, M):
         r"""
@@ -120,12 +125,15 @@ class AffineCipher(SymmetricKeyCipher):
         # sanity check
         D = self.domain()  # = plaintext_space = ciphertext_space
         if M.parent() != D:
-            raise TypeError("Argument M must be a string in the plaintext/ciphertext space.")
+            raise TypeError(
+                "Argument M must be a string in the plaintext/ciphertext space."
+            )
 
         from sage.rings.finite_rings.integer_mod import Mod
-        A = list(D.alphabet())     # plaintext/ciphertext alphabet as a list
+
+        A = list(D.alphabet())  # plaintext/ciphertext alphabet as a list
         N = self.domain().ngens()  # number of elements in this alphabet
-        a, b = self.key()          # encryption/decryption key (a,b)
+        a, b = self.key()  # encryption/decryption key (a,b)
         # Let I be the index list of M. That is, the i-th element of M has
         # index k in the cipher domain D. We store this cipher domain index
         # as the i-th element of I.
@@ -135,7 +143,7 @@ class AffineCipher(SymmetricKeyCipher):
         # corresponding to i is ai + b (mod N). This can also be used for
         # decryption, in which case (a, b) is the inverse key corresponding
         # to a secret key.
-        return D([ A.index(A[Mod(a*i + b, N).lift()]) for i in I ])
+        return D([A.index(A[Mod(a * i + b, N).lift()]) for i in I])
 
     def _repr_(self):
         r"""
@@ -157,6 +165,7 @@ class HillCipher(SymmetricKeyCipher):
     """
     Hill cipher class
     """
+
     def __init__(self, parent, key):
         """
         Create a Hill cipher.
@@ -188,25 +197,31 @@ class HillCipher(SymmetricKeyCipher):
         SymmetricKeyCipher.__init__(self, parent, key)
 
     def __eq__(self, right):
-        return type(self) is type(right) and self.parent() == right.parent() and self.key() == right.key()
+        return (
+            type(self) is type(right)
+            and self.parent() == right.parent()
+            and self.key() == right.key()
+        )
 
     def __call__(self, M):
-        S = self.domain() # = plaintext_space = ciphertext_space
+        S = self.domain()  # = plaintext_space = ciphertext_space
         if not isinstance(M, StringMonoidElement) and M.parent() == S:
-            raise TypeError("Argument M (= %s) must be a string in the plaintext space." % M)
+            raise TypeError(
+                "Argument M (= %s) must be a string in the plaintext space." % M
+            )
         m = self.parent().block_length()
         if len(M) % m != 0:
-            raise TypeError("The length of M (= %s) must be a multiple of %s." % (M, m ))
+            raise TypeError("The length of M (= %s) must be a multiple of %s." % (M, m))
         Alph = list(S.alphabet())
-        A = self.key() # A is an m x m matrix
+        A = self.key()  # A is an m x m matrix
         R = A.parent().base_ring()
-        V = FreeModule(R,m)
+        V = FreeModule(R, m)
         Mstr = str(M)
         C = []
-        for i in range(len(M)//m):
-            v = V([ Alph.index(Mstr[m*i+j]) for j in range(m) ])
+        for i in range(len(M) // m):
+            v = V([Alph.index(Mstr[m * i + j]) for j in range(m)])
             C += (v * A).list()
-        return S([ k.lift() for k in C ])
+        return S([k.lift() for k in C])
 
     def _repr_(self):
         r"""
@@ -222,7 +237,9 @@ class HillCipher(SymmetricKeyCipher):
             Hill cipher on Free alphabetic string monoid on A-Z of block length 3
         """
         return "Hill cipher on %s of block length %s" % (
-            self.parent().cipher_domain(), self.parent().block_length() )
+            self.parent().cipher_domain(),
+            self.parent().block_length(),
+        )
 
     def inverse(self):
         E = self.parent()
@@ -294,7 +311,11 @@ class ShiftCipher(SymmetricKeyCipher):
             sage: shift1 == shift2
             False
         """
-        return type(self) is type(other) and self.parent() == other.parent() and self.key() == other.key()
+        return (
+            type(self) is type(other)
+            and self.parent() == other.parent()
+            and self.key() == other.key()
+        )
 
     def __call__(self, M):
         r"""
@@ -331,11 +352,15 @@ class ShiftCipher(SymmetricKeyCipher):
         """
         dom = self.domain()  # = plaintext_space = ciphertext_space
         if not isinstance(M, StringMonoidElement) and M.parent() == dom:
-            raise TypeError("Argument M (= %s) must be a string in the plaintext/ciphertext space." % M)
+            raise TypeError(
+                "Argument M (= %s) must be a string in the plaintext/ciphertext space."
+                % M
+            )
         from sage.rings.finite_rings.integer_mod import Mod
-        A = list(dom.alphabet())   # plaintext/ciphertext alphabet as a list
+
+        A = list(dom.alphabet())  # plaintext/ciphertext alphabet as a list
         N = self.domain().ngens()  # number of elements in this alphabet
-        K = self.key()             # encryption/decryption key
+        K = self.key()  # encryption/decryption key
         # Here, M is a message encoded within the ciphertext/plaintext
         # alphabet of this shift cryptosystem. The list A above is a list of
         # all elements of this alphabet, each element being associated with
@@ -352,7 +377,7 @@ class ShiftCipher(SymmetricKeyCipher):
         I = [A.index(str(e)) for e in M]
         # Perform encryption/decryption on the whole message M, returning
         # the result as a string encoded in the alphabet A.
-        return dom([ A.index(A[Mod(i + K, N).lift()]) for i in I ])
+        return dom([A.index(A[Mod(i + K, N).lift()]) for i in I])
 
     def _repr_(self):
         r"""
@@ -380,6 +405,7 @@ class SubstitutionCipher(SymmetricKeyCipher):
     """
     Substitution cipher class
     """
+
     def __init__(self, parent, key):
         """
         Create a substitution cipher.
@@ -408,17 +434,23 @@ class SubstitutionCipher(SymmetricKeyCipher):
         SymmetricKeyCipher.__init__(self, parent, key)
 
     def __eq__(self, right):
-        return type(self) is type(right) and self.parent() == right.parent() and self.key() == right.key()
+        return (
+            type(self) is type(right)
+            and self.parent() == right.parent()
+            and self.key() == right.key()
+        )
 
     def __call__(self, M):
-        S = self.domain() # = plaintext_space = ciphertext_space
+        S = self.domain()  # = plaintext_space = ciphertext_space
         if not isinstance(M, StringMonoidElement) and M.parent() == S:
-            raise TypeError("Argument M (= %s) must be a string in the plaintext space." % M)
+            raise TypeError(
+                "Argument M (= %s) must be a string in the plaintext space." % M
+            )
         A = list(S.alphabet())
-        K = str(self.key()) # K is a string, while we want the indices:
-        I = [ A.index(K[i]) for i in range(len(K)) ]
+        K = str(self.key())  # K is a string, while we want the indices:
+        I = [A.index(K[i]) for i in range(len(K))]
         Mstr = str(M)
-        return S([ I[A.index(Mstr[i])] for i in range(len(Mstr)) ])
+        return S([I[A.index(Mstr[i])] for i in range(len(Mstr))])
 
     def _repr_(self):
         r"""
@@ -454,6 +486,7 @@ class TranspositionCipher(SymmetricKeyCipher):
     """
     Transition cipher class
     """
+
     def __init__(self, parent, key):
         """
         Create a transposition cipher.
@@ -498,22 +531,28 @@ class TranspositionCipher(SymmetricKeyCipher):
         SymmetricKeyCipher.__init__(self, parent, key)
 
     def __call__(self, M, mode='ECB'):
-        S = self.domain() # = plaintext_space = ciphertext_space
+        S = self.domain()  # = plaintext_space = ciphertext_space
         if not isinstance(M, StringMonoidElement) and M.parent() == S:
-            raise TypeError("Argument M (= %s) must be a string in the plaintext space." % M)
+            raise TypeError(
+                "Argument M (= %s) must be a string in the plaintext space." % M
+            )
         if not mode == "ECB":
-            raise NotImplementedError("Enciphering not implemented for mode (= %s) other than 'ECB'." % mode)
+            raise NotImplementedError(
+                "Enciphering not implemented for mode (= %s) other than 'ECB'." % mode
+            )
         g = self.key()
         N = len(M)
         m = self.parent().block_length()
         if not N % m == 0:
-            raise TypeError("Argument M (= %s) must be a string of length k*%s." % (M, m))
-        Melt = M._element_list # this uses the internal structure of string monoids
+            raise TypeError(
+                "Argument M (= %s) must be a string of length k*%s." % (M, m)
+            )
+        Melt = M._element_list  # this uses the internal structure of string monoids
         # Caution: this is parsed as an outer loop in k and an inner loop in i:
         #     for k in range(N//m):
         #         for i in range(m):
         #             S([ Melt[g(i+1)-1+k*m]
-        return S([ Melt[g(i+1)-1+k*m] for k in range(N//m) for i in range(m) ])
+        return S([Melt[g(i + 1) - 1 + k * m] for k in range(N // m) for i in range(m)])
 
     def inverse(self):
         E = self.parent()
@@ -525,6 +564,7 @@ class VigenereCipher(SymmetricKeyCipher):
     """
     Vigenere cipher class
     """
+
     def __init__(self, parent, key):
         """
         Create a Vigenere cipher.
@@ -549,18 +589,22 @@ class VigenereCipher(SymmetricKeyCipher):
         SymmetricKeyCipher.__init__(self, parent, key)
 
     def __call__(self, M, mode='ECB'):
-        S = self.domain() # = plaintext_space = ciphertext_space
+        S = self.domain()  # = plaintext_space = ciphertext_space
         if not isinstance(M, StringMonoidElement) and M.parent() == S:
-            raise TypeError("Argument M (= %s) must be a string in the plaintext space." % M)
+            raise TypeError(
+                "Argument M (= %s) must be a string in the plaintext space." % M
+            )
         if not mode == "ECB":
-            raise NotImplementedError("Enciphering not implemented for mode (= %s) other than 'ECB'." % mode)
+            raise NotImplementedError(
+                "Enciphering not implemented for mode (= %s) other than 'ECB'." % mode
+            )
         K = self.key()
         m = self.parent().period()
         n = S.ngens()
         # This uses the internal structure of string monoids
         Melt = M._element_list
         Kelt = K._element_list
-        return S([ (Melt[i]+Kelt[i % m]) % n for i in range(len(M)) ])
+        return S([(Melt[i] + Kelt[i % m]) % n for i in range(len(M))])
 
     def inverse(self):
         E = self.parent()

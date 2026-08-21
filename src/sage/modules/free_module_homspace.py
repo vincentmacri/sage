@@ -61,6 +61,7 @@ See :issue:`13321`::
     TypeError: nontrivial morphisms require a coercion map from the base ring
     of the domain to the base ring of the codomain
 """
+
 # ****************************************************************************
 #  Copyright (C) 2005 William Stein <wstein@gmail.com>
 #
@@ -154,6 +155,7 @@ class FreeModuleHomspace(sage.categories.homset.HomsetWithBase):
             [(0, 0), (0, 0)]
         """
         from . import free_module_morphism
+
         side = kwds.get("side", "left")
         if not isinstance(A, Matrix):
             # Compute the matrix of the morphism that sends the
@@ -168,15 +170,24 @@ class FreeModuleHomspace(sage.categories.homset.HomsetWithBase):
                 else:
                     v = [C(a) for a in A]
                     if side == "right":
-                        A = matrix([C.coordinates(a) for a in v], ncols=C.rank()).transpose()
+                        A = matrix(
+                            [C.coordinates(a) for a in v], ncols=C.rank()
+                        ).transpose()
                     else:
                         A = matrix([C.coordinates(a) for a in v], ncols=C.rank())
             except TypeError:
                 # Let us hope that FreeModuleMorphism knows to handle
                 # that case
                 pass
-        if not self.codomain().base_ring().has_coerce_map_from(self.domain().base_ring()) and not A.is_zero():
-            raise TypeError("nontrivial morphisms require a coercion map from the base ring of the domain to the base ring of the codomain")
+        if (
+            not self.codomain()
+            .base_ring()
+            .has_coerce_map_from(self.domain().base_ring())
+            and not A.is_zero()
+        ):
+            raise TypeError(
+                "nontrivial morphisms require a coercion map from the base ring of the domain to the base ring of the codomain"
+            )
         return free_module_morphism.FreeModuleMorphism(self, A, side)
 
     @cached_method
@@ -316,6 +327,9 @@ class FreeModuleHomspace(sage.categories.homset.HomsetWithBase):
             Codomain: Ambient free module of rank 5 over the principal ideal domain ...
         """
         if self.is_endomorphism_set():
-            return self(identity_matrix(self.base_ring(), self.domain().rank()),
-                        side=side)
-        raise TypeError("Identity map only defined for endomorphisms. Try natural_map() instead.")
+            return self(
+                identity_matrix(self.base_ring(), self.domain().rank()), side=side
+            )
+        raise TypeError(
+            "Identity map only defined for endomorphisms. Try natural_map() instead."
+        )

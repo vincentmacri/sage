@@ -89,6 +89,7 @@ class TraceMonoidElement(ElementWrapper, MonoidElement):
         sage: x.foata_normal_form()
         (b, a*d, a, b*c)
     """
+
     def _repr_(self) -> str:
         """
         Textual representation of ``self``.
@@ -220,8 +221,7 @@ class TraceMonoidElement(ElementWrapper, MonoidElement):
         graph = {}
 
         for i, e in enumerate(elements):
-            edges = [(v, i) for v in graph
-                     if (e, elements[v]) not in independence]
+            edges = [(v, i) for v in graph if (e, elements[v]) not in independence]
             graph[i] = []
             for v1, v2 in edges:
                 graph[v1].append(v2)
@@ -273,8 +273,7 @@ class TraceMonoidElement(ElementWrapper, MonoidElement):
             return self.naive_hasse_diagram()
         if algorithm == "min":
             return self.min_hasse_diagram()
-        raise ValueError("`alg` option must be `naive` "
-                         f"or `min`, got `{algorithm}`.")
+        raise ValueError(f"`alg` option must be `naive` or `min`, got `{algorithm}`.")
 
     def min_hasse_diagram(self):
         r"""
@@ -468,6 +467,7 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
         sage: M.number_of_words(3) == len(M.words(3))                                   # needs sage.graphs
         True
     """
+
     Element = TraceMonoidElement
 
     @staticmethod
@@ -665,8 +665,10 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
                     g_stack.pop()
                     elements.append(generator)
                     for other_gen in generators_set:
-                        if (other_gen != generator
-                                and (generator, other_gen) not in independence):
+                        if (
+                            other_gen != generator
+                            and (generator, other_gen) not in independence
+                        ):
                             stacks[other_gen].pop()
                     break
 
@@ -775,8 +777,11 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
             sage: sorted(M.dependence())
             [(a, a), (a, b), (b, a), (b, b), (b, c), (c, b), (c, c)]
         """
-        return frozenset(pair for pair in product(self._free_monoid.gens(), repeat=2)
-                         if pair not in self._independence)
+        return frozenset(
+            pair
+            for pair in product(self._free_monoid.gens(), repeat=2)
+            if pair not in self._independence
+        )
 
     @cached_method
     def dependence_graph(self):
@@ -793,10 +798,15 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
             sage: M.dependence_graph() == Graph({a:[a,b], b:[b], c:[c,b]})              # needs sage.graphs
             True
         """
-        return Graph({frozenset((e1, e2)) if e1 != e2 else (e1, e2)
-                      for e1, e2 in self.dependence()}, loops=True,
-                     format='list_of_edges',
-                     immutable=True)
+        return Graph(
+            {
+                frozenset((e1, e2)) if e1 != e2 else (e1, e2)
+                for e1, e2 in self.dependence()
+            },
+            loops=True,
+            format='list_of_edges',
+            immutable=True,
+        )
 
     @cached_method
     def independence_graph(self):
@@ -840,8 +850,7 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
             R = PolynomialRing(ZZ, 't')
             t = R.gen()
         clique_seq = self.independence_graph().clique_polynomial().coefficients()
-        return ~sum((-1)**i * coeff * (t**i)
-                    for i, coeff in enumerate(clique_seq))
+        return ~sum((-1) ** i * coeff * (t**i) for i, coeff in enumerate(clique_seq))
 
     @cached_method
     def number_of_words(self, length):
@@ -911,10 +920,17 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
         if length == 1:
             return frozenset(self.gens())
 
-        return frozenset([word * suffix for word in self.words(length - 1)
-                          for suffix in self.gens()
-                          if not ((list(word.value)[-1][0], suffix.value) in self._independence
-                                  and list(word.value)[-1][0] > suffix.value)])
+        return frozenset(
+            [
+                word * suffix
+                for word in self.words(length - 1)
+                for suffix in self.gens()
+                if not (
+                    (list(word.value)[-1][0], suffix.value) in self._independence
+                    and list(word.value)[-1][0] > suffix.value
+                )
+            ]
+        )
 
     def _sorted_independence(self) -> list:
         r"""
@@ -931,8 +947,7 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
             sage: M._sorted_independence()
             [[a, c]]
         """
-        return sorted(sorted(x_y)
-                      for x_y in self.independence())
+        return sorted(sorted(x_y) for x_y in self.independence())
 
     def _repr_(self) -> str:
         r"""
@@ -946,10 +961,13 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
             Trace monoid on 4 generators ([a], [b], [c], [d])
              with independence relation {{a, d}, {b, c}}
         """
-        return ("Trace monoid on {!s} generators {!s} "
-                "with independence relation {{{}}}").format(self.ngens(), self.gens(),
-                                                            ", ".join(f"{{{x}, {y}}}"
-                                                                      for (x, y) in self._sorted_independence()))
+        return (
+            "Trace monoid on {!s} generators {!s} with independence relation {{{}}}"
+        ).format(
+            self.ngens(),
+            self.gens(),
+            ", ".join(f"{{{x}, {y}}}" for (x, y) in self._sorted_independence()),
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -965,7 +983,6 @@ class TraceMonoid(UniqueRepresentation, Monoid_class):
         return "\\langle {} \\mid {} \\rangle".format(
             repr(self._free_monoid.gens())[1:-1],
             ",".join(
-                f"{v1!r}{v2!r}={v2!r}{v1!r}"
-                for v1, v2 in self._sorted_independence()
-            )
+                f"{v1!r}{v2!r}={v2!r}{v1!r}" for v1, v2 in self._sorted_independence()
+            ),
         )

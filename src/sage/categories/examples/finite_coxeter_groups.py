@@ -2,6 +2,7 @@
 r"""
 Examples of finite Coxeter groups
 """
+
 # ****************************************************************************
 #  Copyright (C) 2008 Nicolas M. Thiery <nthiery at users.sf.net>
 #  Copyright (C) 2009 Nicolas Borie <nicolas dot borie at math.u-psud.fr>
@@ -129,6 +130,7 @@ class DihedralGroup(UniqueRepresentation, Parent):
         (also tested by :meth:`test_an_element` :meth:`test_some_elements`)
         """
         from sage.structure.element import parent
+
         return parent(x) is self
 
     @cached_method
@@ -232,6 +234,7 @@ class DihedralGroup(UniqueRepresentation, Parent):
                 [(), (1,), (2,), (), (), (1, 2, 1), (2, 1, 2), (), (), (1, 2, 1, 2, 1)]
             """
             from copy import copy
+
             reduced_word = copy(self.value)
             n = self.parent().n
             if len(reduced_word) == n:
@@ -239,7 +242,9 @@ class DihedralGroup(UniqueRepresentation, Parent):
                     return self.parent()(reduced_word[:-1])
                 return self.parent()(reduced_word[1:])
 
-            if (len(reduced_word) == n - 1 and (not self.has_descent(i))) and (reduced_word[0] == 2):
+            if (len(reduced_word) == n - 1 and (not self.has_descent(i))) and (
+                reduced_word[0] == 2
+            ):
                 return self.parent()((1,) + reduced_word)
 
             if self.has_descent(i):

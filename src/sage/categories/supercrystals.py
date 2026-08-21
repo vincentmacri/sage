@@ -3,7 +3,7 @@ r"""
 Supercrystals
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2017 Franco Saliola <saliola@gmail.com>
 #                     2017 Anne Schilling <anne at math.ucdavis.edu>
 #                     2019 Travis Scrimshaw <tcscrims at gmail.com>
@@ -13,7 +13,7 @@ Supercrystals
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_singleton import Category_singleton
@@ -61,14 +61,26 @@ class SuperCrystals(Category_singleton):
                 raise ValueError("all crystals must be of the same Cartan type")
 
             if cartan_type.letter == 'Q':
-                from sage.combinat.crystals.tensor_product import FullTensorProductOfQueerSuperCrystals
-                return FullTensorProductOfQueerSuperCrystals((self,) + tuple(crystals), **options)
-            from sage.combinat.crystals.tensor_product import FullTensorProductOfSuperCrystals
-            return FullTensorProductOfSuperCrystals((self,) + tuple(crystals), **options)
+                from sage.combinat.crystals.tensor_product import (
+                    FullTensorProductOfQueerSuperCrystals,
+                )
+
+                return FullTensorProductOfQueerSuperCrystals(
+                    (self,) + tuple(crystals), **options
+                )
+            from sage.combinat.crystals.tensor_product import (
+                FullTensorProductOfSuperCrystals,
+            )
+
+            return FullTensorProductOfSuperCrystals(
+                (self,) + tuple(crystals), **options
+            )
 
     class Finite(CategoryWithAxiom):
         class ParentMethods:
-            @cached_method(key=lambda s,i: tuple(i) if i is not None else s.index_set())
+            @cached_method(
+                key=lambda s, i: tuple(i) if i is not None else s.index_set()
+            )
             def digraph(self, index_set=None):
                 r"""
                 Return the :class:`DiGraph` associated to ``self``.
@@ -107,19 +119,25 @@ class SuperCrystals(Category_singleton):
 
                 def edge_options(data):
                     u, v, l = data
-                    edge_opts = { 'edge_string': '->', 'color': 'black' }
+                    edge_opts = {'edge_string': '->', 'color': 'black'}
                     if l > 0:
                         edge_opts['color'] = CartanType._colors.get(l, 'black')
                         edge_opts['label'] = LatexExpr(str(l))
                     elif l < 0:
-                        edge_opts['color'] = "dashed," + CartanType._colors.get(-l, 'black')
+                        edge_opts['color'] = "dashed," + CartanType._colors.get(
+                            -l, 'black'
+                        )
                         edge_opts['label'] = LatexExpr("\\overline{%s}" % str(-l))
                     else:
-                        edge_opts['color'] = "dotted," + CartanType._colors.get(l, 'black')
+                        edge_opts['color'] = "dotted," + CartanType._colors.get(
+                            l, 'black'
+                        )
                         edge_opts['label'] = LatexExpr(str(l))
                     return edge_opts
 
-                G.set_latex_options(format='dot2tex', edge_labels=True, edge_options=edge_options)
+                G.set_latex_options(
+                    format='dot2tex', edge_labels=True, edge_options=edge_options
+                )
                 return G
 
             def genuine_highest_weight_vectors(self):
@@ -140,7 +158,9 @@ class SuperCrystals(Category_singleton):
                     sage: s.genuine_highest_weight_vectors()
                     ([-2, -1], [-2, -2])
                 """
-                return tuple([x[0] for x in self._genuine_highest_lowest_weight_vectors()])
+                return tuple(
+                    [x[0] for x in self._genuine_highest_lowest_weight_vectors()]
+                )
 
             connected_components_generators = genuine_highest_weight_vectors
 
@@ -165,6 +185,7 @@ class SuperCrystals(Category_singleton):
                 """
                 category = SuperCrystals()
                 from sage.categories.regular_supercrystals import RegularSuperCrystals
+
                 if self in RegularSuperCrystals():
                     category = RegularSuperCrystals()
                 index_set = self.index_set()
@@ -172,10 +193,12 @@ class SuperCrystals(Category_singleton):
                 CCs = []
 
                 for mg in self.connected_components_generators():
-                    subcrystal = self.subcrystal(generators=(mg,),
-                                                 index_set=index_set,
-                                                 cartan_type=cartan_type,
-                                                 category=category)
+                    subcrystal = self.subcrystal(
+                        generators=(mg,),
+                        index_set=index_set,
+                        cartan_type=cartan_type,
+                        category=category,
+                    )
                     CCs.append(subcrystal)
 
                 return CCs
@@ -198,7 +221,9 @@ class SuperCrystals(Category_singleton):
                     sage: s.genuine_lowest_weight_vectors()
                     ([3, 3], [3, 2])
                 """
-                return tuple([x[1] for x in self._genuine_highest_lowest_weight_vectors()])
+                return tuple(
+                    [x[1] for x in self._genuine_highest_lowest_weight_vectors()]
+                )
 
             @cached_method
             def _genuine_highest_lowest_weight_vectors(self) -> tuple:
@@ -259,6 +284,7 @@ class SuperCrystals(Category_singleton):
                      + B[(0, 0, 0, 1, 0)] + B[(0, 0, 0, 0, 1)]
                 """
                 from sage.rings.integer_ring import ZZ
+
                 A = self.weight_lattice_realization().algebra(ZZ)
                 return A.sum(A(x.weight()) for x in self)
 
@@ -349,7 +375,9 @@ class SuperCrystals(Category_singleton):
                 P = self.parent()
                 if index_set is None or set(index_set) == set(P.index_set()):
                     return self in P.genuine_highest_weight_vectors()
-                S = P.subcrystal(generators=P, index_set=index_set, category=P.category())
+                S = P.subcrystal(
+                    generators=P, index_set=index_set, category=P.category()
+                )
                 return any(self == x.value for x in S.genuine_highest_weight_vectors())
 
             def is_genuine_lowest_weight(self, index_set=None):
@@ -382,7 +410,9 @@ class SuperCrystals(Category_singleton):
                 P = self.parent()
                 if index_set is None or set(index_set) == set(P.index_set()):
                     return self in P.genuine_lowest_weight_vectors()
-                S = P.subcrystal(generators=P, index_set=index_set, category=P.category())
+                S = P.subcrystal(
+                    generators=P, index_set=index_set, category=P.category()
+                )
                 return any(self == x.value for x in S.genuine_lowest_weight_vectors())
 
     class TensorProducts(TensorProductsCategory):
@@ -390,6 +420,7 @@ class SuperCrystals(Category_singleton):
         The category of regular crystals constructed by tensor
         product of regular crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """

@@ -483,6 +483,7 @@ class SageInputBuilder:
             # but I think they're rare enough in Sage that it's not
             # worth the effort.
             from math import inf, isnan
+
             if x == inf:
                 return self.name('float')(self.name('infinity'))
             if isnan(x):
@@ -495,6 +496,7 @@ class SageInputBuilder:
                 return SIE_literal_stringrep(self, str(x))
             from sage.rings.real_mpfr import RR
             from sage.rings.integer_ring import ZZ
+
             rrx = RR(x)
             if rrx in ZZ and abs(rrx) < (1 << 53):
                 return self.name('float')(self.int(ZZ(rrx)))
@@ -1014,12 +1016,18 @@ class SageInputBuilder:
         if parent not in self._parent_gens:
             self(parent)
             if parent not in self._parent_gens:
-                raise ValueError("{} did not register generators for sage_input".format(parent))
+                raise ValueError(
+                    "{} did not register generators for sage_input".format(parent)
+                )
 
         gens = self._parent_gens[parent]
 
         if n > len(gens):
-            raise ValueError("{} registered only {} generators for sage_input".format(parent, len(gens)))
+            raise ValueError(
+                "{} registered only {} generators for sage_input".format(
+                    parent, len(gens)
+                )
+            )
 
         return gens[n]
 
@@ -1070,12 +1078,18 @@ class SageInputBuilder:
                     neg = not neg
                     factor = factor._sie_operand
                     factors[i] = factor
-                if isinstance(factor, SIE_literal_stringrep) and factor._sie_value == '0':
+                if (
+                    isinstance(factor, SIE_literal_stringrep)
+                    and factor._sie_value == '0'
+                ):
                     factors = [factor]
                     neg = False
                     break
-                if isinstance(factor, SIE_literal_stringrep) and factor._sie_value == '1':
-                    factors[i:i + 1] = []
+                if (
+                    isinstance(factor, SIE_literal_stringrep)
+                    and factor._sie_value == '1'
+                ):
+                    factors[i : i + 1] = []
                 else:
                     i += 1
             if not factors:
@@ -1121,7 +1135,7 @@ class SageInputBuilder:
             while i < len(terms):
                 term = terms[i]
                 if isinstance(term, SIE_literal_stringrep) and term._sie_value == '0':
-                    terms[i:i + 1] = []
+                    terms[i : i + 1] = []
                 else:
                     i += 1
             if not terms:
@@ -1396,8 +1410,7 @@ class SageInputExpression:
             {call: {atomic:3}({atomic:4})}
         """
         new_args = [self._sie_builder(arg) for arg in args]
-        new_kwargs = {key: self._sie_builder(val)
-                      for key, val in kwargs.items()}
+        new_kwargs = {key: self._sie_builder(val) for key, val in kwargs.items()}
         return SIE_call(self._sie_builder, self, new_args, new_kwargs)
 
     def __getitem__(self, key):
@@ -1870,8 +1883,7 @@ class SIE_call(SageInputExpression):
         """
         func = repr(self._sie_func)
         args = [repr(arg) for arg in self._sie_args]
-        kwargs = sorted(k + '=' + repr(v)
-                        for k, v in self._sie_kwargs.items())
+        kwargs = sorted(k + '=' + repr(v) for k, v in self._sie_kwargs.items())
         all_args = ', '.join(args + kwargs)
         return "{call: %s(%s)}" % (func, all_args)
 
@@ -1911,8 +1923,7 @@ class SIE_call(SageInputExpression):
         """
         func = sif.format(self._sie_func, _prec_attribute)
         args = [sif.format(arg, 0) for arg in self._sie_args]
-        kwargs = sorted(k + '=' + sif.format(v, 0)
-                        for k, v in self._sie_kwargs.items())
+        kwargs = sorted(k + '=' + sif.format(v, 0) for k, v in self._sie_kwargs.items())
         all_args = ', '.join(args + kwargs)
         return ('%s(%s)' % (func, all_args), _prec_funcall)
 
@@ -2040,6 +2051,7 @@ class SIE_getattr(SageInputExpression):
         sage: sie
         {call: {getattr: {atomic:CC}.gen}()}
     """
+
     def __init__(self, sib, obj, attr):
         r"""
         Initialize an instance of :class:`SIE_getattr`.
@@ -2174,8 +2186,7 @@ class SIE_tuple(SageInputExpression):
             {list: ({atomic:'Hello'}, {atomic:'world'})}
         """
         kind = "list" if self._sie_is_list else "tuple"
-        return "{%s: (%s)}" % \
-            (kind, ', '.join(repr(v) for v in self._sie_values))
+        return "{%s: (%s)}" % (kind, ', '.join(repr(v) for v in self._sie_values))
 
     def _sie_referenced(self):
         r"""
@@ -2277,9 +2288,9 @@ class SIE_dict(SageInputExpression):
             sage: sib.dict({'keaton':'general', 'chan':'master'})
             {dict: {{atomic:'keaton'}:{atomic:'general'}, {atomic:'chan'}:{atomic:'master'}}}
         """
-        return "{dict: {%s}}" % \
-            ', '.join(repr(key) + ':' + repr(val)
-                      for key, val in self._sie_entries)
+        return "{dict: {%s}}" % ', '.join(
+            repr(key) + ':' + repr(val) for key, val in self._sie_entries
+        )
 
     def _sie_referenced(self):
         r"""
@@ -2313,8 +2324,9 @@ class SIE_dict(SageInputExpression):
             sage: sie._sie_format(sif)
             ("{'carnivores':1, 'thinking':2, 'triumph':3}", 42)
         """
-        return "{%s}" % ', '.join(sif.format(k, 0) + ':' + sif.format(v, 0)
-                                  for k, v in self._sie_entries), _prec_atomic
+        return "{%s}" % ', '.join(
+            sif.format(k, 0) + ':' + sif.format(v, 0) for k, v in self._sie_entries
+        ), _prec_atomic
 
 
 class SIE_binary(SageInputExpression):
@@ -2369,7 +2381,11 @@ class SIE_binary(SageInputExpression):
             sage: sib(7)/9
             {binop:/ {atomic:7} {atomic:9}}
         """
-        return "{binop:%s %s %s}" % (self._sie_op, repr(self._sie_operands[0]), repr(self._sie_operands[1]))
+        return "{binop:%s %s %s}" % (
+            self._sie_op,
+            repr(self._sie_operands[0]),
+            repr(self._sie_operands[1]),
+        )
 
     def _sie_referenced(self):
         r"""
@@ -2716,7 +2732,10 @@ class SIE_gens_constructor(SageInputExpression):
             ....:                      gens_syntax=sib.empty_subscript(qq))
             {constr_parent: {subscr: {atomic:QQ}[{atomic:'x'}]} with gens: ('x',)}
         """
-        return "{constr_parent: %s with gens: %s}" % (repr(self._sie_constr), self._sie_gen_names)
+        return "{constr_parent: %s with gens: %s}" % (
+            repr(self._sie_constr),
+            self._sie_gen_names,
+        )
 
     def _sie_referenced(self):
         r"""
@@ -2831,19 +2850,31 @@ class SIE_gens_constructor(SageInputExpression):
             (R, R, GF(17)['y'])
         """
         if not self._sie_generated:
-            if self._sie_builder.preparse() and \
-                    self._sie_gens_constr is not None and \
-                    all(g._sie_got_preferred(sif) for g in self._sie_gens):
+            if (
+                self._sie_builder.preparse()
+                and self._sie_gens_constr is not None
+                and all(g._sie_got_preferred(sif) for g in self._sie_gens)
+            ):
                 s, _ = self._sie_gens_constr._sie_format(sif)
-                sif._commands += '%s.<%s> = %s\n' % (self._sie_get_varname(sif), ','.join(self._sie_gen_names), s)
+                sif._commands += '%s.<%s> = %s\n' % (
+                    self._sie_get_varname(sif),
+                    ','.join(self._sie_gen_names),
+                    s,
+                )
             else:
                 s, _ = self._sie_constr._sie_format(sif)
                 sif._commands += '%s = %s\n' % (self._sie_get_varname(sif), s)
                 if self._sie_assign_gens:
                     if len(self._sie_gens) == 1:
-                        sif._commands += '%s = %s.gen()\n' % (self._sie_gens[0]._sie_get_varname(sif), self._sie_get_varname(sif))
+                        sif._commands += '%s = %s.gen()\n' % (
+                            self._sie_gens[0]._sie_get_varname(sif),
+                            self._sie_get_varname(sif),
+                        )
                     else:
-                        sif._commands += '%s = %s.gens()\n' % (','.join(g._sie_get_varname(sif) for g in self._sie_gens), self._sie_get_varname(sif))
+                        sif._commands += '%s = %s.gens()\n' % (
+                            ','.join(g._sie_get_varname(sif) for g in self._sie_gens),
+                            self._sie_get_varname(sif),
+                        )
             self._sie_generated = True
 
     def _sie_format(self, sif):
@@ -3092,8 +3123,13 @@ class SIE_import_name(SageInputExpression):
             sage: sib.import_name('sage.foo', 'happy', 'sad')
             {import:sage.foo/happy as sad}
         """
-        return "{import:%s/%s%s}" % (self._sie_module_name, self._sie_object_name,
-                                     "" if self._sie_object_name == self._sie_preferred_varname else " as %s" % self._sie_preferred_varname)
+        return "{import:%s/%s%s}" % (
+            self._sie_module_name,
+            self._sie_object_name,
+            ""
+            if self._sie_object_name == self._sie_preferred_varname
+            else " as %s" % self._sie_preferred_varname,
+        )
 
     def _sie_is_simple(self):
         r"""
@@ -3159,9 +3195,11 @@ class SIE_import_name(SageInputExpression):
         rename = ''
         if name != self._sie_object_name:
             rename = ' as ' + name
-        sif._commands += 'from %s import %s%s\n' % (self._sie_module_name,
-                                                    self._sie_object_name,
-                                                    rename)
+        sif._commands += 'from %s import %s%s\n' % (
+            self._sie_module_name,
+            self._sie_object_name,
+            rename,
+        )
         return name, _prec_atomic
 
 
@@ -3467,6 +3505,7 @@ def verify_same(a, b):
         AssertionError
     """
     from sage.structure.element import Element
+
     if isinstance(a, Element):
         assert a.parent() == b.parent()
     else:
@@ -3521,6 +3560,7 @@ def verify_si_answer(x, answer, preparse):
         sage: verify_si_answer(1, 'ZZ(1)', None)
     """
     from sage.misc.sage_eval import sage_eval
+
     if preparse is None:
         verify_same(x, sage_eval(answer, preparse=True))
         verify_same(x, sage_eval(answer, preparse=False))
@@ -3600,6 +3640,5 @@ class SageInputAnswer(tuple):
             return self[0] + self[1]
 
         locals = self[2]
-        locals_text = ''.join('  %s: %r\n' % (k, v)
-                              for k, v in locals.items())
+        locals_text = ''.join('  %s: %r\n' % (k, v) for k, v in locals.items())
         return 'LOCALS:\n' + locals_text + self[0] + self[1]

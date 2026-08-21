@@ -74,6 +74,7 @@ class N2LieConformalAlgebra(GradedLieConformalAlgebra):
         sage: G.bracket(G)
         {0: 2*L, 2: 2/3*C}
     """
+
     def __init__(self, R) -> None:
         """
         Initialize ``self``.
@@ -83,27 +84,43 @@ class N2LieConformalAlgebra(GradedLieConformalAlgebra):
             sage: V = lie_conformal_algebras.N2(QQ)
             sage: TestSuite(V).run()  # long time (:issue:`39569`)
         """
-        n2dict = {('L', 'L'): {0: {('L', 1): 1},
-                               1: {('L', 0): 2},
-                               3: {('C', 0): R(2).inverse_of_unit()}},
-                  ('L', 'G1'): {0: {('G1', 1): 1},
-                                1: {('G1', 0): 3 * R(2).inverse_of_unit()}},
-                  ('L', 'G2'): {0: {('G2', 1): 1},
-                                1: {('G2', 0): 3 * R(2).inverse_of_unit()}},
-                  ('G1', 'G2'): {0: {('L', 0): 1, ('J', 1): R(2).inverse_of_unit()},
-                                 1: {('J', 0): 1},
-                                 2: {('C', 0): R(3).inverse_of_unit()}},
-                  ('L', 'J'): {0: {('J', 1): 1}, 1: {('J', 0): 1}},
-                  ('J', 'J'): {1: {('C', 0): R(3).inverse_of_unit()}},
-                  ('J', 'G1'): {0: {('G1', 0): 1}},
-                  ('J', 'G2'): {0: {('G2', 0): -1}}}
+        n2dict = {
+            ('L', 'L'): {
+                0: {('L', 1): 1},
+                1: {('L', 0): 2},
+                3: {('C', 0): R(2).inverse_of_unit()},
+            },
+            ('L', 'G1'): {
+                0: {('G1', 1): 1},
+                1: {('G1', 0): 3 * R(2).inverse_of_unit()},
+            },
+            ('L', 'G2'): {
+                0: {('G2', 1): 1},
+                1: {('G2', 0): 3 * R(2).inverse_of_unit()},
+            },
+            ('G1', 'G2'): {
+                0: {('L', 0): 1, ('J', 1): R(2).inverse_of_unit()},
+                1: {('J', 0): 1},
+                2: {('C', 0): R(3).inverse_of_unit()},
+            },
+            ('L', 'J'): {0: {('J', 1): 1}, 1: {('J', 0): 1}},
+            ('J', 'J'): {1: {('C', 0): R(3).inverse_of_unit()}},
+            ('J', 'G1'): {0: {('G1', 0): 1}},
+            ('J', 'G2'): {0: {('G2', 0): -1}},
+        }
         from sage.rings.rational_field import QQ
+
         weights = (2, 1, QQ(3) / 2, QQ(3) / 2)
         parity = (0, 0, 1, 1)
-        GradedLieConformalAlgebra.__init__(self, R, n2dict,
-                                           names=('L', 'J', 'G1', 'G2'),
-                                           central_elements=('C',),
-                                           weights=weights, parity=parity)
+        GradedLieConformalAlgebra.__init__(
+            self,
+            R,
+            n2dict,
+            names=('L', 'J', 'G1', 'G2'),
+            central_elements=('C',),
+            weights=weights,
+            parity=parity,
+        )
 
     def _repr_(self) -> str:
         """

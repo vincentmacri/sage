@@ -26,6 +26,7 @@ class JuPyMake(JoinFeature):
         sage: JuPyMake().is_present()  # optional - jupymake
         FeatureTestResult('jupymake', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -34,8 +35,9 @@ class JuPyMake(JoinFeature):
             sage: isinstance(JuPyMake(), JuPyMake)
             True
         """
-        JoinFeature.__init__(self, "jupymake",
-                             [PythonModule("JuPyMake", spkg='jupymake')])
+        JoinFeature.__init__(
+            self, "jupymake", [PythonModule("JuPyMake", spkg='jupymake')]
+        )
 
 
 def all_features():

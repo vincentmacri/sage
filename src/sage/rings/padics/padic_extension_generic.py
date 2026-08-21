@@ -9,7 +9,7 @@ AUTHORS:
 - David Roe
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007-2013 David Roe <roed.math@gmail.com>
 #                               William Stein <wstein@gmail.com>
 #
@@ -18,7 +18,7 @@ AUTHORS:
 #  the License, or (at your option) any later version.
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 import sage.rings.abc
 
@@ -54,7 +54,7 @@ class pAdicExtensionGeneric(pAdicGeneric):
             sage: f = x^5 + 75*x^3 - 15*x^2 +125*x - 5
             sage: W.<w> = R.ext(f)  # indirect doctest
         """
-        #type checking done in factory
+        # type checking done in factory
         self._given_poly = poly
         R = poly.base_ring()
         # We'll deal with the different names better later.
@@ -64,7 +64,9 @@ class pAdicExtensionGeneric(pAdicGeneric):
         print_mode['ram_name'] = names[3]
         print_mode['var_name'] = names[0]
         names = names[0]
-        pAdicGeneric.__init__(self, R, R.prime(), prec, print_mode, names, element_class)
+        pAdicGeneric.__init__(
+            self, R, R.prime(), prec, print_mode, names, element_class
+        )
         self._populate_coercion_lists_(coerce_list=[R])
 
     def _coerce_map_from_(self, R):
@@ -88,24 +90,40 @@ class pAdicExtensionGeneric(pAdicGeneric):
                 return True
             if R._prec_type() == 'capped-abs':
                 if R.absolute_e() == 1:
-                    from sage.rings.padics.qadic_flint_CA import pAdicCoercion_CA_frac_field as coerce_map
+                    from sage.rings.padics.qadic_flint_CA import (
+                        pAdicCoercion_CA_frac_field as coerce_map,
+                    )
                 else:
-                    from sage.rings.padics.relative_ramified_CA import pAdicCoercion_CA_frac_field as coerce_map
+                    from sage.rings.padics.relative_ramified_CA import (
+                        pAdicCoercion_CA_frac_field as coerce_map,
+                    )
             elif R._prec_type() == 'capped-rel':
                 if R.absolute_e() == 1:
-                    from sage.rings.padics.qadic_flint_CR import pAdicCoercion_CR_frac_field as coerce_map
+                    from sage.rings.padics.qadic_flint_CR import (
+                        pAdicCoercion_CR_frac_field as coerce_map,
+                    )
                 else:
-                    from sage.rings.padics.relative_ramified_CR import pAdicCoercion_CR_frac_field as coerce_map
+                    from sage.rings.padics.relative_ramified_CR import (
+                        pAdicCoercion_CR_frac_field as coerce_map,
+                    )
             elif R._prec_type() == 'floating-point':
                 if R.absolute_e() == 1:
-                    from sage.rings.padics.qadic_flint_FP import pAdicCoercion_FP_frac_field as coerce_map
+                    from sage.rings.padics.qadic_flint_FP import (
+                        pAdicCoercion_FP_frac_field as coerce_map,
+                    )
                 else:
-                    from sage.rings.padics.relative_ramified_FP import pAdicCoercion_FP_frac_field as coerce_map
+                    from sage.rings.padics.relative_ramified_FP import (
+                        pAdicCoercion_FP_frac_field as coerce_map,
+                    )
             elif R._prec_type() == 'fixed-mod':
                 if R.absolute_e() == 1:
-                    from sage.rings.padics.qadic_flint_FM import pAdicCoercion_FM_frac_field as coerce_map
+                    from sage.rings.padics.qadic_flint_FM import (
+                        pAdicCoercion_FM_frac_field as coerce_map,
+                    )
                 else:
-                    from sage.rings.padics.relative_ramified_FM import pAdicCoercion_FM_frac_field as coerce_map
+                    from sage.rings.padics.relative_ramified_FM import (
+                        pAdicCoercion_FM_frac_field as coerce_map,
+                    )
             return coerce_map(R, self)
 
     def _extension_type(self):
@@ -177,12 +195,21 @@ class pAdicExtensionGeneric(pAdicGeneric):
                 if f == 1:
                     subscript = str(p)
                 else:
-                    subscript = "%s^{%s}" % (p,f)
+                    subscript = "%s^{%s}" % (p, f)
                 return "%s_{%s}" % (letter, subscript)
-            return "%s[%s]" % (self.base_ring()._repr_(do_latex=True), self.latex_name())
+            return "%s[%s]" % (
+                self.base_ring()._repr_(do_latex=True),
+                self.latex_name(),
+            )
         if type != "":
             type += " "
-        s = "%s-adic %sExtension %s in %s defined by %s" % (p, type, "Field" if self.is_field() else "Ring", self.variable_name(), self.defining_polynomial(exact=True))
+        s = "%s-adic %sExtension %s in %s defined by %s" % (
+            p,
+            type,
+            "Field" if self.is_field() else "Ring",
+            self.variable_name(),
+            self.defining_polynomial(exact=True),
+        )
         if base.absolute_degree() > 1:
             s += " over its base " + ("field" if base.is_field() else "ring")
         return s
@@ -217,16 +244,27 @@ class pAdicExtensionGeneric(pAdicGeneric):
         if self._implementation == 'NTL' and R == QQ:
             # Want to use DefaultConvertMap_unique
             return None
-        if isinstance(R, pAdicExtensionGeneric) and R.prime() == self.prime() and R.defining_polynomial(exact=True) == self.defining_polynomial(exact=True):
+        if (
+            isinstance(R, pAdicExtensionGeneric)
+            and R.prime() == self.prime()
+            and R.defining_polynomial(exact=True)
+            == self.defining_polynomial(exact=True)
+        ):
             if R.is_field() and not self.is_field():
                 cat = SetsWithPartialMaps()
             elif R.category() is self.category():
                 cat = R.category()
             else:
                 cat = EuclideanDomains() & MetricSpaces().Complete()
-        elif isinstance(R, sage.rings.abc.Order) and R.number_field().defining_polynomial() == self.defining_polynomial():
+        elif (
+            isinstance(R, sage.rings.abc.Order)
+            and R.number_field().defining_polynomial() == self.defining_polynomial()
+        ):
             cat = IntegralDomains()
-        elif isinstance(R, NumberField) and R.defining_polynomial() == self.defining_polynomial():
+        elif (
+            isinstance(R, NumberField)
+            and R.defining_polynomial() == self.defining_polynomial()
+        ):
             if self.is_field():
                 cat = Fields()
             else:
@@ -262,10 +300,12 @@ class pAdicExtensionGeneric(pAdicGeneric):
         if not isinstance(other, pAdicExtensionGeneric):
             return False
 
-        return (self.ground_ring() == other.ground_ring() and
-                self.defining_polynomial() == other.defining_polynomial() and
-                self.precision_cap() == other.precision_cap() and
-                self._printer.richcmp_modes(other._printer, op_EQ))
+        return (
+            self.ground_ring() == other.ground_ring()
+            and self.defining_polynomial() == other.defining_polynomial()
+            and self.precision_cap() == other.precision_cap()
+            and self._printer.richcmp_modes(other._printer, op_EQ)
+        )
 
     def __ne__(self, other):
         """
@@ -295,19 +335,24 @@ class pAdicExtensionGeneric(pAdicGeneric):
             True
         """
         # _printer is not hashable, hence not taken into account
-        return hash((self.ground_ring(), self.defining_polynomial(exact=True),
-                     self.precision_cap()))
+        return hash(
+            (
+                self.ground_ring(),
+                self.defining_polynomial(exact=True),
+                self.precision_cap(),
+            )
+        )
 
-    #def absolute_discriminant(self):
+    # def absolute_discriminant(self):
     #    raise NotImplementedError
 
-    #def discriminant(self):
+    # def discriminant(self):
     #    raise NotImplementedError
 
-    #def is_abelian(self):
+    # def is_abelian(self):
     #    raise NotImplementedError
 
-    #def is_normal(self):
+    # def is_normal(self):
     #    raise NotImplementedError
 
     def defining_polynomial(self, var=None, exact=False):
@@ -369,7 +414,11 @@ class pAdicExtensionGeneric(pAdicGeneric):
             :meth:`defining_polynomial`
             :meth:`modulus`
         """
-        return self.base_ring().exact_field().extension(self._exact_modulus, self.variable_name())
+        return (
+            self.base_ring()
+            .exact_field()
+            .extension(self._exact_modulus, self.variable_name())
+        )
 
     def exact_ring(self):
         """
@@ -396,7 +445,11 @@ class pAdicExtensionGeneric(pAdicGeneric):
             ...
             ValueError: each generator must be integral
         """
-        return self.base_ring().exact_ring().extension(self.defining_polynomial(exact=True), self.variable_name())
+        return (
+            self.base_ring()
+            .exact_ring()
+            .extension(self.defining_polynomial(exact=True), self.variable_name())
+        )
 
     def modulus(self, exact=False):
         r"""
@@ -457,7 +510,7 @@ class pAdicExtensionGeneric(pAdicGeneric):
             return self.ground_ring()
         return self.ground_ring().ground_ring_of_tower()
 
-    #def is_isomorphic(self, ring):
+    # def is_isomorphic(self, ring):
     #    raise NotImplementedError
 
     def polynomial_ring(self):
@@ -471,7 +524,7 @@ class pAdicExtensionGeneric(pAdicGeneric):
         """
         return self._given_poly.parent()
 
-    #def teichmuller(self, x, prec=None):
+    # def teichmuller(self, x, prec=None):
     #    if prec is None:
     #        prec = self.precision_cap()
     #    x = self(x, prec)
@@ -529,17 +582,25 @@ class pAdicExtensionGeneric(pAdicGeneric):
             sage: c(R) is K
             True
         """
-        from sage.categories.pushout import AlgebraicExtensionFunctor as AEF, FractionField as FF
+        from sage.categories.pushout import (
+            AlgebraicExtensionFunctor as AEF,
+            FractionField as FF,
+        )
+
         if not forbid_frac_field and self.is_field():
             return (FF(), self.integer_ring())
-        return (AEF([self.defining_polynomial(exact=True)],
-                    [self.variable_name()],
-                    precs=[self.precision_cap()],
-                    print_mode=self._printer.dict(),
-                    implementations=[self._implementation]),
-                self.base_ring())
+        return (
+            AEF(
+                [self.defining_polynomial(exact=True)],
+                [self.variable_name()],
+                precs=[self.precision_cap()],
+                print_mode=self._printer.dict(),
+                implementations=[self._implementation],
+            ),
+            self.base_ring(),
+        )
 
-    #def hasGNB(self):
+    # def hasGNB(self):
     #    raise NotImplementedError
 
     def random_element(self):
@@ -559,10 +620,14 @@ class pAdicExtensionGeneric(pAdicGeneric):
             sage: W.random_element().parent() is W
             True
         """
-        return reduce(lambda x,y: x+y,
-                      [self.ground_ring().random_element() * self.gen()**i for i in
-                           range(self.modulus().degree())],
-                      0)
+        return reduce(
+            lambda x, y: x + y,
+            [
+                self.ground_ring().random_element() * self.gen() ** i
+                for i in range(self.modulus().degree())
+            ],
+            0,
+        )
 
     @cached_method(key=(lambda self, base, basis, map: (base or self.base_ring(), map)))
     def free_module(self, base=None, basis=None, map=True):
@@ -639,20 +704,21 @@ class pAdicExtensionGeneric(pAdicGeneric):
         to_V = ToV.__make_element_class__(to_V)(ToV)
         return V, from_V, to_V
 
-    #def unit_group(self):
+    # def unit_group(self):
     #    raise NotImplementedError
 
-    #def unit_group_gens(self):
+    # def unit_group_gens(self):
     #    raise NotImplementedError
 
-    #def principal_unit_group(self):
+    # def principal_unit_group(self):
     #    raise NotImplementedError
 
-    #def zeta(self, n=None):
+    # def zeta(self, n=None):
     #    raise NotImplementedError
 
-    #def zeta_order(self):
+    # def zeta_order(self):
     #    raise NotImplementedError
+
 
 # We could have used morphisms in the category
 # FiniteDimensionalModulesWithBasis over Qp(p)
@@ -679,6 +745,7 @@ class pAdicModuleIsomorphism(Map):
         sage: isinstance(fr, pAdicModuleIsomorphism)
         True
     """
+
     def _repr_type(self):
         r"""
         EXAMPLES::
@@ -738,6 +805,7 @@ class MapFreeModuleToOneStep(pAdicModuleIsomorphism):
         sage: V, fr, to = K.free_module()
         sage: TestSuite(fr).run(skip=['_test_nonzero_equal'])  # skipped since Qq(125) doesn't have dimension()
     """
+
     def _call_(self, x):
         """
         EXAMPLES::
@@ -773,6 +841,7 @@ class MapOneStepToFreeModule(pAdicModuleIsomorphism):
         sage: V, fr, to = K.free_module()
         sage: TestSuite(to).run()
     """
+
     def _call_(self, x):
         """
         EXAMPLES::
@@ -801,6 +870,7 @@ class MapFreeModuleToTwoStep(pAdicModuleIsomorphism):
         sage: V, fr, to = L.free_module(base=Qp(5))
         sage: TestSuite(fr).run(skip=['_test_nonzero_equal'])  # skipped since L doesn't have dimension()
     """
+
     def _call_(self, x):
         """
         EXAMPLES::
@@ -818,7 +888,7 @@ class MapFreeModuleToTwoStep(pAdicModuleIsomorphism):
         x = list(x)
         n = len(x)
         d = n // L.relative_degree()
-        v = [U(x[i:i+d]) for i in range(0,n,d)]
+        v = [U(x[i : i + d]) for i in range(0, n, d)]
         return L(v)
 
     def _call_with_args(self, x, args=(), kwds={}):
@@ -848,6 +918,7 @@ class MapTwoStepToFreeModule(pAdicModuleIsomorphism):
         sage: V, fr, to = L.free_module(base=Qp(5))
         sage: TestSuite(to).run()
     """
+
     def _call_(self, x):
         """
         EXAMPLES::
@@ -860,7 +931,9 @@ class MapTwoStepToFreeModule(pAdicModuleIsomorphism):
             sage: to(b)
             (1 + O(5^3), O(5^3), O(5^2), 1 + O(5^2), O(5^2), O(5^2))
         """
-        v = flatten([c._polynomial_list(pad=True) for c in x._polynomial_list(pad=True)])
+        v = flatten(
+            [c._polynomial_list(pad=True) for c in x._polynomial_list(pad=True)]
+        )
         return self.codomain()(v)
 
 
@@ -889,6 +962,7 @@ class DefPolyConversion(Morphism):
         sage: f = S.convert_map_from(R)
         sage: TestSuite(f).run()
     """
+
     def _call_(self, x):
         """
         Use the polynomial associated to the element to do the conversion.
@@ -973,12 +1047,16 @@ class DefPolyConversion(Morphism):
         if isinstance(x.parent(), pAdicExtensionGeneric):
             if args:
                 if 'absprec' in kwds:
-                    raise TypeError("_call_with_args() got multiple values for keyword argument 'absprec'")
+                    raise TypeError(
+                        "_call_with_args() got multiple values for keyword argument 'absprec'"
+                    )
                 absprec = args[0]
                 args = args[1:]
             else:
                 absprec = kwds.pop('absprec', Infinity)
             absprec = min(absprec, x.precision_absolute())
             if absprec is not Infinity:
-                return S([Sbase(c).lift_to_precision() for c in L], absprec, *args, **kwds)
+                return S(
+                    [Sbase(c).lift_to_precision() for c in L], absprec, *args, **kwds
+                )
         return S([Sbase(c) for c in L], *args, **kwds)

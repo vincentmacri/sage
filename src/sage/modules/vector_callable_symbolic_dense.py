@@ -52,7 +52,9 @@ from sage.modules import free_module_element
 from sage.symbolic.ring import SR
 
 
-class Vector_callable_symbolic_dense(free_module_element.FreeModuleElement_generic_dense):
+class Vector_callable_symbolic_dense(
+    free_module_element.FreeModuleElement_generic_dense
+):
     def _repr_(self):
         """
         Return the string representation of the vector.
@@ -92,6 +94,7 @@ class Vector_callable_symbolic_dense(free_module_element.FreeModuleElement_gener
             t \ {\mapsto}\ \left(\cos\left(t\right),\,\sin\left(t\right)\right)
         """
         from sage.misc.latex import latex
+
         ring = self.coordinate_ring()
         args = ring.arguments()
         args = [latex(arg) for arg in args]

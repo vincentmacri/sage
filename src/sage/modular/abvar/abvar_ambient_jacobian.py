@@ -8,11 +8,15 @@ TESTS::
     sage: loads(dumps(J1(13))) == J1(13)
     True
 """
+
 import weakref
 
-from .abvar import (ModularAbelianVariety_modsym_abstract,
-                    simple_factorization_of_modsym_space, modsym_lattices,
-                    ModularAbelianVariety_modsym)
+from .abvar import (
+    ModularAbelianVariety_modsym_abstract,
+    simple_factorization_of_modsym_space,
+    modsym_lattices,
+    ModularAbelianVariety_modsym,
+)
 
 from sage.misc.cachefunc import cached_method
 from sage.modular.modsym.modsym import ModularSymbols
@@ -73,6 +77,7 @@ class ModAbVar_ambient_jacobian_class(ModularAbelianVariety_modsym_abstract):
     An ambient Jacobian modular abelian variety attached to a
     congruence subgroup.
     """
+
     def __init__(self, group) -> None:
         """
         Create an ambient Jacobian modular abelian variety.
@@ -123,8 +128,11 @@ class ModAbVar_ambient_jacobian_class(ModularAbelianVariety_modsym_abstract):
             sage: A.reset_name()
         """
         txt = '' if self.base_field() == QQ else ' over %s' % self.base_field()
-        return 'Abelian variety %s of dimension %s%s' % (self._ambient_repr(),
-                                                         self.dimension(), txt)
+        return 'Abelian variety %s of dimension %s%s' % (
+            self._ambient_repr(),
+            self.dimension(),
+            txt,
+        )
 
     def _latex_(self) -> str:
         """
@@ -353,12 +361,14 @@ class ModAbVar_ambient_jacobian_class(ModularAbelianVariety_modsym_abstract):
         is_simple = True if simple else None
         for newform_level, isogeny_number, number, modsym, lattice in factors:
             A = ModularAbelianVariety_modsym(
-                modsym, lattice=lattice,
+                modsym,
+                lattice=lattice,
                 newform_level=(newform_level, group),
                 is_simple=is_simple,
                 isogeny_number=isogeny_number,
                 number=(number, level),
-                check=False)
+                check=False,
+            )
             D.append(A)
 
             # This line below could be safely deleted.  It basically
@@ -398,6 +408,8 @@ class ModAbVar_ambient_jacobian_class(ModularAbelianVariety_modsym_abstract):
             return [S.newform(names=names) for S in self.decomposition()]
         Gtype = G.parent()
         N = G.level()
-        preans = (Newforms(Gtype(d), names=names) * len((N // d).divisors())
-                  for d in N.divisors())
+        preans = (
+            Newforms(Gtype(d), names=names) * len((N // d).divisors())
+            for d in N.divisors()
+        )
         return [newform for li in preans for newform in li]

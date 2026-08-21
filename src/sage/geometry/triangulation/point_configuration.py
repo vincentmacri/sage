@@ -192,8 +192,11 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.unique_representation import UniqueRepresentation
 
-from sage.geometry.triangulation.base import \
-    PointConfiguration_base, Point, ConnectedTriangulationsIterator
+from sage.geometry.triangulation.base import (
+    PointConfiguration_base,
+    Point,
+    ConnectedTriangulationsIterator,
+)
 
 from sage.geometry.triangulation.element import Triangulation
 
@@ -280,11 +283,15 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             return PointConfiguration._have_TOPCOM_cached
 
         try:
-            out = next(PointConfiguration._TOPCOM_exec('points2placingtriang',
-                                                  '[[0,1],[1,1]]', verbose=False))
+            out = next(
+                PointConfiguration._TOPCOM_exec(
+                    'points2placingtriang', '[[0,1],[1,1]]', verbose=False
+                )
+            )
             PointConfiguration._have_TOPCOM_cached = True
-            assert out == '{{0,1}}',\
+            assert out == '{{0,1}}', (
                 'TOPCOM ran but did not produce the correct output!'
+            )
         except (FeatureNotPresentError, pexpect.ExceptionPexpect):
             PointConfiguration._have_TOPCOM_cached = False
 
@@ -292,7 +299,15 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         return PointConfiguration._have_TOPCOM_cached
 
     @staticmethod
-    def __classcall__(cls, points, projective=False, connected=True, fine=False, regular=None, star=None):
+    def __classcall__(
+        cls,
+        points,
+        projective=False,
+        connected=True,
+        fine=False,
+        regular=None,
+        star=None,
+    ):
         r"""
         Normalize the constructor arguments to be unique keys.
 
@@ -305,22 +320,23 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         """
         if isinstance(points, PointConfiguration_base):
             pc = points
-            points = tuple( p.projective() for p in points )
+            points = tuple(p.projective() for p in points)
             projective = True
             defined_affine = pc.is_affine()
         elif projective:
-            points = tuple( tuple(p) for p in points )
+            points = tuple(tuple(p) for p in points)
             defined_affine = False
         else:
-            points = tuple( tuple(p)+(1,) for p in points )
+            points = tuple(tuple(p) + (1,) for p in points)
             defined_affine = True
         if star is not None and star not in ZZ:
             star_point = tuple(star)
             if len(star_point) < len(points[0]):
-                star_point = tuple(star)+(1,)
+                star_point = tuple(star) + (1,)
             star = points.index(star_point)
-        return super().__classcall__(cls, points, connected, fine,
-                                     regular, star, defined_affine)
+        return super().__classcall__(
+            cls, points, connected, fine, regular, star, defined_affine
+        )
 
     def __init__(self, points, connected, fine, regular, star, defined_affine):
         """
@@ -343,7 +359,9 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         assert connected in [True, False], 'Unknown value: connected=' + str(connected)
         self._connected = connected
         if not connected and not PointConfiguration._have_TOPCOM():
-            raise ValueError('You must install TOPCOM to find non-connected triangulations.')
+            raise ValueError(
+                'You must install TOPCOM to find non-connected triangulations.'
+            )
 
         assert fine in [True, False], 'Unknown value: fine=' + str(fine)
         self._fine = fine
@@ -384,9 +402,9 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         """
         engine = engine.lower()
         if engine not in ['auto', 'topcom', 'internal']:
-            raise ValueError('Unknown value for "engine": '+str(engine))
+            raise ValueError('Unknown value for "engine": ' + str(engine))
 
-        PointConfiguration._use_TOPCOM = (engine == 'topcom')
+        PointConfiguration._use_TOPCOM = engine == 'topcom'
 
     def star_center(self):
         r"""
@@ -441,12 +459,16 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             True
         """
         if self.is_affine():
-            points = tuple( p.affine() for p in self )
-            return (PointConfiguration, (points, False,
-                                         self._connected, self._fine, self._regular, self._star))
-        points = tuple( p.projective() for p in self )
-        return (PointConfiguration, (points, True,
-                                     self._connected, self._fine, self._regular, self._star))
+            points = tuple(p.affine() for p in self)
+            return (
+                PointConfiguration,
+                (points, False, self._connected, self._fine, self._regular, self._star),
+            )
+        points = tuple(p.projective() for p in self)
+        return (
+            PointConfiguration,
+            (points, True, self._connected, self._fine, self._regular, self._star),
+        )
 
     def an_element(self):
         """
@@ -524,11 +546,11 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             s += ' affine'
         else:
             s += ' projective'
-        s += " %s-space over %s" % (self.ambient_dim(),self.base_ring())
+        s += " %s-space over %s" % (self.ambient_dim(), self.base_ring())
         if len(self) == 1:
-            s += ' consisting of '+str(len(self))+' point. '
+            s += ' consisting of ' + str(len(self)) + ' point. '
         else:
-            s += ' consisting of '+str(len(self))+' points. '
+            s += ' consisting of ' + str(len(self)) + ' points. '
 
         s += 'The triangulations of this point configuration are assumed to be'
 
@@ -544,7 +566,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
 
         if self._regular:
             s += ' regular'
-        elif self._regular is False: # may be False or None, with different meanings
+        elif self._regular is False:  # may be False or None, with different meanings
             s += ' irregular'
         else:
             s += ' not necessarily regular'
@@ -552,7 +574,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         if self._star is None:
             s += '.'
         else:
-            s += ', and star with center '+str(self.star_center())+'.'
+            s += ', and star with center ' + str(self.star_center()) + '.'
         if self.n_points() == 0:
             s = 'The pointless empty configuration'
         return s
@@ -569,9 +591,9 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             '[[0,0,0,1],[-2,0,0,1],[0,-2,0,1],[-2,-2,0,1],[0,0,-2,1]]'
         """
         s = '['
-        s += ','.join([
-                '[' + ','.join(map(str,p.reduced_projective())) + ']'
-                for p in self ])
+        s += ','.join(
+            ['[' + ','.join(map(str, p.reduced_projective())) + ']' for p in self]
+        )
         s += ']'
         return s
 
@@ -670,16 +692,16 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             #######################
             [(<0,1,2,4>, <1,2,3,4>)]
         """
-        for line in self._TOPCOM_exec(executable,
-                                      self._TOPCOM_points(), verbose):
-            triangulation = line[ line.find('{{')+2 : line.rfind('}}') ]
+        for line in self._TOPCOM_exec(executable, self._TOPCOM_points(), verbose):
+            triangulation = line[line.find('{{') + 2 : line.rfind('}}')]
             triangulation = triangulation.split('},{')
-            triangulation = [ [ QQ(t) for t in triangle.split(',') ]
-                              for triangle in triangulation ]
+            triangulation = [
+                [QQ(t) for t in triangle.split(',')] for triangle in triangulation
+            ]
 
             if self._star is not None:
                 o = self._star
-                if not all( t.count(o) > 0 for t in triangulation):
+                if not all(t.count(o) > 0 for t in triangulation):
                     continue
 
             yield self(triangulation)
@@ -744,9 +766,10 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             [(0, 1, 2), (0, 1, 4), (0, 2, 4), (1, 2, 3)]
             sage: p.set_engine('internal')
         """
-        assert self._regular is not False, \
-            'When asked for a single triangulation TOPCOM ' + \
-            'always returns a regular triangulation.'
+        assert self._regular is not False, (
+            'When asked for a single triangulation TOPCOM '
+            + 'always returns a regular triangulation.'
+        )
 
         command = "points2"
         if self._fine:
@@ -793,11 +816,13 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             True
             sage: PointConfiguration.set_engine('internal')
         """
-        return PointConfiguration(self,
-                                  connected=self._connected,
-                                  fine=self._fine,
-                                  regular=regular,
-                                  star=self._star)
+        return PointConfiguration(
+            self,
+            connected=self._connected,
+            fine=self._fine,
+            regular=regular,
+            star=self._star,
+        )
 
     def restrict_to_connected_triangulations(self, connected=True):
         """
@@ -837,11 +862,13 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             True
             sage: PointConfiguration.set_engine('internal')
         """
-        return PointConfiguration(self,
-                                  connected=connected,
-                                  fine=self._fine,
-                                  regular=self._regular,
-                                  star=self._star)
+        return PointConfiguration(
+            self,
+            connected=connected,
+            fine=self._fine,
+            regular=self._regular,
+            star=self._star,
+        )
 
     def restrict_to_fine_triangulations(self, fine=True):
         """
@@ -874,11 +901,13 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             sage: p == p_fine.restrict_to_fine_triangulations(fine=False)
             True
         """
-        return PointConfiguration(self,
-                                  connected=self._connected,
-                                  fine=fine,
-                                  regular=self._regular,
-                                  star=self._star)
+        return PointConfiguration(
+            self,
+            connected=self._connected,
+            fine=fine,
+            regular=self._regular,
+            star=self._star,
+        )
 
     def restrict_to_star_triangulations(self, star):
         """
@@ -914,11 +943,13 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             sage: p == p_star.restrict_to_star_triangulations(star=None)
             True
         """
-        return PointConfiguration(self,
-                                  connected=self._connected,
-                                  fine=self._fine,
-                                  regular=self._regular,
-                                  star=star)
+        return PointConfiguration(
+            self,
+            connected=self._connected,
+            fine=self._fine,
+            regular=self._regular,
+            star=star,
+        )
 
     def triangulations(self, verbose=False):
         r"""
@@ -987,7 +1018,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         else:
             if not self._connected:
                 raise ValueError('Need TOPCOM to find disconnected triangulations.')
-            if (self._regular is not None):
+            if self._regular is not None:
                 raise ValueError('Need TOPCOM to test for regularity.')
             ci = ConnectedTriangulationsIterator(self, star=self._star, fine=self._fine)
             for encoded_triangulation in ci:
@@ -1062,7 +1093,12 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
                 # either topcom did not return a triangulation or we filtered it out
                 pass
 
-        if self._connected and not self._fine and self._regular is not False and self._star is None:
+        if (
+            self._connected
+            and not self._fine
+            and self._regular is not False
+            and self._star is None
+        ):
             return self.placing_triangulation()
 
         try:
@@ -1088,6 +1124,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             pass
 
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         pts = [p.reduced_affine() for p in self.points()]
         self._polyhedron = Polyhedron(vertices=pts)
         return self._polyhedron
@@ -1142,8 +1179,8 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             sage: DihedralGroup(1).is_isomorphic(_)                                # needs sage.graphs sage.groups
             True
         """
-        v_list = [ vector(p.projective()) for p in self ]
-        Qinv = sum( v.column() * v.row() for v in v_list ).inverse()
+        v_list = [vector(p.projective()) for p in self]
+        Qinv = sum(v.column() * v.row() for v in v_list).inverse()
 
         # construct the graph
         from sage.graphs.graph import Graph
@@ -1153,10 +1190,10 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         # the backends are fixed.
         G = Graph(sparse=True)
         for i in range(len(v_list)):
-            for j in range(i+1,len(v_list)):
+            for j in range(i + 1, len(v_list)):
                 v_i = v_list[i]
                 v_j = v_list[j]
-                G.add_edge(i+1,j+1, v_i * Qinv * v_j)
+                G.add_edge(i + 1, j + 1, v_i * Qinv * v_j)
 
         return G.automorphism_group(edge_labels=True)
 
@@ -1190,8 +1227,8 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
 
         inequalities = []
         for ieq in self.convex_hull().inequality_generator():
-            if (ieq.A()*p + ieq.b() == 0):
-                inequalities += [ ieq.vector() ]
+            if ieq.A() * p + ieq.b() == 0:
+                inequalities += [ieq.vector()]
         return matrix(inequalities).rank()
 
     def face_interior(self, dim=None, codim=None):
@@ -1208,11 +1245,13 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             sage: triangle.face_interior(codim=1)  # interior of facets
             (3,)
         """
-        assert not (dim is not None and codim is not None), "You cannot specify both dim and codim."
+        assert not (dim is not None and codim is not None), (
+            "You cannot specify both dim and codim."
+        )
 
-        if (dim is not None):
-            return self.face_interior()[self.convex_hull().dim()-dim]
-        if (codim is not None):
+        if dim is not None:
+            return self.face_interior()[self.convex_hull().dim() - dim]
+        if codim is not None:
             return self.face_interior()[codim]
 
         try:
@@ -1220,10 +1259,12 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         except AttributeError:
             pass
 
-        d = [ self.face_codimension(i) for i in range(self.n_points()) ]
+        d = [self.face_codimension(i) for i in range(self.n_points())]
 
-        return tuple( tuple(i for i in range(self.n_points()) if d[i] == codim )
-                      for codim in range(self.dim()+1) )
+        return tuple(
+            tuple(i for i in range(self.n_points()) if d[i] == codim)
+            for codim in range(self.dim() + 1)
+        )
 
     def exclude_points(self, point_idx_list):
         """
@@ -1251,14 +1292,17 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             sage: p.exclude_points(p.face_interior(codim=1)).points()
             (P(-1, 0), P(0, 0), P(1, -1), P(1, 1))
         """
-        points = [self.point(i) for i in range(self.n_points())
-                  if i not in point_idx_list]
-        return PointConfiguration(points,
-                                  projective=False,
-                                  connected=self._connected,
-                                  fine=self._fine,
-                                  regular=self._regular,
-                                  star=self._star)
+        points = [
+            self.point(i) for i in range(self.n_points()) if i not in point_idx_list
+        ]
+        return PointConfiguration(
+            points,
+            projective=False,
+            connected=self._connected,
+            fine=self._fine,
+            regular=self._regular,
+            star=self._star,
+        )
 
     def volume(self, simplex=None):
         """
@@ -1299,13 +1343,13 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             things so that the volume of the standard `n`-simplex is 1.
             See [GKZ1994]_ page 182.
         """
-        if (simplex is None):
-            return sum([ self.volume(s) for s in self.triangulate() ])
+        if simplex is None:
+            return sum([self.volume(s) for s in self.triangulate()])
 
-        #Form a matrix whose columns are the points of simplex
-        #with the first point of simplex shifted to the origin.
-        v = [ self.point(i).reduced_affine_vector() for i in simplex ]
-        m = matrix([ v_i - v[0] for v_i in v[1:] ])
+        # Form a matrix whose columns are the points of simplex
+        # with the first point of simplex shifted to the origin.
+        v = [self.point(i).reduced_affine_vector() for i in simplex]
+        m = matrix([v_i - v[0] for v_i in v[1:]])
         return abs(m.det())
 
     def secondary_polytope(self):
@@ -1352,9 +1396,10 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
              An inequality (0, 0, 0, 3, 2) x - 14 >= 0)
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
-        #TODO: once restriction to regular triangulations is fixed,
-        #change the next line to only take the regular triangulations,
-        #since they are the vertices of the secondary polytope anyway.
+
+        # TODO: once restriction to regular triangulations is fixed,
+        # change the next line to only take the regular triangulations,
+        # since they are the vertices of the secondary polytope anyway.
         l = self.triangulations_list()
         return Polyhedron(vertices=[x.gkz_phi() for x in l])
 
@@ -1385,15 +1430,14 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         supports_k = []
 
         for k in range(2, self.dim() + 3):
-
             # possibly linear dependent subsets
             supports_knext = set()
             possible_dependency = set()
             for indep in independent_k:
-                indep_plus_one = [ tuple(sorted(indep+(i,))) for i in (I-set(indep)) ]
+                indep_plus_one = [tuple(sorted(indep + (i,))) for i in (I - set(indep))]
                 possible_dependency.update(indep_plus_one)
             for supp in supports_k:
-                supp_plus_one = [ tuple(sorted(supp+(i,))) for i in (I-set(supp)) ]
+                supp_plus_one = [tuple(sorted(supp + (i,))) for i in (I - set(supp))]
                 possible_dependency.difference_update(supp_plus_one)
                 supports_knext.update(supp_plus_one)
 
@@ -1401,7 +1445,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             supports_k = list(supports_knext)
             independent_k = []
             for idx in possible_dependency:
-                rk = matrix([ U[i] for i in idx ]).rank()
+                rk = matrix([U[i] for i in idx]).rank()
                 if rk == k:
                     independent_k.append(idx)
                 else:
@@ -1468,13 +1512,13 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
 
         Circuits = ()
         for support in self.circuits_support():
-            m = matrix([ U[i] for i in support ]).transpose()
+            m = matrix([U[i] for i in support]).transpose()
             ker = m.right_kernel().basis()[0]
             assert len(ker) == len(support)
-            Cplus = [ support[i] for i in range(len(support)) if ker[i] > 0 ]
-            Cminus = [ support[i] for i in range(len(support)) if ker[i] < 0 ]
-            Czero = set( range(n) ).difference(support)
-            Circuits += ( (tuple(Cplus), tuple(Czero), tuple(Cminus)), )
+            Cplus = [support[i] for i in range(len(support)) if ker[i] > 0]
+            Cminus = [support[i] for i in range(len(support)) if ker[i] < 0]
+            Czero = set(range(n)).difference(support)
+            Circuits += ((tuple(Cplus), tuple(Czero), tuple(Cminus)),)
         self._circuits = Circuits
         return Circuits
 
@@ -1506,9 +1550,9 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             Cpos = circuit[0]
             Cneg = circuit[2]
             if Cpos == negative:
-                pos += ( Cneg, )
+                pos += (Cneg,)
             elif Cneg == negative:
-                pos += ( Cpos, )
+                pos += (Cpos,)
         return pos
 
     def bistellar_flips(self):
@@ -1551,12 +1595,18 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         for C in self.circuits():
             Cpos = list(C[0])
             Cneg = list(C[2])
-            Tpos = [Cpos + Cneg[0:i] + Cneg[i+1:len(Cneg)]
-                    for i in range(len(Cneg))]
-            Tneg = [Cneg + Cpos[0:i] + Cpos[i+1:len(Cpos)]
-                    for i in range(len(Cpos))]
-            flips.append((self.element_class(Tpos, parent=self, check=False),
-                          self.element_class(Tneg, parent=self, check=False)))
+            Tpos = [
+                Cpos + Cneg[0:i] + Cneg[i + 1 : len(Cneg)] for i in range(len(Cneg))
+            ]
+            Tneg = [
+                Cneg + Cpos[0:i] + Cpos[i + 1 : len(Cpos)] for i in range(len(Cpos))
+            ]
+            flips.append(
+                (
+                    self.element_class(Tpos, parent=self, check=False),
+                    self.element_class(Tneg, parent=self, check=False),
+                )
+            )
         return tuple(flips)
 
     def lexicographic_triangulation(self):
@@ -1604,19 +1654,19 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             else:
                 lex_supp.add(Cminus)
 
-        lex_supp = sorted(lex_supp, key=lambda x:-len(x))
+        lex_supp = sorted(lex_supp, key=lambda x: -len(x))
         basepts = copy(lex_supp)
-        for i in range(len(lex_supp)-1):
-            for j in range(i+1,len(lex_supp)):
+        for i in range(len(lex_supp) - 1):
+            for j in range(i + 1, len(lex_supp)):
                 if set(lex_supp[j]).issubset(set(lex_supp[i])):
                     try:
                         basepts.remove(lex_supp[i])
                     except ValueError:
                         pass
 
-        basepts = [ (len(b),)+b for b in basepts ]     # decorate
-        basepts = sorted(basepts)                      # sort
-        basepts = [ b[1:] for b in basepts ]           # undecorate
+        basepts = [(len(b),) + b for b in basepts]  # decorate
+        basepts = sorted(basepts)  # sort
+        basepts = [b[1:] for b in basepts]  # undecorate
 
         def make_cotriang(basepts):
             if len(basepts) == 0:
@@ -1624,7 +1674,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             triangulation = set()
             for tail in make_cotriang(basepts[1:]):
                 for head in basepts[0]:
-                    triangulation.update([ frozenset([head]).union(tail) ])
+                    triangulation.update([frozenset([head]).union(tail)])
 
             nonminimal = set()
             for rel in itertools.combinations(triangulation, 2):
@@ -1634,15 +1684,15 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
                     nonminimal.update([rel[0]])
             triangulation.difference_update(nonminimal)
 
-            triangulation = [ [len(t)]+sorted(t) for t in triangulation ] # decorate
-            triangulation = sorted(triangulation)                         # sort
-            triangulation = [ frozenset(t[1:]) for t in triangulation ]   # undecorate
+            triangulation = [[len(t)] + sorted(t) for t in triangulation]  # decorate
+            triangulation = sorted(triangulation)  # sort
+            triangulation = [frozenset(t[1:]) for t in triangulation]  # undecorate
 
             return triangulation
 
         triangulation = make_cotriang(basepts)
         I = frozenset(range(self.n_points()))
-        triangulation = [ tuple(I.difference(t)) for t in triangulation ]
+        triangulation = [tuple(I.difference(t)) for t in triangulation]
 
         return self(triangulation)
 
@@ -1678,7 +1728,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         self._assert_is_affine()
         d = 0
         for xi, yi in zip(x.projective(), y.projective()):
-            d += (xi-yi)**2
+            d += (xi - yi) ** 2
         return d
 
     @cached_method
@@ -1713,10 +1763,10 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
         """
         x2 = y2 = xy = 0
         for xi, yi in zip(x.projective(), y.projective()):
-            x2 += xi*xi
-            y2 += yi*yi
-            xy += xi*yi
-        return 1-xy*xy/(x2*y2)
+            x2 += xi * xi
+            y2 += yi * yi
+            xy += xi * yi
+        return 1 - xy * xy / (x2 * y2)
 
     @cached_method
     def distance(self, x, y):
@@ -1747,8 +1797,8 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             [0, 1/2, 5/6, 5/6, 1/2]
         """
         if self.is_affine():
-            return self.distance_affine(x,y)
-        return self.distance_FS(x,y)
+            return self.distance_affine(x, y)
+        return self.distance_FS(x, y)
 
     def farthest_point(self, points, among=None):
         """
@@ -1783,9 +1833,9 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
                 continue
             if p_max is None:
                 p_max = p
-                d_max = min(self.distance(p,q) for q in points)
+                d_max = min(self.distance(p, q) for q in points)
                 continue
-            d = min(self.distance(p,q) for q in points)
+            d = min(self.distance(p, q) for q in points)
             if d > d_max:
                 p_max = p
         return p_max
@@ -1954,14 +2004,20 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             simplex = list(simplex)
             origin = simplex[0]
             rest = simplex[1:]
-            span = matrix([origin.reduced_affine_vector()-p.reduced_affine_vector()
-                           for p in rest])
+            span = matrix(
+                [
+                    origin.reduced_affine_vector() - p.reduced_affine_vector()
+                    for p in rest
+                ]
+            )
             # span.inverse() linearly transforms the simplex into the unit simplex
             normals = span.inverse().columns()
             facets = []
             # The facets incident to the chosen vertex "origin"
             for opposing_vertex, normal in zip(rest, normals):
-                facet = frozenset([origin] + [p for p in rest if p is not opposing_vertex])
+                facet = frozenset(
+                    [origin] + [p for p in rest if p is not opposing_vertex]
+                )
                 facets.append(facet)
                 normal.set_immutable()
                 facet_normals[facet] = normal
@@ -1981,14 +2037,17 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             point_order = list(self.points())
         elif isinstance(point_order[0], Point):
             point_order = list(point_order)
-            assert all(p.point_configuration() is self for p in point_order),\
+            assert all(p.point_configuration() is self for p in point_order), (
                 "Some point in 'point_order' does not belong to the PointConfiguration."
+            )
         else:
             point_order = [self.point(i) for i in point_order]
 
         # construct the initial simplex
         if point_order_is_given:
-            simplices = [frozenset(self.contained_simplex(large=False, point_order=point_order))]
+            simplices = [
+                frozenset(self.contained_simplex(large=False, point_order=point_order))
+            ]
         else:
             simplices = [frozenset(self.contained_simplex(large=True))]
         for s in simplices[0]:
@@ -2114,7 +2173,7 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             points = self.points()
         else:
             try:
-                points = [ self.point(ZZ(i)) for i in points ]
+                points = [self.point(ZZ(i)) for i in points]
             except TypeError:
                 pass
         if homogenize:
@@ -2221,15 +2280,20 @@ class PointConfiguration(UniqueRepresentation, PointConfiguration_base):
             2.2 of [ACEP2020].
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         gale = self.Gale_transform(homogenize=False)
         dual_rays = gale.columns()
         n = self.n_points()
         K = None
         for cone_indices in collection:
-            dual_cone = Polyhedron(rays=[dual_rays[i] for i in range(n) if i not in cone_indices])
+            dual_cone = Polyhedron(
+                rays=[dual_rays[i] for i in range(n) if i not in cone_indices]
+            )
             K = K.intersection(dual_cone) if K is not None else dual_cone
         preimages = [gale.solve_right(r.vector()) for r in K.rays()]
-        return Polyhedron(lines=matrix(self.points()).transpose().rows(),rays=preimages)
+        return Polyhedron(
+            lines=matrix(self.points()).transpose().rows(), rays=preimages
+        )
 
     def plot(self, **kwds):
         r"""

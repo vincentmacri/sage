@@ -14,7 +14,7 @@ REFERENCES:
 
 - [Lee2013]_
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
 #
@@ -22,7 +22,7 @@ REFERENCES:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.manifolds import Manifolds
 from sage.manifolds.differentiable.manifold import DifferentiableManifold
@@ -296,10 +296,19 @@ class OpenInterval(DifferentiableManifold):
         sage: XK.coord_range()
         t: (1/2, 1)
     """
+
     @staticmethod
-    def __classcall_private__(cls, lower, upper, ambient_interval=None,
-                              name=None, latex_name=None, coordinate=None,
-                              names=None, start_index=0):
+    def __classcall_private__(
+        cls,
+        lower,
+        upper,
+        ambient_interval=None,
+        name=None,
+        latex_name=None,
+        coordinate=None,
+        names=None,
+        start_index=0,
+    ):
         r"""
         Determine the correct interval to return based upon the input.
 
@@ -318,14 +327,29 @@ class OpenInterval(DifferentiableManifold):
             coordinate = None
             names = None
             start_index = 0
-        return super().__classcall__(cls, lower, upper,
-                                     ambient_interval=ambient_interval, name=name,
-                                     latex_name=latex_name, coordinate=coordinate,
-                                     names=names, start_index=start_index)
+        return super().__classcall__(
+            cls,
+            lower,
+            upper,
+            ambient_interval=ambient_interval,
+            name=name,
+            latex_name=latex_name,
+            coordinate=coordinate,
+            names=names,
+            start_index=start_index,
+        )
 
-    def __init__(self, lower, upper, ambient_interval=None,
-                 name=None, latex_name=None,
-                 coordinate=None, names=None, start_index=0):
+    def __init__(
+        self,
+        lower,
+        upper,
+        ambient_interval=None,
+        name=None,
+        latex_name=None,
+        coordinate=None,
+        names=None,
+        start_index=0,
+    ):
         r"""
         Construct an open interval.
 
@@ -349,16 +373,24 @@ class OpenInterval(DifferentiableManifold):
             ambient_manifold = None
         else:
             if not isinstance(ambient_interval, OpenInterval):
-                raise TypeError("the argument ambient_interval must be an open interval")
+                raise TypeError(
+                    "the argument ambient_interval must be an open interval"
+                )
             ambient_manifold = ambient_interval.manifold()
         field = 'real'
         structure = RealDifferentialStructure()
         category = Manifolds(RR).Smooth().Connected()
-        DifferentiableManifold.__init__(self, 1, name, field, structure,
-                                        base_manifold=ambient_manifold,
-                                        latex_name=latex_name,
-                                        start_index=start_index,
-                                        category=category)
+        DifferentiableManifold.__init__(
+            self,
+            1,
+            name,
+            field,
+            structure,
+            base_manifold=ambient_manifold,
+            latex_name=latex_name,
+            start_index=start_index,
+            category=category,
+        )
         if ambient_interval is None:
             if coordinate is None:
                 if names is None:
@@ -367,11 +399,15 @@ class OpenInterval(DifferentiableManifold):
                     coordinate = names[0]
         else:
             if lower < ambient_interval.lower_bound():
-                raise ValueError("the lower bound is smaller than that of "
-                                 + "the containing interval")
+                raise ValueError(
+                    "the lower bound is smaller than that of "
+                    + "the containing interval"
+                )
             if upper > ambient_interval.upper_bound():
-                raise ValueError("the upper bound is larger than that of "
-                                 + "the containing interval")
+                raise ValueError(
+                    "the upper bound is larger than that of "
+                    + "the containing interval"
+                )
             self.declare_subset(ambient_interval)
             ambient_interval._top_subsets.add(self)
         if lower != minus_infinity:
@@ -385,11 +421,13 @@ class OpenInterval(DifferentiableManifold):
             else:
                 restrictions = None
         if ambient_interval is None:
-            self._canon_chart = self.chart(coordinates=coordinate,
-                                           coord_restrictions=restrictions)
+            self._canon_chart = self.chart(
+                coordinates=coordinate, coord_restrictions=restrictions
+            )
         else:
-            self._canon_chart = ambient_interval.canonical_chart().restrict(self,
-                                                                            restrictions=restrictions)
+            self._canon_chart = ambient_interval.canonical_chart().restrict(
+                self, restrictions=restrictions
+            )
         self._lower = lower
         self._upper = upper
 
@@ -435,8 +473,9 @@ class OpenInterval(DifferentiableManifold):
         """
         return self._canon_chart[:]
 
-    def _element_constructor_(self, coords=None, chart=None, name=None,
-                              latex_name=None, check_coords=True):
+    def _element_constructor_(
+        self, coords=None, chart=None, name=None, latex_name=None, check_coords=True
+    ):
         r"""
         Construct an element of ``self``.
 
@@ -487,9 +526,13 @@ class OpenInterval(DifferentiableManifold):
         """
         if coords in SR:
             coords = (coords,)
-        return super()._element_constructor_(coords=coords,
-                                             chart=chart, name=name, latex_name=latex_name,
-                                             check_coords=check_coords)
+        return super()._element_constructor_(
+            coords=coords,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+            check_coords=check_coords,
+        )
 
     def _Hom_(self, other, category=None):
         r"""
@@ -520,6 +563,7 @@ class OpenInterval(DifferentiableManifold):
             True
         """
         from sage.manifolds.differentiable.manifold_homset import DifferentiableCurveSet
+
         return DifferentiableCurveSet(self, other)
 
     def canonical_chart(self):
@@ -683,15 +727,18 @@ class OpenInterval(DifferentiableManifold):
         if name is None:
             if latex_name is None:
                 return OpenInterval(lower, upper, ambient_interval=self)
-            return OpenInterval(lower, upper, ambient_interval=self,
-                                latex_name=latex_name)
+            return OpenInterval(
+                lower, upper, ambient_interval=self, latex_name=latex_name
+            )
         if latex_name is None:
             return OpenInterval(lower, upper, ambient_interval=self, name=name)
-        return OpenInterval(lower, upper, ambient_interval=self, name=name,
-                            latex_name=latex_name)
+        return OpenInterval(
+            lower, upper, ambient_interval=self, name=name, latex_name=latex_name
+        )
 
 
-#******************************************************************************
+# ******************************************************************************
+
 
 class RealLine(OpenInterval):
     r"""
@@ -842,9 +889,16 @@ class RealLine(OpenInterval):
         sage: list(R.subset_family())
         [Real interval (0, 1), Real number line ℝ]
     """
+
     @staticmethod
-    def __classcall__(cls, name=unicode_mathbbR, latex_name=r'\Bold{R}',
-                      coordinate=None, names=None, start_index=0):
+    def __classcall__(
+        cls,
+        name=unicode_mathbbR,
+        latex_name=r'\Bold{R}',
+        coordinate=None,
+        names=None,
+        start_index=0,
+    ):
         r"""
         Determine the correct interval to return based upon the input.
 
@@ -857,13 +911,23 @@ class RealLine(OpenInterval):
             sage: R is R1
             True
         """
-        return super().__classcall__(cls, name=name,
-                                     latex_name=latex_name,
-                                     coordinate=coordinate,
-                                     names=names, start_index=start_index)
+        return super().__classcall__(
+            cls,
+            name=name,
+            latex_name=latex_name,
+            coordinate=coordinate,
+            names=names,
+            start_index=start_index,
+        )
 
-    def __init__(self, name=unicode_mathbbR, latex_name=r'\Bold{R}',
-                 coordinate=None, names=None, start_index=0):
+    def __init__(
+        self,
+        name=unicode_mathbbR,
+        latex_name=r'\Bold{R}',
+        coordinate=None,
+        names=None,
+        start_index=0,
+    ):
         r"""
         Construct the real line manifold.
 
@@ -876,9 +940,16 @@ class RealLine(OpenInterval):
              of precision
             sage: TestSuite(R).run(skip='_test_elements')  # pickling of elements fails
         """
-        OpenInterval.__init__(self, minus_infinity, infinity, name=name,
-                              latex_name=latex_name, coordinate=coordinate,
-                              names=names, start_index=start_index)
+        OpenInterval.__init__(
+            self,
+            minus_infinity,
+            infinity,
+            name=name,
+            latex_name=latex_name,
+            coordinate=coordinate,
+            names=names,
+            start_index=start_index,
+        )
 
     def _repr_(self):
         r"""

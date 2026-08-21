@@ -1,12 +1,12 @@
 r"""
 Magmas and Additive Magmas
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2010 Nicolas Borie <nicolas.borie@math.u-psud.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import LazyImport
@@ -54,7 +54,6 @@ class MagmasAndAdditiveMagmas(Category_singleton):
     """
 
     class SubcategoryMethods:
-
         @cached_method
         def Distributive(self):
             r"""
@@ -131,7 +130,11 @@ class MagmasAndAdditiveMagmas(Category_singleton):
         """
         return None
 
-    Distributive = LazyImport('sage.categories.distributive_magmas_and_additive_magmas', 'DistributiveMagmasAndAdditiveMagmas', at_startup=True)
+    Distributive = LazyImport(
+        'sage.categories.distributive_magmas_and_additive_magmas',
+        'DistributiveMagmasAndAdditiveMagmas',
+        at_startup=True,
+    )
 
     class CartesianProducts(CartesianProductsCategory):
         def extra_super_categories(self):

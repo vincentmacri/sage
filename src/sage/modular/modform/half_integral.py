@@ -122,9 +122,9 @@ def half_integral_weight_modform_basis(chi, k, prec):
 
     chi = chi.minimize_base_ring()
     psi = chi.parent()(DirichletGroup(4, chi.base_ring()).gen())
-    eps = chi*psi**((k+1) // 2)
+    eps = chi * psi ** ((k + 1) // 2)
     eps = eps.minimize_base_ring()
-    M = constructor.ModularForms(eps, (k+1)//2)
+    M = constructor.ModularForms(eps, (k + 1) // 2)
     C = M.cuspidal_subspace()
     B = C.basis()
 
@@ -134,18 +134,18 @@ def half_integral_weight_modform_basis(chi, k, prec):
     T2 = theta2_qexp(prec)
     T3 = theta_qexp(prec)
     n = len(S)
-    MS = MatrixSpace(M.base_ring(), 2*n, prec)
+    MS = MatrixSpace(M.base_ring(), 2 * n, prec)
     A = copy(MS.zero_matrix())
 
     for i in range(n):
-        T2f = T2*S[i]
-        T3f = T3*S[i]
+        T2f = T2 * S[i]
+        T3f = T3 * S[i]
         for j in range(prec):
             A[i, j] = T2f[j]
-            A[n+i, j] = -T3f[j]
+            A[n + i, j] = -T3f[j]
 
     B = A.kernel().basis()
-    a_vec = [sum([b[i]*S[i] for i in range(n)]) for b in B]
+    a_vec = [sum([b[i] * S[i] for i in range(n)]) for b in B]
     if len(a_vec) == 0:
         return []
     R = a_vec[0].parent()

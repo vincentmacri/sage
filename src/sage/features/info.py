@@ -15,6 +15,7 @@ class Info(Executable):
         sage: Info()
         Feature('info')
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -23,8 +24,9 @@ class Info(Executable):
             sage: isinstance(Info(), Info)
             True
         """
-        Executable.__init__(self, 'info', executable='info',
-                            spkg='info', type='standard')
+        Executable.__init__(
+            self, 'info', executable='info', spkg='info', type='standard'
+        )
 
 
 def all_features():

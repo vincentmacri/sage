@@ -83,7 +83,7 @@ def CurvePointToIdeal(C, P):
             if ai == 0:
                 polys.append(x[i])
             else:
-                polys.append(a_m*x[i]-ai*x_m)
+                polys.append(a_m * x[i] - ai * x_m)
     elif isinstance(A, AffineSpace_generic):
         for i in range(m + 1):
             ai = P[i]
@@ -184,9 +184,10 @@ class Divisor_generic(FormalSum):
         # straight - as the test above demonstrates, it results in the first
         # generator being in front of the second one
         terms.sort(key=lambda x: x[1], reverse=True)
-        return repr_lincomb([(r"\mathrm{V}\left(%s\right)" % latex(v), c)
-                             for c, v in terms],
-                            is_latex=True)
+        return repr_lincomb(
+            [(r"\mathrm{V}\left(%s\right)" % latex(v), c) for c, v in terms],
+            is_latex=True,
+        )
 
     def _repr_(self):
         r"""
@@ -267,6 +268,7 @@ class Divisor_curve(Divisor_generic):
         sage: E.divisor([(3,P), (-4,5*P)])
         3*(x, y) - 4*(x - 1/4*z, y + 5/8*z)
     """
+
     def __init__(self, v, parent=None, check=True, reduce=True):
         """
         Construct a divisor on a curve.
@@ -289,6 +291,7 @@ class Divisor_curve(Divisor_generic):
             (x, y)
         """
         from sage.schemes.generic.divisor_group import DivisorGroup_curve
+
         if not isinstance(v, (list, tuple)):
             v = [(1, v)]
 
@@ -299,18 +302,26 @@ class Divisor_curve(Divisor_generic):
                     try:
                         C = t[1].scheme()
                     except (TypeError, AttributeError):
-                        raise TypeError("Argument v (= %s) must consist of multiplicities and points on a scheme.")
+                        raise TypeError(
+                            "Argument v (= %s) must consist of multiplicities and points on a scheme."
+                        )
                 else:
                     try:
                         C = t.scheme()
                     except TypeError:
-                        raise TypeError("Argument v (= %s) must consist of multiplicities and points on a scheme.")
+                        raise TypeError(
+                            "Argument v (= %s) must consist of multiplicities and points on a scheme."
+                        )
                 parent = DivisorGroup_curve(C)
             else:
-                raise TypeError("Argument v (= %s) must consist of multiplicities and points on a scheme.")
+                raise TypeError(
+                    "Argument v (= %s) must consist of multiplicities and points on a scheme."
+                )
         else:
             if not isinstance(parent, DivisorGroup_curve):
-                raise TypeError("parent (of type %s) must be a DivisorGroup_curve" % type(parent))
+                raise TypeError(
+                    "parent (of type %s) must be a DivisorGroup_curve" % type(parent)
+                )
             C = parent.scheme()
 
         if len(v) < 1:
@@ -334,8 +345,7 @@ class Divisor_curve(Divisor_generic):
                     know_points = False
                 w.append((n, I))
             v = w
-        Divisor_generic.__init__(
-            self, v, check=False, reduce=True, parent=parent)
+        Divisor_generic.__init__(self, v, check=False, reduce=True, parent=parent)
 
         if know_points:
             self._points = points
@@ -344,7 +354,10 @@ class Divisor_curve(Divisor_generic):
             # rational_points() with irreducible_components()
             # once Sage can deal with divisors that are not only
             # rational points (see trac #16225)
-            self._points = [(m, self.scheme().ambient_space().subscheme(p).rational_points()[0]) for (m, p) in self]
+            self._points = [
+                (m, self.scheme().ambient_space().subscheme(p).rational_points()[0])
+                for (m, p) in self
+            ]
         self._sort_points()
 
     def _repr_(self):

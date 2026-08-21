@@ -37,6 +37,7 @@ from sage.matrix.special import identity_matrix
 # Parameters of hypergeometric functions
 ########################################
 
+
 def dwork(a, p):
     r"""
     Return the image of `a` under the `p`-th Dwork map
@@ -61,6 +62,7 @@ class HypergeometricParameters(SageObject):
     r"""
     Class for parameters of hypergeometric functions.
     """
+
     def __init__(self, top, bottom, add_one=True):
         r"""
         Initialize this set of parameters.
@@ -126,11 +128,15 @@ class HypergeometricParameters(SageObject):
             self.d = 1
             self.bound = 1
         else:
-            self.d = lcm([a.denominator() for a in top]
-                       + [b.denominator() for b in bottom])
-            B = max(c1.denominator().lcm(c2.denominator()) * abs(c1 - c2)
-                    for c1 in top + bottom for c2 in top + bottom)
-            self.bound = 1 + max(B, 2*len(bottom))
+            self.d = lcm(
+                [a.denominator() for a in top] + [b.denominator() for b in bottom]
+            )
+            B = max(
+                c1.denominator().lcm(c2.denominator()) * abs(c1 - c2)
+                for c1 in top + bottom
+                for c2 in top + bottom
+            )
+            self.bound = 1 + max(B, 2 * len(bottom))
 
     def __repr__(self):
         r"""
@@ -174,8 +180,11 @@ class HypergeometricParameters(SageObject):
             sage: pa == pa2
             True
         """
-        return (isinstance(other, HypergeometricParameters)
-            and self.top == other.top and self.bottom == other.bottom)
+        return (
+            isinstance(other, HypergeometricParameters)
+            and self.top == other.top
+            and self.bottom == other.bottom
+        )
 
     def is_balanced(self):
         # balanced is already in use for a different property of hypergeometric functions
@@ -287,8 +296,8 @@ class HypergeometricParameters(SageObject):
              (60, -1, 1)]
         """
         d = self.d
-        A = [(d - (-d*c*a) % d, -a, -1) for a in self.top]
-        B = [(d - (-d*c*b) % d, -b, 1) for b in self.bottom]
+        A = [(d - (-d * c * a) % d, -a, -1) for a in self.top]
+        B = [(d - (-d * c * b) % d, -b, 1) for b in self.bottom]
         return sorted(A + B)
 
     def parenthesis_criterion(self, c):
@@ -429,7 +438,7 @@ class HypergeometricParameters(SageObject):
             sage: pa.q_christol_sorting(7)
             [(2, 1), (2.5, -1), (3.5, -1), (5.5, -1), (6, 1), (7, 1)]
         """
-        A = [(1/2 + (-a) % q, -1) for a in self.top]
+        A = [(1 / 2 + (-a) % q, -1) for a in self.top]
         B = [(1 + (-b) % q, 1) for b in self.bottom]
         return sorted(A + B)
 
@@ -608,7 +617,7 @@ class HypergeometricParameters(SageObject):
         if discard_one:
             try:
                 i = top.index(1)
-                top = top[:i] + top[i+1:]
+                top = top[:i] + top[i + 1 :]
                 bottom = bottom[:-1]
             except ValueError:
                 pass
@@ -631,8 +640,8 @@ class HypergeometricParameters(SageObject):
             sage: pa.shift(2)
             ((1, 9/4, 7/3, 5/2), (12/5, 13/5, 3, 1))
         """
-        top = [a+s for a in self.top]
-        bottom = [b+s for b in self.bottom]
+        top = [a + s for a in self.top]
+        bottom = [b + s for b in self.bottom]
         return HypergeometricParameters(top, bottom, add_one=False)
 
     def decimal_part(self):
@@ -767,7 +776,7 @@ class HypergeometricParameters(SageObject):
         else:
             anticipated = True
             drift += shift
-            growth = (p-1)*drift + diff
+            growth = (p - 1) * drift + diff
         if degree is infinity and growth < 0:
             return -infinity, None, 0
 
@@ -820,9 +829,9 @@ class HypergeometricParameters(SageObject):
             w = 0
             TMr = matrix(TSR, n)
             for i in range(n):
-                x, dw, param = jumps[i]    # discontinuity point
-                y, _, right = jumps[i+1]   # next discontinuity point
-                w += dw   # the value of w_r on this interval
+                x, dw, param = jumps[i]  # discontinuity point
+                y, _, right = jumps[i + 1]  # next discontinuity point
+                w += dw  # the value of w_r on this interval
                 indices[param] = len(signature)
                 if x == y:
                     # Case of empty interval
@@ -843,18 +852,18 @@ class HypergeometricParameters(SageObject):
                     # Case r > 1
                     # The variable complete stores whether the interval
                     # [x,y] covers all [0, p^(r-1)) modulo p^(r-1)
-                    complete = (y - x >= q)
+                    complete = y - x >= q
                     if complete and drift < 0:
-                        interval = ((y-1) // q) - 1
+                        interval = ((y - 1) // q) - 1
                         j = j0 = indices_prev[right]
                     else:
-                        interval = max(0, (x-1) // q)
+                        interval = max(0, (x - 1) // q)
                         j = j0 = indices_prev[param]
                     val = infinity
                     while True:
                         valj, posj, paramj = signature_prev[j]
                         valj += drift * interval
-                        TMr[i, j] = TSR(drift*interval + w)
+                        TMr[i, j] = TSR(drift * interval + w)
                         if valj < val:
                             val = valj
                             pos = posj + q * interval
@@ -869,10 +878,14 @@ class HypergeometricParameters(SageObject):
             # The halting criterion
             if q > bound:
                 valuation, position, _ = min(signature[i] for i in range(negpivot))
-                if (anticipated
-                    and drift > 2*threshold
-                    and all(signature[i][0] > valuation + threshold
-                            for i in range(negpivot, n))):
+                if (
+                    anticipated
+                    and drift > 2 * threshold
+                    and all(
+                        signature[i][0] > valuation + threshold
+                        for i in range(negpivot, n)
+                    )
+                ):
                     return QQ(valuation), ZZ(position), r
                 if degree is not infinity or growth == 0:
                     if count < order:
@@ -883,14 +896,17 @@ class HypergeometricParameters(SageObject):
                             TM = TM.weak_transitive_closure()
                         except ValueError:
                             return -infinity, None, r
-                        valfinal = min(TM[i, j].lift() + signature[j][0]
-                                       for i in range(negpivot) for j in range(n))
+                        valfinal = min(
+                            TM[i, j].lift() + signature[j][0]
+                            for i in range(negpivot)
+                            for j in range(n)
+                        )
                     if valuation == valfinal:
                         return QQ(valuation), ZZ(position), r
 
             # We update the values for the next r
             q = pq
-            drift = p*drift + diff
+            drift = p * drift + diff
             signature_prev = signature
             indices_prev = indices
 
@@ -961,9 +977,9 @@ class HypergeometricParameters(SageObject):
             signature = []
             w = 0
             for i in range(n):
-                x, dw, param = jumps[i]    # discontinuity point
-                y, _, right = jumps[i+1]   # next discontinuity point
-                w += dw   # the value of w_r on this interval
+                x, dw, param = jumps[i]  # discontinuity point
+                y, _, right = jumps[i + 1]  # next discontinuity point
+                w += dw  # the value of w_r on this interval
                 if x == y:
                     # Case of empty interval
                     val = infty
@@ -984,13 +1000,15 @@ class HypergeometricParameters(SageObject):
                             continue
                         drift_scaled = left_interval * drift
                         if left_interval < right_interval:
-                            drift_scaled = drift_scaled.convex_hull(right_interval * drift)
+                            drift_scaled = drift_scaled.convex_hull(
+                                right_interval * drift
+                            )
                         val = val.convex_hull(drift_scaled + valj)
                 val = val.translation((0, w))
                 signature.append((val, x, param))
 
             q = pq
-            drift = (p*drift).translation((0, diff))
+            drift = (p * drift).translation((0, diff))
             signature_prev = signature
 
         NP = signature[0][0]

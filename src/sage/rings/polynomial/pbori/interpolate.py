@@ -40,13 +40,16 @@ def bench_interpolate(degree, nvariables, points):
     c1 = clock()
     res2 = interpolate_smallest_lex(p, q)
     c2 = clock()
-    print("finished interpolate_smallest_lex(p,q),len:", len(res2),
-          "time", c2 - c1)
+    print("finished interpolate_smallest_lex(p,q),len:", len(res2), "time", c2 - c1)
     c1 = clock()
     res1 = interpolate(p, q)
     c2 = clock()
-    print("finished interpolate(p,q)" + len("_smallest_lex") * " " + ",len:",
-          res1.set().size_double(), "time:", c2 - c1)
+    print(
+        "finished interpolate(p,q)" + len("_smallest_lex") * " " + ",len:",
+        res1.set().size_double(),
+        "time:",
+        c2 - c1,
+    )
     return res2
 
 
@@ -95,26 +98,37 @@ def lex_groebner_basis_points(points, variables):
 
 def lex_groebner_basis_for_polynomial_via_variety(p):
     variables = p.vars_as_monomial()
-    return lex_groebner_basis_points(p.zeros_in(variables.divisors()),
-                                     variables)
+    return lex_groebner_basis_points(p.zeros_in(variables.divisors()), variables)
 
 
 if __name__ == '__main__':
     nvariables = 100
     r = declare_ring([Block("x", nvariables)])
-    for number_of_points in (100, 500, 1000, 2000, 3000,
-                             4000, 5000, 10000,
-                             20000, 50000, 100000):
+    for number_of_points in (
+        100,
+        500,
+        1000,
+        2000,
+        3000,
+        4000,
+        5000,
+        10000,
+        20000,
+        50000,
+        100000,
+    ):
         print("----------")
         print("number_of_points:", number_of_points)
         print("generate points")
-        points = gen_random_poly(r, number_of_points,
-                                 nvariables,
-                                 [Variable(i, r) for i in range(nvariables)])
+        points = gen_random_poly(
+            r, number_of_points, nvariables, [Variable(i, r) for i in range(nvariables)]
+        )
         print("points generated")
         bench_interpolate(nvariables, nvariables, points)
         vars_mon = Monomial(r)
         for i in reversed(range(nvariables)):
             vars_mon = vars_mon * Variable(i, r)
-        print(len(variety_lex_leading_terms(points, vars_mon)),
-              "elements in groebner basis")
+        print(
+            len(variety_lex_leading_terms(points, vars_mon)),
+            "elements in groebner basis",
+        )

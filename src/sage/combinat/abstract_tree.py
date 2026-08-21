@@ -61,6 +61,7 @@ incoherent with the data structure.
 - Florent Hivert (2010-2011): initial revision
 - Frédéric Chapoton (2011): contributed some methods
 """
+
 import itertools
 
 from sage.misc.latex import latex
@@ -197,8 +198,7 @@ class AbstractTree:
         if self.is_empty():
             return
         yield self
-        yield from itertools.chain(*[c.pre_order_traversal_iter()
-                                     for c in self])
+        yield from itertools.chain(*[c.pre_order_traversal_iter() for c in self])
 
     def iterative_pre_order_traversal(self, action=None):
         r"""
@@ -270,8 +270,10 @@ class AbstractTree:
         if self.is_empty():
             return
         if action is None:
+
             def action(x):
                 return None
+
         stack = []
         stack.append(self)
         while stack:
@@ -385,8 +387,10 @@ class AbstractTree:
             7
         """
         if action is None:
+
             def action(x):
                 return None
+
         for node in self.pre_order_traversal_iter():
             action(node)
 
@@ -480,8 +484,7 @@ class AbstractTree:
         """
         if self.is_empty():
             return
-        yield from itertools.chain(*[c.post_order_traversal_iter()
-                                     for c in self])
+        yield from itertools.chain(*[c.post_order_traversal_iter() for c in self])
         yield self
 
     def post_order_traversal(self, action=None):
@@ -552,8 +555,10 @@ class AbstractTree:
             7
         """
         if action is None:
+
             def action(x):
                 return None
+
         for node in self.post_order_traversal_iter():
             action(node)
 
@@ -628,8 +633,10 @@ class AbstractTree:
         if self.is_empty():
             return
         if action is None:
+
             def action(x):
                 return None
+
         stack = [self]
         while stack:
             node = stack[-1]
@@ -647,7 +654,9 @@ class AbstractTree:
                 node = stack.pop()
                 action(node)
 
-    def contour_traversal(self, first_action=None, middle_action=None, final_action=None, leaf_action=None):
+    def contour_traversal(
+        self, first_action=None, middle_action=None, final_action=None, leaf_action=None
+    ):
         r"""
         Run the counterclockwise contour traversal algorithm (iterative
         implementation) and subject every node encountered
@@ -719,17 +728,25 @@ class AbstractTree:
             7
         """
         if first_action is None:
+
             def first_action(x):
                 return
+
         if middle_action is None:
+
             def middle_action(x):
                 return
+
         if final_action is None:
+
             def final_action(x):
                 return
+
         if leaf_action is None:
+
             def leaf_action(x):
                 return
+
         stack = []
         stack.append(self)
         corners = [0, 0]
@@ -823,8 +840,10 @@ class AbstractTree:
         if self.is_empty():
             return
         if action is None:
+
             def action(x):
                 return None
+
         queue = []
         queue.append(self)
         while queue:
@@ -1069,8 +1088,9 @@ class AbstractTree:
         depth = len(path)
         if depth == 0:
             return Integer(0)
-        result = sum(son.number_of_nodes_at_depth(depth - 1)
-                     for son in self[path[0] + 1:])
+        result = sum(
+            son.number_of_nodes_at_depth(depth - 1) for son in self[path[0] + 1 :]
+        )
         if path[0] < len(self) and path[0] >= 0:
             result += self[path[0]].number_of_nodes_to_the_right(path[1:])
         return result
@@ -1222,8 +1242,9 @@ class AbstractTree:
                 # Using post-order
                 # Thus _node_number is computed for all non-empty subtrees
                 node._node_number = Integer(1)
-                node._node_number += sum(e._node_number for e in node
-                                         if not e.is_empty())
+                node._node_number += sum(
+                    e._node_number for e in node if not e.is_empty()
+                )
 
         self.iterative_post_order_traversal(count)
         return self._node_number
@@ -1350,14 +1371,17 @@ class AbstractTree:
                        /  /
                       14 15
         """
+
         def node_to_str(t):
             return str(t.label()) if hasattr(t, "label") else "o"
 
         if self.is_empty():
             from sage.typeset.ascii_art import empty_ascii_art
+
             return empty_ascii_art
 
         from sage.typeset.ascii_art import AsciiArt
+
         if len(self) == 0:
             t_repr = AsciiArt([node_to_str(self)])
             t_repr._root = 1
@@ -1388,7 +1412,10 @@ class AbstractTree:
             ls_sep += " " * (t_repr._root) + "/" + " " * (t_repr._l - t_repr._root)
         mid = whitesep + (len(lf_sep) - whitesep) // 2
         node = node_to_str(self)
-        t_repr = AsciiArt([lf_sep[:mid - 1] + node + lf_sep[mid + len(node) - 1:], ls_sep]) * acc
+        t_repr = (
+            AsciiArt([lf_sep[: mid - 1] + node + lf_sep[mid + len(node) - 1 :], ls_sep])
+            * acc
+        )
         t_repr._root = mid
         t_repr._baseline = t_repr._h - 1
         return t_repr
@@ -1469,13 +1496,16 @@ class AbstractTree:
             if hasattr(t, "label"):
                 return str(t.label())
             return "o"
+
         # other possible choices for nodes would be u"█ ▓ ░ ╋ ╬"
 
         if self.is_empty():
             from sage.typeset.unicode_art import empty_unicode_art
+
             return empty_unicode_art
 
         from sage.typeset.unicode_art import UnicodeArt
+
         if not len(self):
             t_repr = UnicodeArt([node_to_str(self)])
             t_repr._root = 0
@@ -1508,8 +1538,11 @@ class AbstractTree:
                 ls_sep += " " * (tr._root) + "│" + " " * (tr._l - tr._root)
         mid = whitesep + (len(lf_sep) - whitesep) // 2
         node = node_to_str(self)
-        lf_sep = (lf_sep[:mid - len(node) // 2] + node +
-                  lf_sep[mid + len(node) - len(node) // 2:])
+        lf_sep = (
+            lf_sep[: mid - len(node) // 2]
+            + node
+            + lf_sep[mid + len(node) - len(node) // 2 :]
+        )
         t_repr = UnicodeArt([lf_sep, ls_sep]) * acc
         t_repr._root = mid
         t_repr._baseline = t_repr._h - 1
@@ -1540,11 +1573,11 @@ class AbstractTree:
             sage: BinaryTree().canonical_labelling()
             .
         """
+
         def aux(tree, LTR, curlabel):
             mylabel = curlabel[0]
             curlabel[0] += 1
-            newtree = LTR([aux(st, LTR, curlabel) for st in tree],
-                          label=mylabel)
+            newtree = LTR([aux(st, LTR, curlabel) for st in tree], label=mylabel)
             return newtree
 
         return aux(self, self.parent().labelled_trees(), [shift])
@@ -1654,7 +1687,9 @@ class AbstractTree:
         begin_env = "\\begin{tikzpicture}[auto]\n"
         end_env = "\\end{tikzpicture}"
         # it uses matrix trick to place each node
-        matrix_begin = "\\matrix[column sep=.3cm, row sep=.3cm,ampersand replacement=\\&]{\n"
+        matrix_begin = (
+            "\\matrix[column sep=.3cm, row sep=.3cm,ampersand replacement=\\&]{\n"
+        )
         matrix_end = "\\\\\n};\n"
         # a basic path to each edges
         path_begin = "\\path[ultra thick, red] "
@@ -1674,6 +1709,7 @@ class AbstractTree:
 
         def node_to_str(node):
             return " " + node + " " * (len(space) - 1 - len(node))
+
         # # TODO:: modify how to create nodes --> new_cmd : \\node[...] in create_node
         num = [0]
 
@@ -1694,8 +1730,8 @@ class AbstractTree:
                 """
                 name = "".join(chr(ord(x) + 49) for x in str(num[0]))
                 node = cmd + name
-                nodes.append((name,
-                    (str(self.label()) if hasattr(self, "label") else ""))
+                nodes.append(
+                    (name, (str(self.label()) if hasattr(self, "label") else ""))
                 )
                 num[0] += 1
                 return node, name
@@ -1841,8 +1877,11 @@ class AbstractTree:
                     tmp(self[i], edge, nodes, edges, matrix)
 
                 # # create the root line
-                root_line = (spacesep * (nb_of_and + 1) + node_to_str(node) +
-                    sepspace * (matrix[0].count(sep) - nb_of_and - 1))
+                root_line = (
+                    spacesep * (nb_of_and + 1)
+                    + node_to_str(node)
+                    + sepspace * (matrix[0].count(sep) - nb_of_and - 1)
+                )
                 matrix.insert(0, root_line)
                 # add edges from the root
                 edges.append(edge)
@@ -1932,15 +1971,18 @@ class AbstractTree:
                     tmp(self[i], edge, nodes, edges, matrix)
 
                 # # create the root line
-                root_line = (spacesep * (nb_of_and) + node_to_str(node) +
-                    sepspace * (matrix[0].count(sep) - nb_of_and))
+                root_line = (
+                    spacesep * (nb_of_and)
+                    + node_to_str(node)
+                    + sepspace * (matrix[0].count(sep) - nb_of_and)
+                )
                 matrix.insert(0, root_line)
                 # add edges from the root
                 edges.append(edge)
+
             if self.is_empty():
                 empty_tree()
-            elif len(self) == 0 or all(subtree.is_empty()
-                                       for subtree in self):
+            elif len(self) == 0 or all(subtree.is_empty() for subtree in self):
                 one_node_tree(self)
             elif not len(self) % 2:
                 pair_nodes_tree(self, nodes, edges, matrix)
@@ -1955,9 +1997,9 @@ class AbstractTree:
             for name, label in nodes:
                 if label:
                     label = "$" + label + "$"
-                cmds.append(new_cmd1 + name + new_cmd2 +
-                            name + new_cmd3 +
-                            label + new_cmd4)
+                cmds.append(
+                    new_cmd1 + name + new_cmd2 + name + new_cmd3 + label + new_cmd4
+                )
             return cmds
 
         def make_edges(edges):
@@ -1968,18 +2010,26 @@ class AbstractTree:
                     path += " edge (%s)" % edge[i]
                 all_paths.append(path)
             return all_paths
-        return ("{ " +
-            "".join(make_cmd(nodes)) +
-            begin_env +
-                (matrix_begin +
-                    "\\\\ \n".join(matrix) +
-                matrix_end +
-                (path_begin +
-                    "\n\t".join(make_edges(edges)) +
-                path_end if edges else "")
-                if matrix else "") +
-            end_env +
-            "}")
+
+        return (
+            "{ "
+            + "".join(make_cmd(nodes))
+            + begin_env
+            + (
+                matrix_begin
+                + "\\\\ \n".join(matrix)
+                + matrix_end
+                + (
+                    path_begin + "\n\t".join(make_edges(edges)) + path_end
+                    if edges
+                    else ""
+                )
+                if matrix
+                else ""
+            )
+            + end_env
+            + "}"
+        )
 
 
 class AbstractClonableTree(AbstractTree):
@@ -2532,6 +2582,7 @@ class AbstractLabelledTree(AbstractTree):
            True
         """
         from sage.graphs.digraph import DiGraph
+
         vertices = [self.label()]
         edges = []
         stack = [self]
@@ -2545,12 +2596,12 @@ class AbstractLabelledTree(AbstractTree):
                     edges.append((u, v))
                     stack.append(t)
 
-        return DiGraph([vertices, edges], format="vertices_and_edges",
-                       immutable=immutable)
+        return DiGraph(
+            [vertices, edges], format="vertices_and_edges", immutable=immutable
+        )
 
 
-class AbstractLabelledClonableTree(AbstractLabelledTree,
-                                   AbstractClonableTree):
+class AbstractLabelledClonableTree(AbstractLabelledTree, AbstractClonableTree):
     """
     Abstract Labelled Clonable Tree.
 
@@ -2693,8 +2744,7 @@ class AbstractLabelledClonableTree(AbstractLabelledTree,
         """
         if self.is_empty():
             return self
-        return self.parent()([t.map_labels(f) for t in self],
-                             label=f(self.label()))
+        return self.parent()([t.map_labels(f) for t in self], label=f(self.label()))
 
 
 def from_hexacode(ch, parent=None, label='@'):
@@ -2744,6 +2794,7 @@ def from_hexacode(ch, parent=None, label='@'):
     """
     if parent is None:
         from sage.combinat.ordered_tree import LabelledOrderedTrees
+
         parent = LabelledOrderedTrees()
     return _from_hexacode_aux(ch, parent, label)[0]
 

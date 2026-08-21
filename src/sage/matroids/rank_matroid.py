@@ -46,6 +46,7 @@ AUTHORS:
 Methods
 =======
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Rudi Pendavingh <rudi.pendavingh@gmail.com>
 #       Copyright (C) 2013 Stefan van Zwam <stefanvanzwam@gmail.com>
@@ -82,6 +83,7 @@ class RankMatroid(Matroid):
         sage: M.is_isomorphic(matroids.Uniform(3, 6))
         True
     """
+
     def __init__(self, groundset, rank_function):
         """
         Initialize the rank matroid.
@@ -200,7 +202,9 @@ class RankMatroid(Matroid):
         """
         if not isinstance(other, RankMatroid):
             return False
-        return (self.groundset() == other.groundset()) and (self._rank_function == other._rank_function)
+        return (self.groundset() == other.groundset()) and (
+            self._rank_function == other._rank_function
+        )
 
     def __ne__(self, other):
         """
@@ -263,4 +267,6 @@ class RankMatroid(Matroid):
             this class doesn't have load/save support. Convert to another
             class, such as BasisMatroid, instead.
         """
-        raise TypeError("unfortunately, functions cannot be saved reliably, so this class doesn't have load/save support. Convert to another class, such as BasisMatroid, instead.")
+        raise TypeError(
+            "unfortunately, functions cannot be saved reliably, so this class doesn't have load/save support. Convert to another class, such as BasisMatroid, instead."
+        )

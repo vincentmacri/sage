@@ -1,6 +1,7 @@
 r"""
 Frank Lübeck's tables of Conway polynomials over finite fields
 """
+
 # ****************************************************************************
 #
 #       Copyright (C) 2005-2006 William Stein <wstein@gmail.com>
@@ -92,6 +93,7 @@ class ConwayPolynomials(Mapping):
             Frank Lübeck's database of Conway polynomials
         """
         import conway_polynomials
+
         self._store = conway_polynomials.database()
 
     def __repr__(self):
@@ -206,7 +208,9 @@ class ConwayPolynomials(Mapping):
         try:
             return self[p, n]
         except KeyError:
-            raise RuntimeError("Conway polynomial over F_%s of degree %s not in database." % (p, n))
+            raise RuntimeError(
+                "Conway polynomial over F_%s of degree %s not in database." % (p, n)
+            )
 
     def has_polynomial(self, p, n) -> bool:
         """

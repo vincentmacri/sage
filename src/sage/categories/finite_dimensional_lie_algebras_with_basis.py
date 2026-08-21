@@ -61,6 +61,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         Many of these tests should use non-abelian Lie algebras and need to
         be added after :issue:`16820`.
     """
+
     _base_category_class_and_axiom = (LieAlgebras.FiniteDimensional, "WithBasis")
 
     def example(self, n=3):
@@ -81,11 +82,16 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             An example of a finite dimensional Lie algebra with basis:
              the 5-dimensional abelian Lie algebra over Rational Field
         """
-        from sage.categories.examples.finite_dimensional_lie_algebras_with_basis import Example
+        from sage.categories.examples.finite_dimensional_lie_algebras_with_basis import (
+            Example,
+        )
+
         return Example(self.base_ring(), n)
 
-    Nilpotent = LazyImport('sage.categories.finite_dimensional_nilpotent_lie_algebras_with_basis',
-                           'FiniteDimensionalNilpotentLieAlgebrasWithBasis')
+    Nilpotent = LazyImport(
+        'sage.categories.finite_dimensional_nilpotent_lie_algebras_with_basis',
+        'FiniteDimensionalNilpotentLieAlgebrasWithBasis',
+    )
 
     class ParentMethods:
         @cached_method
@@ -143,6 +149,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
                 def names_map(x):
                     return x
+
                 F = FreeAlgebra(self.base_ring(), names)
             except ValueError:
                 names = ['b{}'.format(i) for i in range(self.dimension())]
@@ -159,15 +166,16 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
             def get_var(g):
                 return d[names_map(g)]
+
             # The function ``get_var`` sends an element of the basis of
             # ``self`` to the corresponding element of ``F``.
             for k in S.keys():
                 g0 = get_var(k[0])
                 g1 = get_var(k[1])
                 if g0 < g1:
-                    rels[g1*g0] = g0*g1 - F.sum(val*get_var(g) for g, val in S[k])
+                    rels[g1 * g0] = g0 * g1 - F.sum(val * get_var(g) for g, val in S[k])
                 else:
-                    rels[g0*g1] = g1*g0 + F.sum(val*get_var(g) for g, val in S[k])
+                    rels[g0 * g1] = g1 * g0 + F.sum(val * get_var(g) for g, val in S[k])
             try:
                 return F.g_algebra(rels)
             except RuntimeError:
@@ -262,6 +270,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             if R is None:
                 R = self.base_ring()
             from sage.modules.free_module import FreeModule
+
             return FreeModule(R, self.dimension())
 
         module = _dense_free_module
@@ -365,8 +374,9 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             from sage.matrix.constructor import matrix
 
             B = self.basis()
-            m = matrix(self.base_ring(),
-                       [[self.killing_form(x, y) for x in B] for y in B])
+            m = matrix(
+                self.base_ring(), [[self.killing_form(x, y) for x in B] for y in B]
+            )
             m.set_immutable()
             return m
 
@@ -416,7 +426,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             K = list(B.keys())
             zero = self.zero()
             for i, x in enumerate(K):
-                for y in K[i + 1:]:
+                for y in K[i + 1 :]:
                     bx = B[x]
                     by = B[y]
                     val = self.bracket(bx, by)
@@ -481,6 +491,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             # if isinstance(S, LieSubalgebra) or S is self:
             if S is self:
                 from sage.matrix.special import identity_matrix
+
                 m = identity_matrix(self.base_ring(), self.dimension())
             elif isinstance(S, (list, tuple)):
                 m = matrix([v.to_vector() for v in self.echelon_form(S)])
@@ -495,11 +506,21 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sc[k[1], k[0]] = -v
             X = self.basis().keys()
             d = len(X)
-            c_mat = matrix(self.base_ring(),
-                           [[sum(m[i, j] * sc[x, xp][k] for j, xp in enumerate(X)
-                                 if (x, xp) in sc)
-                             for x in X]
-                            for i in range(m.nrows()) for k in range(d)])
+            c_mat = matrix(
+                self.base_ring(),
+                [
+                    [
+                        sum(
+                            m[i, j] * sc[x, xp][k]
+                            for j, xp in enumerate(X)
+                            if (x, xp) in sc
+                        )
+                        for x in X
+                    ]
+                    for i in range(m.nrows())
+                    for k in range(d)
+                ],
+            )
             C = c_mat.right_kernel().basis_matrix()
             return [self.from_vector(c) for c in C]
 
@@ -605,13 +626,24 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             X = self.basis().keys()
             d = len(X)
             t = m.nrows()
-            c_mat = matrix(self.base_ring(),
-                           [[sum(m[i, j] * sc[x, xp][k]
-                                 for j, xp in enumerate(X) if (x, xp) in sc)
-                             for x in X]
-                            + [0]*(i*t) + [-m[j, k] for j in range(t)]
-                            + [0]*((t-i-1)*t)
-                            for i in range(t) for k in range(d)])
+            c_mat = matrix(
+                self.base_ring(),
+                [
+                    [
+                        sum(
+                            m[i, j] * sc[x, xp][k]
+                            for j, xp in enumerate(X)
+                            if (x, xp) in sc
+                        )
+                        for x in X
+                    ]
+                    + [0] * (i * t)
+                    + [-m[j, k] for j in range(t)]
+                    + [0] * ((t - i - 1) * t)
+                    for i in range(t)
+                    for k in range(d)
+                ],
+            )
             C = c_mat.right_kernel().basis_matrix()
             return [self.from_vector(c[:d]) for c in C]
 
@@ -701,24 +733,30 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             R = self.base_ring()
             B = self.basis()
             keys = list(B.keys())
-            scoeffs = {(j, y, i): c for y in keys for i in keys
-                       for j, c in self.bracket(B[y], B[i])
-                       }
+            scoeffs = {
+                (j, y, i): c
+                for y in keys
+                for i in keys
+                for j, c in self.bracket(B[y], B[i])
+            }
             zero = R.zero()
             data = {}
             N = len(keys)
             for ii, i in enumerate(keys):
-                for ij, j in enumerate(keys[ii+1:]):
+                for ij, j in enumerate(keys[ii + 1 :]):
                     ijp = ij + ii + 1
                     for il, l in enumerate(keys):
                         row = ii + N * il + N**2 * ij
                         for ik, k in enumerate(keys):
-                            data[row, ik+N*il] = (data.get((row, ik+N*il), zero)
-                                                  + scoeffs.get((k, i, j), zero))
-                            data[row, ii+N*ik] = (data.get((row, ii+N*ik), zero)
-                                                  - scoeffs.get((l, k, j), zero))
-                            data[row, ijp+N*ik] = (data.get((row, ijp+N*ik), zero)
-                                                   - scoeffs.get((l, i, k), zero))
+                            data[row, ik + N * il] = data.get(
+                                (row, ik + N * il), zero
+                            ) + scoeffs.get((k, i, j), zero)
+                            data[row, ii + N * ik] = data.get(
+                                (row, ii + N * ik), zero
+                            ) - scoeffs.get((l, k, j), zero)
+                            data[row, ijp + N * ik] = data.get(
+                                (row, ijp + N * ik), zero
+                            ) - scoeffs.get((l, i, k), zero)
             mat = matrix(R, data, sparse=True)
             return tuple([matrix(R, N, N, list(b)) for b in mat.right_kernel().basis()])
 
@@ -744,8 +782,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             R = self.base_ring()
             IDer = matrix(R, [b.adjoint_matrix().list() for b in self.basis()])
             N = self.dimension()
-            return tuple([matrix(R, N, N, list(b))
-                          for b in IDer.row_module().basis()])
+            return tuple([matrix(R, N, N, list(b)) for b in IDer.row_module().basis()])
 
         @cached_method
         def nilradical_basis(self):
@@ -845,20 +882,26 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     return tuple([self(L.lift(b)) for b in ret])
 
                 from sage.matrix.constructor import matrix
+
                 s = P.dimension()
                 QP = L.quotient(P)
                 MP = P.module()
                 for b in QP.basis():
                     yi = QP.lift(b)
                     brackets = [yi.bracket(P.lift(b)) for b in P.basis()]
-                    adj = matrix([MP.coordinate_vector(elt.to_vector())
-                                  for elt in brackets]).transpose()
+                    adj = matrix(
+                        [MP.coordinate_vector(elt.to_vector()) for elt in brackets]
+                    ).transpose()
                     if adj.rank() < s:
                         J = L.ideal(brackets)
                         QJ = L.quotient(J)
-                        M = L.ideal([QJ.lift(b) for b in QJ.nilradical_basis()]
-                                    + list(J.basis()))
-                        return tuple([self(L.lift(b.value)) for b in M.nilradical_basis()])
+                        M = L.ideal(
+                            [QJ.lift(b) for b in QJ.nilradical_basis()]
+                            + list(J.basis())
+                        )
+                        return tuple(
+                            [self(L.lift(b.value)) for b in M.nilradical_basis()]
+                        )
 
                     f = adj.minimal_polynomial()
                     if not f.is_squarefree():
@@ -867,9 +910,13 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                         phi = P.module_morphism(codomain=P, matrix=g(adj))
                         I = L.ideal([phi(p) for p in P.basis()])
                         QI = L.quotient(I)
-                        M = L.ideal([QI.lift(b) for b in QI.nilradical_basis()]
-                                    + list(I.basis()))
-                        return tuple([self(L.lift(b.value)) for b in M.nilradical_basis()])
+                        M = L.ideal(
+                            [QI.lift(b) for b in QI.nilradical_basis()]
+                            + list(I.basis())
+                        )
+                        return tuple(
+                            [self(L.lift(b.value)) for b in M.nilradical_basis()]
+                        )
                 return tuple([self(L.lift(b.value)) for b in P.basis()])
 
             # positive characteristic
@@ -878,16 +925,23 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
             from sage.matrix.matrix_space import MatrixSpace
             from sage.matrix.constructor import matrix
+
             dim = self.dimension()
             MS = MatrixSpace(self.base_ring(), dim)
             gens = [b.adjoint_matrix() for b in self.basis()]
             A = MS.subalgebra(gens)
             RB = A.radical_basis()
-            mat = matrix(self.base_ring(),
-                         [g._vector_() for g in gens]
-                         + [A.lift(r)._vector_() for r in RB])
-            return tuple([self.from_vector(w) for v in mat.left_kernel().basis()
-                          if (w := v[:dim])])
+            mat = matrix(
+                self.base_ring(),
+                [g._vector_() for g in gens] + [A.lift(r)._vector_() for r in RB],
+            )
+            return tuple(
+                [
+                    self.from_vector(w)
+                    for v in mat.left_kernel().basis()
+                    if (w := v[:dim])
+                ]
+            )
 
         def nilradical(self):
             r"""
@@ -960,9 +1014,13 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 Bad = [b.adjoint_matrix() for b in self.basis()]
                 Pad = [self(p).adjoint_matrix() for p in P.basis()]
                 from sage.matrix.constructor import matrix
-                mat = matrix(self.base_ring(),
-                             [[(B * P).trace() for B in Bad] for P in Pad])
-                return tuple([self.from_vector(c) for c in mat.right_kernel().basis_matrix()])
+
+                mat = matrix(
+                    self.base_ring(), [[(B * P).trace() for B in Bad] for P in Pad]
+                )
+                return tuple(
+                    [self.from_vector(c) for c in mat.right_kernel().basis_matrix()]
+                )
 
             # positive characteristic
             if not self.nilradical_basis():
@@ -1035,12 +1093,16 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sage: S.homogeneous_component_basis(2).list()
                 [X_12]
             """
-            from sage.algebras.lie_algebras.subalgebra import LieSubalgebra_finite_dimensional_with_basis
+            from sage.algebras.lie_algebras.subalgebra import (
+                LieSubalgebra_finite_dimensional_with_basis,
+            )
+
             if len(gens) == 1 and isinstance(gens[0], (list, tuple)):
                 gens = gens[0]
             category = kwds.pop('category', None)
             return LieSubalgebra_finite_dimensional_with_basis(
-                self, gens, category=category, **kwds)
+                self, gens, category=category, **kwds
+            )
 
         def ideal(self, *gens, **kwds):
             r"""
@@ -1073,13 +1135,17 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sage: I.homogeneous_component_basis(1).list()
                 [x, y]
             """
-            from sage.algebras.lie_algebras.subalgebra import LieSubalgebra_finite_dimensional_with_basis
+            from sage.algebras.lie_algebras.subalgebra import (
+                LieSubalgebra_finite_dimensional_with_basis,
+            )
             from sage.structure.element import Element
+
             if len(gens) == 1 and not isinstance(gens[0], Element):
                 gens = gens[0]
             category = kwds.pop('category', None)
             return LieSubalgebra_finite_dimensional_with_basis(
-                self, gens, ideal_of=self, category=category, **kwds)
+                self, gens, ideal_of=self, category=category, **kwds
+            )
 
         @cached_method
         def is_ideal(self, A):
@@ -1109,16 +1175,19 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             if A == self:
                 return True
             if A not in LieAlgebras(self.base_ring()).FiniteDimensional().WithBasis():
-                raise NotImplementedError("A must be a finite dimensional"
-                                          " Lie algebra with basis")
+                raise NotImplementedError(
+                    "A must be a finite dimensional Lie algebra with basis"
+                )
 
             from sage.matrix.constructor import matrix
 
             B = self.basis()
             AB = A.basis()
             try:
-                b_mat = matrix(A.base_ring(), [A.bracket(b, ab).to_vector()
-                                               for b in B for ab in AB])
+                b_mat = matrix(
+                    A.base_ring(),
+                    [A.bracket(b, ab).to_vector() for b in B for ab in AB],
+                )
             except (ValueError, TypeError):
                 return False
             return b_mat.row_space().is_submodule(self.module())
@@ -1167,10 +1236,13 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 ...
                 NotImplementedError: quotients over non-fields not implemented
             """
-            from sage.algebras.lie_algebras.quotient import LieQuotient_finite_dimensional_with_basis
-            return LieQuotient_finite_dimensional_with_basis(self, I,
-                                                             names=names,
-                                                             category=category)
+            from sage.algebras.lie_algebras.quotient import (
+                LieQuotient_finite_dimensional_with_basis,
+            )
+
+            return LieQuotient_finite_dimensional_with_basis(
+                self, I, names=names, category=category
+            )
 
         def product_space(self, L, submodule=False):
             r"""
@@ -1245,8 +1317,9 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 LB = L.basis()
 
             B = self.basis()
-            b_mat = matrix(A.base_ring(), [A.bracket(b, lb).to_vector()
-                                           for b in B for lb in LB])
+            b_mat = matrix(
+                A.base_ring(), [A.bracket(b, lb).to_vector() for b in B for lb in LB]
+            )
             if submodule is True or not (self.is_ideal(A) and L.is_ideal(A)):
                 return b_mat.row_space()
             # We echelonize the matrix here
@@ -1600,7 +1673,9 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             return not self.solvable_radical_basis()
 
         @cached_method(key=_ce_complex_key)
-        def chevalley_eilenberg_complex(self, M=None, dual=False, sparse=True, ncpus=None):
+        def chevalley_eilenberg_complex(
+            self, M=None, dual=False, sparse=True, ncpus=None
+        ):
             r"""
             Return the Chevalley-Eilenberg complex of ``self``.
 
@@ -1694,13 +1769,16 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             - [Wei1994]_ Chapter 7
             """
             if dual:
-                return self.chevalley_eilenberg_complex(M, dual=False,
-                                                        sparse=sparse,
-                                                        ncpus=ncpus).dual()
+                return self.chevalley_eilenberg_complex(
+                    M, dual=False, sparse=sparse, ncpus=ncpus
+                ).dual()
 
             from itertools import combinations, product
             from sage.matrix.matrix_space import MatrixSpace
-            from sage.algebras.lie_algebras.representation import Representation_abstract
+            from sage.algebras.lie_algebras.representation import (
+                Representation_abstract,
+            )
+
             R = self.base_ring()
             zero = R.zero()
             mone = -R.one()
@@ -1736,13 +1814,13 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 is ``(zero, None)``.
                 """
                 Y = list(X)
-                for i in range(len(X)-1, -1, -1):
+                for i in range(len(X) - 1, -1, -1):
                     val = X[i]
                     if val == k:
                         return zero, None
                     if k > val:
-                        Y.insert(i+1, k)
-                        return mone**(i+1), tuple(Y)
+                        Y.insert(i + 1, k)
+                        return mone ** (i + 1), tuple(Y)
                 Y.insert(0, k)
                 return R.one(), tuple(Y)
 
@@ -1755,7 +1833,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 Build the ``k``-th differential (in parallel).
                 """
                 # The indices for the exterior algebra
-                ext_ind = {tuple(X): i for i, X in enumerate(combinations(LI, k-1))}
+                ext_ind = {tuple(X): i for i, X in enumerate(combinations(LI, k - 1))}
 
                 # Compute the part independent of the module first ("part 2" of the computation)
                 if sparse:
@@ -1777,8 +1855,8 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                         for j in range(i + 1, k):
                             # We shift j by 1 because we already removed
                             #   an earlier element from X.
-                            Z = tuple(Y[:j-1] + Y[j:])
-                            elt = mone**(i+j+1) * LB[X[i]].bracket(LB[X[j]])
+                            Z = tuple(Y[: j - 1] + Y[j:])
+                            elt = mone ** (i + j + 1) * LB[X[i]].bracket(LB[X[j]])
                             if not elt:
                                 continue
                             if ambient:
@@ -1832,7 +1910,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                         elt = mone**i * LB[X[i]] * MB[v]
                         if not elt:
                             continue
-                        Y = X[:i] + X[i+1:]
+                        Y = X[:i] + X[i + 1 :]
                         for j in MI:
                             coeff = elt[MK[j]]
                             if not coeff:
@@ -1858,6 +1936,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 return ret
 
             from sage.homology.chain_complex import ChainComplex
+
             ind = list(range(1, len(LI) + 1))
             chain_data = {X[0][0]: M for X, M in compute_diff(ind)}
             return ChainComplex(chain_data, degree_of_differential=-1)
@@ -1909,8 +1988,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
                 :meth:`chevalley_eilenberg_complex`
             """
-            C = self.chevalley_eilenberg_complex(M=M, sparse=sparse,
-                                                 ncpus=ncpus)
+            C = self.chevalley_eilenberg_complex(M=M, sparse=sparse, ncpus=ncpus)
             return C.homology(deg=deg)
 
         def cohomology(self, deg=None, M=None, sparse=True, ncpus=None):
@@ -1984,8 +2062,9 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
             - :wikipedia:`Lie_algebra_cohomology`
             """
-            C = self.chevalley_eilenberg_complex(M=M, dual=True, sparse=sparse,
-                                                 ncpus=ncpus)
+            C = self.chevalley_eilenberg_complex(
+                M=M, dual=True, sparse=sparse, ncpus=ncpus
+            )
             return C.homology(deg=deg)
 
         def as_finite_dimensional_algebra(self):
@@ -2022,7 +2101,10 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     else:
                         M.append(zero_vec)
                 mats.append(matrix(R, M))
-            from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra import FiniteDimensionalAlgebra
+            from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra import (
+                FiniteDimensionalAlgebra,
+            )
+
             return FiniteDimensionalAlgebra(R, mats, names=self._names)
 
         def morphism(self, on_generators, codomain=None, base_map=None, check=True):
@@ -2095,9 +2177,17 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sage: phi(i*X)
                 -i*A
             """
-            from sage.algebras.lie_algebras.morphism import LieAlgebraMorphism_from_generators
-            return LieAlgebraMorphism_from_generators(on_generators, domain=self,
-                                                      codomain=codomain, base_map=base_map, check=check)
+            from sage.algebras.lie_algebras.morphism import (
+                LieAlgebraMorphism_from_generators,
+            )
+
+            return LieAlgebraMorphism_from_generators(
+                on_generators,
+                domain=self,
+                codomain=codomain,
+                base_map=base_map,
+                check=check,
+            )
 
         @cached_method
         def universal_polynomials(self):
@@ -2152,6 +2242,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                  - X2_1*X7_7 - X3_7*X8_1 + X3_1*X8_7 + X0_4
             """
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             I = self.basis().keys()
             n = len(I)
             s_coeffs = self.structure_coefficients(True)
@@ -2163,29 +2254,38 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 if i > j:
                     return -s_coeffs[I[j], I[i]]
                 return s_coeffs[I[i], I[j]]
+
             d = {}
             keys = []
             if n >= 10:
                 vs = 'X{}_{}'
             else:
                 vs = 'X{}{}'
-            R = PolynomialRing(self.base_ring(), ','.join(vs.format(i, j)
-                                                          for i in range(n)
-                                                          for j in range(n)))
-            X = [[R.gen(i+n*j) for i in range(n)] for j in range(n)]
+            R = PolynomialRing(
+                self.base_ring(),
+                ','.join(vs.format(i, j) for i in range(n) for j in range(n)),
+            )
+            X = [[R.gen(i + n * j) for i in range(n)] for j in range(n)]
             for a in range(n):
                 for i in range(n):
-                    for j in range(i+1, n):
+                    for j in range(i + 1, n):
                         k = (I[a], I[i], I[j])
                         keys.append(k)
                         if i != j:
                             s = sc(i, j)
-                            d[k] = (R.sum(s[I[u]] * X[a][u] for u in range(n))
-                                    - R.sum(sc(s, t)[I[a]] * X[s][i] * X[t][j]
-                                            for s in range(n) for t in range(n) if s != t))
+                            d[k] = R.sum(s[I[u]] * X[a][u] for u in range(n)) - R.sum(
+                                sc(s, t)[I[a]] * X[s][i] * X[t][j]
+                                for s in range(n)
+                                for t in range(n)
+                                if s != t
+                            )
                         else:
-                            d[k] = -R.sum(sc(s, t)[I[a]] * X[s][i] * X[t][j]
-                                          for s in range(n) for t in range(n) if s != t)
+                            d[k] = -R.sum(
+                                sc(s, t)[I[a]] * X[s][i] * X[t][j]
+                                for s in range(n)
+                                for t in range(n)
+                                if s != t
+                            )
             return Family(keys, d.__getitem__)
 
         @cached_method
@@ -2339,8 +2439,12 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 # Special case for the quadratic using the Killing form
                 try:
                     K = self.killing_form_matrix().inverse()
-                    return UEA.sum(K[i, j] * UEA(x) * UEA(y) for i, x in enumerate(B)
-                                   for j, y in enumerate(B) if K[i, j])
+                    return UEA.sum(
+                        K[i, j] * UEA(x) * UEA(y)
+                        for i, x in enumerate(B)
+                        for j, y in enumerate(B)
+                        if K[i, j]
+                    )
                 except (ValueError, TypeError, ZeroDivisionError):
                     # fall back to finding solutions to the system of equations
                     pass
@@ -2354,8 +2458,11 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             # setup the equations
             from sage.matrix.constructor import matrix
             from itertools import product
-            eqns = matrix.zero(self.base_ring(), dim**(order+1), dim**order, sparse=True)
-            for ii, p in enumerate(product(range(dim), repeat=order+1)):
+
+            eqns = matrix.zero(
+                self.base_ring(), dim ** (order + 1), dim**order, sparse=True
+            )
+            for ii, p in enumerate(product(range(dim), repeat=order + 1)):
                 i = p[0]
                 a = keys[i]
                 for j, b in enumerate(keys):
@@ -2363,7 +2470,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                         continue
                     sc_val = s_coeffs[a, b]
                     for k in range(order):
-                        c = keys[p[k+1]]
+                        c = keys[p[k + 1]]
                         if not sc_val[c]:
                             continue
                         pp = list(p[1:])
@@ -2380,7 +2487,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             def to_prod(vec, index):
                 coeff = vec[index]
                 p = [0] * order
-                base = dim ** (order-1)
+                base = dim ** (order - 1)
                 for i in range(order):
                     p[i] = index // base
                     index %= base
@@ -2394,8 +2501,9 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 vec = tens[0]
                 return UEA.sum(to_prod(vec, index) for index in vec.support())
 
-            return [UEA.sum(to_prod(vec, index) for index in vec.support())
-                    for vec in tens]
+            return [
+                UEA.sum(to_prod(vec, index) for index in vec.support()) for vec in tens
+            ]
 
         def faithful_representation(self, algorithm=None):
             r"""
@@ -2478,14 +2586,23 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 if algorithm is None:
                     algorithm = "regular"
                 if algorithm == "regular":
-                    from sage.algebras.lie_algebras.representation import FaithfulRepresentationNilpotentPBW
+                    from sage.algebras.lie_algebras.representation import (
+                        FaithfulRepresentationNilpotentPBW,
+                    )
+
                     return FaithfulRepresentationNilpotentPBW(self, minimal=False)
                 if algorithm == "minimal":
-                    from sage.algebras.lie_algebras.representation import FaithfulRepresentationNilpotentPBW
+                    from sage.algebras.lie_algebras.representation import (
+                        FaithfulRepresentationNilpotentPBW,
+                    )
+
                     return FaithfulRepresentationNilpotentPBW(self, minimal=True)
             if algorithm is None or algorithm == "generic":
                 if self.base_ring().characteristic() > 0:
-                    from sage.algebras.lie_algebras.representation import FaithfulRepresentationPBWPosChar
+                    from sage.algebras.lie_algebras.representation import (
+                        FaithfulRepresentationPBWPosChar,
+                    )
+
                     return FaithfulRepresentationPBWPosChar(self)
                 raise NotImplementedError("only implemented for nilpotent Lie algebras")
             raise ValueError("invalid algorithm '{}'".format(algorithm))
@@ -2545,9 +2662,11 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
             P = self.parent()
             basis = P.basis()
-            return matrix(self.base_ring(),
-                          [P.bracket(self, b).to_vector(sparse=sparse) for b in basis],
-                          sparse=sparse).transpose()
+            return matrix(
+                self.base_ring(),
+                [P.bracket(self, b).to_vector(sparse=sparse) for b in basis],
+                sparse=sparse,
+            ).transpose()
 
         def to_vector(self, sparse=False, order=None):
             r"""
@@ -2594,6 +2713,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             mc = self.monomial_coefficients(copy=False)
             if sparse:
                 from sage.modules.free_module import FreeModule
+
                 M = FreeModule(self.parent().base_ring(), self.dimension(), sparse=True)
                 if order is None:
                     order = {b: i for i, b in enumerate(self.parent()._basis_ordering)}
@@ -2611,6 +2731,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         A category for subalgebras of a finite dimensional Lie algebra
         with basis.
         """
+
         class ParentMethods:
             @abstract_method
             def ambient(self):
@@ -2712,6 +2833,7 @@ class FiniteDimensionalLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 """
                 R = self.base_ring()
                 from sage.categories.fields import Fields
+
                 is_field = R in Fields()
                 P = X.parent()
                 X = self.ambient()(X)  # make sure it is in the ambient space

@@ -191,8 +191,12 @@ def bdd_height_iq(K, height_bound):
     for n in range(class_number):
         this_ideal = class_group_reps[n]
         this_ideal_norm = class_group_rep_norms[n]
-        gens = [g for i in range(1, int(height_bound + 1))
-                for g in bdd_ideals[i * this_ideal_norm] if g in this_ideal]
+        gens = [
+            g
+            for i in range(1, int(height_bound + 1))
+            for g in bdd_ideals[i * this_ideal_norm]
+            if g in this_ideal
+        ]
         generator_lists.append(gens)
 
     # Build all the output numbers
@@ -437,11 +441,11 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
         if z == 0:
             n = 1
         else:
-            n = RR(1/z).ceil() + 1
-        if RR(n*y).ceil() is n*y:  # WHAT !?
-            m = n*y - 1
+            n = RR(1 / z).ceil() + 1
+        if RR(n * y).ceil() is n * y:  # WHAT !?
+            m = n * y - 1
         else:
-            m = RR(n*y).floor()
+            m = RR(n * y).floor()
         return m / n
 
     def delta_approximation(x, delta):
@@ -481,7 +485,7 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
         log_ga = vector_delta_approximation(log_map(alpha), delta)
         log_gb = vector_delta_approximation(log_map(beta), delta)
         arch_sum = sum([max(log_ga[k], log_gb[k]) for k in range(r + 1)])
-        return (arch_sum - norm_log)
+        return arch_sum - norm_log
 
     def packet_height(n, pair, u):
         r"""
@@ -494,12 +498,12 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
         Log_gj = lambda_gens_approx[gens[j]]
         Log_u_gi = vector(Log_gi) + unit_log_dict[u]
         arch_sum = sum([max(Log_u_gi[k], Log_gj[k]) for k in range(r + 1)])
-        return (arch_sum - class_group_rep_norm_log_approx[n])
+        return arch_sum - class_group_rep_norm_log_approx[n]
 
     # Step 1
     # Computes ideal class representative and their rational approx norm
-    t = theta / (3*B)
-    delta_1 = t / (6*r+12)
+    t = theta / (3 * B)
+    delta_1 = t / (6 * r + 12)
 
     class_group_reps = []
     class_group_rep_norms = []
@@ -552,19 +556,21 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
         gens = generator_lists[n]
         l = len(gens)
         for i in range(l):
-            for j in range(i+1, l):
+            for j in range(i + 1, l):
                 if K.ideal(gens[i], gens[j]) == class_group_reps[n]:
                     relevant_pairs.append([i, j])
-                    gen_height_approx_dictionary[(n, i, j)] = log_height_for_generators_approx(gens[i], gens[j], t/6)
+                    gen_height_approx_dictionary[(n, i, j)] = (
+                        log_height_for_generators_approx(gens[i], gens[j], t / 6)
+                    )
         relevant_pair_lists.append(relevant_pairs)
 
     # Step 5
-    b = rational_in(t/12 + RR(B).log(), t/4 + RR(B).log())
+    b = rational_in(t / 12 + RR(B).log(), t / 4 + RR(B).log())
     maximum = 0
     for n in range(class_number):
         for p in relevant_pair_lists[n]:
             maximum = max(maximum, gen_height_approx_dictionary[(n, p[0], p[1])])
-    d_tilde = b + t/6 + maximum
+    d_tilde = b + t / 6 + maximum
 
     # Step 6
     # computes fundamental units and their value under log map
@@ -580,16 +586,18 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
 
     # Step 7
     # Variables needed for rational approximation
-    lambda_tilde = (t/12) / (d_tilde*r*(1+m))
-    delta_tilde = min(lambda_tilde/((r**2)*((m**2)+m*lambda_tilde)), 1/(r**2))
-    M = d_tilde * (upper_bound+lambda_tilde*RR(r).sqrt())
+    lambda_tilde = (t / 12) / (d_tilde * r * (1 + m))
+    delta_tilde = min(lambda_tilde / ((r**2) * ((m**2) + m * lambda_tilde)), 1 / (r**2))
+    M = d_tilde * (upper_bound + lambda_tilde * RR(r).sqrt())
     M = RR(M).ceil()
     d_tilde = RR(d_tilde)
-    delta_2 = min(delta_tilde, (t/6)/(r*(r+1)*M))
+    delta_2 = min(delta_tilde, (t / 6) / (r * (r + 1) * M))
 
     # Step 8, 9
     # Computes relevant points in polytope
-    fund_unit_log_approx = [vector_delta_approximation(fund_unit_logs[i], delta_2) for i in range(r)]
+    fund_unit_log_approx = [
+        vector_delta_approximation(fund_unit_logs[i], delta_2) for i in range(r)
+    ]
     S_tilde = column_matrix(fund_unit_log_approx).delete_rows([r])
     S_tilde_inverse = S_tilde.inverse()
     U = integer_points_in_polytope(S_tilde_inverse, d_tilde)
@@ -606,18 +614,18 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
     # Computes unit height
     unit_height_dict = {}
     U_copy = copy(U)
-    inter_bound = b - (5*t)/12
+    inter_bound = b - (5 * t) / 12
 
     for u in U:
-        u_log = sum([u[j]*vector(fund_unit_log_approx[j]) for j in range(r)])
+        u_log = sum([u[j] * vector(fund_unit_log_approx[j]) for j in range(r)])
         unit_log_dict[u] = u_log
         u_height = sum([max(u_log[k], 0) for k in range(r + 1)])
         unit_height_dict[u] = u_height
         if u_height < inter_bound:
             U0.append(u)
-        if inter_bound <= u_height < b - (t/12):
+        if inter_bound <= u_height < b - (t / 12):
             U0_tilde.append(u)
-        if u_height > t/12 + d_tilde:
+        if u_height > t / 12 + d_tilde:
             U_copy.remove(u)
     U = U_copy
 
@@ -629,14 +637,14 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
         for pair in relevant_pair_lists[n]:
             i = pair[0]
             j = pair[1]
-            u_height_bound = b + gen_height_approx_dictionary[(n, i, j)] + t/4
+            u_height_bound = b + gen_height_approx_dictionary[(n, i, j)] + t / 4
             for u in U:
                 if unit_height_dict[u] < u_height_bound:
                     candidate_height = packet_height(n, pair, u)
-                    if candidate_height <= b - 7*t/12:
+                    if candidate_height <= b - 7 * t / 12:
                         L0.append([n, pair, u])
                         relevant_tuples.add(u)
-                    elif candidate_height < b + t/4:
+                    elif candidate_height < b + t / 4:
                         L0_tilde.append([n, pair, u])
                         relevant_tuples.add(u)
 
@@ -646,7 +654,7 @@ def bdd_height(K, height_bound, tolerance=1e-2, precision=53):
     for u in relevant_tuples:
         unit = K.one()
         for k in range(r):
-            unit *= fund_units[k]**u[k]
+            unit *= fund_units[k] ** u[k]
         tuple_to_unit_dict[u] = unit
 
     # Step 14

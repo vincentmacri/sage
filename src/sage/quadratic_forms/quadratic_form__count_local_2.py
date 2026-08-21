@@ -70,6 +70,7 @@ def count_congruence_solutions_as_vector(self, p, k, m, zvec, nzvec):
 # // Front-ends for our counting routines //
 # //////////////////////////////////////////
 
+
 def count_congruence_solutions(self, p, k, m, zvec, nzvec):
     r"""
     Count all solutions of `Q(x) = m` (mod `p^k`) satisfying the

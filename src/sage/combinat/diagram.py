@@ -105,6 +105,7 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
         . . . . . .
         . . . . . .
     """
+
     @staticmethod
     def __classcall_private__(self, cells, n_rows=None, n_cols=None, check=True):
         r"""
@@ -234,6 +235,7 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             -
         """
         from sage.typeset.ascii_art import ascii_art
+
         if self._n_rows == 0 or self._n_cols == 0:
             return ascii_art("-")
         return ascii_art("\n".join(self._pretty_print()))
@@ -275,6 +277,7 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             ∅
         """
         from sage.typeset.unicode_art import unicode_art
+
         if self._n_rows == 0 or self._n_cols == 0:
             return unicode_art("∅")
 
@@ -282,12 +285,12 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
         cell = "│X"
         empty = "│ "
         it = self._pretty_print(cell, empty)
-        ret = "┌─" + "┬─"*ndivs + "┐"
+        ret = "┌─" + "┬─" * ndivs + "┐"
         ret += "\n" + next(it) + "│"
         for row in it:
-            ret += "\n├─" + "┼─"*ndivs + "┤"
+            ret += "\n├─" + "┼─" * ndivs + "┤"
             ret += "\n" + row + "│"
-        ret += "\n└─" + "┴─"*ndivs + "┘"
+        ret += "\n└─" + "┴─" * ndivs + "┘"
         return unicode_art(ret)
 
     def _pretty_print(self, cell='O ', empty='. '):
@@ -338,30 +341,45 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
 
         lr = r'\def\lr#1{\multicolumn{1}{|@{\hspace{.6ex}}c@{\hspace{.6ex}}|}{\raisebox{-.3ex}{$#1$}}}'
 
-        array = [[("\\phantom{x}" if (i, j) in self else None)
-                  for j in range(self._n_cols)]
-                 for i in range(self._n_rows)]
+        array = [
+            [("\\phantom{x}" if (i, j) in self else None) for j in range(self._n_cols)]
+            for i in range(self._n_rows)
+        ]
 
         def end_line(r):
             # give the line ending to row ``r``
             if r == 0:
-                return "".join(r'\cline{%s-%s}' % (i+1, i+1)
-                               for i, j in enumerate(array[0]) if j is not None)
+                return "".join(
+                    r'\cline{%s-%s}' % (i + 1, i + 1)
+                    for i, j in enumerate(array[0])
+                    if j is not None
+                )
             if r == len(array):
-                return r"\\" + "".join(r'\cline{%s-%s}' % (i+1, i+1)
-                                       for i, j in enumerate(array[r-1]) if j is not None)
-            out = r"\\" + "".join(r'\cline{%s-%s}' % (i+1, i+1)
-                                  for i, j in enumerate(array[r-1]) if j is not None)
-            out += "".join(r'\cline{%s-%s}' % (i+1, i+1)
-                           for i, j in enumerate(array[r]) if j is not None)
+                return r"\\" + "".join(
+                    r'\cline{%s-%s}' % (i + 1, i + 1)
+                    for i, j in enumerate(array[r - 1])
+                    if j is not None
+                )
+            out = r"\\" + "".join(
+                r'\cline{%s-%s}' % (i + 1, i + 1)
+                for i, j in enumerate(array[r - 1])
+                if j is not None
+            )
+            out += "".join(
+                r'\cline{%s-%s}' % (i + 1, i + 1)
+                for i, j in enumerate(array[r])
+                if j is not None
+            )
             return out
 
-        tex = r'\raisebox{-.6ex}{$\begin{array}[b]{*{%s}{p{0.6ex}}}' % (max(map(len, array)))
-        tex += end_line(0)+'\n'
+        tex = r'\raisebox{-.6ex}{$\begin{array}[b]{*{%s}{p{0.6ex}}}' % (
+            max(map(len, array))
+        )
+        tex += end_line(0) + '\n'
         for r in range(len(array)):
             tex += '&'.join('' if c is None else r'\lr{%s}' % (c,) for c in array[r])
-            tex += end_line(r+1)+'\n'
-        return '{%s\n%s\n}' % (lr, tex+r'\end{array}$}')
+            tex += end_line(r + 1) + '\n'
+        return '{%s\n%s\n}' % (lr, tex + r'\end{array}$}')
 
     def number_of_rows(self):
         r"""
@@ -490,6 +508,7 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             ValueError: diagrams must be indexed by nonnegative integers
         """
         from sage.sets.non_negative_integers import NonNegativeIntegers
+
         NN = NonNegativeIntegers()
         if not all(i in NN for c in self._cells for i in c):
             raise ValueError("diagrams must be indexed by nonnegative integers")
@@ -509,8 +528,10 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
         """
         from sage.combinat.specht_module import SpechtModule
         from sage.combinat.symmetric_group_algebra import SymmetricGroupAlgebra
+
         if base_ring is None:
             from sage.rings.rational_field import QQ
+
             base_ring = QQ
         R = SymmetricGroupAlgebra(base_ring, len(self))
         return SpechtModule(R, self)
@@ -533,6 +554,7 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             12
         """
         from sage.combinat.specht_module import specht_module_rank
+
         return specht_module_rank(self, base_ring)
 
     @cached_method
@@ -552,8 +574,12 @@ class Diagram(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             sage: D.essential_set()
             ((0, 0), (2, 3), (3, 2))
         """
-        ret = [c for c in self._cells if (c[0]+1, c[1]) not in self._cells
-               and (c[0], c[1]+1) not in self._cells]
+        ret = [
+            c
+            for c in self._cells
+            if (c[0] + 1, c[1]) not in self._cells
+            and (c[0], c[1] + 1) not in self._cells
+        ]
         ret.sort()
         return tuple(ret)
 
@@ -589,7 +615,9 @@ class Diagrams(UniqueRepresentation, Parent):
 
             sage: TestSuite(Dgms).run()
         """
-        Parent.__init__(self, category=InfiniteEnumeratedSets().or_subcategory(category))
+        Parent.__init__(
+            self, category=InfiniteEnumeratedSets().or_subcategory(category)
+        )
 
     def __iter__(self):
         r"""
@@ -642,6 +670,7 @@ class Diagrams(UniqueRepresentation, Parent):
         from sage.sets.non_negative_integers import NonNegativeIntegers
         from sage.categories.cartesian_product import cartesian_product
         from sage.combinat.subset import subsets
+
         # the product of positive integers automatically implements an
         # an enumeration which allows us to get out of the first column
         N = NonNegativeIntegers()
@@ -838,6 +867,7 @@ class Diagrams(UniqueRepresentation, Parent):
 # Northwest diagrams
 ####################
 
+
 class NorthwestDiagram(Diagram, metaclass=InheritComparisonClasscallMetaclass):
     r"""
     Diagrams with the northwest property.
@@ -862,6 +892,7 @@ class NorthwestDiagram(Diagram, metaclass=InheritComparisonClasscallMetaclass):
         . . .
         O . .
     """
+
     @staticmethod
     def __classcall_private__(self, cells, n_rows=None, n_cols=None, check=True):
         """
@@ -912,9 +943,12 @@ class NorthwestDiagram(Diagram, metaclass=InheritComparisonClasscallMetaclass):
             ValueError: diagrams must be indexed by nonnegative integers
         """
         from itertools import combinations
+
         Diagram.check(self)
-        if not all((min(i1, i2), min(j1, j2)) in self
-                   for (i1, j1), (i2, j2) in combinations(self._cells, 2)):
+        if not all(
+            (min(i1, i2), min(j1, j2)) in self
+            for (i1, j1), (i2, j2) in combinations(self._cells, 2)
+        ):
             raise ValueError("diagram is not northwest")
 
     def peelable_tableaux(self):
@@ -1099,7 +1133,7 @@ class NorthwestDiagram(Diagram, metaclass=InheritComparisonClasscallMetaclass):
         # if there is a single column in the diagram then there is only
         # one posslbe peelable tableau.
         if self._n_nonempty_cols == 1:
-            return set([Tableau([[i+1] for i, j in self.cells()])])
+            return set([Tableau([[i + 1] for i, j in self.cells()])])
 
         first_col = min(j for i, j in self._cells)
 
@@ -1471,6 +1505,7 @@ class NorthwestDiagrams(Diagrams):
             . O O
         """
         from sage.matrix.constructor import Matrix
+
         M = Matrix(p.get_array())
         return self.from_zero_one_matrix(M)
 
@@ -1543,7 +1578,10 @@ def RotheDiagram(w):
 
     N = w.size()
     winv = w.inverse()
-    cells = [c for c in product(range(N), range(N))
-             if c[0] + 1 < winv(c[1] + 1) and c[1] + 1 < w(c[0] + 1)]
+    cells = [
+        c
+        for c in product(range(N), range(N))
+        if c[0] + 1 < winv(c[1] + 1) and c[1] + 1 < w(c[0] + 1)
+    ]
 
     return NorthwestDiagram(cells, n_rows=N, n_cols=N, check=False)

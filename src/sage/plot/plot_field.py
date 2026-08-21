@@ -2,6 +2,7 @@
 """
 Plotting fields
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
@@ -35,6 +36,7 @@ class PlotField(GraphicPrimitive):
     Primitive class that initializes the
     PlotField graphics type
     """
+
     def __init__(self, xpos_array, ypos_array, xvec_array, yvec_array, options):
         """
         Create the graphics primitive PlotField.  This sets options
@@ -83,6 +85,7 @@ class PlotField(GraphicPrimitive):
             10.0
         """
         from sage.plot.plot import minmax_data
+
         return minmax_data(self.xpos_array, self.ypos_array, dict=True)
 
     def _allowed_options(self):
@@ -97,13 +100,15 @@ class PlotField(GraphicPrimitive):
             sage: d['pivot']
             'Where the arrow should be placed in relation to the point (tail, middle, tip)'
         """
-        return {'plot_points': 'How many points to use for plotting precision',
-                'pivot': 'Where the arrow should be placed in relation to the point (tail, middle, tip)',
-                'headwidth': 'Head width as multiple of shaft width, default is 3',
-                'headlength': 'head length as multiple of shaft width, default is 5',
-                'headaxislength': 'head length at shaft intersection, default is 4.5',
-                'zorder': 'The layer level in which to draw',
-                'color': 'The color of the arrows'}
+        return {
+            'plot_points': 'How many points to use for plotting precision',
+            'pivot': 'Where the arrow should be placed in relation to the point (tail, middle, tip)',
+            'headwidth': 'Head width as multiple of shaft width, default is 3',
+            'headlength': 'head length as multiple of shaft width, default is 5',
+            'headaxislength': 'head length at shaft intersection, default is 4.5',
+            'zorder': 'The layer level in which to draw',
+            'color': 'The color of the arrows',
+        }
 
     def _repr_(self):
         """
@@ -138,7 +143,8 @@ class PlotField(GraphicPrimitive):
             20
         """
         return "PlotField defined by a {} x {} vector grid".format(
-               self._options['plot_points'], self._options['plot_points'])
+            self._options['plot_points'], self._options['plot_points']
+        )
 
     def _render_on_subplot(self, subplot):
         """
@@ -150,9 +156,14 @@ class PlotField(GraphicPrimitive):
         options = self.options()
         quiver_options = options.copy()
         quiver_options.pop('plot_points')
-        subplot.quiver(self.xpos_array, self.ypos_array,
-                       self.xvec_array, self.yvec_array,
-                       angles='xy', **quiver_options)
+        subplot.quiver(
+            self.xpos_array,
+            self.ypos_array,
+            self.xvec_array,
+            self.yvec_array,
+            angles='xy',
+            **quiver_options,
+        )
 
 
 @options(plot_points=20, frame=True)
@@ -258,8 +269,8 @@ def plot_vector_field(f_g, xrange, yrange, **options):
     f, g = f_g
     from sage.plot.graphics import Graphics
     from sage.plot.misc import setup_for_eval_on_grid
-    z, ranges = setup_for_eval_on_grid([f, g], [xrange, yrange],
-                                       options['plot_points'])
+
+    z, ranges = setup_for_eval_on_grid([f, g], [xrange, yrange], options['plot_points'])
     f, g = z
 
     xpos_array, ypos_array, xvec_array, yvec_array = [], [], [], []
@@ -271,12 +282,12 @@ def plot_vector_field(f_g, xrange, yrange, **options):
             yvec_array.append(g(x, y))
 
     import numpy
+
     xvec_array = numpy.ma.masked_invalid(numpy.array(xvec_array, dtype=float))
     yvec_array = numpy.ma.masked_invalid(numpy.array(yvec_array, dtype=float))
     g = Graphics()
     g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
-    g.add_primitive(PlotField(xpos_array, ypos_array,
-                              xvec_array, yvec_array, options))
+    g.add_primitive(PlotField(xpos_array, ypos_array, xvec_array, yvec_array, options))
     return g
 
 
@@ -342,20 +353,22 @@ def plot_slope_field(f, xrange, yrange, **kwds):
         Graphics object consisting of 1 graphics primitive
         sage: dummy_err = numpy.seterr(**old_err)
     """
-    slope_options = {'headaxislength': 0,
-                     'headlength': 1e-9,
-                     'pivot': 'middle'}
+    slope_options = {'headaxislength': 0, 'headlength': 1e-9, 'pivot': 'middle'}
     slope_options.update(kwds)
 
     from sage.misc.functional import sqrt
     from sage.misc.sageinspect import is_function_or_cython_function
+
     if is_function_or_cython_function(f):
+
         def norm_inverse(x, y):
-            return 1 / sqrt(f(x, y)**2 + 1)
+            return 1 / sqrt(f(x, y) ** 2 + 1)
 
         def f_normalized(x, y):
             return f(x, y) * norm_inverse(x, y)
     else:
         norm_inverse = 1 / sqrt(f**2 + 1)
         f_normalized = f * norm_inverse
-    return plot_vector_field((norm_inverse, f_normalized), xrange, yrange, **slope_options)
+    return plot_vector_field(
+        (norm_inverse, f_normalized), xrange, yrange, **slope_options
+    )

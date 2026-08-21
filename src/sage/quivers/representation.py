@@ -590,6 +590,7 @@ class QuiverRepFactory(UniqueFactory):
         sage: N.dimension_vector()
         (0, 1, 2)
     """
+
     def create_key(self, k, P, *args, **kwds):
         """
         Return a key for the specified module.
@@ -625,7 +626,9 @@ class QuiverRepFactory(UniqueFactory):
         """
         key = [k, P]
         Q = P.quiver()
-        if 'option' in kwds and (kwds['option'] == 'paths' or kwds['option'] == 'dual paths'):
+        if 'option' in kwds and (
+            kwds['option'] == 'paths' or kwds['option'] == 'dual paths'
+        ):
             # Follow the 'paths' specification for the input
             key.append(kwds['option'])
             if args:
@@ -691,12 +694,13 @@ class QuiverRepFactory(UniqueFactory):
             # an integer is given set it as a free module of that rank, otherwise
             # assume the object is a module and assign it to the vertex.
             from sage.rings.finite_rings.integer_mod_ring import Integers
+
             verts = Q.vertices(sort=True)
             for x in verts:
                 if x not in spaces:
                     key.append(k**0)
                 elif spaces[x] in Integers():
-                    key.append(k**spaces[x])
+                    key.append(k ** spaces[x])
                 else:
                     key.append(spaces[x])
 
@@ -711,6 +715,7 @@ class QuiverRepFactory(UniqueFactory):
             # vertex is 1 so the space assigned to vertex v is key[2 + v]
             from sage.categories.morphism import Morphism
             from sage.matrix.constructor import Matrix
+
             for x in P._sorted_edges:
                 if x in maps:
                     e = maps[x]
@@ -719,7 +724,11 @@ class QuiverRepFactory(UniqueFactory):
                 elif x[2] in maps:
                     e = maps[x[2]]
                 else:
-                    e = Matrix(k, key[3 + verts.index(x[0])].dimension(), key[3 + verts.index(x[1])].dimension())
+                    e = Matrix(
+                        k,
+                        key[3 + verts.index(x[0])].dimension(),
+                        key[3 + verts.index(x[1])].dimension(),
+                    )
 
                 # If a morphism is specified take it's matrix.  Create one if
                 # needed.  Otherwise assume the Matrix function can convert the
@@ -728,13 +737,27 @@ class QuiverRepFactory(UniqueFactory):
                     if hasattr(e, 'matrix'):
                         key.append(e.matrix())
                     else:
-                        gens_images = [key[3 + verts.index(x[1])].coordinate_vector(e(x))
-                                       for x in key[3 + verts.index(x[0])].gens()]
-                        key.append(Matrix(k, key[3 + verts.index(x[0])].dimension(),
-                                          key[3 + verts.index(x[1])].dimension(), gens_images))
+                        gens_images = [
+                            key[3 + verts.index(x[1])].coordinate_vector(e(x))
+                            for x in key[3 + verts.index(x[0])].gens()
+                        ]
+                        key.append(
+                            Matrix(
+                                k,
+                                key[3 + verts.index(x[0])].dimension(),
+                                key[3 + verts.index(x[1])].dimension(),
+                                gens_images,
+                            )
+                        )
                 else:
-                    key.append(Matrix(k, key[3 + verts.index(x[0])].dimension(),
-                                      key[3 + verts.index(x[1])].dimension(), e))
+                    key.append(
+                        Matrix(
+                            k,
+                            key[3 + verts.index(x[0])].dimension(),
+                            key[3 + verts.index(x[1])].dimension(),
+                            e,
+                        )
+                    )
 
                 # Make sure the matrix is immutable so it hashes
                 key[-1].set_immutable()
@@ -1048,8 +1071,7 @@ class QuiverRepElement(ModuleElement):
             sage: h1 == hash(v)
             True
         """
-        return hash(frozenset((v, tuple(self._elems[v]))
-                              for v in self._quiver))
+        return hash(frozenset((v, tuple(self._elems[v])) for v in self._quiver))
 
     def __eq__(self, other):
         """
@@ -1278,6 +1300,7 @@ class QuiverRepElement(ModuleElement):
         name = self.get_custom_name()
         return self.parent()(self._elems.copy(), name)
 
+
 ####################################################################
 # The representations
 
@@ -1334,6 +1357,7 @@ class QuiverRep_generic(WithEqualityById, Module):
         sage: TestSuite(I).run()
         sage: TestSuite(Q.S(ZZ,2)).run()
     """
+
     Element = QuiverRepElement
 
     ###########################################################################
@@ -1389,11 +1413,12 @@ class QuiverRep_generic(WithEqualityById, Module):
         # an integer is given set it as a free module of that rank, otherwise
         # assume the object is a module and assign it to the vertex.
         from sage.rings.finite_rings.integer_mod_ring import Integers
+
         for x in Q:
             if x not in spaces:
                 self._spaces[x] = k**0
             elif spaces[x] in Integers():
-                self._spaces[x] = k**spaces[x]
+                self._spaces[x] = k ** spaces[x]
             else:
                 self._spaces[x] = spaces[x]
 
@@ -1417,6 +1442,7 @@ class QuiverRep_generic(WithEqualityById, Module):
             # zero and one of the base ring are valid inputs (one is valid only
             # when the domain and codomain are equal).
             from sage.categories.morphism import Morphism
+
             if isinstance(e, Morphism):
                 self._maps[x] = e
             else:
@@ -1462,9 +1488,13 @@ class QuiverRep_generic(WithEqualityById, Module):
 
         for x in self._semigroup._sorted_edges:
             if self._maps[x].domain() != self._spaces[x[0]]:
-                raise ValueError("domain of map at edge '{}' does not match".format(x[2]))
+                raise ValueError(
+                    "domain of map at edge '{}' does not match".format(x[2])
+                )
             if self._maps[x].codomain() != self._spaces[x[1]]:
-                raise ValueError("codomain of map at edge '{}' does not match".format(x[2]))
+                raise ValueError(
+                    "codomain of map at edge '{}' does not match".format(x[2])
+                )
 
     def _repr_(self):
         """
@@ -1532,7 +1562,11 @@ class QuiverRep_generic(WithEqualityById, Module):
         # Create edge homomorphisms restricted to the new domains and codomains
         maps = {}
         for e in self._semigroup._sorted_edges:
-            maps[e] = self._maps[e].restrict_domain(spaces[e[0]]).restrict_codomain(spaces[e[1]])
+            maps[e] = (
+                self._maps[e]
+                .restrict_domain(spaces[e[0]])
+                .restrict_codomain(spaces[e[1]])
+            )
 
         return self._semigroup.representation(self.base_ring(), spaces, maps)
 
@@ -1921,7 +1955,7 @@ class QuiverRep_generic(WithEqualityById, Module):
             (x, y, z)
         """
         # Use names as a list if and only if it is the correct length
-        uselist = (len(names) == self.dimension())
+        uselist = len(names) == self.dimension()
         i = 0
 
         # Create bases for each space and construct QuiverRepElements from
@@ -2169,7 +2203,9 @@ class QuiverRep_generic(WithEqualityById, Module):
             for e in self._semigroup._sorted_edges:
                 for x in sub._spaces[e[0]].gens():
                     if sub._maps[e](x) != self._maps[e](x):
-                        raise ValueError("the quotient method was not passed a submodule")
+                        raise ValueError(
+                            "the quotient method was not passed a submodule"
+                        )
 
         # Then pass the edge maps to the quotient
         maps = {}
@@ -2196,8 +2232,10 @@ class QuiverRep_generic(WithEqualityById, Module):
                 # mapped over using the original map.  The codomain is set as the
                 # quotient so sage will take care of pushing the result to the
                 # quotient in the codomain.
-                maps[e] = spaces[e[0]].hom([self._maps[e](factor.lift(x))
-                                            for x in spaces[e[0]].gens()], spaces[e[1]])
+                maps[e] = spaces[e[0]].hom(
+                    [self._maps[e](factor.lift(x)) for x in spaces[e[0]].gens()],
+                    spaces[e[1]],
+                )
 
         return self._semigroup.representation(self.base_ring(), spaces, maps)
 
@@ -2310,10 +2348,12 @@ class QuiverRep_generic(WithEqualityById, Module):
         """
         # This module is formed by taking the transpose of the edge maps.
         spaces = self._spaces.copy()
-        maps = {(e[1], e[0], e[2]):
-                self._spaces[e[1]].hom(self._maps[e].matrix().transpose(),
-                                       self._spaces[e[0]])
-                for e in self._semigroup._sorted_edges}
+        maps = {
+            (e[1], e[0], e[2]): self._spaces[e[1]].hom(
+                self._maps[e].matrix().transpose(), self._spaces[e[0]]
+            )
+            for e in self._semigroup._sorted_edges
+        }
 
         # Reverse the bases if present
         if hasattr(self, '_bases'):
@@ -2324,15 +2364,21 @@ class QuiverRep_generic(WithEqualityById, Module):
                 basis.extend(bases[v])
 
         if isinstance(self, QuiverRep_with_path_basis):
-            result = self._semigroup.reverse().representation(self.base_ring(), basis, option='dual paths')
+            result = self._semigroup.reverse().representation(
+                self.base_ring(), basis, option='dual paths'
+            )
             result._maps = maps
             result._bases = bases
         elif isinstance(self, QuiverRep_with_dual_path_basis):
-            result = self._semigroup.reverse().representation(self.base_ring(), basis, option='paths')
+            result = self._semigroup.reverse().representation(
+                self.base_ring(), basis, option='paths'
+            )
             result._maps = maps
             result._bases = bases
         else:
-            result = self._semigroup.reverse().representation(self.base_ring(), spaces, maps)
+            result = self._semigroup.reverse().representation(
+                self.base_ring(), spaces, maps
+            )
 
         return result
 
@@ -2368,7 +2414,10 @@ class QuiverRep_generic(WithEqualityById, Module):
             (7, 2, 1)
         """
         from sage.quivers.homspace import QuiverHomSpace
-        return QuiverHomSpace(self, self._semigroup.free_module(self.base_ring())).left_module(basis)
+
+        return QuiverHomSpace(
+            self, self._semigroup.free_module(self.base_ring())
+        ).left_module(basis)
 
     def Hom(self, codomain):
         """
@@ -2383,6 +2432,7 @@ class QuiverRep_generic(WithEqualityById, Module):
             Dimension 2 QuiverHomSpace
         """
         from sage.quivers.homspace import QuiverHomSpace
+
         return QuiverHomSpace(self, codomain)
 
     def direct_sum(self, modules, return_maps=False):
@@ -2469,17 +2519,19 @@ class QuiverRep_generic(WithEqualityById, Module):
                 raise ValueError("cannot direct sum modules with different base rings")
 
         # Get the dimensions of all spaces at each vertex
-        dims = {v: [x._spaces[v].dimension() for x in mods]
-                for v in self._quiver}
+        dims = {v: [x._spaces[v].dimension() for x in mods] for v in self._quiver}
 
         # Create spaces of the correct dimensions
-        spaces = {v: self.base_ring()**sum(dims[v]) for v in self._quiver}
+        spaces = {v: self.base_ring() ** sum(dims[v]) for v in self._quiver}
 
         # Take block sums of matrices to form the maps
         from sage.matrix.constructor import block_diagonal_matrix
+
         maps = {}
         for e in self._semigroup._sorted_edges:
-            maps[e] = block_diagonal_matrix([x._maps[e].matrix() for x in mods], subdivide=False)
+            maps[e] = block_diagonal_matrix(
+                [x._maps[e].matrix() for x in mods], subdivide=False
+            )
 
         # Create the QuiverRep, return if the maps aren't wanted
         result = self._semigroup.representation(self.base_ring(), spaces, maps)
@@ -2489,6 +2541,7 @@ class QuiverRep_generic(WithEqualityById, Module):
         # Create the inclusions and projections
         from sage.matrix.constructor import Matrix, block_matrix
         from sage.rings.integer import Integer
+
         iota = []
         pi = []
         for i in range(len(mods)):
@@ -2497,13 +2550,25 @@ class QuiverRep_generic(WithEqualityById, Module):
             for v in self._quiver:
                 # Create the maps using block matrices
                 pre_dims = sum(dims[v][:i])
-                post_dims = sum(dims[v][i + 1:])
-                incl_maps[v] = block_matrix(1, 3, [Matrix(dims[v][i], pre_dims),
-                                                   Matrix(dims[v][i], dims[v][i], Integer(1)),
-                                                   Matrix(dims[v][i], post_dims)])
-                proj_maps[v] = block_matrix(3, 1, [Matrix(pre_dims, dims[v][i]),
-                                                   Matrix(dims[v][i], dims[v][i], Integer(1)),
-                                                   Matrix(post_dims, dims[v][i])])
+                post_dims = sum(dims[v][i + 1 :])
+                incl_maps[v] = block_matrix(
+                    1,
+                    3,
+                    [
+                        Matrix(dims[v][i], pre_dims),
+                        Matrix(dims[v][i], dims[v][i], Integer(1)),
+                        Matrix(dims[v][i], post_dims),
+                    ],
+                )
+                proj_maps[v] = block_matrix(
+                    3,
+                    1,
+                    [
+                        Matrix(pre_dims, dims[v][i]),
+                        Matrix(dims[v][i], dims[v][i], Integer(1)),
+                        Matrix(post_dims, dims[v][i]),
+                    ],
+                )
                 # These matrices are over the integers, and get coerced
                 # into the appropriate base ring at a later stage.
                 # Might make trouble if the integer 1 does not coerce to
@@ -2689,6 +2754,7 @@ class QuiverRep_with_path_basis(QuiverRep_generic):
       list under right multiplication forms the basis of the resulting
       representation.
     """
+
     # This class implements quiver representations whose bases correspond to
     # paths in the path algebra and whose maps are path multiplication.  The
     # main advantage to having such a basis is that a homomorphism can be
@@ -2746,6 +2812,7 @@ class QuiverRep_with_path_basis(QuiverRep_generic):
 
         # Create the matrices of the maps
         from sage.matrix.constructor import Matrix
+
         maps = {}
         for e in P._sorted_edges:
             arrow = P([e], check=False)
@@ -2774,7 +2841,12 @@ class QuiverRep_with_path_basis(QuiverRep_generic):
                 for j in range(ell):
                     if e[1] == self._bases[v][j].initial_vertex():
                         try:
-                            action_mats[e][v][self._bases[v].index(P([e], check=False) * self._bases[v][j]), j] = k.one()
+                            action_mats[e][v][
+                                self._bases[v].index(
+                                    P([e], check=False) * self._bases[v][j]
+                                ),
+                                j,
+                            ] = k.one()
                         except ValueError:
                             # There is no left action
                             return
@@ -2854,11 +2926,14 @@ class QuiverRep_with_path_basis(QuiverRep_generic):
         if isinstance(edge, list):
             if not edge:
                 return element
-            return self.left_edge_action(edge[:-1], self.left_edge_action(edge[-1], element))
+            return self.left_edge_action(
+                edge[:-1], self.left_edge_action(edge[-1], element)
+            )
 
         # Now we are just acting by a single edge
-        elems = {v: self._left_action_mats[edge][v] * element._elems[v]
-                 for v in self._quiver}
+        elems = {
+            v: self._left_action_mats[edge][v] * element._elems[v] for v in self._quiver
+        }
         return self(elems)
 
     def is_left_module(self) -> bool:
@@ -2917,6 +2992,7 @@ class QuiverRep_with_dual_path_basis(QuiverRep_generic):
       list under left deletion forms the basis of the resulting
       representation.
     """
+
     # This class implements quiver representations whose bases correspond to
     # paths in the path algebra and whose maps are edge deletion.  The
     # main advantage to having such a basis is that a homomorphism can be
@@ -2963,6 +3039,7 @@ class QuiverRep_with_dual_path_basis(QuiverRep_generic):
 
         # Create the matrices of the maps
         from sage.matrix.constructor import Matrix
+
         maps = {}
         for e in P._sorted_edges:
             arrow = P([e], check=False)

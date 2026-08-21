@@ -26,6 +26,7 @@ class POVRay:
 
     POVRay: http://www.povray.org
     """
+
     def __repr__(self):
         return 'POV-Ray The Persistence of Vision Ray Tracer'
 

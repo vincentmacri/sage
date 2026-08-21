@@ -158,10 +158,17 @@ lazy_import('sage.misc.latex', 'latex')
 lazy_import('sage.symbolic.constants', ['I', 'pi'])
 
 lazy_import('sage.libs.mpmath.utils', 'call', as_='_mpmath_utils_call')
-lazy_import('mpmath',
-            ['spherharm', 'ellipe', 'ellipf', 'ellipk', 'ellippi'],
-            as_=['_mpmath_spherharm', '_mpmath_ellipe', '_mpmath_ellipf',
-                 '_mpmath_ellipk', '_mpmath_ellippi'])
+lazy_import(
+    'mpmath',
+    ['spherharm', 'ellipe', 'ellipf', 'ellipk', 'ellippi'],
+    as_=[
+        '_mpmath_spherharm',
+        '_mpmath_ellipe',
+        '_mpmath_ellipf',
+        '_mpmath_ellipk',
+        '_mpmath_ellippi',
+    ],
+)
 
 
 class SphericalHarmonic(BuiltinFunction):
@@ -242,6 +249,7 @@ class SphericalHarmonic(BuiltinFunction):
 
     - :wikipedia:`Spherical_harmonics`
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -250,12 +258,17 @@ class SphericalHarmonic(BuiltinFunction):
             sage: spherical_harmonic(n, m, theta, phi)._sympy_()                        # needs sympy sage.symbolic
             Ynm(n, m, theta, phi)
         """
-        BuiltinFunction.__init__(self, 'spherical_harmonic', nargs=4,
-                                 conversions=dict(
-                                     maple='SphericalY',
-                                     mathematica='SphericalHarmonicY',
-                                     maxima='spherical_harmonic',
-                                     sympy='Ynm'))
+        BuiltinFunction.__init__(
+            self,
+            'spherical_harmonic',
+            nargs=4,
+            conversions=dict(
+                maple='SphericalY',
+                mathematica='SphericalHarmonicY',
+                maxima='spherical_harmonic',
+                sympy='Ynm',
+            ),
+        )
 
     def _eval_(self, n, m, theta, phi, **kwargs):
         r"""
@@ -307,14 +320,17 @@ class SphericalHarmonic(BuiltinFunction):
             if abs(m) > n:
                 return ZZ(0)
             if m == 0 and theta.is_zero():
-                return sqrt((2*n+1)/4/pi)
+                return sqrt((2 * n + 1) / 4 / pi)
             from sage.arith.misc import factorial
             from sage.functions.trig import cos
             from sage.functions.orthogonal_polys import gen_legendre_P
-            res = (sqrt(factorial(n-m) * (2*n+1) / (4*pi * factorial(n+m)))
-                   * gen_legendre_P(n, m, cos(theta))
-                   * exp(I*m*phi)).simplify_trig()
-            res = res.substitute({sqrt(sin(theta)**2): sin(theta)})
+
+            res = (
+                sqrt(factorial(n - m) * (2 * n + 1) / (4 * pi * factorial(n + m)))
+                * gen_legendre_P(n, m, cos(theta))
+                * exp(I * m * phi)
+            ).simplify_trig()
+            res = res.substitute({sqrt(sin(theta) ** 2): sin(theta)})
             return res
 
     def _evalf_(self, n, m, theta, phi, parent, **kwds):
@@ -364,14 +380,13 @@ class SphericalHarmonic(BuiltinFunction):
             True
         """
         if diff_param == 2:
-            return (m * cot(theta) * spherical_harmonic(n, m, theta, phi) +
-                    sqrt((n - m) * (n + m + 1)) * exp(-I * phi) *
-                    spherical_harmonic(n, m + 1, theta, phi))
+            return m * cot(theta) * spherical_harmonic(n, m, theta, phi) + sqrt(
+                (n - m) * (n + m + 1)
+            ) * exp(-I * phi) * spherical_harmonic(n, m + 1, theta, phi)
         if diff_param == 3:
             return I * m * spherical_harmonic(n, m, theta, phi)
 
-        raise ValueError('only derivative with respect to theta or phi'
-                         ' supported')
+        raise ValueError('only derivative with respect to theta or phi supported')
 
     def _latex_(self):
         r"""
@@ -391,13 +406,15 @@ class SphericalHarmonic(BuiltinFunction):
             Y_{3}^{2}\left(x, y\right)
         """
         return r"Y_{{{}}}^{{{}}}\left({}, {}\right)".format(
-            latex(n), latex(m), latex(theta), latex(phi))
+            latex(n), latex(m), latex(theta), latex(phi)
+        )
 
 
 spherical_harmonic = SphericalHarmonic()
 
 
 # elliptic functions and integrals
+
 
 def elliptic_j(z, prec=53):
     r"""
@@ -453,16 +470,19 @@ def elliptic_j(z, prec=53):
     CC = z.parent()
     if not isinstance(CC, sage.rings.abc.ComplexField):
         from sage.rings.complex_mpfr import ComplexField
+
         CC = ComplexField(prec)
         try:
             z = CC(z)
         except ValueError:
             raise ValueError("elliptic_j only defined for complex arguments.")
     from sage.libs.pari import pari
+
     return CC(pari(z).ellj())
 
 
 # elliptic integrals
+
 
 class EllipticE(BuiltinFunction):
     r"""
@@ -501,6 +521,7 @@ class EllipticE(BuiltinFunction):
 
     - :wikipedia:`Jacobi_elliptic_functions`
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -538,13 +559,19 @@ class EllipticE(BuiltinFunction):
              0.000000000000000,
              0.000000000000000]
         """
-        BuiltinFunction.__init__(self, 'elliptic_e', nargs=2,
-                                 # Maple conversion left out since it uses
-                                 # k instead of m as the second argument
-                                 conversions=dict(mathematica='EllipticE',
-                                                  maxima='elliptic_e',
-                                                  sympy='elliptic_e',
-                                                  fricas='((x,y)+->ellipticE(sin(x), y))'))
+        BuiltinFunction.__init__(
+            self,
+            'elliptic_e',
+            nargs=2,
+            # Maple conversion left out since it uses
+            # k instead of m as the second argument
+            conversions=dict(
+                mathematica='EllipticE',
+                maxima='elliptic_e',
+                sympy='elliptic_e',
+                fricas='((x,y)+->ellipticE(sin(x), y))',
+            ),
+        )
 
     def _eval_(self, z, m):
         """
@@ -645,6 +672,7 @@ class EllipticEC(BuiltinFunction):
 
     - :wikipedia:`Elliptic_integral#Complete_elliptic_integral_of_the_second_kind`
     """
+
     def __init__(self):
         """
         EXAMPLES::
@@ -664,11 +692,18 @@ class EllipticEC(BuiltinFunction):
             sage: fricas.ellipticE(0.5).sage()  # abs tol 1e-8                  # optional - fricas, needs sage.symbolic
             1.3506438810476755025201749
         """
-        BuiltinFunction.__init__(self, 'elliptic_ec', nargs=1, latex_name='E',
-                                 conversions=dict(mathematica='EllipticE',
-                                                  maxima='elliptic_ec',
-                                                  sympy='elliptic_e',
-                                                  fricas='ellipticE'))
+        BuiltinFunction.__init__(
+            self,
+            'elliptic_ec',
+            nargs=1,
+            latex_name='E',
+            conversions=dict(
+                mathematica='EllipticE',
+                maxima='elliptic_ec',
+                sympy='elliptic_e',
+                fricas='ellipticE',
+            ),
+        )
 
     def _eval_(self, x):
         """
@@ -742,6 +777,7 @@ class EllipticEU(BuiltinFunction):
 
     - :wikipedia:`Jacobi_elliptic_functions`
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -749,8 +785,9 @@ class EllipticEU(BuiltinFunction):
             sage: loads(dumps(elliptic_eu))
             elliptic_eu
         """
-        BuiltinFunction.__init__(self, 'elliptic_eu', nargs=2,
-                                 conversions=dict(maxima='elliptic_eu'))
+        BuiltinFunction.__init__(
+            self, 'elliptic_eu', nargs=2, conversions=dict(maxima='elliptic_eu')
+        )
 
     def _eval_(self, u, m):
         """
@@ -788,17 +825,21 @@ class EllipticEU(BuiltinFunction):
              - elliptic_eu(x, m)*jacobi_dn(x, m))*sqrt(-m*jacobi_sn(x, m)^2 + 1)/((m - 1)*m)
         """
         from sage.functions.jacobi import jacobi, jacobi_am
+
         if diff_param == 0:
-            return (sqrt(-m * jacobi('sn', u, m) ** Integer(2) +
-                         Integer(1)) * jacobi('dn', u, m))
+            return sqrt(-m * jacobi('sn', u, m) ** Integer(2) + Integer(1)) * jacobi(
+                'dn', u, m
+            )
         if diff_param == 1:
-            return (Integer(1) / Integer(2) *
-                    (elliptic_eu(u, m) - elliptic_f(jacobi_am(u, m), m)) / m -
-                    Integer(1) / Integer(2) * sqrt(-m * jacobi('sn', u, m) **
-                    Integer(2) + Integer(1)) * (m * jacobi('sn', u, m) *
-                    jacobi('cn', u, m) - (m - Integer(1)) * u -
-                    elliptic_eu(u, m) * jacobi('dn', u, m)) /
-                    ((m - Integer(1)) * m))
+            return Integer(1) / Integer(2) * (
+                elliptic_eu(u, m) - elliptic_f(jacobi_am(u, m), m)
+            ) / m - Integer(1) / Integer(2) * sqrt(
+                -m * jacobi('sn', u, m) ** Integer(2) + Integer(1)
+            ) * (
+                m * jacobi('sn', u, m) * jacobi('cn', u, m)
+                - (m - Integer(1)) * u
+                - elliptic_eu(u, m) * jacobi('dn', u, m)
+            ) / ((m - Integer(1)) * m)
 
     def _print_latex_(self, u, m):
         """
@@ -824,6 +865,7 @@ def elliptic_eu_f(u, m):
         mpf('0.49605455128659691')
     """
     from mpmath import mp as ctx
+
     prec = ctx.prec
     try:
         u = ctx.convert(u)
@@ -866,6 +908,7 @@ class EllipticF(BuiltinFunction):
 
     - :wikipedia:`Elliptic_integral#Incomplete_elliptic_integral_of_the_first_kind`
     """
+
     def __init__(self):
         r"""
         EXAMPLES::
@@ -903,11 +946,17 @@ class EllipticF(BuiltinFunction):
              0.000000000000000,
              0.000000000000000]
         """
-        BuiltinFunction.__init__(self, 'elliptic_f', nargs=2,
-                                 conversions=dict(mathematica='EllipticF',
-                                                  maxima='elliptic_f',
-                                                  fricas='((x,y)+->ellipticF(sin(x), y))',
-                                                  sympy='elliptic_f'))
+        BuiltinFunction.__init__(
+            self,
+            'elliptic_f',
+            nargs=2,
+            conversions=dict(
+                mathematica='EllipticF',
+                maxima='elliptic_f',
+                fricas='((x,y)+->ellipticF(sin(x), y))',
+                sympy='elliptic_f',
+            ),
+        )
 
     def _eval_(self, z, m):
         """
@@ -959,11 +1008,18 @@ class EllipticF(BuiltinFunction):
         if diff_param == 0:
             return Integer(1) / sqrt(Integer(1) - m * sin(z) ** Integer(2))
         if diff_param == 1:
-            return (elliptic_e(z, m) / (Integer(2) * (Integer(1) - m) * m) -
-                    elliptic_f(z, m) / (Integer(2) * m) -
-                    (sin(Integer(2) * z) /
-                     (Integer(4) * (Integer(1) - m) *
-                      sqrt(Integer(1) - m * sin(z) ** Integer(2)))))
+            return (
+                elliptic_e(z, m) / (Integer(2) * (Integer(1) - m) * m)
+                - elliptic_f(z, m) / (Integer(2) * m)
+                - (
+                    sin(Integer(2) * z)
+                    / (
+                        Integer(4)
+                        * (Integer(1) - m)
+                        * sqrt(Integer(1) - m * sin(z) ** Integer(2))
+                    )
+                )
+            )
 
     def _print_latex_(self, z, m):
         r"""
@@ -1003,6 +1059,7 @@ class EllipticKC(BuiltinFunction):
 
     - :wikipedia:`Elliptic_integral#Incomplete_elliptic_integral_of_the_first_kind`
     """
+
     def __init__(self):
         """
         EXAMPLES::
@@ -1022,11 +1079,18 @@ class EllipticKC(BuiltinFunction):
             sage: fricas.ellipticK(0.3).sage()  # abs tol 1e-3                  # optional - fricas, needs sage.symbolic
             1.7138894481787910555457043
         """
-        BuiltinFunction.__init__(self, 'elliptic_kc', nargs=1, latex_name='K',
-                                 conversions=dict(mathematica='EllipticK',
-                                                  maxima='elliptic_kc',
-                                                  sympy='elliptic_k',
-                                                  fricas='ellipticK'))
+        BuiltinFunction.__init__(
+            self,
+            'elliptic_kc',
+            nargs=1,
+            latex_name='K',
+            conversions=dict(
+                mathematica='EllipticK',
+                maxima='elliptic_kc',
+                sympy='elliptic_k',
+                fricas='ellipticK',
+            ),
+        )
 
     def _eval_(self, z):
         """
@@ -1074,8 +1138,9 @@ class EllipticKC(BuiltinFunction):
             -1/2*((x - 1)*elliptic_kc(x)
             + elliptic_ec(x))/((x - 1)*x)
         """
-        return ((elliptic_ec(z) - (Integer(1) - z) * elliptic_kc(z)) /
-                (Integer(2) * (Integer(1) - z) * z))
+        return (elliptic_ec(z) - (Integer(1) - z) * elliptic_kc(z)) / (
+            Integer(2) * (Integer(1) - z) * z
+        )
 
 
 elliptic_kc = EllipticKC()
@@ -1114,6 +1179,7 @@ class EllipticPi(BuiltinFunction):
 
     - :wikipedia:`Elliptic_integral#Incomplete_elliptic_integral_of_the_third_kind`
     """
+
     def __init__(self):
         """
         EXAMPLES::
@@ -1123,11 +1189,17 @@ class EllipticPi(BuiltinFunction):
             sage: elliptic_pi(x, pi/4, 1)._sympy_()                                     # needs sympy sage.symbolic
             elliptic_pi(x, pi/4, 1)
         """
-        BuiltinFunction.__init__(self, 'elliptic_pi', nargs=3,
-                                 conversions=dict(mathematica='EllipticPi',
-                                                  maxima='EllipticPi',
-                                                  # fricas='ellipticPi', doubt
-                                                  sympy='elliptic_pi'))
+        BuiltinFunction.__init__(
+            self,
+            'elliptic_pi',
+            nargs=3,
+            conversions=dict(
+                mathematica='EllipticPi',
+                maxima='EllipticPi',
+                # fricas='ellipticPi', doubt
+                sympy='elliptic_pi',
+            ),
+        )
 
     def _eval_(self, n, z, m):
         """
@@ -1177,22 +1249,33 @@ class EllipticPi(BuiltinFunction):
             - 2*elliptic_pi(n, z, m))/(m - n)
         """
         if diff_param == 0:
-            return ((Integer(1) / (Integer(2) * (m - n) * (n - Integer(1)))) *
-                    (elliptic_e(z, m) + ((m - n) / n) * elliptic_f(z, m) +
-                    ((n ** Integer(2) - m) / n) * elliptic_pi(n, z, m) -
-                    (n * sqrt(Integer(1) - m * sin(z) ** Integer(2)) *
-                     sin(Integer(2) * z)) /
-                    (Integer(2) * (Integer(1) - n * sin(z) ** Integer(2)))))
+            return (Integer(1) / (Integer(2) * (m - n) * (n - Integer(1)))) * (
+                elliptic_e(z, m)
+                + ((m - n) / n) * elliptic_f(z, m)
+                + ((n ** Integer(2) - m) / n) * elliptic_pi(n, z, m)
+                - (
+                    n
+                    * sqrt(Integer(1) - m * sin(z) ** Integer(2))
+                    * sin(Integer(2) * z)
+                )
+                / (Integer(2) * (Integer(1) - n * sin(z) ** Integer(2)))
+            )
         if diff_param == 1:
-            return (Integer(1) /
-                    (sqrt(Integer(1) - m * sin(z) ** Integer(Integer(2))) *
-                     (Integer(1) - n * sin(z) ** Integer(2))))
+            return Integer(1) / (
+                sqrt(Integer(1) - m * sin(z) ** Integer(Integer(2)))
+                * (Integer(1) - n * sin(z) ** Integer(2))
+            )
         if diff_param == 2:
-            return ((Integer(1) / (Integer(2) * (n - m))) *
-                    (elliptic_e(z, m) / (m - Integer(1)) +
-                     elliptic_pi(n, z, m) - (m * sin(Integer(2) * z)) /
-                     (Integer(2) * (m - Integer(1)) *
-                     sqrt(Integer(1) - m * sin(z) ** Integer(2)))))
+            return (Integer(1) / (Integer(2) * (n - m))) * (
+                elliptic_e(z, m) / (m - Integer(1))
+                + elliptic_pi(n, z, m)
+                - (m * sin(Integer(2) * z))
+                / (
+                    Integer(2)
+                    * (m - Integer(1))
+                    * sqrt(Integer(1) - m * sin(z) ** Integer(2))
+                )
+            )
 
     def _print_latex_(self, n, z, m):
         r"""

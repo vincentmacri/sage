@@ -540,8 +540,10 @@ class Maxima(MaximaAbstract, Expect):
         sage: m == maxima
         False
     """
-    def __init__(self, script_subdirectory=None, logfile=None, server=None,
-                 init_code=None):
+
+    def __init__(
+        self, script_subdirectory=None, logfile=None, server=None, init_code=None
+    ):
         """
         Create an instance of the Maxima interpreter.
 
@@ -592,32 +594,41 @@ class Maxima(MaximaAbstract, Expect):
             env['MAXIMA_PREFIX'] = MAXIMA_PREFIX
 
         MaximaAbstract.__init__(self, "maxima")
-        Expect.__init__(self,
-                        name='maxima',
-                        prompt=r'\(\%i[0-9]+\) ',
-                        command='{0} -p {1}'.format(MAXIMA, shlex.quote(STARTUP)),
-                        env=env,
-                        script_subdirectory=script_subdirectory,
-                        restart_on_ctrlc=False,
-                        verbose_start=False,
-                        init_code=init_code,
-                        logfile=logfile,
-                        eval_using_file_cutoff=eval_using_file_cutoff)
+        Expect.__init__(
+            self,
+            name='maxima',
+            prompt=r'\(\%i[0-9]+\) ',
+            command='{0} -p {1}'.format(MAXIMA, shlex.quote(STARTUP)),
+            env=env,
+            script_subdirectory=script_subdirectory,
+            restart_on_ctrlc=False,
+            verbose_start=False,
+            init_code=init_code,
+            logfile=logfile,
+            eval_using_file_cutoff=eval_using_file_cutoff,
+        )
         # Must match what is in the file sage-maxima.lisp
         self._display_prompt = '<sage-display>'
         # See #15440 for the importance of the trailing space
         self._output_prompt_re = re.compile(r'\(\%o[0-9]+\) ')
-        self._ask = [b'zero or nonzero\\?', b'an integer\\?',
-                     b'positive, negative or zero\\?', b'positive or negative\\?',
-                     b'positive or zero\\?', b'equal to .*\\?']
+        self._ask = [
+            b'zero or nonzero\\?',
+            b'an integer\\?',
+            b'positive, negative or zero\\?',
+            b'positive or negative\\?',
+            b'positive or zero\\?',
+            b'equal to .*\\?',
+        ]
 
-        self._prompt_wait = ([self._prompt] +
-                             [re.compile(x) for x in self._ask] +
-                             [b'Break [0-9]+'])
+        self._prompt_wait = (
+            [self._prompt] + [re.compile(x) for x in self._ask] + [b'Break [0-9]+']
+        )
         # note that you might need to change _expect_expr if you
         # change this _prompt_wait
 
-        self._error_re = re.compile('(Principal Value|debugmode|incorrect syntax|Maxima encountered a Lisp error)')
+        self._error_re = re.compile(
+            '(Principal Value|debugmode|incorrect syntax|Maxima encountered a Lisp error)'
+        )
         self._display2d = False
 
     def set_seed(self, seed=None):
@@ -656,7 +667,9 @@ class Maxima(MaximaAbstract, Expect):
             True
         """
         Expect._start(self)
-        self._sendline(r":lisp (defun tex-derivative (x l r) (tex (if $derivabbrev (tex-dabbrev x) (tex-d x '\\partial)) l r lop rop ))")
+        self._sendline(
+            r":lisp (defun tex-derivative (x l r) (tex (if $derivabbrev (tex-dabbrev x) (tex-d x '\\partial)) l r lop rop ))"
+        )
 
         # Don't use ! for factorials (#11539)
         self._sendline(":lisp (remprop 'mfactorial 'grind)")
@@ -762,17 +775,20 @@ class Maxima(MaximaAbstract, Expect):
                 if expr is self._prompt_wait and i > len(self._ask):
                     self.quit()
                     raise ValueError(
-                            "{}\nComputation failed due to a bug in Maxima "
-                            "-- NOTE: Maxima had to be restarted.".format(v))
+                        "{}\nComputation failed due to a bug in Maxima "
+                        "-- NOTE: Maxima had to be restarted.".format(v)
+                    )
 
                 j = v.find('Is ')
                 v = v[j:]
                 k = v.find(' ', 3)
-                msg = "Computation failed since Maxima requested additional " \
-                      "constraints (try the command " \
-                      "\"maxima.assume('{}>0')\" " \
-                      "before integral or limit evaluation, for example):\n" \
-                      "{}{}".format(v[3:k], v, self._after())
+                msg = (
+                    "Computation failed since Maxima requested additional "
+                    "constraints (try the command "
+                    "\"maxima.assume('{}>0')\" "
+                    "before integral or limit evaluation, for example):\n"
+                    "{}{}".format(v[3:k], v, self._after())
+                )
                 self._sendline(";")
                 self._expect_expr()
                 raise ValueError(msg)
@@ -780,9 +796,11 @@ class Maxima(MaximaAbstract, Expect):
             i = 0
             while True:
                 try:
-                    print("Control-C pressed.  Interrupting Maxima. Please wait a few seconds...")
-                    self._sendstr('quit;\n'+chr(3))
-                    self._sendstr('quit;\n'+chr(3))
+                    print(
+                        "Control-C pressed.  Interrupting Maxima. Please wait a few seconds..."
+                    )
+                    self._sendstr('quit;\n' + chr(3))
+                    self._sendstr('quit;\n' + chr(3))
                     self.interrupt()
                     self.interrupt()
                 except KeyboardInterrupt:
@@ -793,8 +811,15 @@ class Maxima(MaximaAbstract, Expect):
                     break
             raise KeyboardInterrupt(msg)
 
-    def _eval_line(self, line, allow_use_file=False,
-                   wait_for_prompt=True, reformat=True, error_check=True, restart_if_needed=False):
+    def _eval_line(
+        self,
+        line,
+        allow_use_file=False,
+        wait_for_prompt=True,
+        reformat=True,
+        error_check=True,
+        restart_if_needed=False,
+    ):
         """
         Return result of line evaluation.
 
@@ -832,7 +857,9 @@ class Maxima(MaximaAbstract, Expect):
         if not wait_for_prompt:
             return
         # line_echo sometimes has randomly inserted terminal echo in front #15811
-        assert line_echo.strip().endswith(line.strip()), 'mismatch:\n' + line_echo + line
+        assert line_echo.strip().endswith(line.strip()), (
+            'mismatch:\n' + line_echo + line
+        )
 
         self._expect_expr(self._display_prompt)
         out = self._before()  # input echo + output prompt + output
@@ -842,12 +869,11 @@ class Maxima(MaximaAbstract, Expect):
             return out
 
         self._expect_expr()
-        assert len(self._before()) == 0, \
-            'Maxima expect interface is confused!'
+        assert len(self._before()) == 0, 'Maxima expect interface is confused!'
         r = self._output_prompt_re
         m = r.search(out)
         if m is not None:
-            out = out[m.end():]
+            out = out[m.end() :]
         return re.sub(r'\s+', ' ', out).rstrip()
 
     def _synchronize(self):
@@ -877,7 +903,7 @@ class Maxima(MaximaAbstract, Expect):
         if self._expect is None:
             return
         r = randrange(2147483647)
-        s = marker + str(r+1)
+        s = marker + str(r + 1)
 
         # The 0; *is* necessary... it comes up in certain rare cases
         # that are revealed by extensive testing.
@@ -930,7 +956,7 @@ class Maxima(MaximaAbstract, Expect):
             cmd = 'batch("%s");' % tmp_to_use
 
         r = randrange(2147483647)
-        s = str(r+1)
+        s = str(r + 1)
         cmd = "%s1+%s;\n" % (cmd, r)
 
         self._sendline(cmd)
@@ -1001,7 +1027,10 @@ class Maxima(MaximaAbstract, Expect):
             Maxima ERROR:
                 Principal Value
         """
-        raise TypeError("Error executing code in Maxima\nCODE:\n\t%s\nMaxima ERROR:\n\t%s" % (cmd, out.replace('-- an error.  To debug this try debugmode(true);', '')))
+        raise TypeError(
+            "Error executing code in Maxima\nCODE:\n\t%s\nMaxima ERROR:\n\t%s"
+            % (cmd, out.replace('-- an error.  To debug this try debugmode(true);', ''))
+        )
 
     ###########################################
     # Direct access to underlying lisp interpreter.
@@ -1021,8 +1050,13 @@ class Maxima(MaximaAbstract, Expect):
             19
             (
         """
-        self._eval_line(':lisp %s\n""' % cmd, allow_use_file=False,
-                        wait_for_prompt=False, reformat=False, error_check=False)
+        self._eval_line(
+            ':lisp %s\n""' % cmd,
+            allow_use_file=False,
+            wait_for_prompt=False,
+            reformat=False,
+            error_check=False,
+        )
         self._expect_expr('(%i)')
         return self._before()
 
@@ -1138,6 +1172,7 @@ class Maxima(MaximaAbstract, Expect):
     # of the Maxima interface. these routines expect arguments
     # living in the symbolic ring and return something
     # that is hopefully coercible into the symbolic ring again.
+
 
 #    def sr_integral(self, *args):
 #        return args[0]._maxima_().integrate(*args[1:])
@@ -1265,14 +1300,14 @@ class MaximaElementFunction(MaximaElement, MaximaAbstractElementFunction):
             False
         """
         MaximaElement.__init__(self, parent, name, is_name=True)
-        MaximaAbstractElementFunction.__init__(self, parent,
-                                name, defn, args, latex)
+        MaximaAbstractElementFunction.__init__(self, parent, name, defn, args, latex)
 
 
 # An instance
-maxima = Maxima(init_code=['display2d : false',
-                           'domain : complex', 'keepfloat : true'],
-                script_subdirectory=None)
+maxima = Maxima(
+    init_code=['display2d : false', 'domain : complex', 'keepfloat : true'],
+    script_subdirectory=None,
+)
 
 
 def reduce_load_Maxima():  # (init_code=None):
@@ -1321,4 +1356,5 @@ def __doctest_cleanup():
         False
     """
     import sage.interfaces.quit
+
     sage.interfaces.quit.expect_quitall()

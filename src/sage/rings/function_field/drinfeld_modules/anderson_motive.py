@@ -275,6 +275,7 @@ from sage.rings.function_field.drinfeld_modules.morphism import DrinfeldModuleMo
 # Classes for Anderson motives
 ##############################
 
+
 class AndersonMotive_general(OreModule):
     r"""
     General class for Anderson motives.
@@ -286,6 +287,7 @@ class AndersonMotive_general(OreModule):
         sage: M = AndersonMotive(A, K)
         sage: TestSuite(M).run()
     """
+
     @staticmethod
     def __classcall_private__(cls, category, tau, twist=0, names=None, normalize=True):
         r"""
@@ -339,7 +341,7 @@ class AndersonMotive_general(OreModule):
                 if exponent == 0:
                     break
             if exponent is not Infinity and exponent > 0:
-                denom = divisor ** exponent
+                denom = divisor**exponent
                 tau = tau.parent()([entry // denom for entry in tau.list()])
                 twist -= exponent
 
@@ -392,7 +394,13 @@ class AndersonMotive_general(OreModule):
             sage: loads(dumps(M)) is M
             True
         """
-        return self._general_class, (self._category, self._tau, self._twist, self._names, False)
+        return self._general_class, (
+            self._category,
+            self._tau,
+            self._twist,
+            self._names,
+            False,
+        )
 
     @lazy_attribute
     def _dettau(self):
@@ -516,7 +524,7 @@ class AndersonMotive_general(OreModule):
         For definition and relevance of this notion, we refer to [HJ2020]_.
         """
         S = self._tau.smith_form(transformation=False)
-        return [-self._twist + S[i,i].degree() for i in range(self.rank())]
+        return [-self._twist + S[i, i].degree() for i in range(self.rank())]
 
     def is_effective(self):
         r"""
@@ -555,6 +563,7 @@ class AndersonMotive_drinfeld(AndersonMotive_general):
         sage: M = phi.anderson_motive()
         sage: TestSuite(M).run()
     """
+
     def __classcall_private__(cls, phi, dual, names):
         r"""
         Normalize the input and construct this Anderson motive.
@@ -592,18 +601,20 @@ class AndersonMotive_drinfeld(AndersonMotive_general):
         if dual:
             divisor = category.divisor()
             for i in range(1, r):
-                tau[i-1, i] = divisor
-                tau[i-1, 0] = P[i]
-            tau[r-1, 0] = P[r]
+                tau[i - 1, i] = divisor
+                tau[i - 1, 0] = P[i]
+            tau[r - 1, 0] = P[r]
             denominator = Factorization([(divisor, 1)])
         else:
-            tau[r-1, 0] = (AK.gen() - P[0]) / P[r]
+            tau[r - 1, 0] = (AK.gen() - P[0]) / P[r]
             for i in range(1, r):
-                tau[i-1, i] = 1
-                tau[r-1, i] = -P[i]/P[r]
+                tau[i - 1, i] = 1
+                tau[r - 1, i] = -P[i] / P[r]
             denominator = Factorization([])
         names = normalize_names(names, r)
-        return cls.__classcall__(cls, tau, category._ore_polring, denominator, names, category, phi, dual)
+        return cls.__classcall__(
+            cls, tau, category._ore_polring, denominator, names, category, phi, dual
+        )
 
     def __init__(self, mat, ore, denominator, names, category, phi, dual) -> None:
         r"""
@@ -710,6 +721,7 @@ class AndersonSubMotive(AndersonMotive_general, OreSubmodule):
         sage: N = M.span(v)
         sage: TestSuite(N).run()
     """
+
     def __init__(self, ambient, submodule, names):
         r"""
         Initialize this Anderson motive.
@@ -764,6 +776,7 @@ class AndersonQuotientMotive(AndersonMotive_general, OreQuotientModule):
         sage: Q = M.quo(u)
         sage: TestSuite(Q).run()
     """
+
     def __init__(self, cover, submodule, names):
         r"""
         Initialize this Anderson motive.
@@ -804,6 +817,7 @@ class AndersonQuotientMotive(AndersonMotive_general, OreQuotientModule):
 
 # Morphisms between Anderson modules
 
+
 class AndersonMotiveMorphism(OreModuleMorphism):
     r"""
     A class for morphisms betweeen Anderson motives.
@@ -817,6 +831,7 @@ class AndersonMotiveMorphism(OreModuleMorphism):
         sage: f = u.anderson_motive()
         sage: TestSuite(f).run()
     """
+
     def _repr_type(self):
         r"""
         Return a string representation of the type of this morphism.
@@ -846,16 +861,27 @@ class AndersonMotiveMorphism(OreModuleMorphism):
             sage: f
             Endomorphism of Anderson motive of rank 1 over Univariate Polynomial Ring in T over Finite Field in z of size 5^3
         """
-        from sage.rings.function_field.drinfeld_modules.anderson_motive import AndersonMotive_drinfeld
+        from sage.rings.function_field.drinfeld_modules.anderson_motive import (
+            AndersonMotive_drinfeld,
+        )
+
         if isinstance(im_gens, DrinfeldModuleMorphism):
             domain = parent.domain()
             codomain = parent.codomain()
-            if not isinstance(domain, AndersonMotive_drinfeld)\
-            or domain.drinfeld_module() is not im_gens.codomain():
-                raise ValueError("the domain must be the Anderson module of the codomain of the isogeny")
-            if not isinstance(codomain, AndersonMotive_drinfeld)\
-            or codomain.drinfeld_module() is not im_gens.domain():
-                raise ValueError("the codomain must be the Anderson module of the domain of the isogeny")
+            if (
+                not isinstance(domain, AndersonMotive_drinfeld)
+                or domain.drinfeld_module() is not im_gens.codomain()
+            ):
+                raise ValueError(
+                    "the domain must be the Anderson module of the codomain of the isogeny"
+                )
+            if (
+                not isinstance(codomain, AndersonMotive_drinfeld)
+                or codomain.drinfeld_module() is not im_gens.domain()
+            ):
+                raise ValueError(
+                    "the codomain must be the Anderson module of the domain of the isogeny"
+                )
             im_gens = im_gens._motive_matrix()
             check = False
         OreModuleMorphism.__init__(self, parent, im_gens, check)
@@ -903,11 +929,13 @@ class AndersonMotive_homspace(OreModule_homspace):
 
 # Coercion maps
 
+
 class DrinfeldToAnderson(Map):
     r"""
     The canonical isomorphism `K\{\tau\} \to M(\phi)`
     for a Drinfeld module `\phi : A \to K\{\tau\}`.
     """
+
     def __init__(self, parent, phi):
         r"""
         Initialize this map.
@@ -965,6 +993,7 @@ class AndersonToDrinfeld(Map):
     The canonical isomorphism `M(\phi) \to K\{\tau\}`
     for a Drinfeld module `\phi : A \to K\{\tau\}`.
     """
+
     def __init__(self, parent, phi):
         r"""
         Initialize this map.
@@ -1006,12 +1035,13 @@ class AndersonToDrinfeld(Map):
         ans = S.zero()
         d = max(xi.degree() for xi in xs)
         for j in range(d, -1, -1):
-            ans = ans*phiT + S([xs[i][j] for i in range(r)])
+            ans = ans * phiT + S([xs[i][j] for i in range(r)])
         return ans
 
 
 # Constructor
 #############
+
 
 def AndersonMotive(arg1, arg2=None, names=None):
     r"""
@@ -1197,7 +1227,10 @@ def AndersonMotive(arg1, arg2=None, names=None):
     if isinstance(arg2, Matrix):
         tau = arg2
         AK = tau.base_ring()
-        if not isinstance(AK, PolynomialRing_general) or AK.variable_name() != A.variable_name():
+        if (
+            not isinstance(AK, PolynomialRing_general)
+            or AK.variable_name() != A.variable_name()
+        ):
             raise TypeError("incompatible base rings")
         det = tau.determinant()
         if det == 0:
@@ -1208,7 +1241,7 @@ def AndersonMotive(arg1, arg2=None, names=None):
         if gamma is None:
             p = A.characteristic()
             if h.gcd(p) == 1:
-                theta = -det[h-1] / det[h] / h
+                theta = -det[h - 1] / det[h] / h
             else:
                 raise NotImplementedError("cannot determine the structure of A-field")
             gamma = A.hom([theta])

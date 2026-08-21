@@ -6,7 +6,6 @@ from sage.numerical.mip import MixedIntegerLinearProgram
 
 @pytest.importorskip("cvxpy")
 class TestCVXPYBackend(GenericBackendTests):
-
     @pytest.fixture
     def backend(self) -> GenericBackend:
         return MixedIntegerLinearProgram(solver="CVXPY").get_backend()

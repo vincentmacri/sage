@@ -67,7 +67,9 @@ from sage.modules.free_module import FreeModule
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.parent import Parent
 
-lazy_import('sage.algebras.letterplace.free_algebra_letterplace', 'FreeAlgebra_letterplace')
+lazy_import(
+    'sage.algebras.letterplace.free_algebra_letterplace', 'FreeAlgebra_letterplace'
+)
 
 
 class FreeAlgebraQuotient(UniqueRepresentation, Parent):
@@ -88,8 +90,7 @@ class FreeAlgebraQuotient(UniqueRepresentation, Parent):
             M = M.parent()(M)
             M.set_immutable()
             new_mats.append(M)
-        return super().__classcall__(cls, A, tuple(mons),
-                                     tuple(new_mats), tuple(names))
+        return super().__classcall__(cls, A, tuple(mons), tuple(new_mats), tuple(names))
 
     Element = FreeAlgebraQuotientElement
 
@@ -166,8 +167,7 @@ class FreeAlgebraQuotient(UniqueRepresentation, Parent):
         self.__module = FreeModule(R, self.__dim)
         self.__matrix_action = mats
         self.__monomial_basis = mons  # elements of free monoid
-        Parent.__init__(self, base=R, names=names,
-                        normalize=True, category=Algebras(R))
+        Parent.__init__(self, base=R, names=names, normalize=True, category=Algebras(R))
 
     def _element_constructor_(self, x):
         """
@@ -258,8 +258,9 @@ class FreeAlgebraQuotient(UniqueRepresentation, Parent):
         """
         one = self.base_ring().one()
         F = self.__free_algebra.monoid()
-        return tuple(self.element_class(self, {F.gen(i): one})
-                     for i in range(self.__ngens))
+        return tuple(
+            self.element_class(self, {F.gen(i): one}) for i in range(self.__ngens)
+        )
 
     def ngens(self):
         """
@@ -391,13 +392,16 @@ def hamilton_quatalg(R):
     """
     from sage.algebras.free_algebra import FreeAlgebra
     from sage.matrix.matrix_space import MatrixSpace
+
     A = FreeAlgebra(R, 3, 'i')
     F = A.monoid()
     i, j, k = F.gens()
     mons = [F.one(), i, j, k]
     M = MatrixSpace(R, 4)
-    mats = [M([0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0]),
-            M([0, 0, 1, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, -1, 0, 0]),
-            M([0, 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, 0])]
+    mats = [
+        M([0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0]),
+        M([0, 0, 1, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, -1, 0, 0]),
+        M([0, 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, 0]),
+    ]
     H3 = FreeAlgebraQuotient(A, mons, mats, names=('i', 'j', 'k'))
     return H3, H3.gens()

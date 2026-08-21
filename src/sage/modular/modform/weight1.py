@@ -95,6 +95,7 @@ def modular_ratio_to_prec(chi, qexp, prec):
     if prec <= qexp.prec():
         return qexp.add_bigoh(prec)
     from sage.modular.modform.constructor import EisensteinForms, CuspForms
+
     C = CuspForms(chi.level(), 2, base_ring=qexp.base_ring())
     B = EisensteinForms(~chi, 1).gen(0).qexp(prec)
     qexp = qexp.add_bigoh(C.sturm_bound())
@@ -126,12 +127,17 @@ def hecke_stable_subspace(chi, aux_prime=ZZ(2)):
     G = GammaH(N, H)
     try:
         if ArithmeticSubgroup.dimension_cusp_forms(G, 1) == 0:
-            verbose("no wt 1 cusp forms for N=%s, chi=%s by Riemann-Roch" % (N, chi._repr_short_()), level=1)
+            verbose(
+                "no wt 1 cusp forms for N=%s, chi=%s by Riemann-Roch"
+                % (N, chi._repr_short_()),
+                level=1,
+            )
             return []
     except NotImplementedError:
         pass
 
     from sage.modular.modform.constructor import EisensteinForms
+
     chi = chi.minimize_base_ring()
     K = chi.base_ring()
 
@@ -182,7 +188,9 @@ def hecke_stable_subspace(chi, aux_prime=ZZ(2)):
     # intermediate between S_1(chi) and M_1(chi). In every example I know of,
     # it is equal to S_1(chi), but just for honesty, we check this anyway.
     t = verbose("Checking cuspidality", level=1)
-    JEis = V.span(V(x.padded_list(R)) for x in EisensteinForms(chi, 1).q_echelon_basis(prec=R))
+    JEis = V.span(
+        V(x.padded_list(R)) for x in EisensteinForms(chi, 1).q_echelon_basis(prec=R)
+    )
     D = JEis.intersection(J)
     if D.dimension() != 0:
         raise ArithmeticError("Got non-cuspidal form!")

@@ -2,6 +2,7 @@
 r"""
 Hecke algebra representations
 """
+
 # ***************************************************************************
 #       Copyright (C) 2013 Nicolas M. Thiery <nthiery at users.sf.net>
 #                          Anne Schilling <anne at math.ucdavis.edu>
@@ -113,7 +114,11 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
             on Algebra of Weyl Group of type ['A', 3]
             (as a matrix group acting on the ambient space) over Rational Field"
         """
-        return "A representation of the %s-Hecke algebra of type %s on %s" % ((self._q1,self._q2), self.cartan_type(), self.domain())
+        return "A representation of the %s-Hecke algebra of type %s on %s" % (
+            (self._q1, self._q2),
+            self.cartan_type(),
+            self.domain(),
+        )
 
     @cached_method
     def parameters(self, i):
@@ -219,7 +224,7 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
         """
         q1 = self._q1
         q2 = self._q2
-        return (self._domain.term(x, q1+q2) - self.Ti_on_basis(x, i))/(q1*q2)
+        return (self._domain.term(x, q1 + q2) - self.Ti_on_basis(x, i)) / (q1 * q2)
 
     @cached_method
     def on_basis(self, x, word, signs=None, scalar=None):
@@ -273,13 +278,12 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
         if l == 0:
             return self._domain.monomial(x)
         rec = self.on_basis(x, word[:-1], signs)
-        i = word[l-1]
-        if signs is not None and signs[l-1] == -1:
+        i = word[l - 1]
+        if signs is not None and signs[l - 1] == -1:
             operator = self.Ti_inverse_on_basis
         else:
             operator = self.Ti_on_basis
-        result = self._domain.linear_combination((operator(l, i), c)
-                                                 for l,c in rec)
+        result = self._domain.linear_combination((operator(l, i), c) for l, c in rec)
         if scalar is None:
             return result
         return scalar * result
@@ -391,8 +395,10 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
             3
         """
         word = self.straighten_word(word)
-        result = self._domain.module_morphism(functools.partial(self.on_basis, word=word, signs=signs, scalar=scalar),
-                                            codomain=self._domain)
+        result = self._domain.module_morphism(
+            functools.partial(self.on_basis, word=word, signs=signs, scalar=scalar),
+            codomain=self._domain,
+        )
         # For debugging purpose, make the parameters easily accessible:
         result.word = word
         result.signs = signs
@@ -464,18 +470,18 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
         T = self
 
         def Ti(x, i, c):
-            return T[i](x)+c*x
+            return T[i](x) + c * x
 
         try:
             # Check the quadratic relation
             for i in cartan_type.index_set():
                 for x in elements:
-                    tester.assertTrue(Ti(Ti(x,i,-q2),i,-q1).is_zero())
+                    tester.assertTrue(Ti(Ti(x, i, -q2), i, -q1).is_zero())
             G = cartan_type.coxeter_diagram()
             # Check the braid relation
-            for (i, j) in Subsets(cartan_type.index_set(), 2):
-                if G.has_edge(i,j):
-                    o = G.edge_label(i,j)
+            for i, j in Subsets(cartan_type.index_set(), 2):
+                if G.has_edge(i, j):
+                    o = G.edge_label(i, j)
                 else:
                     o = 2
                 if o == infinity:
@@ -485,7 +491,7 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
                     for k in range(o):
                         x = T[i](x)
                         y = T[j](y)
-                        y,x = x,y
+                        y, x = x, y
                     tester.assertEqual(x, y)
         except ImportError:
             pass
@@ -603,8 +609,8 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
 
             - [HST2008]_ for the formula in terms of `q_1, q_2`
         """
-        #Q_check = self.Y().keys()
-        #assert Q_check.is_parent_of(lambdacheck)
+        # Q_check = self.Y().keys()
+        # assert Q_check.is_parent_of(lambdacheck)
         Q_check = lambdacheck.parent()
 
         # Alcove walks and the like are currently only implemented in
@@ -624,7 +630,9 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
         assert P_check.has_coerce_map_from(Q_check)
         alphacheck = P_check.simple_roots()
         c = Q_check.cartan_type().translation_factors()
-        t = P_check.linear_combination( (alphacheck[i], c[i] * coeff) for i,coeff in lambdacheck )
+        t = P_check.linear_combination(
+            (alphacheck[i], c[i] * coeff) for i, coeff in lambdacheck
+        )
         # In type BC, c[i] may introduce rational coefficients
         # If we want to work in the lattice we might want to use the
         # following workaround after the fact ...
@@ -647,7 +655,9 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
         # so we can ignore this see the discussion in
         # sage.combinat.root_system.weight_space.WeightSpace).
         special_node = Q_check.cartan_type().special_node()
-        scalar = (-self._q1*self._q2)**(-sum(signs)/2) * self._q**(-lambdacheck[special_node])
+        scalar = (-self._q1 * self._q2) ** (-sum(signs) / 2) * self._q ** (
+            -lambdacheck[special_node]
+        )
         return self.Tw(word, signs, scalar)
 
     def Y(self, base_ring=ZZ):
@@ -675,7 +685,9 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
             Lazy family (...(i))_{i in Coroot lattice of the Root system of type ['A', 3, 1]}
         """
         if not self.cartan_type().is_affine():
-            raise ValueError("The Cherednik operators are only defined for representations of affine Hecke algebra")
+            raise ValueError(
+                "The Cherednik operators are only defined for representations of affine Hecke algebra"
+            )
         L = self.cartan_type().root_system().coroot_space(base_ring)
         return Family(L, self.Y_lambdacheck)
 
@@ -701,7 +713,7 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
             I = L.index_set()
             alpha = L.simple_roots()
             Yi = Family(I, lambda i: Y[alpha[i]])
-            for Y1, Y2 in Subsets(Yi,2):
+            for Y1, Y2 in Subsets(Yi, 2):
                 for x in elements:
                     tester.assertEqual(Y1(Y2(x)), Y2(Y1(x)))
 
@@ -764,8 +776,11 @@ class HeckeAlgebraRepresentation(WithEqualityById, SageObject):
              2121 - 121 - 212 + 12 + 21 - 1 - 2 + ]
         """
         if not self.cartan_type().is_affine():
-            raise ValueError("The Cherednik operators are only defined for representations of affine Hecke algebra")
+            raise ValueError(
+                "The Cherednik operators are only defined for representations of affine Hecke algebra"
+            )
         return CherednikOperatorsEigenvectors(self)
+
 
 # TODO: this should probably inherit from family!
 
@@ -1022,7 +1037,9 @@ class CherednikOperatorsEigenvectors(UniqueRepresentation, SageObject):
             [(-q2)/q1, (-q2^2)/(-q1^2), q1^3/(-q2^3)]
         """
         alphacheck = self.Y().keys().simple_roots()
-        return [self.eigenvalue(mu, alphacheck[i]) for i in self.cartan_type().index_set()]
+        return [
+            self.eigenvalue(mu, alphacheck[i]) for i in self.cartan_type().index_set()
+        ]
 
     @cached_method
     def eigenvalue(self, mu, l):
@@ -1074,14 +1091,16 @@ class CherednikOperatorsEigenvectors(UniqueRepresentation, SageObject):
         elif self.domain().is_parent_of(mu):
             Emu = mu
         else:
-            raise TypeError("input should be a (tentative) eigenvector or an index thereof")
+            raise TypeError(
+                "input should be a (tentative) eigenvector or an index thereof"
+            )
         res = Y[l](Emu)
         if not res:
             return self.domain().base_ring().zero()
         t = res.leading_support()
         assert t == Emu.leading_support()
         c = res[t] / Emu[t]
-        assert res == Emu*c, "not an eigenvector!!!"
+        assert res == Emu * c, "not an eigenvector!!!"
         return c
 
     def twist(self, mu, i):
@@ -1168,7 +1187,7 @@ class CherednikOperatorsEigenvectors(UniqueRepresentation, SageObject):
         else:
             a = 1
         Yi = self.eigenvalue(mui, -coroot)
-        result = self._T.Tw(i)(E_mui) - (q1+q2)*Yi**(a-1)/(1-Yi**a)*E_mui
+        result = self._T.Tw(i)(E_mui) - (q1 + q2) * Yi ** (a - 1) / (1 - Yi**a) * E_mui
         if self._normalized:
             coeff = result.coefficient(mu)
             result /= coeff

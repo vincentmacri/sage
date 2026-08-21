@@ -6,6 +6,7 @@ Shuffle product of words
     The module :mod:`sage.combinat.shuffle` contains a more general
     implementation of shuffle product.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #       Copyright (C) 2008 Franco Saliola <saliola@gmail.com>
@@ -138,8 +139,9 @@ class ShuffleProduct_w1w2(Parent, UniqueRepresentation):
             except IndexError:
                 return False
             if w1 and w2 and letter == w1[0] == w2[0]:
-                return (Word(wx) in self._w1[1:].shuffle(self._w2) or
-                        Word(wx) in self._w1.shuffle(self._w2[1:]))
+                return Word(wx) in self._w1[1:].shuffle(self._w2) or Word(
+                    wx
+                ) in self._w1.shuffle(self._w2[1:])
             if w1 and letter == w1[0]:
                 w1.pop(0)
             elif w2 and letter == w2[0]:

@@ -7,15 +7,14 @@ AUTHORS:
   finite_field_ext_pari.py by William Stein et al.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013 Peter Bruin <peter.bruin@math.uzh.ch>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from cypari2.handle_error import PariError
 
@@ -100,6 +99,7 @@ class FiniteField_pari_ffelt(FiniteField):
         sage: loads(K.dumps()) == K
         True
     """
+
     def __init__(self, p, modulus, name=None):
         """
         Create a finite field of characteristic `p` defined by the
@@ -252,4 +252,4 @@ class FiniteField_pari_ffelt(FiniteField):
             i += 1
             fi = self.__pari_frobenius_powers[-1].ffcompomap(f1)
             self.__pari_frobenius_powers.append(fi)
-        return self.__pari_frobenius_powers[k-1]
+        return self.__pari_frobenius_powers[k - 1]

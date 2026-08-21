@@ -777,8 +777,10 @@ class HyperellipticJacobianHomset(SchemeHomset_points):
 
         # For the inert case, the genus must be even
         if H.is_inert() and g % 2:
-            raise NotImplementedError('unable to perform arithmetic for inert models of odd genus; '
-                                      'consider extending the base field to adjoin the points at infinity')
+            raise NotImplementedError(
+                'unable to perform arithmetic for inert models of odd genus; '
+                'consider extending the base field to adjoin the points at infinity'
+            )
 
         if degree is None:
             degree = (-1, g)
@@ -1024,7 +1026,11 @@ class HyperellipticJacobianHomset(SchemeHomset_points):
         """
         n = self.order()
         g = self.curve().genus()
-        from sage.groups.additive_abelian.additive_abelian_wrapper import expand_basis, AdditiveAbelianGroupWrapper
+        from sage.groups.additive_abelian.additive_abelian_wrapper import (
+            expand_basis,
+            AdditiveAbelianGroupWrapper,
+        )
+
         gens, ords = [], []
         for fast in (True, False):
             for _ in range(99 * g):
@@ -1035,4 +1041,6 @@ class HyperellipticJacobianHomset(SchemeHomset_points):
                     return AdditiveAbelianGroupWrapper(self, gens, ords)
                 D = self.random_element(fast=fast)
                 gens, ords = expand_basis(gens, D, ords)
-        raise RuntimeError('very unlikely event, or (more likely) bug in HyperellipticJacobianHomset.abelian_group()')
+        raise RuntimeError(
+            'very unlikely event, or (more likely) bug in HyperellipticJacobianHomset.abelian_group()'
+        )

@@ -12,7 +12,7 @@ AUTHORS:
   :class:`RiemannianStructure` and :class:`LorentzianStructure`
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015, 2018 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Travis Scrimshaw <tscrimsh at umn.edu>
 #
@@ -21,7 +21,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.manifolds.chart import Chart, RealChart
 from sage.manifolds.differentiable.chart import DiffChart, RealDiffChart
@@ -39,6 +39,7 @@ class TopologicalStructure(Singleton):
     """
     The structure of a topological manifold over a general topological field.
     """
+
     chart = Chart
     name = "topological"
     scalar_field_algebra = ScalarFieldAlgebra
@@ -63,6 +64,7 @@ class RealTopologicalStructure(Singleton):
     r"""
     The structure of a topological manifold over `\RR`.
     """
+
     chart = RealChart
     name = "topological"
     scalar_field_algebra = ScalarFieldAlgebra
@@ -88,6 +90,7 @@ class DifferentialStructure(Singleton):
     The structure of a differentiable manifold over a general topological
     field.
     """
+
     chart = DiffChart
     name = "differentiable"
     scalar_field_algebra = DiffScalarFieldAlgebra
@@ -112,6 +115,7 @@ class RealDifferentialStructure(Singleton):
     r"""
     The structure of a differentiable manifold over `\RR`.
     """
+
     chart = RealDiffChart
     name = "differentiable"
     scalar_field_algebra = DiffScalarFieldAlgebra
@@ -136,6 +140,7 @@ class PseudoRiemannianStructure(Singleton):
     """
     The structure of a pseudo-Riemannian manifold.
     """
+
     chart = RealDiffChart
     name = "pseudo-Riemannian"
     scalar_field_algebra = DiffScalarFieldAlgebra
@@ -160,6 +165,7 @@ class RiemannianStructure(Singleton):
     """
     The structure of a Riemannian manifold.
     """
+
     chart = RealDiffChart
     name = "Riemannian"
     scalar_field_algebra = DiffScalarFieldAlgebra
@@ -184,6 +190,7 @@ class LorentzianStructure(Singleton):
     """
     The structure of a Lorentzian manifold.
     """
+
     chart = RealDiffChart
     name = "Lorentzian"
     scalar_field_algebra = DiffScalarFieldAlgebra
@@ -208,6 +215,7 @@ class DegenerateStructure(Singleton):
     """
     The structure of a degenerate manifold.
     """
+
     chart = RealDiffChart
     name = "degenerate_metric"
     scalar_field_algebra = DiffScalarFieldAlgebra

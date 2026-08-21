@@ -7,7 +7,7 @@ AUTHORS:
 - Jeroen Demeyer (2014-01-03): added ``abort_degree`` argument, :issue:`15626`
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2014 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.integer import Integer
 from sage.arith.misc import factorial
@@ -42,6 +42,7 @@ class SplittingFieldAbort(Exception):
         ...
         SplittingFieldAbort: degree of splitting field equals 12
     """
+
     def __init__(self, div, mult):
         self.degree_divisor = div
         self.degree_multiple = mult
@@ -64,6 +65,7 @@ class SplittingData:
     field containing the current field `K` and all roots of other
     polynomials inside the list `L` with ``dm`` less than this ``dm``.
     """
+
     def __init__(self, _pol, _dm):
         self.pol = _pol
         self.dm = Integer(_dm)
@@ -122,7 +124,15 @@ class SplittingData:
         return (self.poldegree(), self.dm)
 
 
-def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=None, simplify=True, simplify_all=False):
+def splitting_field(
+    poly,
+    name,
+    map=False,
+    degree_multiple=None,
+    abort_degree=None,
+    simplify=True,
+    simplify_all=False,
+):
     r"""
     Compute the splitting field of a given polynomial, defined over a
     number field.
@@ -410,9 +420,11 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
             rel_degree_divisor = rel_degree_divisor.lcm(splitting.poldegree())
 
         # Check for early aborts
-        abort_rel_degree = abort_degree//absolute_degree
+        abort_rel_degree = abort_degree // absolute_degree
         if abort_rel_degree and rel_degree_divisor > abort_rel_degree:
-            raise SplittingFieldAbort(absolute_degree * rel_degree_divisor, degree_multiple)
+            raise SplittingFieldAbort(
+                absolute_degree * rel_degree_divisor, degree_multiple
+            )
 
         # First, factor polynomials in Lred and store the result in L
         verbose("SplittingData to factor: %s" % [s._repr_tuple() for s in Lred])
@@ -436,7 +448,7 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
                 # If the Galois group is contained in A_n, then mq_alt is
                 # also the degree multiple over the current field K.
                 # Here, we have equality if the Galois group is A_n.
-                mq_alt = mq.gcd(fac//2)
+                mq_alt = mq.gcd(fac // 2)
 
                 # If we are over Q, then use PARI's polgalois() to compute
                 # these degrees exactly.
@@ -447,23 +459,25 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
                         pass
                     else:
                         mq = Integer(G[0])
-                        mq_alt = mq//2 if (G[1] == -1) else mq
+                        mq_alt = mq // 2 if (G[1] == -1) else mq
 
                 # In degree 4, use the cubic resolvent to refine the
                 # degree bounds.
                 if d == 4 and mq >= 12:  # mq equals 12 or 24
                     # Compute cubic resolvent
-                    a0, a1, a2, a3, a4 = (q/q.pollead()).Vecrev()
+                    a0, a1, a2, a3, a4 = (q / q.pollead()).Vecrev()
                     assert a4 == 1
-                    cubicpol = pari([4*a0*a2 - a1*a1 - a0*a3*a3, a1*a3 - 4*a0, -a2, 1]).Polrev()
+                    cubicpol = pari(
+                        [4 * a0 * a2 - a1 * a1 - a0 * a3 * a3, a1 * a3 - 4 * a0, -a2, 1]
+                    ).Polrev()
                     cubicfactors = Kpol.nffactor(cubicpol)[0]
-                    if len(cubicfactors) == 1:    # A4 or S4
+                    if len(cubicfactors) == 1:  # A4 or S4
                         # After adding a root of the cubic resolvent,
                         # the degree of the extension defined by q
                         # is a factor 3 smaller.
                         L.append(SplittingData(cubicpol, 3))
                         rel_degree_divisor = rel_degree_divisor.lcm(3)
-                        mq = mq//3  # 4 or 8
+                        mq = mq // 3  # 4 or 8
                         mq_alt = 4
                     elif len(cubicfactors) == 2:  # C4 or D8
                         # The irreducible degree 2 factor is
@@ -471,7 +485,7 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
                         discpol = cubicfactors[1]
                         L.append(SplittingData(discpol, 2))
                         mq = mq_alt = 4
-                    else:                         # C2 x C2
+                    else:  # C2 x C2
                         mq = mq_alt = 4
 
                 if mq > mq_alt >= 3:
@@ -488,7 +502,9 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
                 L.append(SplittingData(q, mq))
                 rel_degree_divisor = rel_degree_divisor.lcm(q.poldegree())
                 if abort_rel_degree and rel_degree_divisor > abort_rel_degree:
-                    raise SplittingFieldAbort(absolute_degree * rel_degree_divisor, degree_multiple)
+                    raise SplittingFieldAbort(
+                        absolute_degree * rel_degree_divisor, degree_multiple
+                    )
         verbose("Done factoring", t, level=2)
 
         if len(L) == 0:  # Nothing left to do
@@ -506,7 +522,9 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
         # Sort according to degree to handle low degrees first
         L.sort(key=lambda x: x.key())
         verbose("SplittingData to handle: %s" % [s._repr_tuple() for s in L])
-        verbose("Bounds for absolute degree: [%s, %s]" % (degree_divisor,degree_multiple))
+        verbose(
+            "Bounds for absolute degree: [%s, %s]" % (degree_divisor, degree_multiple)
+        )
 
         # Check consistency
         if degree_multiple % degree_divisor != 0:
@@ -538,12 +556,14 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
             if denom == 1:
                 break
             denom = pari(denom.factor().radical_value())
-            Mpol = (Mpol*(denom**Mpol.poldegree())).subst("x", pari([0,1/denom]).Polrev("x"))
+            Mpol = (Mpol * (denom ** Mpol.poldegree())).subst(
+                "x", pari([0, 1 / denom]).Polrev("x")
+            )
             Mpol /= Mpol.content()
             Mdiv *= denom
 
         # We are finished for sure if we hit the degree bound
-        finished = (Mpol.poldegree() >= degree_multiple)
+        finished = Mpol.poldegree() >= degree_multiple
 
         if simplify_all or (simplify and not finished):
             # Find a simpler defining polynomial Lpol for Mpol
@@ -557,9 +577,9 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
             Lpol = Mpol.change_variable_name("y")
             MtoL = pari("'y")
 
-        NtoL = MtoL/Mdiv
+        NtoL = MtoL / Mdiv
         KtoL = KtoN.lift().subst("x", NtoL).Mod(Lpol)
-        Kpol = Lpol   # New Kpol (for next iteration)
+        Kpol = Lpol  # New Kpol (for next iteration)
         verbose("New field: %s" % Kpol, t)
         if map:
             t = cputime()
@@ -578,25 +598,29 @@ def splitting_field(poly, name, map=False, degree_multiple=None, abort_degree=No
 
         # First add f divided by the linear factor we obtained,
         # mg is the new degree multiple.
-        mg = splitting.dm//f.poldegree()
+        mg = splitting.dm // f.poldegree()
         if mg > 1:
             g = [c.subst("y", KtoL).Mod(Lpol) for c in f.Vecrev().lift()]
             g = pari(g).Polrev()
-            g /= pari([k*KtoL - NtoL, 1]).Polrev()  # divide linear factor
+            g /= pari([k * KtoL - NtoL, 1]).Polrev()  # divide linear factor
             Lred.append(SplittingData(g, mg))
 
         for splitting in Lold:
             g = [c.subst("y", KtoL) for c in splitting.pol.Vecrev().lift()]
             g = pari(g).Polrev()
             mg = splitting.dm
-            if Integer(g.poldegree()).gcd(f.poldegree()) == 1:  # linearly disjoint fields
+            if (
+                Integer(g.poldegree()).gcd(f.poldegree()) == 1
+            ):  # linearly disjoint fields
                 L.append(SplittingData(g, mg))
             else:
                 Lred.append(SplittingData(g, mg))
         verbose("Converted polynomials to new field", t, level=2)
 
     # Convert Kpol to Sage and construct the absolute number field
-    Kpol = PolynomialRing(RationalField(), name=poly.variable_name())(Kpol/Kpol.pollead())
+    Kpol = PolynomialRing(RationalField(), name=poly.variable_name())(
+        Kpol / Kpol.pollead()
+    )
     K = NumberField(Kpol, name)
     if map:
         return K, F.hom(Fgen, K)

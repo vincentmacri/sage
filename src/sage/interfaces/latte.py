@@ -11,7 +11,6 @@ Interface to LattE integrale programs
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.cpython.string import str_to_bytes, bytes_to_str
 
 from subprocess import Popen, PIPE
@@ -19,7 +18,14 @@ from sage.rings.integer import Integer
 from sage.features.latte import Latte_count, Latte_integrate
 
 
-def count(arg, ehrhart_polynomial=False, multivariate_generating_function=False, raw_output=False, verbose=False, **kwds):
+def count(
+    arg,
+    ehrhart_polynomial=False,
+    multivariate_generating_function=False,
+    raw_output=False,
+    verbose=False,
+    **kwds,
+):
     r"""
     Call to the program count from LattE integrale.
 
@@ -146,6 +152,7 @@ def count(arg, ehrhart_polynomial=False, multivariate_generating_function=False,
 
     if multivariate_generating_function:
         from sage.misc.temporary_file import tmp_filename
+
         filename = tmp_filename()
         with open(filename, 'w') as f:
             f.write(bytes_to_str(arg))
@@ -156,12 +163,16 @@ def count(arg, ehrhart_polynomial=False, multivariate_generating_function=False,
     # The cwd argument is needed because latte
     # always produces diagnostic output files.
     import tempfile
+
     tempd = tempfile.TemporaryDirectory()
 
-    latte_proc = Popen(args,
-                       stdin=PIPE, stdout=PIPE,
-                       stderr=(None if verbose else PIPE),
-                       cwd=tempd.name)
+    latte_proc = Popen(
+        args,
+        stdin=PIPE,
+        stdout=PIPE,
+        stderr=(None if verbose else PIPE),
+        cwd=tempd.name,
+    )
 
     ans, err = latte_proc.communicate(arg)
     if err:
@@ -172,7 +183,10 @@ def count(arg, ehrhart_polynomial=False, multivariate_generating_function=False,
             err = ", see error message above"
         else:
             err = ":\n" + err
-        raise RuntimeError("LattE integrale program failed (exit code {})".format(ret_code) + err.strip())
+        raise RuntimeError(
+            "LattE integrale program failed (exit code {})".format(ret_code)
+            + err.strip()
+        )
 
     ans = bytes_to_str(ans)
 
@@ -187,6 +201,7 @@ def count(arg, ehrhart_polynomial=False, multivariate_generating_function=False,
             return ans
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         from sage.rings.rational_field import QQ
+
         R = PolynomialRing(QQ, 't')
         tempd.cleanup()
         return R(ans)
@@ -196,7 +211,9 @@ def count(arg, ehrhart_polynomial=False, multivariate_generating_function=False,
         if raw_output:
             tempd.cleanup()
             return ans
-        raise NotImplementedError("there is no Sage object to handle multivariate series from LattE, use raw_output=True")
+        raise NotImplementedError(
+            "there is no Sage object to handle multivariate series from LattE, use raw_output=True"
+        )
     else:
         if ans:  # Sometimes (when LattE's preproc does the work), no output appears on stdout.
             ans = ans.splitlines()[-1]
@@ -213,7 +230,14 @@ def count(arg, ehrhart_polynomial=False, multivariate_generating_function=False,
         return Integer(ans)
 
 
-def integrate(arg, polynomial=None, algorithm='triangulate', raw_output=False, verbose=False, **kwds):
+def integrate(
+    arg,
+    polynomial=None,
+    algorithm='triangulate',
+    raw_output=False,
+    verbose=False,
+    **kwds,
+):
     r"""
     Call to the function integrate from LattE integrale.
 
@@ -372,6 +396,7 @@ def integrate(arg, polynomial=None, algorithm='triangulate', raw_output=False, v
             monomials_list = str(polynomial)
 
         from sage.misc.temporary_file import tmp_filename
+
         filename_polynomial = tmp_filename()
 
         with open(filename_polynomial, 'w') as f:
@@ -383,12 +408,16 @@ def integrate(arg, polynomial=None, algorithm='triangulate', raw_output=False, v
     # The cwd argument is needed because latte
     # always produces diagnostic output files.
     import tempfile
+
     tempd = tempfile.TemporaryDirectory()
 
-    latte_proc = Popen(args,
-                       stdin=PIPE, stdout=PIPE,
-                       stderr=(None if verbose else PIPE),
-                       cwd=tempd.name)
+    latte_proc = Popen(
+        args,
+        stdin=PIPE,
+        stdout=PIPE,
+        stderr=(None if verbose else PIPE),
+        cwd=tempd.name,
+    )
 
     ans, err = latte_proc.communicate(arg)
     if err:
@@ -399,7 +428,10 @@ def integrate(arg, polynomial=None, algorithm='triangulate', raw_output=False, v
             err = ", see error message above"
         else:
             err = ":\n" + err
-        raise RuntimeError("LattE integrale program failed (exit code {})".format(ret_code) + err.strip())
+        raise RuntimeError(
+            "LattE integrale program failed (exit code {})".format(ret_code)
+            + err.strip()
+        )
 
     ans = bytes_to_str(ans)
     ans = ans.splitlines()
@@ -455,13 +487,17 @@ def to_latte_polynomial(polynomial):
     # transform list of exponents into a list of lists.
     # this branch handles the multivariate/univariate case
     if isinstance(polynomial.exponents()[0], ETuple):
-        exponents_list = [list(exponent_vector_i) for exponent_vector_i in polynomial.exponents()]
+        exponents_list = [
+            list(exponent_vector_i) for exponent_vector_i in polynomial.exponents()
+        ]
     else:
-        exponents_list = [[exponent_vector_i] for exponent_vector_i in polynomial.exponents()]
+        exponents_list = [
+            [exponent_vector_i] for exponent_vector_i in polynomial.exponents()
+        ]
 
     # assuming that the order in coefficients() and exponents() methods match
-    monomials_list = [list(monomial_i)
-                      for monomial_i
-                      in zip(coefficients_list, exponents_list)]
+    monomials_list = [
+        list(monomial_i) for monomial_i in zip(coefficients_list, exponents_list)
+    ]
 
     return str(monomials_list)

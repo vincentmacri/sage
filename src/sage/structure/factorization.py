@@ -220,6 +220,7 @@ class Factorization(SageObject):
         ...
         TypeError: no conversion of this rational to integer
     """
+
     def __init__(self, x, unit=None, cr=False, sort=True, simplify=True):
         """
         Create a :class:`Factorization` object.
@@ -300,6 +301,7 @@ class Factorization(SageObject):
             (Ambient free module of rank 3 over the principal ideal domain Integer Ring)^2
         """
         from sage.rings.integer import Integer
+
         x = [(p, Integer(e)) for (p, e) in x]
 
         try:
@@ -483,8 +485,9 @@ class Factorization(SageObject):
         """
         # No need to sort, since the factorization is already sorted
         # in whatever order is desired.
-        return Factorization(self.__x, unit=self.__unit, cr=self.__cr,
-                             sort=False, simplify=False)
+        return Factorization(
+            self.__x, unit=self.__unit, cr=self.__cr, sort=False, simplify=False
+        )
 
     def __deepcopy__(self, memo):
         r"""
@@ -523,8 +526,10 @@ class Factorization(SageObject):
             ([1, 2])^5 * ([5, 6])^10
         """
         import copy
-        return Factorization(copy.deepcopy(list(self), memo),
-                             cr=self.__cr, sort=False, simplify=False)
+
+        return Factorization(
+            copy.deepcopy(list(self), memo), cr=self.__cr, sort=False, simplify=False
+        )
 
     def universe(self):
         r"""
@@ -584,9 +589,13 @@ class Factorization(SageObject):
         if len(self) == 0:
             return self
         try:
-            return Factorization([(U(f[0]), f[1]) for f in list(self)], unit=U(self.unit()))
+            return Factorization(
+                [(U(f[0]), f[1]) for f in list(self)], unit=U(self.unit())
+            )
         except TypeError:
-            raise TypeError("Impossible to coerce the factors of %s into %s" % (self, U))
+            raise TypeError(
+                "Impossible to coerce the factors of %s into %s" % (self, U)
+            )
 
     def is_commutative(self) -> bool:
         """
@@ -657,6 +666,7 @@ class Factorization(SageObject):
         repeat = False
         simp = []
         import itertools
+
         for obj, agroup in itertools.groupby(list(self), lambda x: x[0]):
             xs = list(agroup)
             if len(xs) > 1:
@@ -844,8 +854,9 @@ class Factorization(SageObject):
             mul += '\n'
         x = self.__x[0][0]
         try:
-            atomic = (isinstance(x, int) or
-                      self.universe()._repr_option('element_is_atomic'))
+            atomic = isinstance(x, int) or self.universe()._repr_option(
+                'element_is_atomic'
+            )
         except AttributeError:
             atomic = False
 
@@ -891,8 +902,9 @@ class Factorization(SageObject):
         if len(self) == 0:
             return self.__unit._latex_()
         try:
-            atomic = (isinstance(self.__x[0][0], int) or
-                      self.universe()._repr_option('element_is_atomic'))
+            atomic = isinstance(self.__x[0][0], int) or self.universe()._repr_option(
+                'element_is_atomic'
+            )
         except AttributeError:
             atomic = False
         s = ''
@@ -1011,8 +1023,7 @@ class Factorization(SageObject):
             1
         """
         unit = -self.__unit
-        return Factorization(list(self), unit, self.__cr,
-                             sort=False, simplify=False)
+        return Factorization(list(self), unit, self.__cr, sort=False, simplify=False)
 
     def __rmul__(self, left):
         """
@@ -1095,7 +1106,10 @@ class Factorization(SageObject):
                 self = self.base_change(U)
                 other = other.base_change(U)
             except TypeError:
-                raise TypeError("Cannot multiply %s and %s because they cannot be coerced into a common universe" % (self, other))
+                raise TypeError(
+                    "Cannot multiply %s and %s because they cannot be coerced into a common universe"
+                    % (self, other)
+                )
 
         if self.is_commutative() and other.is_commutative():
             d1 = dict(self)
@@ -1134,6 +1148,7 @@ class Factorization(SageObject):
             x^3 * y^2 * x^4 * y^2 * x
         """
         from sage.rings.integer import Integer
+
         if not isinstance(n, Integer):
             try:
                 n = Integer(n)
@@ -1144,12 +1159,18 @@ class Factorization(SageObject):
         if n == 0:
             return Factorization([])
         if self.is_commutative():
-            return Factorization([(p, n * e) for p, e in self], unit=self.unit()**n,
-                                 cr=self.__cr, sort=False, simplify=False)
+            return Factorization(
+                [(p, n * e) for p, e in self],
+                unit=self.unit() ** n,
+                cr=self.__cr,
+                sort=False,
+                simplify=False,
+            )
         if n < 0:
             self = ~self
             n = -n
         from sage.arith.power import generic_power
+
         return generic_power(self, n)
 
     def __invert__(self):
@@ -1169,8 +1190,11 @@ class Factorization(SageObject):
             sage: F^-1                                                                  # needs sage.combinat sage.modules
             (1/2) * x^-1 * y^-2 * x^-3
         """
-        return Factorization([(p, -e) for p, e in reversed(self)],
-                             cr=self._cr(), unit=self.unit()**(-1))
+        return Factorization(
+            [(p, -e) for p, e in reversed(self)],
+            cr=self._cr(),
+            unit=self.unit() ** (-1),
+        )
 
     def __truediv__(self, other):
         r"""
@@ -1274,6 +1298,7 @@ class Factorization(SageObject):
             x^3*y^2*x
         """
         from sage.misc.misc_c import prod
+
         return prod([p**e for p, e in self.__x], self.__unit)
 
     # Two aliases for ``value(self)``.
@@ -1300,7 +1325,9 @@ class Factorization(SageObject):
             Univariate Polynomial Ring in x over Integer Ring
         """
         if not isinstance(other, Factorization):
-            raise NotImplementedError("can't take gcd of factorization and non-factorization")
+            raise NotImplementedError(
+                "can't take gcd of factorization and non-factorization"
+            )
 
         if len(self) and len(other):
             try:
@@ -1310,7 +1337,10 @@ class Factorization(SageObject):
                 self = self.base_change(U)
                 other = other.base_change(U)
             except TypeError:
-                raise TypeError("Cannot take the gcd of %s and %s because they cannot be coerced into a common universe" % (self, other))
+                raise TypeError(
+                    "Cannot take the gcd of %s and %s because they cannot be coerced into a common universe"
+                    % (self, other)
+                )
 
         if self.is_commutative() and other.is_commutative():
             d1 = dict(self)
@@ -1319,7 +1349,9 @@ class Factorization(SageObject):
             for a in set(d1).intersection(set(d2)):
                 s[a] = min(d1[a], d2[a])
             return Factorization(list(s.items()))
-        raise NotImplementedError("gcd is not implemented for non-commutative factorizations")
+        raise NotImplementedError(
+            "gcd is not implemented for non-commutative factorizations"
+        )
 
     def lcm(self, other):
         r"""
@@ -1341,7 +1373,9 @@ class Factorization(SageObject):
             Univariate Polynomial Ring in x over Integer Ring
         """
         if not isinstance(other, Factorization):
-            raise NotImplementedError("can't take lcm of factorization and non-factorization")
+            raise NotImplementedError(
+                "can't take lcm of factorization and non-factorization"
+            )
 
         if len(self) and len(other):
             try:
@@ -1351,7 +1385,10 @@ class Factorization(SageObject):
                 self = self.base_change(U)
                 other = other.base_change(U)
             except TypeError:
-                raise TypeError("Cannot take the lcm of %s and %s because they cannot be coerced into a common universe" % (self, other))
+                raise TypeError(
+                    "Cannot take the lcm of %s and %s because they cannot be coerced into a common universe"
+                    % (self, other)
+                )
 
         if self.is_commutative() and other.is_commutative():
             d1 = dict(self)
@@ -1360,7 +1397,9 @@ class Factorization(SageObject):
             for a in set(d1).union(set(d2)):
                 s[a] = max(d1.get(a, 0), d2.get(a, 0))
             return Factorization(list(s.items()))
-        raise NotImplementedError("lcm is not implemented for non-commutative factorizations")
+        raise NotImplementedError(
+            "lcm is not implemented for non-commutative factorizations"
+        )
 
     def is_integral(self) -> bool:
         r"""
@@ -1402,8 +1441,13 @@ class Factorization(SageObject):
         """
         if not all(e > 0 for _, e in self.__x):
             raise ValueError("all exponents in the factorization must be positive")
-        return Factorization([(p, 1) for p, _ in self.__x], unit=self.unit().parent()(1),
-                             cr=self.__cr, sort=False, simplify=False)
+        return Factorization(
+            [(p, 1) for p, _ in self.__x],
+            unit=self.unit().parent()(1),
+            cr=self.__cr,
+            sort=False,
+            simplify=False,
+        )
 
     def radical_value(self):
         """
@@ -1429,6 +1473,7 @@ class Factorization(SageObject):
         if not all(e > 0 for _, e in self.__x):
             raise ValueError("all exponents in the factorization must be positive")
         from sage.misc.misc_c import prod
+
         return prod([p for p, _ in self.__x])
 
     def is_complete_factorization(self):

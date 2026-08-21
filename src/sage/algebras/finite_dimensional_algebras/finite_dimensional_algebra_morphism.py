@@ -57,6 +57,7 @@ class FiniteDimensionalAlgebraMorphism(RingHomomorphism_im_gens):
 
     .. TODO:: An example illustrating unitary flag.
     """
+
     def __init__(self, parent, f, check=True, unitary=True):
         """
         TESTS::
@@ -72,12 +73,16 @@ class FiniteDimensionalAlgebraMorphism(RingHomomorphism_im_gens):
         A = parent.domain()
         B = parent.codomain()
 
-        RingHomomorphism_im_gens.__init__(self, parent=parent, im_gens=f.rows(), check=check)
+        RingHomomorphism_im_gens.__init__(
+            self, parent=parent, im_gens=f.rows(), check=check
+        )
         self._matrix = f
 
-        if unitary and check and (not A.is_unitary()
-                                  or not B.is_unitary()
-                                  or self(A.one()) != B.one()):
+        if (
+            unitary
+            and check
+            and (not A.is_unitary() or not B.is_unitary() or self(A.one()) != B.one())
+        ):
             raise ValueError("homomorphism does not respect unit elements")
 
     def _repr_(self) -> str:
@@ -94,7 +99,8 @@ class FiniteDimensionalAlgebraMorphism(RingHomomorphism_im_gens):
             'Morphism from Finite-dimensional algebra of degree 2 over Rational Field to Finite-dimensional algebra of degree 1 over Rational Field given by matrix\n[1]\n[0]'
         """
         return "Morphism from {} to {} given by matrix\n{}".format(
-            self.domain(), self.codomain(), self._matrix)
+            self.domain(), self.codomain(), self._matrix
+        )
 
     def __call__(self, x):
         """
@@ -130,9 +136,11 @@ class FiniteDimensionalAlgebraMorphism(RingHomomorphism_im_gens):
             sage: phi == H.zero()
             False
         """
-        return (isinstance(other, FiniteDimensionalAlgebraMorphism)
-                and self.parent() == other.parent()
-                and self._matrix == other._matrix)
+        return (
+            isinstance(other, FiniteDimensionalAlgebraMorphism)
+            and self.parent() == other.parent()
+            and self._matrix == other._matrix
+        )
 
     def __ne__(self, other):
         """
@@ -193,13 +201,16 @@ class FiniteDimensionalAlgebraMorphism(RingHomomorphism_im_gens):
             True
         """
         coker_I = I.basis_matrix().transpose().kernel().basis_matrix().transpose()
-        return self.domain().ideal((self._matrix * coker_I).kernel().basis_matrix(), given_by_matrix=True)
+        return self.domain().ideal(
+            (self._matrix * coker_I).kernel().basis_matrix(), given_by_matrix=True
+        )
 
 
 class FiniteDimensionalAlgebraHomset(RingHomset_generic):
     """
     Set of morphisms between two finite-dimensional algebras.
     """
+
     @cached_method
     def zero(self):
         """
@@ -217,9 +228,13 @@ class FiniteDimensionalAlgebraHomset(RingHomset_generic):
             [0 0]
         """
         from sage.matrix.constructor import matrix
-        return FiniteDimensionalAlgebraMorphism(self, matrix.zero(self.domain().ngens(),
-                                                       self.codomain().ngens()),
-                                     False, False)
+
+        return FiniteDimensionalAlgebraMorphism(
+            self,
+            matrix.zero(self.domain().ngens(), self.codomain().ngens()),
+            False,
+            False,
+        )
 
     def __call__(self, f, check=True, unitary=True):
         """
@@ -249,6 +264,7 @@ class FiniteDimensionalAlgebraHomset(RingHomset_generic):
             return FiniteDimensionalAlgebraMorphism(self, f, check, unitary)
         try:
             from sage.matrix.constructor import matrix
+
             return FiniteDimensionalAlgebraMorphism(self, matrix(f), check, unitary)
         except Exception:
             return RingHomset_generic.__call__(self, f, check)

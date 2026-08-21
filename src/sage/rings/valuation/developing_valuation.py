@@ -68,6 +68,7 @@ class DevelopingValuation(DiscretePseudoValuation):
 
         sage: TestSuite(v).run()                # long time                             # needs sage.geometry.polyhedron
     """
+
     def __init__(self, parent, phi):
         r"""
         TESTS::
@@ -82,12 +83,17 @@ class DevelopingValuation(DiscretePseudoValuation):
 
         domain = parent.domain()
         from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
+
         if not isinstance(domain, PolynomialRing_generic) or not domain.ngens() == 1:
-            raise TypeError("domain must be a univariate polynomial ring but %r is not" % (domain,))
+            raise TypeError(
+                "domain must be a univariate polynomial ring but %r is not" % (domain,)
+            )
 
         phi = domain.coerce(phi)
         if phi.is_constant() or not phi.is_monic():
-            raise ValueError("phi must be a monic non-constant polynomial but %r is not" % (phi,))
+            raise ValueError(
+                "phi must be a monic non-constant polynomial but %r is not" % (phi,)
+            )
 
         self._phi = phi
 
@@ -153,7 +159,9 @@ class DevelopingValuation(DiscretePseudoValuation):
         f = self.domain().coerce(f)
 
         if f.is_zero():
-            raise ValueError("the effective degree is only defined for nonzero polynomials")
+            raise ValueError(
+                "the effective degree is only defined for nonzero polynomials"
+            )
 
         if valuations is None:
             valuations = list(self.valuations(f))
@@ -184,10 +192,27 @@ class DevelopingValuation(DiscretePseudoValuation):
         if e == 1:
             return self.simplify(f, error=error)
         if e % 2 == 0:
-            return self._pow(self.simplify(f*f, error=error*2/e, effective_degree=effective_degree*2/e),
-                             e//2, error=error, effective_degree=effective_degree)
-        return self.simplify(f*self._pow(f, e-1, error=error*(e-1)/e, effective_degree=effective_degree*(e-1)/e),
-                             error=error, effective_degree=effective_degree)
+            return self._pow(
+                self.simplify(
+                    f * f,
+                    error=error * 2 / e,
+                    effective_degree=effective_degree * 2 / e,
+                ),
+                e // 2,
+                error=error,
+                effective_degree=effective_degree,
+            )
+        return self.simplify(
+            f
+            * self._pow(
+                f,
+                e - 1,
+                error=error * (e - 1) / e,
+                effective_degree=effective_degree * (e - 1) / e,
+            ),
+            error=error,
+            effective_degree=effective_degree,
+        )
 
     def coefficients(self, f):
         r"""
@@ -268,6 +293,7 @@ class DevelopingValuation(DiscretePseudoValuation):
         f = self.domain().coerce(f)
 
         from sage.geometry.newton_polygon import NewtonPolygon
+
         if valuations is None:
             valuations = self.valuations(f)
         return NewtonPolygon(list(enumerate(valuations)))
@@ -300,6 +326,7 @@ class DevelopingValuation(DiscretePseudoValuation):
         f = self.domain().coerce(f)
 
         from sage.rings.infinity import infinity
+
         if f.is_zero():
             return infinity
 

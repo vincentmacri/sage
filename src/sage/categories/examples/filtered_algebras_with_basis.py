@@ -1,12 +1,12 @@
 r"""
 Examples of filtered algebra with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.filtered_algebras_with_basis import FilteredAlgebrasWithBasis
 from sage.combinat.free_module import CombinatorialFreeModule
@@ -45,6 +45,7 @@ class PBWBasisCrossProduct(CombinatorialFreeModule):
       by using :meth:`degree_on_basis` which returns the sum of exponents
       of the monomial
     """
+
     def __init__(self, base_ring):
         """
         EXAMPLES::
@@ -55,10 +56,15 @@ class PBWBasisCrossProduct(CombinatorialFreeModule):
         """
         I = IndexedFreeAbelianMonoid(['x', 'y', 'z'], prefix='U')
 
-        CombinatorialFreeModule.__init__(self, base_ring, I, bracket=False,
-                                         prefix='',
-                                         sorting_key=self._sort_key,
-                                         category=FilteredAlgebrasWithBasis(base_ring))
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            I,
+            bracket=False,
+            prefix='',
+            sorting_key=self._sort_key,
+            category=FilteredAlgebrasWithBasis(base_ring),
+        )
 
     def _sort_key(self, x):
         """
@@ -90,7 +96,9 @@ class PBWBasisCrossProduct(CombinatorialFreeModule):
              the universal enveloping algebra of
              Lie algebra of RR^3 with cross product over Rational Field
         """
-        return "An example of a filtered algebra with basis: the universal enveloping algebra of Lie algebra of RR^3 with cross product over {}".format(self.base_ring())
+        return "An example of a filtered algebra with basis: the universal enveloping algebra of Lie algebra of RR^3 with cross product over {}".format(
+            self.base_ring()
+        )
 
     def algebra_generators(self):
         """
@@ -171,14 +179,14 @@ class PBWBasisCrossProduct(CombinatorialFreeModule):
         if len(t) == 0:
             return self.monomial(s)
         if s.trailing_support() <= t.leading_support():
-            return self.monomial(s*t)
+            return self.monomial(s * t)
 
         if len(t) == 1:
             if len(s) == 1:
                 # Do the product of the generators
                 a = s.leading_support()
                 b = t.leading_support()
-                cur = self.monomial(s*t)
+                cur = self.monomial(s * t)
                 if a <= b:
                     return cur
                 if a == 'z':

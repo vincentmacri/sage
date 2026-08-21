@@ -2,6 +2,7 @@
 """
 Witt symmetric functions
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>
 #                     2012 Mike Zabrocki <mike.zabrocki@gmail.com>
@@ -27,7 +28,9 @@ from sage.misc.cachefunc import cached_method
 from . import multiplicative
 
 
-class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_multiplicative):
+class SymmetricFunctionAlgebra_witt(
+    multiplicative.SymmetricFunctionAlgebra_multiplicative
+):
     r"""
     The Witt symmetric function basis (or Witt basis, to be short).
 
@@ -206,6 +209,7 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
     Witt symmetric functions pass through the complete homogeneous
     symmetric functions by default.
     """
+
     def __init__(self, Sym):
         r"""
         Initialize ``self``.
@@ -216,19 +220,33 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
             sage: TestSuite(w).run(skip=['_test_associativity', '_test_distributivity', '_test_prod'])
             sage: TestSuite(w).run(elements=[w[1,1]+w[2], w[1]+2*w[1,1]])
         """
-        multiplicative.SymmetricFunctionAlgebra_multiplicative.__init__(self, Sym, "Witt", 'w')
+        multiplicative.SymmetricFunctionAlgebra_multiplicative.__init__(
+            self, Sym, "Witt", 'w'
+        )
 
         self._h = Sym.h()
-        self.register_coercion(self._h._module_morphism(self._h_to_w_on_basis, codomain=self))
-        self._h.register_coercion(self._module_morphism(self._w_to_h_on_basis, codomain=self._h))
+        self.register_coercion(
+            self._h._module_morphism(self._h_to_w_on_basis, codomain=self)
+        )
+        self._h.register_coercion(
+            self._module_morphism(self._w_to_h_on_basis, codomain=self._h)
+        )
 
         self._e = Sym.e()
-        self.register_coercion(self._e._module_morphism(self._e_to_w_on_basis, codomain=self))
-        self._e.register_coercion(self._module_morphism(self._w_to_e_on_basis, codomain=self._e))
+        self.register_coercion(
+            self._e._module_morphism(self._e_to_w_on_basis, codomain=self)
+        )
+        self._e.register_coercion(
+            self._module_morphism(self._w_to_e_on_basis, codomain=self._e)
+        )
 
         self._p = Sym.p()
-        self.register_coercion(self._p._module_morphism(self._p_to_w_on_basis, codomain=self))
-        self._p.register_coercion(self._module_morphism(self._w_to_p_on_basis, codomain=self._p))
+        self.register_coercion(
+            self._p._module_morphism(self._p_to_w_on_basis, codomain=self)
+        )
+        self._p.register_coercion(
+            self._module_morphism(self._w_to_p_on_basis, codomain=self._p)
+        )
 
     @cached_method
     def _h_to_w_on_basis(self, lam):
@@ -336,8 +354,12 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
         if len(lam) == 1:
             R = self.base_ring()
             n = lam[0]
-            index_set = IntegerListsLex(n, min_part=1, max_slope=-1, element_constructor=P)
-            return self.element_class(self, {mu: R((-1)**(n-len(mu))) for mu in index_set})
+            index_set = IntegerListsLex(
+                n, min_part=1, max_slope=-1, element_constructor=P
+            )
+            return self.element_class(
+                self, {mu: R((-1) ** (n - len(mu))) for mu in index_set}
+            )
         # Multiply by the smallest part to minimize the number of products
         return self._e_to_w_on_basis(P(lam[:-1])) * self._e_to_w_on_basis(P([lam[-1]]))
 
@@ -375,9 +397,12 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
         if len(lam) == 1:
             R = self.base_ring()
             n = lam[0]
-            index_set = IntegerListsLex(n, min_part=1, min_length=2, max_slope=-1, element_constructor=P)
-            return R((-1)**(n-1)) * self._e[n] + self._e.linear_combination((self._w_to_e_on_basis(mu), R((-1)**len(mu)))
-                                                                            for mu in index_set)
+            index_set = IntegerListsLex(
+                n, min_part=1, min_length=2, max_slope=-1, element_constructor=P
+            )
+            return R((-1) ** (n - 1)) * self._e[n] + self._e.linear_combination(
+                (self._w_to_e_on_basis(mu), R((-1) ** len(mu))) for mu in index_set
+            )
         # Multiply by the smallest part to minimize the number of products
         return self._w_to_e_on_basis(P(lam[:-1])) * self._w_to_e_on_basis(P([lam[-1]]))
 
@@ -412,7 +437,9 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
         if len(lam) == 1:
             R = self.base_ring()
             n = lam[0]
-            return self.element_class(self, {P([d] * (n // d)): R(d) for d in divisors(n)})
+            return self.element_class(
+                self, {P([d] * (n // d)): R(d) for d in divisors(n)}
+            )
         # Multiply by the smallest part to minimize the number of products
         return self._p_to_w_on_basis(P(lam[:-1])) * self._p_to_w_on_basis(P([lam[-1]]))
 
@@ -454,8 +481,11 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
         if len(lam) == 1:
             R = self.base_ring()
             n = lam[0]
-            return ~R(n) * self._p[n] - self._p.linear_combination((self._w_to_p_on_basis(P([d] * (n // d))), R(d) / R(n))
-                                                                   for d in divisors(n) if d != n)
+            return ~R(n) * self._p[n] - self._p.linear_combination(
+                (self._w_to_p_on_basis(P([d] * (n // d))), R(d) / R(n))
+                for d in divisors(n)
+                if d != n
+            )
         # Multiply by the smallest part to minimize the number of products
         return self._w_to_p_on_basis(P(lam[:-1])) * self._w_to_p_on_basis(P([lam[-1]]))
 
@@ -485,8 +515,11 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
             w[] # w[2, 1] - w[1] # w[1, 1] + w[1] # w[2] - w[1, 1] # w[1] + w[2] # w[1] + w[2, 1] # w[]
         """
         from sage.categories.tensor import tensor
-        return self.tensor_square().sum(coeff * tensor([self(self._h[x]), self(self._h[y])])
-                                        for ((x, y), coeff) in self._h(elt).coproduct())
+
+        return self.tensor_square().sum(
+            coeff * tensor([self(self._h[x]), self(self._h[y])])
+            for ((x, y), coeff) in self._h(elt).coproduct()
+        )
 
     def verschiebung(self, n):
         r"""
@@ -589,9 +622,11 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
         parent = self.parent()
         w_coords_of_self = self._monomial_coefficients.items()
         P = self._indices
-        dct = {P([i // n for i in lam]): coeff
-               for lam, coeff in w_coords_of_self
-               if all(i % n == 0 for i in lam)}
+        dct = {
+            P([i // n for i in lam]): coeff
+            for lam, coeff in w_coords_of_self
+            if all(i % n == 0 for i in lam)
+        }
         return parent._from_dict(dct)
 
     def _omega_on_basis(self, lam):
@@ -716,5 +751,7 @@ class SymmetricFunctionAlgebra_witt(multiplicative.SymmetricFunctionAlgebra_mult
                 True
             """
             P = self.parent()
-            return P.linear_combination((P._omega_on_basis(lam), coeff)
-                                        for lam, coeff in self._monomial_coefficients.items())
+            return P.linear_combination(
+                (P._omega_on_basis(lam), coeff)
+                for lam, coeff in self._monomial_coefficients.items()
+            )

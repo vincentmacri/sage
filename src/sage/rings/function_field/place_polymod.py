@@ -27,6 +27,7 @@ class FunctionFieldPlace_polymod(FunctionFieldPlace):
     """
     Places of extensions of function fields.
     """
+
     def place_below(self):
         """
         Return the place lying below the place.
@@ -204,7 +205,7 @@ class FunctionFieldPlace_polymod(FunctionFieldPlace):
                     i, j = j, i
                     ideg, jdeg = jdeg, ideg
 
-                coeff = - mat[i, c].lc() / mat[j, c].lc()
+                coeff = -mat[i, c].lc() / mat[j, c].lc()
                 s = coeff * one.shift(ideg - jdeg)
 
                 mat.add_multiple_of_row(i, j, s)
@@ -234,7 +235,7 @@ class FunctionFieldPlace_polymod(FunctionFieldPlace):
 
         V, fr, to = F.vector_space()
 
-        prime_inv = ~ self.prime_ideal()
+        prime_inv = ~self.prime_ideal()
         I = O.ideal(1)
         J = Oinf.ideal(1)
 
@@ -602,7 +603,9 @@ class FunctionFieldPlace_polymod(FunctionFieldPlace):
                 # primitive element in K corresponding to g in O mod P
                 prim = min_poly.roots(K)[0][0]
 
-                W, from_W, to_W = K.vector_space(k, basis=[prim**i for i in range(deg)], map=True)
+                W, from_W, to_W = K.vector_space(
+                    k, basis=[prim**i for i in range(deg)], map=True
+                )
         else:  # deg == 1
             K = k
 
@@ -626,7 +629,7 @@ class FunctionFieldPlace_polymod(FunctionFieldPlace):
         p = prime.prime_below().gen().numerator()
         beta = prime._beta
         alpha = ~p * sum(c1 * c2 for c1, c2 in zip(beta, Obasis))
-        alpha_powered_by_ramification_index = alpha ** prime._ramification_index
+        alpha_powered_by_ramification_index = alpha**prime._ramification_index
 
         def to_K(f):
             if f not in O:

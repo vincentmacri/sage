@@ -23,8 +23,13 @@ from sage.structure.element import Expression
 from .set import Set, Set_base, Set_boolean_operators, Set_add_sub_operators
 
 
-class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_operators,
-                   UniqueRepresentation):
+class ConditionSet(
+    Set_generic,
+    Set_base,
+    Set_boolean_operators,
+    Set_add_sub_operators,
+    UniqueRepresentation,
+):
     r"""
     Set of elements of a universe that satisfy given predicates.
 
@@ -126,8 +131,11 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
         sage: TestSuite(P_inter_B).run(skip='_test_pickling')  # cannot pickle lambdas  # needs sage.geometry.polyhedron
         sage: TestSuite(P_inter_B_again).run()                                          # needs sage.geometry.polyhedron sage.symbolic
     """
+
     @staticmethod
-    def __classcall_private__(cls, universe, *predicates, vars=None, names=None, category=None):
+    def __classcall_private__(
+        cls, universe, *predicates, vars=None, names=None, category=None
+    ):
         r"""
         Normalize init arguments.
 
@@ -148,7 +156,9 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
 
         if vars is not None:
             if names is not None:
-                raise ValueError('cannot use names and vars at the same time; they are aliases')
+                raise ValueError(
+                    'cannot use names and vars at the same time; they are aliases'
+                )
             names, vars = vars, None
 
         if names is not None:
@@ -168,9 +178,12 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
                 callable_symbolic_predicates.append(predicate)
             elif isinstance(predicate, Expression):
                 if names is None:
-                    raise TypeError('use callable symbolic expressions or provide variable names')
+                    raise TypeError(
+                        'use callable symbolic expressions or provide variable names'
+                    )
                 if vars is None:
                     from sage.symbolic.ring import SR
+
                     vars = tuple(SR.var(name) for name in names)
                 callable_symbolic_predicates.append(predicate.function(*vars))
             else:
@@ -183,15 +196,17 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
                 # No conditions, no variable names, no category, just use Set.
                 return Set(universe)
 
-        if any(predicate.args() != vars
-               for predicate in callable_symbolic_predicates):
+        if any(predicate.args() != vars for predicate in callable_symbolic_predicates):
             # TODO: Implement safe renaming of the arguments of a callable symbolic expressions
-            raise NotImplementedError('all callable symbolic expressions must use the same arguments')
+            raise NotImplementedError(
+                'all callable symbolic expressions must use the same arguments'
+            )
 
         if names is None:
             names = ("x",)
-        return super().__classcall__(cls, universe, *predicates,
-                                     names=names, category=category)
+        return super().__classcall__(
+            cls, universe, *predicates, names=names, category=category
+        )
 
     def __init__(self, universe, *predicates, names=None, category=None):
         r"""
@@ -206,8 +221,9 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
         facade = None
         if isinstance(universe, Parent):
             facade = universe
-        super().__init__(facade=facade, category=category,
-                         names=names, normalize=False)  # names already normalized by classcall
+        super().__init__(
+            facade=facade, category=category, names=names, normalize=False
+        )  # names already normalized by classcall
 
     def _first_ngens(self, n):
         r"""
@@ -276,8 +292,7 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
                 args = args[0]
             condition = self._call_predicate(predicate, args)
             return str(condition)
-        comma_sep_names = ", ".join(str(name)
-                                    for name in self.variable_names())
+        comma_sep_names = ", ".join(str(name) for name in self.variable_names())
         return f"{predicate}({comma_sep_names})"
 
     @cached_method
@@ -295,6 +310,7 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
             Symbolic Ring
         """
         from sage.symbolic.ring import SR
+
         return SR.var(self.variable_names())
 
     def _element_constructor_(self, *args, **kwds):
@@ -331,8 +347,9 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
                 raise ValueError(f'{element} is not an element of the universe')
         else:
             element = universe_element_constructor(*args, **kwds)
-        if not all(self._call_predicate(predicate, element)
-                   for predicate in self._predicates):
+        if not all(
+            self._call_predicate(predicate, element) for predicate in self._predicates
+        ):
             raise ValueError(f'{element} does not satisfy the condition')
         return element
 
@@ -439,6 +456,7 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
             SageSet({ x ∈ Integer Ring : <function is_even at 0x...>(x) })
         """
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         import sympy
 
@@ -448,16 +466,18 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
             args = args[0]
 
         try:
-            conditions = [self._call_predicate(predicate, args)
-                          for predicate in self._predicates]
+            conditions = [
+                self._call_predicate(predicate, args) for predicate in self._predicates
+            ]
 
             sym = tuple(x._sympy_() for x in self.arguments())
             if single_arg:
                 sym = sym[0]
-            result = sympy.ConditionSet(sym,
-                                        sympy.And(*[condition._sympy_()
-                                                    for condition in conditions]),
-                                        base_set=self._universe._sympy_())
+            result = sympy.ConditionSet(
+                sym,
+                sympy.And(*[condition._sympy_() for condition in conditions]),
+                base_set=self._universe._sympy_(),
+            )
             result._sage_object = self
             return result
         except TypeError:
@@ -503,9 +523,11 @@ class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_ope
                                over Rational Field : 3*x^2 + y^2 <= 42 }
         """
         if isinstance(X, ConditionSet):
-            return ConditionSet(self.ambient().intersection(X.ambient()),
-                                *(self._predicates + X._predicates),
-                                vars=self.arguments())
+            return ConditionSet(
+                self.ambient().intersection(X.ambient()),
+                *(self._predicates + X._predicates),
+                vars=self.arguments(),
+            )
         return super().intersection(X)
 
     def __iter__(self):

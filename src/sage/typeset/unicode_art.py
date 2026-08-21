@@ -51,7 +51,9 @@ class UnicodeArt(CharacterArt):
 
 
 _unicode_art_factory = CharacterArtFactory(
-    UnicodeArt, str, '_unicode_art_',
+    UnicodeArt,
+    str,
+    '_unicode_art_',
     (symbol.unicode_left_parenthesis, symbol.unicode_right_parenthesis),
     (symbol.unicode_left_square_bracket, symbol.unicode_right_square_bracket),
     (symbol.unicode_left_curly_brace, symbol.unicode_right_curly_brace),
@@ -135,20 +137,45 @@ def unicode_art(*obj, **kwds):
         separator = _unicode_art_factory.build(separator, baseline=sep_baseline)
     elif sep_baseline is not None:
         from copy import copy
+
         separator = copy(separator)
         separator._baseline = sep_baseline
-    return _unicode_art_factory.concatenate(obj, separator, empty_unicode_art,
-                                            baseline=baseline)
+    return _unicode_art_factory.concatenate(
+        obj, separator, empty_unicode_art, baseline=baseline
+    )
 
 
-_subscript_dict = {'0': '₀', '1': '₁', '2': '₂', '3': '₃', '4': '₄',
-                   '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉',
-                   '-': '₋', '+': '₊'}
+_subscript_dict = {
+    '0': '₀',
+    '1': '₁',
+    '2': '₂',
+    '3': '₃',
+    '4': '₄',
+    '5': '₅',
+    '6': '₆',
+    '7': '₇',
+    '8': '₈',
+    '9': '₉',
+    '-': '₋',
+    '+': '₊',
+}
 
 
-_superscript_dict = {'0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
-                     '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
-                     '-': '⁻', '+': '⁺', '/': 'ᐟ'}
+_superscript_dict = {
+    '0': '⁰',
+    '1': '¹',
+    '2': '²',
+    '3': '³',
+    '4': '⁴',
+    '5': '⁵',
+    '6': '⁶',
+    '7': '⁷',
+    '8': '⁸',
+    '9': '⁹',
+    '-': '⁻',
+    '+': '⁺',
+    '/': 'ᐟ',
+}
 
 
 def unicode_superscript(x):

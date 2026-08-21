@@ -58,10 +58,14 @@ from sage.misc.lazy_import import lazy_import
 from sage.rings.infinity import infinity
 from sage.rings.morphism import RingHomomorphism
 
-lazy_import("sage.rings.function_field.derivations", (
-    "FunctionFieldDerivation",
-    "FunctionFieldHigherDerivation",
-), deprecation=35230)
+lazy_import(
+    "sage.rings.function_field.derivations",
+    (
+        "FunctionFieldDerivation",
+        "FunctionFieldHigherDerivation",
+    ),
+    deprecation=35230,
+)
 
 
 class FunctionFieldVectorSpaceIsomorphism(Morphism):
@@ -76,6 +80,7 @@ class FunctionFieldVectorSpaceIsomorphism(Morphism):
         sage: isinstance(f, sage.rings.function_field.maps.FunctionFieldVectorSpaceIsomorphism)
         True
     """
+
     def _repr_(self) -> str:
         """
         Return the string representation of this isomorphism.
@@ -155,8 +160,10 @@ class FunctionFieldVectorSpaceIsomorphism(Morphism):
             return NotImplemented
 
         from sage.structure.richcmp import richcmp
-        return richcmp((self.domain(), self.codomain()),
-                       (other.domain(), other.codomain()), op)
+
+        return richcmp(
+            (self.domain(), self.codomain()), (other.domain(), other.codomain()), op
+        )
 
     def __hash__(self) -> int:
         r"""
@@ -190,6 +197,7 @@ class MapVectorSpaceToFunctionField(FunctionFieldVectorSpaceIsomorphism):
           From: Vector space of dimension 2 over Rational function field in x over Rational Field
           To:   Function field in y defined by y^2 - x*y + 4*x^3
     """
+
     def __init__(self, V, K) -> None:
         """
         EXAMPLES::
@@ -244,6 +252,7 @@ class MapVectorSpaceToFunctionField(FunctionFieldVectorSpaceIsomorphism):
         from itertools import product
 
         from sage.misc.misc_c import prod
+
         exponents = product(*[range(d) for d in degrees])
         basis = [prod(g**e for g, e in zip(gens, es)) for es in exponents]
 
@@ -294,6 +303,7 @@ class MapFunctionFieldToVectorSpace(FunctionFieldVectorSpaceIsomorphism):
           From: Function field in y defined by y^2 - x*y + 4*x^3
           To:   Vector space of dimension 2 over Rational function field in x over Rational Field
     """
+
     def __init__(self, K, V) -> None:
         """
         Initialize.
@@ -346,6 +356,7 @@ class MapFunctionFieldToVectorSpace(FunctionFieldVectorSpaceIsomorphism):
         fields = self._K._intermediate_fields(self._V.base_field())
         fields.pop()
         from itertools import chain
+
         for k in fields:
             ret = chain.from_iterable([y.list() for y in ret])
         ret = list(ret)
@@ -364,6 +375,7 @@ class FunctionFieldMorphism(RingHomomorphism):
         Function Field endomorphism of Rational function field in x over Rational Field
           Defn: x |--> 1/x
     """
+
     def __init__(self, parent, im_gen, base_morphism) -> None:
         """
         Initialize.
@@ -429,6 +441,7 @@ class FunctionFieldMorphism_polymod(FunctionFieldMorphism):
         sage: f(y).charpoly('y')
         y^3 + 6*x^3 + x
     """
+
     def __init__(self, parent, im_gen, base_morphism) -> None:
         """
         Initialize.
@@ -472,6 +485,7 @@ class FunctionFieldMorphism_rational(FunctionFieldMorphism):
     """
     Morphism from a rational function field to a function field.
     """
+
     def __init__(self, parent, im_gen, base_morphism) -> None:
         """
         Initialize.
@@ -537,6 +551,7 @@ class FunctionFieldConversionToConstantBaseField(Map):
           From: Rational function field in x over Rational Field
           To:   Rational Field
     """
+
     def __init__(self, parent) -> None:
         """
         Initialize.
@@ -602,6 +617,7 @@ class FunctionFieldToFractionField(FunctionFieldVectorSpaceIsomorphism):
         True
         sage: TestSuite(f).run()
     """
+
     def _call_(self, f):
         r"""
         Return the value of this map at ``f``.
@@ -631,7 +647,9 @@ class FunctionFieldToFractionField(FunctionFieldVectorSpaceIsomorphism):
                 To:   Rational function field in x over Rational Field
         """
         parent = Hom(self.codomain(), self.domain())
-        return parent.__make_element_class__(FractionFieldToFunctionField)(parent.domain(), parent.codomain())
+        return parent.__make_element_class__(FractionFieldToFunctionField)(
+            parent.domain(), parent.codomain()
+        )
 
 
 class FractionFieldToFunctionField(FunctionFieldVectorSpaceIsomorphism):
@@ -659,6 +677,7 @@ class FractionFieldToFunctionField(FunctionFieldVectorSpaceIsomorphism):
         True
         sage: TestSuite(f).run()
     """
+
     def _call_(self, f):
         r"""
         Return the value of this morphism at ``f``.
@@ -742,6 +761,7 @@ class FunctionFieldCompletion(Map):
         b + b*t + b*t^3 + b*t^4 + (b + 1)*t^5 + (b + 1)*t^7 + b*t^9 + b*t^11
         + b*t^12 + b*t^13 + b*t^15 + b*t^16 + (b + 1)*t^17 + (b + 1)*t^19 + O(t^20)
     """
+
     def __init__(self, field, place, name=None, prec=None, gen_name=None) -> None:
         """
         Initialize.
@@ -770,11 +790,13 @@ class FunctionFieldCompletion(Map):
 
         if prec == infinity:
             from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
+
             codomain = LazyLaurentSeriesRing(k, name)
             self._precision = infinity
         else:  # prec < infinity:
             # if prec is None, the Laurent series ring provides default precision
             from sage.rings.laurent_series_ring import LaurentSeriesRing
+
             codomain = LaurentSeriesRing(k, name=name, default_prec=prec)
             self._precision = codomain.default_prec()
 
@@ -862,7 +884,7 @@ class FunctionFieldCompletion(Map):
         sep = place.local_uniformizer()
 
         val = f.valuation(place)
-        e = f * sep**(-val)
+        e = f * sep ** (-val)
 
         coeffs = [to_k(der._derive(e, i, sep)) for i in range(prec)]
         return self.codomain()(coeffs, val).add_bigoh(prec + val)
@@ -896,7 +918,7 @@ class FunctionFieldCompletion(Map):
         sep = place.local_uniformizer()
 
         val = f.valuation(place)
-        e = f * sep**(-val)
+        e = f * sep ** (-val)
 
         def coeff(s, n):
             return to_k(der._derive(e, n - val, sep))
@@ -923,6 +945,7 @@ class FunctionFieldRingMorphism(SetMorphism):
     """
     Ring homomorphism.
     """
+
     def _repr_(self) -> str:
         """
         Return the string representation of the map.
@@ -951,6 +974,7 @@ class FunctionFieldLinearMap(SetMorphism):
     """
     Linear map to function fields.
     """
+
     def _repr_(self) -> str:
         """
         Return the string representation of the map.
@@ -978,6 +1002,7 @@ class FunctionFieldLinearMapSection(SetMorphism):
     """
     Section of linear map from function fields.
     """
+
     def _repr_(self) -> str:
         """
         Return the string representation of the map.

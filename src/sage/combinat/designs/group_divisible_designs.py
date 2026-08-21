@@ -92,6 +92,7 @@ def group_divisible_design(v, K, G, existence=False, check=False):
     # from a (v+1,k,1)-BIBD
     if len(G) == 1 == len(K) and G[0] + 1 in K:
         from .bibd import balanced_incomplete_block_design
+
         k = K[0]
         if existence:
             return balanced_incomplete_block_design(v + 1, k, existence=True)
@@ -100,13 +101,13 @@ def group_divisible_design(v, K, G, existence=False, check=False):
         d = {p: i for i, p in enumerate(sum(groups, []))}
         d[v] = v
         BIBD.relabel(d)
-        groups = [list(range((k - 1) * i, (k - 1) * (i + 1)))
-                  for i in range(v // (k - 1))]
+        groups = [
+            list(range((k - 1) * i, (k - 1) * (i + 1))) for i in range(v // (k - 1))
+        ]
         blocks = [S for S in BIBD if v not in S]
 
     # (v,{4},{2})-GDD
-    elif (v % 2 == 0 and K == [4] and
-          G == [2] and GDD_4_2(v // 2, existence=True)):
+    elif v % 2 == 0 and K == [4] and G == [2] and GDD_4_2(v // 2, existence=True):
         if existence:
             return True
         return GDD_4_2(v // 2, check=check)
@@ -114,16 +115,13 @@ def group_divisible_design(v, K, G, existence=False, check=False):
     # From a TD(k,g)
     elif len(G) == 1 == len(K) and K[0] * G[0] == v:
         from .orthogonal_arrays import transversal_design
+
         return transversal_design(k=K[0], n=G[0], existence=existence)
 
     if blocks:
-        return GroupDivisibleDesign(v,
-                                    groups=groups,
-                                    blocks=blocks,
-                                    G=G,
-                                    K=K,
-                                    check=check,
-                                    copy=True)
+        return GroupDivisibleDesign(
+            v, groups=groups, blocks=blocks, G=G, K=K, check=check, copy=True
+        )
 
     if existence:
         return Unknown
@@ -175,26 +173,33 @@ def GDD_4_2(q, existence=False, check=True):
         return True
 
     from sage.rings.finite_rings.finite_field_constructor import FiniteField
+
     G = FiniteField(q, 'x')
     w = G.primitive_element()
-    e = w**((q - 1) // 3)
+    e = w ** ((q - 1) // 3)
 
     # A first parallel class is defined. G acts on it, which yields all others.
-    first_class = [[(0, 0), (1, w**i), (1, e * w**i), (1, e * e * w**i)]
-                   for i in range((q - 1) // 6)]
+    first_class = [
+        [(0, 0), (1, w**i), (1, e * w**i), (1, e * e * w**i)]
+        for i in range((q - 1) // 6)
+    ]
 
     label = {p: i for i, p in enumerate(G)}
-    classes = [[[2 * label[x[1] + g] + (x[0] + j) % 2 for x in S]
-                for S in first_class]
-               for g in G for j in range(2)]
+    classes = [
+        [[2 * label[x[1] + g] + (x[0] + j) % 2 for x in S] for S in first_class]
+        for g in G
+        for j in range(2)
+    ]
 
-    return GroupDivisibleDesign(2 * q,
+    return GroupDivisibleDesign(
+        2 * q,
         groups=[[i, i + 1] for i in range(0, 2 * q, 2)],
         blocks=sum(classes, []),
         K=[4],
         G=[2],
         check=check,
-        copy=False)
+        copy=False,
+    )
 
 
 class GroupDivisibleDesign(IncidenceStructure):
@@ -259,8 +264,19 @@ class GroupDivisibleDesign(IncidenceStructure):
         sage: sorted(GDD.groups())
         [['a', 'b', 'c'], ['d', 'e', 'f'], ['g', 'h', 'i'], ['k', 'l', 'm']]
     """
-    def __init__(self, points, groups, blocks, G=None, K=None, lambd=1,
-                 check=True, copy=True, **kwds):
+
+    def __init__(
+        self,
+        points,
+        groups,
+        blocks,
+        G=None,
+        K=None,
+        lambd=1,
+        check=True,
+        copy=True,
+        **kwds,
+    ):
         r"""
         Constructor function.
 
@@ -276,12 +292,9 @@ class GroupDivisibleDesign(IncidenceStructure):
 
         self._lambd = lambd
 
-        IncidenceStructure.__init__(self,
-                                    points,
-                                    blocks,
-                                    copy=copy,
-                                    check=False,
-                                    **kwds)
+        IncidenceStructure.__init__(
+            self, points, blocks, copy=copy, check=False, **kwds
+        )
 
         if groups is None or (copy is False and self._point_to_index is None):
             self._groups = groups
@@ -291,9 +304,9 @@ class GroupDivisibleDesign(IncidenceStructure):
             self._groups = [[self._point_to_index[x] for x in g] for g in groups]
 
         if check or groups is None:
-            is_gdd = is_group_divisible_design(self._groups, self._blocks,
-                                               self.n_points(), G, K,
-                                               lambd, verbose=1)
+            is_gdd = is_group_divisible_design(
+                self._groups, self._blocks, self.n_points(), G, K, lambd, verbose=1
+            )
             assert is_gdd
             if groups is None:
                 self._groups = is_gdd[1]
@@ -347,8 +360,9 @@ class GroupDivisibleDesign(IncidenceStructure):
         """
         group_sizes = [len(g) for g in self._groups]
 
-        gdd_type = ("{}^{}".format(s, group_sizes.count(s))
-                    for s in sorted(set(group_sizes)))
+        gdd_type = (
+            "{}^{}".format(s, group_sizes.count(s)) for s in sorted(set(group_sizes))
+        )
         gdd_type = ".".join(gdd_type)
 
         if not gdd_type:

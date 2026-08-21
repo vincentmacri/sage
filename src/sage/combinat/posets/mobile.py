@@ -61,10 +61,13 @@ class MobilePoset(FinitePoset):
         ...
         ValueError: the empty poset is not a mobile poset
     """
+
     _lin_ext_type = LinearExtensionsOfMobile
     _desc = 'Finite mobile poset'
 
-    def __init__(self, hasse_diagram, elements, category, facade, key, ribbon=None, check=True) -> None:
+    def __init__(
+        self, hasse_diagram, elements, category, facade, key, ribbon=None, check=True
+    ) -> None:
         r"""
         Initialize ``self``.
 
@@ -74,8 +77,14 @@ class MobilePoset(FinitePoset):
             ....:                        {}, anchor=(8, 0, posets.ChainPoset(1)))
             sage: TestSuite(P).run()
         """
-        FinitePoset.__init__(self, hasse_diagram=hasse_diagram, elements=elements,
-                             category=category, facade=facade, key=key)
+        FinitePoset.__init__(
+            self,
+            hasse_diagram=hasse_diagram,
+            elements=elements,
+            category=category,
+            facade=facade,
+            key=key,
+        )
         if not self._hasse_diagram:
             raise ValueError("the empty poset is not a mobile poset")
 
@@ -112,7 +121,9 @@ class MobilePoset(FinitePoset):
         num_anchors = 0
 
         for r in ribbon:
-            anchor_neighbors = set(G.neighbor_out_iterator(r)).difference(set(R.neighbor_out_iterator(r)))
+            anchor_neighbors = set(G.neighbor_out_iterator(r)).difference(
+                set(R.neighbor_out_iterator(r))
+            )
             if len(anchor_neighbors) == 1:
                 num_anchors += 1
             elif len(anchor_neighbors) > 1:
@@ -123,7 +134,11 @@ class MobilePoset(FinitePoset):
                     continue
 
                 G_un.delete_edge(lc, r)
-                P = Poset(G.subgraph(G_un.connected_component_containing_vertex(lc, sort=False)))
+                P = Poset(
+                    G.subgraph(
+                        G_un.connected_component_containing_vertex(lc, sort=False)
+                    )
+                )
                 if P.top() != lc or not P.is_d_complete():
                     return False
                 G_un.add_edge(lc, r)
@@ -151,11 +166,17 @@ class MobilePoset(FinitePoset):
 
         # Find the anchor vertex, if it exists, and return the edge
         for r in ribbon:
-            anchor_neighbors = set(H.neighbor_out_iterator(r)).difference(set(R.neighbor_out_iterator(r)))
+            anchor_neighbors = set(H.neighbor_out_iterator(r)).difference(
+                set(R.neighbor_out_iterator(r))
+            )
             if len(anchor_neighbors) == 1:
                 anchor = (r, anchor_neighbors.pop())
                 break
-        return (self._vertex_to_element(anchor[0]), self._vertex_to_element(anchor[1])) if anchor is not None else None
+        return (
+            (self._vertex_to_element(anchor[0]), self._vertex_to_element(anchor[1]))
+            if anchor is not None
+            else None
+        )
 
     @lazy_attribute
     def _ribbon(self):
@@ -206,8 +227,12 @@ class MobilePoset(FinitePoset):
                     traverse_ribbon = ribbon if end_count == 0 else ribbon[::-1]
                     for ind, p in enumerate(traverse_ribbon):
                         if H_un.is_cut_edge(p, traverse_ribbon[ind + 1]):
-                            return [self._vertex_to_element(r)
-                                    for r in G.shortest_path(ends[(end_count + 1) % 2], traverse_ribbon[ind + 1])]
+                            return [
+                                self._vertex_to_element(r)
+                                for r in G.shortest_path(
+                                    ends[(end_count + 1) % 2], traverse_ribbon[ind + 1]
+                                )
+                            ]
             return [self._vertex_to_element(r) for r in ribbon]
 
         # First check path counts between ends and deg3 vertex
@@ -226,7 +251,9 @@ class MobilePoset(FinitePoset):
 
         if anchoredEnd is not None:
             ends.remove(anchoredEnd)
-            return [self._vertex_to_element(r) for r in G.shortest_path(ends[0], ends[1])]
+            return [
+                self._vertex_to_element(r) for r in G.shortest_path(ends[0], ends[1])
+            ]
 
         possible_anchors = ends[:]
         for end in ends:

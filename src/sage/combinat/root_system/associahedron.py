@@ -12,6 +12,7 @@ AUTHORS:
 
 - Christian Stump
 """
+
 # ***************************************************************************
 #       Copyright (C) 2011-2012 Christian Stump <christian.stump@gmail.com>
 #
@@ -25,13 +26,29 @@ from sage.geometry.polyhedron.backend_normaliz import Polyhedron_QQ_normaliz
 from sage.geometry.polyhedron.backend_cdd import Polyhedron_QQ_cdd
 from sage.geometry.polyhedron.backend_field import Polyhedron_field
 from sage.geometry.polyhedron.backend_polymake import Polyhedron_polymake
-from sage.geometry.polyhedron.parent import Polyhedra, Polyhedra_base, Polyhedra_QQ_ppl, Polyhedra_QQ_normaliz, Polyhedra_QQ_cdd, Polyhedra_polymake, Polyhedra_field
+from sage.geometry.polyhedron.parent import (
+    Polyhedra,
+    Polyhedra_base,
+    Polyhedra_QQ_ppl,
+    Polyhedra_QQ_normaliz,
+    Polyhedra_QQ_cdd,
+    Polyhedra_polymake,
+    Polyhedra_field,
+)
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
-ancestors_of_associahedron = set([Polyhedron_QQ_ppl, Polyhedron_QQ_normaliz, Polyhedron_QQ_cdd, Polyhedron_field, Polyhedron_polymake])
+ancestors_of_associahedron = set(
+    [
+        Polyhedron_QQ_ppl,
+        Polyhedron_QQ_normaliz,
+        Polyhedron_QQ_cdd,
+        Polyhedron_field,
+        Polyhedron_polymake,
+    ]
+)
 
 
 def Associahedron(cartan_type, backend='ppl'):
@@ -142,6 +159,7 @@ class Associahedron_class_base:
         Generalized associahedron of type ['A', 2] with 5 vertices
         sage: TestSuite(Asso).run()
     """
+
     def __new__(typ, parent=None, Vrep=None, Hrep=None, cartan_type=None, **kwds):
         r"""
         Return instance of :class:`Assciahedron_class_base`, if ``cartan_type`` is provided
@@ -258,8 +276,7 @@ class Associahedron_class_base:
             -alpha[1], -alpha[2])
         """
         root_space = self._cartan_type.root_system().root_space()
-        return tuple(root_space.from_vector(vector(V))
-                     for V in self.vertex_generator())
+        return tuple(root_space.from_vector(vector(V)) for V in self.vertex_generator())
 
 
 class Associahedron_class_ppl(Associahedron_class_base, Polyhedron_QQ_ppl):
@@ -372,15 +389,18 @@ class Associahedra_base:
             raise ValueError("the Cartan type must be finite")
         root_space = cartan_type.root_system().root_space()
         # TODO: generalize this as a method of root lattice realization
-        rhocheck = sum(beta.associated_coroot()
-                       for beta in root_space.positive_roots()) / 2
+        rhocheck = (
+            sum(beta.associated_coroot() for beta in root_space.positive_roots()) / 2
+        )
         I = root_space.index_set()
         inequalities = []
         for orbit in root_space.almost_positive_roots_decomposition():
             c = rhocheck.coefficient(orbit[0].leading_support())
             for beta in orbit:
                 inequalities.append([c] + [beta.coefficient(i) for i in I])
-        associahedron = super()._element_constructor_(None, [inequalities, []], cartan_type=cartan_type)
+        associahedron = super()._element_constructor_(
+            None, [inequalities, []], cartan_type=cartan_type
+        )
         return associahedron
 
     def _coerce_map_from_(self, X):

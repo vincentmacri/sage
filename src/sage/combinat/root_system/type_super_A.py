@@ -47,10 +47,10 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         ct = root_system.cartan_type()
         if index_set is None:
-            index_set = tuple(list(range(-ct.m - 1, 0)) +
-                              list(range(1, ct.n + 2)))
-        ambient_space.AmbientSpace.__init__(self, root_system, base_ring,
-                                            index_set=index_set)
+            index_set = tuple(list(range(-ct.m - 1, 0)) + list(range(1, ct.n + 2)))
+        ambient_space.AmbientSpace.__init__(
+            self, root_system, base_ring, index_set=index_set
+        )
 
     @classmethod
     def smallest_base_ring(cls, cartan_type=None):
@@ -94,10 +94,10 @@ class AmbientSpace(ambient_space.AmbientSpace):
              (0, 0, 1, -1, 0), (0, 0, 0, 1, -1)]
         """
         if i < 0:
-            return self.monomial(i-1) - self.monomial(i)
+            return self.monomial(i - 1) - self.monomial(i)
         if i == 0:
             return self.monomial(-1) - self.monomial(1)
-        return self.monomial(i) - self.monomial(i+1)
+        return self.monomial(i) - self.monomial(i + 1)
 
     def positive_roots(self):
         """
@@ -133,12 +133,16 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         ct = self.root_system.cartan_type()
         ret = []
-        ret += [self.monomial(-j) - self.monomial(-i)
-                for i in range(1, ct.m + 2)
-                for j in range(i + 1, ct.m + 2)]
-        ret += [self.monomial(i) - self.monomial(j)
-                for i in range(1, ct.n + 2)
-                for j in range(i + 1, ct.n + 2)]
+        ret += [
+            self.monomial(-j) - self.monomial(-i)
+            for i in range(1, ct.m + 2)
+            for j in range(i + 1, ct.m + 2)
+        ]
+        ret += [
+            self.monomial(i) - self.monomial(j)
+            for i in range(1, ct.n + 2)
+            for j in range(i + 1, ct.n + 2)
+        ]
         return ret
 
     def positive_odd_roots(self):
@@ -157,9 +161,11 @@ class AmbientSpace(ambient_space.AmbientSpace):
              (1, 0, 0, 0, -1)]
         """
         ct = self.root_system.cartan_type()
-        return [self.monomial(-i) - self.monomial(j)
-                for i in range(1, ct.m + 2)
-                for j in range(1, ct.n + 2)]
+        return [
+            self.monomial(-i) - self.monomial(j)
+            for i in range(1, ct.m + 2)
+            for j in range(1, ct.n + 2)
+        ]
 
     def highest_root(self):
         """
@@ -172,7 +178,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
            (1, 0, 0, 0, 0, 0, 0, -1)
         """
         ct = self.root_system.cartan_type()
-        return self.monomial(-ct.m-1) - self.monomial(ct.n+1)
+        return self.monomial(-ct.m - 1) - self.monomial(ct.n + 1)
 
     def negative_roots(self):
         """
@@ -208,12 +214,16 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         ct = self.root_system.cartan_type()
         ret = []
-        ret += [self.monomial(-i) - self.monomial(-j)
-                for i in range(1, ct.m + 2)
-                for j in range(i + 1, ct.m + 2)]
-        ret += [self.monomial(j) - self.monomial(i)
-                for i in range(1, ct.n + 2)
-                for j in range(i + 1, ct.n + 2)]
+        ret += [
+            self.monomial(-i) - self.monomial(-j)
+            for i in range(1, ct.m + 2)
+            for j in range(i + 1, ct.m + 2)
+        ]
+        ret += [
+            self.monomial(j) - self.monomial(i)
+            for i in range(1, ct.n + 2)
+            for j in range(i + 1, ct.n + 2)
+        ]
         return ret
 
     def negative_odd_roots(self):
@@ -232,9 +242,11 @@ class AmbientSpace(ambient_space.AmbientSpace):
              (-1, 0, 0, 0, 1)]
         """
         ct = self.root_system.cartan_type()
-        return [self.monomial(j) - self.monomial(-i)
-                for i in range(1, ct.m + 2)
-                for j in range(1, ct.n + 2)]
+        return [
+            self.monomial(j) - self.monomial(-i)
+            for i in range(1, ct.m + 2)
+            for j in range(1, ct.n + 2)
+        ]
 
     def fundamental_weight(self, i):
         r"""
@@ -274,10 +286,12 @@ class AmbientSpace(ambient_space.AmbientSpace):
         m = self.root_system.cartan_type().m
         n = self.root_system.cartan_type().n
         if i <= 0:
-            return self.sum(self.monomial(j) for j in range(-m-1,i))
-        return (self.sum(self.monomial(j) for j in range(-m-1,1))
-                - self.sum(self.monomial(j) for j in range(i+1))
-                - 2*self.sum(self.monomial(j) for j in range(i+1,n+2)))
+            return self.sum(self.monomial(j) for j in range(-m - 1, i))
+        return (
+            self.sum(self.monomial(j) for j in range(-m - 1, 1))
+            - self.sum(self.monomial(j) for j in range(i + 1))
+            - 2 * self.sum(self.monomial(j) for j in range(i + 1, n + 2))
+        )
 
     def simple_coroot(self, i):
         """
@@ -324,13 +338,13 @@ class AmbientSpace(ambient_space.AmbientSpace):
             lambdacheck_mc = lambdacheck._monomial_coefficients
 
             result = self.parent().base_ring().zero()
-            for t,c in lambdacheck_mc.items():
+            for t, c in lambdacheck_mc.items():
                 if t not in self_mc:
                     continue
                 if t > 0:
-                    result -= c*self_mc[t]
+                    result -= c * self_mc[t]
                 else:
-                    result += c*self_mc[t]
+                    result += c * self_mc[t]
             return result
 
         scalar = inner_product
@@ -370,10 +384,11 @@ class AmbientSpace(ambient_space.AmbientSpace):
             except KeyError:
                 pass
             V = P._dense_free_module()
-            dep = V.linear_dependence([self._vector_()] +
-                                      [al[i]._vector_() for i in P.index_set()])[0]
+            dep = V.linear_dependence(
+                [self._vector_()] + [al[i]._vector_() for i in P.index_set()]
+            )[0]
             I = P.index_set()
-            return P.sum((-c/dep[0]) * h[I[i]] for i,c in dep[1:].items())
+            return P.sum((-c / dep[0]) * h[I[i]] for i, c in dep[1:].items())
 
         def has_descent(self, i, positive=False) -> bool:
             """
@@ -443,8 +458,11 @@ class AmbientSpace(ambient_space.AmbientSpace):
             alpha = self.parent().simple_roots()
             l = self.parent().cartan_type().symmetrizer()
             from sage.rings.semirings.non_negative_integer_semiring import NN
-            return all(l[i] * self.inner_product(alpha[i]) in NN
-                       for i in self.parent().index_set())
+
+            return all(
+                l[i] * self.inner_product(alpha[i]) in NN
+                for i in self.parent().index_set()
+            )
 
 
 class CartanType(SuperCartanType_standard):
@@ -574,6 +592,7 @@ class CartanType(SuperCartanType_standard):
             Root system of type ['A', [2, 3]]
         """
         from sage.combinat.root_system.root_system import RootSystem
+
         return RootSystem(self)
 
     @cached_method
@@ -590,6 +609,7 @@ class CartanType(SuperCartanType_standard):
 
         def ell(i):
             return ZZ.one() if i <= 0 else -ZZ.one()
+
         return Family(self.index_set(), ell)
 
     def dynkin_diagram(self):
@@ -631,11 +651,12 @@ class CartanType(SuperCartanType_standard):
             ([0, 1], [(0, 1, 1), (1, 0, -1)])
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         g = DynkinDiagram_class(self, odd_isotropic_roots=[0])
         for i in range(self.m):
-            g.add_edge(-i-1, -i)
+            g.add_edge(-i - 1, -i)
         for i in range(1, self.n):
-            g.add_edge(i, i+1)
+            g.add_edge(i, i + 1)
         g.add_vertex(0)  # Usually there, but not when m == n == 0
         if self.m > 0:
             g.add_edge(-1, 0)
@@ -707,6 +728,7 @@ class CartanType(SuperCartanType_standard):
             A1|2 relabelled by {-1: -1, 0: 0, 1: 2, 2: 1}
         """
         from . import type_relabel
+
         return type_relabel.CartanType(self, relabelling)
 
     def _latex_draw_node(self, x, y, label, position='below=4pt'):
@@ -727,13 +749,18 @@ class CartanType(SuperCartanType_standard):
             sage: print(t._latex_draw_node(0, 0, 1))
             \draw[fill=white] (0 cm, 0 cm) circle (.25cm) node[below=4pt]{$1$};
         """
-        ret = "\\draw[fill={}] ({} cm, {} cm) circle (.25cm) node[{}]{{${}$}};\n".format(
-              'white', x, y, position, label)
+        ret = (
+            "\\draw[fill={}] ({} cm, {} cm) circle (.25cm) node[{}]{{${}$}};\n".format(
+                'white', x, y, position, label
+            )
+        )
         if label == 0:
             ret += "\\draw[-,thick] ({} cm, {} cm) -- ({} cm, {} cm);\n".format(
-                                    x+.17, y+.17, x-.17, y-.17)
+                x + 0.17, y + 0.17, x - 0.17, y - 0.17
+            )
             ret += "\\draw[-,thick] ({} cm, {} cm) -- ({} cm, {} cm);\n".format(
-                                    x+.17, y-.17, x-.17, y+.17)
+                x + 0.17, y - 0.17, x - 0.17, y + 0.17
+            )
         return ret
 
     def _latex_dynkin_diagram(self, label=None, node=None, node_dist=2):
@@ -779,11 +806,14 @@ class CartanType(SuperCartanType_standard):
         if node is None:
             node = self._latex_draw_node
         if self.n + self.m > 1:
-            ret = "\\draw (0 cm, 0 cm) -- ({} cm, 0 cm);\n".format((self.n+self.m)*node_dist)
+            ret = "\\draw (0 cm, 0 cm) -- ({} cm, 0 cm);\n".format(
+                (self.n + self.m) * node_dist
+            )
         else:
             ret = ""
-        return ret + "".join(node((self.m+i)*node_dist, 0, label(i))
-                             for i in self.index_set())
+        return ret + "".join(
+            node((self.m + i) * node_dist, 0, label(i)) for i in self.index_set()
+        )
 
     def ascii_art(self, label=None, node=None):
         """
@@ -817,7 +847,7 @@ class CartanType(SuperCartanType_standard):
             label = lambda i: i
         if node is None:
             node = lambda i: 'O'
-        ret = "---".join(node(label(i)) for i in range(1,self.m+1))
+        ret = "---".join(node(label(i)) for i in range(1, self.m + 1))
         if self.m == 0:
             if self.n == 0:
                 ret = "X"
@@ -828,8 +858,10 @@ class CartanType(SuperCartanType_standard):
                 ret += "---X"
             else:
                 ret += "---X---"
-        ret += "---".join(node(label(i)) for i in range(1,self.n+1)) + "\n"
-        ret += "".join("{!s:4}".format(label(-i)) for i in reversed(range(1,self.m+1)))
+        ret += "---".join(node(label(i)) for i in range(1, self.n + 1)) + "\n"
+        ret += "".join(
+            "{!s:4}".format(label(-i)) for i in reversed(range(1, self.m + 1))
+        )
         ret += "{!s:4}".format(label(0))
-        ret += "".join("{!s:4}".format(label(i)) for i in range(1,self.n+1))
+        ret += "".join("{!s:4}".format(label(i)) for i in range(1, self.n + 1))
         return ret

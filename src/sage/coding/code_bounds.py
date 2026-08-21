@@ -167,8 +167,10 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.real_double import RDF
 
-from .delsarte_bounds import (delsarte_bound_hamming_space,
-                              delsarte_bound_additive_hamming_space)
+from .delsarte_bounds import (
+    delsarte_bound_hamming_space,
+    delsarte_bound_additive_hamming_space,
+)
 
 lazy_import('sage.libs.gap.libgap', 'libgap')
 
@@ -207,7 +209,9 @@ def _check_n_q_d(n, q, d, field_based=True):
     if q not in ZZ or q < 2:
         raise ValueError("The alphabet size must be an integer >1")
     if field_based and not is_prime_power(q):
-        raise ValueError("The alphabet size does not make sense for a code over a field")
+        raise ValueError(
+            "The alphabet size does not make sense for a code over a field"
+        )
     if not (0 < d <= n and n in ZZ and d in ZZ):
         raise ValueError("The length or minimum distance does not make sense")
     return True
@@ -330,8 +334,7 @@ def volume_hamming(n, q, r):
         sage: codes.bounds.volume_hamming(10,2,3)
         176
     """
-    return sum([binomial(n, i) * (q - 1)**i
-                for i in range(r + 1)])
+    return sum([binomial(n, i) * (q - 1) ** i for i in range(r + 1)])
 
 
 def gilbert_lower_bound(n, q, d):
@@ -373,19 +376,20 @@ def plotkin_upper_bound(n, q, d, algorithm=None):
         GapPackage("guava", spkg='gap_packages').require()
         libgap.load_package("guava")
         return QQ(libgap.UpperBoundPlotkin(n, d, q))
-    t = 1 - 1/q
-    if (q == 2) and (n == 2*d) and (d % 2 == 0):
-        return 4*d
-    if (q == 2) and (n == 2*d + 1) and (d % 2 == 1):
-        return 4*d + 4
-    if d > t*n:
-        return int(d / (d - t*n))
-    if d < t*n + 1:
-        fact = (d-1) / t
+    t = 1 - 1 / q
+    if (q == 2) and (n == 2 * d) and (d % 2 == 0):
+        return 4 * d
+    if (q == 2) and (n == 2 * d + 1) and (d % 2 == 1):
+        return 4 * d + 4
+    if d > t * n:
+        return int(d / (d - t * n))
+    if d < t * n + 1:
+        fact = (d - 1) / t
         from sage.rings.real_mpfr import RR
+
         if RR(fact) == RR(int(fact)):
             fact = int(fact) + 1
-        return int(d / (d - t * fact)) * q**(n - fact)
+        return int(d / (d - t * fact)) * q ** (n - fact)
 
 
 def griesmer_upper_bound(n, q, d, algorithm=None):
@@ -433,14 +437,15 @@ def griesmer_upper_bound(n, q, d, algorithm=None):
     # To compute the bound, we keep summing up the terms on the RHS
     # until we start violating the inequality.
     from sage.arith.misc import integer_ceil as ceil
+
     den = 1
     s = 0
     k = 0
     while s <= n:
-        s += ceil(d/den)
+        s += ceil(d / den)
         den *= q
         k = k + 1
-    return q**(k-1)
+    return q ** (k - 1)
 
 
 def elias_upper_bound(n, q, d, algorithm=None):
@@ -459,16 +464,22 @@ def elias_upper_bound(n, q, d, algorithm=None):
         232
     """
     _check_n_q_d(n, q, d, field_based=False)
-    r = 1-1/q
+    r = 1 - 1 / q
     if algorithm == "gap":
         GapPackage("guava", spkg='gap_packages').require()
         libgap.load_package("guava")
         return QQ(libgap.UpperBoundElias(n, d, q))
 
     def ff(n, d, w, q):
-        return r*n*d*q**n/((w**2-2*r*n*w+r*n*d)*volume_hamming(n, q, w))
+        return (
+            r
+            * n
+            * d
+            * q**n
+            / ((w**2 - 2 * r * n * w + r * n * d) * volume_hamming(n, q, w))
+        )
 
-    I = (i for i in range(1, int(r*n) + 1) if i**2 - 2*r*n*i + r*n*d > 0)
+    I = (i for i in range(1, int(r * n) + 1) if i**2 - 2 * r * n * i + r * n * d > 0)
     bnd = min([ff(n, d, w, q) for w in I])
     return int(bnd)
 
@@ -506,7 +517,7 @@ def hamming_upper_bound(n, q, d):
         93
     """
     _check_n_q_d(n, q, d, field_based=False)
-    return int((q**n)/(volume_hamming(n, q, int((d-1)/2))))
+    return int((q**n) / (volume_hamming(n, q, int((d - 1) / 2))))
 
 
 def singleton_upper_bound(n, q, d):
@@ -535,7 +546,7 @@ def singleton_upper_bound(n, q, d):
         256
     """
     _check_n_q_d(n, q, d, field_based=False)
-    return q**(n - d + 1)
+    return q ** (n - d + 1)
 
 
 def gv_info_rate(n, delta, q):
@@ -551,7 +562,7 @@ def gv_info_rate(n, delta, q):
         0.36704992608261894
     """
     q = ZZ(q)
-    return log(gilbert_lower_bound(n, q, int(n*delta)), q)/n
+    return log(gilbert_lower_bound(n, q, int(n * delta)), q) / n
 
 
 def entropy(x, q=2):
@@ -586,16 +597,17 @@ def entropy(x, q=2):
         ValueError: The value q must be an integer greater than 1
     """
     if x < 0 or x > 1:
-        raise ValueError("The entropy function is defined only for x in the"
-                         " interval [0, 1]")
-    q = ZZ(q)   # This will error out if q is not an integer
-    if q < 2:   # Here we check that q is actually at least 2
+        raise ValueError(
+            "The entropy function is defined only for x in the interval [0, 1]"
+        )
+    q = ZZ(q)  # This will error out if q is not an integer
+    if q < 2:  # Here we check that q is actually at least 2
         raise ValueError("The value q must be an integer greater than 1")
     if x == 0:
         return 0
     if x == 1:
-        return log(q-1, q)
-    return x*log(q-1, q)-x*log(x, q)-(1-x)*log(1-x, q)
+        return log(q - 1, q)
+    return x * log(q - 1, q) - x * log(x, q) - (1 - x) * log(1 - x, q)
 
 
 def entropy_inverse(x, q=2):
@@ -630,21 +642,23 @@ def entropy_inverse(x, q=2):
     """
     # No nice way to compute the inverse. We resort to root finding.
     if x < 0 or x > 1:
-        raise ValueError("The inverse entropy function is defined only for "
-                         "x in the interval [0, 1]")
-    q = ZZ(q)   # This will error out if q is not an integer
-    if q < 2:   # Here we check that q is actually at least 2
+        raise ValueError(
+            "The inverse entropy function is defined only for x in the interval [0, 1]"
+        )
+    q = ZZ(q)  # This will error out if q is not an integer
+    if q < 2:  # Here we check that q is actually at least 2
         raise ValueError("The value q must be an integer greater than 1")
 
     eps = 4.5e-16  # find_root has about this as the default xtol
-    ymax = 1 - 1/q
+    ymax = 1 - 1 / q
     if x <= eps:
         return 0
-    if x >= 1-eps:
+    if x >= 1 - eps:
         return ymax
 
     # find_root will error out if the root can not be found
     from sage.numerical.optimize import find_root
+
     f = lambda y: entropy(y, q) - x
     return find_root(f, 0, ymax)
 
@@ -723,7 +737,7 @@ def elias_bound_asymp(delta, q):
         0.39912396330...
     """
     r = 1 - 1 / q
-    return RDF(1-entropy(r-sqrt(r*(r-delta)), q))
+    return RDF(1 - entropy(r - sqrt(r * (r - delta)), q))
 
 
 def mrrw1_bound_asymp(delta, q):
@@ -737,4 +751,8 @@ def mrrw1_bound_asymp(delta, q):
         sage: codes.bounds.mrrw1_bound_asymp(1/4,2)   # abs tol 4e-16                   # needs sage.symbolic
         0.3545789026652697
     """
-    return RDF(entropy((q-1-delta*(q-2)-2*sqrt((q-1)*delta*(1-delta)))/q, q))
+    return RDF(
+        entropy(
+            (q - 1 - delta * (q - 2) - 2 * sqrt((q - 1) * delta * (1 - delta))) / q, q
+        )
+    )

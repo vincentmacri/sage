@@ -132,6 +132,7 @@ class FunctionFieldOrder_base(CachedRepresentation, Parent):
         sage: F.maximal_order()
         Maximal order of Rational function field in y over Rational Field
     """
+
     def __init__(self, field, ideal_class=FunctionFieldIdeal, category=None) -> None:
         """
         Initialize.
@@ -218,6 +219,7 @@ class FunctionFieldOrder(FunctionFieldOrder_base):
     """
     Base class for orders in function fields.
     """
+
     def _repr_(self) -> str:
         """
         Return the string representation.
@@ -234,6 +236,7 @@ class FunctionFieldOrderInfinite(FunctionFieldOrder_base):
     """
     Base class for infinite orders in function fields.
     """
+
     def _repr_(self) -> str:
         """
         EXAMPLES::
@@ -248,6 +251,7 @@ class FunctionFieldMaximalOrder(UniqueRepresentation, FunctionFieldOrder):
     """
     Base class of maximal orders of function fields.
     """
+
     def _repr_(self) -> str:
         """
         Return the string representation of the order.
@@ -272,10 +276,13 @@ class FunctionFieldMaximalOrder(UniqueRepresentation, FunctionFieldOrder):
         return self.ideal(1)
 
 
-class FunctionFieldMaximalOrderInfinite(FunctionFieldMaximalOrder, FunctionFieldOrderInfinite):
+class FunctionFieldMaximalOrderInfinite(
+    FunctionFieldMaximalOrder, FunctionFieldOrderInfinite
+):
     """
     Base class of maximal infinite orders of function fields.
     """
+
     def _repr_(self) -> str:
         """
         EXAMPLES::

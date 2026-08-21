@@ -1,6 +1,7 @@
 r"""
 Super Hopf algebras with basis
 """
+
 # ****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
@@ -29,6 +30,7 @@ class SuperHopfAlgebrasWithBasis(SuperModulesCategory):
         sage: C = HopfAlgebras(ZZ).WithBasis().Super()
         sage: TestSuite(C).run()
     """
+
     class ParentMethods:
         @lazy_attribute
         def antipode(self):
@@ -57,8 +59,7 @@ class SuperHopfAlgebrasWithBasis(SuperModulesCategory):
             """
             if self.antipode_on_basis is not NotImplemented:
                 # Should give the information that this is an anti-morphism of algebra
-                return self._module_morphism(self.antipode_on_basis,
-                                             codomain=self)
+                return self._module_morphism(self.antipode_on_basis, codomain=self)
             if hasattr(self, "antipode_by_coercion"):
                 return self.antipode_by_coercion
 
@@ -97,11 +98,15 @@ class SuperHopfAlgebrasWithBasis(SuperModulesCategory):
 
             S = self.antipode
 
-            IS = lambda x: self.sum(c * self.monomial(t1) * S(self.monomial(t2))
-                                for ((t1, t2), c) in x.coproduct())
+            IS = lambda x: self.sum(
+                c * self.monomial(t1) * S(self.monomial(t2))
+                for ((t1, t2), c) in x.coproduct()
+            )
 
-            SI = lambda x: self.sum(c * S(self.monomial(t1)) * self.monomial(t2)
-                                for ((t1, t2), c) in x.coproduct())
+            SI = lambda x: self.sum(
+                c * S(self.monomial(t1)) * self.monomial(t2)
+                for ((t1, t2), c) in x.coproduct()
+            )
 
             for x in tester.some_elements():
                 x_even = x.even_component()
@@ -111,14 +116,10 @@ class SuperHopfAlgebrasWithBasis(SuperModulesCategory):
                     y_odd = y.odd_component()
 
                     # The antipode is a graded anti-homomorphism.
-                    tester.assertEqual(S(x_even) * S(y_even),
-                                       S(y_even * x_even))
-                    tester.assertEqual(S(x_even) * S(y_odd),
-                                       S(y_odd * x_even))
-                    tester.assertEqual(S(x_odd) * S(y_even),
-                                       S(y_even * x_odd))
-                    tester.assertEqual(S(x_odd) * S(y_odd),
-                                       -S(y_odd * x_odd))
+                    tester.assertEqual(S(x_even) * S(y_even), S(y_even * x_even))
+                    tester.assertEqual(S(x_even) * S(y_odd), S(y_odd * x_even))
+                    tester.assertEqual(S(x_odd) * S(y_even), S(y_even * x_odd))
+                    tester.assertEqual(S(x_odd) * S(y_odd), -S(y_odd * x_odd))
 
                 # mu * (S # I) * delta == counit * unit
                 tester.assertEqual(SI(x), self.counit(x) * self.one())

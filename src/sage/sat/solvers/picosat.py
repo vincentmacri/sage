@@ -40,6 +40,7 @@ class PicoSAT(SatSolver):
         sage: from sage.sat.solvers.picosat import PicoSAT
         sage: solver = PicoSAT()                           # optional - pycosat
     """
+
     def __init__(self, verbosity=0, prop_limit=0):
         r"""
         Construct a new PicoSAT instance.
@@ -161,8 +162,12 @@ class PicoSAT(SatSolver):
         """
         # import pycosat
         # self._solve = pycosat.solve
-        sol = self._solve(self._clauses, verbose=self._verbosity,
-                          prop_limit=self._prop_limit, vars=self._nvars)
+        sol = self._solve(
+            self._clauses,
+            verbose=self._verbosity,
+            prop_limit=self._prop_limit,
+            vars=self._nvars,
+        )
         # sol = pycosat.solve(self._clauses)
         if sol == 'UNSAT':
             return False
@@ -177,7 +182,9 @@ class PicoSAT(SatSolver):
             sage: solver                                   # optional - pycosat
             PicoSAT solver: 0 variables, 0 clauses.
         """
-        return "PicoSAT solver: {} variables, {} clauses.".format(self.nvars(), len(self.clauses()))
+        return "PicoSAT solver: {} variables, {} clauses.".format(
+            self.nvars(), len(self.clauses())
+        )
 
     def clauses(self, filename=None):
         r"""
@@ -222,4 +229,5 @@ class PicoSAT(SatSolver):
         if filename is None:
             return self._clauses
         from sage.sat.solvers.dimacs import DIMACS
+
         DIMACS.render_dimacs(self._clauses, filename, self.nvars())

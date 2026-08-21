@@ -63,8 +63,7 @@ from sage.tensor.modules.finite_rank_free_module import FiniteRankFreeModule_abs
 from sage.tensor.modules.free_module_tensor import FreeModuleTensor
 from sage.tensor.modules.alternating_contr_tensor import AlternatingContrTensor
 from sage.tensor.modules.free_module_alt_form import FreeModuleAltForm
-from sage.tensor.modules.free_module_morphism import \
-                                                   FiniteRankFreeModuleMorphism
+from sage.tensor.modules.free_module_morphism import FiniteRankFreeModuleMorphism
 from sage.tensor.modules.free_module_automorphism import FreeModuleAutomorphism
 from sage.tensor.modules.reflexive_module import ReflexiveModule_tensor
 
@@ -350,27 +349,39 @@ class TensorFreeModule(ReflexiveModule_tensor, FiniteRankFreeModule_abstract):
         self._tensor_type = tuple(tensor_type)
         ring = fmodule._ring
         rank = pow(fmodule._rank, tensor_type[0] + tensor_type[1])
-        if self._tensor_type == (0,1):  # case of the dual
+        if self._tensor_type == (0, 1):  # case of the dual
             category = Modules(ring).FiniteDimensional().or_subcategory(category)
             if name is None and fmodule._name is not None:
                 name = fmodule._name + '*'
             if latex_name is None and fmodule._latex_name is not None:
                 latex_name = fmodule._latex_name + r'^*'
         else:
-            category = Modules(ring).FiniteDimensional().TensorProducts().or_subcategory(category)
+            category = (
+                Modules(ring)
+                .FiniteDimensional()
+                .TensorProducts()
+                .or_subcategory(category)
+            )
             if name is None and fmodule._name is not None:
-                name = 'T^' + str(self._tensor_type) + '(' + fmodule._name + \
-                       ')'
+                name = 'T^' + str(self._tensor_type) + '(' + fmodule._name + ')'
             if latex_name is None and fmodule._latex_name is not None:
-                latex_name = r'T^{' + str(self._tensor_type) + r'}\left(' + \
-                             fmodule._latex_name + r'\right)'
-        super().__init__(fmodule._ring, rank, name=name, latex_name=latex_name, category=category)
+                latex_name = (
+                    r'T^{'
+                    + str(self._tensor_type)
+                    + r'}\left('
+                    + fmodule._latex_name
+                    + r'\right)'
+                )
+        super().__init__(
+            fmodule._ring, rank, name=name, latex_name=latex_name, category=category
+        )
         fmodule._all_modules.add(self)
 
     #### Parent Methods
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None, sym=None, antisym=None):
+    def _element_constructor_(
+        self, comp=[], basis=None, name=None, latex_name=None, sym=None, antisym=None
+    ):
         r"""
         Construct a tensor.
 
@@ -394,89 +405,127 @@ class TensorFreeModule(ReflexiveModule_tensor, FiniteRankFreeModule_abstract):
             True
         """
         from sage.rings.integer import Integer
+
         if isinstance(comp, (int, Integer)) and comp == 0:
             return self.zero()
         if isinstance(comp, FiniteRankFreeModuleMorphism):
             # coercion of an endomorphism to a type-(1,1) tensor:
             endo = comp  # for readability
-            if self._tensor_type == (1,1) and endo.is_endomorphism() and \
-                                                self._fmodule is endo.domain():
-                resu = self.element_class(self._fmodule, (1,1),
-                                          name=endo._name,
-                                          latex_name=endo._latex_name,
-                                          parent=self)
+            if (
+                self._tensor_type == (1, 1)
+                and endo.is_endomorphism()
+                and self._fmodule is endo.domain()
+            ):
+                resu = self.element_class(
+                    self._fmodule,
+                    (1, 1),
+                    name=endo._name,
+                    latex_name=endo._latex_name,
+                    parent=self,
+                )
                 for basis, mat in endo._matrices.items():
                     resu.add_comp(basis[0])[:] = mat
             else:
-                raise TypeError("cannot coerce the {}".format(endo) +
-                                " to an element of {}".format(self))
+                raise TypeError(
+                    "cannot coerce the {}".format(endo)
+                    + " to an element of {}".format(self)
+                )
         elif isinstance(comp, AlternatingContrTensor):
             # coercion of an alternating contravariant tensor of degree
             # p to a type-(p,0) tensor:
-            tensor = comp # for readability
+            tensor = comp  # for readability
             p = tensor.degree()
-            if self._tensor_type != (p,0) or \
-                                    self._fmodule != tensor.base_module():
-                raise TypeError("cannot coerce the {}".format(tensor) +
-                                " to an element of {}".format(self))
+            if self._tensor_type != (p, 0) or self._fmodule != tensor.base_module():
+                raise TypeError(
+                    "cannot coerce the {}".format(tensor)
+                    + " to an element of {}".format(self)
+                )
             if p == 1:
                 asym = None
             else:
                 asym = range(p)
-            resu = self.element_class(self._fmodule, (p,0),
-                                      name=tensor._name,
-                                      latex_name=tensor._latex_name,
-                                      antisym=asym,
-                                      parent=self)
+            resu = self.element_class(
+                self._fmodule,
+                (p, 0),
+                name=tensor._name,
+                latex_name=tensor._latex_name,
+                antisym=asym,
+                parent=self,
+            )
             for basis, comp in tensor._components.items():
                 resu._components[basis] = comp.copy()
         elif isinstance(comp, FreeModuleAltForm):
             # coercion of an alternating form to a type-(0,p) tensor:
-            form = comp # for readability
+            form = comp  # for readability
             p = form.degree()
-            if self._tensor_type != (0,p) or \
-                                           self._fmodule != form.base_module():
-                raise TypeError("cannot coerce the {}".format(form) +
-                                " to an element of {}".format(self))
+            if self._tensor_type != (0, p) or self._fmodule != form.base_module():
+                raise TypeError(
+                    "cannot coerce the {}".format(form)
+                    + " to an element of {}".format(self)
+                )
             if p == 1:
                 asym = None
             else:
                 asym = range(p)
-            resu = self.element_class(self._fmodule, (0,p), name=form._name,
-                                      latex_name=form._latex_name,
-                                      antisym=asym,
-                                      parent=self)
+            resu = self.element_class(
+                self._fmodule,
+                (0, p),
+                name=form._name,
+                latex_name=form._latex_name,
+                antisym=asym,
+                parent=self,
+            )
             for basis, comp in form._components.items():
                 resu._components[basis] = comp.copy()
         elif isinstance(comp, FreeModuleAutomorphism):
             # coercion of an automorphism to a type-(1,1) tensor:
-            autom = comp # for readability
-            if self._tensor_type != (1,1) or \
-                                          self._fmodule != autom.base_module():
-                raise TypeError("cannot coerce the {}".format(autom) +
-                                " to an element of {}".format(self))
-            resu = self.element_class(self._fmodule, (1,1), name=autom._name,
-                                      latex_name=autom._latex_name,
-                                      parent=self)
+            autom = comp  # for readability
+            if self._tensor_type != (1, 1) or self._fmodule != autom.base_module():
+                raise TypeError(
+                    "cannot coerce the {}".format(autom)
+                    + " to an element of {}".format(self)
+                )
+            resu = self.element_class(
+                self._fmodule,
+                (1, 1),
+                name=autom._name,
+                latex_name=autom._latex_name,
+                parent=self,
+            )
             for basis, comp in autom._components.items():
                 resu._components[basis] = comp.copy()
         elif isinstance(comp, FreeModuleTensor):
             tensor = comp
-            if self._tensor_type != tensor._tensor_type or \
-               self._fmodule != tensor.base_module():
-                raise TypeError("cannot coerce the {}".format(tensor) +
-                                " to an element of {}".format(self))
-            resu = self.element_class(self._fmodule, self._tensor_type,
-                                      name=name, latex_name=latex_name,
-                                      sym=sym, antisym=antisym,
-                                      parent=self)
+            if (
+                self._tensor_type != tensor._tensor_type
+                or self._fmodule != tensor.base_module()
+            ):
+                raise TypeError(
+                    "cannot coerce the {}".format(tensor)
+                    + " to an element of {}".format(self)
+                )
+            resu = self.element_class(
+                self._fmodule,
+                self._tensor_type,
+                name=name,
+                latex_name=latex_name,
+                sym=sym,
+                antisym=antisym,
+                parent=self,
+            )
             for basis, comp in tensor._components.items():
                 resu._components[basis] = comp.copy()
         else:
             # Standard construction:
-            resu = self.element_class(self._fmodule, self._tensor_type,
-                                      name=name, latex_name=latex_name,
-                                      sym=sym, antisym=antisym, parent=self)
+            resu = self.element_class(
+                self._fmodule,
+                self._tensor_type,
+                name=name,
+                latex_name=latex_name,
+                sym=sym,
+                antisym=antisym,
+                parent=self,
+            )
             if comp:
                 resu.set_comp(basis)[:] = comp
         return resu
@@ -504,7 +553,7 @@ class TensorFreeModule(ReflexiveModule_tensor, FiniteRankFreeModule_abstract):
         for basis in self._fmodule._known_bases:
             resu._add_comp_unsafe(basis)
             # (since new components are initialized to zero)
-        resu._is_zero = True # This element is certainly zero
+        resu._is_zero = True  # This element is certainly zero
         resu.set_immutable()
         return resu
 
@@ -599,28 +648,30 @@ class TensorFreeModule(ReflexiveModule_tensor, FiniteRankFreeModule_abstract):
             True
         """
         from .free_module_homset import FreeModuleHomset
-        from .ext_pow_free_module import (ExtPowerFreeModule,
-                                          ExtPowerDualFreeModule)
+        from .ext_pow_free_module import ExtPowerFreeModule, ExtPowerDualFreeModule
         from .free_module_linear_group import FreeModuleLinearGroup
+
         if isinstance(other, FreeModuleHomset):
             # Coercion of an endomorphism to a type-(1,1) tensor:
-            if self._tensor_type == (1,1):
-                return other.is_endomorphism_set() and \
-                                         self._fmodule is other.domain()
+            if self._tensor_type == (1, 1):
+                return other.is_endomorphism_set() and self._fmodule is other.domain()
             return False
         if isinstance(other, ExtPowerFreeModule):
             # Coercion of an alternating contravariant tensor to a
             # type-(p,0) tensor:
-            return self._tensor_type == (other.degree(), 0) and \
-                                    self._fmodule is other.base_module()
+            return (
+                self._tensor_type == (other.degree(), 0)
+                and self._fmodule is other.base_module()
+            )
         if isinstance(other, ExtPowerDualFreeModule):
             # Coercion of an alternating form to a type-(0,p) tensor:
-            return self._tensor_type == (0, other.degree()) and \
-                                    self._fmodule is other.base_module()
+            return (
+                self._tensor_type == (0, other.degree())
+                and self._fmodule is other.base_module()
+            )
         if isinstance(other, FreeModuleLinearGroup):
             # Coercion of an automorphism to a type-(1,1) tensor:
-            return self._tensor_type == (1,1) and \
-                                    self._fmodule is other.base_module()
+            return self._tensor_type == (1, 1) and self._fmodule is other.base_module()
         try:
             if other.is_submodule(self):
                 return True
@@ -642,7 +693,8 @@ class TensorFreeModule(ReflexiveModule_tensor, FiniteRankFreeModule_abstract):
              M over the Rational Field
         """
         description = "Free module of type-({},{}) tensors on the {}".format(
-                     self._tensor_type[0], self._tensor_type[1], self._fmodule)
+            self._tensor_type[0], self._tensor_type[1], self._fmodule
+        )
         return description
 
     def base_module(self):
@@ -686,9 +738,16 @@ class TensorFreeModule(ReflexiveModule_tensor, FiniteRankFreeModule_abstract):
         return self._tensor_type
 
     @cached_method
-    def basis(self, symbol, latex_symbol=None, from_family=None,
-              indices=None, latex_indices=None, symbol_dual=None,
-              latex_symbol_dual=None):
+    def basis(
+        self,
+        symbol,
+        latex_symbol=None,
+        from_family=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Return the standard basis of ``self`` corresponding to a basis of the base module.
 
@@ -752,9 +811,15 @@ class TensorFreeModule(ReflexiveModule_tensor, FiniteRankFreeModule_abstract):
             f_0⊗f_1 + f_1⊗f_0
             f_1⊗f_1
         """
-        return TensorFreeSubmoduleBasis_sym(self, symbol=symbol, latex_symbol=latex_symbol,
-                                             indices=indices, latex_indices=latex_indices,
-                                             symbol_dual=symbol_dual, latex_symbol_dual=latex_symbol_dual)
+        return TensorFreeSubmoduleBasis_sym(
+            self,
+            symbol=symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
     @cached_method
     def _basis_sym(self):

@@ -7,8 +7,10 @@ Noncommutative symmetric functions and quasi-symmetric functions
 - :ref:`Quasi-Symmetric Functions (QSym) <sage.combinat.ncsf_qsym.qsym>`
 - :ref:`sage.combinat.ncsf_qsym.generic_basis_code`
 """
+
 # install the docstring of this module to the containing package
 from sage.misc.namespace_package import install_doc
+
 install_doc(__package__, __doc__)
 
 from sage.misc.lazy_import import lazy_import

@@ -43,8 +43,13 @@ AUTHORS:
 # ****************************************************************************
 
 from sage.misc.lazy_import import LazyImport
-from sage.rings.polynomial.laurent_polynomial import LaurentPolynomial, LaurentPolynomial_univariate
-from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
+from sage.rings.polynomial.laurent_polynomial import (
+    LaurentPolynomial,
+    LaurentPolynomial_univariate,
+)
+from sage.rings.polynomial.laurent_polynomial_ring_base import (
+    LaurentPolynomialRing_generic,
+)
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.structure.element import parent
 
@@ -213,7 +218,7 @@ def LaurentPolynomialRing(base_ring, *args, **kwds):
 
     R = PolynomialRing(base_ring, *args, **kwds)
     if R in _cache:
-        return _cache[R]   # put () here to re-enable weakrefs
+        return _cache[R]  # put () here to re-enable weakrefs
 
     if isinstance(R, PolynomialRing_generic):
         # univariate case
@@ -292,8 +297,7 @@ def _split_dict_(D, indices, group_by=None):
     def extract(T, indices):
         return tuple(get(T, i) for i in indices)
 
-    remaining = sorted(set(range(len(next(iter(D)))))
-                       - set(indices) - set(group_by))
+    remaining = sorted(set(range(len(next(iter(D))))) - set(indices) - set(group_by))
     result = {}
     for K, V in D.items():
         if not all(r == 0 for r in extract(K, remaining)):
@@ -362,8 +366,7 @@ def _split_laurent_polynomial_dict_(P, M, d):
         return {k: value(v, P.base_ring()) for k, v in D.items()}
     except (ValueError, TypeError):
         pass
-    return sum(P({k: 1}) * value(v, P)
-               for k, v in D.items()).monomial_coefficients()
+    return sum(P({k: 1}) * value(v, P) for k, v in D.items()).monomial_coefficients()
 
 
 def from_fraction_field(L, x):
@@ -419,6 +422,7 @@ class LaurentPolynomialRing_univariate(LaurentPolynomialRing_generic):
             raise ValueError("must be 1 generator")
         LaurentPolynomialRing_generic.__init__(self, R)
         from sage.rings.integer_ring import IntegerRing
+
         self._indices = IntegerRing()
 
     Element = LaurentPolynomial_univariate
@@ -430,7 +434,10 @@ class LaurentPolynomialRing_univariate(LaurentPolynomialRing_generic):
             sage: LaurentPolynomialRing(QQ,'x')  # indirect doctest
             Univariate Laurent Polynomial Ring in x over Rational Field
         """
-        return "Univariate Laurent Polynomial Ring in %s over %s" % (self._R.variable_name(), self._R.base_ring())
+        return "Univariate Laurent Polynomial Ring in %s over %s" % (
+            self._R.variable_name(),
+            self._R.base_ring(),
+        )
 
     def _element_constructor_(self, x):
         """
@@ -502,6 +509,7 @@ class LaurentPolynomialRing_univariate(LaurentPolynomialRing_generic):
         from sage.structure.element import Expression
         from sage.rings.fraction_field_element import FractionFieldElement
         from sage.rings.localization import LocalizationElement
+
         if isinstance(x, Expression):
             return x.laurent_polynomial(ring=self)
 
@@ -572,9 +580,12 @@ class LaurentPolynomialRing_mpair(LaurentPolynomialRing_generic):
         LaurentPolynomialRing_generic.__init__(self, R)
         from sage.modules.free_module import FreeModule
         from sage.rings.integer_ring import IntegerRing
+
         self._indices = FreeModule(IntegerRing(), R.ngens())
 
-    Element = LazyImport('sage.rings.polynomial.laurent_polynomial_mpair', 'LaurentPolynomial_mpair')
+    Element = LazyImport(
+        'sage.rings.polynomial.laurent_polynomial_mpair', 'LaurentPolynomial_mpair'
+    )
 
     def _repr_(self):
         """
@@ -585,7 +596,10 @@ class LaurentPolynomialRing_mpair(LaurentPolynomialRing_generic):
             sage: LaurentPolynomialRing(QQ,1,'x').__repr__()                            # needs sage.modules
             'Multivariate Laurent Polynomial Ring in x over Rational Field'
         """
-        return "Multivariate Laurent Polynomial Ring in %s over %s" % (", ".join(self._R.variable_names()), self._R.base_ring())
+        return "Multivariate Laurent Polynomial Ring in %s over %s" % (
+            ", ".join(self._R.variable_names()),
+            self._R.base_ring(),
+        )
 
     def monomial(self, *exponents):
         r"""
@@ -623,11 +637,14 @@ class LaurentPolynomialRing_mpair(LaurentPolynomialRing_generic):
             TypeError: tuple key (-1, 2, 3) must have same length as ngens (= 2)
         """
         from sage.rings.polynomial.polydict import ETuple
+
         if len(exponents) == 1 and isinstance((e := exponents[0]), (tuple, ETuple)):
             exponents = e
 
         if len(exponents) != self.ngens():
-            raise TypeError(f"tuple key {exponents} must have same length as ngens (= {self.ngens()})")
+            raise TypeError(
+                f"tuple key {exponents} must have same length as ngens (= {self.ngens()})"
+            )
 
         m = ETuple(exponents, int(self.ngens()))
         return self.element_class(self, self.polynomial_ring().base_ring().one(), m)
@@ -738,8 +755,8 @@ class LaurentPolynomialRing_mpair(LaurentPolynomialRing_generic):
         P = parent(x)
         if P is self.polynomial_ring():
             from sage.rings.polynomial.polydict import ETuple
-            return self.element_class(self, x,
-                                      mon=ETuple({}, int(self.ngens())))
+
+            return self.element_class(self, x, mon=ETuple({}, int(self.ngens())))
 
         if isinstance(x, Expression):
             return x.laurent_polynomial(ring=self)
@@ -757,6 +774,7 @@ class LaurentPolynomialRing_mpair(LaurentPolynomialRing_generic):
                 x = _split_laurent_polynomial_dict_(self, P, d)
             elif P is self.base_ring():
                 from sage.rings.polynomial.polydict import ETuple
+
                 mz = ETuple({}, int(self.ngens()))
                 return self.element_class(self, {mz: x}, mz)
             elif x.is_constant() and self.has_coerce_map_from(P.base_ring()):

@@ -118,6 +118,7 @@ from sage.schemes.toric.weierstrass import (
 
 ######################################################################
 
+
 def WeierstrassMap(polynomial, variables=None):
     r"""
     Return the Weierstrass form of an anticanonical hypersurface.
@@ -227,10 +228,15 @@ def WeierstrassMap(polynomial, variables=None):
         variables = polynomial.variables()
     # switch to suitable inhomogeneous coordinates
     from sage.geometry.polyhedron.ppl_lattice_polygon import (
-        polar_P2_polytope, polar_P1xP1_polytope, polar_P2_112_polytope)
+        polar_P2_polytope,
+        polar_P1xP1_polytope,
+        polar_P2_112_polytope,
+    )
     from sage.schemes.toric.weierstrass import Newton_polygon_embedded
-    newton_polytope, polynomial_aff, variables_aff = \
-        Newton_polygon_embedded(polynomial, variables)
+
+    newton_polytope, polynomial_aff, variables_aff = Newton_polygon_embedded(
+        polynomial, variables
+    )
     polygon = newton_polytope.embed_in_reflexive_polytope('polytope')
     # Compute the map in inhomogeneous coordinates
     if polygon is polar_P2_polytope():
@@ -255,6 +261,7 @@ def WeierstrassMap(polynomial, variables=None):
         result = vector(ZZ, result)
         result.set_immutable()
         return result
+
     X_dict = {homogenize(e, 2): v for e, v in X.monomial_coefficients().items()}
     Y_dict = {homogenize(e, 3): v for e, v in Y.monomial_coefficients().items()}
     Z_dict = {homogenize(e, 1): v for e, v in Z.monomial_coefficients().items()}
@@ -278,6 +285,7 @@ def WeierstrassMap(polynomial, variables=None):
 #  Weierstrass form of cubic in P^2
 #
 ######################################################################
+
 
 def WeierstrassMap_P2(polynomial, variables=None):
     r"""
@@ -332,6 +340,7 @@ def WeierstrassMap_P2(polynomial, variables=None):
 #
 ######################################################################
 
+
 def WeierstrassMap_P1xP1(polynomial, variables=None):
     r"""
     Map an anticanonical hypersurface in
@@ -376,7 +385,7 @@ def WeierstrassMap_P1xP1(polynomial, variables=None):
     x, y, s, t = _check_polynomial_P1xP1(polynomial, variables)
     a00 = polynomial.coefficient({s: 2})
     V = polynomial.coefficient({s: 1})
-    U = - _partial_discriminant(polynomial, s, t) / 4
+    U = -_partial_discriminant(polynomial, s, t) / 4
     Q = invariant_theory.binary_quartic(U, x, y)
     g = Q.g_covariant()
     h = Q.h_covariant()
@@ -390,6 +399,7 @@ def WeierstrassMap_P1xP1(polynomial, variables=None):
 #  Weierstrass form of anticanonical hypersurface in WP2[1,1,2]
 #
 ######################################################################
+
 
 def WeierstrassMap_P2_112(polynomial, variables=None):
     r"""
@@ -447,7 +457,7 @@ def WeierstrassMap_P2_112(polynomial, variables=None):
     x, y, z, t = _check_polynomial_P2_112(polynomial, variables)
     a00 = polynomial.coefficient({y: 2})
     V = polynomial.coefficient({y: 1})
-    U = - _partial_discriminant(polynomial, y, t) / 4
+    U = -_partial_discriminant(polynomial, y, t) / 4
     Q = invariant_theory.binary_quartic(U, x, z)
     g = Q.g_covariant()
     h = Q.h_covariant()

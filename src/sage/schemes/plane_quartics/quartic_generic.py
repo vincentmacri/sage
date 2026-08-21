@@ -18,7 +18,6 @@ EXAMPLES::
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-
 from sage.schemes.curves import projective_curve
 
 

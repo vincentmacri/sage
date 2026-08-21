@@ -3,12 +3,12 @@ Facade Sets
 
 For background, see :ref:`What is a facade set? <facade-sets>`.
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2010-2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_with_axiom import CategoryWithAxiom
 
@@ -34,6 +34,7 @@ class FacadeSets(CategoryWithAxiom):
             An example of facade set: the monoid of positive integers
         """
         import sage.categories.examples.facade_sets as examples
+
         if choice == "union":
             return examples.IntegersCompletion()
         if choice == 'subset':
@@ -41,7 +42,6 @@ class FacadeSets(CategoryWithAxiom):
         raise TypeError("choice should be 'union' or 'subset'")
 
     class ParentMethods:
-
         def _element_constructor_(self, element):
             """
             Coerce ``element`` into ``self``.
@@ -99,7 +99,9 @@ class FacadeSets(CategoryWithAxiom):
                     return parent(element)
                 except Exception:
                     pass
-            raise ValueError("Can't coerce `%s` in any parent `%s` is a facade for" % (element, self))
+            raise ValueError(
+                "Can't coerce `%s` in any parent `%s` is a facade for" % (element, self)
+            )
 
         def facade_for(self):
             """
@@ -131,7 +133,9 @@ class FacadeSets(CategoryWithAxiom):
             try:
                 return self._facade_for
             except AttributeError:
-                raise NotImplementedError("this parent did not specify which parents it is a facade for")
+                raise NotImplementedError(
+                    "this parent did not specify which parents it is a facade for"
+                )
 
         def is_parent_of(self, element):
             """
@@ -177,6 +181,7 @@ class FacadeSets(CategoryWithAxiom):
             if parents is True:
                 return True
             from sage.structure.element import parent
+
             return parent(element) in parents
 
         def __contains__(self, element) -> bool:

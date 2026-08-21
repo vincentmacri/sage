@@ -67,17 +67,24 @@ class FormsElement(FormsRingElement):
 
         if self.AT(["quasi"]) >= self._analytic_type:
             pass
-        elif not (self.is_homogeneous() and
-                  self._weight == parent.weight() and
-                  self._ep == parent.ep()):
-            raise ValueError("{} does not correspond to an element of {}.".format(rat, parent))
+        elif not (
+            self.is_homogeneous()
+            and self._weight == parent.weight()
+            and self._ep == parent.ep()
+        ):
+            raise ValueError(
+                "{} does not correspond to an element of {}.".format(rat, parent)
+            )
 
         from .subspace import SubSpaceForms
+
         if isinstance(parent, SubSpaceForms) and (parent._module is not None):
             try:
                 self.coordinate_vector()
             except TypeError:
-                raise ValueError("{} does not correspond to an element of {}.".format(rat, parent))
+                raise ValueError(
+                    "{} does not correspond to an element of {}.".format(rat, parent)
+                )
 
     def _repr_(self) -> str:
         """
@@ -290,13 +297,15 @@ class FormsElement(FormsRingElement):
         from sage.misc.functional import sqrt
         from sage.lfunctions.dokchitser import Dokchitser
 
-        if (not (self.is_modular() and self.is_holomorphic()) or self.weight() == 0):
-            raise NotImplementedError("L-series are only implemented for non-trivial holomorphic modular forms.")
+        if not (self.is_modular() and self.is_holomorphic()) or self.weight() == 0:
+            raise NotImplementedError(
+                "L-series are only implemented for non-trivial holomorphic modular forms."
+            )
 
         if num_prec is None:
             num_prec = self.parent().default_num_prec()
 
-        conductor = self.group().lam()**2
+        conductor = self.group().lam() ** 2
         if self.group().is_arithmetic():
             conductor = ZZ(conductor)
         else:
@@ -324,25 +333,36 @@ class FormsElement(FormsRingElement):
 
             residues = [residue]
 
-        L = Dokchitser(conductor=conductor,
-                       gammaV=gammaV,
-                       weight=weight,
-                       eps=eps,
-                       poles=poles,
-                       residues=residues,
-                       prec=num_prec)
+        L = Dokchitser(
+            conductor=conductor,
+            gammaV=gammaV,
+            weight=weight,
+            eps=eps,
+            poles=poles,
+            residues=residues,
+            prec=num_prec,
+        )
 
         # TODO for later: Figure out the correct coefficient growth and do L.set_coeff_growth(...)
 
         # n_coeffs = L.cost()
         n_coeffs = L.cost(1.2)
-        coeff_vector = list(self.q_expansion_vector(min_exp=0, max_exp=n_coeffs + 1, fix_d=True))
+        coeff_vector = list(
+            self.q_expansion_vector(min_exp=0, max_exp=n_coeffs + 1, fix_d=True)
+        )
         pari_precode = "coeff = {};".format(coeff_vector)
 
-        L.init_coeffs(v="coeff[k+1]", pari_precode=pari_precode,
-                      max_imaginary_part=max_imaginary_part,
-                      max_asymp_coeffs=max_asymp_coeffs)
+        L.init_coeffs(
+            v="coeff[k+1]",
+            pari_precode=pari_precode,
+            max_imaginary_part=max_imaginary_part,
+            max_asymp_coeffs=max_asymp_coeffs,
+        )
         L.check_functional_equation()
-        L.rename("L-series associated to the {} form {}".format("cusp" if self.is_cuspidal() else "modular", self))
+        L.rename(
+            "L-series associated to the {} form {}".format(
+                "cusp" if self.is_cuspidal() else "modular", self
+            )
+        )
 
         return L

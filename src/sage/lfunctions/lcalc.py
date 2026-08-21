@@ -37,7 +37,11 @@ from sage.rings.rational_field import QQ
 
 lazy_import('sage.rings.complex_mpfr', 'ComplexField')
 lazy_import('sage.rings.real_mpfr', 'RealField')
-lazy_import('sage.schemes.elliptic_curves.ell_generic', 'EllipticCurve_generic', as_='EllipticCurve')
+lazy_import(
+    'sage.schemes.elliptic_curves.ell_generic',
+    'EllipticCurve_generic',
+    as_='EllipticCurve',
+)
 
 prec = 32
 
@@ -63,6 +67,7 @@ class LCalc(SageObject):
     class. Type ``lcalc.help()`` for a list of commands and
     how to call them.
     """
+
     def _repr_(self):
         return "Rubinsteins L-function Calculator"
 
@@ -80,7 +85,9 @@ class LCalc(SageObject):
         if isinstance(L, EllipticCurve):
             if L.base_ring() == QQ:
                 L = L.minimal_model()
-                return '-e --a1 %s --a2 %s --a3 %s --a4 %s --a6 %s' % tuple(L.a_invariants())
+                return '-e --a1 %s --a2 %s --a3 %s --a4 %s --a6 %s' % tuple(
+                    L.a_invariants()
+                )
         raise TypeError("$L$-function of %s not known" % L)
 
     def help(self):
@@ -157,8 +164,10 @@ class LCalc(SageObject):
         """
         L = self._compute_L(L)
         RR = RealField(prec)
-        X = self('--zeros-interval -x %s -y %s --stepsize=%s %s' % (
-            float(x), float(y), float(stepsize), L))
+        X = self(
+            '--zeros-interval -x %s -y %s --stepsize=%s %s'
+            % (float(x), float(y), float(stepsize), L)
+        )
         return [tuple([RR(z) for z in t.split()]) for t in X.split('\n')]
 
     def value(self, s, L=''):
@@ -261,8 +270,10 @@ class LCalc(SageObject):
         CC = ComplexField(prec)
         s0 = CC(s0)
         s1 = CC(s1)
-        v = self('--value-line-segment -x %s -y %s -X %s -Y %s --number-samples %s %s' % (
-            (s0.real(), s0.imag(), s1.real(), s1.imag(), int(number_samples), L)))
+        v = self(
+            '--value-line-segment -x %s -y %s -X %s -Y %s --number-samples %s %s'
+            % ((s0.real(), s0.imag(), s1.real(), s1.imag(), int(number_samples), L))
+        )
         w = []
         for a in v.split('\n'):
             try:
@@ -324,8 +335,10 @@ class LCalc(SageObject):
         typ = '--twist-quadratic'
         dmin = int(dmin)
         dmax = int(dmax)
-        v = self('-v -x %s -y %s %s --start %s --finish %s %s' % (
-            (s.real(), s.imag(), typ, dmin, dmax, L)))
+        v = self(
+            '-v -x %s -y %s %s --start %s --finish %s %s'
+            % ((s.real(), s.imag(), typ, dmin, dmax, L))
+        )
         w = []
         if len(v) == 0:
             return w
@@ -364,8 +377,7 @@ class LCalc(SageObject):
         RR = RealField(prec)
         typ = '--twist-quadratic'
         n = int(n)
-        v = self('-z %s %s --start %s --finish %s %s' % (
-            (n, typ, dmin, dmax, L)))
+        v = self('-z %s %s --start %s --finish %s %s' % ((n, typ, dmin, dmax, L)))
         w = {}
         if len(v) == 0:
             return w
@@ -405,7 +417,7 @@ class LCalc(SageObject):
         L = self._compute_L(L)
         s = self('--rank-compute %s' % L)
         i = s.find('equals')
-        return ZZ(s[i + 6:])
+        return ZZ(s[i + 6 :])
 
 
 # An instance

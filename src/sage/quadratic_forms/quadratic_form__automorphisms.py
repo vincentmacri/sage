@@ -2,6 +2,7 @@
 """
 Automorphisms of Quadratic Forms
 """
+
 # ****************************************************************************
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
@@ -76,8 +77,9 @@ def basis_of_short_vectors(self, show_lengths=False):
         vector_list_by_length[l].append(vector([-x for x in v]))
 
     # Make a matrix from the column vectors (in order of ascending length).
-    sorted_list = [v for i in range(len(vector_list_by_length))
-                   for v in vector_list_by_length[i]]
+    sorted_list = [
+        v for i in range(len(vector_list_by_length)) for v in vector_list_by_length[i]
+    ]
     sorted_matrix = Matrix(sorted_list).transpose()
 
     # Determine a basis of vectors of minimal length
@@ -177,8 +179,10 @@ def short_vector_list_up_to_length(self, len_bound, up_to_sign_flag=False):
         45902280
     """
     if not self.is_positive_definite():
-        raise ValueError("Quadratic form must be positive definite "
-                         "in order to enumerate short vectors")
+        raise ValueError(
+            "Quadratic form must be positive definite "
+            "in order to enumerate short vectors"
+        )
 
     from sage.libs.pari import pari
 
@@ -246,8 +250,7 @@ def short_primitive_vector_list_up_to_length(self, len_bound, up_to_sign_flag=Fa
     full_vec_list = self.short_vector_list_up_to_length(len_bound, up_to_sign_flag)
 
     # Make a new list of the primitive vectors
-    prim_vec_list = [[v for v in L if GCD(v) == 1]
-                     for L in full_vec_list]
+    prim_vec_list = [[v for v in L if GCD(v) == 1] for L in full_vec_list]
 
     # Return the list of primitive vectors
     return prim_vec_list
@@ -273,7 +276,9 @@ def _compute_automorphisms(self):
         NotImplementedError: computing the automorphism group of a quadratic form is only supported over ZZ
     """
     if self.base_ring() is not ZZ:
-        raise NotImplementedError("computing the automorphism group of a quadratic form is only supported over ZZ")
+        raise NotImplementedError(
+            "computing the automorphism group of a quadratic form is only supported over ZZ"
+        )
     if not self.is_definite():
         raise ValueError("not a definite form in QuadraticForm.automorphisms()")
 
@@ -326,6 +331,7 @@ def automorphism_group(self):
 
     from sage.matrix.matrix_space import MatrixSpace
     from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
     MS = MatrixSpace(self.base_ring().fraction_field(), self.dim(), self.dim())
     gens = [MS(x.sage()) for x in self.__automorphisms_pari]
     return MatrixGroup(gens)

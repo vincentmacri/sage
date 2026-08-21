@@ -178,7 +178,7 @@ TESTS::
     sage: TestSuite(R).run()                                                            # needs sage.geometry.polyhedron
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008 David Roe <roed.math@gmail.com>
 #                          William Stein <wstein@gmail.com>
 #
@@ -187,7 +187,7 @@ TESTS::
 #  the License, or (at your option) any later version.
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 from sage.rings.integer_ring import ZZ
 from sage.rings.padics.generic_nodes import (
     pAdicCappedAbsoluteRingGeneric,
@@ -213,6 +213,7 @@ class pAdicRingCappedRelative(pAdicRingBaseGeneric, pAdicCappedRelativeRingGener
     An implementation of the `p`-adic integers with capped relative
     precision.
     """
+
     def __init__(self, p, prec, print_mode, names, category=None):
         """
         Initialization.
@@ -248,7 +249,15 @@ class pAdicRingCappedRelative(pAdicRingBaseGeneric, pAdicCappedRelativeRingGener
             ....:                  max_runs=2^5, skip='_test_log')
             sage: R._test_log(max_runs=2, elements=[R.random_element() for i in range(4)])          # long time
         """
-        pAdicRingBaseGeneric.__init__(self, p, prec, print_mode, names, pAdicCappedRelativeElement, category=category)
+        pAdicRingBaseGeneric.__init__(
+            self,
+            p,
+            prec,
+            print_mode,
+            names,
+            pAdicCappedRelativeElement,
+            category=category,
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -276,13 +285,15 @@ class pAdicRingCappedRelative(pAdicRingBaseGeneric, pAdicCappedRelativeRingGener
             sage: K.has_coerce_map_from(ZpCA(17,40))
             False
         """
-        #if isinstance(R, pAdicRingRelaxed) and R.prime() == self.prime():
+        # if isinstance(R, pAdicRingRelaxed) and R.prime() == self.prime():
         #    return True
         if isinstance(R, pAdicRingCappedRelative) and R.prime() == self.prime():
             if R.precision_cap() < self.precision_cap():
                 return True
-            if (R.precision_cap() == self.precision_cap() and
-                  self._printer.richcmp_modes(R._printer, op_LE)):
+            if (
+                R.precision_cap() == self.precision_cap()
+                and self._printer.richcmp_modes(R._printer, op_LE)
+            ):
                 return True
 
     def _convert_map_from_(self, R):
@@ -297,12 +308,14 @@ class pAdicRingCappedRelative(pAdicRingBaseGeneric, pAdicCappedRelativeRingGener
               To:   7-adic Ring with capped relative precision 20
         """
         from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+
         if isinstance(R, IntegerModRing_generic):
             N = R.cardinality()
             p = self.prime()
             n = N.exact_log(p)
             if N == p**n:
                 from sage.rings.padics.padic_generic import ResidueLiftingMap
+
                 return ResidueLiftingMap._create_(R, self)
 
 
@@ -310,6 +323,7 @@ class pAdicRingCappedAbsolute(pAdicRingBaseGeneric, pAdicCappedAbsoluteRingGener
     r"""
     An implementation of the `p`-adic integers with capped absolute precision.
     """
+
     def __init__(self, p, prec, print_mode, names, category=None):
         """
         Initialization.
@@ -345,7 +359,15 @@ class pAdicRingCappedAbsolute(pAdicRingBaseGeneric, pAdicCappedAbsoluteRingGener
             ....:                  max_runs=2^5, skip='_test_log')
             sage: R._test_log(max_runs=2, elements=[R.random_element() for i in range(4)])
         """
-        pAdicRingBaseGeneric.__init__(self, p, prec, print_mode, names, pAdicCappedAbsoluteElement, category=category)
+        pAdicRingBaseGeneric.__init__(
+            self,
+            p,
+            prec,
+            print_mode,
+            names,
+            pAdicCappedAbsoluteElement,
+            category=category,
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -373,15 +395,17 @@ class pAdicRingCappedAbsolute(pAdicRingBaseGeneric, pAdicCappedAbsoluteRingGener
             sage: K.has_coerce_map_from(Zp(17,40))
             True
         """
-        #if isinstance(R, pAdicRingRelaxed) and R.prime() == self.prime():
+        # if isinstance(R, pAdicRingRelaxed) and R.prime() == self.prime():
         #    return True
         if isinstance(R, pAdicRingCappedRelative) and R.prime() == self.prime():
             return True
         if isinstance(R, pAdicRingCappedAbsolute) and R.prime() == self.prime():
             if R.precision_cap() < self.precision_cap():
                 return True
-            if (R.precision_cap() == self.precision_cap() and
-                  self._printer.richcmp_modes(R._printer, op_LE)):
+            if (
+                R.precision_cap() == self.precision_cap()
+                and self._printer.richcmp_modes(R._printer, op_LE)
+            ):
                 return True
 
     def _convert_map_from_(self, R):
@@ -396,12 +420,14 @@ class pAdicRingCappedAbsolute(pAdicRingBaseGeneric, pAdicCappedAbsoluteRingGener
               To:   7-adic Ring with capped absolute precision 20
         """
         from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+
         if isinstance(R, IntegerModRing_generic):
             N = R.cardinality()
             p = self.prime()
             n = N.exact_log(p)
             if N == p**n:
                 from sage.rings.padics.padic_generic import ResidueLiftingMap
+
                 return ResidueLiftingMap._create_(R, self)
 
     def _magma_init_(self, magma):
@@ -423,6 +449,7 @@ class pAdicRingFloatingPoint(pAdicRingBaseGeneric, pAdicFloatingPointRingGeneric
     An implementation of the `p`-adic integers with floating point
     precision.
     """
+
     def __init__(self, p, prec, print_mode, names, category=None):
         """
         Initialization.
@@ -458,7 +485,15 @@ class pAdicRingFloatingPoint(pAdicRingBaseGeneric, pAdicFloatingPointRingGeneric
             ....:                  max_runs=2^5, skip='_test_log')
             sage: R._test_log(max_runs=2, elements=[R.random_element() for i in range(4)])
         """
-        pAdicRingBaseGeneric.__init__(self, p, prec, print_mode, names, pAdicFloatingPointElement, category=category)
+        pAdicRingBaseGeneric.__init__(
+            self,
+            p,
+            prec,
+            print_mode,
+            names,
+            pAdicFloatingPointElement,
+            category=category,
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -489,7 +524,10 @@ class pAdicRingFloatingPoint(pAdicRingBaseGeneric, pAdicFloatingPointRingGeneric
         if isinstance(R, pAdicRingFloatingPoint) and R.prime() == self.prime():
             if R.precision_cap() > self.precision_cap():
                 return True
-            if R.precision_cap() == self.precision_cap() and self._printer.richcmp_modes(R._printer, op_LE):
+            if (
+                R.precision_cap() == self.precision_cap()
+                and self._printer.richcmp_modes(R._printer, op_LE)
+            ):
                 return True
 
     def _convert_map_from_(self, R):
@@ -504,12 +542,14 @@ class pAdicRingFloatingPoint(pAdicRingBaseGeneric, pAdicFloatingPointRingGeneric
               To:   7-adic Ring with floating precision 20
         """
         from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+
         if isinstance(R, IntegerModRing_generic):
             N = R.cardinality()
             p = self.prime()
             n = N.exact_log(p)
             if N == p**n:
                 from sage.rings.padics.padic_generic import ResidueLiftingMap
+
                 return ResidueLiftingMap._create_(R, self)
 
 
@@ -517,6 +557,7 @@ class pAdicRingFixedMod(pAdicRingBaseGeneric, pAdicFixedModRingGeneric):
     r"""
     An implementation of the `p`-adic integers using fixed modulus.
     """
+
     def __init__(self, p, prec, print_mode, names, category=None):
         """
         Initialization.
@@ -561,7 +602,9 @@ class pAdicRingFixedMod(pAdicRingBaseGeneric, pAdicFixedModRingGeneric):
             sage: K(R(90))
             3*5 + 3*5^2
         """
-        pAdicRingBaseGeneric.__init__(self, p, prec, print_mode, names, pAdicFixedModElement, category=category)
+        pAdicRingBaseGeneric.__init__(
+            self, p, prec, print_mode, names, pAdicFixedModElement, category=category
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -589,13 +632,15 @@ class pAdicRingFixedMod(pAdicRingBaseGeneric, pAdicFixedModRingGeneric):
             sage: K.has_coerce_map_from(Zp(17,40))
             False
         """
-        #if isinstance(R, pAdicRingRelaxed) and R.prime() == self.prime():
+        # if isinstance(R, pAdicRingRelaxed) and R.prime() == self.prime():
         #    return True
         if isinstance(R, pAdicRingFixedMod) and R.prime() == self.prime():
             if R.precision_cap() > self.precision_cap():
                 return True
-            if (R.precision_cap() == self.precision_cap() and
-                  self._printer.richcmp_modes(R._printer, op_LE)):
+            if (
+                R.precision_cap() == self.precision_cap()
+                and self._printer.richcmp_modes(R._printer, op_LE)
+            ):
                 return True
 
     def _convert_map_from_(self, R):
@@ -610,12 +655,14 @@ class pAdicRingFixedMod(pAdicRingBaseGeneric, pAdicFixedModRingGeneric):
               To:   7-adic Ring of fixed modulus 7^20
         """
         from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+
         if isinstance(R, IntegerModRing_generic):
             N = R.cardinality()
             p = self.prime()
             n = N.exact_log(p)
             if N == p**n:
                 from sage.rings.padics.padic_generic import ResidueLiftingMap
+
                 return ResidueLiftingMap._create_(R, self)
 
     def _magma_init_(self, magma):
@@ -683,7 +730,15 @@ class pAdicFieldCappedRelative(pAdicFieldBaseGeneric, pAdicCappedRelativeFieldGe
             ....:                  max_runs=2^5, skip='_test_log')
             sage: R._test_log(max_runs=2, elements=[R.random_element() for i in range(4)])
         """
-        pAdicFieldBaseGeneric.__init__(self, p, prec, print_mode, names, pAdicCappedRelativeElement, category=category)
+        pAdicFieldBaseGeneric.__init__(
+            self,
+            p,
+            prec,
+            print_mode,
+            names,
+            pAdicCappedRelativeElement,
+            category=category,
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -711,15 +766,20 @@ class pAdicFieldCappedRelative(pAdicFieldBaseGeneric, pAdicCappedRelativeFieldGe
             sage: K.has_coerce_map_from(Zp(17,40))
             True
         """
-        #if isinstance(R, pAdicRingRelaxed) or isinstance(R, pAdicFieldRelaxed) and R.prime() == self.prime():
+        # if isinstance(R, pAdicRingRelaxed) or isinstance(R, pAdicFieldRelaxed) and R.prime() == self.prime():
         #    return True
-        if isinstance(R, (pAdicRingCappedRelative, pAdicRingCappedAbsolute)) and R.prime() == self.prime():
+        if (
+            isinstance(R, (pAdicRingCappedRelative, pAdicRingCappedAbsolute))
+            and R.prime() == self.prime()
+        ):
             return True
         if isinstance(R, pAdicFieldCappedRelative) and R.prime() == self.prime():
             if R.precision_cap() < self.precision_cap():
                 return True
-            if (R.precision_cap() == self.precision_cap() and
-                  self._printer.richcmp_modes(R._printer, op_LE)):
+            if (
+                R.precision_cap() == self.precision_cap()
+                and self._printer.richcmp_modes(R._printer, op_LE)
+            ):
                 return True
 
     def _convert_map_from_(self, R):
@@ -734,12 +794,14 @@ class pAdicFieldCappedRelative(pAdicFieldBaseGeneric, pAdicCappedRelativeFieldGe
               To:   7-adic Field with capped relative precision 20
         """
         from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+
         if isinstance(R, IntegerModRing_generic):
             N = R.cardinality()
             p = self.prime()
             n = N.exact_log(p)
             if N == p**n:
                 from sage.rings.padics.padic_generic import ResidueLiftingMap
+
                 return ResidueLiftingMap._create_(R, self)
 
     def _magma_init_(self, magma):
@@ -772,10 +834,10 @@ class pAdicFieldCappedRelative(pAdicFieldBaseGeneric, pAdicCappedRelativeFieldGe
             sage: Qp(17,6).random_element().parent() is Qp(17,6)
             True
         """
-        if (algorithm == 'default'):
+        if algorithm == 'default':
             k = ZZ.random_element()
-            a = ZZ.random_element(self.prime()**self.precision_cap())
-            return self(self.prime()**k * a, absprec=k + self.precision_cap())
+            a = ZZ.random_element(self.prime() ** self.precision_cap())
+            return self(self.prime() ** k * a, absprec=k + self.precision_cap())
         raise NotImplementedError("Don't know %s algorithm" % algorithm)
 
 
@@ -784,6 +846,7 @@ class pAdicFieldFloatingPoint(pAdicFieldBaseGeneric, pAdicFloatingPointFieldGene
     An implementation of the `p`-adic rationals with floating point
     precision.
     """
+
     def __init__(self, p, prec, print_mode, names, category=None):
         """
         Initialization.
@@ -820,7 +883,15 @@ class pAdicFieldFloatingPoint(pAdicFieldBaseGeneric, pAdicFloatingPointFieldGene
             ....:                  max_runs=2^5, skip='_test_log')
             sage: R._test_log(max_runs=2, elements=[R.random_element() for i in range(4)])
         """
-        pAdicFieldBaseGeneric.__init__(self, p, prec, print_mode, names, pAdicFloatingPointElement, category=category)
+        pAdicFieldBaseGeneric.__init__(
+            self,
+            p,
+            prec,
+            print_mode,
+            names,
+            pAdicFloatingPointElement,
+            category=category,
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -850,10 +921,18 @@ class pAdicFieldFloatingPoint(pAdicFieldBaseGeneric, pAdicFloatingPointFieldGene
             sage: K.has_coerce_map_from(ZpCA(17,40))
             False
         """
-        if isinstance(R, (pAdicRingFixedMod, pAdicRingFloatingPoint, pAdicFieldFloatingPoint)) and R.prime() == self.prime():
+        if (
+            isinstance(
+                R, (pAdicRingFixedMod, pAdicRingFloatingPoint, pAdicFieldFloatingPoint)
+            )
+            and R.prime() == self.prime()
+        ):
             if R.precision_cap() > self.precision_cap():
                 return True
-            if R.precision_cap() == self.precision_cap() and self._printer.richcmp_modes(R._printer, op_LE):
+            if (
+                R.precision_cap() == self.precision_cap()
+                and self._printer.richcmp_modes(R._printer, op_LE)
+            ):
                 return True
 
     def _convert_map_from_(self, R):
@@ -868,13 +947,16 @@ class pAdicFieldFloatingPoint(pAdicFieldBaseGeneric, pAdicFloatingPointFieldGene
               To:   7-adic Field with floating precision 20
         """
         from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
+
         if isinstance(R, IntegerModRing_generic):
             N = R.cardinality()
             p = self.prime()
             n = N.exact_log(p)
             if N == p**n:
                 from sage.rings.padics.padic_generic import ResidueLiftingMap
+
                 return ResidueLiftingMap._create_(R, self)
+
 
 # Lattice precision
 ###################
@@ -915,6 +997,7 @@ class pAdicRingLattice(pAdicLatticeGeneric, pAdicRingBaseGeneric):
         sage: R
         2-adic Ring with lattice-cap precision (label: init)
     """
+
     def __init__(self, p, prec, subtype, print_mode, names, label=None, category=None):
         """
         Initialization.
@@ -928,10 +1011,16 @@ class pAdicRingLattice(pAdicLatticeGeneric, pAdicRingBaseGeneric):
         # pAdicRingBaseGeneric.__init__ can work
         self._subtype = subtype
         if isinstance(prec, tuple):
-            pAdicRingBaseGeneric.__init__(self, p, prec[1], print_mode, names, None, category=category)
+            pAdicRingBaseGeneric.__init__(
+                self, p, prec[1], print_mode, names, None, category=category
+            )
         else:
-            pAdicRingBaseGeneric.__init__(self, p, prec, print_mode, names, None, category=category)
-        pAdicLatticeGeneric.__init__(self, p, prec, print_mode, names, label, category=category)
+            pAdicRingBaseGeneric.__init__(
+                self, p, prec, print_mode, names, None, category=category
+            )
+        pAdicLatticeGeneric.__init__(
+            self, p, prec, print_mode, names, label, category=category
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -1045,6 +1134,7 @@ class pAdicFieldLattice(pAdicLatticeGeneric, pAdicFieldBaseGeneric):
         sage: R
         2-adic Field with lattice-cap precision (label: init)
     """
+
     def __init__(self, p, prec, subtype, print_mode, names, label=None, category=None):
         """
         Initialization.
@@ -1058,10 +1148,16 @@ class pAdicFieldLattice(pAdicLatticeGeneric, pAdicFieldBaseGeneric):
         # pAdicFieldBaseGeneric.__init__ can work
         self._subtype = subtype
         if isinstance(prec, tuple):
-            pAdicFieldBaseGeneric.__init__(self, p, prec[1], print_mode, names, None, category=category)
+            pAdicFieldBaseGeneric.__init__(
+                self, p, prec[1], print_mode, names, None, category=category
+            )
         else:
-            pAdicFieldBaseGeneric.__init__(self, p, prec, print_mode, names, None, category=category)
-        pAdicLatticeGeneric.__init__(self, p, prec, print_mode, names, label, category=category)
+            pAdicFieldBaseGeneric.__init__(
+                self, p, prec, print_mode, names, None, category=category
+            )
+        pAdicLatticeGeneric.__init__(
+            self, p, prec, print_mode, names, label, category=category
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -1099,7 +1195,10 @@ class pAdicFieldLattice(pAdicLatticeGeneric, pAdicFieldBaseGeneric):
             sage: K2.has_coerce_map_from(K)
             False
         """
-        if isinstance(R, (pAdicRingLattice, pAdicFieldLattice)) and R.precision() is self.precision():
+        if (
+            isinstance(R, (pAdicRingLattice, pAdicFieldLattice))
+            and R.precision() is self.precision()
+        ):
             return True
 
     def random_element(self, prec=None, integral=False):
@@ -1144,7 +1243,8 @@ class pAdicFieldLattice(pAdicLatticeGeneric, pAdicFieldBaseGeneric):
         x = ZZ.random_element(p**prec)
         relcap = x.valuation(p) + self._prec_cap_relative
         prec = min(relcap, prec)
-        return self._element_class(self, x*(p**val), prec=prec)
+        return self._element_class(self, x * (p**val), prec=prec)
+
 
 # Relaxed
 #########
@@ -1170,6 +1270,7 @@ class pAdicRingRelaxed(pAdicRelaxedGeneric, pAdicRingBaseGeneric):
         sage: type(R)                                                                   # needs sage.libs.flint
         <class 'sage.rings.padics.padic_base_leaves.pAdicRingRelaxed_with_category'>
     """
+
     def __init__(self, p, prec, print_mode, names, category=None):
         """
         Initialization.
@@ -1182,8 +1283,17 @@ class pAdicRingRelaxed(pAdicRelaxedGeneric, pAdicRingBaseGeneric):
             sage: TestSuite(R).run(skip=['_test_log', '_test_matrix_smith'])
         """
         from sage.rings.padics import padic_relaxed_element
+
         self._default_prec, self._halting_prec, self._secure = prec
-        pAdicRingBaseGeneric.__init__(self, p, self._default_prec, print_mode, names, padic_relaxed_element.pAdicRelaxedElement, category=category)
+        pAdicRingBaseGeneric.__init__(
+            self,
+            p,
+            self._default_prec,
+            print_mode,
+            names,
+            padic_relaxed_element.pAdicRelaxedElement,
+            category=category,
+        )
         self._element_class_module = padic_relaxed_element
         self._element_class_prefix = "pAdicRelaxedElement_"
 
@@ -1208,6 +1318,7 @@ class pAdicFieldRelaxed(pAdicRelaxedGeneric, pAdicFieldBaseGeneric):
         sage: type(R)                                                                   # needs sage.libs.flint
         <class 'sage.rings.padics.padic_base_leaves.pAdicFieldRelaxed_with_category'>
     """
+
     def __init__(self, p, prec, print_mode, names, category=None):
         """
         Initialization.
@@ -1220,7 +1331,16 @@ class pAdicFieldRelaxed(pAdicRelaxedGeneric, pAdicFieldBaseGeneric):
             sage: TestSuite(K).run(skip=['_test_log', '_test_matrix_smith'])
         """
         from sage.rings.padics import padic_relaxed_element
+
         self._default_prec, self._halting_prec, self._secure = prec
-        pAdicFieldBaseGeneric.__init__(self, p, self._default_prec, print_mode, names, padic_relaxed_element.pAdicRelaxedElement, category=category)
+        pAdicFieldBaseGeneric.__init__(
+            self,
+            p,
+            self._default_prec,
+            print_mode,
+            names,
+            padic_relaxed_element.pAdicRelaxedElement,
+            category=category,
+        )
         self._element_class_module = padic_relaxed_element
         self._element_class_prefix = "pAdicRelaxedElement_"

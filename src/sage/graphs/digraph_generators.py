@@ -54,6 +54,7 @@ AUTHORS:
 Functions and methods
 ---------------------
 """
+
 # ****************************************************************************
 #           Copyright (C) 2006 Robert L. Miller <rlmillster@gmail.com>
 #                              and Emily A. Kirkman
@@ -299,18 +300,21 @@ class DiGraphGenerators:
         # We could switch to Sage integers to handle arbitrary n.
         if vertices == 'strings':
             if n >= 31:
-                raise NotImplementedError("vertices='strings' is only valid for n <= 30")
+                raise NotImplementedError(
+                    "vertices='strings' is only valid for n <= 30"
+                )
             from sage.graphs.generic_graph_pyx import int_to_binary_string
+
             V = []
             E = []
-            for v in range(2 ** n):
+            for v in range(2**n):
                 bv = int_to_binary_string(v)
                 # pad and reverse the string
                 padded_bv = ('0' * (n - len(bv)) + bv)[::-1]
                 V.append(padded_bv)
                 for i in range(n):
                     w = v
-                    w ^= (1 << i)   # push 1 to the left by i and xor with w
+                    w ^= 1 << i  # push 1 to the left by i and xor with w
                     bw = int_to_binary_string(w)
                     padded_bw = ('0' * (n - len(bw)) + bw)[::-1]
                     E.append(((padded_bv, i), (padded_bv, i + 1)))
@@ -319,6 +323,7 @@ class DiGraphGenerators:
             from sage.modules.free_module import VectorSpace
             from sage.rings.finite_rings.finite_field_constructor import FiniteField
             from copy import copy
+
             V = []
             E = []
             for v in VectorSpace(FiniteField(2), n):
@@ -340,9 +345,13 @@ class DiGraphGenerators:
         for i, v in enumerate(sorted(V, reverse=True)):
             for x in range(n + 1):
                 pos[v, x] = (dec * x, i)
-        return DiGraph([pos.keys(), E], format='vertices_and_edges', pos=pos,
-                       name="{}-dimensional Butterfly".format(n),
-                       immutable=immutable)
+        return DiGraph(
+            [pos.keys(), E],
+            format='vertices_and_edges',
+            pos=pos,
+            name="{}-dimensional Butterfly".format(n),
+            immutable=immutable,
+        )
 
     def Path(self, n, immutable=False):
         r"""
@@ -365,9 +374,12 @@ class DiGraphGenerators:
             sage: g.automorphism_group().cardinality()                                  # needs sage.groups
             1
         """
-        g = DiGraph([range(n), zip(range(n - 1), range(1, n))],
-                    format='vertices_and_edges', name='Path',
-                    immutable=immutable)
+        g = DiGraph(
+            [range(n), zip(range(n - 1), range(1, n))],
+            format='vertices_and_edges',
+            name='Path',
+            immutable=immutable,
+        )
         g.set_pos({i: (i, 0) for i in range(n)})
         return g
 
@@ -413,14 +425,21 @@ class DiGraphGenerators:
         """
         from sage.combinat.matrices.hadamard_matrix import skew_hadamard_matrix
         from sage.matrix.constructor import ones_matrix, identity_matrix
+
         if skew_hadamard_matrix(n + 1, existence=True) is not True:
-            raise ValueError(f'strongly regular digraph with {n} vertices not yet implemented')
+            raise ValueError(
+                f'strongly regular digraph with {n} vertices not yet implemented'
+            )
 
         H = skew_hadamard_matrix(n + 1, skew_normalize=True)
         M = H[1:, 1:]
         M = (M + ones_matrix(n)) / 2 - identity_matrix(n)
-        return DiGraph(M, format='adjacency_matrix', immutable=immutable,
-                       name='Strongly regular digraph')
+        return DiGraph(
+            M,
+            format='adjacency_matrix',
+            immutable=immutable,
+            name='Strongly regular digraph',
+        )
 
     def Paley(self, q, immutable=False):
         r"""
@@ -474,14 +493,18 @@ class DiGraphGenerators:
         from sage.rings.finite_rings.integer_mod import mod
         from sage.rings.finite_rings.finite_field_constructor import FiniteField
         from sage.arith.misc import is_prime_power
+
         if not is_prime_power(q):
             raise ValueError("parameter q must be a prime power")
         if not mod(q, 4) == 3:
             raise ValueError("parameter q must be congruent to 3 mod 4")
-        return DiGraph([FiniteField(q, 'a'),
-                        lambda i, j: (i != j) and (j - i).is_square()],
-                       format='rule', loops=False, immutable=immutable,
-                       name="Paley digraph with parameter {}".format(q))
+        return DiGraph(
+            [FiniteField(q, 'a'), lambda i, j: (i != j) and (j - i).is_square()],
+            format='rule',
+            loops=False,
+            immutable=immutable,
+            name="Paley digraph with parameter {}".format(q),
+        )
 
     def TransitiveTournament(self, n, immutable=False):
         r"""
@@ -526,9 +549,13 @@ class DiGraphGenerators:
             raise ValueError('the number of vertices cannot be strictly negative')
 
         from itertools import combinations
-        g = DiGraph([range(n), combinations(range(n), 2)],
-                    format='vertices_and_edges', immutable=immutable,
-                    name="Transitive Tournament")
+
+        g = DiGraph(
+            [range(n), combinations(range(n), 2)],
+            format='vertices_and_edges',
+            immutable=immutable,
+            name="Transitive Tournament",
+        )
         g._circle_embedding(list(range(n)))
         return g
 
@@ -575,19 +602,31 @@ class DiGraphGenerators:
         from sage.misc.prandom import getrandbits
 
         bits = getrandbits(n * (n - 1) // 2)
-        edges = ((i, j) if (bits >> k) & 1 else (j, i)
-                 for k, (i, j) in enumerate(combinations(range(n), 2)))
-        g = DiGraph([range(n), edges], format='vertices_and_edges',
-                    immutable=immutable, name="Random Tournament")
+        edges = (
+            (i, j) if (bits >> k) & 1 else (j, i)
+            for k, (i, j) in enumerate(combinations(range(n), 2))
+        )
+        g = DiGraph(
+            [range(n), edges],
+            format='vertices_and_edges',
+            immutable=immutable,
+            name="Random Tournament",
+        )
 
         g._circle_embedding(list(range(n)))
 
         return g
 
-    def tournaments_nauty(self, n,
-                          min_out_degree=None, max_out_degree=None,
-                          strongly_connected=False, debug=False, options="",
-                          immutable=False):
+    def tournaments_nauty(
+        self,
+        n,
+        min_out_degree=None,
+        max_out_degree=None,
+        strongly_connected=False,
+        debug=False,
+        options="",
+        immutable=False,
+    ):
         r"""
         Iterator over all tournaments on `n` vertices using Nauty.
 
@@ -643,13 +682,17 @@ class DiGraphGenerators:
 
         import shlex
         from sage.features.nauty import NautyExecutable
+
         gentourng_path = NautyExecutable("gentourng").absolute_filename()
 
-        with subprocess.Popen(shlex.quote(gentourng_path) + " {0}".format(nauty_input),
-                              shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True) as sp:
-
+        with subprocess.Popen(
+            shlex.quote(gentourng_path) + " {0}".format(nauty_input),
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+        ) as sp:
             if debug:
                 yield sp.stderr.readline()
 
@@ -673,8 +716,11 @@ class DiGraphGenerators:
                     # Exhausted list of graphs from nauty geng
                     return
 
-                yield DiGraph([range(n), edges(s)], format='vertices_and_edges',
-                              immutable=immutable)
+                yield DiGraph(
+                    [range(n), edges(s)],
+                    format='vertices_and_edges',
+                    immutable=immutable,
+                )
 
     def nauty_directg(self, graphs, options='', debug=False, immutable=False):
         r"""
@@ -777,14 +823,17 @@ class DiGraphGenerators:
 
         import shlex
         from sage.features.nauty import NautyExecutable
+
         directg_path = NautyExecutable("directg").absolute_filename()
 
-        with subprocess.Popen(shlex.quote(directg_path) + ' {0}'.format(options),
-                               shell=True,
-                               stdout=subprocess.PIPE,
-                               stdin=subprocess.PIPE,
-                               stderr=subprocess.STDOUT,
-                               encoding='latin-1') as sub:
+        with subprocess.Popen(
+            shlex.quote(directg_path) + ' {0}'.format(options),
+            shell=True,
+            stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            encoding='latin-1',
+        ) as sub:
             out, err = sub.communicate(input=input)
 
             if debug:
@@ -843,11 +892,17 @@ class DiGraphGenerators:
         """
         import shlex
         from sage.features.nauty import NautyExecutable
+
         geng_path = NautyExecutable("genposetg").absolute_filename()
-        with subprocess.Popen(shlex.quote(geng_path) + f" {options}", shell=True,
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, close_fds=True,
-                              encoding='latin-1') as sp:
+        with subprocess.Popen(
+            shlex.quote(geng_path) + f" {options}",
+            shell=True,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            close_fds=True,
+            encoding='latin-1',
+        ) as sp:
             msg = sp.stderr.readline()
             if debug:
                 yield msg
@@ -902,9 +957,13 @@ class DiGraphGenerators:
             raise ValueError('the number of vertices cannot be strictly negative')
 
         edges = ((u, v) for u in range(n) for v in range(n) if u != v or loops)
-        G = DiGraph([range(n), edges], format='vertices_and_edges',
-                    loops=loops, immutable=immutable,
-                    name="Complete digraph" + (" with loops" if loops else ''))
+        G = DiGraph(
+            [range(n), edges],
+            format='vertices_and_edges',
+            loops=loops,
+            immutable=immutable,
+            name="Complete digraph" + (" with loops" if loops else ''),
+        )
 
         G._circle_embedding(list(range(n)))
 
@@ -935,13 +994,23 @@ class DiGraphGenerators:
         if n < 0:
             raise ValueError('the number of vertices cannot be strictly negative')
         if n == 1:
-            return DiGraph([(0, 0)], format='list_of_edges', loops=True,
-                           immutable=immutable, name='Circuit')
+            return DiGraph(
+                [(0, 0)],
+                format='list_of_edges',
+                loops=True,
+                immutable=immutable,
+                name='Circuit',
+            )
 
         from itertools import chain
+
         edges = zip(range(n), chain(range(1, n), [0]))
-        g = DiGraph([range(n), edges], format='vertices_and_edges',
-                    immutable=immutable, name='Circuit')
+        g = DiGraph(
+            [range(n), edges],
+            format='vertices_and_edges',
+            immutable=immutable,
+            name='Circuit',
+        )
         g._circle_embedding(list(range(n)))
         return g
 
@@ -1002,9 +1071,13 @@ class DiGraphGenerators:
                 loops = True
 
         edges = ((v, (v + j) % n) for j in integers for v in range(n))
-        G = DiGraph([range(n), edges], format='vertices_and_edges',
-                    loops=loops, immutable=immutable,
-                    name="Circulant graph (" + str(integers) + ")")
+        G = DiGraph(
+            [range(n), edges],
+            format='vertices_and_edges',
+            loops=loops,
+            immutable=immutable,
+            name="Circulant graph (" + str(integers) + ")",
+        )
         G._circle_embedding(list(range(n)))
         return G
 
@@ -1112,21 +1185,27 @@ class DiGraphGenerators:
                     for w in W:
                         ww = w[1:]
                         ws = w.string_rep()
-                        yield from ((ws, (ww * a).string_rep(), a.string_rep())
-                                    for a in A)
+                        yield from (
+                            (ws, (ww * a).string_rep(), a.string_rep()) for a in A
+                        )
 
-            return DiGraph(edges(), format='list_of_edges', name=name,
-                           loops=True, multiedges=multiedges,
-                           immutable=immutable)
+            return DiGraph(
+                edges(),
+                format='list_of_edges',
+                name=name,
+                loops=True,
+                multiedges=multiedges,
+                immutable=immutable,
+            )
 
         if vertices == 'integers':
             d = k if isinstance(k, Integer) else len(list(k))
             if not d:
-                return DiGraph(loops=True, multiedges=True, name=name,
-                               immutable=immutable)
+                return DiGraph(
+                    loops=True, multiedges=True, name=name, immutable=immutable
+                )
 
-            return digraphs.GeneralizedDeBruijn(d ** n, d, immutable=immutable,
-                                                name=name)
+            return digraphs.GeneralizedDeBruijn(d**n, d, immutable=immutable, name=name)
 
         raise ValueError('unknown type for vertices')
 
@@ -1192,9 +1271,14 @@ class DiGraphGenerators:
             name = f"Generalized de Bruijn digraph (n={n}, d={d})"
 
         edges = ((u, a % n) for u in range(n) for a in range(u * d, u * d + d))
-        return DiGraph([range(n), edges], format='vertices_and_edges',
-                       loops=True, multiedges=True, immutable=immutable,
-                       name=name)
+        return DiGraph(
+            [range(n), edges],
+            format='vertices_and_edges',
+            loops=True,
+            multiedges=True,
+            immutable=immutable,
+            name=name,
+        )
 
     def ImaseItoh(self, n, d, immutable=False, name=None):
         r"""
@@ -1264,9 +1348,14 @@ class DiGraphGenerators:
             name = f"Imase and Itoh digraph (n={n}, d={d})"
 
         edges = ((u, a % n) for u in range(n) for a in range(-u * d - d, -u * d))
-        return DiGraph([range(n), edges], format='vertices_and_edges',
-                       loops=True, multiedges=True, immutable=immutable,
-                       name=name)
+        return DiGraph(
+            [range(n), edges],
+            format='vertices_and_edges',
+            loops=True,
+            multiedges=True,
+            immutable=immutable,
+            name=name,
+        )
 
     def Kautz(self, k, D, vertices='strings', immutable=False):
         r"""
@@ -1384,8 +1473,9 @@ class DiGraphGenerators:
         if vertices == 'strings':
             from sage.combinat.words.words import Words
 
-            my_alphabet = Words([str(i) for i in range(k + 1)] if isinstance(k,
-                                Integer) else k, 1)
+            my_alphabet = Words(
+                [str(i) for i in range(k + 1)] if isinstance(k, Integer) else k, 1
+            )
             if my_alphabet.alphabet().cardinality() < 2:
                 raise ValueError("degree must be greater than or equal to one")
 
@@ -1401,18 +1491,23 @@ class DiGraphGenerators:
             def edges():
                 for u in V:
                     us = u.string_rep()
-                    yield from ((us, (u[1:] * a).string_rep(), a.string_rep())
-                                for a in my_alphabet if not u.has_suffix(a))
+                    yield from (
+                        (us, (u[1:] * a).string_rep(), a.string_rep())
+                        for a in my_alphabet
+                        if not u.has_suffix(a)
+                    )
 
-            return DiGraph(edges(), format='list_of_edges',
-                           name=name, immutable=immutable)
+            return DiGraph(
+                edges(), format='list_of_edges', name=name, immutable=immutable
+            )
 
         if vertices == 'integers':
             d = k if isinstance(k, Integer) else (len(list(k)) - 1)
             if d < 1:
                 raise ValueError("degree must be greater than or equal to one")
-            return digraphs.ImaseItoh((d + 1) * (d ** (D - 1)), d,
-                                      name=name, immutable=immutable)
+            return digraphs.ImaseItoh(
+                (d + 1) * (d ** (D - 1)), d, name=name, immutable=immutable
+            )
 
         raise ValueError('unknown type for vertices')
 
@@ -1485,6 +1580,7 @@ class DiGraphGenerators:
         # integers are on 31 bits. We thus set the pivot value to p*2^31
         from sage.misc.prandom import randint
         from sage.misc.randstate import random
+
         RAND_MAX_f = float(1 << 31)
         pp = int(round(float(p * RAND_MAX_f)))
 
@@ -1494,15 +1590,24 @@ class DiGraphGenerators:
 
         else:
             from sage.rings.integer_ring import ZZ
+
             if weight_max in ZZ and weight_max < 1:
                 raise ValueError("parameter weight_max must be a positive integer")
 
             name = f"RandomWeightedDAG({n}, {p}, {weight_max})"
-            edges = ((i, j, randint(1, weight_max))
-                     for i in range(n) for j in range(i) if random() < pp)
+            edges = (
+                (i, j, randint(1, weight_max))
+                for i in range(n)
+                for j in range(i)
+                if random() < pp
+            )
 
-        return DiGraph([range(n), edges], format='vertices_and_edges',
-                       name=name, immutable=immutable)
+        return DiGraph(
+            [range(n), edges],
+            format='vertices_and_edges',
+            name=name,
+            immutable=immutable,
+        )
 
     def RandomDirectedGN(self, n, kernel=None, seed=None, immutable=False):
         r"""
@@ -1546,8 +1651,8 @@ class DiGraphGenerators:
         if seed is None:
             seed = int(current_randstate().long_seed() % sys.maxsize)
         import networkx
-        return DiGraph(networkx.gn_graph(n, kernel, seed=seed),
-                       immutable=immutable)
+
+        return DiGraph(networkx.gn_graph(n, kernel, seed=seed), immutable=immutable)
 
     def RandomDirectedGNC(self, n, seed=None, immutable=False):
         r"""
@@ -1583,6 +1688,7 @@ class DiGraphGenerators:
         if seed is None:
             seed = int(current_randstate().long_seed() % sys.maxsize)
         import networkx
+
         return DiGraph(networkx.gnc_graph(n, seed=seed), immutable=immutable)
 
     def RandomDirectedGNP(self, n, p, loops=False, seed=None, immutable=False):
@@ -1619,14 +1725,16 @@ class DiGraphGenerators:
             True
         """
         from sage.graphs.graph_generators_pyx import RandomGNP
+
         if 0.0 > p or 1.0 < p:
             raise ValueError("the probability p must be in [0..1]")
 
         if seed is None:
             seed = current_randstate().long_seed()
 
-        return RandomGNP(n, p, directed=True, loops=loops, seed=seed,
-                         immutable=immutable)
+        return RandomGNP(
+            n, p, directed=True, loops=loops, seed=seed, immutable=immutable
+        )
 
     def RandomDirectedGNM(self, n, m, loops=False, immutable=False):
         r"""
@@ -1711,8 +1819,10 @@ class DiGraphGenerators:
                 m = n * (n - 1) - m
 
         if not good_input:
-            raise ValueError("the number of edges must satisfy 0 <= m <= n(n-1) "
-                             "when no loops are allowed, and 0 <= m <= n^2 otherwise")
+            raise ValueError(
+                "the number of edges must satisfy 0 <= m <= n(n-1) "
+                "when no loops are allowed, and 0 <= m <= n^2 otherwise"
+            )
 
         # When the given number of edges defines a density larger than 1/2, it
         # should be faster to compute the complement of the graph (less edges to
@@ -1728,10 +1838,10 @@ class DiGraphGenerators:
         # We fill the dictionary structure.
 
         from sage.misc.prandom import _pyrand
+
         rand = _pyrand()
 
         while m > 0:
-
             # It is better to obtain random numbers this way than by calling the
             # randint or randrange method. This, because they are very expensive
             # when trying to compute MANY random integers, and because the
@@ -1749,10 +1859,18 @@ class DiGraphGenerators:
         # edges stored in the adj dictionary
 
         if is_dense:
-            edges = ((u, v) for u in range(n) for v in range(n)
-                     if (u != v or loops) and v not in adj[u])
-            return DiGraph([range(n), edges], format='vertices_and_edges',
-                           loops=loops, immutable=immutable)
+            edges = (
+                (u, v)
+                for u in range(n)
+                for v in range(n)
+                if (u != v or loops) and v not in adj[u]
+            )
+            return DiGraph(
+                [range(n), edges],
+                format='vertices_and_edges',
+                loops=loops,
+                immutable=immutable,
+            )
 
         return DiGraph(adj, format='dict_of_lists', loops=loops)
 
@@ -1792,6 +1910,7 @@ class DiGraphGenerators:
         if seed is None:
             seed = int(current_randstate().long_seed() % sys.maxsize)
         import networkx
+
         return DiGraph(networkx.gnr_graph(n, p, seed=seed), immutable=immutable)
 
     def RandomSemiComplete(self, n, immutable=False):
@@ -1851,17 +1970,29 @@ class DiGraphGenerators:
                 if coin >= 2:
                     yield (v, u)
 
-        G = DiGraph([range(n), edges()], format='vertices_and_edges',
-                    immutable=immutable, name="Random Semi-Complete digraph")
+        G = DiGraph(
+            [range(n), edges()],
+            format='vertices_and_edges',
+            immutable=immutable,
+            name="Random Semi-Complete digraph",
+        )
         G._circle_embedding(list(range(n)))
         return G
 
-# ##############################################################################
-#   DiGraph Iterators
-# ##############################################################################
+    # ##############################################################################
+    #   DiGraph Iterators
+    # ##############################################################################
 
-    def __call__(self, vertices=None, property=lambda x: True, augment='edges',
-                 size=None, sparse=True, copy=True, immutable=False):
+    def __call__(
+        self,
+        vertices=None,
+        property=lambda x: True,
+        augment='edges',
+        size=None,
+        sparse=True,
+        copy=True,
+        immutable=False,
+    ):
         """
         Access the generator of isomorphism class representatives [McK1998]_.
         Iterates over distinct, exhaustive representatives.
@@ -1939,31 +2070,38 @@ class DiGraphGenerators:
             sage: digraphs?  # not tested
         """
         if size is not None:
+
             def extra_property(x):
                 return x.size() == size
         else:
+
             def extra_property(x):
                 return True
+
         if augment == 'vertices':
             if vertices is None:
                 raise NotImplementedError
 
             from sage.graphs.graph_generators import canaug_traverse_vert
+
             g = DiGraph(sparse=sparse)
-            for gg in canaug_traverse_vert(g, [], vertices, property, dig=True, sparse=sparse):
+            for gg in canaug_traverse_vert(
+                g, [], vertices, property, dig=True, sparse=sparse
+            ):
                 if extra_property(gg):
                     yield gg.copy(immutable=immutable) if copy or immutable else gg
 
         elif augment == 'edges':
-
             if vertices is None:
                 vertices = 0
                 while True:
-                    yield from self(vertices, sparse=sparse, copy=copy,
-                                    immutable=immutable)
+                    yield from self(
+                        vertices, sparse=sparse, copy=copy, immutable=immutable
+                    )
                     vertices += 1
 
             from sage.graphs.graph_generators import canaug_traverse_edge
+
             g = DiGraph(vertices, sparse=sparse)
             gens = []
             for i in range(vertices - 1):

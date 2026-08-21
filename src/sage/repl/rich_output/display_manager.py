@@ -62,6 +62,7 @@ class DisplayException(Exception):
         ...
         DisplayException: foo
     """
+
     pass
 
 
@@ -84,6 +85,7 @@ class OutputTypeException(DisplayException):
         ...
         OutputTypeException: foo
     """
+
     pass
 
 
@@ -104,11 +106,11 @@ class RichReprWarning(UserWarning):
         ...
         RichReprWarning: foo
     """
+
     pass
 
 
 class restricted_output:
-
     def __init__(self, display_manager, output_classes):
         """
         Context manager to temporarily restrict the accepted output types.
@@ -188,7 +190,6 @@ class restricted_output:
 
 
 class DisplayManager(SageObject):
-
     _instance: Self | None = None
 
     def __init__(self):
@@ -206,6 +207,7 @@ class DisplayManager(SageObject):
         assert DisplayManager._instance is None
         DisplayManager._instance = self
         from sage.repl.rich_output.backend_base import BackendSimple
+
         self.switch_backend(BackendSimple())
 
     @classmethod
@@ -263,6 +265,7 @@ class DisplayManager(SageObject):
             <class 'sage.repl.rich_output.output_basic.OutputPlainText'>
         """
         import sage.repl.rich_output.output_catalog
+
         return sage.repl.rich_output.output_catalog
 
     def switch_backend(self, backend, **kwds):
@@ -298,6 +301,7 @@ class DisplayManager(SageObject):
             True
         """
         from sage.repl.rich_output.backend_base import BackendBase
+
         if not isinstance(backend, BackendBase):
             raise ValueError('backend must be instance of BackendBase class')
         supported = backend.supported_output()
@@ -306,11 +310,12 @@ class DisplayManager(SageObject):
         try:
             self._backend.uninstall()
         except AttributeError:
-            pass   # first time we switch
+            pass  # first time we switch
         # clear caches
         self._output_promotions = dict()
         self._supported_output = frozenset(
-            map(self._demote_output_class, backend.supported_output()))
+            map(self._demote_output_class, backend.supported_output())
+        )
         # install new backend
         try:
             old_backend = self._backend
@@ -413,10 +418,13 @@ class DisplayManager(SageObject):
             <class 'sage.repl.rich_output.output_basic.OutputPlainText'>
         """
         from sage.repl.rich_output.output_basic import OutputBase
+
         if not issubclass(output_class, OutputBase):
             raise OutputTypeException(
-                'invalid output container type: {0} is not subclass of OutputBase'
-                .format(output_class))
+                'invalid output container type: {0} is not subclass of OutputBase'.format(
+                    output_class
+                )
+            )
         result = None
         for type_name in dir(self.types):
             if type_name.startswith('_'):
@@ -427,15 +435,15 @@ class DisplayManager(SageObject):
             if issubclass(output_class, tp):
                 if result is not None:
                     raise OutputTypeException(
-                        '{0} inherits from multiple output classes'
-                        .format(output_class))
+                        '{0} inherits from multiple output classes'.format(output_class)
+                    )
                 else:
                     self._output_promotions[tp] = output_class
                     result = tp
         if result is None:
             raise OutputTypeException(
-                '{0} does not inherit from any known output class'
-                .format(output_class))
+                '{0} does not inherit from any known output class'.format(output_class)
+            )
         return result
 
     def _promote_output(self, output):
@@ -524,25 +532,35 @@ class DisplayManager(SageObject):
         if want == 'ascii_art' and OutputAsciiArt in supported:
             out = self._backend.ascii_art_formatter(obj, **kwds)
             if type(out) is not OutputAsciiArt:
-                raise OutputTypeException('backend returned wrong output type, require AsciiArt')
+                raise OutputTypeException(
+                    'backend returned wrong output type, require AsciiArt'
+                )
             return out
         if want == 'unicode_art' and OutputUnicodeArt in supported:
             out = self._backend.unicode_art_formatter(obj, **kwds)
             if type(out) is not OutputUnicodeArt:
-                raise OutputTypeException('backend returned wrong output type, require UnicodeArt')
+                raise OutputTypeException(
+                    'backend returned wrong output type, require UnicodeArt'
+                )
             return out
         if want == 'latex' and OutputHtml in supported:
             out = self._backend.latex_formatter(obj, **kwds)
             if type(out) is not OutputHtml:
-                raise OutputTypeException('backend returned wrong output type, require Html')
+                raise OutputTypeException(
+                    'backend returned wrong output type, require Html'
+                )
             return out
         if plain_text is not None:
             if type(plain_text) is not OutputPlainText:
-                raise OutputTypeException('backend returned wrong output type, require PlainText')
+                raise OutputTypeException(
+                    'backend returned wrong output type, require PlainText'
+                )
             return plain_text
         out = self._backend.plain_text_formatter(obj, **kwds)
         if type(out) is not OutputPlainText:
-            raise OutputTypeException('backend returned wrong output type, require PlainText')
+            raise OutputTypeException(
+                'backend returned wrong output type, require PlainText'
+            )
         return out
 
     def _call_rich_repr(self, obj, rich_repr_kwds):
@@ -630,7 +648,8 @@ class DisplayManager(SageObject):
             plain_text = self._backend.plain_text_formatter(obj, **rich_repr_kwds)
         if rich_output is None:
             rich_output = self._preferred_text_formatter(
-                obj, plain_text=plain_text, **rich_repr_kwds)
+                obj, plain_text=plain_text, **rich_repr_kwds
+            )
         # promote output container types to backend-specific containers
         plain_text = self._promote_output(plain_text)
         rich_output = self._promote_output(rich_output)
@@ -638,15 +657,23 @@ class DisplayManager(SageObject):
         supported = self._backend.supported_output()
         if type(plain_text) not in supported:
             raise OutputTypeException(
-                'text output container not supported: {0}'.format(type(plain_text)))
+                'text output container not supported: {0}'.format(type(plain_text))
+            )
         if type(rich_output) not in supported:
             raise OutputTypeException(
-                'output container not supported: {0}'.format(type(rich_output)))
+                'output container not supported: {0}'.format(type(rich_output))
+            )
         return plain_text, rich_output
 
-    def graphics_from_save(self, save_function, save_kwds,
-                           file_extension, output_container,
-                           figsize=None, dpi=None):
+    def graphics_from_save(
+        self,
+        save_function,
+        save_kwds,
+        file_extension,
+        output_container,
+        figsize=None,
+        dpi=None,
+    ):
         r"""
         Helper to construct graphics.
 
@@ -694,11 +721,13 @@ class DisplayManager(SageObject):
             '/home/user/.sage/temp/localhost.localdomain/23903/tmp_pu5woK.png'
         """
         import os
+
         if not file_extension.startswith(os.path.extsep):
             raise ValueError('file_extension must start with a period')
         if output_container not in self.supported_output():
             raise OutputTypeException('output_container is not supported by backend')
         from sage.misc.temporary_file import tmp_filename
+
         filename = tmp_filename(ext=file_extension)
         # Call the save_function with the right arguments
         kwds = dict(save_kwds)
@@ -708,6 +737,7 @@ class DisplayManager(SageObject):
             kwds['dpi'] = dpi
         save_function(filename, **kwds)
         from sage.repl.rich_output.buffer import OutputBuffer
+
         buf = OutputBuffer.from_file(filename)
         return output_container(buf)
 
@@ -739,6 +769,7 @@ class DisplayManager(SageObject):
             offline threejs graphics
         """
         from sage.features.threejs import Threejs
+
         if online:
             version = Threejs().required_version()
             return """
@@ -748,7 +779,8 @@ class DisplayManager(SageObject):
             return self._backend.threejs_offline_scripts()
         except AttributeError:
             raise ValueError(
-                'current backend does not support offline threejs graphics')
+                'current backend does not support offline threejs graphics'
+            )
 
     def supported_output(self):
         """

@@ -1,13 +1,13 @@
 r"""
 Finite dimensional semisimple algebras with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2011-2015 Nicolas M. Thiery <nthiery at users.sf.net>
 #                2014-2015 Aladin Virmaux <aladin.virmaux at u-psud.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.algebras import Algebras
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
@@ -36,6 +36,7 @@ class FiniteDimensionalSemisimpleAlgebrasWithBasis(CategoryWithAxiom_over_base_r
 
         sage: TestSuite(C).run()
     """
+
     _base_category_class_and_axiom = (SemisimpleAlgebras.FiniteDimensional, "WithBasis")
 
     class ParentMethods:
@@ -110,13 +111,12 @@ class FiniteDimensionalSemisimpleAlgebrasWithBasis(CategoryWithAxiom_over_base_r
                 sage: Aquo.central_orthogonal_idempotents()
                 (B['x'], B['y'])
             """
-            return tuple([x.lift()
-                          for x in self.center().central_orthogonal_idempotents()])
+            return tuple(
+                [x.lift() for x in self.center().central_orthogonal_idempotents()]
+            )
 
     class Commutative(CategoryWithAxiom_over_base_ring):
-
         class ParentMethods:
-
             @cached_method
             def _orthogonal_decomposition(self, generators=None):
                 r"""
@@ -180,7 +180,14 @@ class FiniteDimensionalSemisimpleAlgebrasWithBasis(CategoryWithAxiom_over_base_r
                 if self.dimension() == 1:
                     return self.basis().list()
 
-                category = Algebras(self.base_ring()).Semisimple().WithBasis().FiniteDimensional().Commutative().Subobjects()
+                category = (
+                    Algebras(self.base_ring())
+                    .Semisimple()
+                    .WithBasis()
+                    .FiniteDimensional()
+                    .Commutative()
+                    .Subobjects()
+                )
 
                 if generators is None:
                     generators = self.basis().list()
@@ -190,22 +197,28 @@ class FiniteDimensionalSemisimpleAlgebrasWithBasis(CategoryWithAxiom_over_base_r
                     # Computing the eigenspaces of the
                     # linear map x -> gen*x
                     phi = self.module_morphism(
-                        on_basis=lambda i:
-                        gen*self.term(i),
-                        codomain=self)
+                        on_basis=lambda i: gen * self.term(i), codomain=self
+                    )
                     eigenspaces = phi.matrix().eigenspaces_right()
 
                     if len(eigenspaces) >= 2:
                         # Gotcha! Let's split the algebra according to the eigenspaces
                         subalgebras = [
-                            self.submodule(map(self.from_vector, eigenspace.basis()),
-                                           category=category)
-                            for eigenvalue, eigenspace in eigenspaces]
+                            self.submodule(
+                                map(self.from_vector, eigenspace.basis()),
+                                category=category,
+                            )
+                            for eigenvalue, eigenspace in eigenspaces
+                        ]
 
                         # Decompose recursively each eigenspace
-                        return tuple([idempotent.lift()
-                                      for subalgebra in subalgebras
-                                      for idempotent in subalgebra._orthogonal_decomposition()])
+                        return tuple(
+                            [
+                                idempotent.lift()
+                                for subalgebra in subalgebras
+                                for idempotent in subalgebra._orthogonal_decomposition()
+                            ]
+                        )
                 # TODO: Should this be an assertion check?
                 raise Exception("Unable to fully decompose %s!" % self)
 
@@ -265,5 +278,9 @@ class FiniteDimensionalSemisimpleAlgebrasWithBasis(CategoryWithAxiom_over_base_r
                     sage: Z4.is_identity_decomposition_into_orthogonal_idempotents(idempotents)
                     True
                 """
-                return tuple([(e.leading_coefficient()/(e*e).leading_coefficient())*e
-                              for e in self._orthogonal_decomposition()])
+                return tuple(
+                    [
+                        (e.leading_coefficient() / (e * e).leading_coefficient()) * e
+                        for e in self._orthogonal_decomposition()
+                    ]
+                )

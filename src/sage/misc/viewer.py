@@ -150,6 +150,7 @@ class Viewer(SageObject):
         'open -a /Applications/Firefox.app'
         sage: viewer.browser(old_browser) # restore old value
     """
+
     def _set(self, app=None, TYPE='browser'):
         r"""
         Change the default viewer. Return the current setting if the

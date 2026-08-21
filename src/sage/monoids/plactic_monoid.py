@@ -88,14 +88,20 @@ class WordMonoid(UniqueRepresentation, Parent):
             ValueError: the rank must be a positive integer
         """
         from sage.categories.monoids import Monoids
+
         if not isinstance(n, (int, Integer)):
             raise ValueError("the rank must be a positive integer")
         n = ZZ(n)
         if n <= 0:
             raise ValueError("the rank must be a positive integer")
         self._n = n
-        Parent.__init__(self, category=(Monoids().FinitelyGenerated().Infinite(),
-                                        SetsWithGrading().Infinite()))
+        Parent.__init__(
+            self,
+            category=(
+                Monoids().FinitelyGenerated().Infinite(),
+                SetsWithGrading().Infinite(),
+            ),
+        )
 
     def rank(self):
         """
@@ -131,8 +137,10 @@ class WordMonoid(UniqueRepresentation, Parent):
             (1, 2, 3, 4)
         """
         from sage.sets.family import Family
-        return Family({i: self.element_class(self, (i,))
-                       for i in range(1, self._n + 1)})
+
+        return Family(
+            {i: self.element_class(self, (i,)) for i in range(1, self._n + 1)}
+        )
 
     @cached_method
     def one(self):
@@ -194,6 +202,7 @@ class WordMonoidElement(ElementWrapper):
         sage: parent(x)
         Hypoplactic monoid of rank 4
     """
+
     def __init__(self, parent, value):
         """
         Initialize ``self``.
@@ -388,9 +397,11 @@ class WordMonoidElement(ElementWrapper):
             sage: H([2, 1, 3]) == H3([2, 1, 3])
             False
         """
-        return (isinstance(other, self.parent().Element)
-                and self.parent() == other.parent()
-                and self.to_tableau() == other.to_tableau())
+        return (
+            isinstance(other, self.parent().Element)
+            and self.parent() == other.parent()
+            and self.to_tableau() == other.to_tableau()
+        )
 
     def shape(self):
         """
@@ -447,8 +458,9 @@ class WordMonoidElement(ElementWrapper):
         """
         parent = self.parent()
         tab = self.to_tableau()
-        return [m for w in Permutations(self.value)
-                if (m := parent(w)).to_tableau() == tab]
+        return [
+            m for w in Permutations(self.value) if (m := parent(w)).to_tableau() == tab
+        ]
 
 
 class PlacticMonoid(WordMonoid):
@@ -497,6 +509,7 @@ class PlacticMonoid(WordMonoid):
         ...
         ValueError: letters must be integers from 1 to 4
     """
+
     def _repr_(self):
         """
         Return a string representation of ``self``.
@@ -535,6 +548,7 @@ class PlacticMonoid(WordMonoid):
         # shape with entries bounded by the rank.
         def to_word(t):
             return self(t.to_word())
+
         tableaux = SemistandardTableaux(k, max_entry=self.rank())
         return Family(tableaux, to_word, lazy=True)
 
@@ -548,6 +562,7 @@ class PlacticMonoid(WordMonoid):
             sage: M([2, 1, 3])
             213
         """
+
         def to_word(self):
             """
             Return the row reading word representative of ``self``.

@@ -256,8 +256,11 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
             2
             sage: M.retract(3)   # not tested: runs forever trying to find 3
     """
+
     @staticmethod
-    def __classcall_private__(cls, generators, ambient=None, one=None, mul=operator.mul, category=None):
+    def __classcall_private__(
+        cls, generators, ambient=None, one=None, mul=operator.mul, category=None
+    ):
         """
         Parse and straighten the arguments; figure out the category.
 
@@ -309,7 +312,9 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
             elif one is not None:
                 ambient = one.parent()
             else:
-                raise ValueError("AutomaticSemigroup requires at least one generator or `one` to determine the ambient space")
+                raise ValueError(
+                    "AutomaticSemigroup requires at least one generator or `one` to determine the ambient space"
+                )
         elif ambient not in Sets():
             raise ValueError("ambient (=%s) should be a set" % ambient)
 
@@ -319,7 +324,9 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
             if category.is_subcategory(Monoids().Subobjects()):
                 one = ambient.one()
             elif category.is_subcategory(Monoids()):
-                raise ValueError("For a monoid which is just a subsemigroup, the unit should be specified")
+                raise ValueError(
+                    "For a monoid which is just a subsemigroup, the unit should be specified"
+                )
 
         # Try to determine the most specific category
         # This logic should be in the categories
@@ -346,8 +353,9 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
             category = default_category
         else:
             category = default_category & category
-        return super().__classcall__(cls, generators, ambient=ambient,
-                                     one=one, mul=mul, category=category)
+        return super().__classcall__(
+            cls, generators, ambient=ambient, one=one, mul=mul, category=category
+        )
 
     def __init__(self, generators, ambient, one, mul, category):
         """
@@ -586,6 +594,7 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
             Finite family {1: 3, 2: 5}
         """
         return self._generators
+
     gens = semigroup_generators
 
     def __init__iter(self):
@@ -834,7 +843,9 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
             return
         if n is not None:
             if up_to is not None:
-                raise ValueError("Only one of the options `up_to` or `n` should be specified")
+                raise ValueError(
+                    "Only one of the options `up_to` or `n` should be specified"
+                )
             i = len(self._elements)
             while i < n and not self._constructed:
                 next(self._iter)
@@ -853,7 +864,6 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
                 pass
 
     class Element(ElementWrapper):
-
         def __init__(self, ambient_element, parent):
             """
             TESTS::
@@ -956,7 +966,9 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
             """
             parent = self.parent()
             assert i in parent._generators.keys()
-            return parent._retract(parent._mul(self.lift(), parent._generators_in_ambient[i]))
+            return parent._retract(
+                parent._mul(self.lift(), parent._generators_in_ambient[i])
+            )
 
         def _repr_(self):
             """
@@ -978,7 +990,10 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
                 sage: b
                 [1, 1, 2]
             """
-            if self.parent()._repr_element_method == "ambient" or self._reduced_word is None:
+            if (
+                self.parent()._repr_element_method == "ambient"
+                or self._reduced_word is None
+            ):
                 return ElementWrapper._repr_(self)
             return str(self._reduced_word)
 
@@ -1008,7 +1023,6 @@ class AutomaticSemigroup(UniqueRepresentation, Parent):
 
 
 class AutomaticMonoid(AutomaticSemigroup):
-
     def one(self):
         """
         Return the unit of ``self``.
@@ -1047,4 +1061,5 @@ class AutomaticMonoid(AutomaticSemigroup):
             Family (1, 3, 5)
         """
         return self._generators
+
     gens = monoid_generators

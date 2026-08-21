@@ -468,8 +468,10 @@ class MumfordDivisorClassFieldInert(MumfordDivisorClassField):
             NotImplementedError: unable to perform arithmetic for inert models of odd genus; consider extending the base field to adjoin the points at infinity
         """
         if self.parent().curve().genus() % 2:
-            raise NotImplementedError('unable to perform arithmetic for inert models of odd genus; '
-                                      'consider extending the base field to adjoin the points at infinity')
+            raise NotImplementedError(
+                'unable to perform arithmetic for inert models of odd genus; '
+                'consider extending the base field to adjoin the points at infinity'
+            )
         return super()._add_(*args, **kwds)
 
     def _neg_(self, *args, **kwds):
@@ -505,8 +507,10 @@ class MumfordDivisorClassFieldInert(MumfordDivisorClassField):
             NotImplementedError: unable to perform arithmetic for inert models of odd genus; consider extending the base field to adjoin the points at infinity
         """
         if self.parent().curve().genus() % 2:
-            raise NotImplementedError('unable to perform arithmetic for inert models of odd genus; '
-                                      'consider extending the base field to adjoin the points at infinity')
+            raise NotImplementedError(
+                'unable to perform arithmetic for inert models of odd genus; '
+                'consider extending the base field to adjoin the points at infinity'
+            )
         return super()._neg_(*args, **kwds)
 
 
@@ -715,7 +719,9 @@ class MumfordDivisorClassFieldSplit(MumfordDivisorClassField):
             (u1, v1, n1) = self._parent.cantor_compose_at_infinity(
                 u0, -h - v0, n0, plus=True
             )
-            n1 = n1 - n0 + m0 + 1  # Shouldn't this always be 0? (See Alg 3.8 of [Mireles2008]_)
+            n1 = (
+                n1 - n0 + m0 + 1
+            )  # Shouldn't this always be 0? (See Alg 3.8 of [Mireles2008]_)
             assert n1 == 0
 
         return self._parent(u1, v1, n1, check=False)

@@ -126,14 +126,17 @@ class Sage(ExtraTabCompletion, Expect):
     its arguments using the s interpreter, so the call to s3 is passed
     ``s('"x"')``, which is the string ``'x'`` in the s interpreter.
     """
-    def __init__(self,
-                 logfile=None,
-                 preparse=True,
-                 init_code=None,
-                 server=None,
-                 server_tmpdir=None,
-                 remote_cleaner=True,
-                 **kwds):
+
+    def __init__(
+        self,
+        logfile=None,
+        preparse=True,
+        init_code=None,
+        server=None,
+        server_tmpdir=None,
+        remote_cleaner=True,
+        **kwds,
+    ):
         """
         EXAMPLES::
 
@@ -150,37 +153,42 @@ class Sage(ExtraTabCompletion, Expect):
                 init_code = list(init_code)
             except TypeError:
                 raise TypeError(
-                    'init_code should be a string or an iterable of lines '
-                    'of code')
+                    'init_code should be a string or an iterable of lines of code'
+                )
 
         command = 'python3 -u'
         prompt = re.compile(b'>>> |sage: |In : ')
         environment = 'sage.all'
         init_code.append(f'from {environment} import *')
         init_code.append('import pickle')
-        init_code.append(textwrap.dedent("""
+        init_code.append(
+            textwrap.dedent("""
             def _sage0_load_local(filename):
                 with open(filename, 'rb') as f:
                     return pickle.load(f)
-        """))
-        init_code.append(textwrap.dedent("""
+        """)
+        )
+        init_code.append(
+            textwrap.dedent("""
             def _sage0_load_remote(filename):
                 with open(filename, 'rb') as f:
                     return loads(f.read())
-        """))
+        """)
+        )
 
-        Expect.__init__(self,
-                        name='sage',
-                        prompt=prompt,
-                        command=command,
-                        restart_on_ctrlc=False,
-                        logfile=logfile,
-                        init_code=init_code,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        remote_cleaner=remote_cleaner,
-                        **kwds
-                        )
+        Expect.__init__(
+            self,
+            name='sage',
+            prompt=prompt,
+            command=command,
+            restart_on_ctrlc=False,
+            logfile=logfile,
+            init_code=init_code,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            remote_cleaner=remote_cleaner,
+            **kwds,
+        )
         self._preparse = preparse
 
     def cputime(self, t=None):
@@ -199,7 +207,7 @@ class Sage(ExtraTabCompletion, Expect):
         s = self.eval('cputime(%s)' % t)
         i = s.rfind('m')
         if i != -1:
-            s = s[i + 1:-1]
+            s = s[i + 1 : -1]
         return float(s)
 
     def _tab_completion(self):
@@ -243,7 +251,7 @@ class Sage(ExtraTabCompletion, Expect):
             code = '_sage0_load_local({!r})'.format(self._local_tmpfile())
             return SageElement(self, code)
         with open(self._local_tmpfile(), 'wb') as fobj:
-            fobj.write(dumps(x))   # my dumps is compressed by default
+            fobj.write(dumps(x))  # my dumps is compressed by default
         self._send_tmpfile_to_server()
         code = '_sage0_load_remote({!r})'.format(self._remote_tmpfile())
         return SageElement(self, code)
@@ -314,7 +322,10 @@ class Sage(ExtraTabCompletion, Expect):
         cmd = '%s=%s' % (var, value)
         out = self.eval(cmd)
         if 'Traceback' in out:
-            raise TypeError("Error executing code in Sage\nCODE:\n\t%s\nSage ERROR:\n\t%s" % (cmd, out))
+            raise TypeError(
+                "Error executing code in Sage\nCODE:\n\t%s\nSage ERROR:\n\t%s"
+                % (cmd, out)
+            )
 
     def get(self, var):
         """
@@ -432,7 +443,6 @@ class Sage(ExtraTabCompletion, Expect):
 
 @instancedoc
 class SageElement(ExpectElement):
-
     def _rich_repr_(self, display_manager, **kwds):
         """
         Disable rich output.
@@ -533,8 +543,7 @@ class SageFunction(FunctionElement):
             sage: sage0(4).gcd
             <bound method PrincipalIdealDomainElement.gcd of 4>
         """
-        return str(self._obj.parent().eval('%s.%s' % (self._obj._name,
-                                                      self._name)))
+        return str(self._obj.parent().eval('%s.%s' % (self._obj._name, self._name)))
 
 
 sage0 = Sage()
@@ -563,6 +572,7 @@ def reduce_load_element(s):
         Sage
     """
     import base64
+
     s = base64.b32encode(s)
     sage0.eval('import base64')
     return sage0('loads(base64.b32decode({!r}))'.format(s))
@@ -582,8 +592,11 @@ def sage0_console():
         ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%sage0 magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%sage0 magics instead.'
+        )
     os.system('sage')
 
 

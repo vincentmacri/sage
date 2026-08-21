@@ -16,15 +16,19 @@ AUTHORS:
 .. autoclass:: sage.groups.galois_group::_SubGaloisMixin
 """
 
-from sage.groups.abelian_gps.abelian_group import AbelianGroup_class, AbelianGroup_subgroup
+from sage.groups.abelian_gps.abelian_group import (
+    AbelianGroup_class,
+    AbelianGroup_subgroup,
+)
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.misc.lazy_import import lazy_import
 from sage.rings.integer_ring import ZZ
 
-lazy_import('sage.groups.galois_group_perm',
-            ['GaloisGroup_perm', 'GaloisSubgroup_perm'])
+lazy_import(
+    'sage.groups.galois_group_perm', ['GaloisGroup_perm', 'GaloisSubgroup_perm']
+)
 lazy_import('sage.groups.perm_gps.permgroup', 'PermutationGroup')
 
 
@@ -60,6 +64,7 @@ class _GMixin:
     It is just intended to provide common functionality between various
     different Galois group classes.
     """
+
     @lazy_attribute
     def _default_algorithm(self):
         """
@@ -170,6 +175,7 @@ class _GaloisMixin(_GMixin):
     This class provides methods for Galois groups, allowing concrete instances
     to inherit from both permutation group and abelian group classes.
     """
+
     @lazy_attribute
     def _field(self):
         """
@@ -256,7 +262,7 @@ class _GaloisMixin(_GMixin):
         """
         try:
             return self._field.degree()
-        except NotImplementedError: # relative number fields don't support degree
+        except NotImplementedError:  # relative number fields don't support degree
             return self._field.absolute_degree()
 
     def transitive_label(self) -> str:
@@ -295,6 +301,7 @@ class _SubGaloisMixin(_GMixin):
     This class provides methods for subgroups of Galois groups, allowing concrete instances
     to inherit from both permutation group and abelian group classes.
     """
+
     @lazy_attribute
     def _ambient_group(self):
         """
@@ -360,8 +367,10 @@ class GaloisGroup_ab(_GaloisMixin, AbelianGroup_class):
     r"""
     Abelian Galois groups
     """
-    def __init__(self, field, generator_orders,
-                 algorithm=None, gen_names='sigma') -> None:
+
+    def __init__(
+        self, field, generator_orders, algorithm=None, gen_names='sigma'
+    ) -> None:
         r"""
         Initialize this Galois group.
 
@@ -413,7 +422,9 @@ class GaloisGroup_ab(_GaloisMixin, AbelianGroup_class):
             sage: GF(3^10).galois_group().permutation_group()                           # needs sage.libs.gap sage.rings.finite_rings
             Permutation Group with generators [(1,2,3,4,5,6,7,8,9,10)]
         """
-        return PermutationGroup(gap_group=self._libgap_().RegularActionHomomorphism().Image())
+        return PermutationGroup(
+            gap_group=self._libgap_().RegularActionHomomorphism().Image()
+        )
 
     @cached_method(key=_alg_key)
     def transitive_number(self, algorithm=None, recompute=False):
@@ -437,6 +448,7 @@ class GaloisGroup_cyc(GaloisGroup_ab):
     r"""
     Cyclic Galois groups
     """
+
     def transitive_number(self, algorithm=None, recompute=False):
         r"""
         Return the transitive number for the action on the roots of the defining polynomial.
@@ -454,7 +466,9 @@ class GaloisGroup_cyc(GaloisGroup_ab):
         """
         d = self.order()
         if d > 47:
-            raise NotImplementedError("transitive database only computed up to degree 47")
+            raise NotImplementedError(
+                "transitive database only computed up to degree 47"
+            )
         if d == 32:
             # I don't know why this case is special, but you can check this in Magma (GAP only goes up to 22)
             return ZZ(33)
@@ -478,6 +492,7 @@ class GaloisSubgroup_ab(AbelianGroup_subgroup, _SubGaloisMixin):
     """
     Subgroups of abelian Galois groups.
     """
+
     pass
 
 

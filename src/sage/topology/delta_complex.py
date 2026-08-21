@@ -242,6 +242,7 @@ class DeltaComplex(GenericCellComplex):
     Type ``delta_complexes.`` and then hit the :kbd:`Tab` key to get the
     full list.
     """
+
     def __init__(self, data=None, check_validity=True) -> None:
         r"""
         Define a `\Delta`-complex.  See :class:`DeltaComplex` for more
@@ -256,6 +257,7 @@ class DeltaComplex(GenericCellComplex):
             sage: X == loads(dumps(X))
             True
         """
+
         def store_bdry(simplex, faces):
             r"""
             Given a simplex of dimension d and a list of boundaries
@@ -272,12 +274,12 @@ class DeltaComplex(GenericCellComplex):
             d = simplex.dimension()
             if d > 0:
                 for f in faces:
-                    if f in new_data[d-1]:
-                        bdry_list.append(new_data[d-1].index(f))
+                    if f in new_data[d - 1]:
+                        bdry_list.append(new_data[d - 1].index(f))
                     else:
-                        bdry_list.append(len(new_data[d-1]))
-                        new_delayed[f] = len(new_data[d-1])
-                        new_data[d-1].append(f)
+                        bdry_list.append(len(new_data[d - 1]))
+                        new_delayed[f] = len(new_data[d - 1])
+                        new_data[d - 1].append(f)
                 bdry_list = tuple(bdry_list)
             else:
                 bdry_list = ()
@@ -309,7 +311,9 @@ class DeltaComplex(GenericCellComplex):
                         new_data[dim] = []
                     for x in data:
                         if not isinstance(x, Simplex):
-                            raise TypeError("each key in the data dictionary must be a simplex")
+                            raise TypeError(
+                                "each key in the data dictionary must be a simplex"
+                            )
                         old_data_by_dim[x.dimension()].append(x)
                     old_delayed = {}
                     for dim in range(dimension, -1, -1):
@@ -336,7 +340,9 @@ class DeltaComplex(GenericCellComplex):
                                     current[bdry] = store_bdry(bdry, bdry.faces())
                                     new_data[dim].append(current[bdry])
                                 else:
-                                    raise ValueError("in the data dictionary, there is a value which is a simplex not already in the dictionary")
+                                    raise ValueError(
+                                        "in the data dictionary, there is a value which is a simplex not already in the dictionary"
+                                    )
                             elif isinstance(bdry, (list, tuple)):
                                 # case 2
                                 # boundary is a list or tuple
@@ -350,7 +356,7 @@ class DeltaComplex(GenericCellComplex):
                                     current[x] = store_bdry(x, x.faces())
                         old_delayed = new_delayed
                         if dim > 0:
-                            old_data_by_dim[dim-1].extend(old_delayed)
+                            old_data_by_dim[dim - 1].extend(old_delayed)
             else:
                 raise ValueError("data is not a list, tuple, or dictionary")
         for n in new_data:
@@ -362,9 +368,11 @@ class DeltaComplex(GenericCellComplex):
             dim = max(new_data)
             for d in range(dim, 1, -1):
                 for s in new_data[d]:  # s is a d-simplex
-                    faces = new_data[d-1]
-                    for j in range(d+1):
-                        if not all(faces[s[j]][i] == faces[s[i]][j-1] for i in range(j)):
+                    faces = new_data[d - 1]
+                    for j in range(d + 1):
+                        if not all(
+                            faces[s[j]][i] == faces[s[i]][j - 1] for i in range(j)
+                        ):
                             msg = "simplicial identity d_i d_j = d_{j-1} d_i fails"
                             msg += " for j={}, in dimension {}".format(j, d)
                             raise ValueError(msg)
@@ -452,14 +460,13 @@ class DeltaComplex(GenericCellComplex):
             d_cells = cells_to_add
             new_data[d] = cells_to_add
             try:
-                cells_to_add = set(new_data[d-1])  # begin to populate the (d-1)-cells
+                cells_to_add = set(new_data[d - 1])  # begin to populate the (d-1)-cells
             except KeyError:
                 cells_to_add = set()
             for x in d_cells:
                 if d + 1 in new_dict:
                     old = new_dict[d + 1]
-                    new_dict[d + 1] = [tuple([translate[n] for n in f])
-                                       for f in old]
+                    new_dict[d + 1] = [tuple([translate[n] for n in f]) for f in old]
                 new_dict[d].append(cells[d][x])
                 cells_to_add.update(cells[d][x])
         new_cells = [new_dict[n] for n in range(max_dim + 1)]
@@ -550,11 +557,14 @@ class DeltaComplex(GenericCellComplex):
         cells = self._cells_dict.copy()
         if subcomplex is None:
             return cells
-        if subcomplex._is_subcomplex_of is None or self not in subcomplex._is_subcomplex_of:
+        if (
+            subcomplex._is_subcomplex_of is None
+            or self not in subcomplex._is_subcomplex_of
+        ):
             if subcomplex == self:
                 for d in range(-1, max(cells) + 1):
                     ell = len(cells[d])
-                    cells[d] = [None] * ell   # get rid of all cells
+                    cells[d] = [None] * ell  # get rid of all cells
                 return cells
             raise ValueError("this is not a subcomplex of self")
         else:
@@ -567,9 +577,16 @@ class DeltaComplex(GenericCellComplex):
             cells[-1] = (None,)
         return cells
 
-    def chain_complex(self, subcomplex=None, augmented=False,
-                      verbose=False, check=False, dimensions=None,
-                      base_ring=ZZ, cochain=False):
+    def chain_complex(
+        self,
+        subcomplex=None,
+        augmented=False,
+        verbose=False,
+        check=False,
+        dimensions=None,
+        base_ring=ZZ,
+        cochain=False,
+    ):
         r"""
         The chain complex associated to this `\Delta`-complex.
 
@@ -640,8 +657,7 @@ class DeltaComplex(GenericCellComplex):
         old = vertices
         old_real = [x for x in old if x is not None]  # remove faces not in subcomplex
         n = len(old_real)
-        differentials[0] = matrix(base_ring, empty_simplex, n,
-                                  n * empty_simplex * [1])
+        differentials[0] = matrix(base_ring, empty_simplex, n, n * empty_simplex * [1])
         # current is list of simplices in dimension dim
         # current_real is list of simplices in dimension dim, with None filtered out
         # old is list of simplices in dimension dim-1
@@ -666,17 +682,21 @@ class DeltaComplex(GenericCellComplex):
                         else:
                             mat_dict[(actual_row, col)] = sign
                     sign *= -1
-            differentials[dim] = matrix(base_ring, len(old_real), len(current_real), mat_dict)
+            differentials[dim] = matrix(
+                base_ring, len(old_real), len(current_real), mat_dict
+            )
             old = current
             old_real = current_real
         if cochain:
             cochain_diffs = {}
             for dim in differentials:
                 cochain_diffs[dim - 1] = differentials[dim].transpose()
-            return ChainComplex(data=cochain_diffs, degree=1,
-                                base_ring=base_ring, check=check)
-        return ChainComplex(data=differentials, degree=-1,
-                            base_ring=base_ring, check=check)
+            return ChainComplex(
+                data=cochain_diffs, degree=1, base_ring=base_ring, check=check
+            )
+        return ChainComplex(
+            data=differentials, degree=-1, base_ring=base_ring, check=check
+        )
 
     def alexander_whitney(self, cell, dim_left):
         r"""
@@ -721,12 +741,12 @@ class DeltaComplex(GenericCellComplex):
         idx_l = cell[0]
         for i in range(dim, dim_left, -1):
             idx_l = left_cell[i]
-            left_cell = self.n_cells(i-1)[idx_l]
+            left_cell = self.n_cells(i - 1)[idx_l]
         right_cell = cell[1]
         idx_r = cell[0]
         for i in range(dim, dim - dim_left, -1):
             idx_r = right_cell[0]
-            right_cell = self.n_cells(i-1)[idx_r]
+            right_cell = self.n_cells(i - 1)[idx_r]
         return [(ZZ.one(), (idx_l, left_cell), (idx_r, right_cell))]
 
     def n_skeleton(self, n):
@@ -825,12 +845,12 @@ class DeltaComplex(GenericCellComplex):
         # dimension of the join:
         maxdim = self.dimension() + other.dimension() + 1
         # now for the d-cells, d>0:
-        for d in range(1, maxdim+1):
+        for d in range(1, maxdim + 1):
             d_cells = []
             positions = {}
             new_idx = 0
-            for k in range(-1, d+1):
-                n = d-1-k
+            for k in range(-1, d + 1):
+                n = d - 1 - k
                 # d=n+k.  need a k-cell from self and an n-cell from other
                 if k == -1:
                     left = [()]
@@ -851,14 +871,16 @@ class DeltaComplex(GenericCellComplex):
                         if k == 0:
                             bdry = [bdries[(-1, 0, n, r_idx)]]
                         else:
-                            bdry = [bdries[(k - 1, l[i], n, r_idx)]
-                                    for i in range(k + 1)]
+                            bdry = [
+                                bdries[(k - 1, l[i], n, r_idx)] for i in range(k + 1)
+                            ]
                         # remaining faces come from right-hand factor
                         if n == 0:
                             bdry.append(bdries[(k, l_idx, -1, 0)])
                         else:
-                            bdry.extend(bdries[(k, l_idx, n - 1, r[i])]
-                                        for i in range(n + 1))
+                            bdry.extend(
+                                bdries[(k, l_idx, n - 1, r[i])] for i in range(n + 1)
+                            )
                         d_cells.append(tuple(bdry))
                         r_idx += 1
                         new_idx += 1
@@ -915,7 +937,7 @@ class DeltaComplex(GenericCellComplex):
             return self
         if n == 1:
             return self.join(delta_complexes.Sphere(0))
-        return self.suspension().suspension(int(n-1))
+        return self.suspension().suspension(int(n - 1))
 
     def product(self, other):
         r"""
@@ -992,29 +1014,32 @@ class DeltaComplex(GenericCellComplex):
                             # Simplex, as well as the function
                             # 'lattice_paths', in
                             # simplicial_complex.py.)
-                            for _path in lattice_paths(list(range(k + 1)),
-                                                       list(range(n + 1)),
-                                                       length=d+1):
+                            for _path in lattice_paths(
+                                list(range(k + 1)), list(range(n + 1)), length=d + 1
+                            ):
                                 path = tuple(_path)
                                 new[(k, k_idx, n, n_idx, path)] = len(simplices)
                                 bdry_list = []
-                                for i in range(d+1):
-                                    face_path = path[:i] + path[i+1:]
-                                    if ((i < d and path[i][0] == path[i+1][0]) or
-                                            (i > 0 and path[i][0] == path[i-1][0])):
+                                for i in range(d + 1):
+                                    face_path = path[:i] + path[i + 1 :]
+                                    if (i < d and path[i][0] == path[i + 1][0]) or (
+                                        i > 0 and path[i][0] == path[i - 1][0]
+                                    ):
                                         # this k-simplex
                                         k_face_idx = k_idx
                                         k_face_dim = k
                                     else:
                                         # face of this k-simplex
                                         k_face_idx = k_cell[path[i][0]]
-                                        k_face_dim = k-1
-                                        tail = [(face_path[j][0] - 1,
-                                                 face_path[j][1])
-                                                for j in range(i, d)]
+                                        k_face_dim = k - 1
+                                        tail = [
+                                            (face_path[j][0] - 1, face_path[j][1])
+                                            for j in range(i, d)
+                                        ]
                                         face_path = face_path[:i] + tuple(tail)
-                                    if ((i < d and path[i][1] == path[i+1][1]) or
-                                            (i > 0 and path[i][1] == path[i-1][1])):
+                                    if (i < d and path[i][1] == path[i + 1][1]) or (
+                                        i > 0 and path[i][1] == path[i - 1][1]
+                                    ):
                                         # this n-simplex
                                         n_face_idx = n_idx
                                         n_face_dim = n
@@ -1022,13 +1047,22 @@ class DeltaComplex(GenericCellComplex):
                                         # face of this n-simplex
                                         n_face_idx = n_cell[path[i][1]]
                                         n_face_dim = n - 1
-                                        tail = [(face_path[j][0],
-                                                 face_path[j][1] - 1)
-                                                for j in range(i, d)]
+                                        tail = [
+                                            (face_path[j][0], face_path[j][1] - 1)
+                                            for j in range(i, d)
+                                        ]
                                         face_path = face_path[:i] + tuple(tail)
-                                    bdry_list.append(bdries[(k_face_dim, k_face_idx,
-                                                             n_face_dim, n_face_idx,
-                                                             face_path)])
+                                    bdry_list.append(
+                                        bdries[
+                                            (
+                                                k_face_dim,
+                                                k_face_idx,
+                                                n_face_dim,
+                                                n_face_idx,
+                                                face_path,
+                                            )
+                                        ]
+                                    )
                                 simplices.append(tuple(bdry_list))
             # add d-simplices to data, store d-simplices in bdries,
             # reset simplices
@@ -1188,8 +1222,7 @@ class DeltaComplex(GenericCellComplex):
             renaming = {}
             process_now = process_later
             for f in glued:
-                renaming.update(dict(zip(right_cells[n - 1][f],
-                                         data[n - 1][glued[f]])))
+                renaming.update(dict(zip(right_cells[n - 1][f], data[n - 1][glued[f]])))
         # deal with vertices separately.  we just need to add enough
         # vertices: all the vertices from Right, minus the number
         # being glued, which should be dim+1, the number of vertices
@@ -1273,7 +1306,9 @@ class DeltaComplex(GenericCellComplex):
             cells_dict[n] = list(old_cells[n])
         dim = self.dimension()
         # cells of standard simplex of dimension dim
-        std_cells = SimplicialComplex([Simplex(dim)]).delta_complex(sort_simplices=True).cells()
+        std_cells = (
+            SimplicialComplex([Simplex(dim)]).delta_complex(sort_simplices=True).cells()
+        )
         # adjust zero-cells so they're distinct
         std_cells[0] = tuple([[n] for n in range(dim + 1)])
         # remove the cell being subdivided
@@ -1377,8 +1412,7 @@ class DeltaComplex(GenericCellComplex):
             faces_dict = {}
             for cell in n_cells:
                 if n > 1:
-                    faces = [tuple(simplex_cells[n - 1][cell[j]])
-                             for j in range(n + 1)]
+                    faces = [tuple(simplex_cells[n - 1][cell[j]]) for j in range(n + 1)]
                     one_cell = dict(zip(faces, self_cells[n][n_cells[cell]]))
                 else:
                     temp = dict(zip(cell, self_cells[n][n_cells[cell]]))
@@ -1431,7 +1465,7 @@ class DeltaComplex(GenericCellComplex):
         i = self.dimension() - 1
         i_faces = set(simplex)
         # if there are enough i_faces, then no gluing is evident so far
-        not_glued = (len(i_faces) == binomial(dim + 1, i + 1))
+        not_glued = len(i_faces) == binomial(dim + 1, i + 1)
         while not_glued and i > 0:
             # count the (i-1) cells and compare to (n+1) choose i.
             old_faces = i_faces
@@ -1439,7 +1473,7 @@ class DeltaComplex(GenericCellComplex):
             all_cells = self.n_cells(i)
             for face in old_faces:
                 i_faces.update(all_cells[face])
-            not_glued = (len(i_faces) == binomial(dim + 1, i))
+            not_glued = len(i_faces) == binomial(dim + 1, i)
             i -= 1
         return not not_glued
 
@@ -1455,6 +1489,7 @@ class DeltaComplex(GenericCellComplex):
             Finite poset containing 6 elements
         """
         from sage.combinat.posets.posets import Poset
+
         # given the structure of self.cells(), it's easier to compute
         # the dual poset, then reverse it at the end.
         dim = self.dimension()
@@ -1484,7 +1519,9 @@ class DeltaComplex(GenericCellComplex):
             ...
             NotImplementedError: barycentric subdivisions are not implemented for Delta complexes
         """
-        raise NotImplementedError("barycentric subdivisions are not implemented for Delta complexes")
+        raise NotImplementedError(
+            "barycentric subdivisions are not implemented for Delta complexes"
+        )
 
     def n_chains(self, n, base_ring=None, cochains=False):
         r"""
@@ -1527,9 +1564,9 @@ class DeltaComplex(GenericCellComplex):
         return Chains(self, n, n_cells, base_ring)
 
     # the second barycentric subdivision is a simplicial complex.  implement this somehow?
-#     def simplicial_complex(self):
-#         X = self.barycentric_subdivision().barycentric_subdivision()
-#         find facets of X and return SimplicialComplex(facets)
+    #     def simplicial_complex(self):
+    #         X = self.barycentric_subdivision().barycentric_subdivision()
+    #         find facets of X and return SimplicialComplex(facets)
 
     # This is cached for speed reasons: it can be very slow to run
     # this function.
@@ -1587,7 +1624,10 @@ class DeltaComplex(GenericCellComplex):
              1: Vector space of dimension 2 over Rational Field,
              2: Vector space of dimension 1 over Rational Field}
         """
-        from sage.homology.algebraic_topological_model import algebraic_topological_model_delta_complex
+        from sage.homology.algebraic_topological_model import (
+            algebraic_topological_model_delta_complex,
+        )
+
         if base_ring is None:
             base_ring = QQ
         return algebraic_topological_model_delta_complex(self, base_ring)
@@ -1650,8 +1690,7 @@ class DeltaComplexExamples:
         """
         if n == 1:
             return DeltaComplex([[()], [(0, 0)]])
-        return DeltaComplex({Simplex(n): True,
-                             Simplex(range(1, n + 2)): Simplex(n)})
+        return DeltaComplex({Simplex(n): True, Simplex(range(1, n + 2)): Simplex(n)})
 
     def Torus(self):
         r"""
@@ -1665,8 +1704,7 @@ class DeltaComplexExamples:
             sage: delta_complexes.Torus().homology(1)                                   # needs sage.modules sage.rings.finite_rings
             Z x Z
         """
-        return DeltaComplex((((),), ((0, 0), (0, 0), (0, 0)),
-                             ((1, 2, 0), (0, 2, 1))))
+        return DeltaComplex((((),), ((0, 0), (0, 0), (0, 0)), ((1, 2, 0), (0, 2, 1))))
 
     def RealProjectivePlane(self):
         r"""
@@ -1688,8 +1726,9 @@ class DeltaComplexExamples:
             sage: P.cohomology(dim=2, base_ring=GF(2))
             Vector space of dimension 1 over Finite Field of size 2
         """
-        return DeltaComplex((((), ()), ((1, 0), (1, 0), (0, 0)),
-                             ((1, 0, 2), (0, 1, 2))))
+        return DeltaComplex(
+            (((), ()), ((1, 0), (1, 0), (0, 0)), ((1, 0, 2), (0, 1, 2)))
+        )
 
     def KleinBottle(self):
         r"""
@@ -1703,8 +1742,7 @@ class DeltaComplexExamples:
             sage: delta_complexes.KleinBottle()
             Delta complex with 1 vertex and 7 simplices
         """
-        return DeltaComplex((((),), ((0, 0), (0, 0), (0, 0)),
-                             ((1, 2, 0), (0, 1, 2))))
+        return DeltaComplex((((),), ((0, 0), (0, 0), (0, 0)), ((1, 2, 0), (0, 1, 2))))
 
     def Simplex(self, n):
         r"""

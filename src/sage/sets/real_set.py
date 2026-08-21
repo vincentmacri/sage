@@ -159,9 +159,9 @@ class InternalRealInterval(UniqueRepresentation, Parent):
                 raise ValueError('upper_closed must be boolean')
             if lower > upper:
                 raise ValueError('lower/upper bounds are not sorted')
-            if (lower_closed and lower == minus_infinity):
+            if lower_closed and lower == minus_infinity:
                 raise ValueError('interval cannot be closed at -oo')
-            if (upper_closed and upper == infinity):
+            if upper_closed and upper == infinity:
                 raise ValueError('interval cannot be closed at +oo')
             # TODO: take care of the empty set case.
 
@@ -180,7 +180,9 @@ class InternalRealInterval(UniqueRepresentation, Parent):
             sage: I.is_empty()
             False
         """
-        return (self._lower == self._upper) and not (self._lower_closed and self._upper_closed)
+        return (self._lower == self._upper) and not (
+            self._lower_closed and self._upper_closed
+        )
 
     def is_point(self):
         """
@@ -194,7 +196,9 @@ class InternalRealInterval(UniqueRepresentation, Parent):
             sage: I.is_point()
             False
         """
-        return (self._lower == self._upper) and self._lower_closed and self._upper_closed
+        return (
+            (self._lower == self._upper) and self._lower_closed and self._upper_closed
+        )
 
     def lower(self):
         """
@@ -388,6 +392,7 @@ class InternalRealInterval(UniqueRepresentation, Parent):
             '\\{\\sqrt{2}\\}'
         """
         from sage.misc.latex import latex
+
         if self.is_point():
             # Converting to str avoids the extra whitespace
             # that LatexExpr add on concatenation. We do not need
@@ -457,10 +462,14 @@ class InternalRealInterval(UniqueRepresentation, Parent):
         from sympy import Interval
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
-        return Interval(self.lower(), self.upper(),
-                        left_open=not self._lower_closed,
-                        right_open=not self._upper_closed)
+        return Interval(
+            self.lower(),
+            self.upper(),
+            left_open=not self._lower_closed,
+            right_open=not self._upper_closed,
+        )
 
     def _giac_condition_(self, variable):
         """
@@ -514,9 +523,11 @@ class InternalRealInterval(UniqueRepresentation, Parent):
         # TODO: take care of the empty set case.
         # maybe not necessary because this is an interval class of
         # :class:`RealSet` whose intervals are all non-empty.
-        lower_closed = (self._lower != minus_infinity)
-        upper_closed = (self._upper != infinity)
-        return InternalRealInterval(self._lower, lower_closed, self._upper, upper_closed)
+        lower_closed = self._lower != minus_infinity
+        upper_closed = self._upper != infinity
+        return InternalRealInterval(
+            self._lower, lower_closed, self._upper, upper_closed
+        )
 
     def interior(self):
         """
@@ -786,13 +797,17 @@ class InternalRealInterval(UniqueRepresentation, Parent):
         if scalar == RLF(0):
             return InternalRealInterval(RLF(0), True, RLF(0), True)
         if scalar < RLF(0):
-            lower, lower_closed, upper, upper_closed = upper, upper_closed, lower, lower_closed
+            lower, lower_closed, upper, upper_closed = (
+                upper,
+                upper_closed,
+                lower,
+                lower_closed,
+            )
         if lower == -infinity:
             lower = -infinity
         if upper == infinity:
             upper = infinity
-        return InternalRealInterval(lower, lower_closed,
-                                    upper, upper_closed)
+        return InternalRealInterval(lower, lower_closed, upper, upper_closed)
 
     def __rmul__(self, other):
         r"""
@@ -885,8 +900,9 @@ class InternalRealInterval(UniqueRepresentation, Parent):
 
 
 @richcmp_method
-class RealSet(UniqueRepresentation, Parent, Set_base,
-              Set_boolean_operators, Set_add_sub_operators):
+class RealSet(
+    UniqueRepresentation, Parent, Set_base, Set_boolean_operators, Set_add_sub_operators
+):
     r"""
     A subset of the real line, a finite union of intervals.
 
@@ -1143,8 +1159,7 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             # No other kwds should be provided.
             return UniqueRepresentation.__classcall__(cls, *args, normalized=True)
         manifold_keywords = ('structure', 'ambient', 'names', 'coordinate')
-        if any(kwds.get(kwd, None)
-               for kwd in manifold_keywords):
+        if any(kwds.get(kwd, None) for kwd in manifold_keywords):
             # Got manifold keywords
             real_set = cls.__classcall__(cls, *args)
             ambient = kwds.pop('ambient', None)
@@ -1154,6 +1169,7 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
                 raise NotImplementedError
 
             from sage.manifolds.differentiable.examples.real_line import RealLine
+
             if real_set.is_universe():
                 if ambient is None:
                     ambient = RealLine(**kwds)
@@ -1175,14 +1191,22 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
                 name = str(real_set)
             if latex_name is None:
                 from sage.misc.latex import latex
+
                 latex_name = latex(real_set)
 
-            return ambient.manifold().canonical_chart().pullback(real_set, name=name, latex_name=latex_name)
+            return (
+                ambient.manifold()
+                .canonical_chart()
+                .pullback(real_set, name=name, latex_name=latex_name)
+            )
 
         if kwds:
-            raise TypeError(f'RealSet constructors cannot take the keyword arguments {kwds}')
+            raise TypeError(
+                f'RealSet constructors cannot take the keyword arguments {kwds}'
+            )
 
         from sage.structure.element import Expression
+
         if len(args) == 1 and isinstance(args[0], RealSet):
             return args[0]  # common optimization
         intervals = []
@@ -1226,19 +1250,25 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
                     elif op == le:
                         s = [InternalRealInterval(-oo, False, val, True)]
                     elif op == ne:
-                        s = [InternalRealInterval(-oo, False, val, False),
-                             InternalRealInterval(val, False, oo, False)]
+                        s = [
+                            InternalRealInterval(-oo, False, val, False),
+                            InternalRealInterval(val, False, oo, False),
+                        ]
                     else:
                         raise ValueError(str(arg) + ' does not determine real interval')
                     return [i for i in s if not i.is_empty()]
 
-                if (arg.lhs().is_symbol()
-                        and (arg.rhs().is_numeric() or arg.rhs().is_constant())
-                        and arg.rhs().is_real()):
+                if (
+                    arg.lhs().is_symbol()
+                    and (arg.rhs().is_numeric() or arg.rhs().is_constant())
+                    and arg.rhs().is_real()
+                ):
                     intervals.extend(rel_to_interval(arg.operator(), arg.rhs()))
-                elif (arg.rhs().is_symbol()
-                      and (arg.lhs().is_numeric() or arg.lhs().is_constant())
-                      and arg.lhs().is_real()):
+                elif (
+                    arg.rhs().is_symbol()
+                    and (arg.lhs().is_numeric() or arg.lhs().is_constant())
+                    and arg.lhs().is_real()
+                ):
                     op = arg.operator()
                     if op == lt:
                         op = gt
@@ -1256,26 +1286,33 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
                     OpenInterval,
                 )
                 from sage.manifolds.subsets.closure import ManifoldSubsetClosure
+
                 if isinstance(arg, OpenInterval):
                     lower, upper = RealSet._prep(arg.lower_bound(), arg.upper_bound())
                     intervals.append(InternalRealInterval(lower, False, upper, False))
-                elif (isinstance(arg, ManifoldSubsetClosure)
-                      and isinstance(arg._subset, OpenInterval)):
+                elif isinstance(arg, ManifoldSubsetClosure) and isinstance(
+                    arg._subset, OpenInterval
+                ):
                     interval = arg._subset
-                    lower, upper = RealSet._prep(interval.lower_bound(),
-                                                 interval.upper_bound())
+                    lower, upper = RealSet._prep(
+                        interval.lower_bound(), interval.upper_bound()
+                    )
                     ambient = interval.manifold()
-                    ambient_lower, ambient_upper = RealSet._prep(ambient.lower_bound(),
-                                                                 ambient.upper_bound())
+                    ambient_lower, ambient_upper = RealSet._prep(
+                        ambient.lower_bound(), ambient.upper_bound()
+                    )
                     lower_closed = ambient_lower < lower
                     upper_closed = upper < ambient_upper
-                    intervals.append(InternalRealInterval(lower, lower_closed,
-                                                          upper, upper_closed))
+                    intervals.append(
+                        InternalRealInterval(lower, lower_closed, upper, upper_closed)
+                    )
                 else:
                     raise ValueError(str(arg) + ' does not determine real interval')
 
         union_intervals = RealSet.normalize(intervals)
-        return UniqueRepresentation.__classcall__(cls, *union_intervals, normalized=True)
+        return UniqueRepresentation.__classcall__(
+            cls, *union_intervals, normalized=True
+        )
 
     def __init__(self, *intervals, normalized=True):
         r"""
@@ -1305,8 +1342,7 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
                 category = category.Subobjects()  # subobject of real line
             if inf is not minus_infinity and sup is not infinity:
                 # Bounded
-                if all(i.lower_closed() and i.upper_closed()
-                       for i in intervals):
+                if all(i.lower_closed() and i.upper_closed() for i in intervals):
                     category = category.Compact()
         Parent.__init__(self, category=category)
         self._intervals = intervals
@@ -1567,6 +1603,7 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             (0, 1) \cup [2, +\infty)
         """
         from sage.misc.latex import latex
+
         if self.n_components() == 0:
             return r'\emptyset'
         return r' \cup '.join(latex(i) for i in self._intervals)
@@ -1638,8 +1675,7 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
         false = 'false'
         if self.n_components() == 0:
             return false
-        return ' or '.join(it._giac_condition_(x)
-                           for it in self._intervals)
+        return ' or '.join(it._giac_condition_(x) for it in self._intervals)
 
     @staticmethod
     def _prep(lower, upper=None):
@@ -1702,7 +1738,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
         if lower_closed is None or upper_closed is None:
             raise ValueError('lower_closed and upper_closed must be explicitly given')
         lower, upper = RealSet._prep(lower, upper)
-        return RealSet(InternalRealInterval(lower, lower_closed, upper, upper_closed), **kwds)
+        return RealSet(
+            InternalRealInterval(lower, lower_closed, upper, upper_closed), **kwds
+        )
 
     @staticmethod
     def open(lower, upper, **kwds):
@@ -1863,7 +1901,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             (-oo, 1)
         """
         bound = RealSet._prep(bound)
-        return RealSet(InternalRealInterval(minus_infinity, False, RLF(bound), False), **kwds)
+        return RealSet(
+            InternalRealInterval(minus_infinity, False, RLF(bound), False), **kwds
+        )
 
     @staticmethod
     def unbounded_above_closed(bound, **kwds):
@@ -1927,7 +1967,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             sage: RealSet.real_line()
             (-oo, +oo)
         """
-        return RealSet(InternalRealInterval(minus_infinity, False, infinity, False), **kwds)
+        return RealSet(
+            InternalRealInterval(minus_infinity, False, infinity, False), **kwds
+        )
 
     def _scan(self):
         r"""
@@ -2053,7 +2095,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             (-oo, 0) ∪ [1, 4) ∪ {5} ∪ (6, +oo)
         """
         sets = [self]
-        if len(real_set_collection) == 1 and isinstance(real_set_collection[0], RealSet):
+        if len(real_set_collection) == 1 and isinstance(
+            real_set_collection[0], RealSet
+        ):
             sets.append(real_set_collection[0])
         elif len(real_set_collection) == 2:
             a, b = real_set_collection
@@ -2132,7 +2176,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             {}
         """
         sets = [self]
-        if len(real_set_collection) == 1 and isinstance(real_set_collection[0], RealSet):
+        if len(real_set_collection) == 1 and isinstance(
+            real_set_collection[0], RealSet
+        ):
             sets.append(real_set_collection[0])
         elif len(real_set_collection) == 2:
             a, b = real_set_collection
@@ -2371,6 +2417,7 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             sage.categories.sets_cat.EmptySetError
         """
         from sage.rings.infinity import AnInfinity
+
         if not self._intervals:
             raise EmptySetError
         i = self._intervals[0]
@@ -2403,9 +2450,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             sage: RealSet(-oo, +oo).is_open()
             True
         """
-        return all(not i.lower_closed()
-                   and not i.upper_closed()
-                   for i in self._intervals)
+        return all(
+            not i.lower_closed() and not i.upper_closed() for i in self._intervals
+        )
 
     def is_closed(self):
         """
@@ -2424,9 +2471,11 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             sage: RealSet(-oo, +oo).is_closed()
             True
         """
-        return all((i.lower_closed() or i.lower() is minus_infinity)
-                   and (i.upper_closed() or i.upper() is infinity)
-                   for i in self._intervals)
+        return all(
+            (i.lower_closed() or i.lower() is minus_infinity)
+            and (i.upper_closed() or i.upper() is infinity)
+            for i in self._intervals
+        )
 
     def closure(self):
         """
@@ -2477,7 +2526,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             sage: RealSet((1, 2), (2, 3)).boundary()
             {1} ∪ {2} ∪ {3}
         """
-        return RealSet(*[RealSet.point(x) for i in self._intervals for x in i.boundary_points()])
+        return RealSet(
+            *[RealSet.point(x) for i in self._intervals for x in i.boundary_points()]
+        )
 
     @staticmethod
     def convex_hull(*real_set_collection):
@@ -2528,7 +2579,9 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
         if lower_scan < upper_scan:
             lower, lower_closed = lower_scan[0][0], lower_scan[0][1] == 0
             upper, upper_closed = upper_scan[0][0], upper_scan[0][1] > 0
-            return RealSet(InternalRealInterval(lower, lower_closed, upper, upper_closed))
+            return RealSet(
+                InternalRealInterval(lower, lower_closed, upper, upper_closed)
+            )
         return RealSet()
 
     def is_connected(self):
@@ -2683,14 +2736,16 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
             if interval.contains(0):
                 return QQ(0)
             if lower == minus_infinity:
-                lower = upper - 2 # to contain at least 1 integer
+                lower = upper - 2  # to contain at least 1 integer
             elif upper == infinity:
-                upper = lower + 2 # to contain at least 1 integer
+                upper = lower + 2  # to contain at least 1 integer
 
             rs_field = RIF(lower, upper)
             lo_open = not interval.lower_closed()
             hi_open = not interval.upper_closed()
-            simplest_rat = rs_field.simplest_rational(low_open=lo_open, high_open=hi_open)
+            simplest_rat = rs_field.simplest_rational(
+                low_open=lo_open, high_open=hi_open
+            )
 
             if not interval.contains(simplest_rat):
                 raise NotImplementedError
@@ -2813,8 +2868,8 @@ class RealSet(UniqueRepresentation, Parent, Set_base,
         from sympy import Reals, Union
 
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
         if self.is_universe():
             return Reals
-        return Union(*[interval._sympy_()
-                       for interval in self._intervals])
+        return Union(*[interval._sympy_() for interval in self._intervals])

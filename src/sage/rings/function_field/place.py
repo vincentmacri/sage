@@ -90,6 +90,7 @@ class FunctionFieldPlace(Element):
         sage: L.places_finite()[0]                                                      # needs sage.rings.function_field
         Place (x, y)
     """
+
     def __init__(self, parent, prime) -> None:
         """
         Initialize the place.
@@ -210,6 +211,7 @@ class FunctionFieldPlace(Element):
              + Place (1/x, 1/x^3*y^2 + 1/x^2*y + 1)
         """
         from .divisor import divisor
+
         return divisor(self.function_field(), {self: -1})
 
     def _add_(self, other) -> FunctionFieldDivisor:
@@ -315,6 +317,7 @@ class FunctionFieldPlace(Element):
             Place (x + 1, y)
         """
         from .divisor import divisor
+
         return divisor(self.function_field(), {self: multiplicity})
 
 
@@ -333,6 +336,7 @@ class PlaceSet(UniqueRepresentation, Parent):
         sage: L.place_set()                                                             # needs sage.rings.function_field
         Set of places of Function field in y defined by y^3 + x^3*y + x
     """
+
     Element = FunctionFieldPlace
 
     def __init__(self, field) -> None:

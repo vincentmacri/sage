@@ -170,7 +170,9 @@ class Frobby:
         resul = 0
         for l in lines:
             lis = [int(_) for _ in l.split()]
-            resul += lis[0]+prod([ring.gen(i)**lis[i+1] for i in range(len(lis)-1)])
+            resul += lis[0] + prod(
+                [ring.gen(i) ** lis[i + 1] for i in range(len(lis) - 1)]
+            )
         return resul
 
     def associated_primes(self, monomial_ideal):
@@ -204,7 +206,8 @@ class Frobby:
         lists = [[int(_) for _ in a.split()] for a in lines]
 
         def to_monomial(exps):
-            return [v ** e for v, e in zip(monomial_ideal.ring().gens(), exps) if e != 0]
+            return [v**e for v, e in zip(monomial_ideal.ring().gens(), exps) if e != 0]
+
         return [monomial_ideal.ring().ideal(to_monomial(a)) for a in lists]
 
     def dimension(self, monomial_ideal):
@@ -323,20 +326,28 @@ class Frobby:
             if lines[0].split()[1] == 'ring':
                 lines.pop(0)
                 lines.pop(0)
-                matrices.append('1 '+str(ring.ngens())+'\n'+'0 '*ring.ngens()+'\n')
+                matrices.append(
+                    '1 ' + str(ring.ngens()) + '\n' + '0 ' * ring.ngens() + '\n'
+                )
             else:
                 nrows = int(lines[0].split()[0])
-                nmatrix = lines.pop(0)+'\n'
+                nmatrix = lines.pop(0) + '\n'
                 for i in range(nrows):
-                    nmatrix += lines.pop(0)+'\n'
+                    nmatrix += lines.pop(0) + '\n'
                 matrices.append(nmatrix)
 
         def to_ideal(exps):
             if len(exps) == 0:
                 return ring.zero_ideal()
-            gens = [prod([v ** e for v, e in zip(ring.gens(), expo) if e != 0]) for expo in exps]
+            gens = [
+                prod([v**e for v, e in zip(ring.gens(), expo) if e != 0])
+                for expo in exps
+            ]
             return ring.ideal(gens or ring(1))
-        return [to_ideal(self._parse_4ti2_matrix(a)) for a in matrices] or [ring.ideal()]
+
+        return [to_ideal(self._parse_4ti2_matrix(a)) for a in matrices] or [
+            ring.ideal()
+        ]
 
     def _parse_4ti2_matrix(self, string):
         r"""
@@ -376,8 +387,7 @@ class Frobby:
         except ValueError:
             raise RuntimeError("Format error: encountered non-number.")
         if len(ints) < 2:
-            raise RuntimeError("Format error: " +
-                               "matrix dimensions not specified.")
+            raise RuntimeError("Format error: " + "matrix dimensions not specified.")
 
         term_count = ints[0]
         var_count = ints[1]

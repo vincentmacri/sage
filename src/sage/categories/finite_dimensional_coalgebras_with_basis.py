@@ -1,13 +1,13 @@
 r"""
 Finite dimensional coalgebras with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 
 def FiniteDimensionalCoalgebrasWithBasis(base_ring):
@@ -29,4 +29,5 @@ def FiniteDimensionalCoalgebrasWithBasis(base_ring):
         sage: TestSuite(C).run()
     """
     from sage.categories.coalgebras_with_basis import CoalgebrasWithBasis
+
     return CoalgebrasWithBasis(base_ring).FiniteDimensional()

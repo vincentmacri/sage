@@ -1,6 +1,7 @@
 """
 Histograms
 """
+
 # ****************************************************************************
 #  Distributed under the terms of the GNU General Public License (GPL)
 #
@@ -39,6 +40,7 @@ class Histogram(GraphicPrimitive):
         sage: g = Histogram([[1,3,2,0], [4,4,3,3]], {}); g
         Histogram defined by 2 data lists
     """
+
     def __init__(self, datalist, options):
         """
         Initialize a ``Histogram`` primitive along with
@@ -51,11 +53,14 @@ class Histogram(GraphicPrimitive):
             Histogram defined by a data list of size 3
         """
         import numpy as np
+
         self.datalist = np.asarray(datalist, dtype=float)
         if 'linestyle' in options:
             from sage.plot.misc import get_matplotlib_linestyle
+
             options['linestyle'] = get_matplotlib_linestyle(
-                    options['linestyle'], return_type='long')
+                options['linestyle'], return_type='long'
+            )
         if options.get('range', None):
             # numpy.histogram performs type checks on "range" so this must be
             # actual floats
@@ -89,6 +94,7 @@ class Histogram(GraphicPrimitive):
             {'xmax': 10.0, 'xmin': 3.0, 'ymax': 0.476190476190..., 'ymin': 0}
         """
         import numpy
+
         if int(numpy.version.short_version[0]) > 1:
             numpy.set_printoptions(legacy="1.25")
 
@@ -108,7 +114,7 @@ class Histogram(GraphicPrimitive):
         # check to see if a list of datasets
         if not hasattr(self.datalist[0], '__contains__'):
             ydata, xdata = numpy.histogram(self.datalist, **opt)
-            return minmax_data(xdata, [0]+list(ydata), dict=True)
+            return minmax_data(xdata, [0] + list(ydata), dict=True)
         m = {'xmax': 0, 'xmin': 0, 'ymax': 0, 'ymin': 0}
         if not options.get('stacked'):
             for d in self.datalist:
@@ -141,24 +147,26 @@ class Histogram(GraphicPrimitive):
             sage: L[-1]
             ('zorder', 'The layer level to draw the histogram')
         """
-        return {'color': 'The color of the face of the bars or list of colors if multiple data sets are given.',
-                'edgecolor': 'The color of the border of each bar.',
-                'alpha': 'How transparent the plot is',
-                'hue': 'The color of the bars given as a hue.',
-                'fill': '(True or False, default: ``True``) Whether to fill the bars',
-                'hatch': 'What symbol to fill with - one of "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"',
-                'linewidth': 'Width of the lines defining the bars',
-                'linestyle': "One of 'solid' or '-', 'dashed' or '--', 'dotted' or ':', 'dashdot' or '-.'",
-                'zorder': 'The layer level to draw the histogram',
-                'bins': 'The number of sections in which to divide the range. Also can be a sequence of points within the range that create the partition.',
-                'align': 'How the bars align inside of each bin. Acceptable values are "left", "right" or "mid".',
-                'rwidth': 'The relative width of the bars as a fraction of the bin width',
-                'cumulative': '(True or False) If True, then a histogram is computed in which each bin gives the counts in that bin plus all bins for smaller values.  Negative values give a reversed direction of accumulation.',
-                'range': 'A list [min, max] which define the range of the histogram. Values outside of this range are treated as outliers and omitted from counts.',
-                'density': '(True or False) If True, the counts are normalized to form a probability density. (n/(len(x)*dbin)',
-                'weights': 'A sequence of weights the same length as the data list. If supplied, then each value contributes its associated weight to the bin count.',
-                'stacked': '(True or False) If True, multiple data are stacked on top of each other.',
-                'label': 'A string label for each data list given.'}
+        return {
+            'color': 'The color of the face of the bars or list of colors if multiple data sets are given.',
+            'edgecolor': 'The color of the border of each bar.',
+            'alpha': 'How transparent the plot is',
+            'hue': 'The color of the bars given as a hue.',
+            'fill': '(True or False, default: ``True``) Whether to fill the bars',
+            'hatch': 'What symbol to fill with - one of "/", "\\", "|", "-", "+", "x", "o", "O", ".", "*"',
+            'linewidth': 'Width of the lines defining the bars',
+            'linestyle': "One of 'solid' or '-', 'dashed' or '--', 'dotted' or ':', 'dashdot' or '-.'",
+            'zorder': 'The layer level to draw the histogram',
+            'bins': 'The number of sections in which to divide the range. Also can be a sequence of points within the range that create the partition.',
+            'align': 'How the bars align inside of each bin. Acceptable values are "left", "right" or "mid".',
+            'rwidth': 'The relative width of the bars as a fraction of the bin width',
+            'cumulative': '(True or False) If True, then a histogram is computed in which each bin gives the counts in that bin plus all bins for smaller values.  Negative values give a reversed direction of accumulation.',
+            'range': 'A list [min, max] which define the range of the histogram. Values outside of this range are treated as outliers and omitted from counts.',
+            'density': '(True or False) If True, the counts are normalized to form a probability density. (n/(len(x)*dbin)',
+            'weights': 'A sequence of weights the same length as the data list. If supplied, then each value contributes its associated weight to the bin count.',
+            'stacked': '(True or False) If True, multiple data are stacked on top of each other.',
+            'label': 'A string label for each data list given.',
+        }
 
     def _repr_(self) -> str:
         """
@@ -200,7 +208,14 @@ class Histogram(GraphicPrimitive):
             subplot.hist(self.datalist.transpose(), **options)
 
 
-@options(aspect_ratio='automatic', align='mid', weights=None, range=None, bins=10, edgecolor='black')
+@options(
+    aspect_ratio='automatic',
+    align='mid',
+    weights=None,
+    range=None,
+    bins=10,
+    edgecolor='black',
+)
 def histogram(datalist, **options):
     """
     Compute and draw the histogram for list(s) of numerical data.

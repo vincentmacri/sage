@@ -29,8 +29,9 @@ from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.matrix.constructor import matrix
 
 
-class DrinfeldModuleMorphism(Morphism, UniqueRepresentation,
-                             metaclass=InheritComparisonClasscallMetaclass):
+class DrinfeldModuleMorphism(
+    Morphism, UniqueRepresentation, metaclass=InheritComparisonClasscallMetaclass
+):
     r"""
     This class represents Drinfeld `\GF{q}[T]`-module morphisms.
 
@@ -123,6 +124,7 @@ class DrinfeldModuleMorphism(Morphism, UniqueRepresentation,
         sage: DrinfeldModuleMorphism(Hom(phi, psi), ore_pol) is morphism
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, parent, x):
         """
@@ -164,7 +166,10 @@ class DrinfeldModuleMorphism(Morphism, UniqueRepresentation,
             ...
             TypeError: parent should be a DrinfeldModuleHomset
         """
-        from sage.rings.function_field.drinfeld_modules.homset import DrinfeldModuleHomset
+        from sage.rings.function_field.drinfeld_modules.homset import (
+            DrinfeldModuleHomset,
+        )
+
         if not isinstance(parent, DrinfeldModuleHomset):
             raise TypeError('parent should be a DrinfeldModuleHomset')
         domain = parent.domain()
@@ -257,12 +262,13 @@ class DrinfeldModuleMorphism(Morphism, UniqueRepresentation,
         if self.is_identity():
             return f'Identity morphism of {self._domain}'
         if self.is_endomorphism():
-            return f'Endomorphism of {self._domain}\n' \
-                   f'  Defn: {self._ore_polynomial}'
-        return f'Drinfeld Module morphism:\n' \
-                   f'  From: {self._domain}\n'  \
-                   f'  To:   {self._codomain}\n' \
-                   f'  Defn: {self._ore_polynomial}'
+            return f'Endomorphism of {self._domain}\n  Defn: {self._ore_polynomial}'
+        return (
+            f'Drinfeld Module morphism:\n'
+            f'  From: {self._domain}\n'
+            f'  To:   {self._codomain}\n'
+            f'  Defn: {self._ore_polynomial}'
+        )
 
     def __hash__(self) -> int:
         r"""
@@ -609,8 +615,10 @@ class DrinfeldModuleMorphism(Morphism, UniqueRepresentation,
 
             :meth:`left_lcm`
         """
-        if (not isinstance(other, DrinfeldModuleMorphism)
-         or other.domain() is not self.domain()):
+        if (
+            not isinstance(other, DrinfeldModuleMorphism)
+            or other.domain() is not self.domain()
+        ):
             raise ValueError("the two morphisms must have the same domain")
         u = self.ore_polynomial().right_gcd(other.ore_polynomial())
         return self.domain().hom(u)
@@ -657,8 +665,10 @@ class DrinfeldModuleMorphism(Morphism, UniqueRepresentation,
 
             :meth:`right_gcd`
         """
-        if (not isinstance(other, DrinfeldModuleMorphism)
-         or other.domain() is not self.domain()):
+        if (
+            not isinstance(other, DrinfeldModuleMorphism)
+            or other.domain() is not self.domain()
+        ):
             raise ValueError("the two morphisms must have the same domain")
         u = self._ore_polynomial.left_lcm(other._ore_polynomial)
         return self.domain().hom(u)
@@ -879,7 +889,9 @@ class DrinfeldModuleMorphism(Morphism, UniqueRepresentation,
             ValueError: characteristic polynomial is only defined for endomorphisms
         """
         if self.domain() is not self.codomain():
-            raise ValueError("characteristic polynomial is only defined for endomorphisms")
+            raise ValueError(
+                "characteristic polynomial is only defined for endomorphisms"
+            )
         P = self._motive_matrix().charpoly()
         # We cast to the correct parent
         A = self.domain().function_ring()

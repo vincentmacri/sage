@@ -77,6 +77,7 @@ class ModularSymbolsElement(hecke.HeckeModuleElement):
         sage: x == loads(dumps(x))
         True
     """
+
     def __init__(self, parent, x, check=True):
         """
         INPUT:
@@ -99,12 +100,18 @@ class ModularSymbolsElement(hecke.HeckeModuleElement):
         """
         if check:
             from .space import ModularSymbolsSpace
+
             if not isinstance(parent, ModularSymbolsSpace):
-                raise TypeError("parent (= %s) must be a space of modular symbols" % parent)
+                raise TypeError(
+                    "parent (= %s) must be a space of modular symbols" % parent
+                )
             if not isinstance(x, sage.modules.free_module_element.FreeModuleElement):
                 raise TypeError("x must be a free module element.")
             if x.degree() != parent.degree():
-                raise TypeError("x (of degree %s) must be of degree the same as the degree of the parent (of degree %s)." % (x.degree(), parent.degree()))
+                raise TypeError(
+                    "x (of degree %s) must be of degree the same as the degree of the parent (of degree %s)."
+                    % (x.degree(), parent.degree())
+                )
         hecke.HeckeModuleElement.__init__(self, parent, x)
 
     def _repr_(self):
@@ -174,7 +181,9 @@ class ModularSymbolsElement(hecke.HeckeModuleElement):
             sage: z.parent() is M
             True
         """
-        return ModularSymbolsElement(self.parent(), self.element() + right.element(), check=False)
+        return ModularSymbolsElement(
+            self.parent(), self.element() + right.element(), check=False
+        )
 
     def _rmul_(self, other):
         r"""
@@ -192,8 +201,7 @@ class ModularSymbolsElement(hecke.HeckeModuleElement):
             ...
             TypeError: unsupported operand parent(s) for *: 'Modular Symbols space of dimension 8 for Gamma_0(3) of weight 12 with sign 0 over Rational Field' and 'Ring of integers modulo 17'
         """
-        return ModularSymbolsElement(self.parent(), self.element() * other,
-                                     check=False)
+        return ModularSymbolsElement(self.parent(), self.element() * other, check=False)
 
     def _lmul_(self, left):
         r"""
@@ -211,8 +219,7 @@ class ModularSymbolsElement(hecke.HeckeModuleElement):
             ...
             TypeError: unsupported operand parent(s) for *: 'Ring of integers modulo 17' and 'Modular Symbols space of dimension 8 for Gamma_0(3) of weight 12 with sign 0 over Rational Field'
         """
-        return ModularSymbolsElement(self.parent(), left * self.element(),
-                                     check=False)
+        return ModularSymbolsElement(self.parent(), left * self.element(), check=False)
 
     def _neg_(self):
         r"""
@@ -240,13 +247,15 @@ class ModularSymbolsElement(hecke.HeckeModuleElement):
             sage: z.parent() is M
             True
         """
-        return ModularSymbolsElement(self.parent(), self.element() - other.element(), check=False)
+        return ModularSymbolsElement(
+            self.parent(), self.element() - other.element(), check=False
+        )
 
-#   this clearly hasn't worked for some time -- the method embedded_vector_space doesn't exist -- DL 2009-05-18
-#    def coordinate_vector(self):
-#        if self.parent().is_ambient():
-#            return self.element()
-#        return self.parent().embedded_vector_space().coordinate_vector(self.element())
+    #   this clearly hasn't worked for some time -- the method embedded_vector_space doesn't exist -- DL 2009-05-18
+    #    def coordinate_vector(self):
+    #        if self.parent().is_ambient():
+    #            return self.element()
+    #        return self.parent().embedded_vector_space().coordinate_vector(self.element())
 
     def list(self):
         r"""
@@ -282,8 +291,11 @@ class ModularSymbolsElement(hecke.HeckeModuleElement):
             v = self.element()
             manin_symbols = A.ambient_hecke_module().manin_symbols_basis()
             F = formal_sum.FormalSums(A.base_ring())
-            ms = F([(v[i], manin_symbols[i]) for i in range(v.degree())
-                    if v[i] != 0], check=False, reduce=False)
+            ms = F(
+                [(v[i], manin_symbols[i]) for i in range(v.degree()) if v[i] != 0],
+                check=False,
+                reduce=False,
+            )
             self.__manin_symbols = ms
         return self.__manin_symbols
 

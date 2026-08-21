@@ -2,7 +2,6 @@
 Lazy format strings
 """
 
-
 from typing import Self
 
 
@@ -98,7 +97,7 @@ class LazyFormat(str):
             <params>
         """
         if hasattr(self, "_args"):  # self is already bound...
-            self = LazyFormat(""+self)
+            self = LazyFormat("" + self)
         self._args = args
         return self
 
@@ -124,7 +123,7 @@ class LazyFormat(str):
         try:
             args = self._args
         except AttributeError:
-            return "unbound LazyFormat(\""+self+"\")"
+            return "unbound LazyFormat(\"" + self + "\")"
         else:
             return str.__mod__(self, args)
 

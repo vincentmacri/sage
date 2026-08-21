@@ -26,6 +26,7 @@ class SloaneOEIS(Feature):
         sage: bool(SloaneOEIS().is_present())  # optional - sloane_database
         True
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -34,8 +35,11 @@ class SloaneOEIS(Feature):
             sage: isinstance(SloaneOEIS(), SloaneOEIS)
             True
         """
-        Feature.__init__(self, name='sloane_database',
-                         description='Sloane Online Encyclopedia of Integer Sequences')
+        Feature.__init__(
+            self,
+            name='sloane_database',
+            description='Sloane Online Encyclopedia of Integer Sequences',
+        )
 
     def _is_present(self):
         r"""

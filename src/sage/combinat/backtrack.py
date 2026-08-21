@@ -10,6 +10,7 @@ tree or graph structure.
 
 This module has mostly been superseded by ``RecursivelyEnumeratedSet``.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #                     2009 Nicolas M. Thiery <nthiery at users.sf.net>
@@ -29,7 +30,8 @@ This module has mostly been superseded by ``RecursivelyEnumeratedSet``.
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.categories.monoids import Monoids
 from sage.categories.commutative_additive_semigroups import (
-    CommutativeAdditiveSemigroups)
+    CommutativeAdditiveSemigroups,
+)
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.integer_ring import ZZ
 from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet_forest
@@ -126,7 +128,15 @@ class PositiveIntegerSemigroup(UniqueRepresentation, RecursivelyEnumeratedSet_fo
             sage: from sage.combinat.backtrack import PositiveIntegerSemigroup
             sage: PP = PositiveIntegerSemigroup()
         """
-        RecursivelyEnumeratedSet_forest.__init__(self, facade=ZZ, category=(InfiniteEnumeratedSets(), CommutativeAdditiveSemigroups(), Monoids()))
+        RecursivelyEnumeratedSet_forest.__init__(
+            self,
+            facade=ZZ,
+            category=(
+                InfiniteEnumeratedSets(),
+                CommutativeAdditiveSemigroups(),
+                Monoids(),
+            ),
+        )
 
     def roots(self):
         r"""

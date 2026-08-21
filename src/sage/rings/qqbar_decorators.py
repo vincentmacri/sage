@@ -86,14 +86,20 @@ def handle_AA_and_QQbar(func):
         from sage.misc.flatten import flatten
         from sage.rings.polynomial.polynomial_element import Polynomial
         from sage.rings.polynomial.multi_polynomial import MPolynomial
-        from sage.rings.polynomial.multi_polynomial_sequence import PolynomialSequence, PolynomialSequence_generic
+        from sage.rings.polynomial.multi_polynomial_sequence import (
+            PolynomialSequence,
+            PolynomialSequence_generic,
+        )
         from sage.rings.ideal import Ideal, Ideal_generic
         from sage.rings.abc import AlgebraicField_common
 
-        if not any(isinstance(a, (Polynomial, MPolynomial, Ideal_generic))
-                   and isinstance(a.base_ring(), AlgebraicField_common)
-                   or isinstance(a, PolynomialSequence_generic)
-                   and isinstance(a.ring().base_ring(), AlgebraicField_common) for a in args):
+        if not any(
+            isinstance(a, (Polynomial, MPolynomial, Ideal_generic))
+            and isinstance(a.base_ring(), AlgebraicField_common)
+            or isinstance(a, PolynomialSequence_generic)
+            and isinstance(a.ring().base_ring(), AlgebraicField_common)
+            for a in args
+        ):
             return func(*args, **kwds)
 
         polynomials = []
@@ -112,7 +118,10 @@ def handle_AA_and_QQbar(func):
         # same_field=True might trigger an exception otherwise.
 
         from sage.rings.qqbar import number_field_elements_from_algebraics
-        numfield, new_elems, morphism = number_field_elements_from_algebraics(orig_elems, same_field=True, minimal=True)
+
+        numfield, new_elems, morphism = number_field_elements_from_algebraics(
+            orig_elems, same_field=True, minimal=True
+        )
 
         elem_dict = dict(zip(orig_elems, new_elems))
 
@@ -120,16 +129,21 @@ def handle_AA_and_QQbar(func):
             if isinstance(item, Ideal_generic):
                 return Ideal([forward_map(g) for g in item.gens()])
             if isinstance(item, Polynomial):
-                return item.map_coefficients(elem_dict.__getitem__, new_base_ring=numfield)
+                return item.map_coefficients(
+                    elem_dict.__getitem__, new_base_ring=numfield
+                )
             if isinstance(item, MPolynomial):
-                return item.map_coefficients(elem_dict.__getitem__, new_base_ring=numfield)
+                return item.map_coefficients(
+                    elem_dict.__getitem__, new_base_ring=numfield
+                )
             if isinstance(item, PolynomialSequence_generic):
-                return PolynomialSequence(map(forward_map, item),
-                                          immutable=item.is_immutable())
+                return PolynomialSequence(
+                    map(forward_map, item), immutable=item.is_immutable()
+                )
             if isinstance(item, list):
                 return list(map(forward_map, item))
             if isinstance(item, dict):
-                return {k: forward_map(v) for k,v in item.items()}
+                return {k: forward_map(v) for k, v in item.items()}
             if isinstance(item, tuple):
                 return tuple(map(forward_map, item))
             if isinstance(item, set):
@@ -144,8 +158,9 @@ def handle_AA_and_QQbar(func):
             if isinstance(item, MPolynomial):
                 return item.map_coefficients(morphism)
             if isinstance(item, PolynomialSequence_generic):
-                return PolynomialSequence(map(reverse_map, item),
-                                          immutable=item.is_immutable())
+                return PolynomialSequence(
+                    map(reverse_map, item), immutable=item.is_immutable()
+                )
             if isinstance(item, list):
                 return list(map(reverse_map, item))
             if isinstance(item, tuple):

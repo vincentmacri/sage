@@ -156,9 +156,11 @@ class DrinfeldModuleAction(Action):
             sage: latex(action)
             \text{Action{ }on{ }}\Bold{F}_{11^{2}}\text{{ }induced{ }by{ }}\phi: T \mapsto τ^{3} + z
         """
-        return f'\\text{{Action{{ }}on{{ }}}}' \
-               f'{latex(self._base)}\\text{{{{ }}' \
-               f'induced{{ }}by{{ }}}}{latex(self._drinfeld_module)}'
+        return (
+            f'\\text{{Action{{ }}on{{ }}}}'
+            f'{latex(self._base)}\\text{{{{ }}'
+            f'induced{{ }}by{{ }}}}{latex(self._drinfeld_module)}'
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -176,8 +178,7 @@ class DrinfeldModuleAction(Action):
             sage: action
             Action on Finite Field in z of size 11^2 induced by Drinfeld module defined by T |--> τ^3 + z
         """
-        return f'Action on {self._base} induced by ' \
-               f'{self._drinfeld_module}'
+        return f'Action on {self._base} induced by {self._drinfeld_module}'
 
     def drinfeld_module(self):
         r"""

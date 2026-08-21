@@ -39,7 +39,6 @@ from sage.structure.sage_object import SageObject
 
 
 class Image(SageObject):
-
     def __init__(self, mode, size, color='white'):
         """
         Create a new image with the given mode and size.
@@ -94,6 +93,7 @@ class Image(SageObject):
         """
         # pillow does not support Sage integers as color
         from sage.rings.integer import Integer
+
         if isinstance(color, Integer):
             color = int(color)
         elif isinstance(color, tuple):
@@ -258,6 +258,7 @@ class Image(SageObject):
             sage: img.show()
         """
         from sage.repl.rich_output import get_display_manager
+
         dm = get_display_manager()
         dm.display_immediately(self)
 
@@ -289,6 +290,7 @@ class Image(SageObject):
             ('GIF', types.OutputImageGif),
         )
         from sage.repl.rich_output.buffer import OutputBuffer
+
         for format, output_container in preferred:
             if output_container in display_manager.supported_output():
                 stream = io.BytesIO()

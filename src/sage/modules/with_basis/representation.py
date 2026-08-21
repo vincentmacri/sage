@@ -20,11 +20,17 @@ AUTHORS:
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import Element
-from sage.combinat.free_module import CombinatorialFreeModule, CombinatorialFreeModule_Tensor
+from sage.combinat.free_module import (
+    CombinatorialFreeModule,
+    CombinatorialFreeModule_Tensor,
+)
 from sage.categories.modules import Modules
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
-from sage.modules.with_basis.subquotient import SubmoduleWithBasis, QuotientModuleWithBasis
+from sage.modules.with_basis.subquotient import (
+    SubmoduleWithBasis,
+    QuotientModuleWithBasis,
+)
 
 
 class Representation_abstract:
@@ -44,6 +50,7 @@ class Representation_abstract:
         This class should come before :class:`CombinatorialFreeModule` in the
         MRO in order for tensor products to use the correct class.
     """
+
     def __init__(self, semigroup, side, algebra=None):
         """
         Initialize ``self``.
@@ -78,18 +85,25 @@ class Representation_abstract:
             # No need to do anything if it is already in the MRO
             if mixin not in self.__class__.__mro__:
                 from sage.structure.dynamic_class import dynamic_class
+
                 cat = self.category()
                 # perhaps the category has not been initialized yet
                 if not isinstance(self, cat.parent_class):
-                    self.__class__ = dynamic_class(f"{type(self).__name__}_with_mixin",
-                                                   (type(self), mixin),
-                                                   doccls=type(self))
+                    self.__class__ = dynamic_class(
+                        f"{type(self).__name__}_with_mixin",
+                        (type(self), mixin),
+                        doccls=type(self),
+                    )
                 else:
-                    base = self.__class__.__base__  # strip off the category dynamic class
+                    base = (
+                        self.__class__.__base__
+                    )  # strip off the category dynamic class
                     # recreate the dynamic class with adding the mixin
-                    self.__class__ = dynamic_class(f"{base.__name__}_with_category",
-                                                   (base, mixin, cat.parent_class),
-                                                   doccls=base)
+                    self.__class__ = dynamic_class(
+                        f"{base.__name__}_with_category",
+                        (base, mixin, cat.parent_class),
+                        doccls=base,
+                    )
 
     def semigroup(self):
         """
@@ -237,6 +251,7 @@ class Representation_abstract:
             True
         """
         from sage.categories.groups import Groups
+
         if G is None:
             G = self.semigroup()
         elif chi in Groups():
@@ -400,8 +415,10 @@ class Representation_abstract:
         """
         G = self._semigroup
         B = self.basis()
-        chi = [sum((g * B[k])[k] for k in B.keys())
-               for g in G.conjugacy_classes_representatives()]
+        chi = [
+            sum((g * B[k])[k] for k in B.keys())
+            for g in G.conjugacy_classes_representatives()
+        ]
         try:
             return G.character(chi)
         except AttributeError:
@@ -438,11 +455,16 @@ class Representation_abstract:
 
         if self.dimension() == 0:
             from sage.rings.rational_field import QQ
-            ccrep = [g for g in G.conjugacy_classes_representatives()
-                     if not p.divides(g.order())]
+
+            ccrep = [
+                g
+                for g in G.conjugacy_classes_representatives()
+                if not p.divides(g.order())
+            ]
             return vector(QQ, [QQ.zero()] * len(ccrep))
 
         from sage.rings.number_field.number_field import CyclotomicField
+
         chi = []
         for g in G.conjugacy_classes_representatives():
             if p.divides(g.order()):
@@ -462,8 +484,8 @@ class Representation_abstract:
                 zeta = zetas[o]
                 prim = prims[o]
                 for deg in range(o):
-                    if prim ** deg == la:
-                        val += zeta ** deg
+                    if prim**deg == la:
+                        val += zeta**deg
                         break
             chi.append(val)
 
@@ -628,7 +650,7 @@ class Representation_abstract:
                 added = matrix([g * vec for g in G for vec in SM.rows()])
                 SM = SM.stack(added)
                 SM.echelonize()
-                SM = SM[:SM.rank()]
+                SM = SM[: SM.rank()]
             if SM.nrows() < amb_dim:
                 return SM
             return None
@@ -650,18 +672,28 @@ class Representation_abstract:
                     continue
                 SM = check_submodule(xi, gens)
                 if SM is not None:
-                    return self.subrepresentation([self.from_vector(v) for v in SM.rows()],
-                                                  is_closed=True)
+                    return self.subrepresentation(
+                        [self.from_vector(v) for v in SM.rows()], is_closed=True
+                    )
                 SM = check_submodule(xi.transpose(), gens_transpose)
                 if SM is not None:
                     # We instead want the submodule given by the orthogonal complement
-                    return self.subrepresentation([self.from_vector(v) for v in SM.right_kernel_matrix().rows()],
-                                                  is_closed=True)
+                    return self.subrepresentation(
+                        [self.from_vector(v) for v in SM.right_kernel_matrix().rows()],
+                        is_closed=True,
+                    )
                 if xi.right_kernel_matrix().nrows() == f.degree():  # good factor
                     return None  # irreducible
 
-    def subrepresentation(self, gens, check=True, already_echelonized=False,
-                          *args, is_closed=False, **opts):
+    def subrepresentation(
+        self,
+        gens,
+        check=True,
+        already_echelonized=False,
+        *args,
+        is_closed=False,
+        **opts,
+    ):
         """
         Construct a subrepresentation of ``self`` generated by ``gens``.
 
@@ -685,24 +717,29 @@ class Representation_abstract:
             5
         """
         if not is_closed and gens:
-            repr_mats = [self.representation_matrix(g)
-                         for g in self._semigroup.gens()]
+            repr_mats = [self.representation_matrix(g) for g in self._semigroup.gens()]
             amb_dim = self.dimension()
             SM = matrix([v._vector_() for v in gens])
             SM.echelonize()
-            SM = SM[:SM.rank()]
+            SM = SM[: SM.rank()]
             dim = 0
             while dim < SM.nrows() < amb_dim:
                 dim = SM.nrows()
                 added = matrix([g * vec for g in repr_mats for vec in SM.rows()])
                 SM = SM.stack(added)
                 SM.echelonize()
-                SM = SM[:SM.rank()]
+                SM = SM[: SM.rank()]
             gens = [self.from_vector(v) for v in SM.rows()]
             # it might not be echelonized w.r.t. the module's basis ordering
             already_echelonized = False
-        return self.submodule(gens, *args, submodule_class=Subrepresentation, check=check,
-                              already_echelonized=already_echelonized, **opts)
+        return self.submodule(
+            gens,
+            *args,
+            submodule_class=Subrepresentation,
+            check=check,
+            already_echelonized=already_echelonized,
+            **opts,
+        )
 
     def quotient_representation(self, subrepr, already_echelonized=False, **kwds):
         r"""
@@ -721,8 +758,9 @@ class Representation_abstract:
             True
         """
         if not isinstance(subrepr, Subrepresentation):
-            subrepr = self.subrepresentation(subrepr, unitriangular=True,
-                                             already_echelonized=already_echelonized)
+            subrepr = self.subrepresentation(
+                subrepr, unitriangular=True, already_echelonized=already_echelonized
+            )
         return QuotientRepresentation(subrepr, **kwds)
 
     @cached_method
@@ -767,6 +805,7 @@ class Representation_abstract:
             [1, 1, 1, 1, 1, 1]
         """
         from sage.data_structures.blas_dict import linear_combination
+
         series = [self]
         cur = 0
         # The natural condition is ``while cur < len(series)``. However, the
@@ -779,12 +818,18 @@ class Representation_abstract:
                 if W is None:  # V is irreducible
                     break
                 # Construct W as a subrepresentation of ``self`` for consistency
-                Wp = self.subrepresentation([self(b) for b in W._basis],
-                                            already_echelonized=True, is_closed=True)
+                Wp = self.subrepresentation(
+                    [self(b) for b in W._basis],
+                    already_echelonized=True,
+                    is_closed=True,
+                )
                 series.append(Wp)
             else:
-                W = V.subrepresentation([V.retract(b) for b in series[cur+1]._basis],
-                                        already_echelonized=True, is_closed=True)
+                W = V.subrepresentation(
+                    [V.retract(b) for b in series[cur + 1]._basis],
+                    already_echelonized=True,
+                    is_closed=True,
+                )
 
             Q = V.quotient_representation(W)
             S = Q.find_subrepresentation()
@@ -793,21 +838,34 @@ class Representation_abstract:
                 # S_basis = [b.lift().lift().lift() for b in S.basis()]
                 # Fast version not creating transient elements
                 if V is self:
-                    S_basis = [self.element_class(self, b._monomial_coefficients) for b in S._basis]
+                    S_basis = [
+                        self.element_class(self, b._monomial_coefficients)
+                        for b in S._basis
+                    ]
                 else:
-                    S_basis = [self.element_class(self, linear_combination((V._basis[i]._monomial_coefficients, coeff)
-                                                                           for i, coeff in b._monomial_coefficients.items()))
-                               for b in S._basis]
+                    S_basis = [
+                        self.element_class(
+                            self,
+                            linear_combination(
+                                (V._basis[i]._monomial_coefficients, coeff)
+                                for i, coeff in b._monomial_coefficients.items()
+                            ),
+                        )
+                        for b in S._basis
+                    ]
                 # Lift the basis of W', which is W as a subrepresentation of ``self``
                 # This is equivalent to [b.lift() for b in series[cur+1].basis()]
-                Wp_basis = list(series[cur+1]._basis)
+                Wp_basis = list(series[cur + 1]._basis)
                 Wp = self.subrepresentation(S_basis + Wp_basis, is_closed=True)
-                series.insert(cur+1, Wp)
+                series.insert(cur + 1, Wp)
                 if V is self:
                     W = Wp
                 else:
-                    W = V.subrepresentation([V.retract(b) for b in series[cur+1]._basis],
-                                            already_echelonized=True, is_closed=True)
+                    W = V.subrepresentation(
+                        [V.retract(b) for b in series[cur + 1]._basis],
+                        already_echelonized=True,
+                        is_closed=True,
+                    )
                 Q = V.quotient_representation(W)
                 S = Q.find_subrepresentation()
 
@@ -826,25 +884,29 @@ class Representation_abstract:
         lift = prev.lift
         retract = lift.section()
         for W in series[2:]:
-            prev = prev.subrepresentation([retract(b) for b in W._basis],
-                                          already_echelonized=True, is_closed=True)
+            prev = prev.subrepresentation(
+                [retract(b) for b in W._basis], already_echelonized=True, is_closed=True
+            )
             ret.append(prev)
 
             # Construct the lift map prev -> self
             data = {i: lift(prev._basis[i]) for i in prev._basis.keys()}
-            lift = prev.module_morphism(data.__getitem__,
-                                        codomain=self,
-                                        triangular='lower',
-                                        unitriangular=False,
-                                        key=W._support_key,
-                                        inverse_on_support='compute')
+            lift = prev.module_morphism(
+                data.__getitem__,
+                codomain=self,
+                triangular='lower',
+                unitriangular=False,
+                key=W._support_key,
+                inverse_on_support='compute',
+            )
             retract = lift.section()
 
         ret.append(ret[-1].subrepresentation([], is_closed=True))
 
         # Construct the simples
-        simples = [ret[i].quotient_representation(ret[i+1])
-                   for i in range(len(ret)-2)]
+        simples = [
+            ret[i].quotient_representation(ret[i + 1]) for i in range(len(ret) - 2)
+        ]
         simples.append(ret[-2])
 
         return (tuple(ret), tuple(simples))
@@ -1011,8 +1073,13 @@ class Representation_abstract:
                 if sP is P._semigroup_algebra:
                     if not self:
                         return self
-                    return P.linear_combination(((P._semigroup_action(ms, self, self_on_left), cs)
-                                                 for ms, cs in scalar), not self_on_left)
+                    return P.linear_combination(
+                        (
+                            (P._semigroup_action(ms, self, self_on_left), cs)
+                            for ms, cs in scalar
+                        ),
+                        not self_on_left,
+                    )
 
                 if P._semigroup.has_coerce_map_from(sP):
                     scalar = P._semigroup(scalar)
@@ -1020,7 +1087,9 @@ class Representation_abstract:
 
                 # Check for scalars first before general coercion to the semigroup algebra.
                 # This will result in a faster action for the scalars.
-                ret = CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+                ret = CombinatorialFreeModule.Element._acted_upon_(
+                    self, scalar, self_on_left
+                )
                 if ret is not None:
                     return ret
 
@@ -1030,7 +1099,9 @@ class Representation_abstract:
 
                 return None
 
-            return CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+            return CombinatorialFreeModule.Element._acted_upon_(
+                self, scalar, self_on_left
+            )
 
 
 class Representation(Representation_abstract, CombinatorialFreeModule):
@@ -1091,6 +1162,7 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
 
     - :wikipedia:`Group_representation`
     """
+
     def __init__(self, semigroup, module, on_basis, side='left', **kwargs):
         """
         Initialize ``self``.
@@ -1158,8 +1230,13 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
         if 'FiniteDimensional' in module.category().axioms():
             category = category.FiniteDimensional()
 
-        CombinatorialFreeModule.__init__(self, module.base_ring(), indices, category=category,
-                                         **module.print_options())
+        CombinatorialFreeModule.__init__(
+            self,
+            module.base_ring(),
+            indices,
+            category=category,
+            **module.print_options(),
+        )
         Representation_abstract.__init__(self, semigroup, side)
 
     def _test_representation(self, **options):
@@ -1181,6 +1258,7 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
             sage: R._test_representation(max_runs=500)
         """
         from sage.misc.functional import sqrt
+
         tester = self._tester(**options)
         S = tester.some_elements()
         L = []
@@ -1193,9 +1271,9 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
             for y in L:
                 for elt in S:
                     if self._left_repr:
-                        tester.assertEqual(x*(y*elt), (x*y)*elt)
+                        tester.assertEqual(x * (y * elt), (x * y) * elt)
                     else:
-                        tester.assertEqual((elt*y)*x, elt*(y*x))
+                        tester.assertEqual((elt * y) * x, elt * (y * x))
 
     def _repr_(self):
         """
@@ -1211,7 +1289,8 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
              over Rational Field
         """
         return "Representation of {} indexed by {} over {}".format(
-            self._semigroup, self.basis().keys(), self.base_ring())
+            self._semigroup, self.basis().keys(), self.base_ring()
+        )
 
     def _repr_term(self, b):
         """
@@ -1254,7 +1333,9 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
             () + (1,3) + 2*(1,3)(2,4) + 3*(1,4,3,2)
         """
         if isinstance(x, Element) and x.parent() is self._module:
-            return self._from_dict(x.monomial_coefficients(copy=False), remove_zeros=False)
+            return self._from_dict(
+                x.monomial_coefficients(copy=False), remove_zeros=False
+            )
         return super()._element_constructor_(x)
 
     def product_by_coercion(self, left, right):
@@ -1295,7 +1376,9 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
         M = self._module
 
         # Multiply in self._module
-        p = M._from_dict(left._monomial_coefficients, False, False) * M._from_dict(right._monomial_coefficients, False, False)
+        p = M._from_dict(left._monomial_coefficients, False, False) * M._from_dict(
+            right._monomial_coefficients, False, False
+        )
 
         # Convert from a term in self._module to a term in self
         return self._from_dict(p.monomial_coefficients(copy=False), False, False)
@@ -1316,8 +1399,10 @@ class Representation(Representation_abstract, CombinatorialFreeModule):
         """
         if self._left_repr == vec_on_left:
             g = ~g
-        return self.linear_combination(((self._on_basis(g, m), c)
-                                       for m, c in vec._monomial_coefficients.items()), not vec_on_left)
+        return self.linear_combination(
+            ((self._on_basis(g, m), c) for m, c in vec._monomial_coefficients.items()),
+            not vec_on_left,
+        )
 
 
 class Subrepresentation(Representation_abstract, SubmoduleWithBasis):
@@ -1328,6 +1413,7 @@ class Subrepresentation(Representation_abstract, SubmoduleWithBasis):
     subrepresentation is a submodule of `R` that is closed under
     the action of `X`.
     """
+
     # Use the same normalization as the base class
     __classcall_private__ = SubmoduleWithBasis.__classcall_private__
 
@@ -1343,7 +1429,9 @@ class Subrepresentation(Representation_abstract, SubmoduleWithBasis):
             sage: TestSuite(S).run()
         """
         SubmoduleWithBasis.__init__(self, basis, support_order, ambient, *args, **opts)
-        Representation_abstract.__init__(self, ambient.semigroup(), ambient.side(), ambient.semigroup_algebra())
+        Representation_abstract.__init__(
+            self, ambient.semigroup(), ambient.side(), ambient.semigroup_algebra()
+        )
 
     def _repr_(self):
         r"""
@@ -1357,7 +1445,9 @@ class Subrepresentation(Representation_abstract, SubmoduleWithBasis):
             Subrepresentation with basis {0} of Left Regular Representation of
              Dihedral group of order 8 as a permutation group over Integer Ring
         """
-        return "Subrepresentation with basis {} of {}".format(self.basis().keys(), self._ambient)
+        return "Subrepresentation with basis {} of {}".format(
+            self.basis().keys(), self._ambient
+        )
 
     class Element(SubmoduleWithBasis.Element):
         def _acted_upon_(self, scalar, self_on_left=True):
@@ -1405,6 +1495,7 @@ class QuotientRepresentation(Representation_abstract, QuotientModuleWithBasis):
     The quotient of a representation by another representation, which
     admits a natural structure of a representation.
     """
+
     # Use the same normalization as the base class
     __classcall_private__ = QuotientModuleWithBasis.__classcall_private__
 
@@ -1422,7 +1513,9 @@ class QuotientRepresentation(Representation_abstract, QuotientModuleWithBasis):
         """
         QuotientModuleWithBasis.__init__(self, *args, **kwds)
         amb = self.ambient()
-        Representation_abstract.__init__(self, amb.semigroup(), amb.side(), amb.semigroup_algebra())
+        Representation_abstract.__init__(
+            self, amb.semigroup(), amb.side(), amb.semigroup_algebra()
+        )
 
     def _repr_(self):
         r"""
@@ -1439,7 +1532,9 @@ class QuotientRepresentation(Representation_abstract, QuotientModuleWithBasis):
              of Left Regular Representation of Dihedral group of order 8
              as a permutation group over Rational Field
         """
-        return "Quotient representation with basis {} of {}".format(self.basis().keys(), self._ambient)
+        return "Quotient representation with basis {} of {}".format(
+            self.basis().keys(), self._ambient
+        )
 
     Element = Subrepresentation.Element
 
@@ -1448,6 +1543,7 @@ class Representation_Tensor(Representation_abstract, CombinatorialFreeModule_Ten
     r"""
     Tensor product of representations.
     """
+
     @staticmethod
     def __classcall_private__(cls, reps, **options):
         r"""
@@ -1478,14 +1574,22 @@ class Representation_Tensor(Representation_abstract, CombinatorialFreeModule_Ten
         assert len(reps) > 0
         assert isinstance(reps[0], Representation_abstract)
         S = reps[0].semigroup()
-        if not all(isinstance(module, Representation_abstract)
-                   and module.semigroup() == S for module in reps):
+        if not all(
+            isinstance(module, Representation_abstract) and module.semigroup() == S
+            for module in reps
+        ):
             return CombinatorialFreeModule_Tensor(reps, **options)
         R = reps[0].base_ring()
         if not all(module in Modules(R).WithBasis() for module in reps):
             raise ValueError("not all representations over the same base ring")
         # flatten the list of modules so that tensor(A, tensor(B,C)) gets rewritten into tensor(A, B, C)
-        reps = sum((module._sets if isinstance(module, Representation_Tensor) else (module,) for module in reps), ())
+        reps = sum(
+            (
+                module._sets if isinstance(module, Representation_Tensor) else (module,)
+                for module in reps
+            ),
+            (),
+        )
         if all('FiniteDimensional' in M.category().axioms() for M in reps):
             options['category'] = options['category'].FiniteDimensional()
         return super().__classcall__(cls, reps, **options)
@@ -1504,11 +1608,13 @@ class Representation_Tensor(Representation_abstract, CombinatorialFreeModule_Ten
         """
         sides = set(M.side() for M in reps)
         if "left" and "right" in sides:
-            side = reps[0].side()  # make a choice as this is not fundamentally important
+            side = reps[
+                0
+            ].side()  # make a choice as this is not fundamentally important
         else:
             if len(sides) == 2:  # mix of one side and twosided
                 sides.remove("twosided")
-            side, = sides  # get the unique side remaining
+            (side,) = sides  # get the unique side remaining
         CombinatorialFreeModule_Tensor.__init__(self, reps, **options)
         Representation_abstract.__init__(self, reps[0].semigroup(), side)
 
@@ -1534,10 +1640,14 @@ class Representation_Tensor(Representation_abstract, CombinatorialFreeModule_Ten
         """
         bases = [M.basis() for M in self._sets]
         if vec_on_left:
-            return self.linear_combination((self._tensor_of_elements([B[k] * g for B, k in zip(bases, b)]), c)
-                                           for b, c in vec._monomial_coefficients.items())
-        return self.linear_combination((self._tensor_of_elements([g * B[k] for B, k in zip(bases, b)]), c)
-                                       for b, c in vec._monomial_coefficients.items())
+            return self.linear_combination(
+                (self._tensor_of_elements([B[k] * g for B, k in zip(bases, b)]), c)
+                for b, c in vec._monomial_coefficients.items()
+            )
+        return self.linear_combination(
+            (self._tensor_of_elements([g * B[k] for B, k in zip(bases, b)]), c)
+            for b, c in vec._monomial_coefficients.items()
+        )
 
     class Element(Representation_abstract.Element):
         pass
@@ -1550,6 +1660,7 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
     r"""
     The exterior power representation (in a fixed degree).
     """
+
     def __init__(self, rep, degree=None, category=None, **options):
         r"""
         Initialize ``self``.
@@ -1584,6 +1695,7 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
         from sage.algebras.clifford_algebra import ExteriorAlgebra
         from sage.algebras.clifford_algebra import CliffordAlgebraIndices
         from sage.rings.integer_ring import ZZ
+
         self._degree = degree
         self._rep = rep
         R = rep.base_ring()
@@ -1597,7 +1709,9 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
         R = rep.base_ring()
         category = Modules(R).WithBasis().or_subcategory(category)
         CombinatorialFreeModule.__init__(self, R, ind, category=category, **options)
-        Representation_abstract.__init__(self, rep.semigroup(), rep.side(), rep.semigroup_algebra())
+        Representation_abstract.__init__(
+            self, rep.semigroup(), rep.side(), rep.semigroup_algebra()
+        )
 
     def _repr_(self):
         r"""
@@ -1617,7 +1731,9 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
         """
         if self._degree is None:
             return "Exterior algebra representation of {}".format(repr(self._rep))
-        return "Exterior power representation of {} in degree {}".format(repr(self._rep), self._degree)
+        return "Exterior power representation of {} in degree {}".format(
+            repr(self._rep), self._degree
+        )
 
     def _latex_(self):
         r"""
@@ -1633,6 +1749,7 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
             \bigwedge ...
         """
         from sage.misc.latex import latex
+
         if self._degree is None:
             return "\\bigwedge " + latex(self._rep)
         return "\\bigwedge^{{{}}} ".format(self._degree) + latex(self._rep)
@@ -1670,6 +1787,7 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
             2*()/\(5,6,7) + 2*()/\(5,7,6) + 3*()/\(1,2)(3,4)
         """
         from sage.typeset.ascii_art import ascii_art
+
         if len(m) == 0:
             return ascii_art('1')
         wedge = '/\\'
@@ -1691,9 +1809,11 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
             2*()∧(5,6,7) + 2*()∧(5,7,6) + 3*()∧(1,2)(3,4)
         """
         from sage.typeset.unicode_art import unicode_art
+
         if len(m) == 0:
             return unicode_art('1')
         import unicodedata
+
         wedge = unicodedata.lookup('LOGICAL AND')
         B = self._rep.basis()
         return unicode_art(*[B[self._basis_order[i]] for i in m], sep=wedge)
@@ -1714,6 +1834,7 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
         if len(m) == 0:
             return '1'
         from sage.misc.latex import latex
+
         B = self._rep.basis()
         return " \\wedge ".join(latex(B[self._basis_order[i]]) for i in m)
 
@@ -1731,7 +1852,9 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
             e0 + 2*e1 + 3*e2 + 4*e3 + 5*e4 + 6*e5
         """
         ind = self._indices
-        data = {ind([self._inv_map[k]]): c for k, c in elt._monomial_coefficients.items()}
+        data = {
+            ind([self._inv_map[k]]): c for k, c in elt._monomial_coefficients.items()
+        }
         return self._extalg.element_class(self._extalg, data)
 
     def _semigroup_action(self, g, vec, vec_on_left):
@@ -1755,8 +1878,13 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
             -2*(1,3,2,4)(6,7)*(1,3,2,4)(5,6) + 2*(1,3,2,4)(5,6)*(1,3,2,4)(5,7)
              - 3*(1,4,2,3)(5,6)*(1,3,2,4)(5,6)
         """
-        return self.linear_combination(((self._action_on_basis(g, b, vec_on_left), c)
-                                        for b, c in vec._monomial_coefficients.items()), not vec_on_left)
+        return self.linear_combination(
+            (
+                (self._action_on_basis(g, b, vec_on_left), c)
+                for b, c in vec._monomial_coefficients.items()
+            ),
+            not vec_on_left,
+        )
 
     def _action_on_basis(self, g, b, vec_on_left):
         r"""
@@ -1784,11 +1912,13 @@ class Representation_Exterior(Representation_abstract, CombinatorialFreeModule):
         """
         B = self._rep.basis()
         if vec_on_left:
-            temp = self._extalg.prod(self._from_repr_to_ext(B[self._basis_order[bk]] * g)
-                                     for bk in b)
+            temp = self._extalg.prod(
+                self._from_repr_to_ext(B[self._basis_order[bk]] * g) for bk in b
+            )
         else:
-            temp = self._extalg.prod(self._from_repr_to_ext(g * B[self._basis_order[bk]])
-                                     for bk in b)
+            temp = self._extalg.prod(
+                self._from_repr_to_ext(g * B[self._basis_order[bk]]) for bk in b
+            )
         return self.element_class(self, temp._monomial_coefficients)
 
 
@@ -1796,6 +1926,7 @@ class Representation_ExteriorAlgebra(Representation_Exterior):
     r"""
     The exterior algebra representation.
     """
+
     def __init__(self, rep, degree=None, category=None, **options):
         r"""
         Initialize ``self``.
@@ -1818,8 +1949,11 @@ class Representation_ExteriorAlgebra(Representation_Exterior):
         """
         R = rep.base_ring()
         from sage.categories.algebras_with_basis import AlgebrasWithBasis
+
         category = AlgebrasWithBasis(R).or_subcategory(category)
-        Representation_Exterior.__init__(self, rep, degree=degree, category=category, **options)
+        Representation_Exterior.__init__(
+            self, rep, degree=degree, category=category, **options
+        )
 
     @cached_method
     def one_basis(self):
@@ -1863,6 +1997,7 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
     r"""
     The symmetric power representation in a fixed degree.
     """
+
     def __init__(self, rep, degree, **options):
         r"""
         Initialize ``self``.
@@ -1888,6 +2023,7 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         from sage.combinat.integer_vector import IntegerVectors
         from sage.rings.integer_ring import ZZ
+
         self._degree = degree
         self._rep = rep
         R = rep.base_ring()
@@ -1900,7 +2036,9 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
         self._inv_map = {b: G[i] for i, b in enumerate(self._basis_order)}
         ind = IntegerVectors(degree, dim)
         CombinatorialFreeModule.__init__(self, rep.base_ring(), ind, **options)
-        Representation_abstract.__init__(self, rep.semigroup(), rep.side(), rep.semigroup_algebra())
+        Representation_abstract.__init__(
+            self, rep.semigroup(), rep.side(), rep.semigroup_algebra()
+        )
 
     def _repr_(self):
         r"""
@@ -1915,7 +2053,9 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
              Dicyclic group of order 12 as a permutation group over Rational Field
              in degree 7
         """
-        return "Symmetric power representation of {} in degree {}".format(repr(self._rep), self._degree)
+        return "Symmetric power representation of {} in degree {}".format(
+            repr(self._rep), self._degree
+        )
 
     def _latex_(self):
         r"""
@@ -1929,6 +2069,7 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
             S^{4} ...
         """
         from sage.misc.latex import latex
+
         return "S^{{{}}} {}".format(self._degree, latex(self._rep))
 
     def _repr_term(self, m):
@@ -1953,8 +2094,13 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
         if not self._degree:
             return '1'
         B = self._rep.basis()
-        return '*'.join(repr(B[self._basis_order[i]]) if e == 1 else repr(B[self._basis_order[i]]) + f'^{e}'
-                        for i,e in enumerate(m) if e)
+        return '*'.join(
+            repr(B[self._basis_order[i]])
+            if e == 1
+            else repr(B[self._basis_order[i]]) + f'^{e}'
+            for i, e in enumerate(m)
+            if e
+        )
 
     def _ascii_art_term(self, m):
         r"""
@@ -1975,6 +2121,7 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
             2*1
         """
         from sage.typeset.ascii_art import ascii_art
+
         if not self._degree:
             return ascii_art('1')
         B = self._rep.basis()
@@ -2009,6 +2156,7 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
             2*1
         """
         from sage.typeset.unicode_art import unicode_art
+
         if not self._degree:
             return unicode_art('1')
         B = self._rep.basis()
@@ -2044,9 +2192,15 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
         if not self._degree:
             return '1'
         from sage.misc.latex import latex
+
         B = self._rep.basis()
-        return " ".join(latex(B[self._basis_order[i]]) if e == 1 else latex(B[self._basis_order[i]]) + f"^{{{e}}}"
-                        for i, e in enumerate(m) if e)
+        return " ".join(
+            latex(B[self._basis_order[i]])
+            if e == 1
+            else latex(B[self._basis_order[i]]) + f"^{{{e}}}"
+            for i, e in enumerate(m)
+            if e
+        )
 
     def _from_repr_to_sym(self, elt):
         r"""
@@ -2061,8 +2215,9 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
             sage: S3L._from_repr_to_sym(sum(i*b for i,b in enumerate(L.basis(), start=1)))
             e0 + 2*e1 + 3*e2 + 4*e3 + 5*e4 + 6*e5
         """
-        return self._symalg.sum(c * self._inv_map[k]
-                                for k, c in elt._monomial_coefficients.items())
+        return self._symalg.sum(
+            c * self._inv_map[k] for k, c in elt._monomial_coefficients.items()
+        )
 
     def _semigroup_action(self, g, vec, vec_on_left):
         r"""
@@ -2085,8 +2240,13 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
             3*(1,3,2,4)(5,6)*(1,3,2,4)(5,7) + 2*(1,3,2,4)(5,6)^2
              + 2*(1,3,2,4)(6,7)*(1,3,2,4)(5,6)
         """
-        return self.linear_combination(((self._action_on_basis(g, b, vec_on_left), c)
-                                        for b, c in vec._monomial_coefficients.items()), not vec_on_left)
+        return self.linear_combination(
+            (
+                (self._action_on_basis(g, b, vec_on_left), c)
+                for b, c in vec._monomial_coefficients.items()
+            ),
+            not vec_on_left,
+        )
 
     def _action_on_basis(self, g, b, vec_on_left):
         r"""
@@ -2114,11 +2274,15 @@ class Representation_Symmetric(Representation_abstract, CombinatorialFreeModule)
         """
         B = self._rep.basis()
         if vec_on_left:
-            temp = self._symalg.prod(self._from_repr_to_sym(B[self._basis_order[bk]] * g) ** e
-                                     for bk, e in enumerate(b))
+            temp = self._symalg.prod(
+                self._from_repr_to_sym(B[self._basis_order[bk]] * g) ** e
+                for bk, e in enumerate(b)
+            )
         else:
-            temp = self._symalg.prod(self._from_repr_to_sym(g * B[self._basis_order[bk]]) ** e
-                                     for bk, e in enumerate(b))
+            temp = self._symalg.prod(
+                self._from_repr_to_sym(g * B[self._basis_order[bk]]) ** e
+                for bk, e in enumerate(b)
+            )
         ind = self._indices
         data = {ind(mon.exponents()[0]): c for c, mon in temp}
         return self.element_class(self, data)
@@ -2144,6 +2308,7 @@ class RegularRepresentation(Representation):
 
     - :wikipedia:`Regular_representation`
     """
+
     def __init__(self, semigroup, base_ring, side='left'):
         """
         Initialize ``self``.
@@ -2225,6 +2390,7 @@ class TrivialRepresentation(Representation_abstract, CombinatorialFreeModule):
 
     - :wikipedia:`Trivial_representation`
     """
+
     def __init__(self, semigroup, base_ring):
         """
         Initialize ``self``.
@@ -2237,6 +2403,7 @@ class TrivialRepresentation(Representation_abstract, CombinatorialFreeModule):
         """
         cat = Modules(base_ring).WithBasis().FiniteDimensional()
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
         indices = FiniteEnumeratedSet(['v'])
         CombinatorialFreeModule.__init__(self, base_ring, indices, category=cat)
         Representation_abstract.__init__(self, semigroup, "twosided")
@@ -2252,8 +2419,9 @@ class TrivialRepresentation(Representation_abstract, CombinatorialFreeModule):
             Trivial representation of Dihedral group of order 8
              as a permutation group over Integer Ring
         """
-        return "Trivial representation of {} over {}".format(self._semigroup,
-                                                             self.base_ring())
+        return "Trivial representation of {} over {}".format(
+            self._semigroup, self.base_ring()
+        )
 
     def _semigroup_action(self, g, vec, vec_on_left):
         r"""
@@ -2319,7 +2487,9 @@ class TrivialRepresentation(Representation_abstract, CombinatorialFreeModule):
                     d = self.monomial_coefficients(copy=True)
                     d['v'] *= sum(scalar.coefficients())
                     return P._from_dict(d)
-            return CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+            return CombinatorialFreeModule.Element._acted_upon_(
+                self, scalar, self_on_left
+            )
 
 
 class SignRepresentation_abstract(Representation_abstract, CombinatorialFreeModule):
@@ -2344,6 +2514,7 @@ class SignRepresentation_abstract(Representation_abstract, CombinatorialFreeModu
 
     - :wikipedia:`Representation_theory_of_the_symmetric_group`
     """
+
     def __init__(self, group, base_ring, sign_function=None):
         """
         Initialize ``self``.
@@ -2451,6 +2622,7 @@ class SignRepresentationPermgroup(SignRepresentation_abstract):
         sage: V = G.sign_representation()
         sage: TestSuite(V).run()
     """
+
     def _default_sign(self, elem):
         """
         Return the sign of the element.
@@ -2482,6 +2654,7 @@ class SignRepresentationMatrixGroup(SignRepresentation_abstract):
         sage: V = G.sign_representation()
         sage: TestSuite(V).run()
     """
+
     def _default_sign(self, elem):
         """
         Return the sign of the element.
@@ -2519,6 +2692,7 @@ class SignRepresentationCoxeterGroup(SignRepresentation_abstract):
         sage: S = W.sign_representation()
         sage: TestSuite(S).run()
     """
+
     def _default_sign(self, elem):
         """
         Return the sign of the element.
@@ -2558,6 +2732,7 @@ class ReflectionRepresentation(Representation_abstract, CombinatorialFreeModule)
         sage: all(g.matrix() == R.representation_matrix(g) for g in W)
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, W, base_ring=None):
         r"""
@@ -2592,8 +2767,11 @@ class ReflectionRepresentation(Representation_abstract, CombinatorialFreeModule)
         self._W = W
         rk = W.coxeter_matrix().rank()
         from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+
         indices = FiniteEnumeratedSet(range(rk))
-        CombinatorialFreeModule.__init__(self, base_ring, indices, prefix='e', bracket=False)
+        CombinatorialFreeModule.__init__(
+            self, base_ring, indices, prefix='e', bracket=False
+        )
         Representation_abstract.__init__(self, W, "left")
 
     def _repr_(self):
@@ -2653,6 +2831,7 @@ class NaturalMatrixRepresentation(Representation):
     - ``base_ring`` -- (optional) the base ring; the default is the base ring
       of the semigroup
     """
+
     @staticmethod
     def __classcall_private__(cls, semigroup, base_ring=None):
         r"""
@@ -2713,6 +2892,7 @@ class NaturalMatrixRepresentation(Representation):
             \Bold{F}_{2} ^{3}
         """
         from sage.misc.latex import latex
+
         return latex(self.base_ring()) + "^{{{}}}".format(self.dimension())
 
     def _semigroup_action(self, g, vec, vec_on_left):
@@ -2829,6 +3009,7 @@ class SchurFunctorRepresentation(Subrepresentation):
         sage: g * v
         3*S[0] + (-2*a+5)*S[2] + 3*a*S[4] - (5*a-2)*S[6] - 6*S[7]
     """
+
     @staticmethod
     def __classcall_private__(cls, V, shape):
         r"""
@@ -2845,6 +3026,7 @@ class SchurFunctorRepresentation(Subrepresentation):
             True
         """
         from sage.combinat.partition import _Partitions
+
         return super().__classcall__(cls, V, _Partitions(shape))
 
     def __init__(self, V, shape):
@@ -2888,17 +3070,29 @@ class SchurFunctorRepresentation(Subrepresentation):
         else:
             keys = list(V.basis().keys())
 
-        ambient = tensor([V]*d)
+        ambient = tensor([V] * d)
         cla = SymmetricGroupAlgebra(R, SymmetricGroup(d)).young_symmetrizer(shape)
         mc = cla.monomial_coefficients(copy=False)
-        gens = [ambient.sum_of_terms((tuple([k[i-1] for i in p.tuple()]), coeff)
-                                     for p, coeff in mc.items())
-                for k in ambient.basis().keys()]
+        gens = [
+            ambient.sum_of_terms(
+                (tuple([k[i - 1] for i in p.tuple()]), coeff) for p, coeff in mc.items()
+            )
+            for k in ambient.basis().keys()
+        ]
         support_order = ambient._compute_support_order(gens, None)
         from sage.sets.family import Family
+
         gens = Family(ambient.echelon_form(gens, order=support_order))
         cat = Modules(ambient.category().base_ring()).WithBasis().Subobjects()
-        Subrepresentation.__init__(self, gens, support_order, ambient, unitriangular=False, category=cat, prefix='S')
+        Subrepresentation.__init__(
+            self,
+            gens,
+            support_order,
+            ambient,
+            unitriangular=False,
+            category=cat,
+            prefix='S',
+        )
 
     def _repr_(self):
         r"""
@@ -2931,6 +3125,9 @@ class SchurFunctorRepresentation(Subrepresentation):
             }}(\Bold{F}_{2} ^{4})
         """
         from sage.misc.latex import latex
-        return "\\mathbb{{S}}_{{{}}}({})".format(latex(self._shape), latex(self._module))
+
+        return "\\mathbb{{S}}_{{{}}}({})".format(
+            latex(self._shape), latex(self._module)
+        )
 
     Element = Subrepresentation.Element

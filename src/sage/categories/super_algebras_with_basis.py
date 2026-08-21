@@ -26,6 +26,7 @@ class SuperAlgebrasWithBasis(SuperModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     def extra_super_categories(self):
         """
         EXAMPLES::
@@ -58,6 +59,7 @@ class SuperAlgebrasWithBasis(SuperModulesCategory):
                  polynomials in x, y over Rational Field
             """
             from sage.algebras.associated_graded import AssociatedGradedAlgebra
+
             return AssociatedGradedAlgebra(self)
 
     class ElementMethods:
@@ -115,10 +117,10 @@ class SuperAlgebrasWithBasis(SuperModulesCategory):
             ret = P.zero()
             for ms, cs in self:
                 term_s = P.term(ms, cs)
-                sign_s = (-1)**P.degree_on_basis(ms)
+                sign_s = (-1) ** P.degree_on_basis(ms)
                 for mx, cx in x:
                     ret += term_s * P.term(mx, cx)
-                    s = sign_s**P.degree_on_basis(mx)
+                    s = sign_s ** P.degree_on_basis(mx)
                     ret -= s * P.term(mx, cx) * term_s
             return ret
 
@@ -127,6 +129,7 @@ class SuperAlgebrasWithBasis(SuperModulesCategory):
         The category of super algebras with basis constructed by tensor
         product of super algebras with basis.
         """
+
         @cached_method
         def extra_super_categories(self):
             """

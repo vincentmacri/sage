@@ -191,7 +191,9 @@ class ReflexiveModule_abstract(Parent):
 
         base_module = self.base_module()
         if not all(module.base_module() == base_module for module in others):
-            raise NotImplementedError('all factors must be tensor modules over the same base module')
+            raise NotImplementedError(
+                'all factors must be tensor modules over the same base module'
+            )
         factors = [self] + list(others)
         result_tensor_type = sum(vector(factor.tensor_type()) for factor in factors)
         result_sym = []
@@ -225,12 +227,15 @@ class ReflexiveModule_abstract(Parent):
                     return tuple(index_map[i] for i in isym)
 
                 result_sym.extend(tuple(index_map[i] for i in isym) for isym in sym)
-                result_antisym.extend(tuple(index_map[i] for i in isym) for isym in antisym)
+                result_antisym.extend(
+                    tuple(index_map[i] for i in isym) for isym in antisym
+                )
 
             running_indices += vector(tensor_type)
 
-        result = base_module.tensor_module(*result_tensor_type,
-                                           sym=result_sym, antisym=result_antisym)
+        result = base_module.tensor_module(
+            *result_tensor_type, sym=result_sym, antisym=result_antisym
+        )
         result._index_maps = tuple(index_maps)
         return result
 
@@ -376,7 +381,7 @@ class ReflexiveModule_tensor(ReflexiveModule_abstract):
              Dual of the Rank-3 free module M over the Integer Ring]
         """
         tensor_type = self.tensor_type()
-        if tensor_type == (0,1):  # case of the dual
+        if tensor_type == (0, 1):  # case of the dual
             raise NotImplementedError
         bmodule = self.base_module()
         factors = [bmodule] * tensor_type[0]

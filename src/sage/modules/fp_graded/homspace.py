@@ -516,7 +516,9 @@ class FPModuleHomspace(Homset):
                 # The i'th generator can go to any of these basis elements:
                 base = N.basis_elements(g.degree() + n)
                 for value in base:
-                    values = [N.zero() if i != j else value for j in range(num_generators)]
+                    values = [
+                        N.zero() if i != j else value for j in range(num_generators)
+                    ]
                     res.append(self(values))
                     if not basis:
                         return res[0]
@@ -533,7 +535,9 @@ class FPModuleHomspace(Homset):
             block_matrix, R = _create_relations_matrix(
                 N,
                 [r.dense_coefficient_list() for r in M.relations()],
-                source_degs, target_degs)
+                source_degs,
+                target_degs,
+            )
 
             ker = R.right_kernel()
 
@@ -544,7 +548,7 @@ class FPModuleHomspace(Homset):
                 xs = []
                 for j, X in enumerate(block_matrix[0]):
                     k = X.domain().dimension()
-                    xs.append(N.element_from_coordinates(b[n:n + k], source_degs[j]))
+                    xs.append(N.element_from_coordinates(b[n : n + k], source_degs[j]))
                     n += k
 
                 res.append(self(xs))

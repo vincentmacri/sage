@@ -2,6 +2,7 @@
 r"""
 Computation of the Frobenius polynomial using Newton's identities
 """
+
 # *****************************************************************************
 #  Copyright (C) 2018 Edgar Costa <edgarc@mit.edu>
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -9,6 +10,7 @@ Computation of the Frobenius polynomial using Newton's identities
 # *****************************************************************************
 from sage.rings.integer_ring import ZZ
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.functions.log", "log")
 
 
@@ -209,7 +211,7 @@ def charpoly_frobenius(frob_matrix, charpoly_prec, p, weight, a=1, known_factor=
     degree = len(charpoly_prec) - 1
     mod = [0] * (degree + 1)
     for i in range(len(charpoly_prec)):
-        mod[-i] = p**charpoly_prec[-i]
+        mod[-i] = p ** charpoly_prec[-i]
         cp[-i] = cp[-i] % mod[-i]
 
     # figure out the sign
@@ -227,12 +229,12 @@ def charpoly_frobenius(frob_matrix, charpoly_prec, p, weight, a=1, known_factor=
         # note, if degree is even, the middle coefficient will not help us determine the sign
         for i in range((degree + 1) // 2):
             # Note: degree*weight is even
-            p_power = p**min(
+            p_power = p ** min(
                 charpoly_prec[i],
                 charpoly_prec[degree - i] + ((a * (degree - 2 * i) * weight) // 2),
             )
             if cp[i] % p_power != 0 and cp[degree - i] % p_power != 0:
-                other = cp[degree - i] * p**((a * (degree - 2 * i) * weight) // 2)
+                other = cp[degree - i] * p ** ((a * (degree - 2 * i) * weight) // 2)
                 if (cp[i] + other) % p_power == 0:
                     sign = -1
                 else:
@@ -246,7 +248,7 @@ def charpoly_frobenius(frob_matrix, charpoly_prec, p, weight, a=1, known_factor=
     # note, this includes the middle coefficient if degree is even
     halfdegree = degree // 2 + 1
 
-    cp[0] = sign * p**((a * degree * weight) // 2)
+    cp[0] = sign * p ** ((a * degree * weight) // 2)
     # Note: degree*weight is even
 
     # calculate the i-th power sum of the roots and correct cp along the way
@@ -280,7 +282,7 @@ def charpoly_frobenius(frob_matrix, charpoly_prec, p, weight, a=1, known_factor=
     # s[k] = \sum x_i ^k for k>0
     s = [None] * (halfdegree)
     res = [None] * len(charpoly_prec)
-    res[0] = sign * p**((a * degree * weight) // 2)
+    res[0] = sign * p ** ((a * degree * weight) // 2)
     # Note: degree*weight is even
 
     res[-1] = 1
@@ -291,8 +293,8 @@ def charpoly_frobenius(frob_matrix, charpoly_prec, p, weight, a=1, known_factor=
         # e[k] correct modulo mod[degree - k]
         # S = sum (-1)^i e[k-i] * s[i]
         # s[k] = (-1)^(k-1) (k*e[k] + S) ==> (-1)^(k-1) s[k] - S = k*e[k]
-        S = sum((-1)**i * e[k - i] * s[i] for i in range(1, k))
-        s[k] = (-1)**(k - 1) * (S + k * e[k])
+        S = sum((-1) ** i * e[k - i] * s[i] for i in range(1, k))
+        s[k] = (-1) ** (k - 1) * (S + k * e[k])
         # hence s[k] is correct modulo k*mod[degree - k]
         localmod = k * mod[degree - k]
         # s[k] +=   (-1)**k * fix_power_sum[k]
@@ -301,17 +303,17 @@ def charpoly_frobenius(frob_matrix, charpoly_prec, p, weight, a=1, known_factor=
         # |x_i| = p^(w*0.5)
         # => s[k] <= degree*p^(a*w*k*0.5)
         # recall, 2*degree*p^(a*w*k*0.5) /k < mod[degree - k]
-        if s[k]**2 > degree**2 * p**(a * weight * k):
+        if s[k] ** 2 > degree**2 * p ** (a * weight * k):
             s[k] = -(-s[k] % localmod)
 
         # now correct e[k] with:
         # (-1)^(k-1) s[k] - S = k*e[k]
-        e[k] = (-S + (-1)**(k - 1) * s[k]) // k
-        assert (-S + (-1)**(k - 1) * s[k]) % k == 0
+        e[k] = (-S + (-1) ** (k - 1) * s[k]) // k
+        assert (-S + (-1) ** (k - 1) * s[k]) % k == 0
         res[degree - k] = e[k] if not k % 2 else -e[k]
         # Note: degree*weight is even
 
-        res[k] = sign * res[degree - k] * p**((a * (degree - 2 * k) * weight) // 2)
+        res[k] = sign * res[degree - k] * p ** ((a * (degree - 2 * k) * weight) // 2)
         # fix e[k + 1]
         if k + 1 < halfdegree:
             e[k + 1] -= sum([fix_e[k + 1 - i] * e[i] for i in range(k + 1)])

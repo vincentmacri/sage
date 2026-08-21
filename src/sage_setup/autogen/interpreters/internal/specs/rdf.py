@@ -1,4 +1,4 @@
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -7,7 +7,7 @@
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 
 from ..instructions import (
@@ -87,24 +87,34 @@ class RDFInterpreter(StackInterpreter):
         # happened, so if an expression evaluates to this number execution
         # is slightly slower.  Hopefully that won't happen too often :)
         self.err_return = '-1094648009105371'
-        self.chunks = [self.mc_args, self.mc_constants, self.mc_py_constants,
-                       self.mc_stack,
-                       self.mc_code]
-        pg = params_gen(A=self.mc_args, C=self.mc_constants, D=self.mc_code,
-                        S=self.mc_stack, P=self.mc_py_constants)
+        self.chunks = [
+            self.mc_args,
+            self.mc_constants,
+            self.mc_py_constants,
+            self.mc_stack,
+            self.mc_code,
+        ]
+        pg = params_gen(
+            A=self.mc_args,
+            C=self.mc_constants,
+            D=self.mc_code,
+            S=self.mc_stack,
+            P=self.mc_py_constants,
+        )
         self.pg = pg
         self.c_header = '#include <gsl/gsl_math.h>'
         self.pyx_header = 'cimport sage.libs.gsl.math  # Add dependency on GSL'
         instrs = [
-            InstrSpec('load_arg', pg('A[D]', 'S'),
-                       code='o0 = i0;'),
-            InstrSpec('load_const', pg('C[D]', 'S'),
-                       code='o0 = i0;'),
-            InstrSpec('return', pg('S', ''),
-                       code='return i0;'),
-            InstrSpec('py_call', pg('P[D]S@D', 'S'),
-                       uses_error_handler=True,
-                       code=ri(0, """
+            InstrSpec('load_arg', pg('A[D]', 'S'), code='o0 = i0;'),
+            InstrSpec('load_const', pg('C[D]', 'S'), code='o0 = i0;'),
+            InstrSpec('return', pg('S', ''), code='return i0;'),
+            InstrSpec(
+                'py_call',
+                pg('P[D]S@D', 'S'),
+                uses_error_handler=True,
+                code=ri(
+                    0,
+                    """
                            PyObject *py_args = PyTuple_New(n_i1);
                            if (py_args == NULL) goto error;
                            int i;
@@ -125,10 +135,16 @@ class RDFInterpreter(StackInterpreter):
                            if (o0 == -1 && PyErr_Occurred()) {
                              goto error;
                            }
-                           """)),
-            InstrSpec('pow', pg('SS', 'S'),
-                       uses_error_handler=True,
-                       code=ri(0, """
+                           """,
+                ),
+            ),
+            InstrSpec(
+                'pow',
+                pg('SS', 'S'),
+                uses_error_handler=True,
+                code=ri(
+                    0,
+                    """
                            /* See python's pow in floatobject.c */
                            if (i0 == 0) o0 = 1.0;
                            else {
@@ -138,23 +154,39 @@ class RDFInterpreter(StackInterpreter):
                              }
                              o0 = pow(i0, i1);
                            }
-                           """))
-            ]
-        for (name, op) in [('add', '+'), ('sub', '-'),
-                           ('mul', '*'), ('div', '/')]:
+                           """,
+                ),
+            ),
+        ]
+        for name, op in [('add', '+'), ('sub', '-'), ('mul', '*'), ('div', '/')]:
             instrs.append(instr_infix(name, pg('SS', 'S'), op))
         instrs.append(instr_funcall_2args('ipow', pg('SD', 'S'), 'gsl_pow_int'))
-        for (name, op) in [('neg', '-i0'), ('invert', '1/i0'),
-                           ('abs', 'fabs(i0)')]:
+        for name, op in [('neg', '-i0'), ('invert', '1/i0'), ('abs', 'fabs(i0)')]:
             instrs.append(instr_unary(name, pg('S', 'S'), op))
-        for name in ['sqrt', 'ceil', 'floor', 'sin', 'cos', 'tan',
-                     'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh',
-                     'asinh', 'acosh', 'atanh', 'exp', 'log']:
-            instrs.append(instr_unary(name, pg('S',  'S'), "%s(i0)" % name))
+        for name in [
+            'sqrt',
+            'ceil',
+            'floor',
+            'sin',
+            'cos',
+            'tan',
+            'asin',
+            'acos',
+            'atan',
+            'sinh',
+            'cosh',
+            'tanh',
+            'asinh',
+            'acosh',
+            'atanh',
+            'exp',
+            'log',
+        ]:
+            instrs.append(instr_unary(name, pg('S', 'S'), "%s(i0)" % name))
         self.instr_descs = instrs
         self._set_opcodes()
         # supported for exponents that fit in an int
-        self.ipow_range = (int(-2**31), int(2**31-1))
+        self.ipow_range = (int(-(2**31)), int(2**31 - 1))
         self.extra_class_members = "cdef object _domain\n"
         self.extra_members_initialize = "self._domain = args['domain']\n"
         self.adjust_retval = 'self._domain'

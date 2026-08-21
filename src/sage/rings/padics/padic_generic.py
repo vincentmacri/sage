@@ -83,11 +83,11 @@ class pAdicGeneric(LocalGeneric):
         p = self(self.prime())
         a = self.gen()
         one = self.one()
-        L = [self.zero(), one, p, (one+p+p).inverse_of_unit(), p-p**2]
+        L = [self.zero(), one, p, (one + p + p).inverse_of_unit(), p - p**2]
         if a != p:
             L.extend([a, (one + a + p).inverse_of_unit()])
         if self.is_field():
-            L.extend([~(p-p-a),p**(-20)])
+            L.extend([~(p - p - a), p ** (-20)])
         return L
 
     def _modified_print_mode(self, print_mode):
@@ -121,9 +121,19 @@ class pAdicGeneric(LocalGeneric):
             print_mode = {}
         elif isinstance(print_mode, str):
             print_mode = {'mode': print_mode}
-        for option in ['mode', 'pos', 'ram_name', 'unram_name', 'var_name',
-                       'max_ram_terms', 'max_unram_terms', 'max_terse_terms',
-                       'sep', 'alphabet', 'show_prec']:
+        for option in [
+            'mode',
+            'pos',
+            'ram_name',
+            'unram_name',
+            'var_name',
+            'max_ram_terms',
+            'max_unram_terms',
+            'max_terse_terms',
+            'sep',
+            'alphabet',
+            'show_prec',
+        ]:
             if option not in print_mode:
                 print_mode[option] = self._printer.dict()[option]
         return print_mode
@@ -287,6 +297,7 @@ class pAdicGeneric(LocalGeneric):
             Finite Field of size 3
         """
         from sage.rings.finite_rings.finite_field_constructor import GF
+
         return GF(self.prime())
 
     def residue_field(self):
@@ -314,7 +325,8 @@ class pAdicGeneric(LocalGeneric):
             Ring of integers modulo 1331
         """
         from sage.rings.finite_rings.integer_mod_ring import Zmod
-        return Zmod(self.prime()**n)
+
+        return Zmod(self.prime() ** n)
 
     def residue_system(self):
         r"""
@@ -345,7 +357,11 @@ class pAdicGeneric(LocalGeneric):
         """
         if print_mode is not None:
             from sage.misc.superseded import deprecation
-            deprecation(23227, "Use the change method if you want to change print options in fraction_field()")
+
+            deprecation(
+                23227,
+                "Use the change method if you want to change print options in fraction_field()",
+            )
             return tuple(sorted(print_mode.items()))
 
     @cached_method(key=_fraction_field_key)
@@ -476,7 +492,11 @@ class pAdicGeneric(LocalGeneric):
         if print_mode is None:
             return self.change(field=False, check=False)
         from sage.misc.superseded import deprecation
-        deprecation(23227, "Use the change method if you want to change print options in integer_ring()")
+
+        deprecation(
+            23227,
+            "Use the change method if you want to change print options in integer_ring()",
+        )
         return self.change(field=False, **print_mode)
 
     def teichmuller(self, x, prec=None):
@@ -534,7 +554,9 @@ class pAdicGeneric(LocalGeneric):
         # Since Teichmüller representatives are defined at infinite precision,
         # we can lift to precision prec, as long as the absolute precision of ans is positive.
         if ans.precision_absolute() <= 0:
-            raise ValueError("not enough precision to determine Teichmuller representative")
+            raise ValueError(
+                "not enough precision to determine Teichmuller representative"
+            )
         if ans.valuation() > 0:
             return self(0) if prec is None else self(0, prec)
         ans = ans.lift_to_precision(prec)
@@ -571,31 +593,38 @@ class pAdicGeneric(LocalGeneric):
         """
         R = self.residue_class_field()
         prec = self.precision_cap()
-        return [self.teichmuller(self(i).lift_to_precision(prec))
-                for i in R if i != 0]
+        return [self.teichmuller(self(i).lift_to_precision(prec)) for i in R if i != 0]
 
-#     def different(self):
-#         raise NotImplementedError
+    #     def different(self):
+    #         raise NotImplementedError
 
-#     def automorphisms(self):
-#         r"""
-#         Returns the group of automorphisms of `\ZZ_p`, i.e. the trivial group.
-#         """
-#         raise NotImplementedError
+    #     def automorphisms(self):
+    #         r"""
+    #         Returns the group of automorphisms of `\ZZ_p`, i.e. the trivial group.
+    #         """
+    #         raise NotImplementedError
 
-#     def galois_group(self):
-#         r"""
-#         Returns the Galois group of `\ZZ_p`, i.e. the trivial group.
-#         """
-#         raise NotImplementedError
+    #     def galois_group(self):
+    #         r"""
+    #         Returns the Galois group of `\ZZ_p`, i.e. the trivial group.
+    #         """
+    #         raise NotImplementedError
 
-#     def hasGNB(self):
-#         r"""
-#         Returns whether or not `\ZZ_p` has a Gauss Normal Basis.
-#         """
-#         raise NotImplementedError
+    #     def hasGNB(self):
+    #         r"""
+    #         Returns whether or not `\ZZ_p` has a Gauss Normal Basis.
+    #         """
+    #         raise NotImplementedError
 
-    def extension(self, modulus, prec=None, names=None, print_mode=None, implementation='FLINT', **kwds):
+    def extension(
+        self,
+        modulus,
+        prec=None,
+        names=None,
+        print_mode=None,
+        implementation='FLINT',
+        **kwds,
+    ):
         r"""
         Create an extension of this `p`-adic ring.
 
@@ -612,15 +641,23 @@ class pAdicGeneric(LocalGeneric):
         if isinstance(modulus, list):
             if len(modulus) == 0:
                 return self
-            return self.extension(modulus[-1], prec=prec[-1],
-                                  names=names[-1],
-                                  implementation=implementation[-1],
-                                  print_mode=print_mode, **kwds).extension(
-                                      modulus[:-1], prec=prec[:-1],
-                                      names=names[:-1],
-                                      implementation=implementation[:-1],
-                                      print_mode=print_mode, **kwds)
+            return self.extension(
+                modulus[-1],
+                prec=prec[-1],
+                names=names[-1],
+                implementation=implementation[-1],
+                print_mode=print_mode,
+                **kwds,
+            ).extension(
+                modulus[:-1],
+                prec=prec[:-1],
+                names=names[:-1],
+                implementation=implementation[:-1],
+                print_mode=print_mode,
+                **kwds,
+            )
         from sage.rings.padics.factory import ExtensionFactory
+
         if print_mode is None:
             print_mode = {}
         elif isinstance(print_mode, str):
@@ -628,7 +665,15 @@ class pAdicGeneric(LocalGeneric):
         else:
             if not isinstance(print_mode, dict):
                 print_mode = dict(print_mode)
-            for option in ['mode', 'pos', 'max_ram_terms', 'max_unram_terms', 'max_terse_terms', 'sep', 'alphabet']:
+            for option in [
+                'mode',
+                'pos',
+                'max_ram_terms',
+                'max_unram_terms',
+                'max_terse_terms',
+                'sep',
+                'alphabet',
+            ]:
                 if option in print_mode:
                     print_mode["print_" + option] = print_mode[option]
                     del print_mode[option]
@@ -643,7 +688,15 @@ class pAdicGeneric(LocalGeneric):
                         print_mode[option] = kwds[option]
                     else:
                         print_mode[option] = self._printer.dict()[option]
-        return ExtensionFactory(base=self, modulus=modulus, prec=prec, names=names, check=True, implementation=implementation, **print_mode)
+        return ExtensionFactory(
+            base=self,
+            modulus=modulus,
+            prec=prec,
+            names=names,
+            check=True,
+            implementation=implementation,
+            **print_mode,
+        )
 
     def _is_valid_homomorphism_(self, codomain, im_gens, base_map=None):
         r"""
@@ -709,11 +762,11 @@ class pAdicGeneric(LocalGeneric):
 
         for x in elements:
             y = x + self.zero()
-            tester.assertEqual(y,x)
-            tester.assertEqual(y.precision_absolute(),x.precision_absolute())
-            tester.assertEqual(y.precision_relative(),x.precision_relative())
+            tester.assertEqual(y, x)
+            tester.assertEqual(y.precision_absolute(), x.precision_absolute())
+            tester.assertEqual(y.precision_relative(), x.precision_relative())
 
-        for x,y in some_tuples(elements, 2, tester._max_runs):
+        for x, y in some_tuples(elements, 2, tester._max_runs):
             z = x + y
             tester.assertIs(z.parent(), self)
             zprec = min(x.precision_absolute(), y.precision_absolute())
@@ -721,11 +774,11 @@ class pAdicGeneric(LocalGeneric):
                 tester.assertGreaterEqual(z.precision_absolute(), zprec)
             elif not self.is_floating_point():
                 tester.assertEqual(z.precision_absolute(), zprec)
-            tester.assertGreaterEqual(z.valuation(), min(x.valuation(),y.valuation()))
+            tester.assertGreaterEqual(z.valuation(), min(x.valuation(), y.valuation()))
             if x.valuation() != y.valuation():
-                tester.assertEqual(z.valuation(), min(x.valuation(),y.valuation()))
-            tester.assertTrue(y.is_equal_to(z-x,zprec))
-            tester.assertTrue(x.is_equal_to(z-y,zprec))
+                tester.assertEqual(z.valuation(), min(x.valuation(), y.valuation()))
+            tester.assertTrue(y.is_equal_to(z - x, zprec))
+            tester.assertTrue(x.is_equal_to(z - y, zprec))
 
     def _test_sub(self, **options):
         r"""
@@ -752,7 +805,7 @@ class pAdicGeneric(LocalGeneric):
             tester.assertEqual(y.precision_absolute(), x.precision_absolute())
             tester.assertEqual(y.precision_relative(), x.precision_relative())
 
-        for x,y in some_tuples(elements, 2, tester._max_runs):
+        for x, y in some_tuples(elements, 2, tester._max_runs):
             z = x - y
             tester.assertIs(z.parent(), self)
             zprec = min(x.precision_absolute(), y.precision_absolute())
@@ -760,11 +813,11 @@ class pAdicGeneric(LocalGeneric):
                 tester.assertGreaterEqual(z.precision_absolute(), zprec)
             elif not self.is_floating_point():
                 tester.assertEqual(z.precision_absolute(), zprec)
-            tester.assertGreaterEqual(z.valuation(), min(x.valuation(),y.valuation()))
+            tester.assertGreaterEqual(z.valuation(), min(x.valuation(), y.valuation()))
             if x.valuation() != y.valuation():
-                tester.assertEqual(z.valuation(), min(x.valuation(),y.valuation()))
-            tester.assertTrue((-y).is_equal_to(z - x,zprec))
-            tester.assertTrue(x.is_equal_to(z + y,zprec))
+                tester.assertEqual(z.valuation(), min(x.valuation(), y.valuation()))
+            tester.assertTrue((-y).is_equal_to(z - x, zprec))
+            tester.assertTrue(x.is_equal_to(z + y, zprec))
 
     def _test_invert(self, **options):
         """
@@ -796,10 +849,15 @@ class pAdicGeneric(LocalGeneric):
                 try:
                     e = y * x
                 except ZeroDivisionError:
-                    tester.assertTrue(self.is_floating_point() and (x.is_zero() or y.is_zero()))
+                    tester.assertTrue(
+                        self.is_floating_point() and (x.is_zero() or y.is_zero())
+                    )
                 else:
                     tester.assertFalse(x.is_zero())
-                    tester.assertIs(y.parent(), self if self.is_fixed_mod() else self.fraction_field())
+                    tester.assertIs(
+                        y.parent(),
+                        self if self.is_fixed_mod() else self.fraction_field(),
+                    )
                     tester.assertTrue(e.is_one())
                     tester.assertEqual(e.precision_relative(), x.precision_relative())
                     tester.assertEqual(y.valuation(), -x.valuation())
@@ -823,13 +881,19 @@ class pAdicGeneric(LocalGeneric):
         tester = self._tester(**options)
 
         elements = list(tester.some_elements())
-        for x,y in some_tuples(elements, 2, tester._max_runs):
+        for x, y in some_tuples(elements, 2, tester._max_runs):
             z = x * y
             tester.assertIs(z.parent(), self)
             if self.is_capped_relative() or self.is_floating_point():
-                tester.assertEqual(z.precision_relative(), min(x.precision_relative(), y.precision_relative()))
+                tester.assertEqual(
+                    z.precision_relative(),
+                    min(x.precision_relative(), y.precision_relative()),
+                )
             else:
-                tester.assertLessEqual(z.precision_relative(), min(x.precision_relative(), y.precision_relative()))
+                tester.assertLessEqual(
+                    z.precision_relative(),
+                    min(x.precision_relative(), y.precision_relative()),
+                )
             if not z.is_zero():
                 tester.assertEqual(z.valuation(), x.valuation() + y.valuation())
 
@@ -852,7 +916,7 @@ class pAdicGeneric(LocalGeneric):
         tester = self._tester(**options)
 
         elements = list(tester.some_elements())
-        for x,y in some_tuples(elements, 2, tester._max_runs):
+        for x, y in some_tuples(elements, 2, tester._max_runs):
             try:
                 z = x / y
             except (ZeroDivisionError, PrecisionError, ValueError):
@@ -862,12 +926,17 @@ class pAdicGeneric(LocalGeneric):
                     tester.assertTrue(y.is_zero())
             else:
                 try:
-                    xx = z*y
+                    xx = z * y
                 except ZeroDivisionError:
-                    tester.assertTrue(self.is_floating_point() and (z.is_zero() or y.is_zero()))
+                    tester.assertTrue(
+                        self.is_floating_point() and (z.is_zero() or y.is_zero())
+                    )
                 else:
                     tester.assertFalse(y.is_zero())
-                    tester.assertIs(z.parent(), self if self.is_fixed_mod() else self.fraction_field())
+                    tester.assertIs(
+                        z.parent(),
+                        self if self.is_fixed_mod() else self.fraction_field(),
+                    )
                     # The following might be false if there is an absolute cap
                     # tester.assertEqual(z.precision_relative(), min(x.precision_relative(), y.precision_relative()))
                     if not x.is_zero():
@@ -894,12 +963,12 @@ class pAdicGeneric(LocalGeneric):
         for x in tester.some_elements():
             y = -x
             tester.assertIs(y.parent(), self)
-            tester.assertTrue((x+y).is_zero())
-            tester.assertEqual(y.valuation(),x.valuation())
-            tester.assertEqual(x.precision_absolute(),y.precision_absolute())
-            tester.assertEqual(x.precision_relative(),y.precision_relative())
-            tester.assertEqual(x.is_zero(),y.is_zero())
-            tester.assertEqual(x.is_unit(),y.is_unit())
+            tester.assertTrue((x + y).is_zero())
+            tester.assertEqual(y.valuation(), x.valuation())
+            tester.assertEqual(x.precision_absolute(), y.precision_absolute())
+            tester.assertEqual(x.precision_relative(), y.precision_relative())
+            tester.assertEqual(x.is_zero(), y.is_zero())
+            tester.assertEqual(x.is_unit(), y.is_unit())
 
     def _test_shift(self, **options):
         """
@@ -923,7 +992,7 @@ class pAdicGeneric(LocalGeneric):
         else:
             cap = self.precision_cap()
         k = self.residue_field()
-        for v in range(min(cap,10)):
+        for v in range(min(cap, 10)):
             if self.is_capped_absolute() or self.is_fixed_mod():
                 prec = cap - v
             else:
@@ -939,12 +1008,12 @@ class pAdicGeneric(LocalGeneric):
                 if x._is_exact_zero() or self.is_field():
                     tester.assertEqual(x, y)
                 else:
-                    for i in range(min(v,prec)):
+                    for i in range(min(v, prec)):
                         tester.assertEqual(k(y.expansion(i)), 0)
-                    for i in range(v,prec):
+                    for i in range(v, prec):
                         tester.assertEqual(y.expansion(i), x.expansion(i))
                     xx = y + (x % b)
-                    tester.assertTrue(xx.is_equal_to(x,prec))
+                    tester.assertTrue(xx.is_equal_to(x, prec))
 
     def _test_log(self, **options):
         r"""
@@ -975,15 +1044,17 @@ class pAdicGeneric(LocalGeneric):
                 if self.absolute_e() == 1:
                     tester.assertEqual(l.precision_absolute(), x.precision_relative())
                 else:
-                    tester.assertLessEqual(l.precision_absolute(), x.precision_relative())
+                    tester.assertLessEqual(
+                        l.precision_absolute(), x.precision_relative()
+                    )
 
         if self.is_capped_absolute() or self.is_capped_relative():
             # In the fixed modulus setting, rounding errors may occur
             for x, y, b in tester.some_elements(repeat=3):
-                if (x*y).is_zero():
+                if (x * y).is_zero():
                     continue
                 r1 = x.log(pi_branch=b) + y.log(pi_branch=b)
-                r2 = (x*y).log(pi_branch=b)
+                r2 = (x * y).log(pi_branch=b)
                 tester.assertEqual(r1, r2)
 
             p = self.prime()
@@ -995,9 +1066,9 @@ class pAdicGeneric(LocalGeneric):
                 else:
                     a = p * x.unit_part()
                 b = a.exp().log()
-                c = (1+a).log().exp()
+                c = (1 + a).log().exp()
                 tester.assertEqual(a, b)
-                tester.assertEqual(1+a, c)
+                tester.assertEqual(1 + a, c)
 
     def _test_teichmuller(self, **options):
         r"""
@@ -1028,9 +1099,13 @@ class pAdicGeneric(LocalGeneric):
                 except (NotImplementedError, AttributeError):
                     pass
                 if self.is_relaxed():
-                    tester.assertTrue(y.is_equal_at_precision(y**self.residue_field().order(), self.default_prec()))
+                    tester.assertTrue(
+                        y.is_equal_at_precision(
+                            y ** self.residue_field().order(), self.default_prec()
+                        )
+                    )
                 else:
-                    tester.assertEqual(y**self.residue_field().order(), y)
+                    tester.assertEqual(y ** self.residue_field().order(), y)
 
     def _test_convert_residue_field(self, **options):
         r"""
@@ -1126,6 +1201,7 @@ class pAdicGeneric(LocalGeneric):
             True
         """
         from .morphism import FrobeniusEndomorphism_padics
+
         return FrobeniusEndomorphism_padics(self, n)
 
     def _test_elements_eq_transitive(self, **options):
@@ -1183,6 +1259,7 @@ class pAdicGeneric(LocalGeneric):
             :meth:`Order.valuation() <sage.rings.number_field.order.Order.valuation>`
         """
         from sage.rings.padics.padic_valuation import pAdicValuation
+
         return pAdicValuation(self)
 
     def _primitive_qth_root_of_unity(self, exponent):
@@ -1216,47 +1293,54 @@ class pAdicGeneric(LocalGeneric):
         n = len(self._qth_roots_of_unity)
 
         # We check if the result is cached
-        if exponent < n-1:
-            return self._qth_roots_of_unity[exponent][0], exponent, self._qth_roots_of_unity[exponent+1]
+        if exponent < n - 1:
+            return (
+                self._qth_roots_of_unity[exponent][0],
+                exponent,
+                self._qth_roots_of_unity[exponent + 1],
+            )
         zeta, accuracy = self._qth_roots_of_unity[-1]
         if accuracy is not Infinity:
-            return self._qth_roots_of_unity[-2][0], n-2, (zeta, accuracy)
+            return self._qth_roots_of_unity[-2][0], n - 2, (zeta, accuracy)
 
         # It is not, so we compute it
         while accuracy is Infinity and n <= exponent + 1:
-            self._qth_roots_of_unity[-1] = (self(zeta), Infinity)  # to avoid multiple conversions
+            self._qth_roots_of_unity[-1] = (
+                self(zeta),
+                Infinity,
+            )  # to avoid multiple conversions
             if n == 1:  # case of pth root of unity
                 p = self.prime()
                 e = self.absolute_e()
                 k = self.residue_field()
-                if e % (p-1) != 0:
+                if e % (p - 1) != 0:
                     # No pth root of unity in this ring
                     zeta = accuracy = None
                 else:
                     rho = -k(self(p).expansion(e))
                     try:
-                        r = rho.nth_root(p-1)
+                        r = rho.nth_root(p - 1)
                     except ValueError:
                         # No pth root of unity in this ring
                         zeta = accuracy = None
                     else:
                         # We compute a primitive pth root of unity
-                        m = e // (p-1)
+                        m = e // (p - 1)
                         prec = self.precision_cap() + e * (1 + m.valuation(p))
                         ring = self.change(prec=prec)
                         zeta = 1 + (ring(r).lift_to_precision() << m)
-                        curprec = m*p + 1
+                        curprec = m * p + 1
                         while curprec < prec:
                             curprec -= e
-                            curprec = min(2*curprec + e, p*curprec)
-                            zeta = zeta.lift_to_precision(min(prec,curprec))
+                            curprec = min(2 * curprec + e, p * curprec)
+                            zeta = zeta.lift_to_precision(min(prec, curprec))
                             zeta += zeta * (1 - zeta**p) // p
             else:
                 zeta, accuracy = zeta._inverse_pth_root()
                 assert accuracy is not None
             self._qth_roots_of_unity.append((zeta, accuracy))
             n += 1
-        return self._qth_roots_of_unity[-2][0], n-2, self._qth_roots_of_unity[-1]
+        return self._qth_roots_of_unity[-2][0], n - 2, self._qth_roots_of_unity[-1]
 
     def primitive_root_of_unity(self, n=None, order=False):
         r"""
@@ -1325,13 +1409,13 @@ class pAdicGeneric(LocalGeneric):
         if m == 1:
             zeta = qthzeta
         else:
-            zeta = self(k.multiplicative_generator() ** ((c-1) // m))
-            invm = self(1/m)
+            zeta = self(k.multiplicative_generator() ** ((c - 1) // m))
+            invm = self(1 / m)
             curprec = 1
             while curprec < prec:
                 curprec *= 2
-                zeta = zeta.lift_to_precision(min(prec,curprec))
-                zeta += invm * zeta * (1 - qthzeta*zeta**m)
+                zeta = zeta.lift_to_precision(min(prec, curprec))
+                zeta += invm * zeta * (1 - qthzeta * zeta**m)
 
         if order:
             return zeta, m * p**s
@@ -1393,9 +1477,11 @@ class pAdicGeneric(LocalGeneric):
             ....:         raise ValueError
         """
         zeta, order = self.primitive_root_of_unity(n, order=True)
-        return [ zeta**i for i in range(order) ]
+        return [zeta**i for i in range(order)]
 
-    def _roots_univariate_polynomial(self, P, ring, multiplicities, algorithm, secure=False):
+    def _roots_univariate_polynomial(
+        self, P, ring, multiplicities, algorithm, secure=False
+    ):
         r"""
         Return the roots of ``P`` in the ring ``ring``.
 
@@ -1554,16 +1640,22 @@ class pAdicGeneric(LocalGeneric):
             ring = self
         if algorithm is None:
             try:
-                return self._roots_univariate_polynomial(P, ring, multiplicities, "pari", secure)
+                return self._roots_univariate_polynomial(
+                    P, ring, multiplicities, "pari", secure
+                )
             except (NotImplementedError, PrecisionError):
-                return self._roots_univariate_polynomial(P, ring, multiplicities, "sage", secure)
+                return self._roots_univariate_polynomial(
+                    P, ring, multiplicities, "sage", secure
+                )
         elif algorithm == "pari":
             P = P.change_ring(ring)
             try:
                 # note that P.factor() calls pari
                 return P._roots_from_factorization(P.factor(), multiplicities)
             except (AttributeError, TypeError):
-                raise NotImplementedError("root finding for this polynomial is not implemented in pari")
+                raise NotImplementedError(
+                    "root finding for this polynomial is not implemented in pari"
+                )
         elif algorithm == "sage":
             if ring.is_field():
                 roots = P.change_ring(ring)._roots(secure, -Infinity, None)
@@ -1571,8 +1663,8 @@ class pAdicGeneric(LocalGeneric):
                 K = ring.fraction_field()
                 roots = P.change_ring(K)._roots(secure, 0, None)
             if multiplicities:
-                return [ (ring(root), m) for (root, m) in roots ]
-            return [ ring(root) for (root, m) in roots ]
+                return [(ring(root), m) for (root, m) in roots]
+            return [ring(root) for (root, m) in roots]
 
 
 class ResidueReductionMap(Morphism):
@@ -1591,6 +1683,7 @@ class ResidueReductionMap(Morphism):
           From: 5-adic Unramified Extension Ring in a defined by x^3 + 3*x + 3
           To:   Finite Field in a0 of size 5^3
     """
+
     @staticmethod
     def _create_(R, k):
         r"""
@@ -1611,11 +1704,14 @@ class ResidueReductionMap(Morphism):
         """
         if R.is_field():
             from sage.categories.sets_with_partial_maps import SetsWithPartialMaps
+
             cat = SetsWithPartialMaps()
         else:
             from sage.categories.rings import Rings
+
             cat = Rings()
         from sage.categories.homset import Hom
+
         kfield = R.residue_field()
         N = k.cardinality()
         q = kfield.cardinality()
@@ -1714,7 +1810,10 @@ class ResidueReductionMap(Morphism):
         """
         if type(self) is not type(other):
             return NotImplemented
-        return richcmp((self.domain(), self.codomain()), (other.domain(), other.codomain()), op)
+        return richcmp(
+            (self.domain(), self.codomain()), (other.domain(), other.codomain()), op
+        )
+
 
 # A class for the Teichmüller lift would also be reasonable....
 
@@ -1735,6 +1834,7 @@ class ResidueLiftingMap(Morphism):
           From: Finite Field in a0 of size 5^3
           To:   5-adic Unramified Extension Ring in a defined by x^3 + 3*x + 3
     """
+
     @staticmethod
     def _create_(k, R):
         r"""
@@ -1753,6 +1853,7 @@ class ResidueLiftingMap(Morphism):
         """
         from sage.categories.sets_cat import Sets
         from sage.categories.homset import Hom
+
         kfield = R.residue_field()
         N = k.cardinality()
         q = kfield.cardinality()
@@ -1790,7 +1891,7 @@ class ResidueLiftingMap(Morphism):
             else:
                 lift = K(x.polynomial().list(), unram_n)
             return R(lift, self._n)
-        #unram_n = (self._n - 1) // R.absolute_e() + 1
+        # unram_n = (self._n - 1) // R.absolute_e() + 1
         raise NotImplementedError
 
     def _call_with_args(self, x, args=(), kwds={}):
@@ -1804,7 +1905,7 @@ class ResidueLiftingMap(Morphism):
             1 + 2 + 2^2 + O(2^5)
         """
         R = self.codomain()
-        kwds = dict(kwds) # we're changing it
+        kwds = dict(kwds)  # we're changing it
         if args:
             args = (min(args[0], self._n),) + args[1:]
             absprec = args[0]
@@ -1846,7 +1947,9 @@ class ResidueLiftingMap(Morphism):
         """
         if type(self) is not type(other):
             return NotImplemented
-        return richcmp((self.domain(), self.codomain()), (other.domain(), other.codomain()), op)
+        return richcmp(
+            (self.domain(), self.codomain()), (other.domain(), other.codomain()), op
+        )
 
 
 def local_print_mode(obj, print_options, pos=None, ram_name=None):
@@ -1877,7 +1980,18 @@ def local_print_mode(obj, print_options, pos=None, ram_name=None):
         print_options['pos'] = pos
     if ram_name is not None:
         print_options['ram_name'] = ram_name
-    for option in ['mode', 'pos', 'ram_name', 'unram_name', 'var_name', 'max_ram_terms', 'max_unram_terms', 'max_terse_terms', 'sep', 'alphabet']:
+    for option in [
+        'mode',
+        'pos',
+        'ram_name',
+        'unram_name',
+        'var_name',
+        'max_ram_terms',
+        'max_unram_terms',
+        'max_terse_terms',
+        'sep',
+        'alphabet',
+    ]:
         if option not in print_options:
             print_options[option] = obj._printer.dict()[option]
     return pAdicPrinter(obj, print_options)

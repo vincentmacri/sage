@@ -100,7 +100,6 @@ Functions
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from itertools import combinations
 from sage.combinat.posets.lattices import FiniteLatticePoset
 from sage.matrix.constructor import matrix
@@ -117,7 +116,13 @@ from sage.matroids.circuits_matroid import CircuitsMatroid
 from sage.matroids.flats_matroid import FlatsMatroid
 from sage.matroids.circuit_closures_matroid import CircuitClosuresMatroid
 from sage.matroids.basis_matroid import BasisMatroid
-from sage.matroids.linear_matroid import LinearMatroid, RegularMatroid, BinaryMatroid, TernaryMatroid, QuaternaryMatroid
+from sage.matroids.linear_matroid import (
+    LinearMatroid,
+    RegularMatroid,
+    BinaryMatroid,
+    TernaryMatroid,
+    QuaternaryMatroid,
+)
 from sage.matroids.graphic_matroid import GraphicMatroid
 import sage.matroids.utilities
 
@@ -783,10 +788,22 @@ def Matroid(groundset=None, data=None, **kwds):
     # "key" is the kind of data we got
     key = None
     if data is None:
-        for k in ['bases', 'independent_sets', 'circuits',
-                  'nonspanning_circuits', 'flats', 'graph', 'matrix',
-                  'reduced_matrix', 'morphism', 'reduced_morphism',
-                  'rank_function', 'revlex', 'circuit_closures', 'matroid']:
+        for k in [
+            'bases',
+            'independent_sets',
+            'circuits',
+            'nonspanning_circuits',
+            'flats',
+            'graph',
+            'matrix',
+            'reduced_matrix',
+            'morphism',
+            'reduced_morphism',
+            'rank_function',
+            'revlex',
+            'circuit_closures',
+            'matroid',
+        ]:
             if k in kwds:
                 data = kwds.pop(k)
                 key = k
@@ -805,11 +822,13 @@ def Matroid(groundset=None, data=None, **kwds):
         if isinstance(data, Graph):
             key = 'graph'
         elif isinstance(data, Matrix) or (
-                isinstance(data, tuple) and isinstance(data[0], Matrix)):
+            isinstance(data, tuple) and isinstance(data[0], Matrix)
+        ):
             key = 'matrix'
         elif isinstance(data, sage.modules.with_basis.morphism.ModuleMorphism) or (
-                isinstance(data, tuple) and
-                isinstance(data[0], sage.modules.with_basis.morphism.ModuleMorphism)):
+            isinstance(data, tuple)
+            and isinstance(data[0], sage.modules.with_basis.morphism.ModuleMorphism)
+        ):
             key = 'morphism'
         elif isinstance(data, sage.matroids.matroid.Matroid):
             key = 'matroid'
@@ -862,8 +881,9 @@ def Matroid(groundset=None, data=None, **kwds):
         try:
             rk = kwds.pop("rank")
         except TypeError:
-            raise TypeError("the rank needs to be specified alongside the " +
-                            "nonspanning circuits")
+            raise TypeError(
+                "the rank needs to be specified alongside the " + "nonspanning circuits"
+            )
         # Determine groundset (note that this cannot detect coloops)
         if groundset is None:
             groundset = set()
@@ -881,8 +901,7 @@ def Matroid(groundset=None, data=None, **kwds):
                 B += [list(b)]
         # convert to circuits matroid defined by non-spanning circuits
         M = CircuitsMatroid(
-            BasisMatroid(groundset=groundset, bases=B),
-            nsc_defined=True
+            BasisMatroid(groundset=groundset, bases=B), nsc_defined=True
         )
 
     # Flats
@@ -939,7 +958,7 @@ def Matroid(groundset=None, data=None, **kwds):
     # Matrices:
     elif key in ['matrix', 'reduced_matrix', 'morphism', 'reduced_morphism']:
         A = data
-        is_reduced = (key == 'reduced_matrix' or key == 'reduced_morphism')
+        is_reduced = key == 'reduced_matrix' or key == 'reduced_morphism'
         if isinstance(data, tuple):
             A = data[0]
             if key == 'matrix' or key == 'reduced_matrix':
@@ -965,7 +984,9 @@ def Matroid(groundset=None, data=None, **kwds):
         if base_ring is not None:
             if A.base_ring() is not base_ring:
                 A = A.change_ring(base_ring)
-        elif A.base_ring() is ZZ and not want_regular:  # Usually a rational matrix is intended, we presume.
+        elif (
+            A.base_ring() is ZZ and not want_regular
+        ):  # Usually a rational matrix is intended, we presume.
             A = A.change_ring(QQ)
             base_ring = QQ
         else:
@@ -979,12 +1000,16 @@ def Matroid(groundset=None, data=None, **kwds):
                 elif len(groundset) == A.nrows() + A.ncols():
                     is_reduced = True
                 else:
-                    raise ValueError("groundset size does not correspond to matrix size")
+                    raise ValueError(
+                        "groundset size does not correspond to matrix size"
+                    )
             elif is_reduced:
                 if len(groundset) == A.nrows() + A.ncols():
                     pass
                 else:
-                    raise ValueError("groundset size does not correspond to matrix size")
+                    raise ValueError(
+                        "groundset size does not correspond to matrix size"
+                    )
 
         if is_reduced:
             kw = dict(groundset=groundset, reduced_matrix=A)
@@ -1027,12 +1052,16 @@ def Matroid(groundset=None, data=None, **kwds):
 
         def revlex_sort_key(s):
             return tuple(reversed(s))
+
         subsets = sorted(combinations(range(N), rk), key=revlex_sort_key)
         if len(data) != len(subsets):
-            raise ValueError("expected string of length %s (%s choose %s), got %s" %
-                             (len(subsets), N, rk, len(data)))
-        bases = [[groundset[c] for c in subsets[i]]
-                 for i, x in enumerate(data) if x != '0']
+            raise ValueError(
+                "expected string of length %s (%s choose %s), got %s"
+                % (len(subsets), N, rk, len(data))
+            )
+        bases = [
+            [groundset[c] for c in subsets[i]] for i, x in enumerate(data) if x != '0'
+        ]
         M = BasisMatroid(groundset=groundset, bases=bases)
 
     # Circuit closures:

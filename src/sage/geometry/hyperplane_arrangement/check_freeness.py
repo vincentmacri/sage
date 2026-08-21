@@ -13,7 +13,7 @@ for details.
     over a polynomial ring.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 Travis Scrimshaw <tscrimsh at umn.edu>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ for details.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.matrix.constructor import matrix
 import sage.libs.singular.function_factory as fun_fact
@@ -59,7 +59,7 @@ def less_generators(X):
                     K.append(j)
                     J = [l for l in J if r[l] == zero]
                     break
-        if not K: # K is empty
+        if not K:  # K is empty
             return X
         Kd = set(range(X.nrows())).difference(K)
         X = X.matrix_from_rows(sorted(Kd))
@@ -90,7 +90,7 @@ def construct_free_chain(A):
         ]
     """
     AL = list(A)
-    if not AL: # Empty arrangement
+    if not AL:  # Empty arrangement
         return []
 
     S = A.parent().ambient_space().symmetric_space()
@@ -106,7 +106,7 @@ def construct_free_chain(A):
 
     # Helper function
     def next_step(indices, prev, T):
-        for pos,i in enumerate(indices):
+        for pos, i in enumerate(indices):
             U = prev * T
             mu = U * phi[i]
             mu = mu.stack(matrix.diagonal([B[i]]).dense_matrix())

@@ -112,17 +112,17 @@ from sage.modular.arithgroup.arithgroup_generic import ArithmeticSubgroup
 from sage.modular.arithgroup.congroup_sl2z import SL2Z
 from sage.rings.integer_ring import ZZ
 
-Idm = SL2Z([1,0,0,1])    # identity
+Idm = SL2Z([1, 0, 0, 1])  # identity
 
-Lm = SL2Z([1,1,0,1])     # parabolic that fixes infinity
-Rm = SL2Z([1,0,1,1])     # parabolic that fixes 0
-S2m = SL2Z([0,-1,1,0])   # elliptic of order 2 (fix i)
-S3m = SL2Z([0,1,-1,1])   # elliptic of order 3 (fix j)
+Lm = SL2Z([1, 1, 0, 1])  # parabolic that fixes infinity
+Rm = SL2Z([1, 0, 1, 1])  # parabolic that fixes 0
+S2m = SL2Z([0, -1, 1, 0])  # elliptic of order 2 (fix i)
+S3m = SL2Z([0, 1, -1, 1])  # elliptic of order 3 (fix j)
 
-S2mi = SL2Z([0,1,-1,0])  # the inverse of S2m in SL(2,Z)
-S3mi = SL2Z([1,-1,1,0])  # the inverse of S3m in SL(2,Z)
-Lmi = SL2Z([1,-1,0,1])   # the inverse of Lm in SL(2,Z)
-Rmi = SL2Z([1,0,-1,1])   # the inverse of Rm in SL(2,Z)
+S2mi = SL2Z([0, 1, -1, 0])  # the inverse of S2m in SL(2,Z)
+S3mi = SL2Z([1, -1, 1, 0])  # the inverse of S3m in SL(2,Z)
+Lmi = SL2Z([1, -1, 0, 1])  # the inverse of Lm in SL(2,Z)
+Rmi = SL2Z([1, 0, -1, 1])  # the inverse of Rm in SL(2,Z)
 
 
 def sl2z_word_problem(A):
@@ -153,49 +153,49 @@ def sl2z_word_problem(A):
 
     # If A00 is zero
     if A[0, 0] == 0:
-        c = A[1,1]
+        c = A[1, 1]
         if c != 1:
-            A = A*Lm**(c-1)*Rm*Lmi
-            output.extend([(0,1-c),(1,-1),(0,1)])
+            A = A * Lm ** (c - 1) * Rm * Lmi
+            output.extend([(0, 1 - c), (1, -1), (0, 1)])
         else:
-            A = A*Rm*Lmi
-            output.extend([(1,-1),(0,1)])
+            A = A * Rm * Lmi
+            output.extend([(1, -1), (0, 1)])
 
-    if A[0, 0] < 0:   # Make sure A00 is positive
-        A = SL2Z(-1)*A
-        output.extend([(1,-1), (0,1), (1,-1), (0,1), (1,-1), (0,1)])
+    if A[0, 0] < 0:  # Make sure A00 is positive
+        A = SL2Z(-1) * A
+        output.extend([(1, -1), (0, 1), (1, -1), (0, 1), (1, -1), (0, 1)])
 
-    if A[0,1] < 0:   # if A01 is negative make it positive
-        n = (-A[0,1]/A[0,0]).ceil()  # n s.t. 0 <= A[0,1]+n*A[0,0] < A[0,0]
-        A = A*Lm**n
+    if A[0, 1] < 0:  # if A01 is negative make it positive
+        n = (-A[0, 1] / A[0, 0]).ceil()  # n s.t. 0 <= A[0,1]+n*A[0,0] < A[0,0]
+        A = A * Lm**n
         output.append((0, -n))
     # At this point A00>0 and A01>=0
-    while not (A[0,0] == 0 or A[0,1] == 0):
-        if A[0,0] > A[0,1]:
-            n = (A[0,0]/A[0,1]).floor()
-            A = A*SL2Z([1,0,-n,1])
+    while not (A[0, 0] == 0 or A[0, 1] == 0):
+        if A[0, 0] > A[0, 1]:
+            n = (A[0, 0] / A[0, 1]).floor()
+            A = A * SL2Z([1, 0, -n, 1])
             output.append((1, n))
 
-        else:      # A[0,0]<=A[0,1]
-            n = (A[0,1]/A[0,0]).floor()
-            A = A*SL2Z([1,-n,0,1])
+        else:  # A[0,0]<=A[0,1]
+            n = (A[0, 1] / A[0, 0]).floor()
+            A = A * SL2Z([1, -n, 0, 1])
             output.append((0, n))
 
     if A == SL2Z.one():
-        pass       # done, so don't add R^0
+        pass  # done, so don't add R^0
     elif A[0, 0] == 0:
         c = A[1, 1]
         if c != 1:
-            A = A*Lm**(c-1)*Rm*Lmi
-            output.extend([(0,1-c),(1,-1),(0, 1)])
+            A = A * Lm ** (c - 1) * Rm * Lmi
+            output.extend([(0, 1 - c), (1, -1), (0, 1)])
         else:
-            A = A*Rm*Lmi
-            output.extend([(1,-1),(0,1)])
+            A = A * Rm * Lmi
+            output.extend([(1, -1), (0, 1)])
     else:
-        c = A[1,0]
+        c = A[1, 0]
         if c:
-            A = A*Rm**(-c)
-            output.append((1,c))
+            A = A * Rm ** (-c)
+            output.append((1, c))
 
     output.reverse()
     return output
@@ -216,7 +216,7 @@ def eval_sl2z_word(w):
     mat = [Lm, Rm]
     w0 = Idm
     w1 = w
-    return w0 * prod((mat[a[0]]**a[1] for a in w1), Idm)
+    return w0 * prod((mat[a[0]] ** a[1] for a in w1), Idm)
 
 
 def word_of_perms(w, p1, p2):
@@ -242,7 +242,7 @@ def word_of_perms(w, p1, p2):
         p2 = PermutationConstructor(p2)
 
     G = p1.parent()
-    if G != p2.parent(): # find a minimal parent
+    if G != p2.parent():  # find a minimal parent
         G2 = p2.parent()
         if G.has_coerce_map_from(G2):
             p2 = G(p2)
@@ -250,16 +250,16 @@ def word_of_perms(w, p1, p2):
             G = G2
             p1 = G(p1)
         else:
-            G = PermutationGroup([p1,p2])
+            G = PermutationGroup([p1, p2])
             p1 = G(p1)
             p2 = G(p2)
 
     M = G.identity()
     p = [p1, p2]
-    m = [p1.order(),p2.order()]
+    m = [p1.order(), p2.order()]
 
-    for i,j in w:
-        M *= p[i]**(j % m[i])
+    for i, j in w:
+        M *= p[i] ** (j % m[i])
 
     return M
 
@@ -279,11 +279,12 @@ def _equalize_perms(l):
         sage: l
         [[0, 1, 2, 3], [1, 0, 2, 3], [3, 0, 1, 2]]
     """
-    n = max(map(len,l))
+    n = max(map(len, l))
     if n == 0:
         n = 1
     for p in l:
         p.extend(list(range(len(p), n)))
+
 
 # Tedious point: in order to unpickle pickled objects from prior to patch
 # #11422, this function needs to accept two non-keyword arguments, to be
@@ -292,9 +293,8 @@ def _equalize_perms(l):
 
 
 def ArithmeticSubgroup_Permutation(
-        L=None, R=None, S2=None, S3=None,
-        relabel=False,
-        check=True):
+    L=None, R=None, S2=None, S3=None, relabel=False, check=True
+):
     r"""
     Construct a subgroup of `\SL_2(\ZZ)` from the action of generators on its
     right cosets.
@@ -378,49 +378,49 @@ def ArithmeticSubgroup_Permutation(
          L=(1,2)(3,5,4)
          R=(1,2)(3,4,5)
     """
-    gens = [x for x in [S2,S3,L,R] if x is not None]
+    gens = [x for x in [S2, S3, L, R] if x is not None]
     if len(gens) == 0:
         S2 = S3 = L = R = ''
     elif len(gens) < 2:
         raise ValueError("Need at least two generators")
 
     if S2 is not None:
-        S2 = PermutationConstructor(S2,check=check)
+        S2 = PermutationConstructor(S2, check=check)
     if S3 is not None:
-        S3 = PermutationConstructor(S3,check=check)
+        S3 = PermutationConstructor(S3, check=check)
     if L is not None:
-        L = PermutationConstructor(L,check=check)
+        L = PermutationConstructor(L, check=check)
     if R is not None:
-        R = PermutationConstructor(R,check=check)
+        R = PermutationConstructor(R, check=check)
 
     if L is not None:
-        if R is not None: # initialize from L,R
+        if R is not None:  # initialize from L,R
             if S2 is None:
                 S2 = R * ~L * R
             if S3 is None:
                 S3 = L * ~R
-        elif S2 is not None: # initialize from L,S2
+        elif S2 is not None:  # initialize from L,S2
             if S3 is None:
                 S3 = ~S2 * ~L
             if R is None:
                 R = ~S2 * ~L * S2
-        elif S3 is not None: # initialize from L,S3
+        elif S3 is not None:  # initialize from L,S3
             if S2 is None:
                 S2 = ~L * ~S3
             if R is None:
                 R = S3 * ~L * ~S3
     elif R is not None:
-        if S2 is not None: # initialize from R, S2
+        if S2 is not None:  # initialize from R, S2
             if L is None:
                 L = ~S2 * ~R * S2
             if S3 is None:
                 S3 = R * ~S2
-        elif S3 is not None: # initialize from R, S3
+        elif S3 is not None:  # initialize from R, S3
             if L is None:
                 L = ~S3 * ~R * S3
             if S2 is None:
                 S2 = ~S3 * R
-    else: # initialize from S2, S3
+    else:  # initialize from S2, S3
         if L is None:
             L = ~S3 * ~S2
         if R is None:
@@ -429,12 +429,12 @@ def ArithmeticSubgroup_Permutation(
     if check and (L != ~S3 * ~S2 or R != S3 * S2):
         raise ValueError("Wrong relations between generators")
 
-    inv = S2*S2
+    inv = S2 * S2
 
     if check:
-        if inv != S3*S3*S3:
+        if inv != S3 * S3 * S3:
             raise ValueError("S2^2 does not equal to S3^3")
-        elif not (inv*inv).is_one():
+        elif not (inv * inv).is_one():
             raise ValueError("S2^2 = S3^3 must have order 1 or 2")
 
         # Check transitivity. This is the most expensive check, so we do it
@@ -443,16 +443,16 @@ def ArithmeticSubgroup_Permutation(
         if not G.is_transitive():
             raise ValueError("Permutations do not generate a transitive group")
 
-    s2 = [i-1 for i in S2.domain()]
-    s3 = [i-1 for i in S3.domain()]
-    l = [i-1 for i in L.domain()]
-    r = [i-1 for i in R.domain()]
-    _equalize_perms((s2,s3,l,r))
+    s2 = [i - 1 for i in S2.domain()]
+    s3 = [i - 1 for i in S3.domain()]
+    l = [i - 1 for i in L.domain()]
+    r = [i - 1 for i in R.domain()]
+    _equalize_perms((s2, s3, l, r))
 
-    if inv.is_one(): # the group is even
-        G = EvenArithmeticSubgroup_Permutation(s2,s3,l,r)
-    else: # the group is odd
-        G = OddArithmeticSubgroup_Permutation(s2,s3,l,r)
+    if inv.is_one():  # the group is even
+        G = EvenArithmeticSubgroup_Permutation(s2, s3, l, r)
+    else:  # the group is odd
+        G = OddArithmeticSubgroup_Permutation(s2, s3, l, r)
 
     if relabel:
         G.relabel()
@@ -530,10 +530,12 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             True
         """
         if isinstance(other, ArithmeticSubgroup_Permutation_class):
-            return (self.is_odd() == other.is_odd() and
-                    self.index() == other.index() and
-                    self.relabel(inplace=False)._S2 == other.relabel(inplace=False)._S2 and
-                    self.relabel(inplace=False)._S3 == other.relabel(inplace=False)._S3)
+            return (
+                self.is_odd() == other.is_odd()
+                and self.index() == other.index()
+                and self.relabel(inplace=False)._S2 == other.relabel(inplace=False)._S2
+                and self.relabel(inplace=False)._S3 == other.relabel(inplace=False)._S3
+            )
 
         if isinstance(other, ArithmeticSubgroup):
             return self == other.as_permutation_group()
@@ -575,8 +577,12 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: hash(G1) == hash(G2)
             False
         """
-        return hash((tuple(self.relabel(inplace=False)._S2),
-                     tuple(self.relabel(inplace=False)._S3)))
+        return hash(
+            (
+                tuple(self.relabel(inplace=False)._S2),
+                tuple(self.relabel(inplace=False)._S3),
+            )
+        )
 
     def _repr_(self):
         r"""
@@ -592,8 +598,10 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             'Arithmetic subgroup of index 24'
         """
         if self.index() < 20:
-            return "Arithmetic subgroup with permutations of right cosets\n S2=%s\n S3=%s\n L=%s\n R=%s" % (
-                self.S2(), self.S3(), self.L(), self.R())
+            return (
+                "Arithmetic subgroup with permutations of right cosets\n S2=%s\n S3=%s\n L=%s\n R=%s"
+                % (self.S2(), self.S3(), self.L(), self.R())
+            )
 
         return "Arithmetic subgroup of index %d" % self.index()
 
@@ -615,7 +623,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: G.S2()
             (1,2)
         """
-        return PermutationConstructor([i+1 for i in self._S2], check=False)
+        return PermutationConstructor([i + 1 for i in self._S2], check=False)
 
     def S3(self):
         r"""
@@ -632,7 +640,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             (1,2,3)
         """
 
-        return PermutationConstructor([i+1 for i in self._S3], check=False)
+        return PermutationConstructor([i + 1 for i in self._S3], check=False)
 
     def L(self):
         r"""
@@ -648,7 +656,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: G.L()
             (1,3)
         """
-        return PermutationConstructor([i+1 for i in self._L], check=False)
+        return PermutationConstructor([i + 1 for i in self._L], check=False)
 
     def R(self):
         r"""
@@ -664,7 +672,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: G.R()
             (2,3)
         """
-        return PermutationConstructor([i+1 for i in self._R], check=False)
+        return PermutationConstructor([i + 1 for i in self._R], check=False)
 
     def perm_group(self):
         r"""
@@ -683,7 +691,9 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
         """
         # we set canonicalize to False as otherwise PermutationGroup changes the
         # order of the generators.
-        return PermutationGroup([self.S2(), self.S3(), self.L(), self.R()], canonicalize=False)
+        return PermutationGroup(
+            [self.S2(), self.S3(), self.L(), self.R()], canonicalize=False
+        )
 
     def index(self):
         r"""
@@ -818,7 +828,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: G.relabel(inplace=False) is G
             True
         """
-        if hasattr(self,'_canonical_label_group'):
+        if hasattr(self, '_canonical_label_group'):
             if inplace:
                 if self is not self._canonical_label_group:
                     self.__dict__ = self._canonical_label_group.__dict__
@@ -830,6 +840,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             G = self
         else:
             from copy import deepcopy
+
             G = deepcopy(self)
 
         n = G.index()
@@ -838,10 +849,10 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
         S3 = G._S3
         L = G._L
         R = G._R
-        G._S2 = [None]*n
-        G._S3 = [None]*n
-        G._L = [None]*n
-        G._R = [None]*n
+        G._S2 = [None] * n
+        G._S3 = [None] * n
+        G._L = [None] * n
+        G._R = [None] * n
 
         for i in range(n):
             G._S2[mapping[i]] = mapping[S2[i]]
@@ -905,21 +916,22 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
         S3_test = [None] * n
 
         m_win = self._canonical_rooted_labels(0)
-        for i in range(n): # conjugation
+        for i in range(n):  # conjugation
             S2_win[m_win[i]] = m_win[self._S2[i]]
             S3_win[m_win[i]] = m_win[self._S3[i]]
 
-        for j0 in range(1,self.index()):
+        for j0 in range(1, self.index()):
             m_test = self._canonical_rooted_labels(j0)
             for i in range(n):
                 S2_test[m_test[i]] = m_test[self._S2[i]]
                 S3_test[m_test[i]] = m_test[self._S3[i]]
 
-            for i in range(n-1):
-                if (S2_test[i] < S2_win[i] or
-                    (S2_test[i] == S2_win[i] and S3_test[i] < S3_win[i])):
-                    S2_win,S2_test = S2_test,S2_win
-                    S3_win,S3_test = S3_test,S3_win
+            for i in range(n - 1):
+                if S2_test[i] < S2_win[i] or (
+                    S2_test[i] == S2_win[i] and S3_test[i] < S3_win[i]
+                ):
+                    S2_win, S2_test = S2_test, S2_win
+                    S3_win, S3_test = S3_test, S3_win
                     m_win = m_test
                     break
 
@@ -1004,16 +1016,16 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
         G = self.relabel(inplace=False)
 
         l = G.L()
-        l_cycle_length = [None]*self.index()
+        l_cycle_length = [None] * self.index()
         for c in l.cycle_tuples(singletons=True):
             for i in c:
-                l_cycle_length[i-1] = len(c)
+                l_cycle_length[i - 1] = len(c)
 
         r = G.R()
-        r_cycle_length = [None]*self.index()
+        r_cycle_length = [None] * self.index()
         for c in r.cycle_tuples(singletons=True):
             for i in c:
-                r_cycle_length[i-1] = len(c)
+                r_cycle_length[i - 1] = len(c)
 
         return (l_cycle_length, r_cycle_length)
 
@@ -1043,13 +1055,13 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             sage: m4 in P
             False
         """
-        w = sl2z_word_problem([a,b,c,d])
+        w = sl2z_word_problem([a, b, c, d])
 
-        perms = [self.relabel(inplace=False)._L,self.relabel(inplace=False)._R]
+        perms = [self.relabel(inplace=False)._L, self.relabel(inplace=False)._R]
         widths = self._index_to_lr_cusp_width()
 
         k = 0
-        for (i,j) in w:
+        for i, j in w:
             for _ in range(j % widths[i][k]):
                 k = perms[i][k]
 
@@ -1078,22 +1090,22 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
         i = 0
         m = SL2Z(1)
         for _ in range(initial_steps):
-            j = randint(0,1)
+            j = randint(0, 1)
             if j == 0:
                 i = self._S2[i]
-                m = m*S2m
+                m = m * S2m
             else:
                 i = self._S3[i]
-                m = m*S3m
+                m = m * S3m
 
         while i != 0:
-            j = randint(0,1)
+            j = randint(0, 1)
             if j == 0:
                 i = self._S2[i]
-                m = m*S2m
+                m = m * S2m
             else:
                 i = self._S3[i]
-                m = m*S3m
+                m = m * S3m
 
         return m
 
@@ -1170,10 +1182,10 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
         s3 = self._S3
         l = self._L
         r = self._R
-        ss2 = [None]*N
-        ss3 = [None]*N
-        ll = [None]*N
-        rr = [None]*N
+        ss2 = [None] * N
+        ss3 = [None] * N
+        ll = [None] * N
+        rr = [None] * N
 
         m = self._canonical_rooted_labels(j0)
         for i in range(N):
@@ -1181,12 +1193,20 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             ss3[m[i]] = m[s3[i]]
             ll[m[i]] = m[l[i]]
             rr[m[i]] = m[r[i]]
-        return self.__class__(ss2,ss3,ll,rr,True)
+        return self.__class__(ss2, ss3, ll, rr, True)
 
-    def coset_graph(self,
-            right_cosets=False,
-            s2_edges=True, s3_edges=True, l_edges=False, r_edges=False,
-            s2_label='s2', s3_label='s3', l_label='l', r_label='r'):
+    def coset_graph(
+        self,
+        right_cosets=False,
+        s2_edges=True,
+        s3_edges=True,
+        l_edges=False,
+        r_edges=False,
+        s2_label='s2',
+        s3_label='s3',
+        l_label='l',
+        r_label='r',
+    ):
         r"""
         Return the right (or left) coset graph.
 
@@ -1221,14 +1241,15 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             Looped multi-digraph on 2 vertices
         """
         from sage.graphs.digraph import DiGraph
+
         res = DiGraph(multiedges=True, loops=True)
         res.add_vertices(list(range(self.index())))
 
         if right_cosets:  # invert the permutations
-            S2 = [None]*self.index()
-            S3 = [None]*self.index()
-            L = [None]*self.index()
-            R = [None]*self.index()
+            S2 = [None] * self.index()
+            S3 = [None] * self.index()
+            L = [None] * self.index()
+            R = [None] * self.index()
             for i in range(self.index()):
                 S2[self._S2[i]] = i
                 S3[self._S3[i]] = i
@@ -1255,15 +1276,15 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
 
         if l_edges:
             if l_label is not None:
-                res.add_edges((i,L[i],l_label) for i in range(self.index()))
+                res.add_edges((i, L[i], l_label) for i in range(self.index()))
             else:
-                res.add_edges((i,L[i]) for i in range(self.index()))
+                res.add_edges((i, L[i]) for i in range(self.index()))
 
         if r_edges:
             if r_label is not None:
-                res.add_edges((i,R[i],r_label) for i in range(self.index()))
+                res.add_edges((i, R[i], r_label) for i in range(self.index()))
             else:
-                res.add_edges((i,R[i]) for i in range(self.index()))
+                res.add_edges((i, R[i]) for i in range(self.index()))
 
         res.plot.options['color_by_label'] = True
 
@@ -1325,9 +1346,10 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
         if self.is_even():
             N = self.generalised_level()
         else:
-            N = 2*self.generalised_level()
+            N = 2 * self.generalised_level()
 
         from .congroup_generic import CongruenceSubgroup_constructor as CS
+
         return CS(N, [x.matrix() for x in self.gens()])
 
     def is_congruence(self) -> bool:
@@ -1431,6 +1453,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             True
         """
         from sage.misc.verbose import verbose
+
         if self.index() == 1:  # the group is SL2Z (trivial case)
             return True
 
@@ -1450,26 +1473,26 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             # N is odd
             # this only gets called if self is even
             onehalf = ZZ(2).inverse_mod(N)  # i.e. 2^(-1) mod N
-            rel = (R*R*L**(-onehalf))**3
+            rel = (R * R * L ** (-onehalf)) ** 3
             return rel.is_one()
 
         if m == 1:
             # N is a power of 2
             onefifth = ZZ(5).inverse_mod(N)  # i.e. 5^(-1) mod N
-            S = L**20*R**onefifth*L**(-4)*~R
+            S = L**20 * R**onefifth * L ** (-4) * ~R
 
             # congruence if the three below permutations are trivial
-            rel = (~L*R*~L) * S * (L*~R*L) * S
+            rel = (~L * R * ~L) * S * (L * ~R * L) * S
             if not rel.is_one():
                 verbose("Failed relation A1")
                 return False
 
-            rel = ~S*R*S*R**(-25)
+            rel = ~S * R * S * R ** (-25)
             if not rel.is_one():
                 verbose("Failed relation A2")
                 return False
 
-            rel = (S*R**5*L*~R*L)**3 * ~(L * ~R * L)**2
+            rel = (S * R**5 * L * ~R * L) ** 3 * ~((L * ~R * L) ** 2)
             if not rel.is_one():
                 verbose("Failed relation A3")
                 return False
@@ -1477,48 +1500,48 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             return True
 
         # e>1, m>1
-        onehalf = ZZ(2).inverse_mod(m) # i.e. 2^(-1) mod m
-        onefifth = ZZ(5).inverse_mod(e) # i.e. 5^(-1) mod e
+        onehalf = ZZ(2).inverse_mod(m)  # i.e. 2^(-1) mod m
+        onefifth = ZZ(5).inverse_mod(e)  # i.e. 5^(-1) mod e
         c, d = CRT_basis([m, e])
         # c=0 mod e, c=1 mod m; d=1 mod e, d=0 mod m
         a = L**c
         b = R**c
         l = L**d
         r = R**d
-        s = l**20 * r**onefifth * l**(-4) * ~r
+        s = l**20 * r**onefifth * l ** (-4) * ~r
 
         # Congruence if the seven permutations below are trivial:
-        rel = ~a*~r*a*r
+        rel = ~a * ~r * a * r
         if not rel.is_one():
             verbose("Failed relation B1")
             return False
 
-        rel = (a*~b*a)**4
+        rel = (a * ~b * a) ** 4
         if not rel.is_one():
             verbose("Failed relation B2")
             return False
 
-        rel = (a*~b*a)**2*(~a*b)**3
+        rel = (a * ~b * a) ** 2 * (~a * b) ** 3
         if not rel.is_one():
             verbose("Failed relation B3")
             return False
 
-        rel = (a*~b*a)**2*(b*b*a**(-onehalf))**(-3)
+        rel = (a * ~b * a) ** 2 * (b * b * a ** (-onehalf)) ** (-3)
         if not rel.is_one():
             verbose("Failed relation B4")
             return False
 
-        rel = (~l*r*~l)*s*(l*~r*l)*s
+        rel = (~l * r * ~l) * s * (l * ~r * l) * s
         if not rel.is_one():
             verbose("Failed relation B5")
             return False
 
-        rel = ~s*r*s*r**(-25)
+        rel = ~s * r * s * r ** (-25)
         if not rel.is_one():
             verbose("Failed relation B6")
             return False
 
-        rel = (l*~r*l)**2*(s*r**5*l*~r*l)**(-3)
+        rel = (l * ~r * l) ** 2 * (s * r**5 * l * ~r * l) ** (-3)
         if not rel.is_one():
             verbose("Failed relation B7")
             return False
@@ -1556,6 +1579,7 @@ class ArithmeticSubgroup_Permutation_class(ArithmeticSubgroup):
             [6, 3, 4, 8, 4, 8, 4, 12, 4, 6, 6, 8, 8]
         """
         from sage.libs.gap.libgap import libgap
+
         P = libgap(self.perm_group())
         for b in P.AllBlocks():
             orbit = P.Orbit(b, libgap.OnSets)
@@ -1620,12 +1644,14 @@ class OddArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: GG.relabel(inplace=False) is GG
             True
         """
-        if hasattr(self,'_canonical_label_group'):
-            canonical_labels = (self is self._canonical_label_group)
+        if hasattr(self, '_canonical_label_group'):
+            canonical_labels = self is self._canonical_label_group
         else:
             canonical_labels = False
-        return (OddArithmeticSubgroup_Permutation,
-                (self._S2,self._S3,self._L,self._R,canonical_labels))
+        return (
+            OddArithmeticSubgroup_Permutation,
+            (self._S2, self._S3, self._L, self._R, canonical_labels),
+        )
 
     def is_odd(self) -> bool:
         r"""
@@ -1680,29 +1706,29 @@ class OddArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
         # build equivalence classes in e
         s2 = self._S2
         e = []
-        e2i = [None]*N
+        e2i = [None] * N
         for i in range(N):
             j = s2[s2[i]]
             if i < j:
                 e2i[i] = e2i[j] = len(e)
-                e.append((i,j))
+                e.append((i, j))
 
         # build the quotient permutations
-        ss2 = [None]*(N//2)
-        ss3 = [None]*(N//2)
-        ll = [None]*(N//2)
-        rr = [None]*(N//2)
+        ss2 = [None] * (N // 2)
+        ss3 = [None] * (N // 2)
+        ll = [None] * (N // 2)
+        rr = [None] * (N // 2)
 
         s3 = self._S3
         l = self._L
         r = self._R
-        for (j0,j1) in e:
+        for j0, j1 in e:
             ss2[e2i[j0]] = e2i[s2[j0]]
             ss3[e2i[j0]] = e2i[s3[j0]]
             ll[e2i[j0]] = e2i[l[j0]]
             rr[e2i[j0]] = e2i[r[j0]]
 
-        G = EvenArithmeticSubgroup_Permutation(ss2,ss3,ll,rr)
+        G = EvenArithmeticSubgroup_Permutation(ss2, ss3, ll, rr)
         if relabel:
             G.relabel()
         return G
@@ -1754,7 +1780,7 @@ class OddArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: G.nirregcusps()
             3
         """
-        inv = self.S2()**2
+        inv = self.S2() ** 2
         n = 0
         for c in self.L().cycle_tuples(singletons=True):
             if inv(c[0]) in c:
@@ -1774,12 +1800,12 @@ class OddArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: G.nregcusps()
             2
         """
-        inv = self.S2()**2
+        inv = self.S2() ** 2
         n = 0
         for c in self.L().cycle_tuples(singletons=True):
             if inv(c[0]) not in c:
                 n += 1
-        return n//2
+        return n // 2
 
     def cusp_widths(self, exp=False):
         r"""
@@ -1799,7 +1825,7 @@ class OddArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: G.cusp_widths(exp=True)
             {1: 2, 5: 2}
         """
-        inv = self.S2()**2
+        inv = self.S2() ** 2
         L = self.L()
         cusps = {c[0] for c in L.cycle_tuples(singletons=True)}
         if exp:
@@ -1846,7 +1872,7 @@ class OddArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: G.ncusps()
             2
         """
-        inv = self.S2()**2
+        inv = self.S2() ** 2
         n = 0
         m = 0
         for c in self.L().cycle_tuples(singletons=True):
@@ -1854,7 +1880,7 @@ class OddArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
                 n += 1
             else:
                 m += 1
-        return n + m//2
+        return n + m // 2
 
 
 class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
@@ -1903,6 +1929,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
         sage: G.genus()
         0
     """
+
     def __init__(self, S2, S3, L, R, canonical_labels=False):
         r"""
         TESTS::
@@ -1938,11 +1965,13 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             True
         """
         if hasattr(self, '_canonical_label_group'):
-            canonical_labels = (self is self._canonical_label_group)
+            canonical_labels = self is self._canonical_label_group
         else:
             canonical_labels = False
-        return (EvenArithmeticSubgroup_Permutation,
-                (self._S2, self._S3, self._L, self._R, canonical_labels))
+        return (
+            EvenArithmeticSubgroup_Permutation,
+            (self._S2, self._S3, self._L, self._R, canonical_labels),
+        )
 
     def is_odd(self) -> bool:
         r"""
@@ -2093,7 +2122,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
         orientation = {x0: []}
         while True:
             # complete the current 3-loop in the tree
-            if s3[x0] != x0: # loop of length 3
+            if s3[x0] != x0:  # loop of length 3
                 x1 = s3[x0]
                 x2 = s3[x1]
                 orientation[x0].append(x1)
@@ -2113,7 +2142,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
                     word_reps[x2] = ['s3'] + word_reps[x1]
                 l.append(x1)
                 l.append(x2)
-            else: # elliptic generator
+            else:  # elliptic generator
                 gens.append((x0, x0, 's3'))
 
             # now perform links with s while we find another guy
@@ -2121,10 +2150,10 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
                 x1 = l.pop(randint(0, len(l) - 1))
                 x0 = s2[x1]
 
-                if x1 != x0: # loop of length 2
+                if x1 != x0:  # loop of length 2
                     if x0 in tree:
                         gens.append((x1, x0, 's2'))
-                        del l[l.index(x0)] # x0 must be in l
+                        del l[l.index(x0)]  # x0 must be in l
                     else:
                         orientation[x1].append(x0)
                         orientation[x0] = [x1]
@@ -2136,7 +2165,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
                             reps[x0] = S2m * reps[x1]
                             word_reps[x0] = ['s2'] + word_reps[x1]
                         break
-                else: # elliptic generator
+                else:  # elliptic generator
                     gens.append((x1, x1, 's2'))
 
             else:
@@ -2208,18 +2237,19 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             s = self._S2
             l = self._L
         else:
-            s = [None]*self.index()
-            l = [None]*self.index()
+            s = [None] * self.index()
+            l = [None] * self.index()
             for i in range(self.index()):
                 s[self._S2[i]] = i
                 l[self._L[i]] = i
 
         from sage.graphs.digraph import DiGraph
-        tree = DiGraph(multiedges=False,loops=False)
+
+        tree = DiGraph(multiedges=False, loops=False)
         gens = []
 
-        reps = [None]*self.index()
-        word_reps = [None]*self.index()
+        reps = [None] * self.index()
+        word_reps = [None] * self.index()
         reps[root] = SL2Z(1)
         word_reps[root] = ''
 
@@ -2232,7 +2262,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             x = x0
             xx = l[x]
             while xx != x0:
-                tree.add_edge(x,xx,'l')
+                tree.add_edge(x, xx, 'l')
                 if on_right:
                     reps[xx] = reps[x] * Lm
                     word_reps[xx] = word_reps[x] + 'l'
@@ -2243,24 +2273,24 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
                 x = xx
                 xx = l[x]
 
-            gens.append((x,x0,'l'))
+            gens.append((x, x0, 'l'))
 
             # now perform links with s while we find another guy which will
             # become the new x0
             while waiting:
                 x0 = None
                 while waiting and x0 is None:
-                    x1 = waiting.pop(randint(0,len(waiting)-1))
+                    x1 = waiting.pop(randint(0, len(waiting) - 1))
                     x0 = s[x1]
 
                 if x0 is not None:
-                    if x1 != x0: # loop of length 2
+                    if x1 != x0:  # loop of length 2
                         if x0 in tree:
-                            gens.append((x1,x0,'s'))
+                            gens.append((x1, x0, 's'))
                             if x0 in waiting:
-                                del waiting[waiting.index(x0)] # x0 must be in l
+                                del waiting[waiting.index(x0)]  # x0 must be in l
                         else:
-                            tree.add_edge(x1,x0,'s')
+                            tree.add_edge(x1, x0, 's')
                             if on_right:
                                 reps[x0] = reps[x1] * S2m
                                 word_reps[x0] = word_reps[x1] + 's'
@@ -2268,13 +2298,13 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
                                 reps[x0] = S2m * reps[x1]
                                 word_reps[x0] = 's' + word_reps[x1]
                             break
-                    else: # elliptic generator
-                        gens.append((x1,x1,'s'))
+                    else:  # elliptic generator
+                        gens.append((x1, x1, 's'))
 
             else:
                 break
 
-        return tree, reps, word_reps,gens
+        return tree, reps, word_reps, gens
 
     def todd_coxeter_s2_s3(self):
         r"""
@@ -2308,7 +2338,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: all(reps[i]*S3*~reps[s3[i]] in G for i in range(4))
             True
         """
-        tree,reps,wreps,edges = self._spanning_tree_kulkarni()
+        tree, reps, wreps, edges = self._spanning_tree_kulkarni()
 
         gens = []
         for e in edges:
@@ -2358,7 +2388,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: all(reps[i]*L*~reps[l[i]] in G for i in range(4))
             True
         """
-        tree,reps,wreps,edges = self._spanning_tree_verrill()
+        tree, reps, wreps, edges = self._spanning_tree_verrill()
 
         gens = []
         for e in edges:
@@ -2416,7 +2446,7 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             sage: G.cusp_widths(exp=True)
             {6: 1}
         """
-        seen = [True]*self.index()
+        seen = [True] * self.index()
 
         if exp:
             widths = {}
@@ -2512,25 +2542,27 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             True
         """
         if self.nu2() != 0:
-            raise ValueError("Group contains an element of order 4, hence no index 2 odd subgroups")
+            raise ValueError(
+                "Group contains an element of order 4, hence no index 2 odd subgroups"
+            )
         n = self.index()
         s2old, s3old = self.S2(), self.S3()
-        s2cycs = s2old.cycle_tuples() # no singletons can exist
+        s2cycs = s2old.cycle_tuples()  # no singletons can exist
         s3cycs = s3old.cycle_tuples(singletons=True)
         s2 = PermutationConstructor([x + tuple(y + n for y in x) for x in s2cycs])
         s3 = PermutationConstructor([x + tuple(y + n for y in x) for x in s3cycs])
 
         if random is False:
-            return ArithmeticSubgroup_Permutation(S2=s2,S3=s3,check=False)
+            return ArithmeticSubgroup_Permutation(S2=s2, S3=s3, check=False)
 
         from sage.misc.prandom import randint
 
         t = []
-        for i in range(1,n+1):
-            if randint(0,1):
-                t.append((i,n+i))
+        for i in range(1, n + 1):
+            if randint(0, 1):
+                t.append((i, n + i))
         t = PermutationConstructor(t)
-        return ArithmeticSubgroup_Permutation(S2=s2,S3=t*s3*t,check=False)
+        return ArithmeticSubgroup_Permutation(S2=s2, S3=t * s3 * t, check=False)
 
     def odd_subgroups(self):
         r"""
@@ -2606,30 +2638,29 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
             return []
         n = self.index()
         s2old, s3old = self.S2(), self.S3()
-        s2cycs = s2old.cycle_tuples() # no singletons can exist
+        s2cycs = s2old.cycle_tuples()  # no singletons can exist
         s3cycs = s3old.cycle_tuples(singletons=True)
         s2 = PermutationConstructor([x + tuple(y + n for y in x) for x in s2cycs])
         s3 = PermutationConstructor([x + tuple(y + n for y in x) for x in s3cycs])
-        H = ArithmeticSubgroup_Permutation(S2=s2,S3=s3)
+        H = ArithmeticSubgroup_Permutation(S2=s2, S3=s3)
 
         bucket = {H}
         res = [H]
         # We use a set *and* a list since checking whether an element is in a
         # set is very fast, but on the other hand we want the order the results
         # are returned to be at least somewhat canonical.
-        ts = [PermutationConstructor(list(range(1,1+2*n)))]
+        ts = [PermutationConstructor(list(range(1, 1 + 2 * n)))]
 
-        for i in range(1,n+1):
+        for i in range(1, n + 1):
+            t = PermutationConstructor([(i, n + i)], check=False)
 
-            t = PermutationConstructor([(i, n+i)], check=False)
-
-            s3c = t*s3*t
+            s3c = t * s3 * t
 
             if s3c == s3:
                 # t commutes with s3; nothing to see here.
                 continue
 
-            HH = ArithmeticSubgroup_Permutation(S2=s2,S3=s3c,check=False)
+            HH = ArithmeticSubgroup_Permutation(S2=s2, S3=s3c, check=False)
 
             if HH not in bucket:
                 # Because the liftings are indexed by Hom(self, +-1) which is a
@@ -2640,8 +2671,12 @@ class EvenArithmeticSubgroup_Permutation(ArithmeticSubgroup_Permutation_class):
                 res.append(HH)
                 ts.append(t)
                 for tt in ts[1:-1]:
-                    ts.append(tt*t)
-                    res.append(ArithmeticSubgroup_Permutation(S2=s2,S3=tt*s3c*tt,check=False))
+                    ts.append(tt * t)
+                    res.append(
+                        ArithmeticSubgroup_Permutation(
+                            S2=s2, S3=tt * s3c * tt, check=False
+                        )
+                    )
                     bucket.add(res[-1])
 
         return res
@@ -2662,9 +2697,8 @@ def HsuExample10():
          R=(1,7,9,10,6)(2,3)(4,5,8)
     """
     return ArithmeticSubgroup_Permutation(
-            L="(1,4)(2,5,9,10,8)(3,7,6)",
-            R="(1,7,9,10,6)(2,3)(4,5,8)",
-            relabel=False)
+        L="(1,4)(2,5,9,10,8)(3,7,6)", R="(1,7,9,10,6)(2,3)(4,5,8)", relabel=False
+    )
 
 
 def HsuExample18():
@@ -2682,6 +2716,7 @@ def HsuExample18():
          R=(1,12,18)(2,6,13,9,4,8,17,7)(3,16,14)(5,11)(10,15)
     """
     return ArithmeticSubgroup_Permutation(
-            L="(1,2)(3,4)(5,6,7)(8,9,10)(11,12,13,14,15,16,17,18)",
-            R="(1,12,18)(2,6,13,9,4,8,17,7)(3,16,14)(5,11)(10,15)",
-            relabel=False)
+        L="(1,2)(3,4)(5,6,7)(8,9,10)(11,12,13,14,15,16,17,18)",
+        R="(1,12,18)(2,6,13,9,4,8,17,7)(3,16,14)(5,11)(10,15)",
+        relabel=False,
+    )

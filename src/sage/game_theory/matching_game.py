@@ -321,6 +321,7 @@ class MatchingGame(SageObject):
         sage: g.solve()
         {1: -1, 2: -2, 3: -3}
     """
+
     def __init__(self, generator, revr=None):
         r"""
         Initialize a matching game and check the inputs.
@@ -484,13 +485,19 @@ class MatchingGame(SageObject):
             sage: g1 == g2
             True
         """
-        return (isinstance(other, MatchingGame)
-                and set(self._suitors) == set(other._suitors)
-                and set(self._reviewers) == set(other._reviewers)
-                and all(r1.pref == r2.pref for r1, r2 in
-                        zip(set(self._reviewers), set(other._reviewers)))
-                and all(s1.pref == s2.pref for s1, s2 in
-                        zip(set(self._suitors), set(other._suitors))))
+        return (
+            isinstance(other, MatchingGame)
+            and set(self._suitors) == set(other._suitors)
+            and set(self._reviewers) == set(other._reviewers)
+            and all(
+                r1.pref == r2.pref
+                for r1, r2 in zip(set(self._reviewers), set(other._reviewers))
+            )
+            and all(
+                s1.pref == s2.pref
+                for s1, s2 in zip(set(self._suitors), set(other._suitors))
+            )
+        )
 
     __hash__ = None
     # not hashable because this is mutable.
@@ -822,7 +829,7 @@ class MatchingGame(SageObject):
             sage: g.suitors()
             (1, 2)
         """
-        return tuple(sorted(self._suitors, key=lambda s:str(s._name)))
+        return tuple(sorted(self._suitors, key=lambda s: str(s._name)))
 
     def reviewers(self):
         """
@@ -834,7 +841,7 @@ class MatchingGame(SageObject):
             sage: g.reviewers()
             (-1, -2)
         """
-        return tuple(sorted(self._reviewers, key=lambda r:str(r._name)))
+        return tuple(sorted(self._reviewers, key=lambda r: str(r._name)))
 
     def solve(self, invert=False):
         r"""
@@ -947,6 +954,7 @@ class Player:
     These instances are used when initiating players and to keep track of
     whether or not partners have a preference.
     """
+
     def __init__(self, name):
         r"""
         TESTS::

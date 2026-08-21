@@ -190,4 +190,5 @@ def call_method(obj: Any, name: str, *args: Any, **kwds: Any) -> Any:
 
 
 from sage.misc.persist import register_unpickle_override
+
 register_unpickle_override("sage.misc.misc", "call_method", call_method)

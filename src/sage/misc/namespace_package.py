@@ -1,6 +1,7 @@
 """
 Utility functions for namespace packages in Sage
 """
+
 from importlib import import_module
 
 
@@ -17,7 +18,7 @@ def install_doc(package, doc):
         'hello'
     """
     pkg = import_module(package)
-    pkg.__doc__ = doc         # enable sage.package?
+    pkg.__doc__ = doc  # enable sage.package?
     pkg.getdoc = lambda: doc  # enable help(sage.package)
 
 

@@ -1,14 +1,14 @@
 r"""
 Algebra modules
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_types import Category_module
 from sage.categories.commutative_algebras import CommutativeAlgebras
@@ -32,6 +32,7 @@ class AlgebraModules(Category_module):
     and use cases for potential generalizations to the non commutative
     case are welcome.
     """
+
     def __init__(self, A):
         """
         EXAMPLES::
@@ -57,7 +58,9 @@ class AlgebraModules(Category_module):
         except AttributeError:
             raise TypeError(f"A (={A}) must be a commutative algebra")
         else:
-            if base_ring not in CommutativeRings() or A not in CommutativeAlgebras(base_ring.category()):
+            if base_ring not in CommutativeRings() or A not in CommutativeAlgebras(
+                base_ring.category()
+            ):
                 raise TypeError(f"A (={A}) must be a commutative algebra")
 
         Category_module.__init__(self, A)
@@ -73,6 +76,7 @@ class AlgebraModules(Category_module):
             Category of algebra modules over Univariate Polynomial Ring in x over Rational Field
         """
         from sage.rings.rational_field import QQ
+
         return cls(QQ['x'])
 
     def algebra(self):

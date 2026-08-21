@@ -112,6 +112,7 @@ class DrinfeldModule_charzero(DrinfeldModule):
         sage: phi(T)
         z^2*τ^2 + τ + z
     """
+
     @cached_method
     def _compute_coefficient_exp(self, k):
         r"""
@@ -143,7 +144,9 @@ class DrinfeldModule_charzero(DrinfeldModule):
         c = self._base.zero()
         for i in range(k):
             j = k - i
-            c += self._compute_coefficient_exp(i) * self._compute_coefficient_log(j)**(q**i)
+            c += self._compute_coefficient_exp(i) * self._compute_coefficient_log(
+                j
+            ) ** (q**i)
         return -c
 
     def exponential(self, prec=Infinity, name='z'):
@@ -267,8 +270,8 @@ class DrinfeldModule_charzero(DrinfeldModule):
         for i in range(k):
             j = k - i
             if j < r + 1:
-                c += self._compute_coefficient_log(i) * self._gen[j]**(q**i)
-        return c / (T - T**(q**k))
+                c += self._compute_coefficient_log(i) * self._gen[j] ** (q**i)
+        return c / (T - T ** (q**k))
 
     def logarithm(self, prec=Infinity, name='z'):
         r"""
@@ -374,13 +377,15 @@ class DrinfeldModule_charzero(DrinfeldModule):
         if n <= q - 1:
             return X**n
         if n % q == 0:
-            return self.goss_polynomial(n // q)**q
+            return self.goss_polynomial(n // q) ** q
         # General case
         pol = poly_ring.zero()
         m = q
         i = 1
         while m < n:
-            pol += self._compute_coefficient_exp(i) * self._compute_goss_polynomial(n - m, q, poly_ring, X)
+            pol += self._compute_coefficient_exp(i) * self._compute_goss_polynomial(
+                n - m, q, poly_ring, X
+            )
             m *= q
             i += 1
         return X * (self._compute_goss_polynomial(n - 1, q, poly_ring, X) + pol)
@@ -444,6 +449,7 @@ class DrinfeldModule_rational(DrinfeldModule_charzero):
         sage: type(C)
         <class 'sage.rings.function_field.drinfeld_modules.drinfeld_module_charzero.DrinfeldModule_rational_with_category'>
     """
+
     def coefficient_in_function_ring(self, n):
         r"""
         Return the `n`-th coefficient of this Drinfeld module as

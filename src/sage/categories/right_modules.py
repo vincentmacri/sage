@@ -1,12 +1,12 @@
 r"""
 Right modules
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups

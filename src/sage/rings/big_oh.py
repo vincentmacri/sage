@@ -159,8 +159,7 @@ def O(*x, **kwds):
     if len(x) > 1:
         if isinstance(x[0], multi_power_series_ring_element.MPowerSeries):
             return multi_power_series_ring_element.MO(x, **kwds)
-        raise ArithmeticError("O(%s) not defined" %
-                              (', '.join(str(e) for e in x),))
+        raise ArithmeticError("O(%s) not defined" % (', '.join(str(e) for e in x),))
 
     x = x[0]
 
@@ -169,11 +168,13 @@ def O(*x, **kwds):
 
     if isinstance(x, Polynomial):
         if x.parent().ngens() != 1:
-            raise NotImplementedError("completion only currently defined "
-                                      "for univariate polynomials")
+            raise NotImplementedError(
+                "completion only currently defined for univariate polynomials"
+            )
         if not x.is_monomial():
-            raise NotImplementedError("completion only currently defined "
-                                      "for the maximal ideal (x)")
+            raise NotImplementedError(
+                "completion only currently defined for the maximal ideal (x)"
+            )
 
     if isinstance(x, (int, Integer, Rational)):
         # p-adic number
@@ -193,10 +194,8 @@ def O(*x, **kwds):
         if not p.is_prime():
             raise ArithmeticError("x must be prime power")
         if r >= 0:
-            return Zp(p, prec=max(r, 20),
-                      type='capped-rel')(0, absprec=r, **kwds)
-        return Qp(p, prec=max(r, 20),
-                  type='capped-rel')(0, absprec=r, **kwds)
+            return Zp(p, prec=max(r, 20), type='capped-rel')(0, absprec=r, **kwds)
+        return Qp(p, prec=max(r, 20), type='capped-rel')(0, absprec=r, **kwds)
 
     if isinstance(x, PuiseuxSeries):
         # note that add_bigoh() of PuiseuxSeries adapts the precision
@@ -206,6 +205,7 @@ def O(*x, **kwds):
 
     from sage.rings.padics.padic_ZZ_pX_FM_element import pAdicZZpXFMElement
     from sage.rings.padics.padic_fixed_mod_element import pAdicFixedModElement
+
     if isinstance(x, (pAdicZZpXFMElement, pAdicFixedModElement)):
         # fixed modulus elements does not keep track of their own precision,
         # we must return zero (that said it is not recommended to use O()

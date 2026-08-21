@@ -1,12 +1,12 @@
 r"""
 Polyhedral subsets of free ZZ, QQ or RR-modules.
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2011 Volker Braun <vbraun.name@gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_types import Category_over_base_ring
@@ -70,4 +70,5 @@ class PolyhedralSets(Category_over_base_ring):
         """
         from sage.categories.magmas import Magmas
         from sage.categories.additive_monoids import AdditiveMonoids
+
         return [Magmas().Commutative(), AdditiveMonoids()]

@@ -31,6 +31,7 @@ class Singular(Executable):
         sage: Singular().is_present()                                                   # needs singular
         FeatureTestResult('singular', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -39,8 +40,9 @@ class Singular(Executable):
             sage: isinstance(Singular(), Singular)
             True
         """
-        Executable.__init__(self, "singular", SINGULAR_BIN,
-                            spkg='singular', type='standard')
+        Executable.__init__(
+            self, "singular", SINGULAR_BIN, spkg='singular', type='standard'
+        )
 
 
 def all_features():

@@ -24,6 +24,7 @@ class KacMoodyAlgebras(Category_over_base_ring):
     """
     Category of Kac-Moody algebras.
     """
+
     @cached_method
     def super_categories(self):
         """
@@ -51,7 +52,10 @@ class KacMoodyAlgebras(Category_over_base_ring):
             sage: KacMoodyAlgebras(QQ).example(4)                                       # needs sage.combinat sage.modules
             Lie algebra of ['A', 4] in the Chevalley basis
         """
-        from sage.algebras.lie_algebras.classical_lie_algebra import LieAlgebraChevalleyBasis
+        from sage.algebras.lie_algebras.classical_lie_algebra import (
+            LieAlgebraChevalleyBasis,
+        )
+
         return LieAlgebraChevalleyBasis(self.base_ring(), ['A', n])
 
     class ParentMethods:
@@ -78,4 +82,5 @@ class KacMoodyAlgebras(Category_over_base_ring):
                 Weyl Group of type ['A', 2] (as a matrix group acting on the ambient space)
             """
             from sage.combinat.root_system.weyl_group import WeylGroup
+
             return WeylGroup(self.cartan_type())

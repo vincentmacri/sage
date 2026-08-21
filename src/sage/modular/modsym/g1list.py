@@ -38,6 +38,7 @@ class G1list(SageObject):
         sage: loads(dumps(L)) == L
         True
     """
+
     def __init__(self, N):
         """
         EXAMPLES::
@@ -46,8 +47,9 @@ class G1list(SageObject):
             List of coset representatives for Gamma_1(6) in SL_2(Z)
         """
         self.__N = N
-        self.__list = [(u, v) for u in range(N) for v in range(N)
-                       if GCD(GCD(u, v), N) == 1]
+        self.__list = [
+            (u, v) for u in range(N) for v in range(N) if GCD(GCD(u, v), N) == 1
+        ]
 
     def __richcmp__(self, other, op):
         r"""
@@ -139,6 +141,7 @@ class _G1list_old_pickle(G1list):
     no input to the class on the initial ``__init__`` call, and the
     new class pickles, we need to have ``__setstate__`` handle it.
     """
+
     def __init__(self):
         """
         For unpickling old pickles.
@@ -172,5 +175,4 @@ class _G1list_old_pickle(G1list):
         self.__dict__ = state  # Default pickling is ``state = self.__dict__``
 
 
-register_unpickle_override('sage.modular.modsym.g1list', 'G1list',
-                           _G1list_old_pickle)
+register_unpickle_override('sage.modular.modsym.g1list', 'G1list', _G1list_old_pickle)

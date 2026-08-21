@@ -173,8 +173,10 @@ def to_matrix_representation(v, sub_field=None, basis=None):
     if not sub_field:
         sub_field = base_field.prime_subfield()
     n = v.length()
-    m = base_field.degree()//sub_field.degree()
-    extension, to_big_field, from_big_field = base_field.vector_space(sub_field, basis, map=True)
+    m = base_field.degree() // sub_field.degree()
+    extension, to_big_field, from_big_field = base_field.vector_space(
+        sub_field, basis, map=True
+    )
     return matrix(sub_field, m, n, lambda i, j: from_big_field(v[j])[i])
 
 
@@ -221,7 +223,9 @@ def from_matrix_representation(w, base_field=None, basis=None):
     sub_field = w.base_ring()
     if not base_field:
         base_field = sub_field.extension(w.nrows())
-    extension, to_big_field, from_big_field = base_field.vector_space(sub_field, basis, map=True)
+    extension, to_big_field, from_big_field = base_field.vector_space(
+        sub_field, basis, map=True
+    )
     v = [to_big_field(w.column(i)) for i in range(w.ncols())]
     return vector(v)
 
@@ -354,11 +358,19 @@ class AbstractLinearRankMetricCode(AbstractLinearCodeNoMetric):
 
     .. automethod:: __init__
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
-    def __init__(self, base_field, sub_field, length, default_encoder_name,
-            default_decoder_name, basis=None):
+    def __init__(
+        self,
+        base_field,
+        sub_field,
+        length,
+        default_encoder_name,
+        default_decoder_name,
+        basis=None,
+    ):
         r"""
         Initialize mandatory parameters that every linear rank metric code has.
 
@@ -467,19 +479,27 @@ class AbstractLinearRankMetricCode(AbstractLinearCodeNoMetric):
             ...
             ValueError: 'sub_field' has to be a subfield of 'base_field'
         """
-        self._registered_decoders["NearestNeighbor"] = LinearRankMetricCodeNearestNeighborDecoder
+        self._registered_decoders["NearestNeighbor"] = (
+            LinearRankMetricCodeNearestNeighborDecoder
+        )
 
         if not sub_field.is_field():
-            raise ValueError("'sub_field' must be a field (and {} is not one)".format(sub_field))
-        if not (sub_field.degree().divides(base_field.degree()) and (sub_field.prime_subfield() == base_field.prime_subfield())):
+            raise ValueError(
+                "'sub_field' must be a field (and {} is not one)".format(sub_field)
+            )
+        if not (
+            sub_field.degree().divides(base_field.degree())
+            and (sub_field.prime_subfield() == base_field.prime_subfield())
+        ):
             raise ValueError("'sub_field' has to be a subfield of 'base_field'")
         m = base_field.degree() // sub_field.degree()
         self._extension_degree = m
         self._sub_field = sub_field
 
         self._generic_constructor = LinearRankMetricCode
-        super().__init__(base_field, length, default_encoder_name,
-                         default_decoder_name, "rank")
+        super().__init__(
+            base_field, length, default_encoder_name, default_decoder_name, "rank"
+        )
 
     def sub_field(self):
         r"""
@@ -648,7 +668,9 @@ class AbstractLinearRankMetricCode(AbstractLinearCodeNoMetric):
         word = self.ambient_space()(word)
         if sub_field is not None:
             if self.base_field().degree() % sub_field.degree() != 0:
-                raise TypeError(f"the input subfield {sub_field} is not a subfield of {self.base_field()}")
+                raise TypeError(
+                    f"the input subfield {sub_field} is not a subfield of {self.base_field()}"
+                )
         return to_matrix_representation(word, sub_field, basis).column_module()
 
     def matrix_form_of_vector(self, word):
@@ -769,6 +791,7 @@ class LinearRankMetricCode(AbstractLinearRankMetricCode):
                 gen_basis = generator.basis()  # vector space etc. case
             if gen_basis is not None:
                 from sage.matrix.constructor import matrix
+
                 generator = matrix(base_field, gen_basis)
                 if generator.nrows() == 0:
                     raise ValueError("this linear code contains no nonzero vector")
@@ -778,8 +801,14 @@ class LinearRankMetricCode(AbstractLinearRankMetricCode):
 
         self._generator_matrix = generator
         self._length = generator.ncols()
-        super().__init__(base_field, sub_field, self._length,
-                         "GeneratorMatrix", "NearestNeighbor", basis)
+        super().__init__(
+            base_field,
+            sub_field,
+            self._length,
+            "GeneratorMatrix",
+            "NearestNeighbor",
+            basis,
+        )
 
     def _repr_(self):
         r"""
@@ -795,8 +824,18 @@ class LinearRankMetricCode(AbstractLinearRankMetricCode):
         R = self.base_field()
         S = self.sub_field()
         if R and S in Fields():
-            return "[%s, %s] linear rank metric code over GF(%s)/GF(%s)" % (self.length(), self.dimension(), R.cardinality(), S.cardinality())
-        return "[%s, %s] linear rank metric code over %s/%s" % (self.length(), self.dimension(), R, S)
+            return "[%s, %s] linear rank metric code over GF(%s)/GF(%s)" % (
+                self.length(),
+                self.dimension(),
+                R.cardinality(),
+                S.cardinality(),
+            )
+        return "[%s, %s] linear rank metric code over %s/%s" % (
+            self.length(),
+            self.dimension(),
+            R,
+            S,
+        )
 
     def _latex_(self):
         r"""
@@ -809,8 +848,12 @@ class LinearRankMetricCode(AbstractLinearRankMetricCode):
             sage: latex(C)
             [3, 2]\textnormal{ Linear rank metric code over }\Bold{F}_{2^{6}}/\Bold{F}_{2^{2}}
         """
-        return "[%s, %s]\\textnormal{ Linear rank metric code over }%s/%s"\
-                % (self.length(), self.dimension(), self.base_field()._latex_(), self.sub_field()._latex_())
+        return "[%s, %s]\\textnormal{ Linear rank metric code over }%s/%s" % (
+            self.length(),
+            self.dimension(),
+            self.base_field()._latex_(),
+            self.sub_field()._latex_(),
+        )
 
     def generator_matrix(self, encoder_name=None, **kwargs):
         r"""
@@ -879,8 +922,10 @@ class LinearRankMetricCodeNearestNeighborDecoder(Decoder):
             sage: D1 == D2
             True
         """
-        return isinstance(other, LinearRankMetricCodeNearestNeighborDecoder)\
-                and self.code() == other.code()
+        return (
+            isinstance(other, LinearRankMetricCodeNearestNeighborDecoder)
+            and self.code() == other.code()
+        )
 
     def _repr_(self):
         r"""
@@ -933,8 +978,8 @@ class LinearRankMetricCodeNearestNeighborDecoder(Decoder):
         c_min = C.zero()
         h_min = C.rank_weight_of_vector(r)
         for c in C:
-            if C.rank_weight_of_vector(c-r) < h_min:
-                h_min = C.rank_weight_of_vector(c-r)
+            if C.rank_weight_of_vector(c - r) < h_min:
+                h_min = C.rank_weight_of_vector(c - r)
                 c_min = c
         c_min.set_immutable()
         return c_min
@@ -957,4 +1002,6 @@ class LinearRankMetricCodeNearestNeighborDecoder(Decoder):
 
 ####################### registration ###############################
 
-LinearRankMetricCode._registered_encoders["GeneratorMatrix"] = LinearCodeGeneratorMatrixEncoder
+LinearRankMetricCode._registered_encoders["GeneratorMatrix"] = (
+    LinearCodeGeneratorMatrixEncoder
+)

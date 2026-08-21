@@ -153,7 +153,6 @@ old pickles to work).
 #                  http://www.gnu.org/licenses/
 # *****************************************************************************
 
-
 import pickletools
 import re
 import sys
@@ -166,8 +165,13 @@ from pickletools import genops
 
 from sage.misc.sage_input import SageInputBuilder, SageInputExpression
 from sage.misc.sage_eval import sage_eval
-from sage.misc.persist import (unpickle_override, unpickle_global, dumps,
-                               register_unpickle_override, SageUnpickler)
+from sage.misc.persist import (
+    unpickle_override,
+    unpickle_global,
+    dumps,
+    register_unpickle_override,
+    SageUnpickler,
+)
 
 
 # Python 3 does not have a "ClassType". Instead, we ensure that
@@ -258,9 +262,14 @@ def explain_pickle(pickle=None, file=None, compress=True, **kwargs):
     return explain_pickle_string(p, **kwargs)
 
 
-def explain_pickle_string(pickle, in_current_sage=False,
-                          default_assumptions=False, eval=False, preparse=True,
-                          pedantic=False):
+def explain_pickle_string(
+    pickle,
+    in_current_sage=False,
+    default_assumptions=False,
+    eval=False,
+    preparse=True,
+    pedantic=False,
+):
     r"""
     This is a helper function for :func:`explain_pickle`.  It takes a decompressed
     pickle string as input; other than that, its options are all the same
@@ -275,9 +284,12 @@ def explain_pickle_string(pickle, in_current_sage=False,
     """
     sib = SageInputBuilder(preparse=preparse)
 
-    pe = PickleExplainer(sib, in_current_sage=in_current_sage,
-                         default_assumptions=default_assumptions,
-                         pedantic=pedantic)
+    pe = PickleExplainer(
+        sib,
+        in_current_sage=in_current_sage,
+        default_assumptions=default_assumptions,
+        pedantic=pedantic,
+    )
 
     v = pe.run_pickle(pickle)
 
@@ -285,8 +297,11 @@ def explain_pickle_string(pickle, in_current_sage=False,
 
     if eval:
         if default_assumptions:
-            raise ValueError("Not safe to evaluate code generated with default_assumptions")
+            raise ValueError(
+                "Not safe to evaluate code generated with default_assumptions"
+            )
         from sage.misc.sage_eval import sage_eval
+
         result = sage_eval(ans, preparse=preparse)
         print(ans)
         return result
@@ -385,6 +400,7 @@ class PickleDict:
     instead of always starting with an empty dictionary and assigning to
     it.
     """
+
     def __init__(self, items):
         r"""
         Initialize a PickleDict.
@@ -404,6 +420,7 @@ class PickleInstance:
     other possible values of a :class:`PickleObject`, a :class:`PickleInstance` doesn't represent
     an exact value; instead, it gives the class (type) of the object.
     """
+
     def __init__(self, klass):
         r"""
         Initialize a PickleInstance.
@@ -423,8 +440,10 @@ class PickleExplainer:
     symbolically and constructs :class:`SageInputExpression` objects instead of
     directly constructing values.
     """
-    def __init__(self, sib, in_current_sage=False, default_assumptions=False,
-                 pedantic=False):
+
+    def __init__(
+        self, sib, in_current_sage=False, default_assumptions=False, pedantic=False
+    ):
         r"""
         Initialize a PickleExplainer interpreter for the pickle virtual machine.
 
@@ -446,7 +465,9 @@ class PickleExplainer:
         self.stack = []
         self.memo = {}
         if in_current_sage and default_assumptions:
-            raise ValueError("in_current_sage and default_assumptions must not both be true")
+            raise ValueError(
+                "in_current_sage and default_assumptions must not both be true"
+            )
 
         self.new_instance = self.sib.import_name('types', 'InstanceType')
 
@@ -471,7 +492,9 @@ class PickleExplainer:
             try:
                 handler = getattr(self, op.name)
             except AttributeError:
-                raise NotImplementedError('PickleExplainer does not yet handle opcode %s' % op.name)
+                raise NotImplementedError(
+                    'PickleExplainer does not yet handle opcode %s' % op.name
+                )
             if arg is None:
                 handler()
             else:
@@ -835,15 +858,21 @@ class PickleExplainer:
             lst.value.extend(slice)
             lst.expression = self.sib(lst.value)
         elif isinstance(lst, PickleObject) or self.default_assumptions:
-            if isinstance(lst.value, list) or \
-               (isinstance(lst.value, PickleInstance) and
-                issubclass(lst.value.klass, list)) or \
-                    self.default_assumptions:
+            if (
+                isinstance(lst.value, list)
+                or (
+                    isinstance(lst.value, PickleInstance)
+                    and issubclass(lst.value.klass, list)
+                )
+                or self.default_assumptions
+            ):
                 if len(slice) > 1:
                     self.sib.command(lst, self.sib.name('list').extend(lst, slice))
                 else:
                     for s in slice:
-                        self.sib.command(lst, self.sib.name('list').append(lst, self.sib(s)))
+                        self.sib.command(
+                            lst, self.sib.name('list').append(lst, self.sib(s))
+                        )
             else:
                 if self.pedantic:
                     app = self.sib(lst).append
@@ -853,7 +882,9 @@ class PickleExplainer:
                     for s in slice:
                         self.sib.command(lst, self.sib(lst).append(self.sib(s)))
         else:
-            self.sib.command(lst, self.sib.name('unpickle_appends')(self.sib(lst), slice_exp))
+            self.sib.command(
+                lst, self.sib.name('unpickle_appends')(self.sib(lst), slice_exp)
+            )
         self.push(lst)
 
     def BINFLOAT(self, f):
@@ -1096,7 +1127,13 @@ class PickleExplainer:
             if isinstance(args, PickleObject):
                 if isinstance(args.value, PickleDict):
                     can_handle_direct_set = True
-                if isinstance(args.value, tuple) and isinstance(args.value[0], PickleObject) and isinstance(args.value[0].value, PickleDict) and isinstance(args.value[1], PickleObject) and isinstance(args.value[1].value, PickleDict):
+                if (
+                    isinstance(args.value, tuple)
+                    and isinstance(args.value[0], PickleObject)
+                    and isinstance(args.value[0].value, PickleDict)
+                    and isinstance(args.value[1], PickleObject)
+                    and isinstance(args.value[1].value, PickleDict)
+                ):
                     can_handle_direct_set = True
             if not can_handle_direct_set:
                 direct_set = False
@@ -1115,7 +1152,9 @@ class PickleExplainer:
             if slots is not None:
                 for k, v in slots.items:
                     if isinstance(k, PickleObject) and isinstance(k.value, str):
-                        self.sib.command(obj, self.sib.assign(self.sib.getattr(obj, k.value), v))
+                        self.sib.command(
+                            obj, self.sib.assign(self.sib.getattr(obj, k.value), v)
+                        )
                     else:
                         self.sib.command(obj, self.sib.name('setattr')(obj, k, v))
         else:
@@ -1417,7 +1456,9 @@ class PickleExplainer:
                     self.push(PickleObject(f, self.sib.import_name(module, func)))
                     return
                 # The original name is in use.
-                self.push(PickleObject(f, self.sib.import_name(module, func, 'pg_' + func)))
+                self.push(
+                    PickleObject(f, self.sib.import_name(module, func, 'pg_' + func))
+                )
                 return
 
         # We don't know the full name of the function that will
@@ -1943,8 +1984,11 @@ class PickleExplainer:
         obj = self.pop()
         simple_call = False
         new_inst = False
-        if isinstance(args, PickleObject) and isinstance(args.value, tuple) \
-                and len(args.value) > 0:
+        if (
+            isinstance(args, PickleObject)
+            and isinstance(args.value, tuple)
+            and len(args.value) > 0
+        ):
             simple_call = True
         if self.default_assumptions:
             simple_call = True
@@ -2174,7 +2218,7 @@ class PickleExplainer:
         i = 0
         while i < len(slice):
             k = slice[i]
-            v = slice[i+1]
+            v = slice[i + 1]
             # This marks d as immutable, if k or v happens to include d.
             self.sib(k)
             self.sib(v)
@@ -2378,6 +2422,7 @@ class PickleExplainer:
 
 # Helper routines for explain_pickle
 
+
 def unpickle_newobj(klass, args):
     r"""
     Create a new object; this corresponds to the C code
@@ -2510,6 +2555,7 @@ def unpickle_extension(code):
         sage: remove_extension('sage.misc.explain_pickle', 'EmptyNewstyleClass', 42)
     """
     from copyreg import _inverted_registry, _extension_cache
+
     # copied from .get_extension() in pickle.py
     nil = []
     obj = _extension_cache.get(code, nil)
@@ -2603,7 +2649,9 @@ def check_pickle(p, verbose_eval=False, pedantic=False, args=()):
 
     pickletools.dis(p)
 
-    current = explain_pickle(p, compress=False, in_current_sage=True, pedantic=pedantic, preparse=False)
+    current = explain_pickle(
+        p, compress=False, in_current_sage=True, pedantic=pedantic, preparse=False
+    )
     generic = explain_pickle(p, compress=False, pedantic=pedantic, preparse=False)
 
     if current == generic:
@@ -2655,6 +2703,7 @@ class EmptyOldstyleClass:
     A featureless old-style class (does not inherit from object); used for
     testing :func:`explain_pickle`.
     """
+
     def __repr__(self):
         r"""
         Print an EmptyOldstyleClass.
@@ -2693,6 +2742,7 @@ class EmptyNewstyleClass:
     A featureless new-style class (inherits from object); used for
     testing :func:`explain_pickle`.
     """
+
     def __repr__(self):
         r"""
         Print an EmptyNewstyleClass.
@@ -2716,6 +2766,7 @@ class TestReduceGetinitargs:
     An old-style class with a ``__getinitargs__`` method.  Used for testing
     :func:`explain_pickle`.
     """
+
     def __init__(self):
         r"""
         Initialize a TestReduceGetinitargs object.  Note that the
@@ -2768,6 +2819,7 @@ class TestReduceNoGetinitargs:
     An old-style class with no ``__getinitargs__`` method.  Used for testing
     :func:`explain_pickle`.
     """
+
     def __init__(self):
         r"""
         Initialize a TestReduceNoGetinitargs object.  Note that the
@@ -2806,6 +2858,7 @@ class TestAppendList(list):
     A subclass of :class:`list`, with deliberately-broken append and extend methods.
     Used for testing :func:`explain_pickle`.
     """
+
     def append(self):
         r"""
         A deliberately broken append method.
@@ -2854,6 +2907,7 @@ class TestAppendNonlist:
     A list-like class, carefully designed to test exact unpickling
     behavior.  Used for testing :func:`explain_pickle`.
     """
+
     def __init__(self):
         r"""
         Construct a TestAppendNonlist.
@@ -2938,6 +2992,7 @@ class TestBuild:
     A simple class with a ``__getstate__`` but no ``__setstate__``.  Used for testing
     :func:`explain_pickle`.
     """
+
     def __getstate__(self):
         r"""
         A __getstate__ method for testing pickling.
@@ -2967,7 +3022,10 @@ class TestBuild:
             sage: v.__repr__()
             'TestBuild: x=None; y=None'
         """
-        return "TestBuild: x=%s; y=%s" % (getattr(self, 'x', None), getattr(self, 'y', None))
+        return "TestBuild: x=%s; y=%s" % (
+            getattr(self, 'x', None),
+            getattr(self, 'y', None),
+        )
 
 
 class TestBuildSetstate(TestBuild):
@@ -2975,6 +3033,7 @@ class TestBuildSetstate(TestBuild):
     A simple class with a ``__getstate__`` and a ``__setstate__``.  Used for testing
     :func:`explain_pickle`.
     """
+
     def __setstate__(self, state):
         r"""
         Set the state of a TestBuildSetstate.  Both prints a message, and
@@ -3005,6 +3064,7 @@ class TestGlobalOldName:
         sage: loads(dumps(TestGlobalOldName()))
         TestGlobalNewName
     """
+
     pass
 
 
@@ -3020,6 +3080,7 @@ class TestGlobalNewName:
         sage: loads(dumps(TestGlobalOldName()))
         TestGlobalNewName
     """
+
     def __repr__(self):
         r"""
         Print a TestGlobalNewName.
@@ -3038,7 +3099,12 @@ class TestGlobalNewName:
         return "TestGlobalNewName"
 
 
-register_unpickle_override('sage.misc.explain_pickle', 'TestGlobalOldName', TestGlobalNewName, call_name=('sage.misc.explain_pickle', 'TestGlobalNewName'))
+register_unpickle_override(
+    'sage.misc.explain_pickle',
+    'TestGlobalOldName',
+    TestGlobalNewName,
+    call_name=('sage.misc.explain_pickle', 'TestGlobalNewName'),
+)
 
 
 class TestGlobalFunnyName:
@@ -3055,6 +3121,7 @@ class TestGlobalFunnyName:
         sage: globals()['funny$name'] is TestGlobalFunnyName
         True
     """
+
     def __repr__(self):
         r"""
         Print a TestGlobalFunnyName.

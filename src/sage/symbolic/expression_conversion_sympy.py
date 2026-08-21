@@ -55,6 +55,7 @@ class SympyConverter(Converter):
         sage: (x+I)._sympy_()
         x + I
     """
+
     def __init__(self):
         """
         TESTS::
@@ -64,6 +65,7 @@ class SympyConverter(Converter):
             sage: TestSuite(s).run(skip='_test_pickling')
         """
         from sage.interfaces.sympy import sympy_init
+
         sympy_init()
 
     def __call__(self, ex=None):
@@ -79,8 +81,10 @@ class SympyConverter(Converter):
         """
         if isinstance(ex, Expression) and ex.is_callable():
             from sympy import Symbol, Lambda
-            return Lambda(tuple(Symbol(str(arg)) for arg in ex.arguments()),
-                          super().__call__(ex))
+
+            return Lambda(
+                tuple(Symbol(str(arg)) for arg in ex.arguments()), super().__call__(ex)
+            )
         return super().__call__(ex)
 
     def pyobject(self, ex, obj):
@@ -111,6 +115,7 @@ class SympyConverter(Converter):
             x + 2
         """
         import sympy
+
         operator = arithmetic_operators[operator]
         ops = [sympy.sympify(self(a), evaluate=False) for a in ex.operands()]
         if operator == "+":
@@ -137,6 +142,7 @@ class SympyConverter(Converter):
             <class 'sympy.core.symbol.Symbol'>
         """
         import sympy
+
         return sympy.symbols(repr(ex))
 
     def relation(self, ex, op):
@@ -156,6 +162,7 @@ class SympyConverter(Converter):
             x > 0
         """
         from sympy import Eq, Ne, Gt, Lt, Ge, Le
+
         ops = {eq: Eq, ne: Ne, gt: Gt, lt: Lt, ge: Ge, le: Le}
         return ops.get(op)(self(ex.lhs()), self(ex.rhs()), evaluate=False)
 

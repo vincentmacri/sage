@@ -48,6 +48,7 @@ AUTHORS:
 
 - Ralf Stephan (2017-10)
 """
+
 ################################################################
 #   Distributed under GNU GPL3, see www.gnu.org
 ################################################################
@@ -55,6 +56,7 @@ from sage.misc.misc import run_once
 
 
 # ################         numbers and constants      ##############
+
 
 def _sympysage_float(self):
     """
@@ -65,6 +67,7 @@ def _sympysage_float(self):
         sage: assert SR(-1.34) == RN('-1.34')._sage_()
     """
     from sage.rings.real_mpfr import create_RealNumber
+
     return create_RealNumber(str(self))
 
 
@@ -77,6 +80,7 @@ def _sympysage_integer_ring(self):
         Integer Ring
     """
     from sage.rings.integer_ring import ZZ
+
     return ZZ
 
 
@@ -91,6 +95,7 @@ def _sympysage_integer(self):
         <class 'sage.rings.integer.Integer'>
     """
     from sage.rings.integer import Integer
+
     return Integer(self.p)
 
 
@@ -104,6 +109,7 @@ def _sympysage_rational(self):
     """
     from sage.rings.integer import Integer
     from sage.rings.rational import Rational
+
     return Rational((Integer(self.p), Integer(self.q)))
 
 
@@ -116,6 +122,7 @@ def _sympysage_rational_field(self):
         Rational Field
     """
     from sage.rings.rational_field import QQ
+
     return QQ
 
 
@@ -139,6 +146,7 @@ def _sympysage_real_interval(self):
     # potential issue with precision
     # Just to be (a little bit) safe, we set it to 1024
     from sage.rings.real_mpfi import RealIntervalField
+
     RIF = RealIntervalField(1024)
     # NOTE: we call fraction_field since sympy stores mpq even
     # for integral entries
@@ -166,11 +174,14 @@ def _sympysage_complex_interval(self):
     # potential issue with precision
     # Just to be (a little bit) safe, we set it to 1024
     from sage.rings.complex_interval_field import ComplexIntervalField
+
     CIF = ComplexIntervalField(1024)
     # NOTE: we call fraction_field since sympy stores mpq even
     # for integral entries
     domain = self.dom._sage_().fraction_field()
-    return CIF(domain(self.ax), domain(self.ay)).union(CIF(domain(self.bx), domain(self.by)))
+    return CIF(domain(self.ax), domain(self.ay)).union(
+        CIF(domain(self.bx), domain(self.by))
+    )
 
 
 def _sympysage_polynomial_ring(self):
@@ -224,7 +235,9 @@ def _sympysage_polynomial(self):
     base_ring = self.domain._sage_()
     variables = ','.join(map(str, self.gens))
     R = base_ring[variables]
-    return R.sum(base_ring(coeff) * R.monomial(*exp) for exp, coeff in self.rep.terms(order=None))
+    return R.sum(
+        base_ring(coeff) * R.monomial(*exp) for exp, coeff in self.rep.terms(order=None)
+    )
 
 
 def _sympysage_pinfty(self):
@@ -236,6 +249,7 @@ def _sympysage_pinfty(self):
         sage: assert SR(oo) == sinf._sage_()
     """
     from sage.rings.infinity import PlusInfinity
+
     return PlusInfinity()
 
 
@@ -248,6 +262,7 @@ def _sympysage_ninfty(self):
         sage: assert SR(-oo) == (-sinf)._sage_()
     """
     from sage.rings.infinity import MinusInfinity
+
     return MinusInfinity()
 
 
@@ -260,6 +275,7 @@ def _sympysage_uinfty(self):
         sage: assert unsigned_infinity == zoo._sage_()
     """
     from sage.rings.infinity import unsigned_infinity
+
     return unsigned_infinity
 
 
@@ -272,6 +288,7 @@ def _sympysage_nan(self):
         sage: assert NaN == snan._sage_()
     """
     from sage.symbolic.constants import NaN
+
     return NaN
 
 
@@ -284,6 +301,7 @@ def _sympysage_e(self):
         sage: assert e == E._sage_()
     """
     from sage.symbolic.constants import e
+
     return e
 
 
@@ -296,6 +314,7 @@ def _sympysage_pi(self):
         sage: assert pi == spi._sage_()
     """
     from sage.symbolic.constants import pi
+
     return pi
 
 
@@ -308,6 +327,7 @@ def _sympysage_golden_ratio(self):
         sage: assert golden_ratio == S.GoldenRatio._sage_()
     """
     from sage.symbolic.constants import golden_ratio
+
     return golden_ratio
 
 
@@ -320,6 +340,7 @@ def _sympysage_eulerg(self):
         sage: assert euler_gamma == S.EulerGamma._sage_()
     """
     from sage.symbolic.constants import euler_gamma
+
     return euler_gamma
 
 
@@ -332,6 +353,7 @@ def _sympysage_catalan(self):
         sage: assert catalan == S.Catalan._sage_()
     """
     from sage.symbolic.constants import catalan
+
     return catalan
 
 
@@ -344,10 +366,12 @@ def _sympysage_i(self):
         sage: assert I == S.ImaginaryUnit._sage_()
     """
     from sage.symbolic.constants import I
+
     return I
 
 
 # #################       basic operators         ##############
+
 
 def _sympysage_add(self):
     """
@@ -388,7 +412,7 @@ def _sympysage_pow(self):
         sage: assert (x^pi^5)._sympy_() == Symbol('x')**S.Pi**5
         sage: assert x^pi^5 == (Symbol('x')**S.Pi**5)._sage_()
     """
-    return self.args[0]._sage_()**self.args[1]._sage_()
+    return self.args[0]._sage_() ** self.args[1]._sage_()
 
 
 def _sympysage_symbol(self):
@@ -400,6 +424,7 @@ def _sympysage_symbol(self):
         sage: assert x == Symbol('x')._sage_()
     """
     from sage.symbolic.ring import SR
+
     try:
         return SR.var(self.name)
     except ValueError:
@@ -417,12 +442,12 @@ def _sympysage_Subs(self):
         sage: from sympy.core.singleton import S
     """
     args = self.args
-    substi = {args[1][i]._sage_(): args[2][i]._sage_()
-              for i in range(len(args[1]))}
+    substi = {args[1][i]._sage_(): args[2][i]._sage_() for i in range(len(args[1]))}
     return args[0]._sage_().subs(substi)
 
 
 # #############       functions       ###############
+
 
 def _sympysage_function_by_name(fname):
     """
@@ -438,16 +463,20 @@ def _sympysage_function_by_name(fname):
         sage: assert f == F._sage_()
     """
     from sage.functions import all as sagefuncs
+
     func = getattr(sagefuncs, fname, None)
     # In the case the function is not known in sage:
     if func is None:
         import sympy
+
         if getattr(sympy, fname, None) is None:
             # symbolic function
             from sage.symbolic.expression import symbol_table
+
             func = symbol_table['functions'].get(fname)
             if func is None:
                 from sage.calculus.var import function
+
                 return function(fname)
 
         else:
@@ -471,6 +500,7 @@ class UndefSageHelper:
         sage: assert f._sympy_() == F
         sage: assert f == F._sage_()
     """
+
     def __get__(self, ins, typ):
         if ins is None:
             return lambda: _sympysage_function_by_name(typ.__name__)
@@ -522,6 +552,7 @@ def _sympysage_integral(self):
         sage: assert integral(x, x, 0, 1, hold=True) == Integral(sx, (sx,0,1))._sage_()
     """
     from sage.misc.functional import integral
+
     f, limits = self.function._sage_(), list(self.limits)
     for limit in limits:
         if len(limit) == 1:
@@ -568,9 +599,13 @@ def _sympysage_derivative(self):
     """
     from sage.calculus.functional import derivative
     from sympy.core.containers import Tuple
+
     f = self.args[0]._sage_()
-    args = [a._sage_() for arg in self.args[1:]
-            for a in (arg if isinstance(arg, (tuple, Tuple)) else [arg])]
+    args = [
+        a._sage_()
+        for arg in self.args[1:]
+        for a in (arg if isinstance(arg, (tuple, Tuple)) else [arg])
+    ]
     return derivative(f, *args)
 
 
@@ -584,6 +619,7 @@ def _sympysage_order(self):
         sage: assert Order(1) == SOrder(1)._sage_()
     """
     from sage.functions.other import Order
+
     return Order(self.args[0])._sage_()
 
 
@@ -596,6 +632,7 @@ def _sympysage_lambertw(self):
         sage: assert lambert_w(x) == LambertW(Symbol('x'))._sage_()
     """
     from sage.functions.log import lambert_w
+
     return lambert_w(self.args[0]._sage_())
 
 
@@ -610,6 +647,7 @@ def _sympysage_rf(self):
         sage: assert rising_factorial(x,y) == rfxy._sage_()
     """
     from sage.arith.misc import rising_factorial
+
     return rising_factorial(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -624,6 +662,7 @@ def _sympysage_ff(self):
         sage: assert falling_factorial(x,y) == ffxy._sage_()
     """
     from sage.arith.misc import falling_factorial
+
     return falling_factorial(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -636,6 +675,7 @@ def _sympysage_lgamma(self):
         sage: assert log_gamma(x) == loggamma(Symbol('x'))._sage_()
     """
     from sage.functions.gamma import log_gamma
+
     return log_gamma(self.args[0]._sage_())
 
 
@@ -654,6 +694,7 @@ def _sympysage_polygamma(self):
         integrate(psi(x), x)
     """
     from sage.functions.gamma import psi
+
     return psi(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -666,6 +707,7 @@ def _sympysage_dirac_delta(self):
         sage: assert dirac_delta(x) == DiracDelta(Symbol('x'))._sage_()
     """
     from sage.functions.generalized import dirac_delta
+
     return dirac_delta(self.args[0]._sage_())
 
 
@@ -678,6 +720,7 @@ def _sympysage_heaviside(self):
         sage: assert heaviside(x) == Heaviside(Symbol('x'))._sage_()
     """
     from sage.functions.generalized import heaviside
+
     return heaviside(self.args[0]._sage_())
 
 
@@ -692,6 +735,7 @@ def _sympysage_expint(self):
         sage: assert exp_integral_e(x,y) == sy._sage_()
     """
     from sage.functions.exp_integral import exp_integral_e
+
     return exp_integral_e(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -706,6 +750,7 @@ def _sympysage_hyp(self):
         sage: assert hypergeometric((a,b),(p,q),x) == sy._sage_()
     """
     from sage.functions.hypergeometric import hypergeometric
+
     ap = [arg._sage_() for arg in self.args[0]]
     bq = [arg._sage_() for arg in self.args[1]]
     return hypergeometric(ap, bq, self.argument._sage_())
@@ -720,6 +765,7 @@ def _sympysage_elliptic_k(self):
         sage: assert elliptic_kc(x) == elliptic_k(Symbol('x'))._sage_()
     """
     from sage.functions.special import elliptic_kc
+
     return elliptic_kc(self.args[0]._sage_())
 
 
@@ -734,6 +780,7 @@ def _sympysage_kronecker_delta(self):
         sage: assert kronecker_delta(x,y) == sy._sage_()
     """
     from sage.functions.generalized import kronecker_delta
+
     return kronecker_delta(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -748,6 +795,7 @@ def _sympysage_ceiling(self):
         integrate(ceil(x), x, 0, +Infinity)
     """
     from sage.functions.other import ceil
+
     return ceil(self.args[0]._sage_())
 
 
@@ -767,6 +815,7 @@ def _sympysage_piecewise(self):
         -y*z + cases(((log(x) != 0, x^y/log(x)), (1, y)))
     """
     from sage.functions.other import cases
+
     return cases([(p.cond._sage_(), p.expr._sage_()) for p in self.args])
 
 
@@ -782,6 +831,7 @@ def _sympysage_fresnels(self):
         sage: assert ex == sp._sage_()
     """
     from sage.functions.error import fresnel_sin
+
     return fresnel_sin(self.args[0]._sage_())
 
 
@@ -797,6 +847,7 @@ def _sympysage_fresnelc(self):
         sage: assert ex == sp._sage_()
     """
     from sage.functions.error import fresnel_cos
+
     return fresnel_cos(self.args[0]._sage_())
 
 
@@ -811,6 +862,7 @@ def _sympysage_besselj(self):
         sage: assert bessel_J(x,y) == sy._sage_()
     """
     from sage.functions.bessel import bessel_J
+
     return bessel_J(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -825,6 +877,7 @@ def _sympysage_bessely(self):
         sage: assert bessel_Y(x,y) == sy._sage_()
     """
     from sage.functions.bessel import bessel_Y
+
     return bessel_Y(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -839,6 +892,7 @@ def _sympysage_besseli(self):
         sage: assert bessel_I(x,y) == sy._sage_()
     """
     from sage.functions.bessel import bessel_I
+
     return bessel_I(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -853,6 +907,7 @@ def _sympysage_besselk(self):
         sage: assert bessel_K(x,y) == sy._sage_()
     """
     from sage.functions.bessel import bessel_K
+
     return bessel_K(self.args[0]._sage_(), self.args[1]._sage_())
 
 
@@ -867,10 +922,13 @@ def _sympysage_ynm(self):
         sage: assert spherical_harmonic(n,m,t,p) == sy._sage_()
     """
     from sage.functions.special import spherical_harmonic
-    return spherical_harmonic(self.args[0]._sage_(),
-                              self.args[1]._sage_(),
-                              self.args[2]._sage_(),
-                              self.args[3]._sage_())
+
+    return spherical_harmonic(
+        self.args[0]._sage_(),
+        self.args[1]._sage_(),
+        self.args[2]._sage_(),
+        self.args[3]._sage_(),
+    )
 
 
 def _sympysage_re(self):
@@ -882,6 +940,7 @@ def _sympysage_re(self):
         sage: assert real_part(x) == re(Symbol('x'))._sage_()
     """
     from sage.functions.other import real_part
+
     return real_part(self.args[0]._sage_())
 
 
@@ -894,6 +953,7 @@ def _sympysage_im(self):
         sage: assert imag_part(x) == im(Symbol('x'))._sage_()
     """
     from sage.functions.other import imag_part
+
     return imag_part(self.args[0]._sage_())
 
 
@@ -906,6 +966,7 @@ def _sympysage_abs(self):
         sage: assert abs(x) == Abs(Symbol('x'))._sage_()
     """
     from sage.functions.other import abs_symbolic
+
     return abs_symbolic(self.args[0]._sage_())
 
 
@@ -925,6 +986,7 @@ def _sympysage_crootof(self):
     """
     from sage.functions.other import complex_root_of
     from sage.symbolic.ring import SR
+
     return complex_root_of(self.args[0]._sage_(), SR(self.args[1]))
 
 
@@ -1000,22 +1062,28 @@ def _sympysage_matrix(self):
         from sage.matrix.constructor import matrix
 
         rows, cols = self.shape
-        d = {row_col: value._sage_()
-             for row_col, value in self.todok().items()}
+        d = {row_col: value._sage_() for row_col, value in self.todok().items()}
         if not d:
             from sage.rings.integer_ring import ZZ
+
             base_ring = ZZ
         else:
             from sage.structure.element import get_coercion_model
             from sage.symbolic.ring import SR
+
             coercion_model = get_coercion_model()
             try:
                 base_ring = coercion_model.common_parent(*d.values())
             except TypeError:  # no common canonical parent
                 base_ring = SR
-        result = matrix(base_ring, rows, cols, d,
-                        sparse=isinstance(self, SparseMatrix),
-                        immutable=True)
+        result = matrix(
+            base_ring,
+            rows,
+            cols,
+            d,
+            sparse=isinstance(self, SparseMatrix),
+            immutable=True,
+        )
         if isinstance(self, ImmutableMatrix):
             self._sage_object = result
         return result
@@ -1042,6 +1110,7 @@ def _sympysage_relational(self):
     """
     from operator import eq, ne, gt, lt, ge, le
     from sympy import Eq, Ne, Gt, Ge, Lt, Le
+
     ops = {Eq: eq, Ne: ne, Gt: gt, Lt: lt, Ge: ge, Le: le}
     return ops.get(self.func)(self.lhs._sage_(), self.rhs._sage_())
 
@@ -1055,6 +1124,7 @@ def _sympysage_false(self):
         sage: assert SR(False) == BooleanFalse()._sage_()
     """
     from sage.symbolic.ring import SR
+
     return SR(False)
 
 
@@ -1067,6 +1137,7 @@ def _sympysage_true(self):
         sage: assert SR(True) == BooleanTrue()._sage_()
     """
     from sage.symbolic.ring import SR
+
     return SR(True)
 
 
@@ -1092,26 +1163,39 @@ def sympy_init():
         sage: assert abs(x) == Abs(Symbol('x'))._sage_()
     """
     from sympy import Add
+
     if Add._sage_ == _sympysage_add:
         return
 
     from sympy import Mul, Pow, Symbol, Subs
-    from sympy.core.function import (Function, AppliedUndef, Derivative)
-    from sympy.core.numbers import (Float, Integer, Rational, Infinity,
-                                    NegativeInfinity, ComplexInfinity,
-                                    Exp1, Pi, GoldenRatio,
-                                    EulerGamma, Catalan, ImaginaryUnit)
+    from sympy.core.function import Function, AppliedUndef, Derivative
+    from sympy.core.numbers import (
+        Float,
+        Integer,
+        Rational,
+        Infinity,
+        NegativeInfinity,
+        ComplexInfinity,
+        Exp1,
+        Pi,
+        GoldenRatio,
+        EulerGamma,
+        Catalan,
+        ImaginaryUnit,
+    )
     from sympy.core.numbers import NaN as sympy_nan
     from sympy.core.relational import Relational
-    from sympy.functions.combinatorial.factorials import (RisingFactorial,
-                                                          FallingFactorial)
-    from sympy.functions.elementary.complexes import (re, im, Abs)
+    from sympy.functions.combinatorial.factorials import (
+        RisingFactorial,
+        FallingFactorial,
+    )
+    from sympy.functions.elementary.complexes import re, im, Abs
     from sympy.functions.elementary.exponential import LambertW
     from sympy.functions.elementary.integers import ceiling
     from sympy.functions.elementary.piecewise import Piecewise
     from sympy.functions.special.error_functions import fresnels, fresnelc
-    from sympy.functions.special.bessel import (besselj, bessely, besseli, besselk)
-    from sympy.functions.special.delta_functions import (DiracDelta, Heaviside)
+    from sympy.functions.special.bessel import besselj, bessely, besseli, besselk
+    from sympy.functions.special.delta_functions import DiracDelta, Heaviside
     from sympy.functions.special.error_functions import expint
     from sympy.functions.special.elliptic_integrals import elliptic_k
     from sympy.functions.special.gamma_functions import loggamma, polygamma
@@ -1127,7 +1211,12 @@ def sympy_init():
     from sympy.polys.rootoftools import CRootOf
     from sympy.polys.rootisolation import RealInterval, ComplexInterval
     from sympy.series.order import Order
-    from sympy.matrices import ImmutableMatrix, ImmutableSparseMatrix, Matrix, SparseMatrix
+    from sympy.matrices import (
+        ImmutableMatrix,
+        ImmutableSparseMatrix,
+        Matrix,
+        SparseMatrix,
+    )
 
     Float._sage_ = _sympysage_float
     Integer._sage_ = _sympysage_integer
@@ -1161,6 +1250,7 @@ def sympy_init():
     Function._sage_ = _sympysage_function
     AppliedUndef._sage_ = _sympysage_function
     import sympy.core.function
+
     sympy.core.function._undef_sage_helper = UndefSageHelper()
     Integral._sage_ = _sympysage_integral
     Derivative._sage_ = _sympysage_derivative
@@ -1203,7 +1293,8 @@ def check_expression(expr, var_symbols, only_from_sympy=False):
         sage: check_expression("1.123*x", "x")
     """
     from sage.symbolic.ring import SR
-    from sympy import (__dict__ as sympydict, Basic, S, var as svar)
+    from sympy import __dict__ as sympydict, Basic, S, var as svar
+
     # evaluate the expression in the context of Sage:
     if var_symbols:
         SR.var(var_symbols)
@@ -1244,6 +1335,7 @@ def check_all():
         sage: from sage.interfaces.sympy import check_all
         sage: check_all()
     """
+
     def test_basics():
         check_expression("x", "x")
         check_expression("x**2", "x")
@@ -1270,6 +1362,7 @@ def check_all():
     def test_functions():
         # Test at least one Function without own _sage_ method
         from sympy import factorial
+
         assert "_sage_" not in factorial.__dict__
         check_expression("factorial(x)", "x")
         check_expression("sin(x)", "x")
@@ -1299,6 +1392,7 @@ def check_all():
         from sage.symbolic.ring import SR
         from sage.misc.functional import log
         from sympy import integrate, simplify
+
         a, x = SR.var("a x")
         i = integrate(log(x) / a, (x, a, a + 1))
         i2 = simplify(i)
@@ -1312,19 +1406,28 @@ def check_all():
         check_expression("Integral(x*y, (x,), (y, ))", "x,y", only_from_sympy=True)
         check_expression("Integral(x*y, (x,), (y, 0, 1))", "x,y", only_from_sympy=True)
         check_expression("Integral(x*y, (x, 0, 1), (y,))", "x,y", only_from_sympy=True)
-        check_expression("Integral(x*y, (x, 0, 1), (y, 0, 1))", "x,y", only_from_sympy=True)
-        check_expression("Integral(x*y*z, (x, 0, 1), (y, 0, 1), (z, 0, 1))", "x,y,z", only_from_sympy=True)
+        check_expression(
+            "Integral(x*y, (x, 0, 1), (y, 0, 1))", "x,y", only_from_sympy=True
+        )
+        check_expression(
+            "Integral(x*y*z, (x, 0, 1), (y, 0, 1), (z, 0, 1))",
+            "x,y,z",
+            only_from_sympy=True,
+        )
 
     def test_integral_failing():
         # Note: sage may attempt to turn this into Integral(x, (x, x, 0))
         check_expression("Integral(x, (x, 0))", "x", only_from_sympy=True)
         check_expression("Integral(x*y, (x,), (y, 0))", "x,y", only_from_sympy=True)
-        check_expression("Integral(x*y, (x, 0, 1), (y, 0))", "x,y", only_from_sympy=True)
+        check_expression(
+            "Integral(x*y, (x, 0, 1), (y, 0))", "x,y", only_from_sympy=True
+        )
 
     def test_undefined_function():
         from sage.symbolic.ring import SR
         from sage.calculus.var import function
         from sympy import Symbol, Function
+
         f = function('f')
         sf = Function('f')
         x, y = SR.var('x y')
@@ -1354,8 +1457,9 @@ def sympy_set_to_list(set, vars):
     Convert all set objects that can be returned by SymPy's solvers.
     """
     from sage.rings.infinity import UnsignedInfinity
-    from sympy import (FiniteSet, And, Or, Union, Interval, oo, S)
+    from sympy import FiniteSet, And, Or, Union, Interval, oo, S
     from sympy.core.relational import Relational
+
     if set == S.Reals:
         return [x._sage_() < oo for x in vars]
     if set == S.Complexes:
@@ -1364,8 +1468,9 @@ def sympy_set_to_list(set, vars):
         return []
     if isinstance(set, (And, Or, Relational)):
         if isinstance(set, And):
-            return [[item for rel in set._args[0]
-                    for item in sympy_set_to_list(rel, vars)]]
+            return [
+                [item for rel in set._args[0] for item in sympy_set_to_list(rel, vars)]
+            ]
         if isinstance(set, Or):
             return [sympy_set_to_list(iv, vars) for iv in set._args[0]]
         if isinstance(set, Relational):

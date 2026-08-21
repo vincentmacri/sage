@@ -25,15 +25,19 @@ import sage.modular.modsym.space
 from sage.misc.cachefunc import cached_method
 
 
-class ModularSymbolsSubspace(sage.modular.modsym.space.ModularSymbolsSpace, hecke.HeckeSubmodule):
+class ModularSymbolsSubspace(
+    sage.modular.modsym.space.ModularSymbolsSpace, hecke.HeckeSubmodule
+):
     """
     Subspace of ambient space of modular symbols
     """
+
     ################################
     # Special Methods
     ################################
-    def __init__(self, ambient_hecke_module, submodule,
-                 dual_free_module=None, check=False):
+    def __init__(
+        self, ambient_hecke_module, submodule, dual_free_module=None, check=False
+    ):
         """
         INPUT:
 
@@ -69,10 +73,12 @@ class ModularSymbolsSubspace(sage.modular.modsym.space.ModularSymbolsSpace, heck
         """
         self.__ambient_hecke_module = ambient_hecke_module
         A = ambient_hecke_module
-        sage.modular.modsym.space.ModularSymbolsSpace.__init__(self, A.group(),
-                                                               A.weight(),
-                                    A.character(), A.sign(), A.base_ring())
-        hecke.HeckeSubmodule.__init__(self, A, submodule, dual_free_module=dual_free_module, check=check)
+        sage.modular.modsym.space.ModularSymbolsSpace.__init__(
+            self, A.group(), A.weight(), A.character(), A.sign(), A.base_ring()
+        )
+        hecke.HeckeSubmodule.__init__(
+            self, A, submodule, dual_free_module=dual_free_module, check=check
+        )
 
     def _repr_(self):
         """
@@ -84,7 +90,9 @@ class ModularSymbolsSubspace(sage.modular.modsym.space.ModularSymbolsSpace, heck
             'Modular Symbols subspace of dimension 16 of Modular Symbols space of dimension 24 for Gamma_0(24) of weight 4 with sign 0 over Rational Field'
         """
         return "Modular Symbols subspace of dimension %s of %s" % (
-            self.rank(), self.ambient_module())
+            self.rank(),
+            self.ambient_module(),
+        )
 
     ################################
     # Public functions
@@ -317,8 +325,11 @@ class ModularSymbolsSubspace(sage.modular.modsym.space.ModularSymbolsSpace, heck
         r = self.dimension()
         s = sum([A.rank() * mult for A, mult in D])
         if r != s:
-            raise NotImplementedError("modular symbols factorization not fully implemented yet "
-                                      "--  self has dimension %s, but sum of dimensions of factors is %s" % (r, s))
+            raise NotImplementedError(
+                "modular symbols factorization not fully implemented yet "
+                "--  self has dimension %s, but sum of dimensions of factors is %s"
+                % (r, s)
+            )
         self._factorization = sage.structure.factorization.Factorization(D, cr=True)
         return self._factorization
 

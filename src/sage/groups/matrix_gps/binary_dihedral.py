@@ -17,7 +17,9 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.rings.number_field.number_field import CyclotomicField
 from sage.matrix.matrix_space import MatrixSpace
@@ -60,6 +62,7 @@ class BinaryDihedralGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gap
 
     - :wikipedia:`Dicyclic_group#Binary_dihedral_group`
     """
+
     def __init__(self, n):
         """
         Initialize ``self``.
@@ -72,23 +75,26 @@ class BinaryDihedralGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gap
         self._n = n
 
         if n % 2 == 0:
-            R = CyclotomicField(2*n)
+            R = CyclotomicField(2 * n)
             zeta = R.gen()
-            i = R.gen()**(n//2)
+            i = R.gen() ** (n // 2)
         else:
-            R = CyclotomicField(4*n)
-            zeta = R.gen()**2
-            i = R.gen()**n
+            R = CyclotomicField(4 * n)
+            zeta = R.gen() ** 2
+            i = R.gen() ** n
 
         MS = MatrixSpace(R, 2)
         zero = R.zero()
         gens = [MS([zeta, zero, zero, ~zeta]), MS([zero, i, i, zero])]
 
         from sage.libs.gap.libgap import libgap
+
         gap_gens = [libgap(matrix_gen) for matrix_gen in gens]
         gap_group = libgap.Group(gap_gens)
 
-        FinitelyGeneratedMatrixGroup_gap.__init__(self, ZZ(2), R, gap_group, category=Groups().Finite())
+        FinitelyGeneratedMatrixGroup_gap.__init__(
+            self, ZZ(2), R, gap_group, category=Groups().Finite()
+        )
 
     def _repr_(self):
         """

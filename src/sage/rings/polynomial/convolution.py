@@ -39,6 +39,7 @@ AUTHORS:
 
 - William Stein: editing the docstrings for inclusion in Sage.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2007 William Stein <wstein@gmail.com>
 #                          David Harvey <dmharvey@math.harvard.edu>
@@ -78,7 +79,7 @@ def convolution(L1, L2):
     """
     if not L1 or not L2:
         raise ValueError("cannot compute convolution of empty lists")
-    if len(L1) <= 100 and len(L2) <= 100:   # very arbitrary cutoff
+    if len(L1) <= 100 and len(L2) <= 100:  # very arbitrary cutoff
         return _convolution_naive(L1, L2)
     return _convolution_fft(L1, L2)
 
@@ -112,9 +113,10 @@ def _convolution_naive(L1, L2):
     m1 = len(L1)
     m2 = len(L2)
 
-    return [sum([L1[i] * L2[k - i]
-            for i in range(max(0, k - m2 + 1), min(k + 1, m1))])
-            for k in range(m1 + m2 - 1)]
+    return [
+        sum([L1[i] * L2[k - i] for i in range(max(0, k - m2 + 1), min(k + 1, m1))])
+        for k in range(m1 + m2 - 1)
+    ]
 
 
 def _negaconvolution_naive(L1, L2):
@@ -138,9 +140,11 @@ def _negaconvolution_naive(L1, L2):
     assert len(L1) == len(L2)
 
     N = len(L1)
-    return [sum([L1[i] * L2[j - i] for i in range(j + 1)]) -
-            sum([L1[i] * L2[N + j - i]
-                 for i in range(j + 1, N)]) for j in range(N)]
+    return [
+        sum([L1[i] * L2[j - i] for i in range(j + 1)])
+        - sum([L1[i] * L2[N + j - i] for i in range(j + 1, N)])
+        for j in range(N)
+    ]
 
 
 # -------------------------------------------------------------------
@@ -158,10 +162,11 @@ def _forward_butterfly(L1, L2, r):
     assert 0 <= r <= len(L1)
 
     K = len(L1)
-    return [L1[i] - L2[i + K - r] for i in range(r)] + \
-        [L1[i] + L2[i - r] for i in range(r, K)], \
-        [L1[i] + L2[i + K - r] for i in range(r)] + \
-        [L1[i] - L2[i - r] for i in range(r, K)]
+    return [L1[i] - L2[i + K - r] for i in range(r)] + [
+        L1[i] + L2[i - r] for i in range(r, K)
+    ], [L1[i] + L2[i + K - r] for i in range(r)] + [
+        L1[i] - L2[i - r] for i in range(r, K)
+    ]
 
 
 def _inverse_butterfly(L1, L2, r):
@@ -175,9 +180,9 @@ def _inverse_butterfly(L1, L2, r):
     assert 0 <= r <= len(L1)
 
     K = len(L1)
-    return [L1[i] + L2[i] for i in range(K)], \
-        [L1[i] - L2[i] for i in range(r, K)] + \
-        [L2[i] - L1[i] for i in range(r)]
+    return [L1[i] + L2[i] for i in range(K)], [L1[i] - L2[i] for i in range(r, K)] + [
+        L2[i] - L1[i] for i in range(r)
+    ]
 
 
 def _fft(L, K, start, depth, root):
@@ -199,8 +204,9 @@ def _fft(L, K, start, depth, root):
 
     # reduce mod (x^(D/2) - y^root) and mod (x^(D/2) + y^root)
     for i in range(half):
-        L[start + i], L[start2 + i] = \
-            _forward_butterfly(L[start + i], L[start2 + i], root)
+        L[start + i], L[start2 + i] = _forward_butterfly(
+            L[start + i], L[start2 + i], root
+        )
 
     # recurse into each half
     if depth >= 2:
@@ -223,8 +229,10 @@ def _ifft(L, K, start, depth, root):
 
     # CRT together (x^(D/2) - y^root) and mod (x^(D/2) + y^root)
     for i in range(half):
-        L[start + i], L[start2 + i] = \
-            _inverse_butterfly(L[start + i], L[start2 + i], root)
+        L[start + i], L[start2 + i] = _inverse_butterfly(
+            L[start + i], L[start2 + i], root
+        )
+
 
 # -------------------------------------------------------------------
 #      splitting and recombining routines
@@ -263,9 +271,9 @@ def _combine(L, m, k):
     """
     M = 1 << m
     half_K = 1 << (k - 1)
-    return [L[0][j] for j in range(half_K)] + \
-        [L[i + 1][j] + L[i][j + half_K]
-         for i in range(M - 1) for j in range(half_K)]
+    return [L[0][j] for j in range(half_K)] + [
+        L[i + 1][j] + L[i][j + half_K] for i in range(M - 1) for j in range(half_K)
+    ]
 
 
 def _nega_combine(L, m, k):
@@ -276,9 +284,9 @@ def _nega_combine(L, m, k):
     """
     M = 1 << m
     half_K = 1 << (k - 1)
-    return [L[0][j] - L[M - 1][j + half_K] for j in range(half_K)] + \
-        [L[i + 1][j] + L[i][j + half_K]
-         for i in range(M - 1) for j in range(half_K)]
+    return [L[0][j] - L[M - 1][j + half_K] for j in range(half_K)] + [
+        L[i + 1][j] + L[i][j + half_K] for i in range(M - 1) for j in range(half_K)
+    ]
 
 
 # -------------------------------------------------------------------
@@ -291,7 +299,7 @@ def _negaconvolution(L1, L2, n):
 
     L1 and L2 must both have length `2^n`.
     """
-    if n <= 3:    # arbitrary cutoff
+    if n <= 3:  # arbitrary cutoff
         return _negaconvolution_naive(L1, L2)
     return _negaconvolution_fft(L1, L2, n)
 

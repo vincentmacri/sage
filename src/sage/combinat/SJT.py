@@ -89,6 +89,7 @@ class SJT(CombinatorialElement):
         sage: s = s.next(); s
         False
     """
+
     def __init__(self, l, directions=None) -> None:
         r"""
         Transpose two elements at positions ``a`` and ``b`` in ``perm`` and
@@ -142,10 +143,12 @@ class SJT(CombinatorialElement):
             return
 
         if directions is None:
-            if not all(l[i] <= l[i+1] for i in range(self._n - 1)):
-                raise ValueError("no internal state directions were given for "
-                                 "non-identity starting permutation for "
-                                 "Steinhaus-Johnson-Trotter algorithm")
+            if not all(l[i] <= l[i + 1] for i in range(self._n - 1)):
+                raise ValueError(
+                    "no internal state directions were given for "
+                    "non-identity starting permutation for "
+                    "Steinhaus-Johnson-Trotter algorithm"
+                )
             self._directions = [-1] * self._n
 
             # The first element has null direction.
@@ -213,8 +216,7 @@ class SJT(CombinatorialElement):
         # If this element has null direction, find the largest whose is
         # non-null.
         if direction == 0:
-            xi = self.__idx_largest_element_non_zero_direction(perm,
-                                                               directions)
+            xi = self.__idx_largest_element_non_zero_direction(perm, directions)
             if xi is None:
                 # We have created every permutation. Detected when all elements
                 # have null direction.
@@ -226,14 +228,16 @@ class SJT(CombinatorialElement):
 
         # Proceed to transpose elements and corresponding directions.
         perm[xi], perm[new_pos] = perm[new_pos], perm[xi]
-        directions[xi], directions[new_pos] = \
-            directions[new_pos], directions[xi]
+        directions[xi], directions[new_pos] = directions[new_pos], directions[xi]
 
         # If the transposition results in the largest element being on one edge
         # or if the following element in its direction is greater than it, then
         # then set its direction to 0
-        if (new_pos == 0 or new_pos == self._n - 1 or
-                perm[new_pos + direction] > selected_elt):
+        if (
+            new_pos == 0
+            or new_pos == self._n - 1
+            or perm[new_pos + direction] > selected_elt
+        ):
             directions[new_pos] = 0
 
         # After each permutation, update each element's direction. If

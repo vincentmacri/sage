@@ -39,6 +39,7 @@ class ScatterPlot(GraphicPrimitive):
         sage: ScatterPlot([0,1,2], [3.5,2,5.1], {'facecolor':'white', 'marker':'s'})
         Scatter plot graphics primitive on 3 data points
     """
+
     def __init__(self, xdata, ydata, options):
         """
         Scatter plot graphics primitive.
@@ -67,10 +68,12 @@ class ScatterPlot(GraphicPrimitive):
             sage: d['ymin']
             ...1.0...
         """
-        return {'xmin': self.xdata.min(),
-                'xmax': self.xdata.max(),
-                'ymin': self.ydata.min(),
-                'ymax': self.ydata.max()}
+        return {
+            'xmin': self.xdata.min(),
+            'xmax': self.xdata.max(),
+            'ymin': self.ydata.min(),
+            'ymax': self.ydata.max(),
+        }
 
     def _allowed_options(self):
         """
@@ -91,15 +94,17 @@ class ScatterPlot(GraphicPrimitive):
             ('rgbcolor', 'The color as an RGB tuple.'),
             ('zorder', 'The layer level in which to draw.')]
         """
-        return {'markersize': 'the size of the markers.',
-                'marker': 'What shape to plot the points. See the documentation of plot() for the full list of markers.',
-                'alpha': 'How transparent the marker border is.',
-                'rgbcolor': 'The color as an RGB tuple.',
-                'hue': 'The color given as a hue.',
-                'facecolor': 'The color of the marker face.',
-                'edgecolor': 'The color of the marker border.',
-                'zorder': 'The layer level in which to draw.',
-                'clip': 'Whether or not to clip.'}
+        return {
+            'markersize': 'the size of the markers.',
+            'marker': 'What shape to plot the points. See the documentation of plot() for the full list of markers.',
+            'alpha': 'How transparent the marker border is.',
+            'rgbcolor': 'The color as an RGB tuple.',
+            'hue': 'The color given as a hue.',
+            'facecolor': 'The color of the marker face.',
+            'edgecolor': 'The color of the marker border.',
+            'zorder': 'The layer level in which to draw.',
+            'clip': 'Whether or not to clip.',
+        }
 
     def _repr_(self):
         """
@@ -131,15 +136,31 @@ class ScatterPlot(GraphicPrimitive):
             Graphics object consisting of 1 graphics primitive
         """
         options = self.options()
-        p = subplot.scatter(self.xdata, self.ydata, alpha=options['alpha'],
-                            zorder=options['zorder'], marker=options['marker'],
-                            s=options['markersize'], facecolors=options['facecolor'],
-                            edgecolors=options['edgecolor'], clip_on=options['clip'])
+        p = subplot.scatter(
+            self.xdata,
+            self.ydata,
+            alpha=options['alpha'],
+            zorder=options['zorder'],
+            marker=options['marker'],
+            s=options['markersize'],
+            facecolors=options['facecolor'],
+            edgecolors=options['edgecolor'],
+            clip_on=options['clip'],
+        )
         if not options['clip']:
             self._bbox_extra_artists = [p]
 
 
-@options(alpha=1, markersize=50, marker='o', zorder=5, facecolor='#fec7b8', edgecolor='black', clip=True, aspect_ratio='automatic')
+@options(
+    alpha=1,
+    markersize=50,
+    marker='o',
+    zorder=5,
+    facecolor='#fec7b8',
+    edgecolor='black',
+    clip=True,
+    aspect_ratio='automatic',
+)
 def scatter_plot(datalist, **options):
     """
     Return a Graphics object of a scatter plot containing all points in
@@ -188,6 +209,7 @@ def scatter_plot(datalist, **options):
     """
     import numpy
     from sage.plot.graphics import Graphics
+
     g = Graphics()
     g._set_extra_kwds(Graphics._extract_kwds_for_show(options))
     data = numpy.array(datalist, dtype='float')

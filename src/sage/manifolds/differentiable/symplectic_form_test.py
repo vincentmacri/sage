@@ -138,24 +138,26 @@ class TestCoherenceOfFormulas:
         self, M: DifferentiableManifold, omega: SymplecticForm
     ):
         a = M.diff_form(2)
-        a[1,2] = 3
+        a[1, 2] = 3
         assert a.trace(using=omega) == a.up(omega, 1).trace()
 
     def test_omega_on_forms_is_determinant_for_decomposables(
         self, M: DifferentiableManifold, omega: SymplecticForm
     ):
-        a = M.one_form(1,2)
-        b = M.one_form(3,4)
-        c = M.one_form(5,6)
-        d = M.one_form(7,8)
+        a = M.one_form(1, 2)
+        b = M.one_form(3, 4)
+        c = M.one_form(5, 6)
+        d = M.one_form(7, 8)
 
-        assert omega.on_forms(a.wedge(b), c.wedge(d)) == omega.on_forms(a,c) * omega.on_forms(b, d) - omega.on_forms(a,d) * omega.on_forms(b,c)
+        assert omega.on_forms(a.wedge(b), c.wedge(d)) == omega.on_forms(
+            a, c
+        ) * omega.on_forms(b, d) - omega.on_forms(a, d) * omega.on_forms(b, c)
 
     def test_omega_on_one_forms_is_omega_on_dual_vectors(
         self, M: DifferentiableManifold, omega: SymplecticForm
     ):
-        a = M.one_form(1,2)
-        b = M.one_form(3,4)
+        a = M.one_form(1, 2)
+        b = M.one_form(3, 4)
         assert omega.on_forms(a, b) == omega(a.up(omega), b.up(omega))
 
 
@@ -194,8 +196,8 @@ class TestR2VectorSpace:
 
     def test_hodge_star(self, M: StandardSymplecticSpace, omega: SymplecticForm):
         # Standard basis
-        e = M.one_form(0,1, name='e')
-        f = M.one_form(1,0, name='f')
+        e = M.one_form(0, 1, name='e')
+        f = M.one_form(1, 0, name='f')
         assert e.wedge(f) == omega
 
         assert M.one_scalar_field().hodge_dual(omega) == omega
@@ -203,10 +205,12 @@ class TestR2VectorSpace:
         assert f.hodge_dual(omega) == f
         assert omega.hodge_dual(omega) == M.one_scalar_field()
 
-    def test_omega_on_one_forms(self, M: StandardSymplecticSpace, omega: SymplecticForm):
+    def test_omega_on_one_forms(
+        self, M: StandardSymplecticSpace, omega: SymplecticForm
+    ):
         # Standard basis
-        e = M.one_form(0,1, name='e')
-        f = M.one_form(1,0, name='f')
+        e = M.one_form(0, 1, name='e')
+        f = M.one_form(1, 0, name='f')
         assert e.wedge(f) == omega
 
         assert omega.on_forms(e, f) == 1
@@ -214,6 +218,8 @@ class TestR2VectorSpace:
     def test_hodge_star_is_given_using_omega_on_forms(
         self, M: StandardSymplecticSpace, omega: SymplecticForm
     ):
-        a = M.one_form(1,2)
-        b = M.one_form(3,4)
-        assert a.wedge(b.hodge_dual(omega)) == omega.on_forms(a, b) * omega.volume_form()
+        a = M.one_form(1, 2)
+        b = M.one_form(3, 4)
+        assert (
+            a.wedge(b.hodge_dual(omega)) == omega.on_forms(a, b) * omega.volume_form()
+        )

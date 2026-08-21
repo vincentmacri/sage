@@ -42,6 +42,7 @@ AUTHOR:
 
 - James Campbell and Vince Knight (06-2014)
 """
+
 from sage.game_theory.normal_form_game import NormalFormGame
 
 
@@ -130,8 +131,11 @@ def PrisonersDilemma(R=-2, P=-4, S=-5, T=0):
         of the form T > R > P > S
     """
     if not (T > R > P > S):
-        raise TypeError("the input values for a Prisoners Dilemma must be of the form T > R > P > S")
+        raise TypeError(
+            "the input values for a Prisoners Dilemma must be of the form T > R > P > S"
+        )
     from sage.matrix.constructor import matrix
+
     A = matrix([[R, S], [T, P]])
     g = NormalFormGame([A, A.transpose()])
     g.rename('Prisoners dilemma - ' + repr(g))
@@ -216,8 +220,11 @@ def CoordinationGame(A=10, a=5, B=0, b=0, C=0, c=0, D=5, d=10):
                         be of the form A > B, D > C, a > c and d > b
     """
     if not (A > B and D > C and a > c and d > b):
-        raise TypeError("the input values for a Coordination game must be of the form A > B, D > C, a > c and d > b")
+        raise TypeError(
+            "the input values for a Coordination game must be of the form A > B, D > C, a > c and d > b"
+        )
     from sage.matrix.constructor import matrix
+
     A = matrix([[A, C], [B, D]])
     B = matrix([[a, c], [b, d]])
     g = NormalFormGame([A, B])
@@ -401,8 +408,11 @@ def AntiCoordinationGame(A=3, a=3, B=5, b=1, C=1, c=5, D=0, d=0):
         TypeError: the input values for an Anti coordination game must be of the form A < B, D < C, a < c and d < b
     """
     if not (A < B and D < C and a < c and d < b):
-        raise TypeError("the input values for an Anti coordination game must be of the form A < B, D < C, a < c and d < b")
+        raise TypeError(
+            "the input values for an Anti coordination game must be of the form A < B, D < C, a < c and d < b"
+        )
     from sage.matrix.constructor import matrix
+
     A = matrix([[A, C], [B, D]])
     B = matrix([[a, c], [b, d]])
     g = NormalFormGame([A, B])
@@ -493,9 +503,12 @@ def HawkDove(v=2, c=3):
         TypeError: the input values for a Hawk Dove game must be of the form c > v
     """
     if not (c > v):
-        raise TypeError("the input values for a Hawk Dove game must be of the form c > v")
-    g = AntiCoordinationGame(A=v/2-c, a=v/2-c, B=0, b=v,
-                             C=v, c=0, D=v/2, d=v/2)
+        raise TypeError(
+            "the input values for a Hawk Dove game must be of the form c > v"
+        )
+    g = AntiCoordinationGame(
+        A=v / 2 - c, a=v / 2 - c, B=0, b=v, C=v, c=0, D=v / 2, d=v / 2
+    )
     g.rename('Hawk-Dove - ' + repr(g))
     return g
 
@@ -550,6 +563,7 @@ def Pigs():
         [[(1, 0), (0, 1)]]
     """
     from sage.matrix.constructor import matrix
+
     A = matrix([[3, 1], [6, 0]])
     B = matrix([[1, 4], [-1, 0]])
     g = NormalFormGame([A, B])
@@ -592,6 +606,7 @@ def MatchingPennies():
         [[(1/2, 1/2), (1/2, 1/2)]]
     """
     from sage.matrix.constructor import matrix
+
     A = matrix([[1, -1], [-1, 1]])
     g = NormalFormGame([A])
     g.rename('Matching pennies - ' + repr(g))
@@ -637,6 +652,7 @@ def RPS():
         [[(1/3, 1/3, 1/3), (1/3, 1/3, 1/3)]]
     """
     from sage.matrix.constructor import matrix
+
     A = matrix([[0, -1, 1], [1, 0, -1], [-1, 1, 0]])
     g = NormalFormGame([A])
     g.rename('Rock-Paper-Scissors - ' + repr(g))
@@ -701,11 +717,16 @@ def RPSLS():
         [[(1/5, 1/5, 1/5, 1/5, 1/5), (1/5, 1/5, 1/5, 1/5, 1/5)]]
     """
     from sage.matrix.constructor import matrix
-    A = matrix([[0, -1, 1, 1, -1],
-                [1, 0, -1, -1, 1],
-                [-1, 1, 0, 1, -1],
-                [-1, 1, -1, 0, 1],
-                [1, -1, 1, -1, 0]])
+
+    A = matrix(
+        [
+            [0, -1, 1, 1, -1],
+            [1, 0, -1, -1, 1],
+            [-1, 1, 0, 1, -1],
+            [-1, 1, -1, 0, 1],
+            [1, -1, 1, -1, 0],
+        ]
+    )
     g = NormalFormGame([A])
     g.rename('Rock-Paper-Scissors-Lizard-Spock - ' + repr(g))
     return g
@@ -796,7 +817,9 @@ def Chicken(A=0, a=0, B=1, b=-1, C=-1, c=1, D=-10, d=-10):
         TypeError: the input values for a game of chicken must be of the form B > A > C > D and c > a > b > d
     """
     if not (B > A > C > D and c > a > b > d):
-        raise TypeError("the input values for a game of chicken must be of the form B > A > C > D and c > a > b > d")
+        raise TypeError(
+            "the input values for a game of chicken must be of the form B > A > C > D and c > a > b > d"
+        )
     g = AntiCoordinationGame(A=A, a=a, B=B, b=b, C=C, c=c, D=D, d=d)
     g.rename('Chicken - ' + repr(g))
     return g
@@ -915,8 +938,13 @@ def TravellersDilemma(max_value=10):
     """
     from sage.matrix.constructor import matrix
     from sage.functions.generalized import sign
-    A = matrix([[min(i, j) + 2 * sign(j - i) for j in range(max_value, 1, -1)]
-                for i in range(max_value, 1, -1)])
+
+    A = matrix(
+        [
+            [min(i, j) + 2 * sign(j - i) for j in range(max_value, 1, -1)]
+            for i in range(max_value, 1, -1)
+        ]
+    )
     g = NormalFormGame([A, A.transpose()])
     g.rename('Travellers dilemma - ' + repr(g))
     return g

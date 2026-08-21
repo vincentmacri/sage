@@ -15,6 +15,7 @@ Feature for testing the presence of ``meataxe``
 from sage.config import meataxe_enabled
 from sage.features.build_feature import BuildModule
 
+
 class Meataxe(BuildModule):
     r"""
     A :class:`~sage.features.Feature` describing the presence of
@@ -39,6 +40,7 @@ class Meataxe(BuildModule):
         FeatureTestResult('meataxe', True)
 
     """
+
     _enabled_in_build = meataxe_enabled
 
     def __init__(self):

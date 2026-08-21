@@ -6,6 +6,7 @@ AUTHORS:
 - William Stein (2011-11-19): improved doctest coverage to 100%
 - David Kohel (2005-09): initial version
 """
+
 # ***************************************************************************
 #  Copyright (C) 2005 David Kohel <kohel@maths.usyd.edu>
 #
@@ -70,8 +71,10 @@ class FreeAlgebraQuotientElement(AlgebraElement):
         B = A.monomial_basis()
 
         if isinstance(x, (Integer, int)):
-            self.__vector = x*M.gen(0)
-        elif isinstance(x, RingElement) and not isinstance(x, AlgebraElement) and x in R:
+            self.__vector = x * M.gen(0)
+        elif (
+            isinstance(x, RingElement) and not isinstance(x, AlgebraElement) and x in R
+        ):
             self.__vector = x * M.gen(0)
         elif isinstance(x, FreeMonoidElement) and x.parent() is F:
             if x in B:
@@ -88,11 +91,11 @@ class FreeAlgebraQuotientElement(AlgebraElement):
             # represented in the monomial basis.
             self.__vector = M(0)
             for m, c in x._FreeAlgebraElement__monomial_coefficients.items():
-                self.__vector += c*M.gen(B.index(m))
+                self.__vector += c * M.gen(B.index(m))
         elif isinstance(x, dict):
             self.__vector = M(0)
             for m, c in x.items():
-                self.__vector += c*M.gen(B.index(m))
+                self.__vector += c * M.gen(B.index(m))
         elif isinstance(x, AlgebraElement) and x.parent().ambient_algebra() is A:
             self.__vector = x.ambient_algebra_element().vector()
         else:
@@ -228,6 +231,7 @@ class FreeAlgebraQuotientElement(AlgebraElement):
                 for _ in range(k):
                     w *= M
             return w
+
         u = self.__vector.__copy__()
         v = y.__vector
         z = A(0)
@@ -235,7 +239,7 @@ class FreeAlgebraQuotientElement(AlgebraElement):
         for i in range(A.dimension()):
             c = v[i]
             if c != 0:
-                z.__vector += monomial_product(A,c*u,B[i])
+                z.__vector += monomial_product(A, c * u, B[i])
         return z
 
     def _rmul_(self, c):
@@ -248,7 +252,7 @@ class FreeAlgebraQuotientElement(AlgebraElement):
             sage: (-1+i-2*j+k)._rmul_(3)
             -3 + 3*i - 6*j + 3*k
         """
-        return self.parent([c*a for a in self.__vector])
+        return self.parent([c * a for a in self.__vector])
 
     def _lmul_(self, c):
         """
@@ -260,4 +264,4 @@ class FreeAlgebraQuotientElement(AlgebraElement):
             sage: (-1+i-2*j+k)._lmul_(3)
             -3 + 3*i - 6*j + 3*k
         """
-        return self.parent([a*c for a in self.__vector])
+        return self.parent([a * c for a in self.__vector])

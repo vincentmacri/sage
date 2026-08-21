@@ -33,6 +33,7 @@ class ScaledValuationFactory(UniqueFactory):
         sage: 3*ZZ.valuation(2) # indirect doctest
         3 * 2-adic valuation
     """
+
     def create_key(self, base, s):
         r"""
         Create a key which uniquely identifies a valuation.
@@ -44,6 +45,7 @@ class ScaledValuationFactory(UniqueFactory):
         """
         from sage.rings.infinity import infinity
         from sage.rings.rational_field import QQ
+
         if s is infinity or s not in QQ or s <= 0:
             # for these values we can not return a TrivialValuation() in
             # create_object() because that would override that instance's
@@ -77,11 +79,14 @@ class ScaledValuationFactory(UniqueFactory):
         assert not isinstance(base, ScaledValuation_generic)
 
         from .valuation_space import DiscretePseudoValuationSpace
+
         parent = DiscretePseudoValuationSpace(base.domain())
         return parent.__make_element_class__(ScaledValuation_generic)(parent, base, s)
 
 
-ScaledValuation = ScaledValuationFactory("sage.rings.valuation.scaled_valuation.ScaledValuation")
+ScaledValuation = ScaledValuationFactory(
+    "sage.rings.valuation.scaled_valuation.ScaledValuation"
+)
 
 
 class ScaledValuation_generic(DiscreteValuation):
@@ -97,6 +102,7 @@ class ScaledValuation_generic(DiscreteValuation):
 
         sage: TestSuite(v).run()                # long time                             # needs sage.geometry.polyhedron
     """
+
     def __init__(self, parent, base_valuation, s):
         r"""
         .. TODO::
@@ -202,7 +208,10 @@ class ScaledValuation_generic(DiscreteValuation):
             [3 * [ 5-adic valuation, v(x + 2) = 1 ]-adic valuation,
              3 * [ 5-adic valuation, v(x + 3) = 1 ]-adic valuation]
         """
-        return [ScaledValuation(w, self._scale) for w in self._base_valuation.extensions(ring)]
+        return [
+            ScaledValuation(w, self._scale)
+            for w in self._base_valuation.extensions(ring)
+        ]
 
     def restriction(self, ring):
         r"""
@@ -275,7 +284,9 @@ class ScaledValuation_generic(DiscreteValuation):
         if self == other:
             return True
         if isinstance(other, ScaledValuation_generic):
-            return (self._scale / other._scale) * self._base_valuation >= other._base_valuation
+            return (
+                self._scale / other._scale
+            ) * self._base_valuation >= other._base_valuation
         if self._scale >= 1:
             if self._base_valuation >= other:
                 return True

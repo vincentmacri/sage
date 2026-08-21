@@ -11,6 +11,7 @@ AUTHORS:
 
 - John Cremona (2014): added many docstrings and doctests
 """
+
 ##############################################################################
 #       Copyright (C) 2010 Robert Bradshaw <robertwb@math.washington.edu>
 #                     2014 John Cremona <john.cremona@gmail.com>
@@ -76,6 +77,7 @@ class UnionOfIntervals:
         Unify :class:`UnionOfIntervals` with the class ``RealSet``
         introduced by :issue:`13125`; see :issue:`16063`.
     """
+
     def __init__(self, endpoints) -> None:
         r"""
         An union of intervals is initialized by giving an increasing list
@@ -102,7 +104,9 @@ class UnionOfIntervals:
             ValueError: endpoints must be given in order
         """
         if len(endpoints) % 2:
-            raise ValueError("an even number of endpoints must be given (got %s)" % len(endpoints))
+            raise ValueError(
+                "an even number of endpoints must be given (got %s)" % len(endpoints)
+            )
         if endpoints != sorted(endpoints):
             raise ValueError("endpoints must be given in order")
         self._endpoints = endpoints
@@ -502,8 +506,8 @@ def nonneg_region(f):
         ()
     """
     roots = sorted(f.roots())
-    sign_changes = [r for r,e in roots if e % 2 == 1]
-    if (f.leading_coefficient() * (-1)**f.degree()) > 0:
+    sign_changes = [r for r, e in roots if e % 2 == 1]
+    if (f.leading_coefficient() * (-1) ** f.degree()) > 0:
         sign_changes = [-infinity] + sign_changes
     if f.leading_coefficient() > 0:
         sign_changes += [infinity]
@@ -548,7 +552,7 @@ def inf_max_abs(f, g, D):
     xs += g.roots() + g.derivative().roots()
     xs += (f - g).roots() + (f + g).roots()
     xs = [r for r, _ in xs if r in D]  # ignore multiplicities and points outside D
-    xs += D.finite_endpoints()        # include endpoints of intervals
+    xs += D.finite_endpoints()  # include endpoints of intervals
     if xs:
         return min(max(abs(f(r)), abs(g(r))) for r in xs)
     return infinity
@@ -593,7 +597,7 @@ def min_on_disk(f, tol, max_iter=10000):
     # Initially L contains one element, the whole unit box, which is
     # not contained in the unit square.
 
-    s = CIF(RIF(-1,1), RIF(-1,1))
+    s = CIF(RIF(-1, 1), RIF(-1, 1))
     fs = f(s)
     L = [(-fs.lower(), fs.relative_diameter(), s, False)]
 
@@ -609,23 +613,23 @@ def min_on_disk(f, tol, max_iter=10000):
 
     for k in range(max_iter):
         value, err, region, in_disk = L.pop()
-        if err < tol:       # reached desired tolerance, so return
+        if err < tol:  # reached desired tolerance, so return
             return region, -value
-        for s in region.bisection(): # 4 sub-regions
+        for s in region.bisection():  # 4 sub-regions
             if in_disk:
-                s_in_disk = True     # if the original region si in the disk so are all its children
+                s_in_disk = True  # if the original region si in the disk so are all its children
             else:
-                r = abs(s)          # otherwise we test each one
+                r = abs(s)  # otherwise we test each one
                 if r > 1:
-                    continue        # skip this subregion if it is entirely outside the disk
-                s_in_disk = r < 1   # meaning it is entirely inside the disk
+                    continue  # skip this subregion if it is entirely outside the disk
+                s_in_disk = r < 1  # meaning it is entirely inside the disk
 
             fs = f(s)
 
             if fs.upper() < min_max:  # we definitely beat the record
                 min_max = fs.upper()
                 unneeded = bisect.bisect(L, (-min_max,))
-                if unneeded > 100:   # discard the worse entries (if there are many)
+                if unneeded > 100:  # discard the worse entries (if there are many)
                     L = L[unneeded:]
 
             if fs.lower() < min_max:
@@ -664,7 +668,7 @@ def rat_term_CIF(z, try_strict=True):
         -0.172467461182437? + 0.?e-16*I
     """
     two_pi_i_z = two_pi_i_CIF * z
-    r = (two_pi_i_z.real()).exp() # = |u|
+    r = (two_pi_i_z.real()).exp()  # = |u|
     x, y = two_pi_i_z.imag().cos(), two_pi_i_z.imag().sin()
 
     real_part = imag_part = None
@@ -673,24 +677,23 @@ def rat_term_CIF(z, try_strict=True):
     # determined by their values at the endpoints.
 
     if try_strict:
-
         # evaluate the function at the four corners:
 
         corner_reals = []
         corner_imags = []
         for a, b in product(z.real().endpoints(), z.imag().endpoints()):
-            zz = CDF(a,b)
-            u = (two_pi_i_CDF*zz).exp()
-            f = u/(1-u)**2
+            zz = CDF(a, b)
+            u = (two_pi_i_CDF * zz).exp()
+            f = u / (1 - u) ** 2
             corner_reals.append(f.real())
             corner_imags.append(f.imag())
 
-        p1 = (((((r+2*x)*r - 6)*r + 2*x) * r) + 1)
-            # =  r^4 + 2*r^3*x - 6*r^2 + 2*r*x + 1
-        p2 = (r*(x*(r+2*x)-4)+x)
-            # = r^2*x + 2*r*x^2 - 4*r + x
+        p1 = ((((r + 2 * x) * r - 6) * r + 2 * x) * r) + 1
+        # =  r^4 + 2*r^3*x - 6*r^2 + 2*r*x + 1
+        p2 = r * (x * (r + 2 * x) - 4) + x
+        # = r^2*x + 2*r*x^2 - 4*r + x
 
-        df_dr = (r**2-1) * p2
+        df_dr = (r**2 - 1) * p2
         dg_dr = p1 * y
         dg_dx = r * df_dr / y
 
@@ -701,11 +704,11 @@ def rat_term_CIF(z, try_strict=True):
             imag_part = RIF(min(corner_imags), max(corner_imags))
 
     if real_part is None or imag_part is None:
-        denom = (1-r*(2*x-r))**2
+        denom = (1 - r * (2 * x - r)) ** 2
     if real_part is None:
-        real_part = r*(x*(1+r**2)-2*r)/denom
+        real_part = r * (x * (1 + r**2) - 2 * r) / denom
     if imag_part is None:
-        imag_part = -(r**2-1)*y*r/denom
+        imag_part = -(r**2 - 1) * y * r / denom
 
     return CIF(real_part, imag_part)
 
@@ -798,16 +801,22 @@ class EllipticCurveCanonicalHeight:
             from an elliptic curve defined over a number field
         """
         from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
+
         if isinstance(E, EllipticCurve_generic):
             self.E = E
             from sage.rings.number_field.number_field_base import NumberField
+
             K = E.base_ring()
             if isinstance(K, NumberField):
                 self.K = K
             else:
-                raise ValueError("EllipticCurveCanonicalHeight class can only be created from an elliptic curve defined over a number field")
+                raise ValueError(
+                    "EllipticCurveCanonicalHeight class can only be created from an elliptic curve defined over a number field"
+                )
         else:
-            raise ValueError("EllipticCurveCanonicalHeight class can only be created from an elliptic curve")
+            raise ValueError(
+                "EllipticCurveCanonicalHeight class can only be created from an elliptic curve"
+            )
 
     def __repr__(self) -> str:
         r"""
@@ -918,18 +927,19 @@ class EllipticCurveCanonicalHeight:
             0.347263296676126
         """
         from sage.rings.polynomial.polynomial_ring import polygen
+
         b2, b4, b6, b8 = (v(b) for b in self.E.b_invariants())
         x = polygen(v.codomain())
-        f = 4*x**3 + b2*x**2 + 2*b4*x + b6
-        g = x**4 - b4*x**2 - 2*b6*x - b8
-        F = f.reverse() << (4-f.degree())
-        G = g.reverse() << (4-g.degree())
+        f = 4 * x**3 + b2 * x**2 + 2 * b4 * x + b6
+        g = x**4 - b4 * x**2 - 2 * b6 * x - b8
+        F = f.reverse() << (4 - f.degree())
+        G = g.reverse() << (4 - g.degree())
 
         if v(self.K.gen()) in RR:
-            I = UnionOfIntervals([-1,1])
+            I = UnionOfIntervals([-1, 1])
             min_fg = inf_max_abs(f, g, nonneg_region(f) & I)
             min_FG = inf_max_abs(F, G, nonneg_region(F) & I)
-            return min(min_fg, min_FG) ** (-1/QQ(3))
+            return min(min_fg, min_FG) ** (-1 / QQ(3))
 
         # def pair_max(f, g):
         #     f = f.change_ring(CIF)
@@ -941,19 +951,27 @@ class EllipticCurveCanonicalHeight:
         def pair_max(f, g):
             f = f.change_ring(CDF)
             g = g.change_ring(CDF)
-            dfn = [fast_callable(f.derivative(n)/factorial(n), CDF) for n in range(f.degree()+1)]
-            dgn = [fast_callable(g.derivative(n)/factorial(n), CDF) for n in range(g.degree()+1)]
+            dfn = [
+                fast_callable(f.derivative(n) / factorial(n), CDF)
+                for n in range(f.degree() + 1)
+            ]
+            dgn = [
+                fast_callable(g.derivative(n) / factorial(n), CDF)
+                for n in range(g.degree() + 1)
+            ]
 
             def max_f_g(s):
-                (a,b), (c,d) = s.real().endpoints(), s.imag().endpoints()
+                (a, b), (c, d) = s.real().endpoints(), s.imag().endpoints()
                 dx = a - b
                 dy = c - d
-                eta = RDF(dx*dx + dy*dy).sqrt()
+                eta = RDF(dx * dx + dy * dy).sqrt()
                 z = CDF(s.center())
-                err_f = sum(eta ** n * abs(df(z)) for n, df in enumerate(dfn) if n)
-                err_g = sum(eta ** n * abs(dg(z)) for n, dg in enumerate(dgn) if n)
+                err_f = sum(eta**n * abs(df(z)) for n, df in enumerate(dfn) if n)
+                err_g = sum(eta**n * abs(dg(z)) for n, dg in enumerate(dgn) if n)
                 return RIF(max(abs(f(z)), abs(g(z)))) + eps(max(err_f, err_g), True)
+
             return max_f_g
+
         _, min_fg = min_on_disk(pair_max(f, g), tol)
         _, min_FG = min_on_disk(pair_max(F, G), tol)
         return min(min_fg, min_FG) ** QQ((-1, 3))
@@ -1036,12 +1054,12 @@ class EllipticCurveCanonicalHeight:
             [0, 2*log(5) + 2*log(2), 0, 2*log(13) + 2*log(5) + 4*log(2), 0]
         """
         s = 0
-        B = (n+1) ** max(2, self.K.degree())
+        B = (n + 1) ** max(2, self.K.degree())
         for p in self.K.primes_of_bounded_norm_iter(B):
             ep = self.e_p(p)
             if ep.divides(n):
                 kp = self.K.residue_field(p)
-                s += 2*(1+(n/ep).valuation(kp.characteristic())) * log(len(kp))
+                s += 2 * (1 + (n / ep).valuation(kp.characteristic())) * log(len(kp))
         return s
 
     @cached_method
@@ -1072,10 +1090,23 @@ class EllipticCurveCanonicalHeight:
             4096
         """
         from sage.misc.misc_c import prod
-        if self.K is QQ:
-            return prod([p ** (e - self.E.local_data(p).discriminant_valuation()) for p, e in self.E.discriminant().factor()], QQ.one())
 
-        ME = prod([p.norm() ** (e - self.E.local_data(p).discriminant_valuation()) for p, e in self.K.ideal(self.E.discriminant()).factor()], QQ.one())
+        if self.K is QQ:
+            return prod(
+                [
+                    p ** (e - self.E.local_data(p).discriminant_valuation())
+                    for p, e in self.E.discriminant().factor()
+                ],
+                QQ.one(),
+            )
+
+        ME = prod(
+            [
+                p.norm() ** (e - self.E.local_data(p).discriminant_valuation())
+                for p, e in self.K.ideal(self.E.discriminant()).factor()
+            ],
+            QQ.one(),
+        )
         return ME.norm()
 
     def B(self, n, mu):
@@ -1178,9 +1209,10 @@ class EllipticCurveCanonicalHeight:
         L = self.E.period_lattice(v)
         w1, w2 = L.basis()
         from sage.schemes.elliptic_curves.constructor import EllipticCurve
+
         ER = EllipticCurve([v(ai) for ai in self.E.a_invariants()])
         xP, yP = ER.lift_x(xi).xy()
-        t = L.e_log_RC(xP,yP) / w1
+        t = L.e_log_RC(xP, yP) / w1
         if t < 0.5:
             t = 1 - t
         return t
@@ -1223,14 +1255,14 @@ class EllipticCurveCanonicalHeight:
         """
         L = self.E.period_lattice(v)
         w1, w2 = L.basis(prec=v.codomain().prec())
-        beta = L.elliptic_exponential(w1/2)[0]
+        beta = L.elliptic_exponential(w1 / 2)[0]
         if xi2 < beta:
             return UnionOfIntervals([])
         if xi1 < beta <= xi2:
             a = self.psi(xi2, v)
-            return UnionOfIntervals([1-a, a])
+            return UnionOfIntervals([1 - a, a])
         a, b = self.psi(xi1, v), self.psi(xi2, v)
-        return UnionOfIntervals([1-b, 1-a, a, b])
+        return UnionOfIntervals([1 - b, 1 - a, a, b])
 
     def Sn(self, xi1, xi2, n, v):
         r"""
@@ -1276,8 +1308,8 @@ class EllipticCurveCanonicalHeight:
             sage: H.Sn(2, 3, 6, v)
             ([0.0236953443100124, 0.0288076194880974] U [0.137859047178569, 0.142971322356654] U [0.190362010976679, 0.195474286154764] U [0.304525713845236, 0.309637989023321] U [0.357028677643346, 0.362140952821431] U [0.471192380511903, 0.476304655689988] U [0.523695344310012, 0.528807619488097] U [0.637859047178569, 0.642971322356654] U [0.690362010976679, 0.695474286154764] U [0.804525713845236, 0.809637989023321] U [0.857028677643346, 0.862140952821431] U [0.971192380511903, 0.976304655689988])
         """
-        SS = 1/ZZ(n) * self.S(xi1, xi2, v)
-        return UnionOfIntervals.union([t/ZZ(n) + SS for t in range(n)])
+        SS = 1 / ZZ(n) * self.S(xi1, xi2, v)
+        return UnionOfIntervals.union([t / ZZ(n) + SS for t in range(n)])
 
     def real_intersection_is_empty(self, Bk, v):
         r"""
@@ -1336,7 +1368,9 @@ class EllipticCurveCanonicalHeight:
             sage: H.real_intersection_is_empty([H.B(n,0.08) for n in srange(1,5)], v)   # needs sage.rings.number_field
             False
         """
-        return UnionOfIntervals.intersection([self.Sn(-B, B, k+1, v) for k,B in enumerate(Bk)]).is_empty()
+        return UnionOfIntervals.intersection(
+            [self.Sn(-B, B, k + 1, v) for k, B in enumerate(Bk)]
+        ).is_empty()
 
     ########################################
     # Empty complex intersection detection.#
@@ -1401,8 +1435,13 @@ class EllipticCurveCanonicalHeight:
         """
         # Note that we normalise w1, w2 differently from [Tho2010]_!
         w2, w1 = self.E.period_lattice(v).normalised_basis()
-        return max(abs(v(self.E.c4()/240)) ** 0.5,
-                   abs(v(self.E.c6()/6048)) ** (1.0/3)) * abs(w1)**2
+        return (
+            max(
+                abs(v(self.E.c4() / 240)) ** 0.5,
+                abs(v(self.E.c6() / 6048)) ** (1.0 / 3),
+            )
+            * abs(w1) ** 2
+        )
 
     def fk_intervals(self, v=None, N=20, domain=CIF):
         r"""
@@ -1464,10 +1503,10 @@ class EllipticCurveCanonicalHeight:
                 raise ValueError("must specify embedding")
         # pre-compute some constants
         tau = self.tau(v)
-        const_term = 1/CC(12)
+        const_term = 1 / CC(12)
         qn = q = (2 * CC.gen() * CC.pi() * tau).exp()
         for n in range(1, N):
-            const_term -= 2 * qn/(1-qn) ** 2
+            const_term -= 2 * qn / (1 - qn) ** 2
             qn *= q
 
         two_pi_i = 2 * domain.gen() * domain.pi()
@@ -1477,29 +1516,32 @@ class EllipticCurveCanonicalHeight:
 
         abs_q = abs(domain(q))
         abs_qN = abs(domain(qn))
-        err_factor = abs(neg_four_pi2) / (1-abs_q)
-        err_term = 2*abs_qN/(1-abs_qN) ** 2
+        err_factor = abs(neg_four_pi2) / (1 - abs_q)
+        err_term = 2 * abs_qN / (1 - abs_qN) ** 2
 
         # choose u/(1-u)^2 evaluation method
         if domain is CIF:
             rat_term = rat_term_CIF
         else:
+
             def rat_term(z):
-                u = (two_pi_i*z).exp()
-                return u/(1-u)**2
+                u = (two_pi_i * z).exp()
+                return u / (1 - u) ** 2
 
         # the actual series
         def fk(z):
-            return (const_term +
-                    sum([rat_term(z+n*tau) for n in range(1-N,N)])
-                    ) * neg_four_pi2
+            return (
+                const_term + sum([rat_term(z + n * tau) for n in range(1 - N, N)])
+            ) * neg_four_pi2
 
         # the error function
         def err(z):
             alpha = z.imag() / tau.imag()
-            qNa = abs_q**(N+alpha)
-            qNai = abs_q**(N-alpha)
-            return (err_factor * (qNa/(1-qNa) ** 2 + qNai/(1-qNai) ** 2 + err_term)).upper()
+            qNa = abs_q ** (N + alpha)
+            qNai = abs_q ** (N - alpha)
+            return (
+                err_factor * (qNa / (1 - qNa) ** 2 + qNai / (1 - qNai) ** 2 + err_term)
+            ).upper()
 
         return fk, err
 
@@ -1578,15 +1620,16 @@ class EllipticCurveCanonicalHeight:
 
             # refine using an estimate that's better near the pole
             z_bound = abs(z).upper()
-            cz2 = c * z_bound ** 2
+            cz2 = c * z_bound**2
             if cz2 < 1:
                 err = (c * cz2) / (1 - cz2)
                 if abs_only:
                     pole_approx = abs(z) ** -2
                 else:
-                    pole_approx = z ** -2
+                    pole_approx = z**-2
                 approx = approx.intersection(pole_approx + eps(err, abs_only))
             return approx
+
         return wp
 
     @cached_method
@@ -1638,11 +1681,11 @@ class EllipticCurveCanonicalHeight:
         fk, err = self.fk_intervals(v, 15, CDF)
         var_z = SR.var('z')
         ff = fast_callable(fk(var_z), CDF, [var_z])
-        N_or_half = N // (1+half)         # array is NxN or Nx(N/2)
-        vals = numpy.empty((N,N_or_half)) # empty array tp hold values
+        N_or_half = N // (1 + half)  # array is NxN or Nx(N/2)
+        vals = numpy.empty((N, N_or_half))  # empty array tp hold values
         for i in range(N):
             for j in range(N_or_half):
-                vals[i,j] = abs(ff((i+.5)/N + (j+.5)*tau/N))
+                vals[i, j] = abs(ff((i + 0.5) / N + (j + 0.5) * tau / N))
         return vals
 
     def complex_intersection_is_empty(self, Bk, v, verbose=False, use_half=True):
@@ -1704,8 +1747,8 @@ class EllipticCurveCanonicalHeight:
         b2 = v(self.E.b2())
         # Note that we normalise w1, w2 differently from [Tho2010]_!
         w2, w1 = self.E.period_lattice(v).normalised_basis()
-        tau = w2/w1
-        bounds = [RDF((B.sqrt() + abs(b2)/12) * abs(w1) ** 2) for B in Bk]
+        tau = w2 / w1
+        bounds = [RDF((B.sqrt() + abs(b2) / 12) * abs(w1) ** 2) for B in Bk]
         vals = self.wp_on_grid(v, 30, half=use_half)
         wp = self.wp_intervals(v, abs_only=True)
 
@@ -1715,26 +1758,31 @@ class EllipticCurveCanonicalHeight:
         if verbose:
             print("trying to prove negative result...")
         intersection = None
-        for B, n in sorted(zip(bounds, ZZ.range(1, k+1))):
+        for B, n in sorted(zip(bounds, ZZ.range(1, k + 1))):
             T = PeriodicRegion(CDF(1), CDF(tau), vals < B, full=not use_half)
             if intersection is None:
-                intersection = PeriodicRegion(CDF(1), CDF(tau), vals < B, full=not use_half)
+                intersection = PeriodicRegion(
+                    CDF(1), CDF(tau), vals < B, full=not use_half
+                )
             else:
-                intersection &= T/n
+                intersection &= T / n
                 if intersection.is_empty():
                     break
         else:
             z = CIF(intersection.innermost_point())
-            if all(wp((k+1)*z).upper() < B for k, B in enumerate(bounds)):
+            if all(wp((k + 1) * z).upper() < B for k, B in enumerate(bounds)):
                 return False
 
         # Now try to prove a positive result.
         if verbose:
             print("trying to prove positive result...")
         intersection = None
-        for B, n in sorted(zip(bounds, ZZ.range(1, k+1))):
-
-            T = PeriodicRegion(CDF(1), CDF(tau), vals < B, full=not use_half).expand().refine()
+        for B, n in sorted(zip(bounds, ZZ.range(1, k + 1))):
+            T = (
+                PeriodicRegion(CDF(1), CDF(tau), vals < B, full=not use_half)
+                .expand()
+                .refine()
+            )
             B = RIF(B)
             leaning_right = tau.real() / tau.imag() >= 0
 
@@ -1758,7 +1806,7 @@ class EllipticCurveCanonicalHeight:
             if intersection is None:
                 intersection = T
             else:
-                intersection &= T/n
+                intersection &= T / n
                 if intersection.is_empty():
                     return True
 
@@ -1848,6 +1896,7 @@ class EllipticCurveCanonicalHeight:
         # stopping if one gives a True result.
 
         from sage.rings.number_field.number_field import refine_embedding
+
         for v in self.K.places():
             ok = False
             while not ok:
@@ -1862,8 +1911,10 @@ class EllipticCurveCanonicalHeight:
                 except ArithmeticError:
                     v = refine_embedding(v)
                     if verbose:
-                        print("Refining embedding, codomain now {}".format(v.codomain()))
-        return False # Couldn't prove it...
+                        print(
+                            "Refining embedding, codomain now {}".format(v.codomain())
+                        )
+        return False  # Couldn't prove it...
 
     def min_gr(self, tol, n_max, verbose=False):
         r"""
@@ -1981,14 +2032,14 @@ class EllipticCurveCanonicalHeight:
         eps = 2.0
         while eps > tol + 1:
             if verbose:
-                print("height bound in [%r, %r] using n_max = %r"
-                      % (mu, mu * eps, n_max))
+                print(
+                    "height bound in [%r, %r] using n_max = %r" % (mu, mu * eps, n_max)
+                )
             eps = math.sqrt(eps)
             if test(mu * eps, n_max, False):
                 mu = mu * eps
         if verbose:
-            print("height bound in [%r, %r] using n_max = %r"
-                  % (mu, mu * eps, n_max))
+            print("height bound in [%r, %r] using n_max = %r" % (mu, mu * eps, n_max))
         return RDF(mu)
 
     def min(self, tol, n_max, verbose=False):
@@ -2088,9 +2139,8 @@ class EllipticCurveCanonicalHeight:
             if self.K == QQ:
                 if self.E.real_components() == 2:
                     tp *= 2
-            elif any(v(self.E.discriminant()) > 0
-                     for v in self.K.real_places()):
+            elif any(v(self.E.discriminant()) > 0 for v in self.K.real_places()):
                 tp *= 2
         # Now tp is such that tp*P has good reduction at all places
         # for all points P:
-        return self.min_gr(tol, n_max, verbose) / tp ** 2
+        return self.min_gr(tol, n_max, verbose) / tp**2

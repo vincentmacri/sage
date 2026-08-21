@@ -50,6 +50,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
         sage: DihedralGroup(5)
         Dihedral group of order 10 as a permutation group
     """
+
     def extra_super_categories(self):
         r"""
         EXAMPLES::
@@ -59,6 +60,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
              Category of Coxeter groups]
         """
         from sage.categories.complex_reflection_groups import ComplexReflectionGroups
+
         return [ComplexReflectionGroups().Finite().WellGenerated()]
 
     class ParentMethods:
@@ -83,6 +85,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             sage: list(W)
             [(), (1,), (2,), (1, 2), (2, 1), (1, 2, 1)]
         """
+
         __iter__ = CoxeterGroups.ParentMethods.__dict__["__iter__"]
 
         @lazy_attribute
@@ -213,6 +216,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                   handle large / infinite Coxeter groups.
             """
             from sage.combinat.posets.posets import Poset
+
             covers = tuple([u, v] for v in self for u in v.bruhat_lower_covers())
             return Poset((self, covers), cover_relations=True, facade=facade)
 
@@ -249,10 +253,14 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                 34*q^3 + 22*q^2 + q
             """
             from sage.combinat.posets.lattices import LatticePoset
-            data = {w: (frozenset(u.lift()
-                                  for u in w.covered_reflections_subgroup()),
-                        frozenset((~w).inversions_as_reflections()))
-                    for w in self}
+
+            data = {
+                w: (
+                    frozenset(u.lift() for u in w.covered_reflections_subgroup()),
+                    frozenset((~w).inversions_as_reflections()),
+                )
+                for w in self
+            }
 
             def shard_comparison(u, v):
                 Gu, Nu = data[u]
@@ -308,9 +316,10 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                     return False
                 return all((v * iu).has_descent(x, positive=True) for x in Su)
 
-            vertices = [(u, u.inverse(),
-                         tuple(set(u.reduced_word_reverse_iterator())))
-                        for u in self]
+            vertices = [
+                (u, u.inverse(), tuple(set(u.reduced_word_reverse_iterator())))
+                for u in self
+            ]
             dg = DiGraph([vertices, covered_by])
             dg.relabel(lambda x: x[0])
             return Poset(dg, cover_relations=True)
@@ -358,12 +367,17 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                 args = ((z.rational_argument(), m) for z, m in roots)
                 args = [(z if z >= 0 else 1 + z, m) for z, m in args]
                 h = max(z.denominator() for z, m in args)
-                return tuple(sorted(ZZ(z * h + 1)
-                                    for z, m in args if z
-                                    for i in range(m)))
+                return tuple(
+                    sorted(ZZ(z * h + 1) for z, m in args if z for i in range(m))
+                )
 
-            return sum((degrees_of_irreducible_component(I)
-                        for I in self.irreducible_component_index_sets()), ())
+            return sum(
+                (
+                    degrees_of_irreducible_component(I)
+                    for I in self.irreducible_component_index_sets()
+                ),
+                (),
+            )
 
         def codegrees(self):
             """
@@ -476,14 +490,19 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             """
             from sage.combinat.posets.posets import Poset
             from sage.combinat.posets.lattices import LatticePoset
+
             if side == "twosided":
-                covers = tuple([u, v] for u in self for v in u.upper_covers(side='left') + u.upper_covers(side='right'))
-                return Poset((self, covers), cover_relations=True,
-                             facade=facade)
+                covers = tuple(
+                    [u, v]
+                    for u in self
+                    for v in u.upper_covers(side='left') + u.upper_covers(side='right')
+                )
+                return Poset((self, covers), cover_relations=True, facade=facade)
             covers = tuple([u, v] for u in self for v in u.upper_covers(side=side))
             cat = FiniteLatticePosets().ChainGraded()
-            return LatticePoset((self, covers), cover_relations=True,
-                                facade=facade, category=cat)
+            return LatticePoset(
+                (self, covers), cover_relations=True, facade=facade, category=cat
+            )
 
         weak_lattice = weak_poset
 
@@ -511,8 +530,10 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                 sage: [t.reduced_word() for t in CoxeterGroup(["A",3]).inversion_sequence([2,1,3,2,1,3])]
                 [[2], [1, 2, 1], [2, 3, 2], [1, 2, 3, 2, 1], [3], [1]]
             """
-            return [self.from_reduced_word(word[:i+1]+list(reversed(word[:i])))
-                    for i in range(len(word))]
+            return [
+                self.from_reduced_word(word[: i + 1] + list(reversed(word[:i])))
+                for i in range(len(word))
+            ]
 
         def reflections_from_w0(self):
             """
@@ -571,6 +592,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             """
             from sage.categories.finite_lattice_posets import FiniteLatticePosets
             from sage.combinat.posets.lattices import LatticePoset
+
             if hasattr(c, "reduced_word"):
                 c = c.reduced_word()
             c = list(c)
@@ -579,11 +601,15 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
 
             if on_roots:
                 if not hasattr(self.long_element(), "reflection_to_root"):
-                    raise ValueError("The parameter 'on_root=True' needs "
-                                     "the ElementMethod 'reflection_to_root'")
+                    raise ValueError(
+                        "The parameter 'on_root=True' needs "
+                        "the ElementMethod 'reflection_to_root'"
+                    )
 
-                inv_woc = [t.reflection_to_root()
-                           for t in self.inversion_sequence(sorting_word)]
+                inv_woc = [
+                    t.reflection_to_root()
+                    for t in self.inversion_sequence(sorting_word)
+                ]
                 S = [s.reflection_to_root() for s in self.simple_reflections()]
                 PhiP = [t.reflection_to_root() for t in self.reflections()]
             else:
@@ -605,18 +631,24 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                         cov_element = [s for s in new_element if s != t]
                         cov_element.append((t[0], t[1] + 1))
                         idx_t0 = inv_woc.index(t[0])
-                        for t_conj in [(i, t[1]) for i in inv_woc[idx_t0:]] + [(i, t[1] + 1) for i in inv_woc[:idx_t0]]:
+                        for t_conj in [(i, t[1]) for i in inv_woc[idx_t0:]] + [
+                            (i, t[1] + 1) for i in inv_woc[:idx_t0]
+                        ]:
                             if t_conj in cov_element:
                                 cov_element.remove(t_conj)
                                 if on_roots:
-                                    tmp = t_conj[0].weyl_action(t[0].associated_reflection())
+                                    tmp = t_conj[0].weyl_action(
+                                        t[0].associated_reflection()
+                                    )
                                     if tmp in PhiP:
                                         cov_element.append((tmp, t_conj[1]))
                                     else:
                                         cov_element.append((-tmp, t_conj[1] - 1))
                                 else:
                                     tmp = t[0] * t_conj[0] * t[0]
-                                    invs = self.inversion_sequence(Twords[t[0]]+Twords[t_conj[0]])
+                                    invs = self.inversion_sequence(
+                                        Twords[t[0]] + Twords[t_conj[0]]
+                                    )
                                     plus_or_minus = invs.count(tmp)
                                     if plus_or_minus % 2:
                                         cov_element.append((tmp, t_conj[1]))
@@ -630,8 +662,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             cat = FiniteLatticePosets()
             if m == 1:
                 cat = cat.CongruenceUniform().Trim()
-            return LatticePoset([elements, covers], cover_relations=True,
-                                category=cat)
+            return LatticePoset([elements, covers], cover_relations=True, category=cat)
 
         def cambrian_lattice(self, c, on_roots=False):
             """
@@ -751,16 +782,24 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             weights = self.fundamental_weights()
             if point is None:
                 from sage.rings.integer_ring import ZZ
+
                 point = [ZZ.one()] * n
-            v = sum(point[i-1] * weights[i] for i in weights.keys())
-            vertices = [v*w for w in self]
+            v = sum(point[i - 1] * weights[i] for i in weights.keys())
+            vertices = [v * w for w in self]
             if base_ring is None:
-                if isinstance(v.base_ring(), (sage.rings.abc.UniversalCyclotomicField,
-                                              sage.rings.abc.AlgebraicField_common)):
+                if isinstance(
+                    v.base_ring(),
+                    (
+                        sage.rings.abc.UniversalCyclotomicField,
+                        sage.rings.abc.AlgebraicField_common,
+                    ),
+                ):
                     from sage.rings.qqbar import AA
+
                     vertices = [v.change_ring(AA) for v in vertices]
                     base_ring = AA
             from sage.geometry.polyhedron.constructor import Polyhedron
+
             return Polyhedron(vertices=vertices, base_ring=base_ring)
 
         def coxeter_poset(self):
@@ -832,6 +871,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                             data[X] = [Y]
                         next_level.add(X)
             from sage.combinat.posets.lattices import MeetSemilattice
+
             return MeetSemilattice(data)
 
         def coxeter_complex(self):
@@ -908,10 +948,10 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             labels = {x: i for i, x in enumerate(verts)}
             result = [[labels[v] for v in F] for F in facets.values()]
             from sage.topology.simplicial_complex import SimplicialComplex
+
             return SimplicialComplex(result)
 
     class ElementMethods:
-
         def absolute_length(self):
             """
             Return the absolute length of ``self``.
@@ -980,9 +1020,11 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             i = self.first_descent(positive=True, side='right')
             if i is not None:
                 wsi = self.apply_simple_reflection(i, side='right')
-                return [u.apply_simple_reflection(i, side='right')
-                        for u in wsi.bruhat_upper_covers()
-                        if u.has_descent(i, side='right')] + [wsi]
+                return [
+                    u.apply_simple_reflection(i, side='right')
+                    for u in wsi.bruhat_upper_covers()
+                    if u.has_descent(i, side='right')
+                ] + [wsi]
             return []
 
         def coxeter_knuth_neighbor(self, w):
@@ -1022,23 +1064,25 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             """
             C = self.parent().cartan_type()
             if not C[0] == 'A':
-                raise NotImplementedError("this has only been implemented in finite type A so far")
+                raise NotImplementedError(
+                    "this has only been implemented in finite type A so far"
+                )
             d = []
             for i in range(2, len(w)):
                 v = list(w)
-                if w[i-2] == w[i]:
-                    if w[i] == w[i-1] - 1:
-                        v[i-2] = w[i-1]
-                        v[i] = w[i-1]
-                        v[i-1] = w[i]
+                if w[i - 2] == w[i]:
+                    if w[i] == w[i - 1] - 1:
+                        v[i - 2] = w[i - 1]
+                        v[i] = w[i - 1]
+                        v[i - 1] = w[i]
                         d += [tuple(v)]
-                elif w[i-1] < w[i-2] and w[i-2] < w[i]:
-                    v[i] = w[i-1]
-                    v[i-1] = w[i]
+                elif w[i - 1] < w[i - 2] and w[i - 2] < w[i]:
+                    v[i] = w[i - 1]
+                    v[i - 1] = w[i]
                     d += [tuple(v)]
-                elif w[i-2] < w[i] and w[i] < w[i-1]:
-                    v[i-2] = w[i-1]
-                    v[i-1] = w[i-2]
+                elif w[i - 2] < w[i] and w[i] < w[i - 1]:
+                    v[i - 2] = w[i - 1]
+                    v[i - 1] = w[i - 2]
                     d += [tuple(v)]
             return set(d)
 
@@ -1083,6 +1127,7 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
                 NotImplementedError: this has only been implemented in finite type A so far
             """
             from sage.graphs.graph import Graph
+
             R = [tuple(v) for v in self.reduced_words()]
             G = Graph()
             G.add_vertices(R)
@@ -1141,6 +1186,8 @@ class FiniteCoxeterGroups(CategoryWithAxiom):
             """
             W = self.parent()
             winv = ~self
-            cov_down = [self * W.simple_reflection(i) * winv
-                        for i in self.descents(side='right')]
+            cov_down = [
+                self * W.simple_reflection(i) * winv
+                for i in self.descents(side='right')
+            ]
             return W.submonoid(cov_down)

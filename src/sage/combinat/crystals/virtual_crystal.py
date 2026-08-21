@@ -10,7 +10,7 @@ AUTHORS:
 - Travis Scrimshaw (2013-10-16): initial implementation
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -23,7 +23,7 @@ AUTHORS:
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 from sage.categories.crystals import Crystals
 from sage.categories.finite_crystals import FiniteCrystals
 from sage.combinat.root_system.cartan_type import CartanType
@@ -152,10 +152,19 @@ class VirtualCrystal(Subcrystal):
     - [OSS03]_
     - [OSS2003]_
     """
+
     @staticmethod
-    def __classcall_private__(cls, ambient, virtualization, scaling_factors,
-                              contained=None, generators=None,
-                              cartan_type=None, index_set=None, category=None):
+    def __classcall_private__(
+        cls,
+        ambient,
+        virtualization,
+        scaling_factors,
+        contained=None,
+        generators=None,
+        cartan_type=None,
+        index_set=None,
+        category=None,
+    ):
         """
         Normalize arguments to ensure a unique representation.
 
@@ -195,13 +204,29 @@ class VirtualCrystal(Subcrystal):
         if ambient in FiniteCrystals() or isinstance(contained, frozenset):
             category = category.Finite()
 
-        return super().__classcall__(cls, ambient, virtualization,
-                                     scaling_factors, contained,
-                                     tuple(generators), cartan_type,
-                                     tuple(index_set), category)
+        return super().__classcall__(
+            cls,
+            ambient,
+            virtualization,
+            scaling_factors,
+            contained,
+            tuple(generators),
+            cartan_type,
+            tuple(index_set),
+            category,
+        )
 
-    def __init__(self, ambient, virtualization, scaling_factors,
-                 contained, generators, cartan_type, index_set, category):
+    def __init__(
+        self,
+        ambient,
+        virtualization,
+        scaling_factors,
+        contained,
+        generators,
+        cartan_type,
+        index_set,
+        category,
+    ):
         """
         Initialize ``self``.
 
@@ -215,8 +240,9 @@ class VirtualCrystal(Subcrystal):
         """
         self._virtualization = virtualization
         self._scaling_factors = scaling_factors
-        Subcrystal.__init__(self, ambient, contained, generators,
-                            cartan_type, index_set, category)
+        Subcrystal.__init__(
+            self, ambient, contained, generators, cartan_type, index_set, category
+        )
 
     def _repr_(self):
         """
@@ -230,7 +256,9 @@ class VirtualCrystal(Subcrystal):
             sage: psi.image()
             Virtual crystal of The crystal of tableaux of type ['D', 4] and shape(s) [[2]] of type ['B', 3]
         """
-        return "Virtual crystal of {} of type {}".format(self._ambient, self._cartan_type)
+        return "Virtual crystal of {} of type {}".format(
+            self._ambient, self._cartan_type
+        )
 
     def __contains__(self, x):
         """
@@ -319,7 +347,7 @@ class VirtualCrystal(Subcrystal):
             P = self.parent()
             sf = P._scaling_factors[i]
             for j in P._virtualization[i]:
-                s += [j]*sf
+                s += [j] * sf
             ret = self.value.e_string(s)
             if ret is None:
                 return None
@@ -344,7 +372,7 @@ class VirtualCrystal(Subcrystal):
             P = self.parent()
             sf = P._scaling_factors[i]
             for j in P._virtualization[i]:
-                s += [j]*sf
+                s += [j] * sf
             ret = self.value.f_string(s)
             if ret is None:
                 return None
@@ -413,7 +441,9 @@ class VirtualCrystal(Subcrystal):
             La = WLR.fundamental_weights()
             v = P._virtualization
             sf = P._scaling_factors
-            return WLR.sum(wt.scalar(ac[v[i][0]]) // sf[i] * La[i]
-                           for i in self.index_set())
+            return WLR.sum(
+                wt.scalar(ac[v[i][0]]) // sf[i] * La[i] for i in self.index_set()
+            )
+
 
 # TODO: implement a devirtualization map

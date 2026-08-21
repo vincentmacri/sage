@@ -34,7 +34,10 @@ where `(a, b)\in S`
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.set_factories import (
-    SetFactory, ParentWithSetFactory, TopMostParentPolicy)
+    SetFactory,
+    ParentWithSetFactory,
+    TopMostParentPolicy,
+)
 from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
 from sage.sets.family import LazyFamily
 from sage.categories.enumerated_sets import EnumeratedSets
@@ -52,6 +55,7 @@ class XYPairsFactory(SetFactory):
 
         :mod:`.set_factories` for an introduction to set factories.
     """
+
     def __call__(self, x=None, y=None, policy=None):
         r"""
         Construct the subset from constraints.
@@ -130,15 +134,19 @@ class XYPairsFactory(SetFactory):
         def set_args(argss):
             for i, v in enumerate(argss):
                 if res[i] is not None and v is not None:
-                    raise ValueError("Duplicate value for constraints '{}': "
-                                     "was {} now {}".format(['x', 'y'][i],
-                                                            res[i], v))
+                    raise ValueError(
+                        "Duplicate value for constraints '{}': was {} now {}".format(
+                            ['x', 'y'][i], res[i], v
+                        )
+                    )
                 if v is not None:
                     res[i] = v
+
         set_args(args)
 
         def parse_args(x=None, y=None):
             set_args((x, y))
+
         parse_args(**opts)
         if res == (None, None):
             return ()
@@ -185,6 +193,7 @@ class XYPair(ElementWrapper):
         ...
         ValueError: numbers must be in range(5)
     """
+
     def __init__(self, parent, value, check=True):
         """
         TESTS::
@@ -229,6 +238,7 @@ class AllPairs(ParentWithSetFactory, DisjointUnionEnumeratedSets):
         sage: P = XYPairs(); P.list()
         [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)]
     """
+
     def __init__(self, policy):
         r"""
         TESTS::
@@ -236,13 +246,16 @@ class AllPairs(ParentWithSetFactory, DisjointUnionEnumeratedSets):
             sage: from sage.structure.set_factories_example import XYPairs
             sage: TestSuite(XYPairs()).run()
         """
-        ParentWithSetFactory.__init__(self, (), policy=policy,
-                                      category=EnumeratedSets().Finite())
-        DisjointUnionEnumeratedSets.__init__(self,
-                                             LazyFamily(range(MAX),
-                                                        self.pairs_y),
-                                             facade=True, keepkey=False,
-                                             category=self.category())
+        ParentWithSetFactory.__init__(
+            self, (), policy=policy, category=EnumeratedSets().Finite()
+        )
+        DisjointUnionEnumeratedSets.__init__(
+            self,
+            LazyFamily(range(MAX), self.pairs_y),
+            facade=True,
+            keepkey=False,
+            category=self.category(),
+        )
 
     def pairs_y(self, letter):
         r"""
@@ -310,6 +323,7 @@ class PairsX_(ParentWithSetFactory, UniqueRepresentation):
         sage: P = XYPairs(0); P.list()
         [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)]
     """
+
     def __init__(self, x, policy):
         r"""
         TESTS::
@@ -318,8 +332,9 @@ class PairsX_(ParentWithSetFactory, UniqueRepresentation):
             sage: TestSuite(XYPairs(0)).run()
         """
         self._x = x
-        ParentWithSetFactory.__init__(self, (x, None), policy=policy,
-                                      category=EnumeratedSets().Finite())
+        ParentWithSetFactory.__init__(
+            self, (x, None), policy=policy, category=EnumeratedSets().Finite()
+        )
 
     def _repr_(self):
         """
@@ -392,6 +407,7 @@ class Pairs_Y(ParentWithSetFactory, DisjointUnionEnumeratedSets):
         sage: P = XYPairs(y=1); P.list()
         [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1)]
     """
+
     def __init__(self, y, policy):
         r"""
         TESTS::
@@ -400,12 +416,16 @@ class Pairs_Y(ParentWithSetFactory, DisjointUnionEnumeratedSets):
             sage: TestSuite(XYPairs(y=1)).run()
         """
         self._y = y
-        ParentWithSetFactory.__init__(self, (None, y), policy=policy,
-                                      category=EnumeratedSets().Finite())
+        ParentWithSetFactory.__init__(
+            self, (None, y), policy=policy, category=EnumeratedSets().Finite()
+        )
         DisjointUnionEnumeratedSets.__init__(
-            self, LazyFamily(range(MAX), self.single_pair),
-            facade=True, keepkey=False,
-            category=self.category())  # TODO remove and fix disjoint union.
+            self,
+            LazyFamily(range(MAX), self.single_pair),
+            facade=True,
+            keepkey=False,
+            category=self.category(),
+        )  # TODO remove and fix disjoint union.
 
     def _repr_(self):
         """
@@ -476,6 +496,7 @@ class SingletonPair(ParentWithSetFactory, UniqueRepresentation):
         sage: P = XYPairs(0,1); P.list()
         [(0, 1)]
     """
+
     def __init__(self, x, y, policy):
         r"""
         TESTS::
@@ -484,8 +505,9 @@ class SingletonPair(ParentWithSetFactory, UniqueRepresentation):
             sage: TestSuite(XYPairs(0,1)).run()
         """
         self._xy = (x, y)
-        ParentWithSetFactory.__init__(self, (x, y), policy=policy,
-                                      category=EnumeratedSets().Finite())
+        ParentWithSetFactory.__init__(
+            self, (x, y), policy=policy, category=EnumeratedSets().Finite()
+        )
 
     def _repr_(self):
         """

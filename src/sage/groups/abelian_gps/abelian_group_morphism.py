@@ -28,6 +28,7 @@ class AbelianGroupMap(Morphism):
     """
     A set-theoretic map between AbelianGroups.
     """
+
     def __init__(self, parent) -> None:
         """
         The Python constructor.
@@ -70,26 +71,27 @@ class AbelianGroupMorphism(Morphism):
     - David Joyner (2006-02)
     """
 
-#    There is a homomorphism from H to G but not from G to H:
-#
-#        sage: phi = AbelianGroupMorphism_im_gens(G,H,[a*b,a*c],[x,y])
-#------------------------------------------------------------
-#Traceback (most recent call last):
-#  File "<ipython console>", line 1, in ?
-#  File ".abeliangp_hom.sage.py", line 737, in __init__
-#    raise TypeError("the orders of the corresponding elements in %s, %s must be equal" % (genss,imgss))
-#TypeError: the orders of the corresponding elements in [a*b, a*c], [x, y] must be equal
-#
-#        sage: phi = AbelianGroupMorphism_im_gens(G,H,[a*b,(a*c)^2],[x*y,y])
-#------------------------------------------------------------
-#Traceback (most recent call last):
-#  File "<ipython console>", line 1, in ?
-#  File ".abeliangp_hom.sage.py", line 730, in __init__
-#    raise TypeError("the list %s must generate G" % genss)
-#TypeError: the list [a*b, c^2] must generate G
+    #    There is a homomorphism from H to G but not from G to H:
+    #
+    #        sage: phi = AbelianGroupMorphism_im_gens(G,H,[a*b,a*c],[x,y])
+    # ------------------------------------------------------------
+    # Traceback (most recent call last):
+    #  File "<ipython console>", line 1, in ?
+    #  File ".abeliangp_hom.sage.py", line 737, in __init__
+    #    raise TypeError("the orders of the corresponding elements in %s, %s must be equal" % (genss,imgss))
+    # TypeError: the orders of the corresponding elements in [a*b, a*c], [x, y] must be equal
+    #
+    #        sage: phi = AbelianGroupMorphism_im_gens(G,H,[a*b,(a*c)^2],[x*y,y])
+    # ------------------------------------------------------------
+    # Traceback (most recent call last):
+    #  File "<ipython console>", line 1, in ?
+    #  File ".abeliangp_hom.sage.py", line 730, in __init__
+    #    raise TypeError("the list %s must generate G" % genss)
+    # TypeError: the list [a*b, c^2] must generate G
 
     def __init__(self, G, H, genss, imgss):
         from sage.categories.homset import Hom
+
         Morphism.__init__(self, Hom(G, H))
         if len(genss) != len(imgss):
             raise TypeError("the lengths of %s, %s must be equal" % (genss, imgss))
@@ -108,7 +110,10 @@ class AbelianGroupMorphism(Morphism):
         self.codomaingens = imgss
         for i in range(len(self.domaingens)):
             if (self.domaingens[i]).order() != (self.codomaingens[i]).order():
-                raise TypeError("the orders of the corresponding elements in %s, %s must be equal" % (genss, imgss))
+                raise TypeError(
+                    "the orders of the corresponding elements in %s, %s must be equal"
+                    % (genss, imgss)
+                )
 
     def _libgap_(self):
         """
@@ -210,5 +215,7 @@ class AbelianGroupMorphism(Morphism):
         """
         # g.word_problem is faster in general than word_problem(g)
         gens = self.codomaingens
-        return prod(gens[(self.domaingens).index(wi[0])]**wi[1]
-                    for wi in g.word_problem(self.domaingens))
+        return prod(
+            gens[(self.domaingens).index(wi[0])] ** wi[1]
+            for wi in g.word_problem(self.domaingens)
+        )

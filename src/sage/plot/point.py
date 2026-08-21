@@ -67,6 +67,7 @@ class Point(GraphicPrimitive_xydata):
         sage: point((3,3))
         Graphics object consisting of 1 graphics primitive
     """
+
     def __init__(self, xdata, ydata, options):
         """
         Initialize base class Point.
@@ -93,16 +94,18 @@ class Point(GraphicPrimitive_xydata):
             sage: P[0]._allowed_options()['size']
             'How big the point is (i.e., area in points^2=(1/72 inch)^2).'
         """
-        return {'alpha': 'How transparent the point is.',
-                'faceted': 'If True color the edge of the point. (only for 2D plots)',
-                'hue': 'The color given as a hue.',
-                'legend_color': 'The color of the legend text',
-                'legend_label': 'The label for this item in the legend.',
-                'marker': 'the marker symbol for 2D plots only (see documentation of plot() for details)',
-                'markeredgecolor': 'the color of the marker edge (only for 2D plots)',
-                'rgbcolor': 'The color as an RGB tuple.',
-                'size': 'How big the point is (i.e., area in points^2=(1/72 inch)^2).',
-                'zorder': 'The layer level in which to draw'}
+        return {
+            'alpha': 'How transparent the point is.',
+            'faceted': 'If True color the edge of the point. (only for 2D plots)',
+            'hue': 'The color given as a hue.',
+            'legend_color': 'The color of the legend text',
+            'legend_label': 'The label for this item in the legend.',
+            'marker': 'the marker symbol for 2D plots only (see documentation of plot() for details)',
+            'markeredgecolor': 'the color of the marker edge (only for 2D plots)',
+            'rgbcolor': 'The color as an RGB tuple.',
+            'size': 'How big the point is (i.e., area in points^2=(1/72 inch)^2).',
+            'zorder': 'The layer level in which to draw',
+        }
 
     def _plot3d_options(self, options=None):
         """
@@ -235,6 +238,7 @@ class Point(GraphicPrimitive_xydata):
         """
         from sage.plot.plot3d.base import Graphics3dGroup
         from sage.plot.plot3d.shapes2 import point3d
+
         options = self._plot3d_options()
         options.update(kwds)
         zdata = []
@@ -293,6 +297,7 @@ class Point(GraphicPrimitive_xydata):
         # three points. This is mentioned in the matplotlib 0.98
         # documentation and fixes #2076
         from matplotlib.colors import rgb2hex
+
         c = rgb2hex(to_mpl_color(options['rgbcolor']))
 
         a = float(options['alpha'])
@@ -305,12 +310,19 @@ class Point(GraphicPrimitive_xydata):
         if not faceted and markeredgecolor is None:
             scatteroptions['edgecolors'] = 'none'
         elif markeredgecolor is not None:
-            scatteroptions['edgecolors'] = to_mpl_color(
-                                              options.pop('markeredgecolor'))
+            scatteroptions['edgecolors'] = to_mpl_color(options.pop('markeredgecolor'))
         scatteroptions['marker'] = options.pop('marker')
 
-        subplot.scatter(self.xdata, self.ydata, s=s, c=c, alpha=a, zorder=z,
-                        label=options['legend_label'], **scatteroptions)
+        subplot.scatter(
+            self.xdata,
+            self.ydata,
+            s=s,
+            c=c,
+            alpha=a,
+            zorder=z,
+            label=options['legend_label'],
+            **scatteroptions,
+        )
 
 
 def point(points, **kwds):
@@ -389,13 +401,22 @@ def point(points, **kwds):
         return point2d(points, **kwds)
     except (ValueError, TypeError):
         from sage.plot.plot3d.shapes2 import point3d
+
         return point3d(points, **kwds)
 
 
 @rename_keyword(color='rgbcolor', pointsize='size')
-@options(alpha=1, aspect_ratio='automatic', faceted=False,
-        legend_color=None, legend_label=None, marker='o',
-        markeredgecolor=None, rgbcolor=(0, 0, 1), size=10)
+@options(
+    alpha=1,
+    aspect_ratio='automatic',
+    faceted=False,
+    legend_color=None,
+    legend_label=None,
+    marker='o',
+    markeredgecolor=None,
+    rgbcolor=(0, 0, 1),
+    size=10,
+)
 def point2d(points, **options):
     r"""
     A point of size ``size`` defined by point = `(x, y)`.
@@ -598,14 +619,18 @@ def point2d(points, **options):
     if l == 0:
         return Graphics()
     if l == 2:  # special case for a single 2D point
-        if all(isinstance(z, numbers.Real)
-               or (isinstance(z, Expression) and not complex(z).imag)
-               for z in points):
+        if all(
+            isinstance(z, numbers.Real)
+            or (isinstance(z, Expression) and not complex(z).imag)
+            for z in points
+        ):
             points = [points]
     elif l == 3:  # special case for a single 3D point
-        if all(isinstance(z, numbers.Real)
-               or (isinstance(z, Expression) and not complex(z).imag)
-               for z in points):
+        if all(
+            isinstance(z, numbers.Real)
+            or (isinstance(z, Expression) and not complex(z).imag)
+            for z in points
+        ):
             raise TypeError('not a 2D point')
 
     xdata, ydata = xydata_from_point_list(points)

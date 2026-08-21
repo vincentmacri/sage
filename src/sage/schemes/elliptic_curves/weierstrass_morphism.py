@@ -59,6 +59,7 @@ class baseWI:
         sage: baseWI(u,r,s,t)
         (u, r, s, t)
     """
+
     def __init__(self, u=1, r=0, s=0, t=0):
         r"""
         Constructor: check for valid parameters (defaults to identity).
@@ -113,10 +114,12 @@ class baseWI:
         """
         u1, r1, s1, t1 = other.tuple()
         u2, r2, s2, t2 = self.tuple()
-        return baseWI(u1 * u2,
-                      (u1**2) * r2 + r1,
-                      u1 * s2 + s1,
-                      (u1**3) * t2 + s1 * (u1**2) * r2 + t1)
+        return baseWI(
+            u1 * u2,
+            (u1**2) * r2 + r1,
+            u1 * s2 + s1,
+            (u1**3) * t2 + s1 * (u1**2) * r2 + t1,
+        )
 
     def __invert__(self):
         r"""
@@ -140,7 +143,7 @@ class baseWI:
             (1, 0, 0, 0)
         """
         u, r, s, t = self.tuple()
-        return baseWI(1/u, -r/u**2, -s/u, (r*s-t)/u**3)
+        return baseWI(1 / u, -r / u**2, -s / u, (r * s - t) / u**3)
 
     def __repr__(self):
         r"""
@@ -200,22 +203,22 @@ class baseWI:
         u, r, s, t = self.tuple()
         if len(EorP) == 5:
             a1, a2, a3, a4, a6 = EorP
-            a6 += r*(a4 + r*(a2 + r)) - t*(a3 + r*a1 + t)
-            a4 += -s*a3 + 2*r*a2 - (t + r*s)*a1 + 3*r*r - 2*s*t
-            a3 += r*a1 + t + t
-            a2 += -s*a1 + 3*r - s*s
-            a1 += 2*s
-            return [a1/u, a2/u**2, a3/u**3, a4/u**4, a6/u**6]
+            a6 += r * (a4 + r * (a2 + r)) - t * (a3 + r * a1 + t)
+            a4 += -s * a3 + 2 * r * a2 - (t + r * s) * a1 + 3 * r * r - 2 * s * t
+            a3 += r * a1 + t + t
+            a2 += -s * a1 + 3 * r - s * s
+            a1 += 2 * s
+            return [a1 / u, a2 / u**2, a3 / u**3, a4 / u**4, a6 / u**6]
         if len(EorP) == 2:
             x, y = EorP
             x -= r
-            y -= (s*x+t)
-            return [x/u**2, y/u**3]
+            y -= s * x + t
+            return [x / u**2, y / u**3]
         if len(EorP) == 3:
             x, y, z = EorP
-            x -= r*z
-            y -= (s*x+t*z)
-            return [x/u**2, y/u**3, z]
+            x -= r * z
+            y -= s * x + t * z
+            return [x / u**2, y / u**3, z]
         raise ValueError("baseWI(a) only for a=(x,y), (x:y:z) or (a1,a2,a3,a4,a6)")
 
 
@@ -295,7 +298,10 @@ def _isomorphisms(E, F):
         True
     """
     from .ell_generic import EllipticCurve_generic
-    if not isinstance(E, EllipticCurve_generic) or not isinstance(F, EllipticCurve_generic):
+
+    if not isinstance(E, EllipticCurve_generic) or not isinstance(
+        F, EllipticCurve_generic
+    ):
         raise ValueError("arguments are not elliptic curves")
 
     j = E.j_invariant()
@@ -305,6 +311,7 @@ def _isomorphisms(E, F):
     K = E.base_ring()
 
     from sage.rings.polynomial.polynomial_ring import polygen
+
     x = polygen(K, 'x')
 
     a1E, a2E, a3E, a4E, a6E = E.ainvs()
@@ -312,24 +319,30 @@ def _isomorphisms(E, F):
 
     char = K.characteristic()
 
-    one_first = lambda vs: [K.one()] * (K.one() in vs) + [v for v in vs if not v.is_one()]
+    one_first = lambda vs: (
+        [K.one()] * (K.one() in vs) + [v for v in vs if not v.is_one()]
+    )
 
     if char == 2:
         if j == 0:
-            ulist = (x**3 - a3E/a3F).roots(multiplicities=False)
+            ulist = (x**3 - a3E / a3F).roots(multiplicities=False)
             for u in one_first(ulist):
-                slist = (x**4 + a3E*x + (a2F**2 + a4F)*u**4 + a2E**2 + a4E).roots(multiplicities=False)
+                slist = (x**4 + a3E * x + (a2F**2 + a4F) * u**4 + a2E**2 + a4E).roots(
+                    multiplicities=False
+                )
                 for s in slist:
-                    r = s**2 + a2E + a2F*u**2
-                    tlist = (x**2 + a3E*x + r**3 + a2E*r**2 + a4E*r + a6E + a6F*u**6).roots(multiplicities=False)
+                    r = s**2 + a2E + a2F * u**2
+                    tlist = (
+                        x**2 + a3E * x + r**3 + a2E * r**2 + a4E * r + a6E + a6F * u**6
+                    ).roots(multiplicities=False)
                     for t in tlist:
                         yield (u, r, s, t)
         else:
-            u = a1E/a1F
-            r = (a3E + a3F*u**3)/a1E
-            slist = (x**2 + a1E*x + r + a2E + a2F*u**2).roots(multiplicities=False)
+            u = a1E / a1F
+            r = (a3E + a3F * u**3) / a1E
+            slist = (x**2 + a1E * x + r + a2E + a2F * u**2).roots(multiplicities=False)
             for s in slist:
-                t = (a4E + a4F*u**4 + s*a3E + r*s*a1E + r**2) / a1E
+                t = (a4E + a4F * u**4 + s * a3E + r * s * a1E + r**2) / a1E
                 yield (u, r, s, t)
         return
 
@@ -338,15 +351,15 @@ def _isomorphisms(E, F):
 
     if char == 3:
         if j == 0:
-            ulist = (x**4 - b4E/b4F).roots(multiplicities=False)
+            ulist = (x**4 - b4E / b4F).roots(multiplicities=False)
             for u in one_first(ulist):
-                s = a1E - a1F*u
-                t = a3E - a3F*u**3
-                rlist = (x**3 - b4E*x + b6E - b6F*u**6).roots(multiplicities=False)
+                s = a1E - a1F * u
+                t = a3E - a3F * u**3
+                rlist = (x**3 - b4E * x + b6E - b6F * u**6).roots(multiplicities=False)
                 for r in rlist:
-                    yield (u, r, s, t + r*a1E)
+                    yield (u, r, s, t + r * a1E)
         else:
-            ulist = (x**2 - b2E/b2F).roots(multiplicities=False)
+            ulist = (x**2 - b2E / b2F).roots(multiplicities=False)
             for u in one_first(ulist):
                 r = (b4F * u**4 - b4E) / b2E
                 s = a1E - a1F * u
@@ -360,16 +373,16 @@ def _isomorphisms(E, F):
     c4F, c6F = F.c_invariants()
 
     if j == 0:
-        m, um = 6, c6E/c6F
+        m, um = 6, c6E / c6F
     elif j == 1728:
-        m, um = 4, c4E/c4F
+        m, um = 4, c4E / c4F
     else:
-        m, um = 2, (c6E*c4F)/(c6F*c4E)
+        m, um = 2, (c6E * c4F) / (c6F * c4E)
     ulist = (x**m - um).roots(multiplicities=False)
     for u in one_first(ulist):
-        s = (a1F*u - a1E)/2
-        r = (a2F*u**2 + a1E*s + s**2 - a2E)/3
-        t = (a3F*u**3 - a1E*r - a3E)/2
+        s = (a1F * u - a1E) / 2
+        r = (a2F * u**2 + a1E * s + s**2 - a2E) / 3
+        t = (a3F * u**3 - a1E * r - a3E) / 2
         yield (u, r, s, t)
 
 
@@ -438,6 +451,7 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
         sage: w._domain == E
         True
     """
+
     def __init__(self, E=None, urst=None, F=None):
         r"""
         Constructor for the ``WeierstrassIsomorphism`` class.
@@ -505,9 +519,11 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
         else:  # none of the parameters is None:
             baseWI.__init__(self, *urst)
             if F != EllipticCurve(baseWI.__call__(self, list(E.a_invariants()))):
-                raise ValueError("second argument is not an isomorphism from first argument to third argument")
+                raise ValueError(
+                    "second argument is not an isomorphism from first argument to third argument"
+                )
 
-        self._mpoly_ring = PolynomialRing(base_ring, ['x','y'])
+        self._mpoly_ring = PolynomialRing(base_ring, ['x', 'y'])
         self._poly_ring = PolynomialRing(base_ring, ['x'])
         self._xyfield = self._mpoly_ring.fraction_field()
         self._xfield = self._poly_ring.fraction_field()
@@ -548,7 +564,9 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
             sage: a == c
             True
         """
-        if not isinstance(left, WeierstrassIsomorphism) or not isinstance(right, WeierstrassIsomorphism):
+        if not isinstance(left, WeierstrassIsomorphism) or not isinstance(
+            right, WeierstrassIsomorphism
+        ):
             return NotImplemented
 
         lx = left._domain
@@ -571,9 +589,9 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
         # of isomorphisms satisfying u=+-1 come first.
         def _sorting_key(iso):
             v, w = iso.tuple(), (-iso).tuple()
-            i = 0 if (1,0,0,0) in (v,w) else 1
+            i = 0 if (1, 0, 0, 0) in (v, w) else 1
             j = 0 if v[0] == 1 else 1 if w[0] == 1 else 2
-            return (i,) + min(v,w) + (j,) + v
+            return (i,) + min(v, w) + (j,) + v
 
         return richcmp(_sorting_key(left), _sorting_key(right), op)
 
@@ -733,9 +751,13 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
             sage: w1._composition_impl(psi, phi)
             NotImplemented
         """
-        if isinstance(left, WeierstrassIsomorphism) and isinstance(right, WeierstrassIsomorphism):
+        if isinstance(left, WeierstrassIsomorphism) and isinstance(
+            right, WeierstrassIsomorphism
+        ):
             if left._domain != right._codomain:
-                raise ValueError("Domain of first argument must equal codomain of second")
+                raise ValueError(
+                    "Domain of first argument must equal codomain of second"
+                )
             w = baseWI.__mul__(left, right)
             return WeierstrassIsomorphism(right._domain, w.tuple(), left._codomain)
 
@@ -766,7 +788,11 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
               To:   Elliptic Curve defined by y^2 + 4*x*y + 11/8*y = x^3 - 7/4*x^2 - 3/2*x - 9/32 over Rational Field
               Via:  (u,r,s,t) = (2, 3, 4, 5)
         """
-        return EllipticCurveHom.__repr__(self) + "\n  Via:  (u,r,s,t) = " + baseWI.__repr__(self)
+        return (
+            EllipticCurveHom.__repr__(self)
+            + "\n  Via:  (u,r,s,t) = "
+            + baseWI.__repr__(self)
+        )
 
     # EllipticCurveHom methods
 
@@ -841,7 +867,7 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
             sage: iso.x_rational_map().parent()
             Fraction Field of Univariate Polynomial Ring in x over Rational Field
         """
-        x, = self._xfield.gens()
+        (x,) = self._xfield.gens()
         return (x - self.r) / self.u**2
 
     def kernel_polynomial(self):
@@ -941,7 +967,7 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
             sage: -t^2 == identity_morphism(E)                                          # needs sage.rings.number_field
             True
         """
-        a1,_,a3,_,_ = self._domain.a_invariants()
+        a1, _, a3, _, _ = self._domain.a_invariants()
         w = baseWI(-1, 0, -a1, -a3)
         urst = baseWI.__mul__(self, w).tuple()
         return WeierstrassIsomorphism(self._domain, urst, self._codomain)
@@ -1080,7 +1106,9 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
         if ws6.is_identity():
             return Integer(6)
 
-        raise NotImplementedError("the order of the endomorphism is not 1, 2, 3, 4 or 6")
+        raise NotImplementedError(
+            "the order of the endomorphism is not 1, 2, 3, 4 or 6"
+        )
 
 
 def identity_morphism(E):

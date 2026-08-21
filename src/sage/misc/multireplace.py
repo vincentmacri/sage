@@ -12,13 +12,13 @@
 #
 ##########################################################################
 
-
 import re
 
 
 #
 # The simplest, lambda-based implementation
 #
+
 
 def multiple_replace(dic, text):
     """
@@ -37,4 +37,4 @@ def multiple_replace(dic, text):
     regex = re.compile("(%s)" % "|".join(re.escape(k) for k in dic))
 
     # For each match, look-up corresponding value in dictionary
-    return regex.sub(lambda mo: dic[mo.string[mo.start():mo.end()]], text)
+    return regex.sub(lambda mo: dic[mo.string[mo.start() : mo.end()]], text)

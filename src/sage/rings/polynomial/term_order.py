@@ -359,6 +359,7 @@ AUTHORS:
 
 - Simon King (2011-06-06): added termorder_from_singular
 """
+
 # ***************************************************************************
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -370,37 +371,38 @@ import re
 from sage.structure.sage_object import SageObject
 
 print_name_mapping = {
-    'lex'           : 'Lexicographic',
-    'invlex'        : 'Inverse lexicographic',
-    'degrevlex'     : 'Degree reverse lexicographic',
-    'deglex'        : 'Degree lexicographic',
-    'neglex'        : 'Negative lexicographic',
-    'negdegrevlex'  : 'Negative degree reverse lexicographic',
-    'negdeglex'     : 'Negative degree lexicographic',
-    'degneglex'     : 'Degree negative lexicographic',
-    'wdegrevlex'    : 'Weighted degree reverse lexicographic',
-    'wdeglex'       : 'Weighted degree lexicographic',
-    'negwdegrevlex' : 'Negative weighted degree reverse lexicographic',
-    'negwdeglex'    : 'Negative weighted degree lexicographic',
+    'lex': 'Lexicographic',
+    'invlex': 'Inverse lexicographic',
+    'degrevlex': 'Degree reverse lexicographic',
+    'deglex': 'Degree lexicographic',
+    'neglex': 'Negative lexicographic',
+    'negdegrevlex': 'Negative degree reverse lexicographic',
+    'negdeglex': 'Negative degree lexicographic',
+    'degneglex': 'Degree negative lexicographic',
+    'wdegrevlex': 'Weighted degree reverse lexicographic',
+    'wdeglex': 'Weighted degree lexicographic',
+    'negwdegrevlex': 'Negative weighted degree reverse lexicographic',
+    'negwdeglex': 'Negative weighted degree lexicographic',
 }
 
 singular_name_mapping = {
-    'lex'           : 'lp',
-    'invlex'        : 'ip',
-    'degrevlex'     : 'dp',
-    'deglex'        : 'Dp',
-    'neglex'        : 'ls',
-    'negdegrevlex'  : 'ds',
-    'negdeglex'     : 'Ds',
-    'degneglex'     : '(a(1:%(ngens)i),ls(%(ngens)i))',
-    'wdegrevlex'    : 'wp',
-    'wdeglex'       : 'Wp',
-    'negwdegrevlex' : 'ws',
-    'negwdeglex'    : 'Ws',
+    'lex': 'lp',
+    'invlex': 'ip',
+    'degrevlex': 'dp',
+    'deglex': 'Dp',
+    'neglex': 'ls',
+    'negdegrevlex': 'ds',
+    'negdeglex': 'Ds',
+    'degneglex': '(a(1:%(ngens)i),ls(%(ngens)i))',
+    'wdegrevlex': 'wp',
+    'wdeglex': 'Wp',
+    'negwdegrevlex': 'ws',
+    'negwdeglex': 'Ws',
 }
 
-inv_singular_name_mapping = dict(zip(singular_name_mapping.values(),
-                                     singular_name_mapping))
+inv_singular_name_mapping = dict(
+    zip(singular_name_mapping.values(), singular_name_mapping)
+)
 
 macaulay2_name_mapping = {
     'lex': 'Lex',
@@ -409,8 +411,9 @@ macaulay2_name_mapping = {
     'deglex': 'GLex',
 }
 
-inv_macaulay2_name_mapping = dict(zip(macaulay2_name_mapping.values(),
-                                      macaulay2_name_mapping))
+inv_macaulay2_name_mapping = dict(
+    zip(macaulay2_name_mapping.values(), macaulay2_name_mapping)
+)
 
 magma_name_mapping = {
     'lex': '"lex"',
@@ -418,8 +421,7 @@ magma_name_mapping = {
     'deglex': '"glex"',
 }
 
-inv_magma_name_mapping = dict(zip(magma_name_mapping.values(),
-                                  magma_name_mapping))
+inv_magma_name_mapping = dict(zip(magma_name_mapping.values(), magma_name_mapping))
 
 lex_description = r"""
 Lexicographic (lex) term order.
@@ -525,20 +527,20 @@ with respect to the `n`-th term order `<_n`.
 """
 
 description_mapping = {
-    'lex'           : lex_description,
-    'invlex'        : invlex_description,
-    'degrevlex'     : degrevlex_description,
-    'deglex'        : deglex_description,
-    'neglex'        : neglex_description,
-    'negdegrevlex'  : negdegrevlex_description,
-    'negdeglex'     : negdeglex_description,
-    'degneglex'     : degneglex_description,
-    'wdeglex'       : wdeglex_description,
-    'wdegrevlex'    : wdegrevlex_description,
-    'negwdegrevlex' : negwdegrevlex_description,
-    'negwdeglex'    : negwdeglex_description,
-    'matrix'        : matrix_description,
-    'block'         : block_description,
+    'lex': lex_description,
+    'invlex': invlex_description,
+    'degrevlex': degrevlex_description,
+    'deglex': deglex_description,
+    'neglex': neglex_description,
+    'negdegrevlex': negdegrevlex_description,
+    'negdeglex': negdeglex_description,
+    'degneglex': degneglex_description,
+    'wdeglex': wdeglex_description,
+    'wdegrevlex': wdegrevlex_description,
+    'negwdegrevlex': negwdegrevlex_description,
+    'negwdeglex': negwdeglex_description,
+    'matrix': matrix_description,
+    'block': block_description,
 }
 
 
@@ -549,6 +551,7 @@ class TermOrder(SageObject):
     See ``sage.rings.polynomial.term_order`` for details on supported
     term orders.
     """
+
     def __setstate__(self, dict):
         """
         Translate old pickled TermOrder objects.
@@ -699,11 +702,15 @@ class TermOrder(SageObject):
                 if not name.is_block_order() and not name.is_weighted_degree_order():
                     self._length = n
                     if self._length != 0:
-                        self._singular_str = (self._singular_str
-                                              % dict(ngens=self._length))
+                        self._singular_str = self._singular_str % dict(
+                            ngens=self._length
+                        )
                 elif self._length != n:
-                    raise ValueError("the length of the given term order ({}) differs from the number of variables ({})"
-                            .format(self._length, n))
+                    raise ValueError(
+                        "the length of the given term order ({}) differs from the number of variables ({})".format(
+                            self._length, n
+                        )
+                    )
             return
 
         if isinstance(name, str):
@@ -748,16 +755,24 @@ class TermOrder(SageObject):
                     t = TermOrder(t, force=True)
                 if t.name() == 'block':
                     blocks = blocks + list(t.blocks())
-                    singular_str.append("%s" % (t.singular_str()[1:-1],))  # [1:-1] is needed to remove parenthesis
+                    singular_str.append(
+                        "%s" % (t.singular_str()[1:-1],)
+                    )  # [1:-1] is needed to remove parenthesis
                     macaulay2_str.append("%s" % (t.macaulay2_str()[1:-1],))
                 else:
                     if len(t) == 0:
-                        raise ArithmeticError("Can only concatenate term orders with length attribute.")
+                        raise ArithmeticError(
+                            "Can only concatenate term orders with length attribute."
+                        )
                     blocks.append(t)
-                    if t.is_weighted_degree_order():  # true if t is a matrix order as well
+                    if (
+                        t.is_weighted_degree_order()
+                    ):  # true if t is a matrix order as well
                         singular_str.append("%s" % (t.singular_str(),))
                     elif t.name() == 'degneglex':
-                        singular_str.append("%s" % (t.singular_str()[1:-1],))  # [1:-1] to remove (,)
+                        singular_str.append(
+                            "%s" % (t.singular_str()[1:-1],)
+                        )  # [1:-1] to remove (,)
                     else:
                         singular_str.append("%s(%d)" % (t.singular_str(), len(t)))
                     macaulay2_str.append("%s => %d" % (t.macaulay2_str(), len(t)))
@@ -779,7 +794,9 @@ class TermOrder(SageObject):
                 self._macaulay2_str = macaulay2_name_mapping.get(name, name)
                 self._magma_str = magma_name_mapping.get(name, name)
             else:
-                split_pattern = r"([^(),]+(?:\([^()]*\)[^(),]*)*)"  # split by outermost commas
+                split_pattern = (
+                    r"([^(),]+(?:\([^()]*\)[^(),]*)*)"  # split by outermost commas
+                )
                 block_names = re.findall(split_pattern, name)
 
                 if len(block_names) == 0:
@@ -791,7 +808,10 @@ class TermOrder(SageObject):
                         m = [int(g) for g in match.group(1).split(',')]
                         self.__copy(TermOrder(m))
                     else:  # simple order
-                        if name not in print_name_mapping and name not in singular_name_mapping.values():
+                        if (
+                            name not in print_name_mapping
+                            and name not in singular_name_mapping.values()
+                        ):
                             raise ValueError("unknown term order {!r}".format(name))
                         self._length = n
                         self._name = name
@@ -806,27 +826,59 @@ class TermOrder(SageObject):
                     singular_str = []
                     macaulay2_str = []
 
-                    length_pattern = re.compile(r"\(([0-9]+)\)$")  # match with parenthesized block length at end
+                    length_pattern = re.compile(
+                        r"\(([0-9]+)\)$"
+                    )  # match with parenthesized block length at end
                     for block in block_names:
                         try:
-                            block_name, block_length, _ = re.split(length_pattern, block.strip())
+                            block_name, block_length, _ = re.split(
+                                length_pattern, block.strip()
+                            )
                             block_length = int(block_length)
                             if block_length > 0:  # ignore blocks with length 0
-                                blocks.append(TermOrder(block_name, block_length, force=force))
-                                singular_str.append("%s(%d)" % (singular_name_mapping.get(block_name, block_name), block_length))
-                                macaulay2_str.append("%s => %d" % (macaulay2_name_mapping.get(block_name, block_name), block_length))
+                                blocks.append(
+                                    TermOrder(block_name, block_length, force=force)
+                                )
+                                singular_str.append(
+                                    "%s(%d)"
+                                    % (
+                                        singular_name_mapping.get(
+                                            block_name, block_name
+                                        ),
+                                        block_length,
+                                    )
+                                )
+                                macaulay2_str.append(
+                                    "%s => %d"
+                                    % (
+                                        macaulay2_name_mapping.get(
+                                            block_name, block_name
+                                        ),
+                                        block_length,
+                                    )
+                                )
                                 length += block_length
                         except ValueError:
                             block_name = block.strip()
                             if block_name.lower() != "c":
-                                raise ValueError("{!r} is not a valid term order (wrong part: {!r})".format(name, block))
+                                raise ValueError(
+                                    "{!r} is not a valid term order (wrong part: {!r})".format(
+                                        name, block
+                                    )
+                                )
 
                     if n and length != n:
-                        raise ValueError("term order length does not match the number of generators")
+                        raise ValueError(
+                            "term order length does not match the number of generators"
+                        )
                     self.__copy(TermOrder('block', blocks))
         elif isinstance(name, str) and isinstance(n, (tuple, list)):
             # weighted degree term orders
-            if name not in print_name_mapping and name not in singular_name_mapping.values() and not force:
+            if (
+                name not in print_name_mapping
+                and name not in singular_name_mapping.values()
+                and not force
+            ):
                 raise ValueError("unknown term order {!r}".format(name))
             weights = tuple(map(int, n))  # n is a tuple of weights
             if any(w <= 0 for w in weights):
@@ -834,15 +886,21 @@ class TermOrder(SageObject):
 
             self._length = len(weights)
             self._name = name
-            self._singular_str = singular_name_mapping.get(name, name) + '(' + ','.join(str(w) for w in weights) + ')'
+            self._singular_str = (
+                singular_name_mapping.get(name, name)
+                + '('
+                + ','.join(str(w) for w in weights)
+                + ')'
+            )
             self._macaulay2_str = ""
             self._magma_str = ""
             self._weights = weights  # defined only for weighted degree orders
         elif isinstance(name, tuple):  # name represents a matrix
             if not n:
                 from math import sqrt
+
                 n = int(sqrt(len(name)))
-            if n*n != len(name):
+            if n * n != len(name):
                 raise ValueError(f"{name} does not specify a square matrix")
 
             int_str = ','.join(str(int(e)) for e in name)
@@ -850,10 +908,13 @@ class TermOrder(SageObject):
             self._length = n
             self._name = "matrix"
             self._singular_str = "M(%s)" % (int_str,)
-            self._macaulay2_str = ""  # Macaulay2 does not support matrix term order directly
+            self._macaulay2_str = (
+                ""  # Macaulay2 does not support matrix term order directly
+            )
             self._magma_str = '"weight",[%s]' % (int_str,)
 
             from sage.matrix.constructor import matrix
+
             self._matrix = matrix(n, name)  # defined only for matrix term order
             self._matrix.set_immutable()
             self._weights = name[:n]  # the first row of the matrix gives weights
@@ -939,8 +1000,7 @@ class TermOrder(SageObject):
             sage: y > x^3                                                               # needs sage.rings.number_field
             False
         """
-        return tuple(sum(l * r for l, r in zip(row, f))
-                     for row in self._matrix)
+        return tuple(sum(l * r for l, r in zip(row, f)) for row in self._matrix)
 
     def sortkey_lex(self, f) -> tuple:
         """
@@ -1016,8 +1076,10 @@ class TermOrder(SageObject):
             sage: x > 1                                                                 # needs sage.rings.number_field
             True
         """
-        return (sum(f.nonzero_values(sort=False)),
-                f.reversed().emul(-1))  # tuple(-v for v in f.reversed()))
+        return (
+            sum(f.nonzero_values(sort=False)),
+            f.reversed().emul(-1),
+        )  # tuple(-v for v in f.reversed()))
 
     def sortkey_neglex(self, f) -> tuple:
         """
@@ -1055,8 +1117,7 @@ class TermOrder(SageObject):
             sage: x > 1                                                                 # needs sage.rings.number_field
             False
         """
-        return (-sum(f.nonzero_values(sort=False)),
-                tuple(-v for v in f.reversed()))
+        return (-sum(f.nonzero_values(sort=False)), tuple(-v for v in f.reversed()))
 
     def sortkey_negdeglex(self, f) -> tuple:
         """
@@ -1114,8 +1175,10 @@ class TermOrder(SageObject):
             sage: x^2 > y^3                                                             # needs sage.rings.number_field
             True
         """
-        return (sum(l * r for l, r in zip(f, self._weights)),
-                tuple(-v for v in f.reversed()))
+        return (
+            sum(l * r for l, r in zip(f, self._weights)),
+            tuple(-v for v in f.reversed()),
+        )
 
     def sortkey_wdeglex(self, f) -> tuple:
         """
@@ -1175,8 +1238,10 @@ class TermOrder(SageObject):
             sage: x^2 > y^3                                                             # needs sage.rings.number_field
             True
         """
-        return (-sum(l * r for l, r in zip(f, self._weights)),
-                tuple(-v for v in f.reversed()))
+        return (
+            -sum(l * r for l, r in zip(f, self._weights)),
+            tuple(-v for v in f.reversed()),
+        )
 
     def sortkey_block(self, f) -> tuple:
         """
@@ -1207,7 +1272,7 @@ class TermOrder(SageObject):
         key = tuple()
         n = 0
         for block in self:
-            r = getattr(block, "sortkey_" + block.name())(f[n:n + len(block)])
+            r = getattr(block, "sortkey_" + block.name())(f[n : n + len(block)])
             key += tuple(r)
             n += len(block)
         return key
@@ -1584,8 +1649,8 @@ class TermOrder(SageObject):
         n = 0
         for block in self:
             keyfn = getattr(block, "sortkey_" + block.name())
-            f_key = keyfn(f[n:n + len(block)])
-            g_key = keyfn(g[n:n + len(block)])
+            f_key = keyfn(f[n : n + len(block)])
+            g_key = keyfn(g[n : n + len(block)])
             if f_key != g_key:
                 if f_key < g_key:
                     return g
@@ -1759,14 +1824,20 @@ class TermOrder(SageObject):
             singular_str = self._singular_str
             if singular_str.startswith('('):
                 singular_str = singular_str[1:-1]  # remove parenthesis
-            split_pattern = r"([^(),]+(?:\([^()]*\)[^(),]*)*)"  # regex to split by outermost commas
+            split_pattern = (
+                r"([^(),]+(?:\([^()]*\)[^(),]*)*)"  # regex to split by outermost commas
+            )
             singular_str_blocks = re.findall(split_pattern, singular_str)
-            if (self._singular_ringorder_column < 0 or
-                self._singular_ringorder_column >= 2*len(singular_str_blocks)+2):
+            if (
+                self._singular_ringorder_column < 0
+                or self._singular_ringorder_column >= 2 * len(singular_str_blocks) + 2
+            ):
                 singular_str_blocks.append("C")
             else:
-                singular_str_blocks.insert(self._singular_ringorder_column // 2,
-                       "C" if self._singular_ringorder_column % 2 == 0 else "c")
+                singular_str_blocks.insert(
+                    self._singular_ringorder_column // 2,
+                    "C" if self._singular_ringorder_column % 2 == 0 else "c",
+                )
             return "(" + ",".join(singular_str_blocks) + ")"
         return self._singular_str
 
@@ -1947,13 +2018,19 @@ class TermOrder(SageObject):
             except Exception:
                 return False
 
-        return (self._name == other._name
+        return (
+            self._name == other._name
             and self._blocks == other._blocks
-            and (not self.is_block_order()
-                or all(len(t1) == len(t2) for (t1, t2) in zip(self._blocks, other._blocks)))
+            and (
+                not self.is_block_order()
+                or all(
+                    len(t1) == len(t2) for (t1, t2) in zip(self._blocks, other._blocks)
+                )
+            )
             and self._weights == other._weights
             and self._matrix == other._matrix
-            and self._singular_ringorder_column == other._singular_ringorder_column)
+            and self._singular_ringorder_column == other._singular_ringorder_column
+        )
 
     def __ne__(self, other):
         """
@@ -2088,8 +2165,15 @@ class TermOrder(SageObject):
             sage: T.is_global()
             True
         """
-        if self.name() in ('lex', 'degrevlex', 'deglex', 'degneglex',
-                           'wdegrevlex', 'wdeglex', 'invlex'):
+        if self.name() in (
+            'lex',
+            'degrevlex',
+            'deglex',
+            'degneglex',
+            'wdegrevlex',
+            'wdeglex',
+            'invlex',
+        ):
             return True
         if self.name() == 'block':
             return all(t.is_global() for t in self.blocks())
@@ -2113,9 +2197,13 @@ class TermOrder(SageObject):
             sage: T.is_local()
             False
         """
-        if (self.name() in ('neglex', 'negdegrevlex', 'negdeglex',
-                            'negwdegrevlex', 'negwdeglex') or
-                self.singular_str() in ('ls', 'ds', 'Ds', 'ws', 'Ws')):
+        if self.name() in (
+            'neglex',
+            'negdegrevlex',
+            'negdeglex',
+            'negwdegrevlex',
+            'negwdeglex',
+        ) or self.singular_str() in ('ls', 'ds', 'Ds', 'ws', 'Ws'):
             return True
         if self.name() == 'block':
             return all(t.is_local() for t in self.blocks())
@@ -2223,6 +2311,7 @@ def termorder_from_singular(S):
         x^2
     """
     from sage.rings.integer_ring import ZZ
+
     singular = S
     T = singular('ringlist(basering)[3]')
     order = []
@@ -2235,12 +2324,13 @@ def termorder_from_singular(S):
             weights_one_block = all(w == 1 for w in weights)
             continue
         elif blocktype == 'c':
-            ringorder_column = 2*idx + 1
+            ringorder_column = 2 * idx + 1
         elif blocktype == 'C':
             if idx < len(T) - 1:  # skip Singular default
-                ringorder_column = 2*idx
+                ringorder_column = 2 * idx
         elif blocktype == 'M':
             from sage.matrix.constructor import matrix
+
             coefs = list(block[2].sage())
             n = ZZ(len(coefs)).sqrt()
             order.append(TermOrder(matrix(n, coefs)))
@@ -2249,11 +2339,16 @@ def termorder_from_singular(S):
             n = ZZ(singular.eval("size(%s[2])" % block.name()))
             order.append(TermOrder('degneglex', n))
         elif blocktype[0] in ['w', 'W']:
-            order.append(TermOrder(inv_singular_name_mapping[blocktype],
-                                   list(block[2].sage())))
+            order.append(
+                TermOrder(inv_singular_name_mapping[blocktype], list(block[2].sage()))
+            )
         else:
-            order.append(TermOrder(inv_singular_name_mapping[blocktype],
-                                   ZZ(singular.eval("size(%s[2])" % block.name()))))
+            order.append(
+                TermOrder(
+                    inv_singular_name_mapping[blocktype],
+                    ZZ(singular.eval("size(%s[2])" % block.name())),
+                )
+            )
         weights_one_block = False
 
     if not order:

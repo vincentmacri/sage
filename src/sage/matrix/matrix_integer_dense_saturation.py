@@ -1,6 +1,7 @@
 """
 Saturation over ZZ
 """
+
 from copy import copy
 
 from sage.arith.misc import binomial, GCD as gcd
@@ -145,14 +146,14 @@ def solve_system_with_difficult_last_row(B, A):
     # This function is just a generalization of that one to A a matrix.
     C = copy(B)
     while True:
-        C[C.nrows()-1] = random_matrix(ZZ, 1, C.ncols()).row(0)
+        C[C.nrows() - 1] = random_matrix(ZZ, 1, C.ncols()).row(0)
         try:
             X = C.solve_right(A)
         except ValueError:
             verbose("Try difficult solve again with different random vector")
         else:
             break
-    D = B.matrix_from_rows(range(C.nrows()-1))
+    D = B.matrix_from_rows(range(C.nrows() - 1))
     N = D._rational_kernel_flint()
     if N.ncols() != 1:
         verbose("Difficult solve quickly failed.  Using direct approach.")
@@ -171,7 +172,7 @@ def solve_system_with_difficult_last_row(B, A):
     # so    alpha*w*k  = A' - w*X.
     w = B[-1]  # last row of B
     A_prime = A[-1]  # last row of A
-    lhs = w*k
+    lhs = w * k
     rhs = A_prime - w * X
 
     if lhs[0] == 0:
@@ -180,7 +181,7 @@ def solve_system_with_difficult_last_row(B, A):
 
     for i in range(X.ncols()):
         alpha = rhs[i] / lhs[0]
-        X.set_column(i, (X.matrix_from_columns([i]) + alpha*k).list())
+        X.set_column(i, (X.matrix_from_columns([i]) + alpha * k).list())
     verbose("Done getting linear combinations.", tm)
     return X
 

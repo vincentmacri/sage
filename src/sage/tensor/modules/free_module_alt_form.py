@@ -212,6 +212,7 @@ class FreeModuleAltForm(FreeModuleTensor):
         sage: s.display(e)
         zero = 0
     """
+
     def __init__(self, fmodule, degree, name=None, latex_name=None):
         r"""
         Initialize ``self``.
@@ -234,10 +235,15 @@ class FreeModuleAltForm(FreeModuleTensor):
             sage: a1[e,0,1] = 2
             sage: TestSuite(a1).run()
         """
-        FreeModuleTensor.__init__(self, fmodule, (0, degree), name=name,
-                                  latex_name=latex_name,
-                                  antisym=range(degree),
-                                  parent=fmodule.dual_exterior_power(degree))
+        FreeModuleTensor.__init__(
+            self,
+            fmodule,
+            (0, degree),
+            name=name,
+            latex_name=latex_name,
+            antisym=range(degree),
+            parent=fmodule.dual_exterior_power(degree),
+        )
 
     def _repr_(self):
         r"""
@@ -323,13 +329,21 @@ class FreeModuleAltForm(FreeModuleTensor):
         """
         fmodule = self._fmodule  # the base free module
         if self._tensor_rank == 1:
-            return Components(fmodule._ring, basis, 1,
-                              start_index=fmodule._sindex,
-                              output_formatter=fmodule._output_formatter)
+            return Components(
+                fmodule._ring,
+                basis,
+                1,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
 
-        return CompFullyAntiSym(fmodule._ring, basis, self._tensor_rank,
-                                start_index=fmodule._sindex,
-                                output_formatter=fmodule._output_formatter)
+        return CompFullyAntiSym(
+            fmodule._ring,
+            basis,
+            self._tensor_rank,
+            start_index=fmodule._sindex,
+            output_formatter=fmodule._output_formatter,
+        )
 
     def degree(self):
         r"""
@@ -382,8 +396,10 @@ class FreeModuleAltForm(FreeModuleTensor):
         from sage.misc.latex import latex
         from sage.typeset.unicode_characters import unicode_wedge
         from .format_utilities import is_atomic, FormattedExpansion
-        basis, format_spec = self._preparse_display(basis=basis,
-                                                    format_spec=format_spec)
+
+        basis, format_spec = self._preparse_display(
+            basis=basis, format_spec=format_spec
+        )
         cobasis = basis.dual_basis()
         comp = self.comp(basis)
         terms_txt = []
@@ -417,13 +433,13 @@ class FreeModuleAltForm(FreeModuleTensor):
                     if is_atomic(coef_txt):
                         terms_txt.append(coef_txt + ' ' + basis_term_txt)
                     else:
-                        terms_txt.append('(' + coef_txt + ') ' +
-                                         basis_term_txt)
+                        terms_txt.append('(' + coef_txt + ') ' + basis_term_txt)
                     if is_atomic(coef_latex):
                         terms_latex.append(coef_latex + basis_term_latex)
                     else:
-                        terms_latex.append(r'\left(' + coef_latex +
-                                           r'\right)' + basis_term_latex)
+                        terms_latex.append(
+                            r'\left(' + coef_latex + r'\right)' + basis_term_latex
+                        )
         if not terms_txt:
             expansion_txt = '0'
         else:
@@ -558,6 +574,7 @@ class FreeModuleAltForm(FreeModuleTensor):
         """
         from sage.misc.latex import latex
         from sage.tensor.modules.format_utilities import FormattedExpansion
+
         exp = self._display_expansion(basis=basis, format_spec=format_spec)
         if self._name is None:
             resu_txt = repr(exp)
@@ -638,9 +655,12 @@ class FreeModuleAltForm(FreeModuleTensor):
         """
         from sage.typeset.unicode_characters import unicode_wedge
         from .format_utilities import is_atomic
+
         if not isinstance(other, FreeModuleAltForm):
-            raise TypeError("the second argument for the exterior product " +
-                            "must be an alternating form")
+            raise TypeError(
+                "the second argument for the exterior product "
+                + "must be an alternating form"
+            )
         if other._tensor_rank == 0:
             return other * self
         if self._tensor_rank == 0:
@@ -660,9 +680,13 @@ class FreeModuleAltForm(FreeModuleTensor):
             raise ValueError("no common basis for the exterior product")
         cmp_s = self._components[basis]
         cmp_o = other._components[basis]
-        cmp_r = CompFullyAntiSym(fmodule._ring, basis, rank_r,
-                                 start_index=fmodule._sindex,
-                                 output_formatter=fmodule._output_formatter)
+        cmp_r = CompFullyAntiSym(
+            fmodule._ring,
+            basis,
+            rank_r,
+            start_index=fmodule._sindex,
+            output_formatter=fmodule._output_formatter,
+        )
         for ind_s, val_s in cmp_s._comp.items():
             for ind_o, val_o in cmp_o._comp.items():
                 ind_r = ind_s + ind_o
@@ -805,9 +829,11 @@ class FreeModuleAltForm(FreeModuleTensor):
         """
         from .format_utilities import is_atomic
         from .alternating_contr_tensor import AlternatingContrTensor
+
         if not isinstance(alt_tensor, AlternatingContrTensor):
-            raise TypeError("{} is not an alternating ".format(alt_tensor) +
-                            "contravariant tensor")
+            raise TypeError(
+                "{} is not an alternating ".format(alt_tensor) + "contravariant tensor"
+            )
         p_res = alt_tensor._tensor_rank - self._tensor_rank  # degree of result
         if self._tensor_rank == 1:
             # Case p = 1:
@@ -816,17 +842,22 @@ class FreeModuleAltForm(FreeModuleTensor):
         else:
             # Case p > 1:
             if alt_tensor._fmodule != self._fmodule:
-                raise ValueError("{} is not defined on ".format(alt_tensor) +
-                                 "the same module as the {}".format(self))
+                raise ValueError(
+                    "{} is not defined on ".format(alt_tensor)
+                    + "the same module as the {}".format(self)
+                )
             if alt_tensor._tensor_rank < self._tensor_rank:
-                raise ValueError("the degree of the {} ".format(alt_tensor) +
-                                 "is lower than that of the {}".format(self))
+                raise ValueError(
+                    "the degree of the {} ".format(alt_tensor)
+                    + "is lower than that of the {}".format(self)
+                )
             # Interior product at the component level:
             basis = self.common_basis(alt_tensor)
             if basis is None:
                 raise ValueError("no common basis for the interior product")
             comp = self._components[basis].interior_product(
-                                                 alt_tensor._components[basis])
+                alt_tensor._components[basis]
+            )
             if p_res == 0:
                 res = comp  # result is a scalar
             else:

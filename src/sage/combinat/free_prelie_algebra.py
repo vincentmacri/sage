@@ -20,18 +20,23 @@ from itertools import product
 from sage.categories.magmatic_algebras import MagmaticAlgebras
 from sage.categories.lie_algebras import LieAlgebras
 from sage.categories.magmas import Magmas
-from sage.categories.pushout import (ConstructionFunctor,
-                                     CompositeConstructionFunctor,
-                                     IdentityConstructionFunctor)
+from sage.categories.pushout import (
+    ConstructionFunctor,
+    CompositeConstructionFunctor,
+    IdentityConstructionFunctor,
+)
 from sage.categories.rings import Rings
 from sage.categories.functor import Functor
 
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.combinat.integer_vector import IntegerVectors
 from sage.combinat.words.alphabet import Alphabet
-from sage.combinat.rooted_tree import (RootedTrees, RootedTree,
-                                       LabelledRootedTrees,
-                                       LabelledRootedTree)
+from sage.combinat.rooted_tree import (
+    RootedTrees,
+    RootedTree,
+    LabelledRootedTrees,
+    LabelledRootedTree,
+)
 from sage.combinat.grossman_larson_algebras import GrossmanLarsonAlgebra, ROOT
 
 from sage.misc.lazy_attribute import lazy_attribute
@@ -174,6 +179,7 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
 
     - [Liv2006]_
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names=None):
         """
@@ -225,11 +231,13 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
         # Here one would need LabelledRootedTrees(names)
         # so that one can restrict the labels to some fixed set
 
-        cat = MagmaticAlgebras(R).WithBasis().Graded() & LieAlgebras(R).WithBasis().Graded()
-        CombinatorialFreeModule.__init__(self, R, Trees,
-                                         latex_prefix='',
-                                         sorting_key=key,
-                                         category=cat)
+        cat = (
+            MagmaticAlgebras(R).WithBasis().Graded()
+            & LieAlgebras(R).WithBasis().Graded()
+        )
+        CombinatorialFreeModule.__init__(
+            self, R, Trees, latex_prefix='', sorting_key=key, category=cat
+        )
 
     def variable_names(self):
         r"""
@@ -463,9 +471,9 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
             B[[[[[]]]]] + B[[[], [[]]]]
         """
         plb = self.pre_Lie_product_on_basis
-        return self._module_morphism(self._module_morphism(plb, position=0,
-                                                           codomain=self),
-                                     position=1)
+        return self._module_morphism(
+            self._module_morphism(plb, position=0, codomain=self), position=1
+        )
 
     def bracket_on_basis(self, x, y):
         r"""
@@ -527,10 +535,9 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
             B[[[], [[]]]]
         """
         npb = self.nap_product_on_basis
-        return self._module_morphism(self._module_morphism(npb,
-                                                           position=0,
-                                                           codomain=self),
-                                     position=1)
+        return self._module_morphism(
+            self._module_morphism(npb, position=0, codomain=self), position=1
+        )
 
     def corolla(self, x, y, n, N):
         """
@@ -604,10 +611,9 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
         xx = x.truncate(max_x + 1)
         yy = y.truncate(max_y + 1)
 
-        y_homog = {i: list(yy.homogeneous_component(i))
-                   for i in range(vy, max_y + 1)}
+        y_homog = {i: list(yy.homogeneous_component(i)) for i in range(vy, max_y + 1)}
         resu = self.zero()
-        for k in range(min_deg, N + 1):   # total degree of (x ; y, y, y, y)
+        for k in range(min_deg, N + 1):  # total degree of (x ; y, y, y, y)
             for mx, coef_x in xx:
                 dx = mx.number_of_nodes()
                 step = self.zero()
@@ -615,8 +621,9 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
                     for ly in product(*[y_homog[part] for part in pi]):
                         coef_y = basering.prod(mc[1] for mc in ly)
                         arbres_y = [mc[0] for mc in ly]
-                        step += coef_y * self.sum(self(t)
-                                                  for t in corolla_gen(mx, arbres_y, labels))
+                        step += coef_y * self.sum(
+                            self(t) for t in corolla_gen(mx, arbres_y, labels)
+                        )
                 resu += coef_x * step
         return resu
 
@@ -658,8 +665,9 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
             B[@[]] + B[@[O[]]] + 1/2*B[@[O[], O[]]] + 1/6*B[@[O[], O[], O[]]]
         """
         br = self.base_ring()
-        return x + self.sum(self.corolla(x, y, i, N) * ~br(factorial(i))
-                            for i in range(1, n + 1))
+        return x + self.sum(
+            self.corolla(x, y, i, N) * ~br(factorial(i)) for i in range(1, n + 1)
+        )
 
     def _element_constructor_(self, x):
         r"""
@@ -691,8 +699,7 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
             ...
             TypeError: not able to convert this to this algebra
         """
-        if (isinstance(x, (RootedTree, LabelledRootedTree)) and
-                x in self.basis().keys()):
+        if isinstance(x, (RootedTree, LabelledRootedTree)) and x in self.basis().keys():
             return self.monomial(x)
         try:
             P = x.parent()
@@ -830,8 +837,10 @@ class FreePreLieAlgebra(CombinatorialFreeModule):
             """
             UEA = self.parent()._construct_UEA()
             LRT = UEA.basis().keys()
-            data = {LRT([x], ROOT): cf
-                    for x, cf in self.monomial_coefficients(copy=False).items()}
+            data = {
+                LRT([x], ROOT): cf
+                for x, cf in self.monomial_coefficients(copy=False).items()
+            }
             return UEA.element_class(UEA, data)
 
         def valuation(self):
@@ -893,6 +902,7 @@ class PreLieFunctor(ConstructionFunctor):
         sage: F(f)(a * F(A)(x))
         (a+b)*B[x[]]
     """
+
     rank = 9
 
     def __init__(self, vars):
@@ -940,8 +950,10 @@ class PreLieFunctor(ConstructionFunctor):
         codom = self(f.codomain())
 
         def action(x):
-            return codom._from_dict({a: f(b)
-                                     for a, b in x.monomial_coefficients().items()})
+            return codom._from_dict(
+                {a: f(b) for a, b in x.monomial_coefficients().items()}
+            )
+
         return dom.module_morphism(function=action, codomain=codom)
 
     def __eq__(self, other):
@@ -978,13 +990,14 @@ class PreLieFunctor(ConstructionFunctor):
             return self
         if isinstance(other, PreLieFunctor):
             if set(self.vars).intersection(other.vars):
-                raise CoercionException("Overlapping variables (%s,%s)" %
-                                        (self.vars, other.vars))
+                raise CoercionException(
+                    "Overlapping variables (%s,%s)" % (self.vars, other.vars)
+                )
             return PreLieFunctor(other.vars + self.vars)
-        if (isinstance(other, CompositeConstructionFunctor) and
-              isinstance(other.all[-1], PreLieFunctor)):
-            return CompositeConstructionFunctor(other.all[:-1],
-                                                self * other.all[-1])
+        if isinstance(other, CompositeConstructionFunctor) and isinstance(
+            other.all[-1], PreLieFunctor
+        ):
+            return CompositeConstructionFunctor(other.all[:-1], self * other.all[-1])
         return CompositeConstructionFunctor(other, self)
 
     def merge(self, other):
@@ -1130,10 +1143,15 @@ def corolla_gen(tx, list_ty, labels=True):
         for pos_t in sorted_data:
             if labels:
                 idx, lbl = new_zx[pos_t[0]]
-                new_zx = (new_zx[:pos_t[0]] + ((idx + 1, lbl),) +
-                          pos_t[1] + new_zx[pos_t[0] + 1:])
+                new_zx = (
+                    new_zx[: pos_t[0]]
+                    + ((idx + 1, lbl),)
+                    + pos_t[1]
+                    + new_zx[pos_t[0] + 1 :]
+                )
             else:
                 idx = new_zx[pos_t[0]]
-                new_zx = (new_zx[:pos_t[0]] + (idx + 1,) +
-                          pos_t[1] + new_zx[pos_t[0] + 1:])
+                new_zx = (
+                    new_zx[: pos_t[0]] + (idx + 1,) + pos_t[1] + new_zx[pos_t[0] + 1 :]
+                )
         yield tree_from_sortkey(new_zx, labels=labels)[0]

@@ -1,14 +1,14 @@
 r"""
 G-Sets
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 David Kohel <kohel@maths.usyd.edu> and
 #                     William Stein <wstein@math.ucsd.edu>
 #                     Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category import Category
 from sage.categories.sets_cat import Sets
@@ -30,6 +30,7 @@ class GSets(Category):
 
     TODO: should this derive from Category_over_base?
     """
+
     def __init__(self, G):
         """
         TESTS::
@@ -49,7 +50,7 @@ class GSets(Category):
         """
         return "G-sets for %s" % self.__G
 
-    #def construction(self):
+    # def construction(self):
     #    return (self.__class__, self.__G)
 
     def super_categories(self):
@@ -72,5 +73,6 @@ class GSets(Category):
             Category of G-sets for Symmetric group of order 8! as a permutation group
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         G = SymmetricGroup(8)
         return cls(G)

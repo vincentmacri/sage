@@ -17,6 +17,7 @@ REFERENCES:
 - Chap. 13, 14 of R. Godement : *Algebra* [God1968]_
 - Chap. 3 of S. Lang : *Algebra* [Lan2002]_
 """
+
 # *****************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
@@ -171,8 +172,16 @@ class FiniteRankFreeModuleMorphism(Morphism):
         sage: phi(3*u + v) == 3*phi(u) + phi(v)
         True
     """
-    def __init__(self, parent, matrix_rep, bases=None, name=None,
-                 latex_name=None, is_identity=False):
+
+    def __init__(
+        self,
+        parent,
+        matrix_rep,
+        bases=None,
+        name=None,
+        latex_name=None,
+        is_identity=False,
+    ):
         r"""
         TESTS:
 
@@ -195,32 +204,35 @@ class FiniteRankFreeModuleMorphism(Morphism):
             \phi
         """
         if is_identity:
-            raise TypeError('use the subclass FiniteRankFreeModuleEndomorphism for the identity morphis')
+            raise TypeError(
+                'use the subclass FiniteRankFreeModuleEndomorphism for the identity morphis'
+            )
         from sage.matrix.constructor import matrix
         from sage.misc.constant_function import ConstantFunction
+
         Morphism.__init__(self, parent)
         fmodule1 = parent.domain()
         fmodule2 = parent.codomain()
         if bases is None:
             def_basis1 = fmodule1.default_basis()
             if def_basis1 is None:
-                raise ValueError("the {} has no default ".format(fmodule1) +
-                                 "basis")
+                raise ValueError("the {} has no default ".format(fmodule1) + "basis")
             def_basis2 = fmodule2.default_basis()
             if def_basis2 is None:
-                raise ValueError("the {} has no default ".format(fmodule2) +
-                                 "basis")
+                raise ValueError("the {} has no default ".format(fmodule2) + "basis")
             bases = (def_basis1, def_basis2)
         else:
             bases = tuple(bases)  # insures bases is a tuple
             if len(bases) != 2:
                 raise TypeError("the argument bases must contain 2 bases")
             if bases[0] not in fmodule1.bases():
-                raise TypeError("{} is not a basis on the {}".format(bases[0],
-                                                                     fmodule1))
+                raise TypeError(
+                    "{} is not a basis on the {}".format(bases[0], fmodule1)
+                )
             if bases[1] not in fmodule2.bases():
-                raise TypeError("{} is not a basis on the {}".format(bases[1],
-                                                                     fmodule2))
+                raise TypeError(
+                    "{} is not a basis on the {}".format(bases[1], fmodule2)
+                )
         ring = parent.base_ring()
         n1 = fmodule1.rank()
         n2 = fmodule2.rank()
@@ -338,7 +350,7 @@ class FiniteRankFreeModuleMorphism(Morphism):
             sage: phi.__eq__(Hom(M,N).zero())
             True
         """
-        if isinstance(other, (int, Integer)): # other should be 0
+        if isinstance(other, (int, Integer)):  # other should be 0
             if other == 0:
                 return self.is_zero()
             return False
@@ -348,9 +360,11 @@ class FiniteRankFreeModuleMorphism(Morphism):
             return False
         bases = self._common_bases(other)
         if bases is None:
-            raise ValueError("no common pair of bases has been found to " +
-                             "compare {} and {}".format(self, other))
-        return bool( self.matrix(*bases) == other.matrix(*bases) )
+            raise ValueError(
+                "no common pair of bases has been found to "
+                + "compare {} and {}".format(self, other)
+            )
+        return bool(self.matrix(*bases) == other.matrix(*bases))
 
     def __ne__(self, other):
         r"""
@@ -477,8 +491,10 @@ class FiniteRankFreeModuleMorphism(Morphism):
         # to have the same parents
         bases = self._common_bases(other)
         if bases is None:
-            raise ValueError("no common pair of bases has been found to " +
-                             "add {} and {}".format(self, other))
+            raise ValueError(
+                "no common pair of bases has been found to "
+                + "add {} and {}".format(self, other)
+            )
         # Addition at the matrix level:
         resu_mat = self._matrices[bases] + other._matrices[bases]
         if self._name is not None and other._name is not None:
@@ -489,8 +505,13 @@ class FiniteRankFreeModuleMorphism(Morphism):
             resu_latex_name = self._latex_name + '+' + other._latex_name
         else:
             resu_latex_name = None
-        return self.__class__(self.parent(), resu_mat, bases=bases,
-                              name=resu_name, latex_name=resu_latex_name)
+        return self.__class__(
+            self.parent(),
+            resu_mat,
+            bases=bases,
+            name=resu_name,
+            latex_name=resu_latex_name,
+        )
 
     def _sub_(self, other):
         r"""
@@ -557,8 +578,10 @@ class FiniteRankFreeModuleMorphism(Morphism):
         # to have the same parents
         bases = self._common_bases(other)
         if bases is None:
-            raise ValueError("no common pair of bases has been found to " +
-                             "subtract {} from {}".format(other, self))
+            raise ValueError(
+                "no common pair of bases has been found to "
+                + "subtract {} from {}".format(other, self)
+            )
         # Subtraction at the matrix level:
         resu_mat = self._matrices[bases] - other._matrices[bases]
         if self._name is not None and other._name is not None:
@@ -569,8 +592,13 @@ class FiniteRankFreeModuleMorphism(Morphism):
             resu_latex_name = self._latex_name + '-' + other._latex_name
         else:
             resu_latex_name = None
-        return self.__class__(self.parent(), resu_mat, bases=bases,
-                              name=resu_name, latex_name=resu_latex_name)
+        return self.__class__(
+            self.parent(),
+            resu_mat,
+            bases=bases,
+            name=resu_name,
+            latex_name=resu_latex_name,
+        )
 
     def _lmul_(self, scalar):
         r"""
@@ -635,7 +663,7 @@ class FiniteRankFreeModuleMorphism(Morphism):
             False
         """
         resu = self.__class__(self.parent(), 0, is_identity=self._is_identity)
-                                           # 0 = provisory value
+        # 0 = provisory value
         for bases, mat in self._matrices.items():
             resu._matrices[bases] = +mat
         if self._name is not None:
@@ -755,8 +783,10 @@ class FiniteRankFreeModuleMorphism(Morphism):
             except ValueError:
                 continue
         else:
-            raise ValueError("no common basis found to evaluate the image " +
-                             "of {} by {}".format(element,self))
+            raise ValueError(
+                "no common basis found to evaluate the image "
+                + "of {} by {}".format(element, self)
+            )
         # Components of the result obtained by matrix multiplication
         mat = self.matrix(basis_dom, basis_codom)
         vcomp = element._components[basis_dom]
@@ -764,7 +794,7 @@ class FiniteRankFreeModuleMorphism(Morphism):
         for i in range(codom.rank()):
             s = 0
             for j in range(dom.rank()):
-                s += mat[i,j] * vcomp[[j+sindex]]
+                s += mat[i, j] * vcomp[[j + sindex]]
             tresu.append(s)
         # Name of the result
         if self._name is not None and element._name is not None:
@@ -772,13 +802,15 @@ class FiniteRankFreeModuleMorphism(Morphism):
         else:
             resu_name = None
         if self._latex_name is not None and element._latex_name is not None:
-            resu_latex_name = self._latex_name + r'\left(' + \
-                              element._latex_name + r'\right)'
+            resu_latex_name = (
+                self._latex_name + r'\left(' + element._latex_name + r'\right)'
+            )
         else:
             resu_latex_name = None
         # Creation of the result
-        return codom(tresu, basis=basis_codom, name=resu_name,
-                     latex_name=resu_latex_name)
+        return codom(
+            tresu, basis=basis_codom, name=resu_name, latex_name=resu_latex_name
+        )
 
     def is_injective(self):
         r"""
@@ -862,8 +894,10 @@ class FiniteRankFreeModuleMorphism(Morphism):
         if self._is_identity:
             return True
         raise NotImplementedError(
-                              "FiniteRankFreeModuleMorphism.is_surjective() " +
-                              "has not been implemented yet")
+            "FiniteRankFreeModuleMorphism.is_surjective() "
+            + "has not been implemented yet"
+        )
+
     #
     # Morphism methods
     #
@@ -967,16 +1001,18 @@ class FiniteRankFreeModuleMorphism(Morphism):
         if basis1 is None:
             basis1 = fmodule1.default_basis()
         elif basis1 not in fmodule1.bases():
-            raise TypeError(str(basis1) + " is not a basis on the " +
-                            str(fmodule1) + ".")
+            raise TypeError(
+                str(basis1) + " is not a basis on the " + str(fmodule1) + "."
+            )
         if basis2 is None:
             if self.is_endomorphism():
                 basis2 = basis1
             else:
                 basis2 = fmodule2.default_basis()
         elif basis2 not in fmodule2.bases():
-            raise TypeError(str(basis2) + " is not a basis on the " +
-                            str(fmodule2) + ".")
+            raise TypeError(
+                str(basis2) + " is not a basis on the " + str(fmodule2) + "."
+            )
         return fmodule1, fmodule2, basis1, basis2
 
     def matrix(self, basis1=None, basis2=None):
@@ -1065,6 +1101,7 @@ class FiniteRankFreeModuleMorphism(Morphism):
             [-25  54 -25]
         """
         from sage.matrix.constructor import matrix
+
         fmodule1, fmodule2, basis1, basis2 = self._modules_and_bases(basis1, basis2)
         if (basis1, basis2) not in self._matrices:
             if self._is_identity:
@@ -1078,14 +1115,16 @@ class FiniteRankFreeModuleMorphism(Morphism):
                     size = fmodule1.rank()
                     mat = []
                     for i in range(size):
-                        row = [zero]*size
+                        row = [zero] * size
                         row[i] = one
                         mat.append(row)
                 else:
                     # the matrix is the change-of-basis matrix:
                     change = fmodule1.change_of_basis(basis1, basis2)
-                    mat = [[change[[i,j]] for j in fmodule1.irange()]
-                                                    for i in fmodule1.irange()]
+                    mat = [
+                        [change[[i, j]] for j in fmodule1.irange()]
+                        for i in fmodule1.irange()
+                    ]
                 self._matrices[(basis1, basis2)] = matrix(mat)
             else:
                 # Generic homomorphism
@@ -1098,43 +1137,70 @@ class FiniteRankFreeModuleMorphism(Morphism):
                             nb2 = b2
                             break
                     else:
-                        raise ValueError("no start basis could be found for " +
-                                        "applying the change-of-basis formula")
+                        raise ValueError(
+                            "no start basis could be found for "
+                            + "applying the change-of-basis formula"
+                        )
                     change2 = fmodule2._basis_changes[(basis2, nb2)]
-                    mat2 = matrix( [[change2[[i,j]] for j in fmodule2.irange()]
-                                                  for i in fmodule2.irange()] )
-                    self._matrices[(basis1, basis2)] = \
-                                            mat2 * self._matrices[(basis1,nb2)]
+                    mat2 = matrix(
+                        [
+                            [change2[[i, j]] for j in fmodule2.irange()]
+                            for i in fmodule2.irange()
+                        ]
+                    )
+                    self._matrices[(basis1, basis2)] = (
+                        mat2 * self._matrices[(basis1, nb2)]
+                    )
                 elif basis2 in b2_list:
                     for b1 in b1_list:
                         if (b1, basis1) in fmodule1._basis_changes:
                             nb1 = b1
                             break
                     else:
-                        raise ValueError("no start basis could be found for " +
-                                        "applying the change-of-basis formula")
+                        raise ValueError(
+                            "no start basis could be found for "
+                            + "applying the change-of-basis formula"
+                        )
                     change1 = fmodule1._basis_changes[(nb1, basis1)]
-                    mat1 = matrix( [[change1[[i,j]] for j in fmodule1.irange()]
-                                                  for i in fmodule1.irange()] )
-                    self._matrices[(basis1, basis2)] = \
-                                            self._matrices[(nb1,basis2)] * mat1
-                else: # most general change-of-basis formula
-                    for (b1, b2) in self._matrices:
-                        if (b1, basis1) in fmodule1._basis_changes and \
-                           (basis2, b2) in fmodule2._basis_changes:
+                    mat1 = matrix(
+                        [
+                            [change1[[i, j]] for j in fmodule1.irange()]
+                            for i in fmodule1.irange()
+                        ]
+                    )
+                    self._matrices[(basis1, basis2)] = (
+                        self._matrices[(nb1, basis2)] * mat1
+                    )
+                else:  # most general change-of-basis formula
+                    for b1, b2 in self._matrices:
+                        if (b1, basis1) in fmodule1._basis_changes and (
+                            basis2,
+                            b2,
+                        ) in fmodule2._basis_changes:
                             nb1, nb2 = b1, b2
                             break
                     else:
-                        raise ValueError("no start basis could be found for " +
-                                        "applying the change-of-basis formula")
+                        raise ValueError(
+                            "no start basis could be found for "
+                            + "applying the change-of-basis formula"
+                        )
                     change1 = fmodule1._basis_changes[(nb1, basis1)]
                     change2 = fmodule2._basis_changes[(basis2, nb2)]
-                    mat1 = matrix( [[change1[[i,j]] for j in fmodule1.irange()]
-                                                  for i in fmodule1.irange()] )
-                    mat2 = matrix( [[change2[[i,j]] for j in fmodule2.irange()]
-                                                  for i in fmodule2.irange()] )
-                    self._matrices[(basis1, basis2)] = \
-                                        mat2 * self._matrices[(nb1,nb2)] * mat1
+                    mat1 = matrix(
+                        [
+                            [change1[[i, j]] for j in fmodule1.irange()]
+                            for i in fmodule1.irange()
+                        ]
+                    )
+                    mat2 = matrix(
+                        [
+                            [change2[[i, j]] for j in fmodule2.irange()]
+                            for i in fmodule2.irange()
+                        ]
+                    )
+                    self._matrices[(basis1, basis2)] = (
+                        mat2 * self._matrices[(nb1, nb2)] * mat1
+                    )
         return self._matrices[(basis1, basis2)]
 
     def _common_bases(self, other):
@@ -1244,6 +1310,7 @@ class FiniteRankFreeModuleMorphism(Morphism):
         """
         from sage.misc.latex import latex
         from .format_utilities import is_atomic, FormattedExpansion
+
         fmodule1, fmodule2, basis1, basis2 = self._modules_and_bases(basis1, basis2)
         matrix = self.matrix(basis1, basis2)
         if all(element._name for element in basis1):
@@ -1254,9 +1321,9 @@ class FiniteRankFreeModuleMorphism(Morphism):
             basis2_names = [element._name for element in basis2]
         else:
             basis2_names = None
-        resu_txt = matrix.str(unicode=True,
-                              top_border=basis1_names,
-                              left_border=basis2_names)
+        resu_txt = matrix.str(
+            unicode=True, top_border=basis1_names, left_border=basis2_names
+        )
         resu_latex = latex(matrix)
         return FormattedExpansion(resu_txt, resu_latex)
 
@@ -1325,8 +1392,16 @@ class FiniteRankFreeModuleEndomorphism(FiniteRankFreeModuleMorphism):
         sage: Id(v) is v
         True
     """
-    def __init__(self, parent, matrix_rep, bases=None, name=None,
-                 latex_name=None, is_identity=False):
+
+    def __init__(
+        self,
+        parent,
+        matrix_rep,
+        bases=None,
+        name=None,
+        latex_name=None,
+        is_identity=False,
+    ):
         r"""
         TESTS::
 
@@ -1361,19 +1436,16 @@ class FiniteRankFreeModuleEndomorphism(FiniteRankFreeModuleMorphism):
         if bases is None:
             def_basis = fmodule.default_basis()
             if def_basis is None:
-                raise ValueError("the {} has no default ".format(fmodule) +
-                                 "basis")
+                raise ValueError("the {} has no default ".format(fmodule) + "basis")
             bases = (def_basis, def_basis)
         else:
             bases = tuple(bases)  # insures bases is a tuple
             if len(bases) != 2:
                 raise TypeError("the argument bases must contain 2 bases")
             if bases[0] not in fmodule.bases():
-                raise TypeError("{} is not a basis on the {}".format(bases[0],
-                                                                     fmodule))
+                raise TypeError("{} is not a basis on the {}".format(bases[0], fmodule))
             if bases[1] not in fmodule.bases():
-                raise TypeError("{} is not a basis on the {}".format(bases[1],
-                                                                     fmodule))
+                raise TypeError("{} is not a basis on the {}".format(bases[1], fmodule))
         if not is_identity:
             # Construction of a generic endomorphism
             if isinstance(matrix_rep, ConstantFunction):
@@ -1385,15 +1457,18 @@ class FiniteRankFreeModuleEndomorphism(FiniteRankFreeModuleMorphism):
         if is_identity:
             # Construction of the identity endomorphism
             if bases[0] != bases[1]:
-                raise TypeError("the two bases must coincide for " +
-                                "constructing the identity endomorphism.")
+                raise TypeError(
+                    "the two bases must coincide for "
+                    + "constructing the identity endomorphism."
+                )
             matrix_rep = 1
             if name is None:
                 name = 'Id'
             if latex_name is None and name == 'Id':
                 latex_name = r'\mathrm{Id}'
-        FiniteRankFreeModuleMorphism.__init__(self, parent, matrix_rep, bases,
-                                              name, latex_name)
+        FiniteRankFreeModuleMorphism.__init__(
+            self, parent, matrix_rep, bases, name, latex_name
+        )
         if is_identity:
             self._is_identity = True
             self._repr_type_str = 'Identity'

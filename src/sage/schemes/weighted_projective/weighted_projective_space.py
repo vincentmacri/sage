@@ -26,7 +26,9 @@ from sage.schemes.projective.projective_space import ProjectiveSpace, _CommRings
 from sage.structure.all import UniqueRepresentation
 from sage.structure.category_object import normalize_names
 
-from sage.schemes.weighted_projective.weighted_projective_homset import SchemeHomset_points_weighted_projective_ring
+from sage.schemes.weighted_projective.weighted_projective_homset import (
+    SchemeHomset_points_weighted_projective_ring,
+)
 
 
 def WeightedProjectiveSpace(weights, R=None, names=None):
@@ -38,7 +40,10 @@ def WeightedProjectiveSpace(weights, R=None, names=None):
         sage: WP = WeightedProjectiveSpace([1, 3, 1]); WP
         Weighted Projective Space of dimension 2 with weights (1, 3, 1) over Integer Ring
     """
-    if isinstance(weights, (MPolynomialRing_base, PolynomialRing_generic)) and R is None:
+    if (
+        isinstance(weights, (MPolynomialRing_base, PolynomialRing_generic))
+        and R is None
+    ):
         if names is not None:
             # Check for the case that the user provided a variable name
             # That does not match what we wanted to use from R
@@ -200,7 +205,9 @@ class WeightedProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             sage: R.term_order()
             Weighted degree reverse lexicographic term order with weights (1, 1, 1)
         """
-        if not hasattr(self, "_coordinate_ring"):  # we don't use cached_method to allow override in WeightedProjectiveSpace
+        if not hasattr(
+            self, "_coordinate_ring"
+        ):  # we don't use cached_method to allow override in WeightedProjectiveSpace
             term_order = TermOrder("wdegrevlex", self.weights())
             self._coordinate_ring = PolynomialRing(
                 self.base_ring(),
@@ -268,7 +275,7 @@ class WeightedProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             '{\\mathbf P}_{\\Bold{Z}_{5}}^{[2, 1, 3]}'
         """
         return (
-            fr"{{\mathbf P}}_{{{latex(self.base_ring())}}}^{{{list(self.weights())}}}"
+            rf"{{\mathbf P}}_{{{latex(self.base_ring())}}}^{{{list(self.weights())}}}"
         )
 
     def _morphism(self, *_, **__):
@@ -335,7 +342,10 @@ class WeightedProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
 
         For internal use only. See :mod:`morphism` for details.
         """
-        from sage.schemes.weighted_projective.weighted_projective_point import SchemeMorphism_point_weighted_projective_ring
+        from sage.schemes.weighted_projective.weighted_projective_point import (
+            SchemeMorphism_point_weighted_projective_ring,
+        )
+
         return SchemeMorphism_point_weighted_projective_ring(*args, **kwds)
 
     def _repr_(self) -> str:
@@ -380,10 +390,10 @@ class WeightedProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             Weighted Projective Space of dimension 2 with weights (1, 3, 1) over Finite Field of size 5
         """
         if isinstance(R, Map):
-            return WeightedProjectiveSpace(self.weights(), R.codomain(),
-                                           self.variable_names())
-        return WeightedProjectiveSpace(self.weights(), R,
-                                       self.variable_names())
+            return WeightedProjectiveSpace(
+                self.weights(), R.codomain(), self.variable_names()
+            )
+        return WeightedProjectiveSpace(self.weights(), R, self.variable_names())
 
     def _an_element_(self):
         r"""
@@ -407,7 +417,9 @@ class WeightedProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
         return self(coords)
 
     def subscheme(self, *_, **__):
-        raise NotImplementedError("subscheme of weighted projective space has not been implemented")
+        raise NotImplementedError(
+            "subscheme of weighted projective space has not been implemented"
+        )
 
     def curve(self, F):
         r"""
@@ -425,7 +437,9 @@ class WeightedProjectiveSpace_ring(UniqueRepresentation, AmbientSpace):
             Weighted Projective Curve over Rational Field defined by y^2 - x^5*z - 3*x^2*z^4 - 2*z^6
         """
         if self.base_ring() not in Fields():
-            raise NotImplementedError("curves in weighted projective space over"
-                                      "rings not implemented")
+            raise NotImplementedError(
+                "curves in weighted projective space overrings not implemented"
+            )
         from sage.schemes.curves.constructor import Curve
+
         return Curve(F, self)

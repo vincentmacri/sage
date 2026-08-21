@@ -1,12 +1,12 @@
 r"""
 Finitely generated magmas
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2014 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.categories.category_with_axiom import CategoryWithAxiom
@@ -37,7 +37,6 @@ class FinitelyGeneratedMagmas(CategoryWithAxiom):
     _base_category_class_and_axiom = (Magmas, "FinitelyGeneratedAsMagma")
 
     class ParentMethods:
-
         @abstract_method
         def magma_generators(self):
             """

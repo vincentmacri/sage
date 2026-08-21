@@ -179,6 +179,7 @@ class TropicalMPolynomial(MPolynomial_polydict):
         ...
         ArithmeticError: cannot negate any non-infinite element
     """
+
     def subs(self, fixed=None, **kwds):
         r"""
         Fix some given variables in ``self`` and return the changed
@@ -293,8 +294,10 @@ class TropicalMPolynomial(MPolynomial_polydict):
         from sage.symbolic.relation import solve
 
         if len(self.parent().variable_names()) != 2:
-            raise NotImplementedError("can only plot the graph of tropical "
-                                      "multivariate polynomial in two variables")
+            raise NotImplementedError(
+                "can only plot the graph of tropical "
+                "multivariate polynomial in two variables"
+            )
         tv = self.tropical_variety()
         axes = tv._axes()
         edge = set()
@@ -310,12 +313,14 @@ class TropicalMPolynomial(MPolynomial_polydict):
             else:
                 valid_int = RealSet(comp[1][0]).intersection(RealSet(comp[1][1]))
             for i, eqn in enumerate(comp[0]):
-                j = (i+1) % 2
+                j = (i + 1) % 2
                 if not eqn.is_numeric():
                     for k in range(2):
                         sol = solve(eqn == axes[i][k], v)
                         if sol[0].rhs() in valid_int:
-                            valid_point = [R(eq.subs(**{str(v): sol[0].rhs()})) for eq in comp[0]]
+                            valid_point = [
+                                R(eq.subs(**{str(v): sol[0].rhs()})) for eq in comp[0]
+                            ]
                             if valid_point[j] in RealSet(axes[j]):
                                 edge.add(tuple(valid_point))
 
@@ -329,14 +334,18 @@ class TropicalMPolynomial(MPolynomial_polydict):
 
         # Calculate the value of polynomial at each marked point
         variables = self.parent().gens()
-        terms = [a*variables[0]**b[0] * variables[1]**b[1] for a, b in zip(self.coefficients(), self.exponents())]
+        terms = [
+            a * variables[0] ** b[0] * variables[1] ** b[1]
+            for a, b in zip(self.coefficients(), self.exponents())
+        ]
         point_terms = {}
         for mark in marks:
             mark_terms = []
             value = self(T(mark[0]), T(mark[1]))
             value_terms = [term(T(mark[0]), T(mark[1])) for term in terms]
-            mark_terms.extend(terms[i] for i in range(len(terms))
-                              if value_terms[i] == value)
+            mark_terms.extend(
+                terms[i] for i in range(len(terms)) if value_terms[i] == value
+            )
             point_terms[(R(mark[0]), R(mark[1]), value.lift())] = mark_terms
 
         # Plot the points that attained its value at one term only
@@ -674,9 +683,9 @@ class TropicalMPolynomial(MPolynomial_polydict):
         except AttributeError:
             key = None
         atomic = self.parent().base_ring()._repr_option('element_is_atomic')
-        s = self.element().poly_repr(self.parent().variable_names(),
-                                     atomic_coefficients=atomic,
-                                     sortkey=key)
+        s = self.element().poly_repr(
+            self.parent().variable_names(), atomic_coefficients=atomic, sortkey=key
+        )
         if self.monomials()[-1].is_constant():
             if self.monomial_coefficient(self.parent()(0)) < 0:
                 s = s.replace(" - ", " + -")
@@ -734,6 +743,7 @@ class TropicalMPolynomialSemiring(UniqueRepresentation, Parent):
         sage: f * R.one() == f
         True
     """
+
     def __init__(self, base_semiring, n, names, order):
         r"""
         Initialize ``self``.
@@ -746,6 +756,7 @@ class TropicalMPolynomialSemiring(UniqueRepresentation, Parent):
         """
         from sage.categories.semirings import Semirings
         from sage.rings.semirings.tropical_semiring import TropicalSemiring
+
         if not isinstance(base_semiring, TropicalSemiring):
             raise ValueError(f"{base_semiring} is not a tropical semiring")
         Parent.__init__(self, base=base_semiring, names=names, category=Semirings())
@@ -768,7 +779,7 @@ class TropicalMPolynomialSemiring(UniqueRepresentation, Parent):
     Element = TropicalMPolynomial
 
     def _element_constructor_(self, x):
-        r""""
+        r""" "
         Convert ``x`` into ``self``.
 
         INPUT:
@@ -799,6 +810,7 @@ class TropicalMPolynomialSemiring(UniqueRepresentation, Parent):
             Polynomial Semiring in x, y over Rational Field
         """
         from sage.rings.polynomial.multi_polynomial import MPolynomial
+
         if isinstance(x, TropicalMPolynomial):
             if x.parent() is not self:
                 raise ValueError(f"can not convert {x} to {self}")
@@ -858,13 +870,18 @@ class TropicalMPolynomialSemiring(UniqueRepresentation, Parent):
             Field with 53 bits of precision
         """
         if self._ngens == 0:
-            return (f"Multivariate Tropical Polynomial Semiring in no variables"
-                    f" over {self.base_ring().base_ring()}")
-        return (f"Multivariate Tropical Polynomial Semiring in {', '.join(self.variable_names())}"
-                f" over {self.base_ring().base_ring()}")
+            return (
+                f"Multivariate Tropical Polynomial Semiring in no variables"
+                f" over {self.base_ring().base_ring()}"
+            )
+        return (
+            f"Multivariate Tropical Polynomial Semiring in {', '.join(self.variable_names())}"
+            f" over {self.base_ring().base_ring()}"
+        )
 
-    def random_element(self, degree=2, terms=None, choose_degree=False,
-                       *args, **kwargs):
+    def random_element(
+        self, degree=2, terms=None, choose_degree=False, *args, **kwargs
+    ):
         r"""
         Return a random multivariate tropical polynomial from ``self``.
 
@@ -900,11 +917,14 @@ class TropicalMPolynomialSemiring(UniqueRepresentation, Parent):
             True
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(self.base().base_ring(), self.variable_names())
-        f = R.random_element(degree=degree, terms=terms, choose_degree=choose_degree,
-                             *args, **kwargs)
-        new_dict = {key: self.base()(value)
-                    for key, value in f.monomial_coefficients().items()}
+        f = R.random_element(
+            degree=degree, terms=terms, choose_degree=choose_degree, *args, **kwargs
+        )
+        new_dict = {
+            key: self.base()(value) for key, value in f.monomial_coefficients().items()
+        }
         return self.element_class(self, new_dict)
 
     def gen(self, n=0):
@@ -961,4 +981,5 @@ class TropicalMPolynomialSemiring(UniqueRepresentation, Parent):
             10
         """
         from sage.rings.integer_ring import ZZ
+
         return ZZ(self._ngens)

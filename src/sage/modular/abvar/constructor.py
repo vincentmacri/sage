@@ -95,6 +95,7 @@ def J0(N):
         return _get(key)
     except ValueError:
         from sage.modular.arithgroup.congroup_gamma0 import Gamma0_constructor as Gamma0
+
         J = Gamma0(N).modular_abelian_variety()
         return _saved(key, J)
 
@@ -114,6 +115,7 @@ def J1(N):
         return _get(key)
     except ValueError:
         from sage.modular.arithgroup.congroup_gamma1 import Gamma1_constructor as Gamma1
+
         return _saved(key, Gamma1(N).modular_abelian_variety())
 
 
@@ -132,6 +134,7 @@ def JH(N, H):
         return _get(key)
     except ValueError:
         from sage.modular.arithgroup.congroup_gammaH import GammaH_constructor as GammaH
+
         return _saved(key, GammaH(N, H).modular_abelian_variety())
 
 
@@ -172,6 +175,7 @@ def AbelianVariety(X):
         X = X.modular_symbols().cuspidal_submodule()
     elif isinstance(X, str):
         from sage.modular.modform.constructor import Newform
+
         f = Newform(X, names='a')
         return ModularAbelianVariety_newform(f, internal_name=True)
     elif isinstance(X, sage.modular.modform.element.Newform):
@@ -180,7 +184,11 @@ def AbelianVariety(X):
     if isinstance(X, ModularSymbolsSpace):
         return abvar.ModularAbelianVariety_modsym(X)
 
-    if isinstance(X, (tuple, list)) and all(isinstance(G, CongruenceSubgroupBase) for G in X):
+    if isinstance(X, (tuple, list)) and all(
+        isinstance(G, CongruenceSubgroupBase) for G in X
+    ):
         return abvar.ModularAbelianVariety(X)
 
-    raise TypeError("X must be an integer, string, newform, modsym space, congruence subgroup or tuple of congruence subgroups")
+    raise TypeError(
+        "X must be an integer, string, newform, modsym space, congruence subgroup or tuple of congruence subgroups"
+    )

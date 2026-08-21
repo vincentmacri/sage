@@ -49,6 +49,7 @@ class Gfan:
     """
     Interface to Anders Jensen's Groebner Fan program.
     """
+
     def __call__(self, input, cmd='', verbose=False):
         r"""
         Call Groebner Fan program with given input.
@@ -91,8 +92,9 @@ class Gfan:
             print("gfan command:\n%s" % cmd)
             print("gfan input:\n%s" % input)
 
-        gfan_processes = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                               encoding='latin-1')
+        gfan_processes = Popen(
+            cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, encoding='latin-1'
+        )
         ans, err = gfan_processes.communicate(input=input)
 
         # sometimes, gfan outputs stuff to stderr even though

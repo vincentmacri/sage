@@ -287,11 +287,20 @@ class Sphere(PseudoRiemannianSubmanifold):
         higher dimensions. Henceforth, high computation times are expected with
         increasing dimension.
     """
+
     @staticmethod
-    def __classcall_private__(cls, n=None, radius=1, ambient_space=None,
-                              center=None, name=None, latex_name=None,
-                              coordinates='spherical', names=None,
-                              unique_tag=None):
+    def __classcall_private__(
+        cls,
+        n=None,
+        radius=1,
+        ambient_space=None,
+        center=None,
+        name=None,
+        latex_name=None,
+        coordinates='spherical',
+        names=None,
+        unique_tag=None,
+    ):
         r"""
         Determine the correct class to return based upon the input.
 
@@ -319,19 +328,37 @@ class Sphere(PseudoRiemannianSubmanifold):
         from time import time
 
         from sage.misc.prandom import getrandbits
+
         if unique_tag is None:
             unique_tag = getrandbits(128) * time()
 
-        return super().__classcall__(cls, n, radius=radius,
-                                     ambient_space=ambient_space,
-                                     center=center,
-                                     name=name, latex_name=latex_name,
-                                     coordinates=coordinates, names=names,
-                                     unique_tag=unique_tag)
+        return super().__classcall__(
+            cls,
+            n,
+            radius=radius,
+            ambient_space=ambient_space,
+            center=center,
+            name=name,
+            latex_name=latex_name,
+            coordinates=coordinates,
+            names=names,
+            unique_tag=unique_tag,
+        )
 
-    def __init__(self, n, radius=1, ambient_space=None, center=None, name=None,
-                 latex_name=None, coordinates='spherical', names=None,
-                 category=None, init_coord_methods=None, unique_tag=None):
+    def __init__(
+        self,
+        n,
+        radius=1,
+        ambient_space=None,
+        center=None,
+        name=None,
+        latex_name=None,
+        coordinates='spherical',
+        names=None,
+        category=None,
+        init_coord_methods=None,
+        unique_tag=None,
+    ):
         r"""
         Construct sphere smoothly embedded in Euclidean space.
 
@@ -349,17 +376,19 @@ class Sphere(PseudoRiemannianSubmanifold):
             raise ValueError('radius must be greater than zero')
         # ambient space
         if ambient_space is None:
-            ambient_space = EuclideanSpace(n+1)
+            ambient_space = EuclideanSpace(n + 1)
         elif not isinstance(ambient_space, EuclideanSpace):
             raise TypeError("the argument 'ambient_space' must be a Euclidean space")
-        elif ambient_space._dim != n+1:
-            raise ValueError("Euclidean space must have dimension {}".format(n+1))
+        elif ambient_space._dim != n + 1:
+            raise ValueError("Euclidean space must have dimension {}".format(n + 1))
         if center is None:
             cart = ambient_space.cartesian_coordinates()
-            c_coords = [0]*(n+1)
+            c_coords = [0] * (n + 1)
             center = ambient_space.point(c_coords, chart=cart)
         elif center not in ambient_space:
-            raise ValueError('{} must be an element of {}'.format(center, ambient_space))
+            raise ValueError(
+                '{} must be an element of {}'.format(center, ambient_space)
+            )
         if name is None:
             name = 'S^{}'.format(n)
             if radius != 1:
@@ -373,21 +402,32 @@ class Sphere(PseudoRiemannianSubmanifold):
                 if center._latex_name:
                     latex_name += r'({})'.format(center._latex_name)
         if category is None:
-            category = Manifolds(RR).Smooth() & MetricSpaces().Complete() & \
-                       TopologicalSpaces().Compact().Connected()
+            category = (
+                Manifolds(RR).Smooth()
+                & MetricSpaces().Complete()
+                & TopologicalSpaces().Compact().Connected()
+            )
         # initialize
-        PseudoRiemannianSubmanifold.__init__(self, n, name,
-                                             ambient=ambient_space,
-                                             signature=n, latex_name=latex_name,
-                                             metric_name='g', start_index=1,
-                                             category=category)
+        PseudoRiemannianSubmanifold.__init__(
+            self,
+            n,
+            name,
+            ambient=ambient_space,
+            signature=n,
+            latex_name=latex_name,
+            metric_name='g',
+            start_index=1,
+            category=category,
+        )
         # set attributes
         self._radius = radius
         self._center = center
         self._coordinates = {}  # established coordinates; values are lists
-        self._init_coordinates = {'spherical': self._init_spherical,
-                                  'stereographic': self._init_stereographic}
-                                 # predefined coordinates
+        self._init_coordinates = {
+            'spherical': self._init_spherical,
+            'stereographic': self._init_stereographic,
+        }
+        # predefined coordinates
         if init_coord_methods:
             self._init_coordinates.update(init_coord_methods)
         if coordinates not in self._init_coordinates:
@@ -429,8 +469,9 @@ class Sphere(PseudoRiemannianSubmanifold):
             sage: S2_3  # indirect doctest
             2-sphere S^2_3 of radius 3 smoothly embedded in the Euclidean space E^3
         """
-        s = "{}-sphere {} of radius {} smoothly embedded in " \
-            "the {}".format(self._dim, self._name, self._radius, self._ambient)
+        s = "{}-sphere {} of radius {} smoothly embedded in the {}".format(
+            self._dim, self._name, self._radius, self._ambient
+        )
         if self._center._name:
             s += ' centered at the Point {}'.format(self._center._name)
         return s
@@ -515,8 +556,7 @@ class Sphere(PseudoRiemannianSubmanifold):
         # intersection:
         int = self._stereoN_dom.intersection(self._stereoS_dom)
         int._name = self._name + '-{NP,SP}'
-        int._latex_name = self._latex_name + \
-                          r'\setminus\{\mathrm{NP}, \mathrm{SP}\}'
+        int._latex_name = self._latex_name + r'\setminus\{\mathrm{NP}, \mathrm{SP}\}'
         # without half circle:
         self._spher_dom = int.open_subset('A')
         # declare union:
@@ -591,8 +631,9 @@ class Sphere(PseudoRiemannianSubmanifold):
         n = self._dim
         if names:
             # add interval:
-            names = tuple([x + ':(0,pi)' for x in names[:-1]] +
-                          [names[-1] + ':(-pi,pi):periodic'])
+            names = tuple(
+                [x + ':(0,pi)' for x in names[:-1]] + [names[-1] + ':(-pi,pi):periodic']
+            )
         else:
             if n == 1:
                 names = ('phi:(-pi,pi):periodic',)
@@ -601,8 +642,10 @@ class Sphere(PseudoRiemannianSubmanifold):
             elif n == 3:
                 names = ('chi:(0,pi)', 'theta:(0,pi)', 'phi:(-pi,pi):periodic')
             else:
-                names = tuple(["phi_{}:(0,pi)".format(i) for i in range(1,n)] +
-                              ["phi_{}:(-pi,pi):periodic".format(n)])
+                names = tuple(
+                    ["phi_{}:(0,pi)".format(i) for i in range(1, n)]
+                    + ["phi_{}:(-pi,pi):periodic".format(n)]
+                )
         spher = A.chart(names=names)
         coord = spher[:]
 
@@ -616,10 +659,10 @@ class Sphere(PseudoRiemannianSubmanifold):
 
         R = self._radius
 
-        coordfunc = [R*cos(coord[n-1])*prod(sin(coord[i]) for i in range(n-1))]
-        coordfunc += [R*prod(sin(coord[i]) for i in range(n))]
-        for k in reversed(range(n-1)):
-            c = R*cos(coord[k])*prod(sin(coord[i]) for i in range(k))
+        coordfunc = [R * cos(coord[n - 1]) * prod(sin(coord[i]) for i in range(n - 1))]
+        coordfunc += [R * prod(sin(coord[i]) for i in range(n))]
+        for k in reversed(range(n - 1)):
+            c = R * cos(coord[k]) * prod(sin(coord[i]) for i in range(k))
             coordfunc.append(c)
         cart = self._ambient.cartesian_coordinates()
         # shift coordinates to barycenter:
@@ -935,24 +978,24 @@ class Sphere(PseudoRiemannianSubmanifold):
         V.set_default_frame(stereoS.frame())
 
         # predefine variables...
-        r2_N = sum(y ** 2 for y in coordN)
-        r2_S = sum(yp ** 2 for yp in coordS)
+        r2_N = sum(y**2 for y in coordN)
+        r2_S = sum(yp**2 for yp in coordS)
         R = self._radius
         R2 = R**2
 
         # define transition map...
-        coordN_to_S = tuple(R*y/r2_N for y in coordN)
-        coordS_to_N = tuple(R*yp/r2_S for yp in coordS)
-        stereoN_to_S = stereoN.transition_map(stereoS, coordN_to_S,
-                                              restrictions1=r2_N != 0,
-                                              restrictions2=r2_S != 0)
+        coordN_to_S = tuple(R * y / r2_N for y in coordN)
+        coordS_to_N = tuple(R * yp / r2_S for yp in coordS)
+        stereoN_to_S = stereoN.transition_map(
+            stereoS, coordN_to_S, restrictions1=r2_N != 0, restrictions2=r2_S != 0
+        )
         stereoN_to_S.set_inverse(*coordS_to_N, check=False)
 
         # manage embedding...
-        coordfuncN = [2*y*R2 / (R2+r2_N) for y in coordN]
-        coordfuncN += [(R*r2_N-R*R2)/(R2+r2_N)]
-        coordfuncS = [2*yp*R2 / (R2+r2_S) for yp in coordS]
-        coordfuncS += [(R*R2-R*r2_S)/(R2+r2_S)]
+        coordfuncN = [2 * y * R2 / (R2 + r2_N) for y in coordN]
+        coordfuncN += [(R * r2_N - R * R2) / (R2 + r2_N)]
+        coordfuncS = [2 * yp * R2 / (R2 + r2_S) for yp in coordS]
+        coordfuncS += [(R * R2 - R * r2_S) / (R2 + r2_S)]
         cart = self._ambient.cartesian_coordinates()
         # shift coordinates to barycenter:
         coordfuncN = self._shift_coords(coordfuncN, s='+')
@@ -1012,10 +1055,8 @@ class Sphere(PseudoRiemannianSubmanifold):
             rstS += (coordS[0] > 0,)
         stereoN_A = stereoN.restrict(A, rstN)
         stereoS_A = stereoS.restrict(A, rstS)
-        self._coord_changes[(stereoN.restrict(W),
-                             stereoS.restrict(W))].restrict(A)
-        self._coord_changes[(stereoS.restrict(W),
-                             stereoN.restrict(W))].restrict(A)
+        self._coord_changes[(stereoN.restrict(W), stereoS.restrict(W))].restrict(A)
+        self._coord_changes[(stereoS.restrict(W), stereoN.restrict(W))].restrict(A)
         spher = self._coordinates['spherical'][0]
 
         R = self._radius
@@ -1026,18 +1067,19 @@ class Sphere(PseudoRiemannianSubmanifold):
         cart = self._ambient.cartesian_coordinates()
         # get ambient coordinates and shift to coordinate origin:
         x = self._shift_coords(imm.expr(spher, cart), s='-')
-        coordfunc = [(R*x[i])/(R-x[-1]) for i in range(n)]
+        coordfunc = [(R * x[i]) / (R - x[-1]) for i in range(n)]
         # define transition map:
         spher_to_stereoN = spher.transition_map(stereoN_A, coordfunc)
 
         # transition: stereoN to spher...
         from sage.functions.trig import acos, atan2
         from sage.misc.functional import sqrt
+
         # get ambient coordinates and shift to coordinate origin:
         x = self._shift_coords(imm.expr(stereoN, cart), s='-')
-        coordfunc = [atan2(x[1],x[0])]
-        for k in range(2, n+1):
-            c = acos(x[k]/sqrt(sum(x[i]**2 for i in range(k+1))))
+        coordfunc = [atan2(x[1], x[0])]
+        for k in range(2, n + 1):
+            c = acos(x[k] / sqrt(sum(x[i] ** 2 for i in range(k + 1))))
             coordfunc.append(c)
         coordfunc = reversed(coordfunc)
         spher_to_stereoN.set_inverse(*coordfunc, check=False)
@@ -1098,6 +1140,7 @@ class Sphere(PseudoRiemannianSubmanifold):
             pi*r
         """
         from sage.functions.trig import acos
+
         # get Euclidean points:
         x = self._immersion(p)
         y = self._immersion(q)
@@ -1108,7 +1151,7 @@ class Sphere(PseudoRiemannianSubmanifold):
 
         n = self._dim + 1
         r = self._radius
-        inv_angle = sum(x_coord[i]*y_coord[i] for i in range(n)) / r**2
+        inv_angle = sum(x_coord[i] * y_coord[i] for i in range(n)) / r**2
         return (r * acos(inv_angle)).simplify()
 
     def radius(self):
@@ -1154,6 +1197,7 @@ class Sphere(PseudoRiemannianSubmanifold):
             2
         """
         from sage.topology.simplicial_complex_examples import Sphere as SymplicialSphere
+
         return SymplicialSphere(self._dim)
 
     def center(self):

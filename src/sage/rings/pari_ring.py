@@ -7,6 +7,7 @@ AUTHORS:
 - Simon King (2011-08-24): Use UniqueRepresentation, element_class and
   proper initialisation of elements.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2004 William Stein <wstein@gmail.com>
 #
@@ -28,6 +29,7 @@ class Pari(RingElement):
     """
     Element of Pari pseudo-ring.
     """
+
     def __init__(self, x, parent=None) -> None:
         """
         EXAMPLES::
@@ -126,7 +128,7 @@ class Pari(RingElement):
         """
         if other not in PariRing():
             other = Pari(other)
-        return self.__class__(self.__x ** other.__x, parent=_inst)
+        return self.__class__(self.__x**other.__x, parent=_inst)
 
     def __invert__(self):
         """
@@ -168,6 +170,7 @@ class PariRing(Singleton, Parent):
         sage: loads(R.dumps()) is R
         True
     """
+
     Element = Pari
 
     def __init__(self):
@@ -216,6 +219,7 @@ class PariRing(Singleton, Parent):
             True
         """
         from sage.rings.integer_ring import ZZ
+
         return self(ZZ.random_element(x, y, distribution))
 
     def zeta(self):

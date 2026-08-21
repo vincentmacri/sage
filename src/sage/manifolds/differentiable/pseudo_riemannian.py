@@ -258,14 +258,14 @@ REFERENCES:
 - \J. M. Lee : *Riemannian Manifolds* [Lee1997]_
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2018 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.manifolds.differentiable.manifold import DifferentiableManifold
 from sage.manifolds.structure import (
@@ -414,10 +414,21 @@ class PseudoRiemannianManifold(DifferentiableManifold):
         sage: M.metric().signature()
         -2
     """
-    def __init__(self, n, name, metric_name=None, signature=None,
-                 base_manifold=None, diff_degree=infinity, latex_name=None,
-                 metric_latex_name=None, start_index=0, category=None,
-                 unique_tag=None):
+
+    def __init__(
+        self,
+        n,
+        name,
+        metric_name=None,
+        signature=None,
+        base_manifold=None,
+        diff_degree=infinity,
+        latex_name=None,
+        metric_latex_name=None,
+        start_index=0,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a pseudo-Riemannian manifold.
 
@@ -435,21 +446,28 @@ class PseudoRiemannianManifold(DifferentiableManifold):
             sage: TestSuite(M).run()
         """
         if base_manifold and not isinstance(base_manifold, PseudoRiemannianManifold):
-            raise TypeError("the argument 'base_manifold' must be a " +
-                            "pseudo-Riemannian manifold")
+            raise TypeError(
+                "the argument 'base_manifold' must be a " + "pseudo-Riemannian manifold"
+            )
         if signature is None or signature == n:
             structure = RiemannianStructure()
-        elif signature == n-2 or signature == 2-n:
+        elif signature == n - 2 or signature == 2 - n:
             structure = LorentzianStructure()
         else:
             structure = PseudoRiemannianStructure()
-        DifferentiableManifold.__init__(self, n, name, 'real', structure,
-                                        base_manifold=base_manifold,
-                                        diff_degree=diff_degree,
-                                        latex_name=latex_name,
-                                        start_index=start_index,
-                                        category=category)
-        self._metric = None # to be initialized by metric()
+        DifferentiableManifold.__init__(
+            self,
+            n,
+            name,
+            'real',
+            structure,
+            base_manifold=base_manifold,
+            diff_degree=diff_degree,
+            latex_name=latex_name,
+            start_index=start_index,
+            category=category,
+        )
+        self._metric = None  # to be initialized by metric()
         self._metric_signature = signature
         if metric_name is None:
             metric_name = 'g'
@@ -463,8 +481,7 @@ class PseudoRiemannianManifold(DifferentiableManifold):
                 raise TypeError("{} is not a string".format(metric_latex_name))
             self._metric_latex_name = metric_latex_name
 
-    def metric(self, name=None, signature=None, latex_name=None,
-               dest_map=None):
+    def metric(self, name=None, signature=None, latex_name=None, dest_map=None):
         r"""
         Return the metric giving the pseudo-Riemannian structure to the
         manifold, or define a new metric tensor on the manifold.
@@ -576,16 +593,18 @@ class PseudoRiemannianManifold(DifferentiableManifold):
                     self._metric = self._manifold._metric.restrict(self)
                 else:
                     # creation from scratch:
-                    self._metric = DifferentiableManifold.metric(self,
-                                           self._metric_name,
-                                           signature=self._metric_signature,
-                                           latex_name=self._metric_latex_name)
+                    self._metric = DifferentiableManifold.metric(
+                        self,
+                        self._metric_name,
+                        signature=self._metric_signature,
+                        latex_name=self._metric_latex_name,
+                    )
             return self._metric
         # Metric distinct from the default one: it is created by the method
         # metric of the superclass for generic differentiable manifolds:
-        return DifferentiableManifold.metric(self, name, signature=signature,
-                                             latex_name=latex_name,
-                                             dest_map=dest_map)
+        return DifferentiableManifold.metric(
+            self, name, signature=signature, latex_name=latex_name, dest_map=dest_map
+        )
 
     def volume_form(self, contra=0):
         r"""
@@ -739,14 +758,17 @@ class PseudoRiemannianManifold(DifferentiableManifold):
             sage: gV is g.restrict(V)
             True
         """
-        resu = PseudoRiemannianManifold(self._dim, name,
-                                        metric_name=self._metric_name,
-                                        signature=self._metric_signature,
-                                        base_manifold=self._manifold,
-                                        diff_degree=self._diff_degree,
-                                        latex_name=latex_name,
-                                        metric_latex_name=self._metric_latex_name,
-                                        start_index=self._sindex)
+        resu = PseudoRiemannianManifold(
+            self._dim,
+            name,
+            metric_name=self._metric_name,
+            signature=self._metric_signature,
+            base_manifold=self._manifold,
+            diff_degree=self._diff_degree,
+            latex_name=latex_name,
+            metric_latex_name=self._metric_latex_name,
+            start_index=self._sindex,
+        )
         if supersets is None:
             supersets = [self]
         for superset in supersets:

@@ -47,5 +47,8 @@ class RunFileCmd:
             s = load_cython(input_file)
             eval(compile(s, tmp_filename(), 'exec'), sage_globals())
         else:
-            eval(compile(open(input_file, 'rb').read(), input_file, 'exec'), sage_globals())
+            eval(
+                compile(open(input_file, 'rb').read(), input_file, 'exec'),
+                sage_globals(),
+            )
         return 0

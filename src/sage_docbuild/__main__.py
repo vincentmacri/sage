@@ -117,9 +117,17 @@ _CLI_HELP_COLUMNS = '80'
 def _stat_identity(info) -> tuple[int, ...]:
     """Return metadata used to detect a file changing and changing back."""
 
-    return (info.st_dev, info.st_ino, info.st_mode, info.st_nlink,
-            info.st_uid, info.st_gid, info.st_size, info.st_mtime_ns,
-            info.st_ctime_ns)
+    return (
+        info.st_dev,
+        info.st_ino,
+        info.st_mode,
+        info.st_nlink,
+        info.st_uid,
+        info.st_gid,
+        info.st_size,
+        info.st_mtime_ns,
+        info.st_ctime_ns,
+    )
 
 
 def _path_status(path: Path):
@@ -163,8 +171,7 @@ def _file_mode() -> int:
     descriptor = None
     probe = directory / 'probe'
     try:
-        descriptor = os.open(probe, os.O_WRONLY | os.O_CREAT | os.O_EXCL,
-                             0o666)
+        descriptor = os.open(probe, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
         return stat.S_IMODE(os.fstat(descriptor).st_mode)
     finally:
         if descriptor is not None:
@@ -198,9 +205,11 @@ def _input_file_digest(path: Path) -> tuple[str, tuple[tuple[int, ...], ...]]:
         opened_after = os.fstat(file.fileno())
     path_after = path.lstat()
     target_after = path.stat()
-    if (_stat_identity(path_after) != _stat_identity(path_before)
-            or _stat_identity(target_after) != _stat_identity(target_before)
-            or _stat_identity(opened_after) != _stat_identity(target_before)):
+    if (
+        _stat_identity(path_after) != _stat_identity(path_before)
+        or _stat_identity(target_after) != _stat_identity(target_before)
+        or _stat_identity(opened_after) != _stat_identity(target_before)
+    ):
         raise OSError(f'command-line source changed while reading: {path}')
     identities = (_stat_identity(path_before), _stat_identity(target_before))
     return digest.hexdigest(), identities
@@ -283,19 +292,19 @@ def _write_text_atomic(path: Path, content: str) -> None:
         info = path.lstat()
     except FileNotFoundError:
         info = None
-    if (info is not None
-            and not (stat.S_ISREG(info.st_mode)
-                     or stat.S_ISLNK(info.st_mode))):
-        raise OSError(
-            f'refusing to replace non-file generated path: {path}')
+    if info is not None and not (
+        stat.S_ISREG(info.st_mode) or stat.S_ISLNK(info.st_mode)
+    ):
+        raise OSError(f'refusing to replace non-file generated path: {path}')
     if info is not None and stat.S_ISREG(info.st_mode):
         unchanged = path.read_bytes() == encoded
         if unchanged:
             if stat.S_IMODE(info.st_mode) != mode:
                 path.chmod(mode)
             return
-    handle, temporary = tempfile.mkstemp(dir=path.parent, prefix=path.name,
-                                         suffix='.tmp')
+    handle, temporary = tempfile.mkstemp(
+        dir=path.parent, prefix=path.name, suffix='.tmp'
+    )
     try:
         with os.fdopen(handle, 'w', encoding='utf-8') as file:
             file.write(content)
@@ -330,6 +339,7 @@ def format_columns(lst, align='<', cols=None, indent=4, pad=3, width=80):
     size = max(map(len, lst)) + pad
     if cols is None:
         import math
+
         cols = math.trunc((width - indent) / size)
     s = " " * indent
     for i in range(len(lst)):
@@ -433,18 +443,16 @@ def source_dir_for_help(argv=None) -> Path:
 
     parser = setup_parser()
     option_strings = {
-        option
-        for action in parser._actions
-        for option in action.option_strings
+        option for action in parser._actions for option in action.option_strings
     }
-    long_options = {option for option in option_strings
-                    if option.startswith('--')}
+    long_options = {option for option in option_strings if option.startswith('--')}
 
     def is_source_option(option):
         if option == '--source':
             return True
-        matches = {candidate for candidate in long_options
-                   if candidate.startswith(option)}
+        matches = {
+            candidate for candidate in long_options if candidate.startswith(option)
+        }
         return matches == {'--source'}
 
     def is_recognized_option(argument):
@@ -460,11 +468,9 @@ def source_dir_for_help(argv=None) -> Path:
         long_option, separator, attached = arg.partition('=')
         if arg == '-s' or (not separator and is_source_option(long_option)):
             if i + 1 == len(argv) or is_recognized_option(argv[i + 1]):
-                raise SystemExit(
-                    'error: argument -s/--source: expected one argument')
+                raise SystemExit('error: argument -s/--source: expected one argument')
             source = Path(argv[i + 1])
-        elif separator and (long_option == '-s'
-                            or is_source_option(long_option)):
+        elif separator and (long_option == '-s' or is_source_option(long_option)):
             source = Path(attached)
         elif arg.startswith('-s') and len(arg) > 2:
             source = Path(arg[2:])
@@ -477,6 +483,7 @@ def source_dir_for_help(argv=None) -> Path:
         # The default is relative to the root of a checkout, and the builder
         # runs from anywhere: fall back on the tree it was installed from.
         from sage.env import SAGE_DOC_SRC
+
         source = Path(SAGE_DOC_SRC)
     return source.absolute()
 
@@ -512,8 +519,7 @@ def sage_root_for(source_dir: Path):
     # This file sits in <root>/src/sage_docbuild.
     candidates.append(Path(__file__).parent.parent.parent)
     for candidate in candidates:
-        if _path_is_regular_file(
-                candidate / 'tools' / 'bootstrap-docs.py'):
+        if _path_is_regular_file(candidate / 'tools' / 'bootstrap-docs.py'):
             return candidate
     return None
 
@@ -549,33 +555,44 @@ def generate_doc_sources(source_dir: Path) -> None:
         return
     bootstrap = root / 'tools' / 'bootstrap-docs.py'
     options = source_dir / 'en' / 'reference' / 'repl' / 'options.txt'
-    options_manifest = (source_dir / 'en' / 'installation' / '__pycache__'
-                        / _OPTIONS_MANIFEST_NAME)
+    options_manifest = (
+        source_dir / 'en' / 'installation' / '__pycache__' / _OPTIONS_MANIFEST_NAME
+    )
 
     # The generator reads the package metadata of the tree it writes into, and
     # finds that tree through the environment, which names the running one.
-    env = {**os.environ, 'SAGE_ROOT': str(root), 'SAGE_SRC': str(root / 'src'),
-           # argparse otherwise wraps its captured help according to whichever
-           # terminal width happened to leak into this noninteractive build.
-           'COLUMNS': _CLI_HELP_COLUMNS,
-           # Bytecode caches are not CLI sources and must not change source
-           # directory identities while the help subprocess is inspected.
-           'PYTHONDONTWRITEBYTECODE': '1'}
+    env = {
+        **os.environ,
+        'SAGE_ROOT': str(root),
+        'SAGE_SRC': str(root / 'src'),
+        # argparse otherwise wraps its captured help according to whichever
+        # terminal width happened to leak into this noninteractive build.
+        'COLUMNS': _CLI_HELP_COLUMNS,
+        # Bytecode caches are not CLI sources and must not change source
+        # directory identities while the help subprocess is inspected.
+        'PYTHONDONTWRITEBYTECODE': '1',
+    }
 
     def run(command, capture=False):
-        logger.warning('Generating documentation sources: %s',
-                       ' '.join(str(part) for part in command))
-        return subprocess.run(command, check=True, text=True, env=env,
-                              capture_output=capture)
+        logger.warning(
+            'Generating documentation sources: %s',
+            ' '.join(str(part) for part in command),
+        )
+        return subprocess.run(
+            command, check=True, text=True, env=env, capture_output=capture
+        )
 
     try:
         # The directory comes first, so that a checkout whose generator is
         # older than --check writes the sources instead of taking the option
         # for the directory to write them into.
-        check = subprocess.run([sys.executable, str(bootstrap),
-                                str(source_dir), '--check'],
-                               check=False, text=True, env=env,
-                               capture_output=True)
+        check = subprocess.run(
+            [sys.executable, str(bootstrap), str(source_dir), '--check'],
+            check=False,
+            text=True,
+            env=env,
+            capture_output=True,
+        )
         if check.stderr:
             logger.warning('%s', check.stderr.rstrip())
         if check.returncode:
@@ -589,33 +606,41 @@ def generate_doc_sources(source_dir: Path) -> None:
                 if not _needs_options_page(options, root, options_manifest):
                     return
                 inputs, race = _options_input_state(root)
-                usage = run([sys.executable, '-c', _CLI_HELP_PROGRAM,
-                             str(root / 'src' / 'sage' / 'cli'), '--help'],
-                            capture=True).stdout
+                usage = run(
+                    [
+                        sys.executable,
+                        '-c',
+                        _CLI_HELP_PROGRAM,
+                        str(root / 'src' / 'sage' / 'cli'),
+                        '--help',
+                    ],
+                    capture=True,
+                ).stdout
                 if not usage.strip():
-                    raise OSError(
-                        f'{root}: the command line described no options')
+                    raise OSError(f'{root}: the command line described no options')
                 after, after_race = _options_input_state(root)
                 if (after, after_race) != (inputs, race):
-                    raise OSError(
-                        f'{root}: sage.cli changed while its help was read')
+                    raise OSError(f'{root}: sage.cli changed while its help was read')
                 _write_text_atomic(options, usage)
                 manifest = {
                     'version': _OPTIONS_MANIFEST_VERSION,
                     'inputs': after,
-                    'output': hashlib.sha256(
-                        usage.encode('utf-8')).hexdigest(),
+                    'output': hashlib.sha256(usage.encode('utf-8')).hexdigest(),
                 }
                 _write_text_atomic(
                     options_manifest,
-                    json.dumps(manifest, indent=2, sort_keys=True) + '\n')
+                    json.dumps(manifest, indent=2, sort_keys=True) + '\n',
+                )
                 final, final_race = _options_input_state(root)
                 if (final, final_race) != (inputs, race):
                     raise OSError(
-                        f'{root}: sage.cli changed while its help was written')
+                        f'{root}: sage.cli changed while its help was written'
+                    )
     except (OSError, subprocess.SubprocessError) as error:
-        raise SystemExit('error: could not generate the documentation sources '
-                         f'of {source_dir}: {error}')
+        raise SystemExit(
+            'error: could not generate the documentation sources '
+            f'of {source_dir}: {error}'
+        )
 
 
 # Print the ``--help`` of the command line whose package sits in the directory
@@ -670,8 +695,7 @@ def _options_input_state(root: Path) -> tuple[str, str]:
         initializer_info = (cli / '__init__.py').stat()
     except FileNotFoundError as error:
         raise FileNotFoundError(f'sage.cli does not exist in {root}') from error
-    if (not stat.S_ISDIR(cli_info.st_mode)
-            or not stat.S_ISREG(initializer_info.st_mode)):
+    if not stat.S_ISDIR(cli_info.st_mode) or not stat.S_ISREG(initializer_info.st_mode):
         raise FileNotFoundError(f'sage.cli does not exist in {root}')
     content = hashlib.sha256(_CLI_HELP_PROGRAM.encode('utf-8'))
     race = hashlib.sha256()
@@ -702,8 +726,9 @@ def _options_input_state(root: Path) -> tuple[str, str]:
     add_directory('sage/cli', cli)
     content.update(_CLI_HELP_COLUMNS.encode('ascii'))
     content.update(b'\0')
-    version = (f'{sys.implementation.name}:{sys.version_info.major}.'
-               f'{sys.version_info.minor}')
+    version = (
+        f'{sys.implementation.name}:{sys.version_info.major}.{sys.version_info.minor}'
+    )
     content.update(version.encode('ascii'))
     content.update(b'\0')
     for source in _walk_cli_tree(cli):
@@ -722,8 +747,9 @@ def _options_input_digest(root: Path) -> str:
     return _options_input_state(root)[0]
 
 
-def _needs_options_page(options: Path, root: Path,
-                        manifest_path: Path | None = None) -> bool:
+def _needs_options_page(
+    options: Path, root: Path, manifest_path: Path | None = None
+) -> bool:
     """
     Return whether the page listing the options of the command line has to be
     written again.
@@ -740,16 +766,19 @@ def _needs_options_page(options: Path, root: Path,
             source_dir = options.parents[3]
         except IndexError:
             return True
-        manifest_path = (source_dir / 'en' / 'installation' / '__pycache__'
-                         / _OPTIONS_MANIFEST_NAME)
+        manifest_path = (
+            source_dir / 'en' / 'installation' / '__pycache__' / _OPTIONS_MANIFEST_NAME
+        )
     try:
         written = options.lstat()
         recorded = manifest_path.lstat()
     except OSError:
         return True
-    if (not stat.S_ISREG(written.st_mode)
-            or not stat.S_ISREG(recorded.st_mode)
-            or not written.st_size):
+    if (
+        not stat.S_ISREG(written.st_mode)
+        or not stat.S_ISREG(recorded.st_mode)
+        or not written.st_size
+    ):
         return True
     try:
         manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
@@ -812,9 +841,14 @@ def help_commands(name='all'):
     # To do: Generate the lists dynamically, using class attributes,
     # as with the Builders above.
     s = ""
-    command_dict = {'reference': [
-        'print_included_modules', 'print_modified_modules        (*)',
-        'print_unincluded_modules', 'print_new_and_updated_modules (*)']}
+    command_dict = {
+        'reference': [
+            'print_included_modules',
+            'print_modified_modules        (*)',
+            'print_unincluded_modules',
+            'print_new_and_updated_modules (*)',
+        ]
+    }
     for doc in command_dict:
         if name == 'all' or doc == name:
             s += "COMMANDs for the DOCUMENT '" + doc + "':\n"
@@ -828,9 +862,15 @@ class help_message_long(argparse.Action):
     Print an extended help message for the Sage documentation builder
     and exits.
     """
+
     def __call__(self, parser, namespace, values, option_string=None):
-        help_funcs = [help_usage, help_description, help_documents,
-                      help_formats, help_commands]
+        help_funcs = [
+            help_usage,
+            help_description,
+            help_documents,
+            help_formats,
+            help_commands,
+        ]
         for f in help_funcs:
             print(f())
         parser.print_help()
@@ -847,6 +887,7 @@ class help_message_short(argparse.Action):
     during this call, the message is printed only if the user hasn't
     requested a list (e.g., documents, formats, commands).
     """
+
     def __call__(self, parser, namespace, values, option_string=None):
         if not hasattr(namespace, 'printed_help'):
             parser.print_help()
@@ -860,6 +901,7 @@ class help_wrapper(argparse.Action):
     documentation builder that print lists, such as document names,
     formats, and document-specific commands.
     """
+
     def __call__(self, parser, namespace, values, option_string=None):
         if option_string in ['-D', '--documents']:
             print(help_documents(), end="")
@@ -877,98 +919,215 @@ def setup_parser():
     Sage documentation builder.
     """
     # Documentation: https://docs.python.org/library/argparse.html
-    parser = argparse.ArgumentParser(prog='sage --docbuild',
-                                     usage=help_usage(compact=True),
-                                     description=help_description(compact=True),
-                                     add_help=False)
+    parser = argparse.ArgumentParser(
+        prog='sage --docbuild',
+        usage=help_usage(compact=True),
+        description=help_description(compact=True),
+        add_help=False,
+    )
     # Standard options. Note: We use explicit option.dest names
     # to avoid ambiguity.
     standard = parser.add_argument_group("Standard")
-    standard.add_argument("-h", "--help", nargs=0, action=help_message_short,
-                          help="show a help message and exit")
-    standard.add_argument("-H", "--help-all", nargs=0, action=help_message_long,
-                          help="show an extended help message and exit")
-    standard.add_argument("-D", "--documents", nargs=0, action=help_wrapper,
-                          help="list all available DOCUMENTs")
-    standard.add_argument("-F", "--formats", nargs=0, action=help_wrapper,
-                          help="list all output FORMATs")
-    standard.add_argument("-C", "--commands", dest="commands",
-                          type=str, metavar="DOC", action=help_wrapper,
-                          help="list all COMMANDs for DOCUMENT DOC; use 'all' to list all")
-    standard.add_argument("-i", "--inherited", dest="inherited",
-                          action="store_true",
-                          help="include inherited members in reference manual; may be slow, may fail for PDF output")
-    standard.add_argument("-u", "--underscore", dest="underscore",
-                          action="store_true",
-                          help="include variables prefixed with '_' in reference manual; may be slow, may fail for PDF output")
-    standard.add_argument("-j", "--mathjax", "--jsmath", dest="mathjax",
-                          action="store_true",
-                          help="ignored for backwards compatibility")
-    standard.add_argument("--no-plot", dest="no_plot",
-                          action="store_true",
-                          help="do not include graphics auto-generated using the '.. plot' markup")
-    standard.add_argument("--include-tests-blocks", dest="skip_tests", default=True,
-                          action="store_false",
-                          help="include TESTS blocks in the reference manual")
-    standard.add_argument("--no-pdf-links", dest="no_pdf_links",
-                          action="store_true",
-                          help="do not include PDF links in DOCUMENT 'website'; FORMATs: html, json, pickle, web")
-    standard.add_argument("--live-doc", dest="live_doc",
-                          action="store_true",
-                          help="make Sage code blocks live for html FORMAT")
-    standard.add_argument("--warn-links", dest="warn_links",
-                          action="store_true",
-                          help="issue a warning whenever a link is not properly resolved; passes '-n' (nitpicky) to sphinx, except for first-pass (inventory) builds")
-    standard.add_argument("--check-nested", dest="check_nested",
-                          action="store_true",
-                          help="check picklability of nested classes in DOCUMENT 'reference'")
-    standard.add_argument("--no-prune-empty-dirs", dest="no_prune_empty_dirs",
-                          action="store_true",
-                          help="do not prune empty directories in the documentation source")
-    standard.add_argument("--use-cdns", dest="use_cdns", default=False,
-                          action="store_true",
-                          help="assume internet connection and use CDNs; in particular, use MathJax CDN")
-    standard.add_argument("-N", "--no-colors", dest="color",
-                          action="store_false",
-                          help="do not color output; does not affect children")
-    standard.add_argument("-q", "--quiet", dest="verbose",
-                          action="store_const", const=0,
-                          help="work quietly; same as --verbose=0")
-    standard.add_argument("-v", "--verbose", dest="verbose",
-                          type=int, default=1, metavar="LEVEL",
-                          action="store",
-                          help="report progress at LEVEL=0 (quiet), 1 (normal), 2 (info), or 3 (debug); does not affect children")
-    standard.add_argument("-s", "--source", dest="source_dir", type=Path,
-                          default=None, metavar="DIR", action="store",
-                          help="directory containing the documentation source files")
-    standard.add_argument("-o", "--output", dest="output_dir", default=None,
-                            type=Path,
-                          metavar="DIR", action="store",
-                          help="if DOCUMENT is a single file ('file=...'), write output to this directory")
+    standard.add_argument(
+        "-h",
+        "--help",
+        nargs=0,
+        action=help_message_short,
+        help="show a help message and exit",
+    )
+    standard.add_argument(
+        "-H",
+        "--help-all",
+        nargs=0,
+        action=help_message_long,
+        help="show an extended help message and exit",
+    )
+    standard.add_argument(
+        "-D",
+        "--documents",
+        nargs=0,
+        action=help_wrapper,
+        help="list all available DOCUMENTs",
+    )
+    standard.add_argument(
+        "-F", "--formats", nargs=0, action=help_wrapper, help="list all output FORMATs"
+    )
+    standard.add_argument(
+        "-C",
+        "--commands",
+        dest="commands",
+        type=str,
+        metavar="DOC",
+        action=help_wrapper,
+        help="list all COMMANDs for DOCUMENT DOC; use 'all' to list all",
+    )
+    standard.add_argument(
+        "-i",
+        "--inherited",
+        dest="inherited",
+        action="store_true",
+        help="include inherited members in reference manual; may be slow, may fail for PDF output",
+    )
+    standard.add_argument(
+        "-u",
+        "--underscore",
+        dest="underscore",
+        action="store_true",
+        help="include variables prefixed with '_' in reference manual; may be slow, may fail for PDF output",
+    )
+    standard.add_argument(
+        "-j",
+        "--mathjax",
+        "--jsmath",
+        dest="mathjax",
+        action="store_true",
+        help="ignored for backwards compatibility",
+    )
+    standard.add_argument(
+        "--no-plot",
+        dest="no_plot",
+        action="store_true",
+        help="do not include graphics auto-generated using the '.. plot' markup",
+    )
+    standard.add_argument(
+        "--include-tests-blocks",
+        dest="skip_tests",
+        default=True,
+        action="store_false",
+        help="include TESTS blocks in the reference manual",
+    )
+    standard.add_argument(
+        "--no-pdf-links",
+        dest="no_pdf_links",
+        action="store_true",
+        help="do not include PDF links in DOCUMENT 'website'; FORMATs: html, json, pickle, web",
+    )
+    standard.add_argument(
+        "--live-doc",
+        dest="live_doc",
+        action="store_true",
+        help="make Sage code blocks live for html FORMAT",
+    )
+    standard.add_argument(
+        "--warn-links",
+        dest="warn_links",
+        action="store_true",
+        help="issue a warning whenever a link is not properly resolved; passes '-n' (nitpicky) to sphinx, except for first-pass (inventory) builds",
+    )
+    standard.add_argument(
+        "--check-nested",
+        dest="check_nested",
+        action="store_true",
+        help="check picklability of nested classes in DOCUMENT 'reference'",
+    )
+    standard.add_argument(
+        "--no-prune-empty-dirs",
+        dest="no_prune_empty_dirs",
+        action="store_true",
+        help="do not prune empty directories in the documentation source",
+    )
+    standard.add_argument(
+        "--use-cdns",
+        dest="use_cdns",
+        default=False,
+        action="store_true",
+        help="assume internet connection and use CDNs; in particular, use MathJax CDN",
+    )
+    standard.add_argument(
+        "-N",
+        "--no-colors",
+        dest="color",
+        action="store_false",
+        help="do not color output; does not affect children",
+    )
+    standard.add_argument(
+        "-q",
+        "--quiet",
+        dest="verbose",
+        action="store_const",
+        const=0,
+        help="work quietly; same as --verbose=0",
+    )
+    standard.add_argument(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        type=int,
+        default=1,
+        metavar="LEVEL",
+        action="store",
+        help="report progress at LEVEL=0 (quiet), 1 (normal), 2 (info), or 3 (debug); does not affect children",
+    )
+    standard.add_argument(
+        "-s",
+        "--source",
+        dest="source_dir",
+        type=Path,
+        default=None,
+        metavar="DIR",
+        action="store",
+        help="directory containing the documentation source files",
+    )
+    standard.add_argument(
+        "-o",
+        "--output",
+        dest="output_dir",
+        default=None,
+        type=Path,
+        metavar="DIR",
+        action="store",
+        help="if DOCUMENT is a single file ('file=...'), write output to this directory",
+    )
 
     # Advanced options.
-    advanced = parser.add_argument_group("Advanced",
-                                         "Use these options with care.")
-    advanced.add_argument("-S", "--sphinx-opts", dest="sphinx_opts",
-                          type=str, metavar="OPTS",
-                          action="store",
-                          help="pass comma-separated OPTS to sphinx-build; must precede OPTS with '=', as in '-S=-q,-aE' or '-S=\"-q,-aE\"'")
-    advanced.add_argument("-U", "--update-mtimes", dest="update_mtimes",
-                          action="store_true",
-                          help="before building reference manual, update modification times for auto-generated reST files")
-    advanced.add_argument("-k", "--keep-going", dest="keep_going",
-                          action="store_true",
-                          help="Do not abort on errors but continue as much as possible after an error")
-    advanced.add_argument("--all-documents", dest="all_documents",
-                          type=str, metavar="ARG",
-                          choices=['all', 'reference'],
-                          help="if ARG is 'reference', list all subdocuments"
-                          " of en/reference. If ARG is 'all', list all main"
-                          " documents")
-    parser.add_argument("document", nargs='?', type=str, metavar="DOCUMENT",
-                        help="name of the document to build. It can be either one of the documents listed by -D or 'file=/path/to/FILE' to build documentation for this specific file.")
-    parser.add_argument("format", nargs='?', type=str,
-                        metavar="FORMAT or COMMAND", help='document output format (or command)')
+    advanced = parser.add_argument_group("Advanced", "Use these options with care.")
+    advanced.add_argument(
+        "-S",
+        "--sphinx-opts",
+        dest="sphinx_opts",
+        type=str,
+        metavar="OPTS",
+        action="store",
+        help="pass comma-separated OPTS to sphinx-build; must precede OPTS with '=', as in '-S=-q,-aE' or '-S=\"-q,-aE\"'",
+    )
+    advanced.add_argument(
+        "-U",
+        "--update-mtimes",
+        dest="update_mtimes",
+        action="store_true",
+        help="before building reference manual, update modification times for auto-generated reST files",
+    )
+    advanced.add_argument(
+        "-k",
+        "--keep-going",
+        dest="keep_going",
+        action="store_true",
+        help="Do not abort on errors but continue as much as possible after an error",
+    )
+    advanced.add_argument(
+        "--all-documents",
+        dest="all_documents",
+        type=str,
+        metavar="ARG",
+        choices=['all', 'reference'],
+        help="if ARG is 'reference', list all subdocuments"
+        " of en/reference. If ARG is 'all', list all main"
+        " documents",
+    )
+    parser.add_argument(
+        "document",
+        nargs='?',
+        type=str,
+        metavar="DOCUMENT",
+        help="name of the document to build. It can be either one of the documents listed by -D or 'file=/path/to/FILE' to build documentation for this specific file.",
+    )
+    parser.add_argument(
+        "format",
+        nargs='?',
+        type=str,
+        metavar="FORMAT or COMMAND",
+        help='document output format (or command)',
+    )
     return parser
 
 
@@ -980,6 +1139,7 @@ def setup_logger(verbose=1, color=True):
     """
     # Set up colors. Adapted from sphinx.cmdline.
     import sphinx.util.console as c
+
     if not color or not sys.stdout.isatty() or not c.color_terminal():
         c.nocolor()
 
@@ -1028,6 +1188,7 @@ class IntersphinxCache:
     Replace sphinx.ext.intersphinx.fetch_inventory by an in-memory
     cached version.
     """
+
     def __init__(self):
         self.inventories = {}
         self.real_fetch_inventory = sphinx.ext.intersphinx.fetch_inventory
@@ -1053,7 +1214,7 @@ def main():
     # command line, so that they are processed as options and overridden.  Note
     # that the args passed to parse_args() shouldn't include sys.argv[0].
     parser = setup_parser()
-    args: BuildOptions = parser.parse_args(command_line_args()) # type: ignore
+    args: BuildOptions = parser.parse_args(command_line_args())  # type: ignore
 
     # Check that the docs source directory exists.  Note that sage.env reads
     # the environment when it is imported, and that this function writes the
@@ -1119,10 +1280,11 @@ error messages. To be certain that these are real errors, run
         # on whitespace too would break -S=-D,html_title=Sage Reference Manual,
         # and shlex.split() would eat the backslashes of
         # -S=-Dlatex_elements.preamble=\usepackage{microtype}.
-        build_options.ALLSPHINXOPTS += [opt for opt in
-                                        (piece.strip() for piece
-                                         in args.sphinx_opts.split(','))
-                                        if opt]
+        build_options.ALLSPHINXOPTS += [
+            opt
+            for opt in (piece.strip() for piece in args.sphinx_opts.split(','))
+            if opt
+        ]
     if args.no_pdf_links:
         build_options.WEBSITESPHINXOPTS = ['-A', 'hide_pdf_links=1']
     if args.warn_links:
@@ -1151,7 +1313,8 @@ error messages. To be certain that these are real errors, run
     build = getattr(builder, typ)
     if not callable(build):
         raise AttributeError(
-            f"{type(builder).__name__!r} object has no command {typ!r}")
+            f"{type(builder).__name__!r} object has no command {typ!r}"
+        )
     # A SingleFileBuilder prepares its output tree under the requested output
     # directory while it is constructed, so it may have created the directory
     # since the validation above.
@@ -1160,7 +1323,8 @@ error messages. To be certain that these are real errors, run
             args.output_dir.mkdir(parents=True)
         except Exception as error:
             parser.error(
-                f"Failed to create output directory {args.output_dir}: {error}")
+                f"Failed to create output directory {args.output_dir}: {error}"
+            )
     if not name.startswith('file='):
         generate_doc_sources(args.source_dir)
 

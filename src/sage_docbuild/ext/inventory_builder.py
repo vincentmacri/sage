@@ -4,6 +4,7 @@ Inventory builder
 A customized builder which only generates intersphinx "object.inv"
 inventory files. The documentation files are not written.
 """
+
 from __future__ import annotations
 
 from os import path
@@ -27,6 +28,7 @@ class InventoryBuilder(DummyBuilder):
     A customized builder which only generates intersphinx "object.inv"
     inventory files. The documentation files are not written.
     """
+
     name = "inventory"
 
     #: The output-format identifier used by the inventory builder.
@@ -69,9 +71,7 @@ class InventoryBuilder(DummyBuilder):
         assert self.env is not None
 
         Path(self.outdir).mkdir(parents=True, exist_ok=True)
-        InventoryFile.dump(
-            path.join(self.outdir, INVENTORY_FILENAME), self.env, self
-        )
+        InventoryFile.dump(path.join(self.outdir, INVENTORY_FILENAME), self.env, self)
 
 
 def setup(app: Sphinx) -> dict[str, Any]:

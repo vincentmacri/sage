@@ -252,6 +252,7 @@ class CooperativeGame(SageObject):
         sage: letter_game.is_symmetric({'A': 0, 'C': 35, 'B': 3})
         True
     """
+
     def __init__(self, characteristic_function):
         r"""
         Initialize a co-operative game and checks the inputs.
@@ -389,8 +390,9 @@ class CooperativeGame(SageObject):
                     k = Integer(len(coalition))
                     weight = 1 / (n.binomial(k) * k)
                     t = tuple(p for p in coalition if p != player)
-                    weighted_contribution += weight * (self.ch_f[tuple(coalition)]
-                                                       - self.ch_f[t])
+                    weighted_contribution += weight * (
+                        self.ch_f[tuple(coalition)] - self.ch_f[t]
+                    )
             payoff_vector[player] = weighted_contribution
 
         return payoff_vector
@@ -454,8 +456,10 @@ class CooperativeGame(SageObject):
             sage: long_game.is_monotone()
             True
         """
-        return not any(set(p1) <= set(p2) and self.ch_f[p1] > self.ch_f[p2]
-                       for p1, p2 in permutations(self.ch_f.keys(), 2))
+        return not any(
+            set(p1) <= set(p2) and self.ch_f[p1] > self.ch_f[p2]
+            for p1, p2 in permutations(self.ch_f.keys(), 2)
+        )
 
     def is_superadditive(self):
         r"""

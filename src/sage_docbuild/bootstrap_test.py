@@ -76,9 +76,7 @@ class GenerationLockTest(unittest.TestCase):
                 return bootstrap_docs._generation_lock(target, exclusive=True)
 
             error = OSError(errno.ENOLCK, "no locks available")
-            with mock.patch.object(
-                bootstrap_docs.fcntl, "flock", side_effect=error
-            ):
+            with mock.patch.object(bootstrap_docs.fcntl, "flock", side_effect=error):
                 self.assert_body_survives_lock_failure(lock)
 
     def test_unlock_failure_does_not_replace_body_result_or_error(self):

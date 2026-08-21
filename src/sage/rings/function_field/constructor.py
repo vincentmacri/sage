@@ -76,6 +76,7 @@ class FunctionFieldFactory(UniqueFactory):
         sage: K is N
         False
     """
+
     def create_key(self, F, names):
         """
         Given the arguments and keywords, create a key that uniquely
@@ -103,15 +104,20 @@ class FunctionFieldFactory(UniqueFactory):
         """
         if key[0].is_finite():
             from .function_field_rational import RationalFunctionField_global
+
             return RationalFunctionField_global(key[0], names=key[1])
         if key[0].characteristic() == 0:
             from .function_field_rational import RationalFunctionField_char_zero
+
             return RationalFunctionField_char_zero(key[0], names=key[1])
         from .function_field_rational import RationalFunctionField
+
         return RationalFunctionField(key[0], names=key[1])
 
 
-FunctionField = FunctionFieldFactory("sage.rings.function_field.constructor.FunctionField")
+FunctionField = FunctionFieldFactory(
+    "sage.rings.function_field.constructor.FunctionField"
+)
 
 
 class FunctionFieldExtensionFactory(UniqueFactory):
@@ -142,6 +148,7 @@ class FunctionFieldExtensionFactory(UniqueFactory):
         sage: L is M                                                                    # needs sage.rings.function_field
         True
     """
+
     def create_key(self, polynomial, names):
         """
         Given the arguments and keywords, create a key that uniquely
@@ -197,17 +204,30 @@ class FunctionFieldExtensionFactory(UniqueFactory):
             k = base_field.constant_field()
             if k.is_finite():  # then we are in positive characteristic
                 # irreducible and separable
-                if f.is_irreducible() and not all(e % k.characteristic() == 0 for e in f.exponents()):
+                if f.is_irreducible() and not all(
+                    e % k.characteristic() == 0 for e in f.exponents()
+                ):
                     # monic and integral
-                    if f.is_monic() and all(e in base_field.maximal_order() for e in f.coefficients()):
-                        return function_field_polymod.FunctionField_global_integral(f, names)
+                    if f.is_monic() and all(
+                        e in base_field.maximal_order() for e in f.coefficients()
+                    ):
+                        return function_field_polymod.FunctionField_global_integral(
+                            f, names
+                        )
                     return function_field_polymod.FunctionField_global(f, names)
             elif k.characteristic() == 0:
-                if f.is_irreducible() and f.is_monic() and all(e in base_field.maximal_order() for e in f.coefficients()):
-                    return function_field_polymod.FunctionField_char_zero_integral(f, names)
+                if (
+                    f.is_irreducible()
+                    and f.is_monic()
+                    and all(e in base_field.maximal_order() for e in f.coefficients())
+                ):
+                    return function_field_polymod.FunctionField_char_zero_integral(
+                        f, names
+                    )
                 return function_field_polymod.FunctionField_char_zero(f, names)
         return function_field_polymod.FunctionField_polymod(f, names)
 
 
 FunctionFieldExtension = FunctionFieldExtensionFactory(
-    "sage.rings.function_field.constructor.FunctionFieldExtension")
+    "sage.rings.function_field.constructor.FunctionFieldExtension"
+)

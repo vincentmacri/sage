@@ -318,7 +318,15 @@ if TYPE_CHECKING:
     import builtins
 
 
-def Poset(data=None, element_labels=None, cover_relations=False, linear_extension=False, category=None, facade=None, key=None):
+def Poset(
+    data=None,
+    element_labels=None,
+    cover_relations=False,
+    linear_extension=False,
+    category=None,
+    facade=None,
+    key=None,
+):
     r"""
     Construct a finite poset from various forms of input data.
 
@@ -691,12 +699,19 @@ def Poset(data=None, element_labels=None, cover_relations=False, linear_extensio
     """
     # Avoiding some errors from the user when data should be a pair
     if not (element_labels is None or isinstance(element_labels, (dict, list))):
-        raise TypeError("element_labels should be a dict or a list if "
-                        "different from None. (Did you intend data to be "
-                        "equal to a pair ?)")
+        raise TypeError(
+            "element_labels should be a dict or a list if "
+            "different from None. (Did you intend data to be "
+            "equal to a pair ?)"
+        )
 
     if isinstance(data, FinitePoset):
-        if element_labels is None and category is None and facade is None and linear_extension == data._with_linear_extension:
+        if (
+            element_labels is None
+            and category is None
+            and facade is None
+            and linear_extension == data._with_linear_extension
+        ):
             return data
         if not linear_extension:
             P = FinitePoset(data, elements=None, category=category, facade=facade)
@@ -704,8 +719,12 @@ def Poset(data=None, element_labels=None, cover_relations=False, linear_extensio
                 P = P.relabel(element_labels)
             return P
         if element_labels is None:
-            return FinitePoset(data, elements=data._elements, category=category, facade=facade)
-        return FinitePoset(data, elements=element_labels, category=category, facade=facade)
+            return FinitePoset(
+                data, elements=data._elements, category=category, facade=facade
+            )
+        return FinitePoset(
+            data, elements=element_labels, category=category, facade=facade
+        )
 
     # Convert data to a DiGraph
     elements = None
@@ -719,8 +738,9 @@ def Poset(data=None, element_labels=None, cover_relations=False, linear_extensio
         if len(data) == 2:  # types 1 or 2
             if callable(data[1]):  # type 2
                 elements, function = data
-                relations = ((x, y) for x in elements for y in elements
-                             if function(x, y))
+                relations = (
+                    (x, y) for x in elements for y in elements if function(x, y)
+                )
             else:  # type 1
                 elements, relations = data
                 # check that relations are relations
@@ -735,9 +755,10 @@ def Poset(data=None, element_labels=None, cover_relations=False, linear_extensio
             if len(vertices) != len(data):
                 # by default, assuming vertices are the range 0..n
                 vertices = range(len(data))
-            D = DiGraph({v: [u for u in cov if u != v]
-                         for v, cov in zip(vertices, data)},
-                        format='dict_of_lists')
+            D = DiGraph(
+                {v: [u for u in cov if u != v] for v, cov in zip(vertices, data)},
+                format='dict_of_lists',
+            )
         else:
             raise ValueError("not valid poset data")
 
@@ -747,6 +768,7 @@ def Poset(data=None, element_labels=None, cover_relations=False, linear_extensio
     # Determine cover relations, if necessary.
     if not cover_relations:
         from sage.graphs.generic_graph_pyx import transitive_reduction_acyclic
+
         D = transitive_reduction_acyclic(D)
 
     # Check that the digraph does not contain loops, multiple edges
@@ -772,9 +794,11 @@ def Poset(data=None, element_labels=None, cover_relations=False, linear_extensio
                 raise ValueError("Hasse diagram contains cycles")
         # Check for duplicate elements
         elif len(elements) != len(set(elements)):
-            raise ValueError("the provided list of elements is not a linear "
-                             "extension for the poset as it contains "
-                             "duplicate elements")
+            raise ValueError(
+                "the provided list of elements is not a linear "
+                "extension for the poset as it contains "
+                "duplicate elements"
+            )
     else:
         elements = None
     return FinitePoset(D, elements=elements, category=category, facade=facade, key=key)
@@ -949,13 +973,16 @@ class FinitePoset(UniqueRepresentation, Parent):
         sage: Q == P
         True
     """
+
     _lin_ext_type = LinearExtensionsOfPoset
     _desc = 'Finite poset'
 
     # The parsing of the construction data (like a list of cover relations)
     #   into a :class:`DiGraph` is done in :func:`Poset`.
     @staticmethod
-    def __classcall__(cls, hasse_diagram, elements=None, category=None, facade=None, key=None):
+    def __classcall__(
+        cls, hasse_diagram, elements=None, category=None, facade=None, key=None
+    ):
         """
         Normalize the arguments passed to the constructor.
 
@@ -1008,11 +1035,17 @@ class FinitePoset(UniqueRepresentation, Parent):
         #   by the facade variable
         if category is not None and category.is_subcategory(Sets().Facade()):
             category = category._without_axiom("Facade")
-        category = Category.join([FinitePosets().or_subcategory(category), FiniteEnumeratedSets()])
-        return super().__classcall__(cls, hasse_diagram=hasse_diagram,
-                                     elements=elements,
-                                     category=category, facade=facade,
-                                     key=key)
+        category = Category.join(
+            [FinitePosets().or_subcategory(category), FiniteEnumeratedSets()]
+        )
+        return super().__classcall__(
+            cls,
+            hasse_diagram=hasse_diagram,
+            elements=elements,
+            category=category,
+            facade=facade,
+            key=key,
+        )
 
     def __init__(self, hasse_diagram, elements, category, facade, key) -> None:
         r"""
@@ -1076,13 +1109,15 @@ class FinitePoset(UniqueRepresentation, Parent):
         # Work around the fact that, currently, when a DiGraph is
         # created with Integer's as vertices, those vertices are
         # converted to plain int's. This is a bit abusive.
-        self._elements = tuple(Integer(i) if isinstance(i, int) else i
-                               for i in elements)
+        self._elements = tuple(
+            Integer(i) if isinstance(i, int) else i for i in elements
+        )
         # Relabel using the linear_extension.
         # So range(len(D)) becomes a linear extension of the poset.
         rdict = {element: i for i, element in enumerate(self._elements)}
-        self._hasse_diagram = HasseDiagram(hasse_diagram.relabel(rdict, inplace=False),
-                                           data_structure='static_sparse')
+        self._hasse_diagram = HasseDiagram(
+            hasse_diagram.relabel(rdict, inplace=False), data_structure='static_sparse'
+        )
         self._element_to_vertex_dict = rdict
         self._is_facade = facade
 
@@ -1111,8 +1146,10 @@ class FinitePoset(UniqueRepresentation, Parent):
         if self._is_facade:
             return self._elements
 
-        return tuple(self.element_class(self, element, vertex)
-                     for vertex, element in enumerate(self._elements))
+        return tuple(
+            self.element_class(self, element, vertex)
+            for vertex, element in enumerate(self._elements)
+        )
 
     # This defines the type (class) of elements of poset.
     Element = PosetElement
@@ -1311,8 +1348,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         try:
             return self._list[self._element_to_vertex_dict[element]]
         except KeyError:
-            raise ValueError("%s is not an element of this poset"
-                             % type(element))
+            raise ValueError("%s is not an element of this poset" % type(element))
 
     def __call__(self, element):
         """
@@ -1375,10 +1411,13 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         G = DiGraph(self._hasse_diagram).relabel(self._list, inplace=False)
         from sage.graphs.dot2tex_utils import have_dot2tex
+
         if have_dot2tex():
-            G.set_latex_options(format='dot2tex',
-                                prog='dot',
-                                rankdir='up',)
+            G.set_latex_options(
+                format='dot2tex',
+                prog='dot',
+                rankdir='up',
+            )
         return G
 
     def _latex_(self) -> str:
@@ -1399,10 +1438,20 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         return self.hasse_diagram()._latex_()
 
-    def tikz(self, format=None, edge_labels=False, color_by_label=False,
-             prog='dot', rankdir='up', standalone_config=None,
-             usepackage=None, usetikzlibrary=None, macros=None,
-             use_sage_preamble=None, **kwds):
+    def tikz(
+        self,
+        format=None,
+        edge_labels=False,
+        color_by_label=False,
+        prog='dot',
+        rankdir='up',
+        standalone_config=None,
+        usepackage=None,
+        usetikzlibrary=None,
+        macros=None,
+        use_sage_preamble=None,
+        **kwds,
+    ):
         r"""
         Return a TikzPicture illustrating the poset.
 
@@ -1463,11 +1512,19 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: _ = tikz.pdf(view=False)          # optional - dot2tex graphviz latex  # long time
         """
         G = self.hasse_diagram()
-        return G.tikz(format=format, edge_labels=edge_labels,
-                      color_by_label=color_by_label, prog=prog, rankdir=rankdir,
-                      standalone_config=standalone_config, usepackage=usepackage,
-                      usetikzlibrary=usetikzlibrary, macros=macros,
-                      use_sage_preamble=use_sage_preamble, **kwds)
+        return G.tikz(
+            format=format,
+            edge_labels=edge_labels,
+            color_by_label=color_by_label,
+            prog=prog,
+            rankdir=rankdir,
+            standalone_config=standalone_config,
+            usepackage=usepackage,
+            usetikzlibrary=usetikzlibrary,
+            macros=macros,
+            use_sage_preamble=use_sage_preamble,
+            **kwds,
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -1519,8 +1576,8 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: dm.preferences.supplemental_plot = 'never'
         """
         prefs = display_manager.preferences
-        is_small = (0 < self.cardinality() < 20)
-        can_plot = (prefs.supplemental_plot != 'never')
+        is_small = 0 < self.cardinality() < 20
+        can_plot = prefs.supplemental_plot != 'never'
         plot_graph = can_plot and (prefs.supplemental_plot == 'always' or is_small)
         # Under certain circumstances we display the plot as graphics
         if plot_graph:
@@ -1536,8 +1593,11 @@ class FinitePoset(UniqueRepresentation, Parent):
             text = repr(self)
         # latex() produces huge tikz environment, override
         tp = display_manager.types
-        if (prefs.text == 'latex' and tp.OutputLatex in display_manager.supported_output()):
-            return tp.OutputLatex(fr'\text{{{text}}}')
+        if (
+            prefs.text == 'latex'
+            and tp.OutputLatex in display_manager.supported_output()
+        ):
+            return tp.OutputLatex(rf'\text{{{text}}}')
         return tp.OutputPlainText(text)
 
     def __iter__(self):
@@ -1944,9 +2004,11 @@ class FinitePoset(UniqueRepresentation, Parent):
             False
         """
         index = {x: i for i, x in enumerate(l)}
-        return (len(l) == self.cardinality() and
-                all(x in index for x in self) and
-                all(index[i] < index[j] for i, j in self.cover_relations()))
+        return (
+            len(l) == self.cardinality()
+            and all(x in index for x in self)
+            and all(index[i] < index[j] for i, j in self.cover_relations())
+        )
 
     def list(self):
         """
@@ -1963,9 +2025,14 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         return list(self._list)
 
-    def plot(self, label_elements=True, element_labels=None,
-             layout='acyclic', cover_labels=None,
-             **kwds):
+    def plot(
+        self,
+        label_elements=True,
+        element_labels=None,
+        layout='acyclic',
+        cover_labels=None,
+        **kwds,
+    ):
         r"""
         Return a Graphic object for the Hasse diagram of the poset.
 
@@ -2120,15 +2187,17 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         graph = self.hasse_diagram()
 
-        rename = {'element_color': 'vertex_color',
-                  'element_colors': 'vertex_colors',
-                  'element_size': 'vertex_size',
-                  'element_shape': 'vertex_shape',
-                  'cover_color': 'edge_color',
-                  'cover_labels_background': 'edge_labels_background',
-                  'cover_colors': 'edge_colors',
-                  'cover_style': 'edge_style',
-                  'border': 'graph_border'}
+        rename = {
+            'element_color': 'vertex_color',
+            'element_colors': 'vertex_colors',
+            'element_size': 'vertex_size',
+            'element_shape': 'vertex_shape',
+            'cover_color': 'edge_color',
+            'cover_labels_background': 'edge_labels_background',
+            'cover_colors': 'edge_colors',
+            'cover_style': 'edge_style',
+            'border': 'graph_border',
+        }
         for param, value in rename.items():
             tmp = kwds.pop(param, None)
             if tmp is not None:
@@ -2144,8 +2213,11 @@ class FinitePoset(UniqueRepresentation, Parent):
         # if relabeling is needed
         if label_elements and element_labels is not None:
             from sage.misc.element_with_label import ElementWithLabel
-            relabeling = {self(element): ElementWithLabel(self(element), label)
-                          for element, label in element_labels.items()}
+
+            relabeling = {
+                self(element): ElementWithLabel(self(element), label)
+                for element, label in element_labels.items()
+            }
             graph = graph.relabel(relabeling, inplace=False)
             if heights is not None:
                 for key in heights:
@@ -2157,8 +2229,7 @@ class FinitePoset(UniqueRepresentation, Parent):
                     graph.set_edge_label(v, w, cover_labels(v, w))
             elif isinstance(cover_labels, dict):
                 for v, w in cover_labels:
-                    graph.set_edge_label(self(v), self(w),
-                                         cover_labels[(v, w)])
+                    graph.set_edge_label(self(v), self(w), cover_labels[(v, w)])
             else:
                 for v, w, l in cover_labels:
                     graph.set_edge_label(self(v), self(w), l)
@@ -2166,14 +2237,15 @@ class FinitePoset(UniqueRepresentation, Parent):
         else:
             cover_labels = False
 
-        return graph.plot(vertex_labels=label_elements,
-                          edge_labels=cover_labels,
-                          layout=layout,
-                          heights=heights,
-                          **kwds)
+        return graph.plot(
+            vertex_labels=label_elements,
+            edge_labels=cover_labels,
+            layout=layout,
+            heights=heights,
+            **kwds,
+        )
 
-    def show(self, label_elements=True, element_labels=None,
-             cover_labels=None, **kwds):
+    def show(self, label_elements=True, element_labels=None, cover_labels=None, **kwds):
         """
         Displays the Hasse diagram of the poset.
 
@@ -2219,12 +2291,15 @@ class FinitePoset(UniqueRepresentation, Parent):
         # The plot_kwds dictionary only contains the options that graphplot
         # understands. These options are removed from kwds at the same time.
         from sage.graphs.graph_plot import graphplot_options
+
         plot_kwds = {k: kwds.pop(k) for k in graphplot_options if k in kwds}
 
-        self.plot(label_elements=label_elements,
-                  element_labels=element_labels,
-                  cover_labels=cover_labels,
-                  **plot_kwds).show(**kwds)
+        self.plot(
+            label_elements=label_elements,
+            element_labels=element_labels,
+            cover_labels=cover_labels,
+            **plot_kwds,
+        ).show(**kwds)
 
     def level_sets(self):
         """
@@ -2253,8 +2328,10 @@ class FinitePoset(UniqueRepresentation, Parent):
             :meth:`dilworth_decomposition` to return elements grouped
             to chains.
         """
-        return [[self._vertex_to_element(_) for _ in level] for level in
-                self._hasse_diagram.level_sets()]
+        return [
+            [self._vertex_to_element(_) for _ in level]
+            for level in self._hasse_diagram.level_sets()
+        ]
 
     def cover_relations(self):
         """
@@ -2302,6 +2379,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             True
         """
         from sage.graphs.graph import Graph
+
         return Graph(self.hasse_diagram(), immutable=True)
 
     def cover_relations_iterator(self):
@@ -2389,7 +2467,10 @@ class FinitePoset(UniqueRepresentation, Parent):
             ([((0, 0), (0, 1), (1, 0), (1, 1)), ((1, 0), (1, 1), (2, 0), (2, 1))], False)
         """
         diamonds, all_diamonds_completed = self._hasse_diagram.diamonds()
-        return ([tuple(map(self._vertex_to_element, d)) for d in diamonds], all_diamonds_completed)
+        return (
+            [tuple(map(self._vertex_to_element, d)) for d in diamonds],
+            all_diamonds_completed,
+        )
 
     def common_upper_covers(self, elmts):
         r"""
@@ -2402,7 +2483,12 @@ class FinitePoset(UniqueRepresentation, Parent):
             [3]
         """
         vertices = list(map(self._element_to_vertex, elmts))
-        return list(map(self._vertex_to_element, self._hasse_diagram.common_upper_covers(vertices)))
+        return list(
+            map(
+                self._vertex_to_element,
+                self._hasse_diagram.common_upper_covers(vertices),
+            )
+        )
 
     def common_lower_covers(self, elmts):
         r"""
@@ -2415,7 +2501,12 @@ class FinitePoset(UniqueRepresentation, Parent):
             [0]
         """
         vertices = list(map(self._element_to_vertex, elmts))
-        return list(map(self._vertex_to_element, self._hasse_diagram.common_lower_covers(vertices)))
+        return list(
+            map(
+                self._vertex_to_element,
+                self._hasse_diagram.common_lower_covers(vertices),
+            )
+        )
 
     def meet(self, x, y):
         r"""
@@ -2520,7 +2611,9 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         H = self._hasse_diagram
 
-        diamonds, all_diamonds_completed = H.diamonds()  # Tuples of four elements that are diamonds
+        diamonds, all_diamonds_completed = (
+            H.diamonds()
+        )  # Tuples of four elements that are diamonds
 
         if not all_diamonds_completed:
             return False
@@ -2646,8 +2739,8 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: P.intervals_poset().is_isomorphic(P)
             True
         """
-        from sage.combinat.posets.lattices import (LatticePoset,
-                                                   FiniteLatticePoset)
+        from sage.combinat.posets.lattices import LatticePoset, FiniteLatticePoset
+
         if isinstance(self, FiniteLatticePoset):
             constructor = LatticePoset
         else:
@@ -2659,8 +2752,9 @@ class FinitePoset(UniqueRepresentation, Parent):
         for a, b in ints:
             covers.extend([(a, b), (a, bb)] for bb in self.upper_covers(b))
             if a != b:
-                covers.extend([(a, b), (aa, b)] for aa in self.upper_covers(a)
-                              if self.le(aa, b))
+                covers.extend(
+                    [(a, b), (aa, b)] for aa in self.upper_covers(a) if self.le(aa, b)
+                )
 
         dg = DiGraph([ints, covers], format='vertices_and_edges')
         return constructor(dg, cover_relations=True)
@@ -2913,7 +3007,9 @@ class FinitePoset(UniqueRepresentation, Parent):
                 raise TypeError(f"{m} and {n} must be integers")
             if m < 1 or n < 1:
                 raise ValueError(f"{m} and {n} must be positive integers")
-            twochains = digraphs.TransitiveTournament(ZZm) + digraphs.TransitiveTournament(ZZn)
+            twochains = digraphs.TransitiveTournament(
+                ZZm
+            ) + digraphs.TransitiveTournament(ZZn)
             if closure.subgraph_search(twochains, induced=True) is not None:
                 return False
         return True
@@ -2939,7 +3035,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         i = self._element_to_vertex(x)
         j = self._element_to_vertex(y)
-        return (self._hasse_diagram.is_lequal(i, j))
+        return self._hasse_diagram.is_lequal(i, j)
 
     le = is_lequal
 
@@ -2991,7 +3087,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         i = self._element_to_vertex(x)
         j = self._element_to_vertex(y)
-        return (self._hasse_diagram.is_lequal(j, i))
+        return self._hasse_diagram.is_lequal(j, i)
 
     ge = is_gequal
 
@@ -3072,7 +3168,9 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         .. SEEALSO:: :meth:`maximal_elements`.
         """
-        return [self._vertex_to_element(_) for _ in self._hasse_diagram.minimal_elements()]
+        return [
+            self._vertex_to_element(_) for _ in self._hasse_diagram.minimal_elements()
+        ]
 
     def maximal_elements(self):
         """
@@ -3086,7 +3184,9 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         .. SEEALSO:: :meth:`minimal_elements`.
         """
-        return [self._vertex_to_element(_) for _ in self._hasse_diagram.maximal_elements()]
+        return [
+            self._vertex_to_element(_) for _ in self._hasse_diagram.maximal_elements()
+        ]
 
     def bottom(self):
         """
@@ -3268,7 +3368,12 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         if not hasattr(other, 'hasse_diagram'):
             raise TypeError("'other' is not a finite poset")
-        return self._hasse_diagram.transitive_closure().subgraph_search(other._hasse_diagram.transitive_closure(), induced=True) is not None
+        return (
+            self._hasse_diagram.transitive_closure().subgraph_search(
+                other._hasse_diagram.transitive_closure(), induced=True
+            )
+            is not None
+        )
 
     def is_bounded(self) -> bool:
         """
@@ -3490,8 +3595,9 @@ class FinitePoset(UniqueRepresentation, Parent):
         if self.cardinality() < 4:
             return True
         if not self.is_connected():
-            return all(part.is_series_parallel() for part in
-                       self.connected_components())
+            return all(
+                part.is_series_parallel() for part in self.connected_components()
+            )
         parts = self.ordinal_summands()
         if len(parts) == 1:
             return False
@@ -3536,17 +3642,24 @@ class FinitePoset(UniqueRepresentation, Parent):
              ((0, 1), (1, 1)): [0],
              ((1, 0), (1, 1)): [1]}
         """
-        label_dict = {(a, b): f(a, b)
-                      for a, b in self.cover_relations_iterator()}
+        label_dict = {(a, b): f(a, b) for a, b in self.cover_relations_iterator()}
         if return_raising_chains:
             raising_chains = {}
         for a, b in self.relations_iterator(strict=True):
             P = self.subposet(self.interval(a, b))
-            max_chains = sorted([[label_dict[(chain[i], chain[i + 1])]
-                                  for i in range(len(chain) - 1)]
-                                 for chain in P.maximal_chains_iterator()])
-            if (max_chains[0] != sorted(max_chains[0]) or
-                    any(max_chains[i] == sorted(max_chains[i]) for i in range(1, len(max_chains)))):
+            max_chains = sorted(
+                [
+                    [
+                        label_dict[(chain[i], chain[i + 1])]
+                        for i in range(len(chain) - 1)
+                    ]
+                    for chain in P.maximal_chains_iterator()
+                ]
+            )
+            if max_chains[0] != sorted(max_chains[0]) or any(
+                max_chains[i] == sorted(max_chains[i])
+                for i in range(1, len(max_chains))
+            ):
                 return False
             if return_raising_chains:
                 raising_chains[(a, b)] = max_chains[0]
@@ -3675,14 +3788,20 @@ class FinitePoset(UniqueRepresentation, Parent):
         # if a realizer is not needed, we can optimize a little
         if not certificate:
             # polynomial time check for dimension 2
-            from sage.graphs.comparability import greedy_is_comparability as is_comparability
-            if is_comparability(self._hasse_diagram.transitive_closure().to_undirected().complement()):
+            from sage.graphs.comparability import (
+                greedy_is_comparability as is_comparability,
+            )
+
+            if is_comparability(
+                self._hasse_diagram.transitive_closure().to_undirected().complement()
+            ):
                 return 2
             k = 3
             # known upper bound for dimension
             max_value = max(self.cardinality() // 2, self.width())
 
         from sage.numerical.mip import MixedIntegerLinearProgram, MIPSolverException
+
         P = Poset(self._hasse_diagram)  # work on an int-labelled poset
         hasse_diagram = P.hasse_diagram()
         inc_graph = P.incomparability_graph()
@@ -3706,7 +3825,9 @@ class FinitePoset(UniqueRepresentation, Parent):
                 p.add_constraint(p.sum(b[(v, u), i] for i in range(k)) == 1)
             for cycle in cycles:  # No monochromatic set
                 for i in range(k):
-                    p.add_constraint(p.sum(b[point, i] for point in cycle) <= len(cycle) - 1)
+                    p.add_constraint(
+                        p.sum(b[point, i] for point in cycle) <= len(cycle) - 1
+                    )
             return p, b
 
         p, b = init_LP(k, cycles, inc_P)
@@ -3725,7 +3846,9 @@ class FinitePoset(UniqueRepresentation, Parent):
 
             # We create the digraphs of all color classes
             linear_extensions = [hasse_diagram.copy() for i in range(k)]
-            for ((u, v), i), x in p.get_values(b, convert=bool, tolerance=integrality_tolerance).items():
+            for ((u, v), i), x in p.get_values(
+                b, convert=bool, tolerance=integrality_tolerance
+            ).items():
                 if x:
                     linear_extensions[i].add_edge(u, v)
 
@@ -3737,18 +3860,21 @@ class FinitePoset(UniqueRepresentation, Parent):
                 if not is_acyclic:
                     okay = False  # one is not acyclic
                     cycle = [(cycle[i - 1], cycle[i]) for i in range(len(cycle))]
-                    cycle = [(u, v) for u, v in cycle if not P.lt(u, v) and not P.lt(v, u)]
+                    cycle = [
+                        (u, v) for u, v in cycle if not P.lt(u, v) and not P.lt(v, u)
+                    ]
                     cycles.append(cycle)
                     for i in range(k):
-                        p.add_constraint(p.sum(b[point, i] for point in cycle) <= len(cycle) - 1)
+                        p.add_constraint(
+                            p.sum(b[point, i] for point in cycle) <= len(cycle) - 1
+                        )
             if okay:
                 break
 
         linear_extensions = [g.topological_sort() for g in linear_extensions]
 
         if certificate:
-            return (k, [[self._list[i] for i in l]
-                    for l in linear_extensions])
+            return (k, [[self._list[i] for i in l] for l in linear_extensions])
         return k
 
     def magnitude(self) -> Integer:
@@ -3886,16 +4012,20 @@ class FinitePoset(UniqueRepresentation, Parent):
             S = []
             if linext:
                 # S is elements where we can grow the chain without a jump.
-                S = [x for x in self.upper_covers(linext[-1]) if
-                     all(low in linext for low in self.lower_covers(x))]
+                S = [
+                    x
+                    for x in self.upper_covers(linext[-1])
+                    if all(low in linext for low in self.lower_covers(x))
+                ]
             if not S:
                 if jumpcount >= nonlocals[0] - 1:
                     return
                 jumpcount += 1
                 # S is minimal elements of the poset without elements in linext
                 S_ = self_as_set.difference(set(linext))
-                S = [x for x in S_ if
-                     not any(low in S_ for low in self.lower_covers(x))]
+                S = [
+                    x for x in S_ if not any(low in S_ for low in self.lower_covers(x))
+                ]
 
             for e in S:
                 greedy_rec(self, linext + [e], jumpcount)
@@ -4122,7 +4252,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         hasse = self._hasse_diagram
         rf = hasse.rank_function()
         if rf is None:
-            return False    # because every graded poset is ranked.
+            return False  # because every graded poset is ranked.
         if not all(rf(i) == 0 for i in hasse.minimal_elements()):
             return False
         maxes = hasse.maximal_elements()
@@ -4146,7 +4276,9 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: P.covers(1, 5)
             False
         """
-        return self._hasse_diagram.has_edge(*[self._element_to_vertex(w) for w in (x, y)])
+        return self._hasse_diagram.has_edge(
+            *[self._element_to_vertex(w) for w in (x, y)]
+        )
 
     def upper_covers_iterator(self, x):
         """
@@ -4430,6 +4562,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         cox_matrix = self._hasse_diagram.coxeter_transformation()
         if algorithm == "magma":
             from sage.interfaces.magma import magma
+
             dense_matrix = magma(cox_matrix).Matrix()
             return dense_matrix.CharacteristicPolynomial().sage()
         return cox_matrix.charpoly()
@@ -4492,40 +4625,43 @@ class FinitePoset(UniqueRepresentation, Parent):
             ``coxeter_matrix``
         """
         c0 = self.coxeter_transformation()
-        x = polygen(QQ, 'x')   # not possible to use ZZ for the moment
+        x = polygen(QQ, 'x')  # not possible to use ZZ for the moment
 
         if algorithm == 'singular':  # quite faster than sage
             from sage.interfaces.singular import singular
+
             singular.LIB('jacobson.lib')
             sing_m = singular(x - c0)
             L = sing_m.smith().sage().diagonal()
-            return sorted([u / u.lc() for u in L],
-                          key=lambda p: p.degree())
+            return sorted([u / u.lc() for u in L], key=lambda p: p.degree())
 
         if algorithm == 'sage':  # *very slow*
             return (x - c0).smith_form(transformation=False).diagonal()
 
         if algorithm == 'magma':  # also quite fast
             from sage.interfaces.magma import magma
+
             elem = magma('ElementaryDivisors')
             return elem.evaluate(x - c0).sage()
 
         if algorithm == 'gap':
             from sage.libs.gap.libgap import libgap
+
             gap_m = libgap(x - c0)
             elem = gap_m.ElementaryDivisorsMat()
             return elem.sage()
 
-        if algorithm == 'pari':   # maybe fast, at least for small size
+        if algorithm == 'pari':  # maybe fast, at least for small size
             from sage.libs.pari import pari
+
             pari_m = pari(x - c0)
             elem = pari_m.matsnf(2)
             A = x.parent()
-            return sorted((A(f) for f in elem),
-                          key=lambda p: p.degree())
+            return sorted((A(f) for f in elem), key=lambda p: p.degree())
 
         if algorithm == 'maple':
             from sage.interfaces.maple import maple
+
             maple_m = maple(x - c0)
             maple.load("MatrixPolynomialAlgebra")
             maple.load("ArrayTools")
@@ -4535,8 +4671,14 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         if algorithm == 'fricas':
             from sage.interfaces.fricas import fricas
+
             fm = fricas(x - c0)
-            return list(fricas(fm.name() + "::Matrix(UP(x, FRAC INT))").smith().diagonal().sage())
+            return list(
+                fricas(fm.name() + "::Matrix(UP(x, FRAC INT))")
+                .smith()
+                .diagonal()
+                .sage()
+            )
 
         raise ValueError("unknown algorithm")
 
@@ -4590,6 +4732,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             (False, (3, 1))
         """
         from sage.combinat.posets.hasse_diagram import LatticeError
+
         try:
             self._hasse_diagram.meet_matrix()
         except LatticeError as error:
@@ -4661,6 +4804,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             (False, (5, 4))
         """
         from sage.combinat.posets.hasse_diagram import LatticeError
+
         try:
             self._hasse_diagram.join_matrix()
         except LatticeError as error:
@@ -4704,8 +4848,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             (True, {1: 4, 2: 5, 3: 6})
         """
         if hasattr(other, 'hasse_diagram'):
-            return self.hasse_diagram().is_isomorphic(other.hasse_diagram(),
-                                                      **kwds)
+            return self.hasse_diagram().is_isomorphic(other.hasse_diagram(), **kwds)
         raise TypeError("'other' is not a finite poset")
 
     def isomorphic_subposets_iterator(self, other):
@@ -4747,7 +4890,14 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         if not hasattr(other, 'hasse_diagram'):
             raise TypeError("'other' is not a finite poset")
-        return (self.subposet([self._list[i] for i in x]) for x in self._hasse_diagram.transitive_closure().subgraph_search_iterator(other.hasse_diagram().transitive_closure(), induced=True, return_graphs=False))
+        return (
+            self.subposet([self._list[i] for i in x])
+            for x in self._hasse_diagram.transitive_closure().subgraph_search_iterator(
+                other.hasse_diagram().transitive_closure(),
+                induced=True,
+                return_graphs=False,
+            )
+        )
 
     def isomorphic_subposets(self, other) -> builtins.list:
         """
@@ -4782,11 +4932,15 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         if not hasattr(other, 'hasse_diagram'):
             raise TypeError("'other' is not a finite poset")
-        L = self._hasse_diagram.transitive_closure().subgraph_search_iterator(other._hasse_diagram.transitive_closure(), induced=True, return_graphs=False)
+        L = self._hasse_diagram.transitive_closure().subgraph_search_iterator(
+            other._hasse_diagram.transitive_closure(), induced=True, return_graphs=False
+        )
         # Since subgraph_search_iterator returns labelled copies, we
         # remove duplicates.
-        return [self.subposet([self._list[i] for i in x])
-                for x in sorted({frozenset(y) for y in L})]
+        return [
+            self.subposet([self._list[i] for i in x])
+            for x in sorted({frozenset(y) for y in L})
+        ]
 
     # Caveat: list is overridden by the method list above!!!
     def antichains(self, element_constructor=None):
@@ -4860,6 +5014,7 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         def f(antichain):
             return element_constructor(vertex_to_element(x) for x in antichain)
+
         result = self._hasse_diagram.antichains(element_class=f)
         result.rename("Set of antichains of %s" % self)
         return result
@@ -4924,9 +5079,12 @@ class FinitePoset(UniqueRepresentation, Parent):
         # See the doc of dilworth_decomposition for an explanation of what is
         # going on.
         from sage.graphs.graph import Graph
+
         n = self.cardinality()
         g = Graph()
-        for v, u in self._hasse_diagram.transitive_closure().edge_iterator(labels=False):
+        for v, u in self._hasse_diagram.transitive_closure().edge_iterator(
+            labels=False
+        ):
             g.add_edge(u + n, v)
         return n - len(g.matching())
 
@@ -4978,9 +5136,12 @@ class FinitePoset(UniqueRepresentation, Parent):
             True
         """
         from sage.graphs.graph import Graph
+
         n = self.cardinality()
         g = Graph()
-        for v, u in self._hasse_diagram.transitive_closure().edge_iterator(labels=False):
+        for v, u in self._hasse_diagram.transitive_closure().edge_iterator(
+            labels=False
+        ):
             g.add_edge(u + n, v)
         matching = {}
         for u, v, _ in g.matching():
@@ -5053,9 +5214,11 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         if exclude is not None:
             exclude = [self._element_to_vertex(x) for x in exclude]
-        result = self._hasse_diagram.chains(element_class=element_constructor,
-                                            exclude=exclude,
-                                            conversion=self._elements)
+        result = self._hasse_diagram.chains(
+            element_class=element_constructor,
+            exclude=exclude,
+            conversion=self._elements,
+        )
         result.rename("Set of chains of %s" % self)
         return result
 
@@ -5096,14 +5259,13 @@ class FinitePoset(UniqueRepresentation, Parent):
         if self._is_facade:
             for part in comps:
                 G = part.relabel(self._vertex_to_element, inplace=False)
-                result.append(Poset(G, cover_relations=True,
-                                    facade=True))
+                result.append(Poset(G, cover_relations=True, facade=True))
         else:
             for part in comps:
-                G = part.relabel(lambda v: self._vertex_to_element(v).element,
-                                 inplace=False)
-                result.append(Poset(G, cover_relations=True,
-                                    facade=False))
+                G = part.relabel(
+                    lambda v: self._vertex_to_element(v).element, inplace=False
+                )
+                result.append(Poset(G, cover_relations=True, facade=False))
         return result
 
     def ordinal_summands(self) -> builtins.list:
@@ -5163,7 +5325,6 @@ class FinitePoset(UniqueRepresentation, Parent):
         upper = set(H.sources())
 
         for e in range(n):
-
             # update 'lower' by adding 'e' to it
             lower.add(e)
             lower.difference_update(H.neighbors_in(e))
@@ -5193,8 +5354,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         parts = []
         for i, j in zip(cut_points, cut_points[1:]):
             G = self._hasse_diagram.subgraph(range(i + 1, j + 1))
-            parts.append(Poset(G.relabel(self._vertex_to_element,
-                                         inplace=False)))
+            parts.append(Poset(G.relabel(self._vertex_to_element, inplace=False)))
         return parts
 
     def product(self, other):
@@ -5247,21 +5407,32 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: type(L) == type(L.product(L))
             True
         """
-        from sage.combinat.posets.lattices import LatticePoset, \
-            JoinSemilattice, MeetSemilattice, FiniteLatticePoset, \
-            FiniteMeetSemilattice, FiniteJoinSemilattice
-        if (isinstance(self, FiniteLatticePoset) and
-                isinstance(other, FiniteLatticePoset)):
+        from sage.combinat.posets.lattices import (
+            LatticePoset,
+            JoinSemilattice,
+            MeetSemilattice,
+            FiniteLatticePoset,
+            FiniteMeetSemilattice,
+            FiniteJoinSemilattice,
+        )
+
+        if isinstance(self, FiniteLatticePoset) and isinstance(
+            other, FiniteLatticePoset
+        ):
             constructor = LatticePoset
-        elif (isinstance(self, FiniteMeetSemilattice) and
-              isinstance(other, FiniteMeetSemilattice)):
+        elif isinstance(self, FiniteMeetSemilattice) and isinstance(
+            other, FiniteMeetSemilattice
+        ):
             constructor = MeetSemilattice
-        elif (isinstance(self, FiniteJoinSemilattice) and
-              isinstance(other, FiniteJoinSemilattice)):
+        elif isinstance(self, FiniteJoinSemilattice) and isinstance(
+            other, FiniteJoinSemilattice
+        ):
             constructor = JoinSemilattice
         else:
             constructor = Poset
-        return constructor(self.hasse_diagram().cartesian_product(other.hasse_diagram()))
+        return constructor(
+            self.hasse_diagram().cartesian_product(other.hasse_diagram())
+        )
 
     _mul_ = product
 
@@ -5386,6 +5557,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         from sage.graphs.graph import Graph
         from sage.misc.flatten import flatten
+
         dg = self._hasse_diagram
         if not dg.is_connected() or not dg.order():
             raise NotImplementedError('the poset is empty or not connected')
@@ -5406,8 +5578,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         factors_range = range(n)
 
         def edge_color(va, vb):
-            return next(i for i, (vai, vbi) in enumerate(zip(va, vb))
-                        if vai != vbi)
+            return next(i for i, (vai, vbi) in enumerate(zip(va, vb)) if vai != vbi)
 
         neighbors_table = {}
         for x in prod_dg:
@@ -5436,12 +5607,14 @@ class FinitePoset(UniqueRepresentation, Parent):
                         fusion_edges.append([i0, i1])
                         break
 
-        fusion = Graph([list(range(n)), fusion_edges],
-                       format="vertices_and_edges")
+        fusion = Graph([list(range(n)), fusion_edges], format="vertices_and_edges")
         resu = []
         for s in fusion.connected_components(sort=False):
-            subg = [x for x in prod_dg if all(x[i] == v0[i] for i in factors_range
-                                              if i not in s)]
+            subg = [
+                x
+                for x in prod_dg
+                if all(x[i] == v0[i] for i in factors_range if i not in s)
+            ]
             resu.append(Poset(prod_dg.subgraph(subg)))
 
         return resu
@@ -5511,8 +5684,9 @@ class FinitePoset(UniqueRepresentation, Parent):
         """
         if not hasattr(other, 'hasse_diagram'):
             raise TypeError("'other' is not a finite poset")
-        return Poset(self.hasse_diagram().disjoint_union(other.hasse_diagram(),
-                                                         labels=labels))
+        return Poset(
+            self.hasse_diagram().disjoint_union(other.hasse_diagram(), labels=labels)
+        )
 
     def ordinal_product(self, other, labels='pairs'):
         r"""
@@ -5581,8 +5755,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: C3.ordinal_product(C4).is_isomorphic(C12)
             True
         """
-        from sage.combinat.posets.lattices import LatticePoset, \
-            FiniteLatticePoset
+        from sage.combinat.posets.lattices import LatticePoset, FiniteLatticePoset
 
         if not hasattr(other, 'hasse_diagram'):
             raise TypeError("'other' is not a finite poset")
@@ -5591,19 +5764,29 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         dg = DiGraph()
         dg.add_vertices([(s, t) for s in self for t in other])
-        dg.add_edges([((s, t), (s2, t2))
-                      for s, s2 in self.cover_relations_iterator()
-                      for t in othermax for t2 in othermin])
-        dg.add_edges([((s, t), (s, t2))
-                      for s in self
-                      for t, t2 in other.cover_relations_iterator()])
+        dg.add_edges(
+            [
+                ((s, t), (s2, t2))
+                for s, s2 in self.cover_relations_iterator()
+                for t in othermax
+                for t2 in othermin
+            ]
+        )
+        dg.add_edges(
+            [
+                ((s, t), (s, t2))
+                for s in self
+                for t, t2 in other.cover_relations_iterator()
+            ]
+        )
         if labels == 'integers':
             dg.relabel()
         elif labels != 'pairs':
             raise ValueError("labels must be either 'pairs' or 'integers'")
 
-        if (isinstance(self, FiniteLatticePoset) and
-                isinstance(other, FiniteLatticePoset)):
+        if isinstance(self, FiniteLatticePoset) and isinstance(
+            other, FiniteLatticePoset
+        ):
             return LatticePoset(dg)
         return Poset(dg)
 
@@ -5680,9 +5863,14 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: P0.ordinal_sum(P0)
             Finite lattice containing 0 elements
         """
-        from sage.combinat.posets.lattices import LatticePoset, \
-            JoinSemilattice, MeetSemilattice, FiniteLatticePoset, \
-            FiniteMeetSemilattice, FiniteJoinSemilattice
+        from sage.combinat.posets.lattices import (
+            LatticePoset,
+            JoinSemilattice,
+            MeetSemilattice,
+            FiniteLatticePoset,
+            FiniteMeetSemilattice,
+            FiniteJoinSemilattice,
+        )
 
         if not hasattr(other, 'hasse_diagram'):
             raise TypeError("'other' is not a finite poset")
@@ -5697,14 +5885,17 @@ class FinitePoset(UniqueRepresentation, Parent):
         elif labels != 'pairs':
             raise ValueError("labels must be either 'pairs' or 'integers'")
 
-        if (isinstance(self, FiniteLatticePoset) and
-                isinstance(other, FiniteLatticePoset)):
+        if isinstance(self, FiniteLatticePoset) and isinstance(
+            other, FiniteLatticePoset
+        ):
             return LatticePoset(G)
-        if (isinstance(self, FiniteMeetSemilattice) and
-                isinstance(other, FiniteMeetSemilattice)):
+        if isinstance(self, FiniteMeetSemilattice) and isinstance(
+            other, FiniteMeetSemilattice
+        ):
             return MeetSemilattice(G)
-        if (isinstance(self, FiniteJoinSemilattice) and
-                isinstance(other, FiniteJoinSemilattice)):
+        if isinstance(self, FiniteJoinSemilattice) and isinstance(
+            other, FiniteJoinSemilattice
+        ):
             return JoinSemilattice(G)
         return Poset(G)
 
@@ -5886,7 +6077,9 @@ class FinitePoset(UniqueRepresentation, Parent):
         # P might be defaultdict, hence the test
         if isinstance(P, dict) and not isinstance(P, defaultdict):
             if set(P) != set(self):
-                raise ValueError("keys of dict P does not match to elements of the poset")
+                raise ValueError(
+                    "keys of dict P does not match to elements of the poset"
+                )
 
         d = DiGraph()
         for t in self:
@@ -5939,12 +6132,13 @@ class FinitePoset(UniqueRepresentation, Parent):
             elements = reversed(self._elements)
         else:
             elements = None
-        H = self._hasse_diagram.relabel(dict(enumerate(self._elements)),
-                                        inplace=False)
-        return self._dual_class(H.reverse(),
-                                elements=elements,
-                                category=self.category(),
-                                facade=self._is_facade)
+        H = self._hasse_diagram.relabel(dict(enumerate(self._elements)), inplace=False)
+        return self._dual_class(
+            H.reverse(),
+            elements=elements,
+            category=self.category(),
+            facade=self._is_facade,
+        )
 
     def with_bounds(self, labels=('bottom', 'top')):
         r"""
@@ -6060,12 +6254,20 @@ class FinitePoset(UniqueRepresentation, Parent):
         if new_max in self:
             raise ValueError("the poset already has element %s" % new_max)
 
-        from sage.combinat.posets.lattices import LatticePoset, \
-            JoinSemilattice, MeetSemilattice, FiniteLatticePoset, \
-            FiniteMeetSemilattice, FiniteJoinSemilattice
-        if (isinstance(self, FiniteLatticePoset) or
-            (isinstance(self, FiniteMeetSemilattice) and new_max is not None) or
-            (isinstance(self, FiniteJoinSemilattice) and new_min is not None)):
+        from sage.combinat.posets.lattices import (
+            LatticePoset,
+            JoinSemilattice,
+            MeetSemilattice,
+            FiniteLatticePoset,
+            FiniteMeetSemilattice,
+            FiniteJoinSemilattice,
+        )
+
+        if (
+            isinstance(self, FiniteLatticePoset)
+            or (isinstance(self, FiniteMeetSemilattice) and new_max is not None)
+            or (isinstance(self, FiniteJoinSemilattice) and new_min is not None)
+        ):
             constructor = LatticePoset
         elif isinstance(self, FiniteMeetSemilattice):
             constructor = MeetSemilattice
@@ -6259,9 +6461,11 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: p1 == p3
             True
         """
-        from sage.combinat.posets.lattices import (FiniteLatticePoset,
-                                                   FiniteMeetSemilattice,
-                                                   FiniteJoinSemilattice)
+        from sage.combinat.posets.lattices import (
+            FiniteLatticePoset,
+            FiniteMeetSemilattice,
+            FiniteJoinSemilattice,
+        )
 
         if isinstance(self, FiniteLatticePoset):
             constructor = FiniteLatticePoset
@@ -6273,28 +6477,30 @@ class FinitePoset(UniqueRepresentation, Parent):
             constructor = FinitePoset
 
         if relabeling is None:
-            return constructor(self._hasse_diagram, category=self.category(),
-                               facade=self._is_facade)
+            return constructor(
+                self._hasse_diagram, category=self.category(), facade=self._is_facade
+            )
 
         if isinstance(relabeling, (list, tuple)):
-            relabeling = {i: relabeling[i]
-                          for i in range(len(self._elements))}
+            relabeling = {i: relabeling[i] for i in range(len(self._elements))}
         else:
             if isinstance(relabeling, dict):
                 relabeling = relabeling.__getitem__
-            relabeling = {i: relabeling(x)
-                          for i, x in enumerate(self._elements)}
+            relabeling = {i: relabeling(x) for i, x in enumerate(self._elements)}
 
         if not self._with_linear_extension:
             elements = None
         else:
-            elements = tuple(relabeling[self._element_to_vertex(x)]
-                             for x in self._elements)
+            elements = tuple(
+                relabeling[self._element_to_vertex(x)] for x in self._elements
+            )
 
-        return constructor(self._hasse_diagram.relabel(relabeling,
-                                                       inplace=False),
-                           elements=elements, category=self.category(),
-                           facade=self._is_facade)
+        return constructor(
+            self._hasse_diagram.relabel(relabeling, inplace=False),
+            elements=elements,
+            category=self.category(),
+            facade=self._is_facade,
+        )
 
     def canonical_label(self, algorithm=None):
         r"""
@@ -6356,8 +6562,9 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: D2 == B2  # optional - bliss
             True
         """
-        canonical_label = self._hasse_diagram.canonical_label(certificate=True,
-                                                              algorithm=algorithm)[1]
+        canonical_label = self._hasse_diagram.canonical_label(
+            certificate=True, algorithm=algorithm
+        )[1]
         canonical_label = {self._elements[v]: i for v, i in canonical_label.items()}
         return self.relabel(canonical_label)
 
@@ -6412,14 +6619,18 @@ class FinitePoset(UniqueRepresentation, Parent):
             the internal :class:`DiGraph` which is `O(n+m)`, where `n`
             is the number of elements and `m` the number of cover relations.
         """
-        new_vertices = [self._element_to_vertex(element) for element in linear_extension]
+        new_vertices = [
+            self._element_to_vertex(element) for element in linear_extension
+        ]
         vertex_relabeling = dict(zip(new_vertices, linear_extension))
         # Hack to get the actual class, not the categorified class
         constructor = self.__class__.__base__
-        return constructor(self._hasse_diagram.relabel(vertex_relabeling, inplace=False),
-                           elements=linear_extension,
-                           category=self.category(),
-                           facade=self._is_facade)
+        return constructor(
+            self._hasse_diagram.relabel(vertex_relabeling, inplace=False),
+            elements=linear_extension,
+            category=self.category(),
+            facade=self._is_facade,
+        )
 
     def graphviz_string(self, graph_string='graph', edge_string='--'):
         r"""
@@ -6531,6 +6742,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             ValueError: probability p must be in [0..1]
         """
         from sage.misc.randstate import current_randstate
+
         random = current_randstate().python_random().random
         p = float(p)
         if p < 0 or p > 1:
@@ -6580,6 +6792,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         from sage.misc.randstate import current_randstate
         from sage.misc.randstate import seed
         from sage.misc.randstate import random
+
         hd = self._hasse_diagram
         n = len(hd)
         lower_covers = [list(hd.lower_covers_iterator(i)) for i in range(n)]
@@ -6615,8 +6828,11 @@ class FinitePoset(UniqueRepresentation, Parent):
         if direction == 'up':
             return [self._vertex_to_element(i) for i, x in enumerate(state) if x == 1]
         if direction == 'antichain':
-            return [self._vertex_to_element(i) for i, x in enumerate(state)
-                    if x == 0 and all(state[j] == 1 for j in hd.upper_covers_iterator(i))]
+            return [
+                self._vertex_to_element(i)
+                for i, x in enumerate(state)
+                if x == 0 and all(state[j] == 1 for j in hd.upper_covers_iterator(i))
+            ]
         if direction != 'down':
             raise ValueError("direction must be 'up', 'down' or 'antichain'")
         return [self._vertex_to_element(i) for i, x in enumerate(state) if x == 0]
@@ -6719,7 +6935,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             new_index = randint(0, len(mins) - 1)
             new = mins[new_index]
             result.append(new)
-            mins = mins[:new_index] + mins[new_index + 1:]
+            mins = mins[:new_index] + mins[new_index + 1 :]
             for u in H.neighbor_out_iterator(new):
                 indegs[u] -= 1
                 if indegs[u] == 0:
@@ -6834,7 +7050,9 @@ class FinitePoset(UniqueRepresentation, Parent):
             Graphics object consisting of 10 graphics primitives
         """
         order_ideal = self.order_ideal(elements)
-        order_filer = self.order_filter(self.order_ideal_complement_generators(order_ideal))
+        order_filer = self.order_filter(
+            self.order_ideal_complement_generators(order_ideal)
+        )
         order_ideal_color_dictionary = {}
         order_ideal_color_dictionary['green'] = order_ideal
         order_ideal_color_dictionary['red'] = order_filer
@@ -6866,9 +7084,12 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: P.interval("a","d")
             [a, b, c, d]
         """
-        return [self._vertex_to_element(w)
-                for w in self._hasse_diagram.interval(
-                    self._element_to_vertex(x), self._element_to_vertex(y))]
+        return [
+            self._vertex_to_element(w)
+            for w in self._hasse_diagram.interval(
+                self._element_to_vertex(x), self._element_to_vertex(y)
+            )
+        ]
 
     def closed_interval(self, x, y):
         r"""
@@ -6895,8 +7116,12 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: A.closed_interval(3, 7)
             []
         """
-        return [self._vertex_to_element(_) for _ in self._hasse_diagram.interval(
-                self._element_to_vertex(x), self._element_to_vertex(y))]
+        return [
+            self._vertex_to_element(_)
+            for _ in self._hasse_diagram.interval(
+                self._element_to_vertex(x), self._element_to_vertex(y)
+            )
+        ]
 
     def open_interval(self, x, y):
         """
@@ -6925,8 +7150,12 @@ class FinitePoset(UniqueRepresentation, Parent):
             sage: A.open_interval(3, 7)
             []
         """
-        return [self._vertex_to_element(_) for _ in self._hasse_diagram.open_interval(
-                self._element_to_vertex(x), self._element_to_vertex(y))]
+        return [
+            self._vertex_to_element(_)
+            for _ in self._hasse_diagram.open_interval(
+                self._element_to_vertex(x), self._element_to_vertex(y)
+            )
+        ]
 
     def comparability_graph(self):
         r"""
@@ -7038,6 +7267,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             True
         """
         from sage.graphs.graph import Graph
+
         # Direct implementation, no optimizations
         L = list(self.linear_extensions())
         G = Graph()
@@ -7216,6 +7446,7 @@ class FinitePoset(UniqueRepresentation, Parent):
              facets {(0, 1, 3), (0, 2, 3)}
         """
         from sage.topology.simplicial_complex import SimplicialComplex
+
         L = self.list()
         if on_ints:
             iso = {L[i]: i for i in range(len(L))}
@@ -7270,8 +7501,11 @@ class FinitePoset(UniqueRepresentation, Parent):
             True
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
-        ineqs = [[0] + [Integer(j == v) - Integer(j == u) for j in self]
-                 for u, v in self.hasse_diagram().edges(sort=False, labels=False)]
+
+        ineqs = [
+            [0] + [Integer(j == v) - Integer(j == u) for j in self]
+            for u, v in self.hasse_diagram().edges(sort=False, labels=False)
+        ]
         for i in self.maximal_elements():
             ineqs += [[1] + [-Integer(j == i) for j in self]]
         for i in self.minimal_elements():
@@ -7309,8 +7543,11 @@ class FinitePoset(UniqueRepresentation, Parent):
             A 5-dimensional polyhedron in ZZ^5 defined as the convex hull of 8 vertices
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
-        ineqs = [[1] + [-Integer(j in chain) for j in self]
-                 for chain in self.maximal_chains_iterator()]
+
+        ineqs = [
+            [1] + [-Integer(j in chain) for j in self]
+            for chain in self.maximal_chains_iterator()
+        ]
         for i in self:
             ineqs += [[0] + [Integer(j == i) for j in self]]
         return Polyhedron(ieqs=ineqs, base_ring=ZZ)
@@ -7422,12 +7659,16 @@ class FinitePoset(UniqueRepresentation, Parent):
             Univariate Polynomial Ring in q over Rational Field
         """
         from sage.functions.other import binomial
+
         R = PolynomialRing(QQ, 'q')
         q = R.gen()
 
         top_level = self.level_sets()[-1]
-        return sum(binomial(q - 2, len(c) - 1)
-                   for c in self.chains() if c and c[-1] in top_level)
+        return sum(
+            binomial(q - 2, len(c) - 1)
+            for c in self.chains()
+            if c and c[-1] in top_level
+        )
 
     def M_triangle(self):
         r"""
@@ -7458,14 +7699,17 @@ class FinitePoset(UniqueRepresentation, Parent):
             ValueError: the poset is not graded
         """
         from sage.combinat.triangles_FHM import M_triangle
+
         hasse = self._hasse_diagram
         rk = hasse.rank_function()
         if rk is None:
             raise ValueError('the poset is not graded')
         ring = PolynomialRing(ZZ, 'x,y')
-        p = ring.sum(hasse.moebius_function(a, b) * ring.monomial(rk(a), rk(b))
-                     for a in hasse
-                     for b in hasse.principal_order_filter(a))
+        p = ring.sum(
+            hasse.moebius_function(a, b) * ring.monomial(rk(a), rk(b))
+            for a in hasse
+            for b in hasse.principal_order_filter(a)
+        )
         return M_triangle(p)
 
     def f_polynomial(self):
@@ -7527,9 +7771,9 @@ class FinitePoset(UniqueRepresentation, Parent):
         # chains with topmost vertex i (in the labelling of the
         # Hasse diagram).
         for i in range(1, hasse_size - 1):
-            chain_polys[i] = q + sum(q * chain_polys[j]
-                                     for j in hasse.principal_order_ideal(i)
-                                     if j)
+            chain_polys[i] = q + sum(
+                q * chain_polys[j] for j in hasse.principal_order_ideal(i) if j
+            )
         return q + q * sum(chain_polys)
 
     def h_polynomial(self):
@@ -7582,10 +7826,11 @@ class FinitePoset(UniqueRepresentation, Parent):
         mini = hasse.bottom()
         if (mini is None) or (maxi is None):
             raise ValueError("the poset is not bounded")
-        f = ring.sum(ring.monomial(len(ch))
-                     for ch in hasse.chains(exclude=[mini, maxi]))
+        f = ring.sum(
+            ring.monomial(len(ch)) for ch in hasse.chains(exclude=[mini, maxi])
+        )
         d = f.degree()
-        f = (1 - q)**d * q * f(q=q / (1 - q))
+        f = (1 - q) ** d * q * f(q=q / (1 - q))
         return ring(f)
 
     def flag_f_polynomial(self):
@@ -7661,8 +7906,9 @@ class FinitePoset(UniqueRepresentation, Parent):
             return PolynomialRing(ZZ, 'x', 1).one()
         anneau = PolynomialRing(ZZ, 'x', n + 1)
         x = anneau.gens()
-        return x[n] * sum(prod(x[rk(i)] for i in ch)
-                          for ch in hasse.chains(exclude=[mini, maxi]))
+        return x[n] * sum(
+            prod(x[rk(i)] for i in ch) for ch in hasse.chains(exclude=[mini, maxi])
+        )
 
     def flag_h_polynomial(self):
         r"""
@@ -7736,9 +7982,14 @@ class FinitePoset(UniqueRepresentation, Parent):
             return PolynomialRing(QQ, 'x', 1).one()
         anneau = PolynomialRing(QQ, 'x', n + 1)
         x = anneau.gens()
-        return prod(1 - x[k] for k in range(1, n)) * x[n] \
-            * sum(prod(x[rk(i)] / (1 - x[rk(i)]) for i in ch)
-                  for ch in hasse.chains(exclude=[mini, maxi]))
+        return (
+            prod(1 - x[k] for k in range(1, n))
+            * x[n]
+            * sum(
+                prod(x[rk(i)] / (1 - x[rk(i)]) for i in ch)
+                for ch in hasse.chains(exclude=[mini, maxi])
+            )
+        )
 
     def characteristic_polynomial(self):
         r"""
@@ -7784,8 +8035,9 @@ class FinitePoset(UniqueRepresentation, Parent):
             raise ValueError("the poset does not have a bottom element")
         n = rk(H.maximal_elements()[0])
         ring = PolynomialRing(ZZ, 'q')
-        return ring.sum(H.bottom_moebius_function(x) * ring.monomial(n - rk(x))
-                        for x in H)
+        return ring.sum(
+            H.bottom_moebius_function(x) * ring.monomial(n - rk(x)) for x in H
+        )
 
     def chain_polynomial(self):
         """
@@ -8314,8 +8566,13 @@ class FinitePoset(UniqueRepresentation, Parent):
                     for j in levels[level + rank_diff]:
                         if H.is_lequal(i, j) and M[i, j] != 1:
                             if certificate:
-                                return (False, (self._vertex_to_element(i),
-                                                self._vertex_to_element(j)))
+                                return (
+                                    False,
+                                    (
+                                        self._vertex_to_element(i),
+                                        self._vertex_to_element(j),
+                                    ),
+                                )
                             return False
         return (True, None) if certificate else True
 
@@ -8376,9 +8633,13 @@ class FinitePoset(UniqueRepresentation, Parent):
                 if certificate:
                     if A_jumps > B_jumps:
                         A, B = B, A
-                    return (False,
-                            (self.linear_extension([self[v] for v in A]),
-                             self.linear_extension([self[v] for v in B])))
+                    return (
+                        False,
+                        (
+                            self.linear_extension([self[v] for v in A]),
+                            self.linear_extension([self[v] for v in B]),
+                        ),
+                    )
                 return False
 
         return (True, None) if certificate else True
@@ -8548,6 +8809,7 @@ class FinitePoset(UniqueRepresentation, Parent):
         - Darij Grinberg (2013-05-09)
         """
         from sage.combinat.partition import Partition
+
         G, a = self.frank_network()
         n = len(self)
         chron = _ford_fulkerson_chronicle(G, (-1, 0), (2, 0), a)
@@ -8666,6 +8928,7 @@ class FinitePoset(UniqueRepresentation, Parent):
                 raise ValueError("the elements of tup are not those of P")
         from sage.combinat.composition import Composition
         from sage.combinat.ncsf_qsym.qsym import QuasiSymmetricFunctions
+
         QR = QuasiSymmetricFunctions(R)
         n = len(tup)
         res = QR.zero()
@@ -8674,15 +8937,17 @@ class FinitePoset(UniqueRepresentation, Parent):
             # The simple case: ``weights == None``.
             F = QR.Fundamental()
             for lin in self.linear_extensions(facade=True):
-                descents = [i + 1 for i in range(n - 1)
-                            if tupdict[lin[i]] > tupdict[lin[i + 1]]]
+                descents = [
+                    i + 1 for i in range(n - 1) if tupdict[lin[i]] > tupdict[lin[i + 1]]
+                ]
                 res += F(Composition(from_subset=(descents, n)))
             return res
         for lin in self.linear_extensions(facade=True):
             M = QR.Monomial()
             lin_weights = Composition([weights.get(lin[i], 1) for i in range(n)])
-            descents = [i + 1 for i in range(n - 1)
-                        if tupdict[lin[i]] > tupdict[lin[i + 1]]]
+            descents = [
+                i + 1 for i in range(n - 1) if tupdict[lin[i]] > tupdict[lin[i + 1]]
+            ]
             d_c = Composition(from_subset=(descents, n))
             for comp in d_c.finer():
                 res += M[lin_weights.fatten(comp)]
@@ -8797,6 +9062,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             Finite lattice containing 0 elements
         """
         from sage.combinat.posets.lattices import LatticePoset
+
         if self.cardinality() == 0:
             return LatticePoset({})
         return LatticePoset((self.cuts(), lambda a, b: a.issuperset(b)))
@@ -8815,6 +9081,7 @@ class FinitePoset(UniqueRepresentation, Parent):
              over Rational Field
         """
         from sage.combinat.posets.incidence_algebras import IncidenceAlgebra
+
         return IncidenceAlgebra(R, self, prefix)
 
     @cached_method(key=lambda self, x, y, l: (x, y))
@@ -8866,14 +9133,20 @@ class FinitePoset(UniqueRepresentation, Parent):
 
         min_elt = self.minimal_elements()[0]
         if canonical_labels:
+
             def sublat(P):
                 return self.subposet(P).canonical_label()
         else:
+
             def sublat(P):
                 return self.subposet(P)
-        poly = -sum(sublat(self.order_ideal([x])).characteristic_polynomial() *
-                    sublat(self.order_filter([x])).kazhdan_lusztig_polynomial()
-                    for x in self if x != min_elt)
+
+        poly = -sum(
+            sublat(self.order_ideal([x])).characteristic_polynomial()
+            * sublat(self.order_filter([x])).kazhdan_lusztig_polynomial()
+            for x in self
+            if x != min_elt
+        )
         tr = self.rank() // 2 + 1
         ret = poly.truncate(tr)
         return ret(q=q)
@@ -8995,14 +9268,17 @@ class FinitePoset(UniqueRepresentation, Parent):
             ...
             AttributeError: 'str' object has no attribute 'subposet'...
         """
-        if (not self._is_facade or (isinstance(other, FinitePoset) and
-                                    not other._is_facade)):
+        if not self._is_facade or (
+            isinstance(other, FinitePoset) and not other._is_facade
+        ):
             raise TypeError("the function is not defined on non-facade posets")
         # TODO: When we have decided if
         # Poset({'x':[42]}) == LatticePoset({'x':[42]})
         # or not, either remove this note or remove .hasse_diagram() below.
-        return (set(self).issubset(set(other)) and
-                other.subposet(self).hasse_diagram() == self.hasse_diagram())
+        return (
+            set(self).issubset(set(other))
+            and other.subposet(self).hasse_diagram() == self.hasse_diagram()
+        )
 
     def _libgap_(self):
         """
@@ -9021,6 +9297,7 @@ class FinitePoset(UniqueRepresentation, Parent):
             13
         """
         from sage.libs.gap.libgap import libgap
+
         libgap.LoadPackage("QPA")
         L = list(self)
         return libgap.Poset(L, [self.principal_order_filter(x) for x in L])
@@ -9047,8 +9324,9 @@ class FinitePoset(UniqueRepresentation, Parent):
         H = self._hasse_diagram
         txt = 'needsPackage "Posets";'
         txt += "poset({%s},{" % ','.join(str(x) for x in H)
-        txt += ",".join(f"{{{str(x)},{str(y)}}}"
-                        for x, y in H.cover_relations_iterator())
+        txt += ",".join(
+            f"{{{str(x)},{str(y)}}}" for x, y in H.cover_relations_iterator()
+        )
         return txt + "})"
 
 
@@ -9168,9 +9446,25 @@ class FinitePosets_n(UniqueRepresentation, Parent):
         """
         # Obtained from The On-Line Encyclopedia of Integer Sequences;
         # this is sequence number A000112.
-        known_values = [1, 1, 2, 5, 16, 63, 318, 2045, 16999, 183231,
-                        2567284, 46749427, 1104891746, 33823827452, 1338193159771,
-                        68275077901156, 4483130665195087]
+        known_values = [
+            1,
+            1,
+            2,
+            5,
+            16,
+            63,
+            318,
+            2045,
+            16999,
+            183231,
+            2567284,
+            46749427,
+            1104891746,
+            33823827452,
+            1338193159771,
+            68275077901156,
+            4483130665195087,
+        ]
         if not from_iterator and self._n < len(known_values):
             return Integer(known_values[self._n])
         return super().cardinality()
@@ -9319,7 +9613,6 @@ def _ford_fulkerson_chronicle(G, s, t, a):
     capacity = [1 for _ in range(m)]
 
     while True:
-
         # Step MC1 in Britz-Fomin, Algorithm 7.2.
 
         # Gprime: directed graph G' from Britz-Fomin, Section 7.

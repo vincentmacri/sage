@@ -84,6 +84,7 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
 
     - [CE2001]_
     """
+
     @staticmethod
     def __classcall_private__(cls, R, M, ordering=None):
         """
@@ -123,7 +124,7 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
             sage: TestSuite(OS).run(elements=elts)
         """
         self._M = M
-        self._sorting = {x:i for i,x in enumerate(ordering)}
+        self._sorting = {x: i for i, x in enumerate(ordering)}
 
         # set up the dictionary of broken circuits
         self._broken_circuits = {}
@@ -132,10 +133,15 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
             self._broken_circuits[frozenset(L[1:])] = L[0]
 
         cat = Algebras(R).FiniteDimensional().WithBasis().Graded()
-        CombinatorialFreeModule.__init__(self, R, list(M.no_broken_circuits_sets(ordering)),
-                                         prefix='OS', bracket='{',
-                                         sorting_key=self._sort_key,
-                                         category=cat)
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            list(M.no_broken_circuits_sets(ordering)),
+            prefix='OS',
+            bracket='{',
+            sorting_key=self._sort_key,
+            category=cat,
+        )
 
     def _sort_key(self, x):
         """
@@ -220,8 +226,9 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
             sage: OS.algebra_generators()
             Finite family {0: OS{0}, 1: OS{0}, 2: OS{0}}
         """
-        return Family(sorted(self._M.groundset()),
-                      lambda i: self.subset_image(frozenset([i])))
+        return Family(
+            sorted(self._M.groundset()), lambda i: self.subset_image(frozenset([i]))
+        )
 
     @cached_method
     def product_on_basis(self, a, b):
@@ -284,7 +291,7 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
             # insert i into nbc, keeping track of sign in coeff
             ns = b.union({i})
             ns_sorted = sorted(ns, key=lambda x: self._sorting[x])
-            coeff = (-1)**ns_sorted.index(i)
+            coeff = (-1) ** ns_sorted.index(i)
 
             return R(coeff) * self.subset_image(ns)
 
@@ -294,7 +301,7 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
         if len(a) % 4 < 2:
             sign = R.one()
         else:
-            sign = - R.one()
+            sign = -R.one()
         r = self._from_dict({b: sign}, remove_zeros=False)
 
         # now do the multiplication generator by generator
@@ -487,6 +494,7 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
             [1, 10, 29, 20, 0]
         """
         from sage.algebras.commutative_dga import GradedCommutativeAlgebra
+
         gens = self.algebra_generators()
         gkeys = gens.keys()
         names = ['e{}'.format(i) for i in range(len(gens))]
@@ -497,7 +505,7 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
             indices = [gkeys.index(el) for el in bclist]
             indices.sort()
             rel = A.zero()
-            sign = -(-1)**len(indices)
+            sign = -((-1) ** len(indices))
             for i in indices:
                 mon = A.one()
                 for j in indices:
@@ -578,23 +586,27 @@ class OrlikSolomonAlgebra(CombinatorialFreeModule):
         if not omega.is_homogeneous() or omega.degree() != 1:
             raise ValueError("omega must be a homogeneous element of degree 1")
         from sage.homology.chain_complex import ChainComplex
+
         R = self.base_ring()
         from collections import defaultdict
         from sage.matrix.constructor import matrix
+
         graded_basis = defaultdict(list)
         B = self.basis()
         for k in B.keys():
             graded_basis[len(k)].append(k)
         degrees = list(graded_basis)
-        data = {i: matrix.zero(R, len(graded_basis[i+1]), len(graded_basis[i]))
-                for i in degrees}
+        data = {
+            i: matrix.zero(R, len(graded_basis[i + 1]), len(graded_basis[i]))
+            for i in degrees
+        }
         for i in degrees:
             mat = data[i]
             for j, key in enumerate(graded_basis[i]):
                 ret = (omega * B[key]).monomial_coefficients(copy=False)
-                for k, imkey in enumerate(graded_basis[i+1]):
+                for k, imkey in enumerate(graded_basis[i + 1]):
                     if imkey in ret:
-                        mat[k,j] = ret[imkey]
+                        mat[k, j] = ret[imkey]
             mat.set_immutable()
         return ChainComplex(data, R)
 
@@ -735,6 +747,7 @@ class OrlikSolomonInvariantAlgebra(FiniteDimensionalInvariantModule):
         `g \cdot I \in \mathcal{I}` for every `g \in G` and for
         every `I \in \mathcal{I}`.
     """
+
     def __init__(self, R, M, G, action_on_groundset=None, *args, **kwargs):
         r"""
         Initialize ``self``.
@@ -764,8 +777,10 @@ class OrlikSolomonInvariantAlgebra(FiniteDimensionalInvariantModule):
         category = kwargs.pop('category', OS.category().Subobjects())
 
         def action(g, m):
-            return OS.sum(c * self._basis_action(g, x)
-                          for x, c in m._monomial_coefficients.items())
+            return OS.sum(
+                c * self._basis_action(g, x)
+                for x, c in m._monomial_coefficients.items()
+            )
 
         self._action = action
 
@@ -785,12 +800,17 @@ class OrlikSolomonInvariantAlgebra(FiniteDimensionalInvariantModule):
         # by `OS_d.invariant_module`, and so we pass to the superclass
         # of `FiniteDimensionalInvariantModule`, which is `SubmoduleWithBasis`.
         from sage.modules.with_basis.subquotient import SubmoduleWithBasis
-        SubmoduleWithBasis.__init__(self, Family(B),
-                                    support_order=OS._compute_support_order(B),
-                                    ambient=OS,
-                                    unitriangular=False,
-                                    category=category,
-                                    *args, **kwargs)
+
+        SubmoduleWithBasis.__init__(
+            self,
+            Family(B),
+            support_order=OS._compute_support_order(B),
+            ambient=OS,
+            unitriangular=False,
+            category=category,
+            *args,
+            **kwargs,
+        )
 
         # To subclass FiniteDimensionalInvariant module, we also need a
         # self._semigroup attribute.

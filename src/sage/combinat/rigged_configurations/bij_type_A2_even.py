@@ -76,7 +76,7 @@ class KRTToRCBijectionTypeA2Even(KRTToRCBijectionTypeC):
         case_S = [None] * n
         if val == 'E':
             pos_val = n
-            max_width = self.ret_rig_con[n-1].insert_cell(0)
+            max_width = self.ret_rig_con[n - 1].insert_cell(0)
         else:
             pos_val = -val
 
@@ -94,10 +94,10 @@ class KRTToRCBijectionTypeA2Even(KRTToRCBijectionTypeC):
                 case_S[a] = max_width
 
             # Special case for n
-            self._insert_cell_case_S(self.ret_rig_con[n-1])
+            self._insert_cell_case_S(self.ret_rig_con[n - 1])
 
         # Now go back following the regular C_n (ish) rules
-        for a in reversed(range(tableau_height, n-1)):
+        for a in reversed(range(tableau_height, n - 1)):
             if case_S[a] == max_width:
                 self._insert_cell_case_S(self.ret_rig_con[a])
             else:
@@ -111,7 +111,7 @@ class KRTToRCBijectionTypeA2Even(KRTToRCBijectionTypeC):
             self._update_partition_values(tableau_height)
 
         if pos_val <= tableau_height:
-            for a in range(pos_val-1, tableau_height):
+            for a in range(pos_val - 1, tableau_height):
                 self._update_vacancy_nums(a)
                 self._update_partition_values(a)
             if pos_val > 1:
@@ -142,7 +142,7 @@ class RCToKRTBijectionTypeA2Even(RCToKRTBijectionTypeC):
         """
         height -= 1  # indexing
         n = self.n
-        ell = [None] * (2*n)
+        ell = [None] * (2 * n)
         case_S = [False] * n
         b = None
 
@@ -162,18 +162,20 @@ class RCToKRTBijectionTypeA2Even(RCToKRTBijectionTypeC):
             b = 'E'
             # This is a slight hack since remove_cell() will just delete the
             #   appropriate row
-            case_S[n-1] = True
+            case_S[n - 1] = True
 
         if b is None:
             # Now go back
-            ell[2*n-1] = ell[n-1]
-            case_S[n-1] = True
-            for a in reversed(range(n-1)):
+            ell[2 * n - 1] = ell[n - 1]
+            case_S[n - 1] = True
+            for a in reversed(range(n - 1)):
                 if a >= height and self.cur_partitions[a][ell[a]] == last_size:
-                    ell[n+a] = ell[a]
+                    ell[n + a] = ell[a]
                     case_S[a] = True
                 else:
-                    ell[n+a] = self._find_singular_string(self.cur_partitions[a], last_size)
+                    ell[n + a] = self._find_singular_string(
+                        self.cur_partitions[a], last_size
+                    )
 
                     if ell[n + a] is None:
                         b = -(a + 2)
@@ -198,20 +200,28 @@ class RCToKRTBijectionTypeA2Even(RCToKRTBijectionTypeC):
                 row_num_bar_next = None
             else:
                 row_num_next = self.cur_partitions[a].remove_cell(ell[a])
-                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n+a])
+                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n + a])
 
             self._update_vacancy_numbers(a - 1)
             if row_num is not None:
-                self.cur_partitions[a-1].rigging[row_num] = self.cur_partitions[a-1].vacancy_numbers[row_num]
+                self.cur_partitions[a - 1].rigging[row_num] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num]
             if row_num_bar is not None:
-                self.cur_partitions[a-1].rigging[row_num_bar] = self.cur_partitions[a-1].vacancy_numbers[row_num_bar]
+                self.cur_partitions[a - 1].rigging[row_num_bar] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num_bar]
             row_num = row_num_next
             row_num_bar = row_num_bar_next
 
         self._update_vacancy_numbers(n - 1)
         if row_num is not None:
-            self.cur_partitions[n-1].rigging[row_num] = self.cur_partitions[n-1].vacancy_numbers[row_num]
+            self.cur_partitions[n - 1].rigging[row_num] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[row_num]
         if row_num_bar is not None:
-            self.cur_partitions[n-1].rigging[row_num_bar] = self.cur_partitions[n-1].vacancy_numbers[row_num_bar]
+            self.cur_partitions[n - 1].rigging[row_num_bar] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[row_num_bar]
 
         return b

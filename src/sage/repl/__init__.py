@@ -2,6 +2,7 @@
 # The Sage application loads it when starting up.
 def load_ipython_extension(*args):
     import sage.repl.ipython_extension
+
     sage.repl.ipython_extension.load_ipython_extension(*args)
 
 
@@ -12,4 +13,5 @@ def load_ipython_extension(*args):
 # So we make "%load_ext sage" work by monkey-patching the function
 # into the sage package upon importing sage.repl.
 import sage
+
 sage.load_ipython_extension = load_ipython_extension

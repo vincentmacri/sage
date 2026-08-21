@@ -512,6 +512,7 @@ The components on the basis are returned by the square bracket operator for
     sage: [v.coefficient(i) for i in {1,2,3}]
     [2, 0, -5]
 """
+
 # ******************************************************************************
 #       Copyright (C) 2014-2021 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #                     2014-2016 Travis Scrimshaw <tscrimsh@umn.edu>
@@ -584,7 +585,7 @@ class FiniteRankFreeModule_abstract(UniqueRepresentation, ReflexiveModule_abstra
             raise TypeError("the module base ring must be commutative")
         category = Modules(ring).FiniteDimensional().or_subcategory(category)
         Parent.__init__(self, base=ring, category=category)
-        self._ring = ring # same as self._base
+        self._ring = ring  # same as self._base
         if ambient is None:
             self._ambient_module = self
         else:
@@ -693,11 +694,13 @@ class FiniteRankFreeModule_abstract(UniqueRepresentation, ReflexiveModule_abstra
         for basis in self._known_bases:
             resu._add_comp_unsafe(basis)
             # (since new components are initialized to zero)
-        resu._is_zero = True # This element is certainly zero
+        resu._is_zero = True  # This element is certainly zero
         resu.set_immutable()
         return resu
 
-    def ambient_module(self): # compatible with sage.modules.free_module.FreeModule_generic
+    def ambient_module(
+        self,
+    ):  # compatible with sage.modules.free_module.FreeModule_generic
         """
         Return the ambient module associated to this module.
 
@@ -715,7 +718,7 @@ class FiniteRankFreeModule_abstract(UniqueRepresentation, ReflexiveModule_abstra
         """
         return self._ambient_module
 
-    ambient = ambient_module # compatible with sage.modules.with_basis.subquotient.SubmoduleWithBasis
+    ambient = ambient_module  # compatible with sage.modules.with_basis.subquotient.SubmoduleWithBasis
 
     def is_submodule(self, other):
         """
@@ -945,12 +948,12 @@ class FiniteRankFreeModule_abstract(UniqueRepresentation, ReflexiveModule_abstra
             basis = self.default_basis()
         if codomain is None:
             from sage.combinat.free_module import CombinatorialFreeModule
+
             if isinstance(basis._symbol, str):
                 prefix = basis._symbol
             else:
                 prefix = None
-            codomain = CombinatorialFreeModule(base_ring, basis.keys(),
-                                               prefix=prefix)
+            codomain = CombinatorialFreeModule(base_ring, basis.keys(), prefix=prefix)
         else:
             try:
                 codomain_rank = codomain.rank()
@@ -960,8 +963,7 @@ class FiniteRankFreeModule_abstract(UniqueRepresentation, ReflexiveModule_abstra
             if codomain_rank != self.rank():
                 raise ValueError("domain and codomain must have the same rank")
             if codomain.base_ring() != base_ring:
-                raise ValueError("domain and codomain must have the same "
-                                 "base ring")
+                raise ValueError("domain and codomain must have the same base ring")
 
         codomain_basis = Family(codomain.basis())
         if isinstance(codomain_basis, TrivialFamily):
@@ -981,8 +983,10 @@ class FiniteRankFreeModule_abstract(UniqueRepresentation, ReflexiveModule_abstra
             r"""
             Concrete isomorphism from ``self`` to ``codomain``.
             """
-            return codomain.sum(x[basis, domain_key] * codomain_basis[codomain_key]
-                                for codomain_key, domain_key in key_pairs)
+            return codomain.sum(
+                x[basis, domain_key] * codomain_basis[codomain_key]
+                for codomain_key, domain_key in key_pairs
+            )
 
         def _inverse(y):
             r"""
@@ -990,7 +994,8 @@ class FiniteRankFreeModule_abstract(UniqueRepresentation, ReflexiveModule_abstra
             """
             return self.linear_combination(
                 (basis_by_codomain_key[codomain_key], coefficient)
-                for codomain_key, coefficient in y.monomial_coefficients().items())
+                for codomain_key, coefficient in y.monomial_coefficients().items()
+            )
 
         category = Modules(self.base_ring())
         homset = Hom(self, codomain, category)
@@ -1231,8 +1236,17 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
     _sindex: int
 
     @staticmethod
-    def __classcall_private__(cls, ring, rank, name=None, latex_name=None, start_index=0,
-                              output_formatter=None, category=None, ambient=None):
+    def __classcall_private__(
+        cls,
+        ring,
+        rank,
+        name=None,
+        latex_name=None,
+        start_index=0,
+        output_formatter=None,
+        category=None,
+        ambient=None,
+    ):
         r"""
         Normalize init arguments for ``UniqueRepresentation``.
 
@@ -1255,7 +1269,16 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         if latex_name is None:
             latex_name = name
         return super().__classcall__(
-            cls, ring, rank, name, latex_name, start_index, output_formatter, category, ambient)
+            cls,
+            ring,
+            rank,
+            name,
+            latex_name,
+            start_index,
+            output_formatter,
+            category,
+            ambient,
+        )
 
     def __init__(
         self,
@@ -1280,8 +1303,14 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
             sage: f = M.basis('f')
             sage: TestSuite(M).run()
         """
-        super().__init__(ring, rank, name=name, latex_name=latex_name,
-                         category=category, ambient=ambient)
+        super().__init__(
+            ring,
+            rank,
+            name=name,
+            latex_name=latex_name,
+            category=category,
+            ambient=ambient,
+        )
         self._sindex = start_index
         self._output_formatter = output_formatter
         # Dictionary of the tensor modules built on self
@@ -1299,13 +1328,13 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         self._all_modules = {self}
         # List of known bases on the free module:
         self._known_bases = []
-        self._def_basis = None # default basis
-        self._basis_changes = {} # Dictionary of the changes of bases
+        self._def_basis = None  # default basis
+        self._basis_changes = {}  # Dictionary of the changes of bases
         # Identity automorphism:
-        self._identity_map = None # to be set by self.identity_map()
+        self._identity_map = None  # to be set by self.identity_map()
         # General linear group:
-        self._general_linear_group = None # to be set by
-                                          # self.general_linear_group()
+        self._general_linear_group = None  # to be set by
+        # self.general_linear_group()
 
     def construction(self):
         """
@@ -1329,21 +1358,26 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         if self._output_formatter:
             return None
         from sage.categories.pushout import VectorFunctor
-        kwds = dict(is_sparse=False,
-                    inner_product_matrix=None,
-                    with_basis=None,
-                    name_mapping={self.base_ring(): self._name} if self._name else None,
-                    latex_name_mapping={self.base_ring(): self._latex_name} if self._latex_name else None)
+
+        kwds = dict(
+            is_sparse=False,
+            inner_product_matrix=None,
+            with_basis=None,
+            name_mapping={self.base_ring(): self._name} if self._name else None,
+            latex_name_mapping={self.base_ring(): self._latex_name}
+            if self._latex_name
+            else None,
+        )
         if self._sindex:
-            return (VectorFunctor(basis_keys=list(self.irange()), **kwds),
-                    self.base_ring())
-        return (VectorFunctor(n=self.rank(), **kwds),
-                self.base_ring())
+            return (
+                VectorFunctor(basis_keys=list(self.irange()), **kwds),
+                self.base_ring(),
+            )
+        return (VectorFunctor(n=self.rank(), **kwds), self.base_ring())
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], basis=None, name=None, latex_name=None):
         r"""
         Construct an element of ``self``.
 
@@ -1444,6 +1478,7 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
              in Category of finite dimensional modules over Integer Ring
         """
         from .free_module_homset import FreeModuleHomset
+
         return FreeModuleHomset(self, other)
 
     def tensor_module(self, k, l, *, sym=None, antisym=None):
@@ -1540,10 +1575,14 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
             elif key == (0, 1):
                 T = self.dual()
             elif sym or antisym:
-                from sage.tensor.modules.tensor_free_submodule import TensorFreeSubmodule_sym
+                from sage.tensor.modules.tensor_free_submodule import (
+                    TensorFreeSubmodule_sym,
+                )
+
                 T = TensorFreeSubmodule_sym(self, (k, l), sym=sym, antisym=antisym)
             else:
                 from sage.tensor.modules.tensor_free_module import TensorFreeModule
+
                 T = TensorFreeModule(self, (k, l))
             self._tensor_modules[key] = T
             return T
@@ -1685,6 +1724,7 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
                 L = self
             else:
                 from sage.tensor.modules.ext_pow_free_module import ExtPowerFreeModule
+
                 L = ExtPowerFreeModule(self, p)
             self._exterior_powers[p] = L
             return L
@@ -1758,7 +1798,10 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
             elif p == 1:
                 L = FiniteRankDualFreeModule(self)
             else:
-                from sage.tensor.modules.ext_pow_free_module import ExtPowerDualFreeModule
+                from sage.tensor.modules.ext_pow_free_module import (
+                    ExtPowerDualFreeModule,
+                )
+
                 L = ExtPowerDualFreeModule(self, p)
             self._dual_exterior_powers[p] = L
             return L
@@ -1816,15 +1859,22 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         :class:`~sage.tensor.modules.free_module_linear_group.FreeModuleLinearGroup`
         for more documentation.
         """
-        from sage.tensor.modules.free_module_linear_group import \
-                                                          FreeModuleLinearGroup
+        from sage.tensor.modules.free_module_linear_group import FreeModuleLinearGroup
+
         if self._general_linear_group is None:
             self._general_linear_group = FreeModuleLinearGroup(self)
         return self._general_linear_group
 
-    def basis(self, symbol, latex_symbol=None, from_family=None,
-              indices=None, latex_indices=None, symbol_dual=None,
-              latex_symbol_dual=None):
+    def basis(
+        self,
+        symbol,
+        latex_symbol=None,
+        from_family=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Define or return a basis of the free module ``self``.
 
@@ -1984,19 +2034,26 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         :class:`~sage.tensor.modules.free_module_basis.FreeModuleBasis`.
         """
         from .free_module_basis import FreeModuleBasis
+
         for other in self._known_bases:
             if symbol == other._symbol and indices == other._indices:
                 return other
-        resu = FreeModuleBasis(self, symbol, latex_symbol=latex_symbol,
-                               indices=indices, latex_indices=latex_indices,
-                               symbol_dual=symbol_dual,
-                               latex_symbol_dual=latex_symbol_dual)
+        resu = FreeModuleBasis(
+            self,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         if from_family:
             try:
                 resu._init_from_family(from_family)
             except ZeroDivisionError:
-                raise ValueError("the provided module elements are not "
-                                 "linearly independent")
+                raise ValueError(
+                    "the provided module elements are not linearly independent"
+                )
         return resu
 
     def _test_basis(self, tester=None, **options):
@@ -2039,10 +2096,11 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
               running ._test_some_elements() . . . pass
         """
         from sage.misc.sage_unittest import TestSuite
+
         # The intention is to raise an exception only if this is
         # run as a sub-testsuite of a larger testsuite.
         # (from _test_elements)
-        is_sub_testsuite = (tester is not None)
+        is_sub_testsuite = tester is not None
         tester = self._tester(tester=tester, **options)
         try:
             b = self.basis('test')
@@ -2060,11 +2118,13 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
             tester.assertTrue(element is b[index])
         # Run test suite of the basis object (similar to _test_elements)
         tester.info("\n  Running the test suite of self.basis('test')")
-        TestSuite(b).run(verbose=tester._verbose, prefix=tester._prefix + "  ",
-                         raise_on_failure=is_sub_testsuite)
+        TestSuite(b).run(
+            verbose=tester._verbose,
+            prefix=tester._prefix + "  ",
+            raise_on_failure=is_sub_testsuite,
+        )
 
-    def _tensor(self, tensor_type, name=None, latex_name=None, sym=None,
-               antisym=None):
+    def _tensor(self, tensor_type, name=None, latex_name=None, sym=None, antisym=None):
         r"""
         Construct a tensor on the free module ``self``.
 
@@ -2108,25 +2168,34 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
             Element t of the Rank-3 free module M over the Integer Ring
         """
         from .comp import CompWithSym
+
         sym, antisym = CompWithSym._canonicalize_sym_antisym(
-            tensor_type[0] + tensor_type[1], sym, antisym)
+            tensor_type[0] + tensor_type[1], sym, antisym
+        )
         # Special cases:
-        if tensor_type == (1,0):
+        if tensor_type == (1, 0):
             return self.element_class(self, name=name, latex_name=latex_name)
-        if tensor_type == (0,1):
+        if tensor_type == (0, 1):
             return self.linear_form(name=name, latex_name=latex_name)
         if tensor_type[0] == 0 and tensor_type[1] > 1 and antisym:
             if len(antisym[0]) == tensor_type[1]:
-                return self.alternating_form(tensor_type[1], name=name,
-                                             latex_name=latex_name)
+                return self.alternating_form(
+                    tensor_type[1], name=name, latex_name=latex_name
+                )
         elif tensor_type[0] > 1 and tensor_type[1] == 0 and antisym:
             if len(antisym[0]) == tensor_type[0]:
-                return self.alternating_contravariant_tensor(tensor_type[0],
-                                           name=name, latex_name=latex_name)
+                return self.alternating_contravariant_tensor(
+                    tensor_type[0], name=name, latex_name=latex_name
+                )
         # Generic case:
-        return self.tensor_module(*tensor_type).element_class(self,
-                                 tensor_type, name=name, latex_name=latex_name,
-                                 sym=sym, antisym=antisym)
+        return self.tensor_module(*tensor_type).element_class(
+            self,
+            tensor_type,
+            name=name,
+            latex_name=latex_name,
+            sym=sym,
+            antisym=antisym,
+        )
 
     def tensor(self, *args, **kwds):
         r"""
@@ -2277,32 +2346,41 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
 
         # 0/ Compatibility checks:
         if comp._ring is not self._ring:
-            raise TypeError("the components are not defined on the same"
-                            " ring as the module")
+            raise TypeError(
+                "the components are not defined on the same ring as the module"
+            )
         if comp._frame not in self._known_bases:
-            raise TypeError("the components are not defined on a basis of"
-                            " the module")
+            raise TypeError("the components are not defined on a basis of the module")
         if comp._nid != tensor_type[0] + tensor_type[1]:
-            raise TypeError("number of component indices not compatible with "
-                            " the tensor type")
+            raise TypeError(
+                "number of component indices not compatible with  the tensor type"
+            )
 
         # 1/ Construction of the tensor:
         if tensor_type == (1, 0):
             resu = self.element_class(self, name=name, latex_name=latex_name)
         elif tensor_type == (0, 1):
             resu = self.linear_form(name=name, latex_name=latex_name)
-        elif tensor_type[0] == 0 and tensor_type[1] > 1 and \
-                                        isinstance(comp, CompFullyAntiSym):
-            resu = self.alternating_form(tensor_type[1], name=name,
-                                         latex_name=latex_name)
-        elif tensor_type[0] > 1 and tensor_type[1] == 0 and \
-                                        isinstance(comp, CompFullyAntiSym):
-            resu = self.alternating_contravariant_tensor(tensor_type[0],
-                                         name=name,
-                                         latex_name=latex_name)
+        elif (
+            tensor_type[0] == 0
+            and tensor_type[1] > 1
+            and isinstance(comp, CompFullyAntiSym)
+        ):
+            resu = self.alternating_form(
+                tensor_type[1], name=name, latex_name=latex_name
+            )
+        elif (
+            tensor_type[0] > 1
+            and tensor_type[1] == 0
+            and isinstance(comp, CompFullyAntiSym)
+        ):
+            resu = self.alternating_contravariant_tensor(
+                tensor_type[0], name=name, latex_name=latex_name
+            )
         else:
-            resu = self.tensor_module(*tensor_type).element_class(self,
-                                 tensor_type, name=name, latex_name=latex_name)
+            resu = self.tensor_module(*tensor_type).element_class(
+                self, tensor_type, name=name, latex_name=latex_name
+            )
             # Tensor symmetries deduced from those of comp:
             if isinstance(comp, CompWithSym):
                 resu._sym = comp._sym
@@ -2313,8 +2391,7 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
 
         return resu
 
-    def alternating_contravariant_tensor(self, degree, name=None,
-                                         latex_name=None):
+    def alternating_contravariant_tensor(self, degree, name=None, latex_name=None):
         r"""
         Construct an alternating contravariant tensor on the free module.
 
@@ -2363,10 +2440,10 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         for more documentation.
         """
         if degree == 1:
-            return self.element_class(self, name=name,
-                                      latex_name=latex_name)
-        return self.exterior_power(degree).element_class(self, degree,
-                                       name=name, latex_name=latex_name)
+            return self.element_class(self, name=name, latex_name=latex_name)
+        return self.exterior_power(degree).element_class(
+            self, degree, name=name, latex_name=latex_name
+        )
 
     def alternating_form(self, degree, name=None, latex_name=None):
         r"""
@@ -2423,13 +2500,17 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         """
         if degree == 0:
             try:
-                return self._ring.element_class(self._ring, name=name,
-                                                latex_name=latex_name)
+                return self._ring.element_class(
+                    self._ring, name=name, latex_name=latex_name
+                )
             except (KeyError, AttributeError):
-                raise NotImplementedError('{} apparently '.format(self._ring) +
-                                          'does not provide generic elements')
-        return self.dual_exterior_power(degree).element_class(self, degree,
-                                              name=name, latex_name=latex_name)
+                raise NotImplementedError(
+                    '{} apparently '.format(self._ring)
+                    + 'does not provide generic elements'
+                )
+        return self.dual_exterior_power(degree).element_class(
+            self, degree, name=name, latex_name=latex_name
+        )
 
     def linear_form(self, name=None, latex_name=None):
         r"""
@@ -2480,11 +2561,11 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         :class:`~sage.tensor.modules.free_module_alt_form.FreeModuleAltForm`
         for more documentation.
         """
-        return self.dual_exterior_power(1).element_class(self, 1, name=name,
-                                                         latex_name=latex_name)
+        return self.dual_exterior_power(1).element_class(
+            self, 1, name=name, latex_name=latex_name
+        )
 
-    def automorphism(self, matrix=None, basis=None, name=None,
-                     latex_name=None):
+    def automorphism(self, matrix=None, basis=None, name=None, latex_name=None):
         r"""
         Construct a module automorphism of ``self``.
 
@@ -2565,8 +2646,9 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         :class:`~sage.tensor.modules.free_module_automorphism.FreeModuleAutomorphism`
         for more documentation.
         """
-        resu = self.general_linear_group().element_class(self, name=name,
-                                                         latex_name=latex_name)
+        resu = self.general_linear_group().element_class(
+            self, name=name, latex_name=latex_name
+        )
         if matrix:
             if basis is None:
                 basis = self.default_basis()
@@ -2669,8 +2751,9 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         See :class:`~sage.tensor.modules.free_module_tensor.FreeModuleTensor`
         for more documentation.
         """
-        return self.tensor_module(0,2).element_class(self, (0,2), name=name,
-                                              latex_name=latex_name, sym=(0,1))
+        return self.tensor_module(0, 2).element_class(
+            self, (0, 2), name=name, latex_name=latex_name, sym=(0, 1)
+        )
 
     #### End of methods to be redefined by derived classes ####
 
@@ -2826,6 +2909,7 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
             Basis (f_1,f_2,f_3) on the Rank-3 free module M over the Integer Ring
         """
         from .free_module_basis import FreeModuleBasis
+
         if not isinstance(basis, FreeModuleBasis):
             raise TypeError("the argument is not a free module basis")
         if basis._fmodule is not self:
@@ -3009,11 +3093,9 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         bc = self._basis_changes
         if (basis1, basis2) not in bc:
             if basis1 not in self._known_bases:
-                raise TypeError("{} is not a basis of the {}".format(basis1,
-                                                                     self))
+                raise TypeError("{} is not a basis of the {}".format(basis1, self))
             if basis2 not in self._known_bases:
-                raise TypeError("{} is not a basis of the {}".format(basis2,
-                                                                     self))
+                raise TypeError("{} is not a basis of the {}".format(basis2, self))
             # Is the inverse already registered ?
             if (basis2, basis1) in bc:
                 inv = bc[(basis2, basis1)].inverse()
@@ -3036,13 +3118,17 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
                     bc[(basis1, basis2)] = inv.inverse()
                     break
             else:
-                raise ValueError(("the change of basis from '{!r}' to '{!r}'"
-                                + " cannot be computed"
-                                ).format(basis1, basis2))
+                raise ValueError(
+                    (
+                        "the change of basis from '{!r}' to '{!r}'"
+                        + " cannot be computed"
+                    ).format(basis1, basis2)
+                )
         return bc[(basis1, basis2)]
 
-    def set_change_of_basis(self, basis1, basis2, change_of_basis,
-                            compute_inverse=True):
+    def set_change_of_basis(
+        self, basis1, basis2, change_of_basis, compute_inverse=True
+    ):
         r"""
         Relates two bases by an automorphism of ``self``.
 
@@ -3089,20 +3175,18 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
             e_0 = 3/5 f_0 + 1/5 f_1
         """
         if basis1 not in self._known_bases:
-            raise TypeError("{} is not a basis of the {}".format(basis1,
-                                                                 self))
+            raise TypeError("{} is not a basis of the {}".format(basis1, self))
         if basis2 not in self._known_bases:
-            raise TypeError("{} is not a basis of the {}".format(basis2,
-                                                                 self))
+            raise TypeError("{} is not a basis of the {}".format(basis2, self))
         if change_of_basis not in self.general_linear_group():
-            raise TypeError("{} is not an automorphism of the {}".format(
-                                                        change_of_basis, self))
+            raise TypeError(
+                "{} is not an automorphism of the {}".format(change_of_basis, self)
+            )
         self._basis_changes[(basis1, basis2)] = change_of_basis
         if compute_inverse:
             self._basis_changes[(basis2, basis1)] = change_of_basis.inverse()
 
-    def hom(self, codomain, matrix_rep, bases=None, name=None,
-            latex_name=None):
+    def hom(self, codomain, matrix_rep, bases=None, name=None, latex_name=None):
         r"""
         Homomorphism from ``self`` to a free module.
 
@@ -3184,8 +3268,7 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         for more documentation.
         """
         homset = Hom(self, codomain)
-        return homset(matrix_rep, bases=bases, name=name,
-                      latex_name=latex_name)
+        return homset(matrix_rep, bases=bases, name=name, latex_name=latex_name)
 
     def endomorphism(self, matrix_rep, basis=None, name=None, latex_name=None):
         r"""
@@ -3249,10 +3332,12 @@ class FiniteRankFreeModule(ReflexiveModule_base, FiniteRankFreeModule_abstract):
         for more documentation.
         """
         from sage.categories.homset import End
+
         if basis is None:
             basis = self.default_basis()
-        return End(self)(matrix_rep, bases=(basis,basis), name=name,
-                         latex_name=latex_name)
+        return End(self)(
+            matrix_rep, bases=(basis, basis), name=name, latex_name=latex_name
+        )
 
     def identity_map(self, name='Id', latex_name=None):
         r"""
@@ -3456,14 +3541,12 @@ class FiniteRankDualFreeModule(ReflexiveModule_dual, FiniteRankFreeModule_abstra
             name = fmodule._name + '*'
         if latex_name is None and fmodule._latex_name is not None:
             latex_name = fmodule._latex_name + r'^*'
-        super().__init__(fmodule._ring, rank, name=name,
-                         latex_name=latex_name)
+        super().__init__(fmodule._ring, rank, name=name, latex_name=latex_name)
         fmodule._all_modules.add(self)
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], basis=None, name=None, latex_name=None):
         r"""
         Construct a linear form.
 
@@ -3483,16 +3566,22 @@ class FiniteRankDualFreeModule(ReflexiveModule_dual, FiniteRankFreeModule_abstra
             return self.zero()
         if isinstance(comp, FreeModuleTensor):
             # coercion of a tensor of type (0,1) to a linear form
-            tensor = comp # for readability
-            if tensor.tensor_type() == (0,1) and self._degree == 1 and \
-                                         tensor.base_module() is self._fmodule:
-                resu = self.element_class(self._fmodule, 1, name=tensor._name,
-                                          latex_name=tensor._latex_name)
+            tensor = comp  # for readability
+            if (
+                tensor.tensor_type() == (0, 1)
+                and self._degree == 1
+                and tensor.base_module() is self._fmodule
+            ):
+                resu = self.element_class(
+                    self._fmodule, 1, name=tensor._name, latex_name=tensor._latex_name
+                )
                 for basis, comp in tensor._components.items():
                     resu._components[basis] = comp.copy()
                 return resu
-            raise TypeError("cannot coerce the {} ".format(tensor) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot coerce the {} ".format(tensor)
+                + "to an element of {}".format(self)
+            )
         # standard construction
         resu = self.element_class(self._fmodule, 1, name=name, latex_name=latex_name)
         if comp:
@@ -3555,7 +3644,7 @@ class FiniteRankDualFreeModule(ReflexiveModule_dual, FiniteRankFreeModule_abstra
         for basis in self._fmodule._known_bases:
             resu._components[basis] = resu._new_comp(basis)
             # (since new components are initialized to zero)
-        resu._is_zero = True # This element is certainly zero
+        resu._is_zero = True  # This element is certainly zero
         resu.set_immutable()
         return resu
 

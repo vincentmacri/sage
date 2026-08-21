@@ -66,12 +66,15 @@ class ImaginaryElement(AdditiveGroupElement):
         except (TypeError, ValueError) as e:
             from sage.rings.asymptotic.misc import combine_exceptions
             from sage.structure.element import parent as parent_function
+
             raise combine_exceptions(
                 ValueError(
-                    '{} ({}) is not in {}'.format(imag,
-                                                  parent_function(imag),
-                                                  parent.base())),
-                e)
+                    '{} ({}) is not in {}'.format(
+                        imag, parent_function(imag), parent.base()
+                    )
+                ),
+                e,
+            )
 
     def imag(self):
         r"""
@@ -154,9 +157,9 @@ class ImaginaryElement(AdditiveGroupElement):
             ...
             RuntimeError: cannot decide '<' for imaginary elements 2*I and I
         """
-        raise RuntimeError("cannot decide '<' "
-                           "for imaginary elements "
-                           "{} and {}".format(self, other))
+        raise RuntimeError(
+            "cannot decide '<' for imaginary elements {} and {}".format(self, other)
+        )
 
     def _repr_(self):
         r"""
@@ -178,6 +181,7 @@ class ImaginaryElement(AdditiveGroupElement):
             -42*I
         """
         from sage.rings.asymptotic.misc import repr_op
+
         if self._imag_ == 0:
             return '0'
         if self._imag_ == 1:
@@ -297,6 +301,7 @@ class ImaginaryGroup(UniqueRepresentation, Parent):
         """
         if category is None:
             from sage.categories.additive_groups import AdditiveGroups
+
             category = AdditiveGroups().AdditiveCommutative()
         return category
 
@@ -362,6 +367,7 @@ class ImaginaryGroup(UniqueRepresentation, Parent):
             'ZZ*I'
         """
         from sage.rings.asymptotic.misc import parent_to_repr_short, repr_op
+
         return repr_op(parent_to_repr_short(self.base()), '*', 'I')
 
     def _element_constructor_(self, data, imag=None):
@@ -462,8 +468,10 @@ class ImaginaryGroup(UniqueRepresentation, Parent):
                         imag = data.imag()
                     else:
                         raise ValueError(
-                            '{} is not in {} because it is not '
-                            'purely imaginary'.format(data, self))
+                            '{} is not in {} because it is not purely imaginary'.format(
+                                data, self
+                            )
+                        )
                 except AttributeError:
                     pass
 
@@ -471,8 +479,8 @@ class ImaginaryGroup(UniqueRepresentation, Parent):
                 raise ValueError('{} is not in {}'.format(data, self))
 
         elif not isinstance(data, int) or data != 0:
-            raise ValueError('input is ambiguous: '
-                             '{} as well as imag={} '
-                             'specified'.format(data, imag))
+            raise ValueError(
+                'input is ambiguous: {} as well as imag={} specified'.format(data, imag)
+            )
 
         return self.element_class(self, imag)

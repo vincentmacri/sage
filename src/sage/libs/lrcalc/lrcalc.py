@@ -202,8 +202,10 @@ def _lrcalc_dict_to_sage(result) -> dict:
         sage: mult([2,1],[3,2,1],3) # indirect doctest
         {[3, 3, 3]: 1, [4, 3, 2]: 2, [4, 4, 1]: 1, [5, 2, 2]: 1, [5, 3, 1]: 1}
     """
-    return {_Partitions.element_class(_Partitions, [Integer(p) for p in la]):
-            Integer(k) for la, k in result.items()}
+    return {
+        _Partitions.element_class(_Partitions, [Integer(p) for p in la]): Integer(k)
+        for la, k in result.items()
+    }
 
 
 def lrcoef_unsafe(outer, inner1, inner2):
@@ -330,14 +332,15 @@ def mult(part1, part2, maxrows=None, level=None, quantum=None) -> dict:
         ValueError: missing parameters maxrows or level
     """
     if maxrows is None and level is not None:
-        raise ValueError('maxrows needs to be specified if you specify'
-                         ' the level')
+        raise ValueError('maxrows needs to be specified if you specify the level')
     if quantum is not None and (level is None or maxrows is None):
         raise ValueError('missing parameters maxrows or level')
 
     if quantum is None:
         if level is not None:
-            return _lrcalc_dict_to_sage(lrcalc.mult_fusion(part1, part2, maxrows, level))
+            return _lrcalc_dict_to_sage(
+                lrcalc.mult_fusion(part1, part2, maxrows, level)
+            )
         if maxrows is None:
             maxrows = -1
         return _lrcalc_dict_to_sage(lrcalc.mult(part1, part2, maxrows))
@@ -348,7 +351,7 @@ def mult(part1, part2, maxrows=None, level=None, quantum=None) -> dict:
     output = {}
     for i, k in result.items():
         la = _Partitions(i[0])
-        output[la] = output.get(la, P.zero()) + k * quantum**(i[1])
+        output[la] = output.get(la, P.zero()) + k * quantum ** (i[1])
     return output
 
 
@@ -405,10 +408,15 @@ def coprod(part, all=0) -> dict:
         [(([1, 1], [1]), 1), (([2], [1]), 1), (([2, 1], []), 1)]
     """
     result = lrcalc.coprod(part, all)
-    return {tuple([_Partitions.element_class(_Partitions,
-                                             [Integer(p) for p in mu])
-                   for mu in la]): Integer(k)
-            for la, k in result.items()}
+    return {
+        tuple(
+            [
+                _Partitions.element_class(_Partitions, [Integer(p) for p in mu])
+                for mu in la
+            ]
+        ): Integer(k)
+        for la, k in result.items()
+    }
 
 
 def mult_schubert(w1, w2, rank=0) -> dict:

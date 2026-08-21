@@ -62,6 +62,7 @@ class Magmas(Category_singleton):
         sage: C = Magmas()
         sage: TestSuite(C).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::
@@ -72,7 +73,6 @@ class Magmas(Category_singleton):
         return [Sets()]
 
     class SubcategoryMethods:
-
         @cached_method
         def Associative(self):
             r"""
@@ -259,8 +259,13 @@ class Magmas(Category_singleton):
                 interactive use or when there is no risk of ambiguity.
             """
             from sage.categories.additive_magmas import AdditiveMagmas
+
             if self.is_subcategory(AdditiveMagmas()):
-                raise ValueError("FinitelyGenerated is ambiguous for {}.\nPlease use explicitly one of the FinitelyGeneratedAsXXX methods".format(self))
+                raise ValueError(
+                    "FinitelyGenerated is ambiguous for {}.\nPlease use explicitly one of the FinitelyGeneratedAsXXX methods".format(
+                        self
+                    )
+                )
             return self.FinitelyGeneratedAsMagma()
 
         @cached_method
@@ -316,9 +321,13 @@ class Magmas(Category_singleton):
                 'sage.categories.magmas_and_additive_magmas'
             """
             from .additive_magmas import AdditiveMagmas
+
             if not self.is_subcategory(AdditiveMagmas()):
-                raise ValueError("The distributive axiom only makes sense on a magma which is simultaneously an additive magma")
+                raise ValueError(
+                    "The distributive axiom only makes sense on a magma which is simultaneously an additive magma"
+                )
             from .magmas_and_additive_magmas import MagmasAndAdditiveMagmas
+
             return (self & MagmasAndAdditiveMagmas()).Distributive()
 
         def JTrivial(self):
@@ -343,15 +352,18 @@ class Magmas(Category_singleton):
             """
             return self._with_axiom('JTrivial')
 
-    Associative = LazyImport('sage.categories.semigroups', 'Semigroups', at_startup=True)
-    FinitelyGeneratedAsMagma = LazyImport('sage.categories.finitely_generated_magmas', 'FinitelyGeneratedMagmas')
+    Associative = LazyImport(
+        'sage.categories.semigroups', 'Semigroups', at_startup=True
+    )
+    FinitelyGeneratedAsMagma = LazyImport(
+        'sage.categories.finitely_generated_magmas', 'FinitelyGeneratedMagmas'
+    )
 
     class JTrivial(CategoryWithAxiom):
         # Workaround for #20515; see also Magmas.SubcategoryMethods.JTrivial
         pass
 
     class Algebras(AlgebrasCategory):
-
         def extra_super_categories(self):
             """
             EXAMPLES::
@@ -375,10 +387,10 @@ class Magmas(Category_singleton):
                 True
             """
             from sage.categories.magmatic_algebras import MagmaticAlgebras
+
             return [MagmaticAlgebras(self.base_ring())]
 
         class ParentMethods:
-
             def is_field(self, proof=True):
                 r"""
                 Return ``True`` if ``self`` is a field.
@@ -403,7 +415,6 @@ class Magmas(Category_singleton):
                 return self.basis().keys().cardinality() == 1
 
     class Commutative(CategoryWithAxiom):
-
         class ParentMethods:
             def is_commutative(self) -> bool:
                 """
@@ -417,7 +428,6 @@ class Magmas(Category_singleton):
                 return True
 
         class Algebras(AlgebrasCategory):
-
             def extra_super_categories(self):
                 """
                 EXAMPLES::
@@ -459,7 +469,6 @@ class Magmas(Category_singleton):
                 return [Magmas().Commutative()]
 
     class Unital(CategoryWithAxiom):
-
         def additional_structure(self):
             r"""
             Return ``self``.
@@ -569,7 +578,6 @@ class Magmas(Category_singleton):
             pass
 
         class SubcategoryMethods:
-
             @cached_method
             def Inverse(self):
                 r"""
@@ -636,7 +644,6 @@ class Magmas(Category_singleton):
                 return [Magmas().Unital()]
 
             class ParentMethods:
-
                 @cached_method
                 def one(self):
                     """
@@ -650,7 +657,8 @@ class Magmas(Category_singleton):
                         (1, 1, 1.00000000000000)
                     """
                     return self._cartesian_product_of_elements(
-                        _.one() for _ in self.cartesian_factors())
+                        _.one() for _ in self.cartesian_factors()
+                    )
 
             class ElementMethods:
                 def __invert__(self):
@@ -692,11 +700,9 @@ class Magmas(Category_singleton):
                     """
                     # variant without coercion:
                     # return self.parent()._cartesian_product_of_elements(
-                    return self.parent()(
-                        ~x for x in self.cartesian_factors())
+                    return self.parent()(~x for x in self.cartesian_factors())
 
         class Algebras(AlgebrasCategory):
-
             def extra_super_categories(self):
                 """
                 EXAMPLES::
@@ -722,9 +728,7 @@ class Magmas(Category_singleton):
                 return [Magmas().Unital()]
 
         class Realizations(RealizationsCategory):
-
             class ParentMethods:
-
                 @cached_method
                 def one(self):
                     r"""
@@ -743,7 +747,6 @@ class Magmas(Category_singleton):
                     return self(self.realization_of().a_realization().one())
 
     class ParentMethods:
-
         def product(self, x, y):
             """
             The binary multiplication of the magma.
@@ -817,9 +820,12 @@ class Magmas(Category_singleton):
             # So, in addition, it should be tested whether the element class exists
             # *and* has a custom _mul_, because in this case it must not be overridden.
 
-            if (self.product.__func__ == self.product_from_element_class_mul.__func__):
+            if self.product.__func__ == self.product_from_element_class_mul.__func__:
                 return
-            if not (hasattr(self, "element_class") and hasattr(self.element_class, "_mul_parent")):
+            if not (
+                hasattr(self, "element_class")
+                and hasattr(self.element_class, "_mul_parent")
+            ):
                 return
 
             E = self.element_class
@@ -988,7 +994,10 @@ class Magmas(Category_singleton):
             """
             from sage.matrix.operation_table import OperationTable
             import operator
-            return OperationTable(self, operation=operator.mul, names=names, elements=elements)
+
+            return OperationTable(
+                self, operation=operator.mul, names=names, elements=elements
+            )
 
     class ElementMethods:
         @abstract_method(optional=True)
@@ -1040,7 +1049,6 @@ class Magmas(Category_singleton):
             return self * self == self
 
     class CartesianProducts(CartesianProductsCategory):
-
         def extra_super_categories(self):
             """
             This implements the fact that a subquotient (and therefore
@@ -1076,10 +1084,10 @@ class Magmas(Category_singleton):
             from .cartesian_product import cartesian_product
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
+
             return cartesian_product([QQ, ZZ, ZZ])
 
         class ParentMethods:
-
             def product(self, left, right):
                 """
                 EXAMPLES::
@@ -1100,8 +1108,10 @@ class Magmas(Category_singleton):
                     sage: x*y
                     B[(0, [1, 2, 3])] + B[(1, [3, 1, 2])]
                 """
-                prods = ((a * b) for a, b in zip(left.cartesian_factors(),
-                                                 right.cartesian_factors()))
+                prods = (
+                    (a * b)
+                    for a, b in zip(left.cartesian_factors(), right.cartesian_factors())
+                )
                 return self._cartesian_product_of_elements(prods)
 
     class Subquotients(SubquotientsCategory):
@@ -1130,7 +1140,6 @@ class Magmas(Category_singleton):
         """
 
         class ParentMethods:
-
             def product(self, x, y):
                 """
                 Return the product of two elements of ``self``.
@@ -1156,9 +1165,7 @@ class Magmas(Category_singleton):
                 return self.retract(self.lift(x) * self.lift(y))
 
     class Realizations(RealizationsCategory):
-
         class ParentMethods:
-
             def product_by_coercion(self, left, right):
                 r"""
                 Default implementation of product for realizations.

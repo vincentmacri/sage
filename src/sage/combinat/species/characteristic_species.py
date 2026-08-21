@@ -90,6 +90,7 @@ class CharacteristicSpeciesStructure(GenericSpeciesStructure):
             Symmetric group of order 3! as a permutation group
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         return SymmetricGroup(len(self._labels))
 
 
@@ -153,7 +154,7 @@ class CharacteristicSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [{1, 2, 3}]
         """
         if len(labels) == self._n:
-            yield structure_class(self, labels, range(1,self._n+1))
+            yield structure_class(self, labels, range(1, self._n + 1))
 
     _isotypes = _structures
 
@@ -227,10 +228,10 @@ class CharacteristicSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             sage: C._equation(var_mapping)
             z^2
         """
-        return var_mapping['z']**(self._n)
+        return var_mapping['z'] ** (self._n)
 
 
-#Backward compatibility
+# Backward compatibility
 CharacteristicSpecies_class = CharacteristicSpecies
 
 
@@ -274,7 +275,7 @@ class EmptySetSpecies(CharacteristicSpecies):
         self._state_info = []
 
 
-#Backward compatibility
+# Backward compatibility
 EmptySetSpecies_class = EmptySetSpecies._cached_constructor = EmptySetSpecies
 
 
@@ -318,5 +319,5 @@ class SingletonSpecies(CharacteristicSpecies):
         self._state_info = []
 
 
-#Backward compatibility
+# Backward compatibility
 SingletonSpecies_class = SingletonSpecies

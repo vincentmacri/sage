@@ -1,13 +1,13 @@
 r"""
 Graded bialgebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 
 def GradedBialgebras(base_ring):
@@ -28,4 +28,5 @@ def GradedBialgebras(base_ring):
         sage: TestSuite(C).run()
     """
     from sage.categories.bialgebras import Bialgebras
+
     return Bialgebras(base_ring).Graded()

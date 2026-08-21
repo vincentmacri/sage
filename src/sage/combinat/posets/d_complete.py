@@ -42,6 +42,7 @@ class DCompletePoset(FiniteJoinSemilattice):
         sage: P = Posets.DoubleTailedDiamond(2)
         sage: TestSuite(P).run()
     """
+
     _lin_ext_type = LinearExtensionsOfPosetWithHooks
     _desc = "Finite d-complete poset"
 
@@ -125,8 +126,7 @@ class DCompletePoset(FiniteJoinSemilattice):
                     queue.append(c)
                     enqueued.add(c)
 
-        return {self._vertex_to_element(key): ZZ(value)
-                for key, value in hooks.items()}
+        return {self._vertex_to_element(key): ZZ(value) for key, value in hooks.items()}
 
     def get_hook(self, elmt):
         r"""

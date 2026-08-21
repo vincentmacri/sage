@@ -99,6 +99,7 @@ logger = logging.getLogger(__name__)
 #      Parallel Building Ref Manual      #
 ##########################################
 
+
 def build_ref_doc(args):
     doc = args[0]
     format = args[1]
@@ -114,11 +115,13 @@ def build_ref_doc(args):
 #             Builders                   #
 ##########################################
 
+
 def builder_helper(type):
     """
     Return a function which builds the documentation for
     output type ``type``.
     """
+
     def f(self, *args, **kwds):
         single_file = self.documents_single_file
         load_lock_acquired = False
@@ -144,8 +147,9 @@ def builder_helper(type):
 
             # An inventory build, and the first pass of the reference manual,
             # run before the inventories of the other documents exist.
-            first_pass = (type == 'inventory'
-                          or not kwds.get('use_multidoc_inventory', True))
+            first_pass = type == 'inventory' or not kwds.get(
+                'use_multidoc_inventory', True
+            )
             options += ['-D', f'multidoc_first_pass={int(first_pass)}']
 
             # Cross-references are legitimately unresolvable in a first pass,
@@ -156,8 +160,16 @@ def builder_helper(type):
             # Provide the ``pdf`` tag as an alias of ``latex``.
             tags = ['-t', 'pdf'] if type == 'latex' else []
 
-            argv = [*tags, '-b', type, '-d', str(self._doctrees_dir()),
-                    *options, str(self.dir), str(output_dir)]
+            argv = [
+                *tags,
+                '-b',
+                type,
+                '-d',
+                str(self._doctrees_dir()),
+                *options,
+                str(self.dir),
+                str(output_dir),
+            ]
 
             logger.debug('sphinx-build %s', ' '.join(argv))
 
@@ -165,16 +177,20 @@ def builder_helper(type):
             # how its diagnostics are treated; see
             # :func:`~sage_docbuild.sphinxbuild.runsphinx`.
             from .sphinxbuild import runsphinx
+
             try:
-                runsphinx(argv,
-                          prefix=os.path.basename(output_dir),
-                          warnings_are_errors=type != 'latex',
-                          first_pass=first_pass,
-                          is_inventory=type == 'inventory',
-                          single_file=self.documents_single_file,
-                          single_file_path=getattr(self, 'single_file_path', None),
-                          single_file_source_root=getattr(
-                              self, 'single_file_source_root', None))
+                runsphinx(
+                    argv,
+                    prefix=os.path.basename(output_dir),
+                    warnings_are_errors=type != 'latex',
+                    first_pass=first_pass,
+                    is_inventory=type == 'inventory',
+                    single_file=self.documents_single_file,
+                    single_file_path=getattr(self, 'single_file_path', None),
+                    single_file_source_root=getattr(
+                        self, 'single_file_source_root', None
+                    ),
+                )
                 succeeded = True
             except Exception:
                 if build_options.ABORT_ON_ERROR:
@@ -197,7 +213,8 @@ def builder_helper(type):
                 logger.warning(f"LaTeX files can be found in {output_dir}.")
             elif type != 'inventory':
                 logger.warning(
-                    f"Build finished. The built documents can be found in {output_dir}.")
+                    f"Build finished. The built documents can be found in {output_dir}."
+                )
         finally:
             try:
                 if single_file and load_lock_acquired:
@@ -213,7 +230,7 @@ def builder_helper(type):
     return f
 
 
-class DocBuilder():
+class DocBuilder:
     #: Whether this builder documents one file of its own rather than a manual;
     #: see :class:`SingleFileBuilder` and :func:`builder_helper`.
     documents_single_file = False
@@ -335,7 +352,8 @@ class DocBuilder():
 
         proc = subprocess.run(
             command,
-            check=False, cwd=tex_dir,
+            check=False,
+            cwd=tex_dir,
             capture_output=True,
             text=True,
         )
@@ -392,8 +410,11 @@ def _output_formats() -> frozenset:
         ['changes', 'html', 'htmlhelp', 'inventory', 'json', 'latex',
          'linkcheck', 'pdf', 'pickle', 'web']
     """
-    formats = {name for name in dir(DocBuilder)
-               if getattr(getattr(DocBuilder, name, None), 'is_output_format', False)}
+    formats = {
+        name
+        for name in dir(DocBuilder)
+        if getattr(getattr(DocBuilder, name, None), 'is_output_format', False)
+    }
     # pdf is a method of its own: it builds the latex output and compiles it.
     return frozenset(formats | {'pdf'})
 
@@ -425,9 +446,11 @@ def _library_modules():
             path = os.path.join(directory, filename)
 
             # Create the module name
-            module_name = path[len(base_path):].replace(os.path.sep, '.')
+            module_name = path[len(base_path) :].replace(os.path.sep, '.')
             module_name = 'sage' + module_name
-            module_name = module_name[:-4] if module_name.endswith('pyx') else module_name[:-3]
+            module_name = (
+                module_name[:-4] if module_name.endswith('pyx') else module_name[:-3]
+            )
 
             # Exclude some ones  -- we don't want init the manual
             if module_name.endswith('__init__') or module_name.endswith('all'):
@@ -452,8 +475,9 @@ def _reference_commands() -> frozenset:
          'print_new_and_updated_modules',
          'print_unincluded_modules']
     """
-    return frozenset(name for name in dir(ReferenceSubBuilder)
-                     if name.startswith('print_'))
+    return frozenset(
+        name for name in dir(ReferenceSubBuilder) if name.startswith('print_')
+    )
 
 
 def build_many(target, args, processes=None):
@@ -503,8 +527,10 @@ class WebsiteBuilder(DocBuilder):
             else:
                 shutil.copy2(src, dst)
 
-        shutil.copy2(os.path.join(self.dir, 'root_index.html'),
-                     os.path.join(html_output_dir, '../../../index.html'))
+        shutil.copy2(
+            os.path.join(self.dir, 'root_index.html'),
+            os.path.join(html_output_dir, '../../../index.html'),
+        )
 
     def pdf(self):
         """
@@ -515,6 +541,7 @@ class WebsiteBuilder(DocBuilder):
         # If the website exists, update it.
 
         from sage.env import SAGE_DOC
+
         website_dir = os.path.join(SAGE_DOC, 'html', 'en', 'website')
 
         if os.path.exists(os.path.join(website_dir, 'index.html')):
@@ -549,13 +576,14 @@ class WebsiteBuilder(DocBuilder):
         DocBuilder.clean(self)
 
 
-class ReferenceBuilder():
+class ReferenceBuilder:
     """
     This class builds the reference manual. It uses DocBuilder to
     build the top-level page and ReferenceSubBuilder for each
     sub-component.
     """
-    def __init__(self, name:str, options: BuildOptions):
+
+    def __init__(self, name: str, options: BuildOptions):
         """
         Record the reference manual's name, in case it's not
         identical to 'reference'.
@@ -598,9 +626,11 @@ class ReferenceBuilder():
         The top-level document is not one of them: it is built last, by
         :meth:`_build_top_level`.
         """
-        return [doc
-                for doc in get_all_reference_documents(self.options.source_dir / 'en')
-                if doc != Path('reference_top')]
+        return [
+            doc
+            for doc in get_all_reference_documents(self.options.source_dir / 'en')
+            if doc != Path('reference_top')
+        ]
 
     def __getattr__(self, attr):
         """
@@ -638,8 +668,10 @@ class ReferenceBuilder():
         """
         if attr not in _output_formats() and attr not in _reference_commands():
             raise AttributeError(
-                f"{type(self).__name__!r} object has no attribute {attr!r}")
+                f"{type(self).__name__!r} object has no attribute {attr!r}"
+            )
         from functools import partial
+
         return partial(self._wrapper, attr)
 
     def _build_bibliography(self, format, *args, **kwds):
@@ -657,7 +689,8 @@ class ReferenceBuilder():
         Build the entire reference manual except the bibliography
         """
         non_references = [
-            (doc, format, self.options, kwds) + args for doc in self._sub_documents()
+            (doc, format, self.options, kwds) + args
+            for doc in self._sub_documents()
             if doc != self._bibliography
         ]
         build_many(build_ref_doc, non_references)
@@ -716,10 +749,12 @@ class ReferenceBuilder():
             # the other documents.
             self._build_top_level(format, *args, **kwds)
 
+
 class ReferenceTopBuilder(DocBuilder):
     """
     This class builds the top-level page of the reference manual.
     """
+
     def __init__(self, name: str, options: BuildOptions):
         DocBuilder.__init__(self, 'en/reference', options)
 
@@ -746,13 +781,21 @@ class ReferenceTopBuilder(DocBuilder):
         with open(output_dir / 'index.html') as f:
             html = f.read()
         # Fix links in navigation bar
-        html = re.sub(r'<a href="(.*)">Sage(.*)Documentation</a>',
-                      r'<a href="../../../html/en/index.html">Sage\2Documentation</a>',
-                      html)
-        html = re.sub(r'<li class="right"(.*)>', r'<li class="right" style="display: none" \1>',
-                      html)
-        html = re.sub(r'<div class="sphinxsidebar"(.*)>', r'<div class="sphinxsidebar" style="display: none" \1>',
-                      html)
+        html = re.sub(
+            r'<a href="(.*)">Sage(.*)Documentation</a>',
+            r'<a href="../../../html/en/index.html">Sage\2Documentation</a>',
+            html,
+        )
+        html = re.sub(
+            r'<li class="right"(.*)>',
+            r'<li class="right" style="display: none" \1>',
+            html,
+        )
+        html = re.sub(
+            r'<div class="sphinxsidebar"(.*)>',
+            r'<div class="sphinxsidebar" style="display: none" \1>',
+            html,
+        )
 
         # From index.html, we want the preamble and the tail.
         html_end_preamble = html.find(r'<section')
@@ -781,12 +824,13 @@ class ReferenceTopBuilder(DocBuilder):
         #
         #   <a href="module/module.pdf"><img src="_static/pdf.png">blah</a>
         #
-        rst = re.sub(r'`([^`\n]*)`__.*\n\n__ (.*)',
-                     r'<a href="\2">\1</a>.', rst)
-        rst = re.sub(r'`([^<\n]*)\s+<(.*)>`_',
-                     r'<a href="\2">\1</a>', rst)
-        rst = re.sub(r':doc:`([^<]*?)\s+<(.*)/index>`',
-                     r'<a title="PDF" class="pdf" href="../../../pdf/en/reference/\2/\2.pdf"><img src="_static/pdf.png"></a><a href="\2/index.html">\1</a> ', rst)
+        rst = re.sub(r'`([^`\n]*)`__.*\n\n__ (.*)', r'<a href="\2">\1</a>.', rst)
+        rst = re.sub(r'`([^<\n]*)\s+<(.*)>`_', r'<a href="\2">\1</a>', rst)
+        rst = re.sub(
+            r':doc:`([^<]*?)\s+<(.*)/index>`',
+            r'<a title="PDF" class="pdf" href="../../../pdf/en/reference/\2/\2.pdf"><img src="_static/pdf.png"></a><a href="\2/index.html">\1</a> ',
+            rst,
+        )
         # Body: add paragraph <p> markup.
         start = rst.rfind('*\n') + 1
         end = rst.find('\nUser Interfaces')
@@ -797,12 +841,17 @@ class ReferenceTopBuilder(DocBuilder):
         end = rst.find('Indices and Tables')
         rst_toc = rst[start:end]
         # change * to <li>; change rst headers to html headers
-        rst_toc = re.sub(r'\*(.*)\n',
-                         r'<li>\1</li>\n', rst_toc)
-        rst_toc = re.sub(r'\n([A-Z][a-zA-Z, ]*)\n[=]*\n',
-                         r'</ul>\n\n\n<h2>\1</h2>\n\n<ul>\n', rst_toc)
-        rst_toc = re.sub(r'\n([A-Z][a-zA-Z, ]*)\n[-]*\n',
-                         r'</ul>\n\n\n<h3>\1</h3>\n\n<ul>\n', rst_toc)
+        rst_toc = re.sub(r'\*(.*)\n', r'<li>\1</li>\n', rst_toc)
+        rst_toc = re.sub(
+            r'\n([A-Z][a-zA-Z, ]*)\n[=]*\n',
+            r'</ul>\n\n\n<h2>\1</h2>\n\n<ul>\n',
+            rst_toc,
+        )
+        rst_toc = re.sub(
+            r'\n([A-Z][a-zA-Z, ]*)\n[-]*\n',
+            r'</ul>\n\n\n<h3>\1</h3>\n\n<ul>\n',
+            rst_toc,
+        )
         # now write the file.
         with open(output_dir / 'index-pdf.html', 'w') as new_index:
             new_index.write(html[:html_end_preamble])
@@ -827,6 +876,7 @@ class ReferenceSubBuilder(DocBuilder):
     1. A new module gets added to one of the toctrees.
     2. The actual module gets updated and possibly contains a new title.
     """
+
     _cache = None
 
     def __init__(self, name: str, options: BuildOptions):
@@ -835,6 +885,7 @@ class ReferenceSubBuilder(DocBuilder):
 
     def _wrap_builder_helpers(self):
         from functools import partial
+
         for attr in dir(self):
             if hasattr(getattr(self, attr), 'is_output_format'):
                 f = partial(self._wrapper, attr)
@@ -855,9 +906,13 @@ class ReferenceSubBuilder(DocBuilder):
         cache = self.get_cache()
         force = False
         try:
-            if (cache['option_inherited'] != self._options.inherited or
-                    cache['option_underscore'] != self._options.underscore):
-                logger.info("Detected change(s) in inherited and/or underscored members option(s).")
+            if (
+                cache['option_inherited'] != self._options.inherited
+                or cache['option_underscore'] != self._options.underscore
+            ):
+                logger.info(
+                    "Detected change(s) in inherited and/or underscored members option(s)."
+                )
                 force = True
         except KeyError:
             force = True
@@ -930,7 +985,9 @@ class ReferenceSubBuilder(DocBuilder):
                 pickle.dump(cache, file)
             logger.debug("Saved the reference cache: %s", self.cache_file())
         except PermissionError:
-            logger.debug("Permission denied for the reference cache: %s", self.cache_file())
+            logger.debug(
+                "Permission denied for the reference cache: %s", self.cache_file()
+            )
 
     def get_sphinx_environment(self):
         """
@@ -944,7 +1001,8 @@ class ReferenceSubBuilder(DocBuilder):
                 return env
         except (OSError, EOFError):
             logger.debug(
-                f"Failed to open Sphinx environment '{env_pickle}'", exc_info=True)
+                f"Failed to open Sphinx environment '{env_pickle}'", exc_info=True
+            )
 
     def update_mtimes(self):
         """
@@ -1053,9 +1111,9 @@ class ReferenceSubBuilder(DocBuilder):
                 # Namespace package
                 old_modules.append(module_name)
                 continue
-            if (module_filename.endswith('.pyc') or module_filename.endswith('.pyo')):
+            if module_filename.endswith('.pyc') or module_filename.endswith('.pyo'):
                 source_filename = module_filename[:-1]
-                if (os.path.exists(source_filename)):
+                if os.path.exists(source_filename):
                     module_filename = source_filename
             newtime = os.path.getmtime(module_filename)
 
@@ -1126,7 +1184,7 @@ class ReferenceSubBuilder(DocBuilder):
         # Extract the title
         i = doc.find('\n')
         if i != -1:
-            return doc[i + 1:].lstrip().splitlines()[0]
+            return doc[i + 1 :].lstrip().splitlines()[0]
         return doc
 
     def auto_rest_filename(self, module_name: str) -> Path:
@@ -1184,8 +1242,10 @@ class ReferenceSubBuilder(DocBuilder):
         """
         try:
             shutil.rmtree(os.path.join(self.dir, 'sage'))
-            logger.debug("Deleted auto-generated reST files in: %s",
-                         os.path.join(self.dir, 'sage'))
+            logger.debug(
+                "Deleted auto-generated reST files in: %s",
+                os.path.join(self.dir, 'sage'),
+            )
         except OSError:
             pass
 
@@ -1262,6 +1322,7 @@ class _SiblingFinder:
     particular, packages below a sibling package and compiled extension
     modules are found as well.
     """
+
     def __init__(self, package: str, directory: str):
         self.package = package
         self.directory = os.path.realpath(directory)
@@ -1271,7 +1332,7 @@ class _SiblingFinder:
         prefix = self.package + '.'
         if not fullname.startswith(prefix):
             return None
-        relative = fullname[len(prefix):].split('.')
+        relative = fullname[len(prefix) :].split('.')
         parent = os.path.join(self.directory, *relative[:-1])
         spec = importlib.machinery.PathFinder.find_spec(fullname, [parent])
         if spec is not None:
@@ -1313,7 +1374,10 @@ class _SiblingFinder:
                 pass
         for path in paths:
             try:
-                if os.path.commonpath((self.directory, os.path.realpath(path))) == self.directory:
+                if (
+                    os.path.commonpath((self.directory, os.path.realpath(path)))
+                    == self.directory
+                ):
                     return True
             except Exception:
                 pass
@@ -1322,8 +1386,7 @@ class _SiblingFinder:
 
 def _finder_packages_overlap(left: str, right: str) -> bool:
     """Return whether two alternate-package finders can answer one name."""
-    return (left == right or left.startswith(right + '.')
-            or right.startswith(left + '.'))
+    return left == right or left.startswith(right + '.') or right.startswith(left + '.')
 
 
 _SINGLE_FILE_IMPORT_LOCK = threading.RLock()
@@ -1334,8 +1397,11 @@ _MISSING = object()
 
 def _in_import_scope(fullname: str, scope: str) -> bool:
     """Return whether ``fullname`` is ``scope``, its ancestor, or descendant."""
-    return (fullname == scope or fullname.startswith(scope + '.')
-            or scope.startswith(fullname + '.'))
+    return (
+        fullname == scope
+        or fullname.startswith(scope + '.')
+        or scope.startswith(fullname + '.')
+    )
 
 
 def _scoped_module_snapshot(scope: str):
@@ -1343,8 +1409,11 @@ def _scoped_module_snapshot(scope: str):
     modules = {}
     namespaces = {}
     for module_name, module in tuple(sys.modules.items()):
-        if (not isinstance(module_name, str) or module is None
-                or not _in_import_scope(module_name, scope)):
+        if (
+            not isinstance(module_name, str)
+            or module is None
+            or not _in_import_scope(module_name, scope)
+        ):
             continue
         modules[module_name] = module
         if isinstance(module, type(sys)):
@@ -1358,8 +1427,7 @@ class _SingleFileImportTransaction:
 
     def __init__(self, scope: str):
         self.scope = scope
-        self.modules_before, self.namespaces_before = (
-            _scoped_module_snapshot(scope))
+        self.modules_before, self.namespaces_before = _scoped_module_snapshot(scope)
         self.finder = None
         self.removed_finders = []
         self.touched = set()
@@ -1369,8 +1437,9 @@ def _record_changed_scoped_modules(transaction) -> None:
     """Record module changes made while importing the containing package."""
     current, _ = _scoped_module_snapshot(transaction.scope)
     for fullname in transaction.modules_before.keys() | current.keys():
-        if (transaction.modules_before.get(fullname, _MISSING)
-                is not current.get(fullname, _MISSING)):
+        if transaction.modules_before.get(fullname, _MISSING) is not current.get(
+            fullname, _MISSING
+        ):
             transaction.touched.add(fullname)
 
 
@@ -1390,7 +1459,8 @@ def _restore_import_transaction(transaction, *, restore_finders=True) -> None:
     # the explicit target displaced.  Imports outside this scope, including
     # modules imported by user code before it failed, remain intact.
     for fullname in sorted(
-            transaction.touched, key=lambda item: item.count('.'), reverse=True):
+        transaction.touched, key=lambda item: item.count('.'), reverse=True
+    ):
         previous = transaction.modules_before.get(fullname, _MISSING)
         if previous is _MISSING:
             sys.modules.pop(fullname, None)
@@ -1422,9 +1492,11 @@ def _restore_import_transaction(transaction, *, restore_finders=True) -> None:
             parent_namespace[child] = desired
         else:
             current = parent_namespace.get(child, _MISSING)
-            if (isinstance(current, type(sys))
-                    and type(sys).__getattribute__(current, '__dict__').get(
-                        '__name__') == fullname):
+            if (
+                isinstance(current, type(sys))
+                and type(sys).__getattribute__(current, '__dict__').get('__name__')
+                == fullname
+            ):
                 parent_namespace.pop(child, None)
 
 
@@ -1454,11 +1526,10 @@ def _clear_single_file_imports(scope=None) -> None:
     # the first is temporarily executing against alternate module bindings.
     with _SINGLE_FILE_LOAD_LOCK:
         with _SINGLE_FILE_IMPORT_LOCK:
-            for transaction in reversed(
-                    _SINGLE_FILE_IMPORT_TRANSACTIONS.copy()):
-                if (scope is not None
-                        and not _finder_packages_overlap(
-                            transaction.scope, scope)):
+            for transaction in reversed(_SINGLE_FILE_IMPORT_TRANSACTIONS.copy()):
+                if scope is not None and not _finder_packages_overlap(
+                    transaction.scope, scope
+                ):
                     continue
                 _restore_import_transaction(transaction)
                 _SINGLE_FILE_IMPORT_TRANSACTIONS.remove(transaction)
@@ -1468,31 +1539,41 @@ def _clear_single_file_imports(scope=None) -> None:
             # but both it and modules visibly loaded from its tree must stop
             # influencing a later active-tree build.
             stale_finders = [
-                item for item in sys.meta_path
-                if (isinstance(item, _SiblingFinder)
-                    and (scope is None
-                         or _finder_packages_overlap(item.package, scope)))
+                item
+                for item in sys.meta_path
+                if (
+                    isinstance(item, _SiblingFinder)
+                    and (scope is None or _finder_packages_overlap(item.package, scope))
+                )
             ]
-            sys.meta_path[:] = [item for item in sys.meta_path
-                                if item not in stale_finders]
+            sys.meta_path[:] = [
+                item for item in sys.meta_path if item not in stale_finders
+            ]
             stale_modules = {
-                fullname for fullname, module in tuple(sys.modules.items())
-                if isinstance(fullname, str) and module is not None
+                fullname
+                for fullname, module in tuple(sys.modules.items())
+                if isinstance(fullname, str)
+                and module is not None
                 and any(
-                    (fullname == finder.package
-                     or fullname.startswith(finder.package + '.'))
+                    (
+                        fullname == finder.package
+                        or fullname.startswith(finder.package + '.')
+                    )
                     and finder.contains(module)
-                    for finder in stale_finders)
+                    for finder in stale_finders
+                )
             }
             _drop_modules(stale_modules)
 
 
 def _serialized_single_file_load(function):
     """Serialize explicit loads without taking Python's global import lock."""
+
     @functools.wraps(function)
     def wrapped(*args, **kwds):
         with _SINGLE_FILE_LOAD_LOCK:
             return function(*args, **kwds)
+
     return wrapped
 
 
@@ -1528,15 +1609,17 @@ def _shadowed_module_names(finder, old_finders, target, package_is_target):
         for value in tuple(namespace.values()):
             if not isinstance(value, type(sys)):
                 continue
-            fullname = type(sys).__getattribute__(value, '__dict__').get(
-                '__name__', '')
-            if (not isinstance(fullname, str)
-                    or not (fullname == package
-                            or fullname.startswith(package + '.'))):
+            fullname = type(sys).__getattribute__(value, '__dict__').get('__name__', '')
+            if not isinstance(fullname, str) or not (
+                fullname == package or fullname.startswith(package + '.')
+            ):
                 continue
-            if (package_is_target or fullname == target
-                    or finder.find_spec(fullname) is not None
-                    or any(old.contains(value) for old in old_finders)):
+            if (
+                package_is_target
+                or fullname == target
+                or finder.find_spec(fullname) is not None
+                or any(old.contains(value) for old in old_finders)
+            ):
                 names.add(fullname)
     return names
 
@@ -1546,12 +1629,17 @@ def _drop_modules(names) -> None:
     for fullname in sorted(names, key=lambda item: item.count('.'), reverse=True):
         parent_name, _, child = fullname.rpartition('.')
         parent = sys.modules.get(parent_name)
-        namespace = (type(sys).__getattribute__(parent, '__dict__')
-                     if isinstance(parent, type(sys)) else None)
+        namespace = (
+            type(sys).__getattribute__(parent, '__dict__')
+            if isinstance(parent, type(sys))
+            else None
+        )
         value = namespace.get(child) if namespace is not None else None
-        if (isinstance(value, type(sys))
-                and type(sys).__getattribute__(value, '__dict__').get(
-                    '__name__') == fullname):
+        if (
+            isinstance(value, type(sys))
+            and type(sys).__getattribute__(value, '__dict__').get('__name__')
+            == fullname
+        ):
             namespace.pop(child, None)
         sys.modules.pop(fullname, None)
 
@@ -1775,19 +1863,23 @@ def load_single_file(name: str, path: str):
                 finder = _SiblingFinder(package, directory)
                 transaction.finder = finder
                 transaction.removed_finders = [
-                    (index, item) for index, item in enumerate(sys.meta_path)
-                    if (isinstance(item, _SiblingFinder)
-                        and _finder_packages_overlap(item.package, package))
+                    (index, item)
+                    for index, item in enumerate(sys.meta_path)
+                    if (
+                        isinstance(item, _SiblingFinder)
+                        and _finder_packages_overlap(item.package, package)
+                    )
                 ]
-                old_finders = [item for _, item
-                               in transaction.removed_finders]
+                old_finders = [item for _, item in transaction.removed_finders]
                 sys.meta_path[:] = [
-                    item for item in sys.meta_path
+                    item
+                    for item in sys.meta_path
                     if not any(item is old for old in old_finders)
                 ]
                 sys.meta_path.insert(0, finder)
                 shadowed = _shadowed_module_names(
-                    finder, old_finders, name, package_is_target)
+                    finder, old_finders, name, package_is_target
+                )
             else:
                 shadowed = {name}
             transaction.touched.update(shadowed)
@@ -1863,7 +1955,7 @@ def _extend_over_namespace_packages(directory, parts):
     while current not in roots:
         parent, package = os.path.split(current)
         if not package or parent == current or not package.isidentifier():
-            return directory, parts   # no entry of sys.path leads here
+            return directory, parts  # no entry of sys.path leads here
         walked.append(package)
         current = parent
     return current, parts + walked
@@ -1942,8 +2034,8 @@ def _single_file_module(path):
             break
         if not package.isidentifier():
             raise ValueError(
-                f'invalid package directory for single-file documentation: '
-                f'{package!r}')
+                f'invalid package directory for single-file documentation: {package!r}'
+            )
         parts.append(package)
     directory, parts = _extend_over_namespace_packages(directory, parts)
     if len(parts) > 1:
@@ -2015,14 +2107,15 @@ def _validated_single_file(path) -> Path:
             valid = False
     if not valid:
         raise ValueError(
-            'single-file documentation requires an existing regular .py file: '
-            f'{path}')
+            f'single-file documentation requires an existing regular .py file: {path}'
+        )
     directory = path.parent
     while (directory / '__init__.py').exists():
         if not directory.name.isidentifier():
             raise ValueError(
                 f'invalid package directory for single-file documentation: '
-                f'{directory.name!r}')
+                f'{directory.name!r}'
+            )
         directory = directory.parent
     return path
 
@@ -2042,8 +2135,10 @@ def _read_regular_text(path: Path):
         return None
     try:
         after = os.fstat(descriptor)
-        if ((before.st_dev, before.st_ino) != (after.st_dev, after.st_ino)
-                or not stat.S_ISREG(after.st_mode)):
+        if (before.st_dev, before.st_ino) != (
+            after.st_dev,
+            after.st_ino,
+        ) or not stat.S_ISREG(after.st_mode):
             return None
         with os.fdopen(descriptor, encoding='utf-8') as file:
             descriptor = None
@@ -2084,8 +2179,9 @@ def _single_file_output_owned(directory: Path) -> bool:
         sage: legacy_is_owned, answer
         (False, True)
     """
-    return (_read_regular_text(directory / _SINGLE_FILE_OWNER)
-            == _SINGLE_FILE_OWNER_CONTENT)
+    return (
+        _read_regular_text(directory / _SINGLE_FILE_OWNER) == _SINGLE_FILE_OWNER_CONTENT
+    )
 
 
 def _prepare_single_file_output(directory: Path, *, explicit: bool) -> None:
@@ -2155,15 +2251,18 @@ def _prepare_single_file_output(directory: Path, *, explicit: bool) -> None:
     if status is not None:
         if not stat.S_ISDIR(status.st_mode):
             raise FileExistsError(
-                f'refusing to replace non-directory single-file output {directory}')
+                f'refusing to replace non-directory single-file output {directory}'
+            )
         if explicit and not _single_file_output_owned(directory):
             raise FileExistsError(
                 f'refusing to remove unowned single-file output directory '
-                f'{directory}; remove it or choose another -o directory')
+                f'{directory}; remove it or choose another -o directory'
+            )
         shutil.rmtree(directory)
 
-    temporary = Path(tempfile.mkdtemp(
-        prefix=f'.{directory.name}.preparing-', dir=directory.parent))
+    temporary = Path(
+        tempfile.mkdtemp(prefix=f'.{directory.name}.preparing-', dir=directory.parent)
+    )
     try:
         with (temporary / _SINGLE_FILE_OWNER).open('x', encoding='utf-8') as file:
             file.write(_SINGLE_FILE_OWNER_CONTENT)
@@ -2189,6 +2288,7 @@ class SingleFileBuilder(DocBuilder):
     command line option "-o DIR", or in ``DOT_SAGE/docbuild/foo/``
     otherwise.
     """
+
     documents_single_file = True
 
     def __init__(self, path: str, options: BuildOptions):
@@ -2248,7 +2348,9 @@ class SingleFileBuilder(DocBuilder):
                     'The file given is the one documented, and the modules '
                     'beside it are read from there as well; anything else '
                     'it imports is what this process has loaded already.',
-                    module_name, found or 'no file')
+                    module_name,
+                    found or 'no file',
+                )
                 from_path = True
 
         _prepare_single_file_output(base_dir, explicit=explicit_output)
@@ -2355,13 +2457,13 @@ latex_documents = [
         if getattr(self, '_single_file_defer_completion', False):
             return
         descriptor, temporary = tempfile.mkstemp(
-            prefix='.documented-file-', dir=self._single_file_base_dir)
+            prefix='.documented-file-', dir=self._single_file_base_dir
+        )
         try:
             with os.fdopen(descriptor, 'w', encoding='utf-8') as file:
                 descriptor = None
                 file.write(os.fspath(self.single_file_path) + '\n')
-            os.replace(temporary,
-                       self._single_file_base_dir / _SINGLE_FILE_SUCCESS)
+            os.replace(temporary, self._single_file_base_dir / _SINGLE_FILE_SUCCESS)
         finally:
             if descriptor is not None:
                 os.close(descriptor)
@@ -2451,14 +2553,19 @@ def get_builder(name: str, options: BuildOptions) -> DocBuilder | ReferenceBuild
     if name in ('reference', 'en/reference') and reference_exists:
         return ReferenceBuilder(name, options)
     document = Path(name)
-    if (len(document.parts) == 2 and document.parts[0] == 'reference'
-            and document.parts[1].isidentifier()
-            and (options.source_dir / 'en' / document / 'index.rst').is_file()):
+    if (
+        len(document.parts) == 2
+        and document.parts[0] == 'reference'
+        and document.parts[1].isidentifier()
+        and (options.source_dir / 'en' / document / 'index.rst').is_file()
+    ):
         return ReferenceSubBuilder(name, options)
     if name.startswith('file='):
         path = name[5:]
         if path.endswith('.sage') or path.endswith('.pyx'):
-            raise NotImplementedError('Building documentation for a single file only works for Python files.')
+            raise NotImplementedError(
+                'Building documentation for a single file only works for Python files.'
+            )
         return SingleFileBuilder(path, options)
     documents = get_all_documents(options.source_dir)
     for document in (Path(name), Path('en') / name):
@@ -2466,7 +2573,9 @@ def get_builder(name: str, options: BuildOptions) -> DocBuilder | ReferenceBuild
             if document.name == 'website':
                 return WebsiteBuilder(document.as_posix(), options)
             return DocBuilder(document.as_posix(), options)
-    print("'%s' is not a recognized document. Type 'sage --docbuild -D' for a list" % name)
+    print(
+        "'%s' is not a recognized document. Type 'sage --docbuild -D' for a list" % name
+    )
     print("of documents, or 'sage --docbuild --help' for more help.")
     sys.exit(1)
 
@@ -2539,9 +2648,11 @@ def get_all_documents(source: Path) -> list[Path]:
             # Skip non-language directories
             continue
         for document in lang.iterdir():
-            if (document.name not in build_options.OMIT
-                    and document.is_dir()
-                    and (document / 'index.rst').is_file()):
+            if (
+                document.name not in build_options.OMIT
+                and document.is_dir()
+                and (document / 'index.rst').is_file()
+            ):
                 documents.append(document.relative_to(source))
 
     # Top-level reference document is build seperately
@@ -2549,6 +2660,7 @@ def get_all_documents(source: Path) -> list[Path]:
         documents.remove(Path('en/reference'))
 
     return documents
+
 
 def get_all_reference_documents(source: Path) -> list[Path]:
     """

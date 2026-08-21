@@ -165,6 +165,7 @@ class DownUpAlgebra(CombinatorialFreeModule):
     - [BR1998]_
     - [CM2000]_
     """
+
     @staticmethod
     def __classcall_private__(cls, alpha, beta, gamma, base_ring=None):
         r"""
@@ -181,6 +182,7 @@ class DownUpAlgebra(CombinatorialFreeModule):
         """
         if base_ring is None:
             from sage.structure.element import get_coercion_model
+
             base_ring = get_coercion_model().common_parent(alpha, beta, gamma)
         if base_ring not in Rings().Commutative():
             raise TypeError("base ring must be a commutative ring")
@@ -209,9 +211,12 @@ class DownUpAlgebra(CombinatorialFreeModule):
         cat = Algebras(base_ring).WithBasis().Graded()
         if self._beta:
             from sage.categories.domains import Domains
+
             cat &= Domains()
         indices = cartesian_product([NonNegativeIntegers()] * 3)
-        CombinatorialFreeModule.__init__(self, base_ring, indices, category=cat, sorting_reverse=True)
+        CombinatorialFreeModule.__init__(
+            self, base_ring, indices, category=cat, sorting_reverse=True
+        )
         self._assign_names(['d', 'u'])
 
     def _repr_(self) -> str:
@@ -225,7 +230,8 @@ class DownUpAlgebra(CombinatorialFreeModule):
             Down-Up algebra with parameters (1, 2, 3) over Integer Ring
         """
         return "Down-Up algebra with parameters ({}, {}, {}) over {}".format(
-            self._alpha, self._beta, self._gamma, self.base_ring())
+            self._alpha, self._beta, self._gamma, self.base_ring()
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -313,8 +319,8 @@ class DownUpAlgebra(CombinatorialFreeModule):
             sage: dict(DU.algebra_generators())
             {'d': d, 'u': u}
         """
-        u = self.monomial(self._indices([1,0,0]))
-        d = self.monomial(self._indices([0,0,1]))
+        u = self.monomial(self._indices([1, 0, 0]))
+        d = self.monomial(self._indices([0, 0, 1]))
         return Family({'d': d, 'u': u})
 
     @cached_method
@@ -395,41 +401,57 @@ class DownUpAlgebra(CombinatorialFreeModule):
 
         if not d1:
             if not u2:
-                return self.monomial(I([u1, du1+du2, d2]))
+                return self.monomial(I([u1, du1 + du2, d2]))
             # else u2 > 0
             if not du1:
-                return self.monomial(I([u1+u2, du2, d2]))
+                return self.monomial(I([u1 + u2, du2, d2]))
             # Perform du * u reduction
-            lhs = self.monomial(I([u1, du1-1, 0]))
-            mid = self._from_dict({I([1,1,0]): self._alpha,
-                                   I([2,0,1]): self._beta,
-                                   I([1,0,0]): self._gamma})
-            rhs = self.monomial(I([u2-1, du2, d2]))
+            lhs = self.monomial(I([u1, du1 - 1, 0]))
+            mid = self._from_dict(
+                {
+                    I([1, 1, 0]): self._alpha,
+                    I([2, 0, 1]): self._beta,
+                    I([1, 0, 0]): self._gamma,
+                }
+            )
+            rhs = self.monomial(I([u2 - 1, du2, d2]))
         else:  # d1 > 0
             if not u2:
                 if not du2:
-                    return self.monomial(I([u1, du1, d1+d2]))
+                    return self.monomial(I([u1, du1, d1 + d2]))
                 # Perform a d * du reduction
-                lhs = self.monomial(I([u1, du1, d1-1]))
-                mid = self._from_dict({I([0,1,1]): self._alpha,
-                                       I([1,0,2]): self._beta,
-                                       I([0,0,1]): self._gamma})
-                rhs = self.monomial(I([0, du2-1, d2]))
+                lhs = self.monomial(I([u1, du1, d1 - 1]))
+                mid = self._from_dict(
+                    {
+                        I([0, 1, 1]): self._alpha,
+                        I([1, 0, 2]): self._beta,
+                        I([0, 0, 1]): self._gamma,
+                    }
+                )
+                rhs = self.monomial(I([0, du2 - 1, d2]))
             elif u2 > 1:
                 # Perform d * u^2 reduction
-                lhs = self.monomial(I([u1, du1, d1-1]))
-                mid = self._from_dict({I([1,1,0]): self._alpha,
-                                       I([2,0,1]): self._beta,
-                                       I([1,0,0]): self._gamma})
-                rhs = self.monomial(I([u2-2, du2, d2]))
+                lhs = self.monomial(I([u1, du1, d1 - 1]))
+                mid = self._from_dict(
+                    {
+                        I([1, 1, 0]): self._alpha,
+                        I([2, 0, 1]): self._beta,
+                        I([1, 0, 0]): self._gamma,
+                    }
+                )
+                rhs = self.monomial(I([u2 - 2, du2, d2]))
             elif u2 == 1:
                 if d1 == 1:
-                    return self.monomial(I([u1, du1+du2+1, d2]))
+                    return self.monomial(I([u1, du1 + du2 + 1, d2]))
                 # Perform a d^2 * u reduction
-                lhs = self.monomial(I([u1, du1, d1-2]))
-                mid = self._from_dict({I([0,1,1]): self._alpha,
-                                       I([1,0,2]): self._beta,
-                                       I([0,0,1]): self._gamma})
+                lhs = self.monomial(I([u1, du1, d1 - 2]))
+                mid = self._from_dict(
+                    {
+                        I([0, 1, 1]): self._alpha,
+                        I([1, 0, 2]): self._beta,
+                        I([0, 0, 1]): self._gamma,
+                    }
+                )
                 rhs = self.monomial(I([0, du2, d2]))
 
         if lhs == self.one():
@@ -555,6 +577,7 @@ class VermaModule(CombinatorialFreeModule):
         sage: list(V.weights()[:8])
         [5, 5*z6 + 5, 10*z6, 10*z6 - 5, 5*z6 - 5, 0, 5, 5*z6 + 5]
     """
+
     @staticmethod
     def __classcall_private__(cls, DU, la):
         """
@@ -617,8 +640,9 @@ class VermaModule(CombinatorialFreeModule):
 
         self._weights = lazy_list(_la_iter())
         cat = Modules(R).WithBasis()
-        CombinatorialFreeModule.__init__(self, R, NonNegativeIntegers(),
-                                         prefix='v', category=cat)
+        CombinatorialFreeModule.__init__(
+            self, R, NonNegativeIntegers(), prefix='v', category=cat
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -732,6 +756,7 @@ class VermaModule(CombinatorialFreeModule):
         r"""
         An element of a Verma module of a down-up algebra.
         """
+
         def _acted_upon_(self, scalar, self_on_left):
             r"""
             Return the action of ``scalar`` (an element of the base ring or
@@ -769,9 +794,11 @@ class VermaModule(CombinatorialFreeModule):
                 return None
             if self_on_left:
                 return None
-            return P.linear_combination((P._action_on_basis(m, n), mc*nc)
-                                        for m, mc in scalar._monomial_coefficients.items()
-                                        for n, nc in self._monomial_coefficients.items())
+            return P.linear_combination(
+                (P._action_on_basis(m, n), mc * nc)
+                for m, mc in scalar._monomial_coefficients.items()
+                for n, nc in self._monomial_coefficients.items()
+            )
 
         def is_weight_vector(self) -> bool:
             r"""
@@ -808,7 +835,7 @@ class VermaModule(CombinatorialFreeModule):
             def get_wt(n):
                 if not n:
                     return (R(P._weights[0]), R.zero())
-                return (R(P._weights[n]), R(P._weights[n-1]))
+                return (R(P._weights[n]), R(P._weights[n - 1]))
 
             it = iter(self._monomial_coefficients)
             wt = get_wt(next(it))

@@ -88,8 +88,9 @@ class Polyhedron_number_field(Polyhedron_field, Polyhedron_base_number_field):
         A 1-dimensional polyhedron in QQ^1 defined as the convex hull of 1 vertex and 1 line
     """
 
-    def _init_from_Vrepresentation(self, vertices, rays, lines,
-                                   minimize=True, verbose=False):
+    def _init_from_Vrepresentation(
+        self, vertices, rays, lines, minimize=True, verbose=False
+    ):
         """
         Construct polyhedron from V-representation data.
 
@@ -127,13 +128,20 @@ class Polyhedron_number_field(Polyhedron_field, Polyhedron_base_number_field):
             sage: p.vertices()[0][0]
             0
         """
-        (vertices, rays, lines), internal_base_ring \
-            = self._compute_data_lists_and_internal_base_ring((vertices, rays, lines),
-                                                     lambda *x: x, lambda *x: x)
+        (vertices, rays, lines), internal_base_ring = (
+            self._compute_data_lists_and_internal_base_ring(
+                (vertices, rays, lines), lambda *x: x, lambda *x: x
+            )
+        )
         self._internal_base_ring = internal_base_ring
-        super()._init_from_Vrepresentation(vertices, rays, lines,
-                                           minimize=minimize, verbose=verbose,
-                                           internal_base_ring=internal_base_ring)
+        super()._init_from_Vrepresentation(
+            vertices,
+            rays,
+            lines,
+            minimize=minimize,
+            verbose=verbose,
+            internal_base_ring=internal_base_ring,
+        )
 
     def _init_from_Hrepresentation(self, ieqs, eqns, minimize=True, verbose=False):
         """
@@ -158,10 +166,16 @@ class Polyhedron_number_field(Polyhedron_field, Polyhedron_base_number_field):
             sage: from sage.geometry.polyhedron.backend_number_field import Polyhedron_number_field
             sage: Polyhedron_number_field._init_from_Hrepresentation(p, [(1, 2, 3)], [])
         """
-        (ieqs, eqns), internal_base_ring \
-            = self._compute_data_lists_and_internal_base_ring((ieqs, eqns),
-                                                     lambda *x: x, lambda *x: x)
+        (ieqs, eqns), internal_base_ring = (
+            self._compute_data_lists_and_internal_base_ring(
+                (ieqs, eqns), lambda *x: x, lambda *x: x
+            )
+        )
         self._internal_base_ring = internal_base_ring
-        super()._init_from_Hrepresentation(ieqs, eqns,
-                                           minimize=minimize, verbose=verbose,
-                                           internal_base_ring=internal_base_ring)
+        super()._init_from_Hrepresentation(
+            ieqs,
+            eqns,
+            minimize=minimize,
+            verbose=verbose,
+            internal_base_ring=internal_base_ring,
+        )

@@ -2,14 +2,14 @@
 r"""
 Groupoid
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 David Kohel <kohel@maths.usyd.edu> and
 #                     William Stein <wstein@math.ucsd.edu>
 #                     Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category import CategoryWithParameters
 from sage.categories.sets_cat import Sets
@@ -42,6 +42,7 @@ class Groupoid(CategoryWithParameters):
         CategoryWithParameters.__init__(self)  # "Groupoid")
         if G is None:
             from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
             G = SymmetricGroup(8)
         self.__G = G
 
@@ -76,7 +77,7 @@ class Groupoid(CategoryWithParameters):
             sage: Groupoid(DihedralGroup(3)).super_categories()
             [Category of sets]
         """
-        return [Sets()] # ???
+        return [Sets()]  # ???
 
     @classmethod
     def an_instance(cls):
@@ -89,5 +90,6 @@ class Groupoid(CategoryWithParameters):
             Groupoid with underlying set Symmetric group of order 8! as a permutation group
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         G = SymmetricGroup(8)
         return cls(G)

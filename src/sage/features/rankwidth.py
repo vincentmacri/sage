@@ -15,6 +15,7 @@ Feature for the rank-width graph decomposition
 from sage.config import rankwidth_enabled
 from sage.features.build_feature import BuildModule
 
+
 class RankWidth(BuildModule):
     r"""
     A :class:`~sage.features.Feature` indicating whether or not the
@@ -43,6 +44,7 @@ class RankWidth(BuildModule):
         FeatureTestResult('rankwidth', True)
 
     """
+
     _enabled_in_build = rankwidth_enabled
 
     def __init__(self):
@@ -55,10 +57,7 @@ class RankWidth(BuildModule):
 
         """
         module_name = "sage.graphs.graph_decompositions.rankwidth"
-        super().__init__("rankwidth",
-                         module_name,
-                         spkg="rw",
-                         type="standard")
+        super().__init__("rankwidth", module_name, spkg="rw", type="standard")
 
 
 def all_features():

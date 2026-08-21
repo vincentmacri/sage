@@ -1,6 +1,7 @@
 """
 Nil-Coxeter Algebra
 """
+
 # ***************************************************************************
 #  Copyright (C) 2011 Chris Berg <cberg at fields.utoronto.ca>
 #                     Anne Schilling <anne at math.ucdavis.edu>
@@ -72,7 +73,10 @@ class NilCoxeterAlgebra(IwahoriHeckeAlgebra.T):
             sage: NilCoxeterAlgebra(WeylGroup(['A',3,1])) # indirect doctest
             The Nil-Coxeter Algebra of Type A3~ over Rational Field
         """
-        return "The Nil-Coxeter Algebra of Type %s over %s" % (self._cartan_type._repr_(compact=True), self.base_ring())
+        return "The Nil-Coxeter Algebra of Type %s over %s" % (
+            self._cartan_type._repr_(compact=True),
+            self.base_ring(),
+        )
 
     def homogeneous_generator_noncommutative_variables(self, r):
         r"""
@@ -111,10 +115,14 @@ class NilCoxeterAlgebra(IwahoriHeckeAlgebra.T):
         """
         ct = self._cartan_type
         msg = f"Analogue of symmetric functions in noncommutative variables is not defined in type {ct}"
-        assert (len(ct) == 2 and ct[0] in ['A', 'B']) or (len(ct) == 3 and ct[2] == 1), msg
+        assert (len(ct) == 2 and ct[0] in ['A', 'B']) or (
+            len(ct) == 3 and ct[2] == 1
+        ), msg
         if r >= self._n:
             return self.zero()
-        return self.sum_of_monomials(w for w in self._W.pieri_factors() if w.length() == r)
+        return self.sum_of_monomials(
+            w for w in self._W.pieri_factors() if w.length() == r
+        )
 
     def homogeneous_noncommutative_variables(self, la):
         r"""
@@ -179,11 +187,20 @@ class NilCoxeterAlgebra(IwahoriHeckeAlgebra.T):
             ...
             AssertionError: Weyl Group of type ['C', 3, 1] (as a matrix group acting on the root space) is not affine type A.
         """
-        assert self._cartan_type[0] == 'A' and len(self._cartan_type) == 3 and self._cartan_type[2] == 1, "%s is not affine type A." % (self._W)
+        assert (
+            self._cartan_type[0] == 'A'
+            and len(self._cartan_type) == 3
+            and self._cartan_type[2] == 1
+        ), "%s is not affine type A." % (self._W)
         assert la in Partitions(), "%s is not a partition." % (la)
-        assert (len(la) == 0 or la[0] < self._W.n), "%s is not a %s-bounded partition." % (la, self._W.n-1)
+        assert len(la) == 0 or la[0] < self._W.n, (
+            "%s is not a %s-bounded partition." % (la, self._W.n - 1)
+        )
         Sym = SymmetricFunctions(self._base_ring)
         h = Sym.homogeneous()
-        ks = Sym.kschur(self._n-1,1)
+        ks = Sym.kschur(self._n - 1, 1)
         f = h(ks[la])
-        return sum(f.coefficient(x)*self.homogeneous_noncommutative_variables(x) for x in f.support())
+        return sum(
+            f.coefficient(x) * self.homogeneous_noncommutative_variables(x)
+            for x in f.support()
+        )

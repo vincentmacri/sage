@@ -601,6 +601,7 @@ from sage.plot.polygon import polygon
 # import of line2d below is only for redirection of imports
 from sage.plot.line import line
 from sage.misc.lazy_import import lazy_import
+
 lazy_import('sage.plot.line', 'line2d', deprecation=28717)
 
 # Currently not used - see comment immediately above about
@@ -701,7 +702,6 @@ def SelectiveFormatter(formatter, skip_values):
     """
     global _SelectiveFormatterClass
     if _SelectiveFormatterClass is None:
-
         from matplotlib.ticker import Formatter
 
         class _SelectiveFormatterClass(Formatter):
@@ -812,6 +812,7 @@ def xydata_from_point_list(points):
         Graphics object consisting of 1 graphics primitive
     """
     import numbers
+
     zero = float(0)
 
     xdata = []
@@ -836,11 +837,22 @@ def xydata_from_point_list(points):
     return xdata, ydata
 
 
-@options(alpha=1, thickness=1, fill=False, fillcolor='automatic',
-         fillalpha=0.5, plot_points=200, adaptive_tolerance=0.01,
-         adaptive_recursion=5, detect_poles=False, exclude=None,
-         legend_label=None, __original_opts=True,
-         aspect_ratio='automatic', imaginary_tolerance=1e-8)
+@options(
+    alpha=1,
+    thickness=1,
+    fill=False,
+    fillcolor='automatic',
+    fillalpha=0.5,
+    plot_points=200,
+    adaptive_tolerance=0.01,
+    adaptive_recursion=5,
+    detect_poles=False,
+    exclude=None,
+    legend_label=None,
+    __original_opts=True,
+    aspect_ratio='automatic',
+    imaginary_tolerance=1e-8,
+)
 def plot(funcs, *args, **kwds):
     r"""
     Use plot by writing.
@@ -2014,7 +2026,9 @@ def plot(funcs, *args, **kwds):
     if 'color' in kwds and 'rgbcolor' in kwds:
         raise ValueError('only one of color or rgbcolor should be specified')
     elif 'color' in kwds:
-        kwds['rgbcolor'] = kwds.pop('color', (0, 0, 1))  # take blue as default ``rgbcolor``
+        kwds['rgbcolor'] = kwds.pop(
+            'color', (0, 0, 1)
+        )  # take blue as default ``rgbcolor``
     G_kwds = Graphics._extract_kwds_for_show(kwds, ignore=['xmin', 'xmax'])
     if 'scale' in G_kwds:
         kwds['scale'] = G_kwds['scale']  # pass scaling information to _plot too
@@ -2023,6 +2037,7 @@ def plot(funcs, *args, **kwds):
     do_show = kwds.pop('show', False)
 
     from sage.structure.element import Vector
+
     if kwds.get('parametric', False) and isinstance(funcs, Vector):
         funcs = tuple(funcs)
 
@@ -2067,7 +2082,9 @@ def plot(funcs, *args, **kwds):
             xmax = kwds.pop('xmax', 1)
             G = _plot(funcs, (xmin, xmax), *args, **kwds)
         else:
-            sage.misc.verbose.verbose(f"there were {n} extra arguments (besides {funcs})", level=0)
+            sage.misc.verbose.verbose(
+                f"there were {n} extra arguments (besides {funcs})", level=0
+            )
 
     G._set_extra_kwds(G_kwds)
     if do_show:
@@ -2075,8 +2092,16 @@ def plot(funcs, *args, **kwds):
     return G
 
 
-def _plot(funcs, xrange, parametric=False,
-          polar=False, fill=False, label='', randomize=True, **options):
+def _plot(
+    funcs,
+    xrange,
+    parametric=False,
+    polar=False,
+    fill=False,
+    label='',
+    randomize=True,
+    **options,
+):
     """
     Internal function which does the actual plotting.
 
@@ -2166,15 +2191,15 @@ def _plot(funcs, xrange, parametric=False,
     """
     from sage.plot.colors import Color
     from sage.plot.misc import setup_for_eval_on_grid
+
     if funcs == []:
         return Graphics()
     orig_funcs = funcs  # keep the original functions (for use in legend labels)
     excluded_points = []
     imag_tol = options["imaginary_tolerance"]
-    funcs, ranges = setup_for_eval_on_grid(funcs,
-                                           [xrange],
-                                           options['plot_points'],
-                                           imaginary_tolerance=imag_tol)
+    funcs, ranges = setup_for_eval_on_grid(
+        funcs, [xrange], options['plot_points'], imaginary_tolerance=imag_tol
+    )
     xmin, xmax, delta = ranges[0]
     xrange = ranges[0][:2]
     # parametric_plot will be a list or tuple of two functions (f,g)
@@ -2193,19 +2218,22 @@ def _plot(funcs, xrange, parametric=False,
 
     # Check to see if funcs is a list of functions that will be all plotted together.
     if isinstance(funcs, (list, tuple)) and not parametric:
+
         def golden_rainbow(i, lightness=0.4):
             # note: sage's "blue" has hue-saturation-lightness values (2/3, 1, 1/2).
             g = 0.61803398875
-            return Color((0.66666666666666 + i*g) % 1, 1, lightness, space='hsl')
+            return Color((0.66666666666666 + i * g) % 1, 1, lightness, space='hsl')
 
-        default_line_styles = ("-", "--", "-.", ":")*len(funcs)
+        default_line_styles = ("-", "--", "-.", ":") * len(funcs)
 
         G = Graphics()
         for i, h in enumerate(funcs):
             options_temp = options.copy()
             color_temp = options_temp.pop('rgbcolor', 'automatic')
             fill_temp = options_temp.pop('fill', fill)
-            fillcolor_temp = options_temp.pop('fillcolor', 'automatic')  # perhaps the 2nd argument should be ``options_temp['color']``
+            fillcolor_temp = options_temp.pop(
+                'fillcolor', 'automatic'
+            )  # perhaps the 2nd argument should be ``options_temp['color']``
             linestyle_temp = options_temp.pop('linestyle', None)
             legend_label_temp = options_temp.pop('legend_label', None)
             legend_color_temp = options_temp.pop('legend_color', None)
@@ -2217,7 +2245,9 @@ def _plot(funcs, xrange, parametric=False,
                     color_entry = color_temp[i]
                 else:
                     color_entry = golden_rainbow(i)
-            elif isinstance(color_temp, (list, tuple)) and isinstance(color_temp[0], (str, list, tuple)):
+            elif isinstance(color_temp, (list, tuple)) and isinstance(
+                color_temp[0], (str, list, tuple)
+            ):
                 if i < len(color_temp):
                     color_entry = color_temp[i]
                 else:
@@ -2312,7 +2342,9 @@ def _plot(funcs, xrange, parametric=False,
             if isinstance(legend_color_temp, dict):
                 if i in legend_color_temp:
                     legend_color_entry = legend_color_temp[i]
-            elif isinstance(legend_color_temp, (list, tuple)) and isinstance(legend_color_temp[0], (str, list, tuple)):
+            elif isinstance(legend_color_temp, (list, tuple)) and isinstance(
+                legend_color_temp[0], (str, list, tuple)
+            ):
                 if i < len(legend_color_temp):
                     legend_color_entry = legend_color_temp[i]
             elif legend_color_temp == 'automatic':
@@ -2321,9 +2353,18 @@ def _plot(funcs, xrange, parametric=False,
             elif legend_color_temp is not None:
                 legend_color_entry = legend_color_temp
 
-            G += plot(h, xrange, polar=polar, fill=fill_entry, fillcolor=fillcolor_entry,
-                      rgbcolor=color_entry, linestyle=linestyle_entry,
-                      legend_label=legend_label_entry, legend_color=legend_color_entry, **options_temp)
+            G += plot(
+                h,
+                xrange,
+                polar=polar,
+                fill=fill_entry,
+                fillcolor=fillcolor_entry,
+                rgbcolor=color_entry,
+                linestyle=linestyle_entry,
+                legend_label=legend_label_entry,
+                legend_color=legend_color_entry,
+                **options_temp,
+            )
         return G
 
     adaptive_tolerance = options.pop('adaptive_tolerance')
@@ -2337,7 +2378,11 @@ def _plot(funcs, xrange, parametric=False,
             if len(exclude.variables()) > 1:
                 raise ValueError('exclude has to be an equation of only one variable')
             v = exclude.variables()[0]
-            points = [e.right() for e in exclude.solve(v) if e.left() == v and (v not in e.right().variables())]
+            points = [
+                e.right()
+                for e in exclude.solve(v)
+                if e.left() == v and (v not in e.right().variables())
+            ]
             # We are only interested in real solutions
             for x in points:
                 try:
@@ -2354,18 +2399,22 @@ def _plot(funcs, xrange, parametric=False,
             raise ValueError('exclude needs to be a list of numbers or an equation')
 
         # We make sure that points plot points close to the excluded points are computed
-        epsilon = 0.001*(xmax - xmin)
-        initial_points = reduce(lambda a, b: a+b,
-                                [[x - epsilon, x + epsilon]
-                                 for x in excluded_points], [])
+        epsilon = 0.001 * (xmax - xmin)
+        initial_points = reduce(
+            lambda a, b: a + b,
+            [[x - epsilon, x + epsilon] for x in excluded_points],
+            [],
+        )
     else:
         initial_points = None
 
     # If we are a log scale plot on the x axis, do a change of variables
     # so we sample the range in log scale
-    is_log_scale = ('scale' in options.keys() and
-                    not parametric and
-                    options['scale'] in ['loglog', 'semilogx'])
+    is_log_scale = (
+        'scale' in options.keys()
+        and not parametric
+        and options['scale'] in ['loglog', 'semilogx']
+    )
     if is_log_scale:
 
         def f_exp(x):
@@ -2377,16 +2426,28 @@ def _plot(funcs, xrange, parametric=False,
         else:
             log_initial_points = [log(x) for x in initial_points]
         data, extra_excluded = generate_plot_points(
-            f_exp, log_xrange, plot_points,
-            adaptive_tolerance, adaptive_recursion,
-            randomize, log_initial_points,
-            excluded=True, imaginary_tolerance=imag_tol)
+            f_exp,
+            log_xrange,
+            plot_points,
+            adaptive_tolerance,
+            adaptive_recursion,
+            randomize,
+            log_initial_points,
+            excluded=True,
+            imaginary_tolerance=imag_tol,
+        )
     else:
         data, extra_excluded = generate_plot_points(
-            f, xrange, plot_points,
-            adaptive_tolerance, adaptive_recursion,
-            randomize, initial_points,
-            excluded=True, imaginary_tolerance=imag_tol)
+            f,
+            xrange,
+            plot_points,
+            adaptive_tolerance,
+            adaptive_recursion,
+            randomize,
+            initial_points,
+            excluded=True,
+            imaginary_tolerance=imag_tol,
+        )
 
     excluded_points += extra_excluded
 
@@ -2433,20 +2494,24 @@ def _plot(funcs, xrange, parametric=False,
                         fstr = 'max'
                     else:
                         fstr = 'min'
-                    msg = "WARNING: You use the built-in function {} for filling. You probably wanted the string '{}'.".format(fstr, fstr)
+                    msg = "WARNING: You use the built-in function {} for filling. You probably wanted the string '{}'.".format(
+                        fstr, fstr
+                    )
                     sage.misc.verbose.verbose(msg, level=0)
                 if not is_fast_float(fill):
                     fill_f = fast_float(fill, expect_one_var=True)
                 else:
                     fill_f = fill
 
-                filldata = generate_plot_points(fill_f,
-                                                xrange,
-                                                plot_points,
-                                                adaptive_tolerance,
-                                                adaptive_recursion,
-                                                randomize,
-                                                imaginary_tolerance=imag_tol)
+                filldata = generate_plot_points(
+                    fill_f,
+                    xrange,
+                    plot_points,
+                    adaptive_tolerance,
+                    adaptive_recursion,
+                    randomize,
+                    imaginary_tolerance=imag_tol,
+                )
                 filldata.reverse()
                 filldata += data
             else:
@@ -2456,17 +2521,21 @@ def _plot(funcs, xrange, parametric=False,
                     base_level = 0
 
             if not callable(fill) and polar:
-                filldata = generate_plot_points(lambda x: base_level,
-                                                xrange,
-                                                plot_points,
-                                                adaptive_tolerance,
-                                                adaptive_recursion,
-                                                randomize,
-                                                imaginary_tolerance=imag_tol)
+                filldata = generate_plot_points(
+                    lambda x: base_level,
+                    xrange,
+                    plot_points,
+                    adaptive_tolerance,
+                    adaptive_recursion,
+                    randomize,
+                    imaginary_tolerance=imag_tol,
+                )
                 filldata.reverse()
                 filldata += data
             if not callable(fill) and not polar:
-                filldata = [(data[0][0], base_level)] + data + [(data[-1][0], base_level)]
+                filldata = (
+                    [(data[0][0], base_level)] + data + [(data[-1][0], base_level)]
+                )
 
         if fillcolor == 'automatic':
             fillcolor = (0.5, 0.5, 0.5)
@@ -2475,14 +2544,14 @@ def _plot(funcs, xrange, parametric=False,
         fill_options['alpha'] = fillalpha
         fill_options['thickness'] = 0
         if polar:
-            filldata = [(y*cos(x), y*sin(x)) for x, y in filldata]
+            filldata = [(y * cos(x), y * sin(x)) for x, y in filldata]
         G += polygon(filldata, **fill_options)
 
     # We need the original data to be able to exclude points in polar plots
     if not parametric:
         exclude_data = data
     if polar:
-        data = [(y*cos(x), y*sin(x)) for x, y in data]
+        data = [(y * cos(x), y * sin(x)) for x, y in data]
 
     detect_poles = options.pop('detect_poles', False)
     legend_label = options.pop('legend_label', None)
@@ -2490,6 +2559,7 @@ def _plot(funcs, xrange, parametric=False,
         start_index = 0
         # setup for pole detection
         from sage.rings.real_double import RDF
+
         epsilon = 0.0001
         pole_options = {}
         pole_options['linestyle'] = '--'
@@ -2505,23 +2575,26 @@ def _plot(funcs, xrange, parametric=False,
             exclusion_point = xmax + 1
 
         flag = True
-        for i in range(len(data)-1):
+        for i in range(len(data) - 1):
             x0, y0 = exclude_data[i]
-            x1, y1 = exclude_data[i+1]
+            x1, y1 = exclude_data[i + 1]
 
             # detect poles
-            if (not (polar or parametric)) and detect_poles \
-               and ((y1 > 0 and y0 < 0) or (y1 < 0 and y0 > 0)):
+            if (
+                (not (polar or parametric))
+                and detect_poles
+                and ((y1 > 0 and y0 < 0) or (y1 < 0 and y0 > 0))
+            ):
                 # calculate the slope of the line segment
-                dy = abs(y1-y0)
+                dy = abs(y1 - y0)
                 dx = x1 - x0
-                alpha = (RDF(dy)/RDF(dx)).arctan()
-                if alpha >= RDF(pi/2) - epsilon:
+                alpha = (RDF(dy) / RDF(dx)).arctan()
+                if alpha >= RDF(pi / 2) - epsilon:
                     G += line(data[start_index:i], **options)
                     if detect_poles == 'show':
                         # draw a vertical asymptote
                         G += line([(x0, y0), (x1, y1)], **pole_options)
-                    start_index = i+2
+                    start_index = i + 2
 
             # exclude points
             if x0 > exclusion_point:
@@ -2552,6 +2625,7 @@ def _plot(funcs, xrange, parametric=False,
 
 
 # ######### misc functions #################
+
 
 @options(aspect_ratio=1.0)
 def parametric_plot(funcs, *args, **kwargs):
@@ -2761,9 +2835,13 @@ def parametric_plot(funcs, *args, **kwargs):
     if num_funcs == 2 and num_ranges == 1:
         kwargs['parametric'] = True
         return plot(funcs, *args, **kwargs)
-    if (num_funcs == 3 and num_ranges <= 2):
-        return sage.plot.plot3d.parametric_plot3d.parametric_plot3d(funcs, *args, **kwargs)
-    raise ValueError("the number of functions and the number of variable ranges is not a supported combination for a 2d or 3d parametric plots")
+    if num_funcs == 3 and num_ranges <= 2:
+        return sage.plot.plot3d.parametric_plot3d.parametric_plot3d(
+            funcs, *args, **kwargs
+        )
+    raise ValueError(
+        "the number of functions and the number of variable ranges is not a supported combination for a 2d or 3d parametric plots"
+    )
 
 
 @options(aspect_ratio=1.0)
@@ -3128,15 +3206,18 @@ def list_plot(data, plotjoined=False, **kwargs):
         Graphics object consisting of 1 graphics primitive
     """
     from sage.plot.point import point
+
     try:
         if not data:
             return Graphics()
     except ValueError:  # numpy raises ValueError if it is not empty
         pass
     if not isinstance(plotjoined, bool):
-        raise TypeError("The second argument 'plotjoined' should be boolean "
-                        "(True or False).  If you meant to plot two lists 'x' "
-                        "and 'y' against each other, use 'list_plot(list(zip(x,y)))'.")
+        raise TypeError(
+            "The second argument 'plotjoined' should be boolean "
+            "(True or False).  If you meant to plot two lists 'x' "
+            "and 'y' against each other, use 'list_plot(list(zip(x,y)))'."
+        )
     if isinstance(data, dict):
         if plotjoined:
             list_data = sorted(data.items())
@@ -3146,6 +3227,7 @@ def list_plot(data, plotjoined=False, **kwargs):
     list_enumerated = False
     try:
         from sage.rings.real_double import RDF
+
         RDF(data[0])
         data = list(enumerate(data))
         list_enumerated = True
@@ -3173,6 +3255,7 @@ def list_plot(data, plotjoined=False, **kwargs):
         # point3d() throws an IndexError on the (0,1) before it ever
         # gets to (1, I).
         from sage.rings.cc import CC
+
         # It is not guaranteed that we enumerated the data so we have two cases
         if list_enumerated:
             data = [(z.real(), z.imag()) for z in [CC(z[1]) for z in data]]
@@ -3181,6 +3264,7 @@ def list_plot(data, plotjoined=False, **kwargs):
         if plotjoined:
             return line(data, **kwargs)
         return point(data, **kwargs)
+
 
 # ------------------------ Graphs on log scale ---------------------------
 
@@ -3561,7 +3645,7 @@ def reshape(v, n, m):
     G = Graphics()
     G.axes(False)
     if len(v) == 0:
-        return [[G]*m]*n
+        return [[G] * m] * n
 
     if not isinstance(v[0], Graphics):
         # a list of lists -- flatten it
@@ -3569,7 +3653,7 @@ def reshape(v, n, m):
 
     # Now v should be a single list.
     # First, make it have the right length.
-    v = list(v)   # do not mutate the argument
+    v = list(v)  # do not mutate the argument
     for i in range(n * m - len(v)):
         v.append(G)
 
@@ -3743,12 +3827,12 @@ def graphics_array(array, nrows=None, ncols=None):
         if nrows is None:
             ncols = int(ncols)
             nrows = length // ncols
-            if nrows*ncols < length or nrows == 0:
+            if nrows * ncols < length or nrows == 0:
                 nrows += 1
         elif ncols is None:
             nrows = int(nrows)
             ncols = length // nrows
-            if nrows*ncols < length or ncols == 0:
+            if nrows * ncols < length or ncols == 0:
                 ncols += 1
         else:
             assert False
@@ -3860,14 +3944,14 @@ def minmax_data(xdata, ydata, dict=False) -> tuple | dict:
     ymin = min(ydata) if len(ydata) else -1
     ymax = max(ydata) if len(ydata) else 1
     if dict:
-        return {'xmin': xmin, 'xmax': xmax,
-                'ymin': ymin, 'ymax': ymax}
+        return {'xmin': xmin, 'xmax': xmax, 'ymin': ymin, 'ymax': ymax}
 
     return xmin, xmax, ymin, ymax
 
 
-def adaptive_refinement(f, p1, p2, adaptive_tolerance=0.01,
-                        adaptive_recursion=5, level=0, *, excluded=False):
+def adaptive_refinement(
+    f, p1, p2, adaptive_tolerance=0.01, adaptive_recursion=5, level=0, *, excluded=False
+):
     r"""
     The adaptive refinement algorithm for plotting a function ``f``. See
     the docstring for plot for a description of the algorithm.
@@ -3941,7 +4025,7 @@ def adaptive_refinement(f, p1, p2, adaptive_tolerance=0.01,
     if level >= adaptive_recursion:
         return []
 
-    x = (p1[0] + p2[0])/2.0
+    x = (p1[0] + p2[0]) / 2.0
     msg = ''
 
     try:
@@ -3961,27 +4045,43 @@ def adaptive_refinement(f, p1, p2, adaptive_tolerance=0.01,
         return []
 
     # this distance calculation is not perfect.
-    if abs((p1[1] + p2[1])/2.0 - y) > adaptive_tolerance:
-        ref = adaptive_refinement(f, p1, (x, y),
-                                  adaptive_tolerance=adaptive_tolerance,
-                                  adaptive_recursion=adaptive_recursion,
-                                  level=level+1,
-                                  excluded=excluded)
+    if abs((p1[1] + p2[1]) / 2.0 - y) > adaptive_tolerance:
+        ref = adaptive_refinement(
+            f,
+            p1,
+            (x, y),
+            adaptive_tolerance=adaptive_tolerance,
+            adaptive_recursion=adaptive_recursion,
+            level=level + 1,
+            excluded=excluded,
+        )
         ref += [(x, y)]
-        ref += adaptive_refinement(f, (x, y), p2,
-                                   adaptive_tolerance=adaptive_tolerance,
-                                   adaptive_recursion=adaptive_recursion,
-                                   level=level+1,
-                                   excluded=excluded)
+        ref += adaptive_refinement(
+            f,
+            (x, y),
+            p2,
+            adaptive_tolerance=adaptive_tolerance,
+            adaptive_recursion=adaptive_recursion,
+            level=level + 1,
+            excluded=excluded,
+        )
         return ref
 
     return []
 
 
-def generate_plot_points(f, xrange, plot_points=5, adaptive_tolerance=0.01,
-                         adaptive_recursion=5, randomize=True,
-                         initial_points=None, *, excluded=False,
-                         imaginary_tolerance=1e-8):
+def generate_plot_points(
+    f,
+    xrange,
+    plot_points=5,
+    adaptive_tolerance=0.01,
+    adaptive_recursion=5,
+    randomize=True,
+    initial_points=None,
+    *,
+    excluded=False,
+    imaginary_tolerance=1e-8,
+):
     r"""
     Calculate plot points for a function f in the interval xrange.  The
     adaptive refinement algorithm is also automatically invoked with a
@@ -4072,10 +4172,10 @@ def generate_plot_points(f, xrange, plot_points=5, adaptive_tolerance=0.01,
         ([(1.0, 0.0)], [0.0])
     """
     from sage.plot.misc import setup_for_eval_on_grid
-    f, ranges = setup_for_eval_on_grid(f,
-                                       [xrange],
-                                       plot_points,
-                                       imaginary_tolerance=imaginary_tolerance)
+
+    f, ranges = setup_for_eval_on_grid(
+        f, [xrange], plot_points, imaginary_tolerance=imaginary_tolerance
+    )
     xmin, xmax, delta = ranges[0]
     x_values = srange(*ranges[0], include_endpoint=True)
 
@@ -4085,15 +4185,15 @@ def generate_plot_points(f, xrange, plot_points=5, adaptive_tolerance=0.01,
         xi = x_values[i]
         # Slightly randomize the interior sample points if
         # randomize is true
-        if randomize and i > 0 and i < plot_points-1:
-            xi += delta*(random() - 0.5)
+        if randomize and i > 0 and i < plot_points - 1:
+            xi += delta * (random() - 0.5)
             x_values[i] = xi
 
     # add initial points
     if isinstance(initial_points, list):
         x_values = sorted(x_values + initial_points)
 
-    data = [None]*len(x_values)
+    data = [None] * len(x_values)
 
     exceptions = 0
     exception_indices = []
@@ -4113,7 +4213,7 @@ def generate_plot_points(f, xrange, plot_points=5, adaptive_tolerance=0.01,
 
             if i == 0:  # Given an error for left endpoint, try to move it in slightly
                 for j in range(1, 99):
-                    xj = xi + delta*j/100.0
+                    xj = xi + delta * j / 100.0
                     try:
                         data[i] = (float(xj), float(f(xj)))
                         # nan != nan
@@ -4127,9 +4227,11 @@ def generate_plot_points(f, xrange, plot_points=5, adaptive_tolerance=0.01,
                     exceptions += 1
                     exception_indices.append(i)
 
-            elif i == plot_points-1:  # Given an error for right endpoint, try to move it in slightly
+            elif (
+                i == plot_points - 1
+            ):  # Given an error for right endpoint, try to move it in slightly
                 for j in range(1, 99):
-                    xj = xi - delta*j/100.0
+                    xj = xi - delta * j / 100.0
                     try:
                         data[i] = (float(xj), float(f(xj)))
                         # nan != nan
@@ -4156,19 +4258,27 @@ def generate_plot_points(f, xrange, plot_points=5, adaptive_tolerance=0.01,
     adaptive_recursion = int(adaptive_recursion)
 
     while i < len(data) - 1:
-        for p in adaptive_refinement(f, data[i], data[i+1],
-                                     adaptive_tolerance=adaptive_tolerance,
-                                     adaptive_recursion=adaptive_recursion,
-                                     excluded=True):
+        for p in adaptive_refinement(
+            f,
+            data[i],
+            data[i + 1],
+            adaptive_tolerance=adaptive_tolerance,
+            adaptive_recursion=adaptive_recursion,
+            excluded=True,
+        ):
             if p[1] == "NaN":
                 excluded_points.append(p[0])
             else:
-                data.insert(i+1, p)
+                data.insert(i + 1, p)
                 i += 1
         i += 1
 
     if (len(data) == 0 and exceptions > 0) or exceptions > 10:
-        sage.misc.verbose.verbose("WARNING: When plotting, failed to evaluate function at %s points." % exceptions, level=0)
+        sage.misc.verbose.verbose(
+            "WARNING: When plotting, failed to evaluate function at %s points."
+            % exceptions,
+            level=0,
+        )
         sage.misc.verbose.verbose("Last error message: '%s'" % msg, level=0)
 
     if excluded:

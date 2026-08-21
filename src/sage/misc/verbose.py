@@ -142,6 +142,7 @@ def verbose(mesg='', t=0, level=1, caller_name=None):
         sage: set_verbose(0)
     """
     from sage.misc.timing import cputime
+
     if level > LEVEL:
         return cputime()
 
@@ -172,8 +173,13 @@ def verbose(mesg='', t=0, level=1, caller_name=None):
     if '<' in short_file_name and '>' in short_file_name:
         s = "verbose %s (%s) %s" % (level, caller_name, mesg)
     else:
-        s = "verbose %s (%s: %s, %s) %s" % (level, lineno,
-                                            short_file_name, caller_name, mesg)
+        s = "verbose %s (%s: %s, %s) %s" % (
+            level,
+            lineno,
+            short_file_name,
+            caller_name,
+            mesg,
+        )
     if t != 0:
         s = s + " (time = %s)" % cputime(t)
     print(s)

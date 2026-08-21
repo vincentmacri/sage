@@ -15,7 +15,10 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import LazyImport
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.monoids import Monoids
-from sage.categories.cartesian_product import CartesianProductsCategory, cartesian_product
+from sage.categories.cartesian_product import (
+    CartesianProductsCategory,
+    cartesian_product,
+)
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.topological_spaces import TopologicalSpacesCategory
 
@@ -36,6 +39,7 @@ class Groups(CategoryWithAxiom):
 
         sage: TestSuite(Groups()).run()
     """
+
     _base_category_class_and_axiom = (Monoids, "Inverse")
 
     def example(self):
@@ -47,7 +51,8 @@ class Groups(CategoryWithAxiom):
         """
         from sage.rings.rational_field import QQ
         from sage.groups.matrix_gps.linear import GL
-        return GL(4,QQ)
+
+        return GL(4, QQ)
 
     @staticmethod
     def free(index_set=None, names=None, **kwds):
@@ -80,17 +85,19 @@ class Groups(CategoryWithAxiom):
             Free Group on generators {x, y, z}
         """
         from sage.rings.integer_ring import ZZ
+
         if index_set in ZZ or (index_set is None and names is not None):
             from sage.groups.free_group import FreeGroup
+
             if names is None:
                 return FreeGroup(index_set, **kwds)
             return FreeGroup(index_set, names, **kwds)
 
         from sage.groups.indexed_free_group import IndexedFreeGroup
+
         return IndexedFreeGroup(index_set, **kwds)
 
     class ParentMethods:
-
         def group_generators(self):
             """
             Return group generators for ``self``.
@@ -105,10 +112,13 @@ class Groups(CategoryWithAxiom):
                 Family ((1,2,3), (2,3,4))
             """
             from sage.sets.family import Family
+
             try:
                 return Family(self.gens())
             except AttributeError:
-                raise NotImplementedError("no generators are implemented for this group")
+                raise NotImplementedError(
+                    "no generators are implemented for this group"
+                )
 
         def monoid_generators(self):
             r"""
@@ -131,9 +141,13 @@ class Groups(CategoryWithAxiom):
             """
             G = self.group_generators()
             from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+
             if G not in FiniteEnumeratedSets():
-                raise NotImplementedError("currently only implemented for finitely generated groups")
+                raise NotImplementedError(
+                    "currently only implemented for finitely generated groups"
+                )
             from sage.sets.family import Family
+
             return Family(tuple(G) + tuple(~x for x in G))
 
         def _test_inverse(self, **options):
@@ -166,7 +180,9 @@ class Groups(CategoryWithAxiom):
                 over Rational Field and General Linear Group of degree 4 over Rational Field
                 not yet implemented
             """
-            raise NotImplementedError("semidirect product of %s and %s not yet implemented" % (self, N))
+            raise NotImplementedError(
+                "semidirect product of %s and %s not yet implemented" % (self, N)
+            )
 
         def holomorph(self):
             r"""
@@ -433,7 +449,10 @@ class Groups(CategoryWithAxiom):
             """
             from sage.matrix.operation_table import OperationTable
             import operator
-            return OperationTable(self, operation=operator.mul, names=names, elements=elements)
+
+            return OperationTable(
+                self, operation=operator.mul, names=names, elements=elements
+            )
 
         def conjugacy_class(self, g):
             r"""
@@ -449,6 +468,7 @@ class Groups(CategoryWithAxiom):
                 <class 'sage.groups.conjugacy_classes.ConjugacyClass_with_category'>
             """
             from sage.groups.conjugacy_classes import ConjugacyClass
+
             return ConjugacyClass(self, g)
 
     class ElementMethods:
@@ -489,9 +509,13 @@ class Groups(CategoryWithAxiom):
             """
             return self.parent().conjugacy_class(self)
 
-    Finite = LazyImport('sage.categories.finite_groups', 'FiniteGroups', at_startup=True)
+    Finite = LazyImport(
+        'sage.categories.finite_groups', 'FiniteGroups', at_startup=True
+    )
     Lie = LazyImport('sage.categories.lie_groups', 'LieGroups', 'Lie')
-    Algebras = LazyImport('sage.categories.group_algebras', 'GroupAlgebras', at_startup=True)
+    Algebras = LazyImport(
+        'sage.categories.group_algebras', 'GroupAlgebras', at_startup=True
+    )
 
     class Commutative(CategoryWithAxiom):
         r"""
@@ -499,6 +523,7 @@ class Groups(CategoryWithAxiom):
 
         A group `G` is *commutative* if `xy = yx` for all `x,y \in G`.
         """
+
         @staticmethod
         def free(index_set=None, names=None, **kwds):
             r"""
@@ -525,6 +550,7 @@ class Groups(CategoryWithAxiom):
                 Multiplicative Abelian group isomorphic to Z x Z x Z
             """
             from sage.rings.integer_ring import ZZ
+
             if names is not None:
                 if isinstance(names, str):
                     if ',' not in names and index_set in ZZ:
@@ -536,13 +562,16 @@ class Groups(CategoryWithAxiom):
                     index_set = ZZ(len(names))
                 if index_set in ZZ:
                     from sage.groups.abelian_gps.abelian_group import AbelianGroup
+
                     return AbelianGroup(index_set, names=names, **kwds)
 
             if index_set in ZZ:
                 from sage.groups.abelian_gps.abelian_group import AbelianGroup
+
                 return AbelianGroup(index_set, **kwds)
 
             from sage.groups.indexed_free_group import IndexedFreeAbelianGroup
+
             return IndexedFreeAbelianGroup(index_set, names=names, **kwds)
 
     class CartesianProducts(CartesianProductsCategory):
@@ -553,6 +582,7 @@ class Groups(CategoryWithAxiom):
         :wikipedia:`Direct_product` and :wikipedia:`Direct_product_of_groups`
         for more information.
         """
+
         def extra_super_categories(self):
             """
             A Cartesian product of groups is endowed with a natural
@@ -611,21 +641,32 @@ class Groups(CategoryWithAxiom):
                     cur = list(ids)
                     cur[i] = gen
                     return self._cartesian_product_of_elements(cur)
+
                 from sage.sets.family import Family
 
                 # Finitely generated
                 cat = FiniteEnumeratedSets()
-                if all(G.group_generators() in cat
-                       or isinstance(G.group_generators(), (tuple, list)) for G in F):
-                    ret = [lift(i, gen) for i, G in enumerate(F) for gen in G.group_generators()]
+                if all(
+                    G.group_generators() in cat
+                    or isinstance(G.group_generators(), (tuple, list))
+                    for G in F
+                ):
+                    ret = [
+                        lift(i, gen)
+                        for i, G in enumerate(F)
+                        for gen in G.group_generators()
+                    ]
                     return Family(ret)
 
                 # Infinitely generated
                 # This does not return a good output, but it is "correct"
                 # TODO: Figure out a better way to do things
-                gens_prod = cartesian_product([Family(G.group_generators(),
-                                                      lambda g: (i, g))
-                                               for i, G in enumerate(F)])
+                gens_prod = cartesian_product(
+                    [
+                        Family(G.group_generators(), lambda g: (i, g))
+                        for i, G in enumerate(F)
+                    ]
+                )
                 return Family(gens_prod, lift, name='gen')
 
             def order(self):
@@ -650,6 +691,7 @@ class Groups(CategoryWithAxiom):
                     ``_cardinality_from_iterator``.
                 """
                 from sage.misc.misc_c import prod
+
                 return prod(c.cardinality() for c in self.cartesian_factors())
 
     class Topological(TopologicalSpacesCategory):

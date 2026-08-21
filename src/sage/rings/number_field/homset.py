@@ -15,9 +15,11 @@ Sets of homomorphisms between number fields
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.homset import RingHomset_generic
-from sage.rings.number_field.morphism import (NumberFieldHomomorphism_im_gens,
-                                              RelativeNumberFieldHomomorphism_from_abs,
-                                              CyclotomicFieldHomomorphism_im_gens)
+from sage.rings.number_field.morphism import (
+    NumberFieldHomomorphism_im_gens,
+    RelativeNumberFieldHomomorphism_from_abs,
+    CyclotomicFieldHomomorphism_im_gens,
+)
 from sage.rings.integer import Integer
 from sage.rings.finite_rings.integer_mod_ring import Zmod
 from sage.structure.sequence import Sequence
@@ -52,6 +54,7 @@ class NumberFieldHomset(RingHomset_generic):
         if category is None:
             from sage.categories.fields import Fields
             from sage.categories.number_fields import NumberFields
+
             if S in NumberFields():
                 category = NumberFields()
             elif S in Fields():
@@ -104,16 +107,20 @@ class NumberFieldHomset(RingHomset_generic):
             return self.element_class(self, x, check=check)
         from sage.categories.number_fields import NumberFields
         from sage.categories.rings import Rings
-        if (x.parent() == self or
-            (x.domain() == self.domain() and x.codomain() == self.codomain() and
-             # This would be the better check, however it returns False currently:
-             # self.homset_category().is_full_subcategory(x.category_for())
-             # So we check instead that this is a morphism anywhere between
-             # Rings and NumberFields where the hom spaces do not change.
-             NumberFields().is_subcategory(self.homset_category()) and
-             self.homset_category().is_subcategory(Rings()) and
-             NumberFields().is_subcategory(x.category_for()) and
-             x.category_for().is_subcategory(Rings()))):
+
+        if x.parent() == self or (
+            x.domain() == self.domain()
+            and x.codomain() == self.codomain()
+            and
+            # This would be the better check, however it returns False currently:
+            # self.homset_category().is_full_subcategory(x.category_for())
+            # So we check instead that this is a morphism anywhere between
+            # Rings and NumberFields where the hom spaces do not change.
+            NumberFields().is_subcategory(self.homset_category())
+            and self.homset_category().is_subcategory(Rings())
+            and NumberFields().is_subcategory(x.category_for())
+            and x.category_for().is_subcategory(Rings())
+        ):
             return self.element_class(self, x.im_gens(), check=False)
 
     def _an_element_(self):
@@ -139,8 +146,10 @@ class NumberFieldHomset(RingHomset_generic):
         if len(L) != 0:
             return L[0]
         from sage.categories.sets_cat import EmptySetError
-        raise EmptySetError("There is no morphism from {} to {}".format(
-            self.domain(), self.codomain()))
+
+        raise EmptySetError(
+            "There is no morphism from {} to {}".format(self.domain(), self.codomain())
+        )
 
     def _repr_(self):
         r"""
@@ -375,10 +384,14 @@ class RelativeNumberFieldHomset(NumberFieldHomset):
             if x.domain() != self.domain().absolute_field(x.domain().variable_name()):
                 raise TypeError("domain of morphism must be absolute field of domain.")
             if x.codomain() != self.codomain():
-                raise ValueError("codomain of absolute homomorphism must be codomain of this homset.")
+                raise ValueError(
+                    "codomain of absolute homomorphism must be codomain of this homset."
+                )
             return self.element_class(self, x)
-        if (isinstance(x, RelativeNumberFieldHomomorphism_from_abs)
-                and x.parent() == self):
+        if (
+            isinstance(x, RelativeNumberFieldHomomorphism_from_abs)
+            and x.parent() == self
+        ):
             return self.element_class(self, x.abs_hom())
         if base_map is None:
             base_map = self.default_base_hom()
@@ -561,8 +574,7 @@ class CyclotomicFieldHomset(NumberFieldHomset):
             sage: (x^2 + a).change_ring(phi)
             x^2 + b
         """
-        if (isinstance(x, CyclotomicFieldHomomorphism_im_gens)
-                and x.parent() == self):
+        if isinstance(x, CyclotomicFieldHomomorphism_im_gens) and x.parent() == self:
             return self.element_class(self, x.im_gens())
         return self.element_class(self, x, check=check)
 

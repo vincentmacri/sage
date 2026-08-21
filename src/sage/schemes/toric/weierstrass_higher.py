@@ -159,7 +159,9 @@ def _biquadratic_syzygy_quartic(quadratic1, quadratic2, variables=None):
          Binary quartic with coefficients (0, 0, 0, -1, 0), {aux...})
     """
     w, x, y, z = _check_polynomials_P3(quadratic1, quadratic2, variables)
-    biquadratic = invariant_theory.quaternary_biquadratic(quadratic1, quadratic2, [w, x, y, z])
+    biquadratic = invariant_theory.quaternary_biquadratic(
+        quadratic1, quadratic2, [w, x, y, z]
+    )
 
     # construct auxiliary polynomial ring to work with the rhs of the syzygy
     R = biquadratic.ring()
@@ -176,11 +178,13 @@ def _biquadratic_syzygy_quartic(quadratic1, quadratic2, variables=None):
 
     # Syzygy is J^2 = syz_rhs + (terms that vanish on the biquadratic) with
     # J = biquadratic.J_covariant()
-    syz_rhs = T**4 * biquadratic.Delta_invariant().subs(to_aux) \
-        - T**3 * T_prime * biquadratic.Theta_invariant().subs(to_aux) \
-        + T**2 * T_prime**2 * biquadratic.Phi_invariant().subs(to_aux) \
-        - T * T_prime**3 * biquadratic.Theta_prime_invariant().subs(to_aux) \
+    syz_rhs = (
+        T**4 * biquadratic.Delta_invariant().subs(to_aux)
+        - T**3 * T_prime * biquadratic.Theta_invariant().subs(to_aux)
+        + T**2 * T_prime**2 * biquadratic.Phi_invariant().subs(to_aux)
+        - T * T_prime**3 * biquadratic.Theta_prime_invariant().subs(to_aux)
         + T_prime**4 * biquadratic.Delta_prime_invariant().subs(to_aux)
+    )
     quartic = invariant_theory.binary_quartic(syz_rhs, [T, T_prime])
     return (biquadratic, quartic, from_aux)
 
@@ -216,8 +220,9 @@ def WeierstrassForm_P3(quadratic1, quadratic2, variables=None):
         sage: b.total_degree(), len(b.coefficients())
         (6, 648)
     """
-    biquadratic, quartic, from_aux = \
-        _biquadratic_syzygy_quartic(quadratic1, quadratic2, variables=variables)
+    biquadratic, quartic, from_aux = _biquadratic_syzygy_quartic(
+        quadratic1, quadratic2, variables=variables
+    )
     a = quartic.EisensteinD().subs(from_aux)
     b = quartic.EisensteinE().subs(from_aux)
     return (-4 * a, 16 * b)
@@ -278,8 +283,9 @@ def WeierstrassMap_P3(quadratic1, quadratic2, variables=None):
         - w*x*y*z*a0^2*a1*a3^3 + w*x*y*z*a0*a1^2*a3^3 + w*x*y*z*a0^2*a2*a3^3
         - w*x*y*z*a1^2*a2*a3^3 - w*x*y*z*a0*a2^2*a3^3 + w*x*y*z*a1*a2^2*a3^3
     """
-    biquadratic, quartic, from_aux = \
-        _biquadratic_syzygy_quartic(quadratic1, quadratic2, variables=variables)
+    biquadratic, quartic, from_aux = _biquadratic_syzygy_quartic(
+        quadratic1, quadratic2, variables=variables
+    )
     J = biquadratic.J_covariant()
     g = quartic.g_covariant().subs(from_aux)
     h = quartic.h_covariant().subs(from_aux)

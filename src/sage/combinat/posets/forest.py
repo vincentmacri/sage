@@ -25,5 +25,6 @@ class ForestPoset(FinitePoset):
     A forest poset is a poset where the underlying Hasse diagram and is
     directed acyclic graph.
     """
+
     _lin_ext_type = LinearExtensionsOfForest
     _desc = 'Finite forest poset'

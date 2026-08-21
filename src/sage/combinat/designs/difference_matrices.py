@@ -46,7 +46,7 @@ def find_product_decomposition(g, k, lmbda=1):
         False
     """
     for lmbda1 in divisors(lmbda):
-        lmbda2 = lmbda//lmbda1
+        lmbda2 = lmbda // lmbda1
 
         # To avoid infinite loop:
         # if lmbda1 == lmbda, then g1 should not be g
@@ -63,12 +63,14 @@ def find_product_decomposition(g, k, lmbda=1):
                 div = divisors(g)
 
         for g1 in div:
-            g2 = g//g1
+            g2 = g // g1
             if g1 > g2:
                 break
-            if (difference_matrix(g1,k,lmbda1,existence=True) is True and
-                difference_matrix(g2,k,lmbda2,existence=True) is True):
-                return (g1,lmbda1),(g2,lmbda2)
+            if (
+                difference_matrix(g1, k, lmbda1, existence=True) is True
+                and difference_matrix(g2, k, lmbda2, existence=True) is True
+            ):
+                return (g1, lmbda1), (g2, lmbda2)
 
     return False
 
@@ -111,17 +113,26 @@ def difference_matrix_product(k, M1, G1, lmbda1, M2, G2, lmbda2, check=True):
     """
     g1 = G1.cardinality()
     g2 = G2.cardinality()
-    g = g1*g2
-    lmbda = lmbda1*lmbda2
+    g = g1 * g2
+    lmbda = lmbda1 * lmbda2
     from sage.categories.cartesian_product import cartesian_product
-    G = cartesian_product([G1,G2])
 
-    M = [[G((M1[j1][i],M2[j2][i])) for i in range(k)] for j1 in range(lmbda1*g1) for j2 in range(lmbda2*g2)]
+    G = cartesian_product([G1, G2])
 
-    if check and not is_difference_matrix(M,G,k,lmbda,True):
-        raise RuntimeError("In the product construction, Sage built something which is not a ({},{},{})-DM!".format(g,k,lmbda))
+    M = [
+        [G((M1[j1][i], M2[j2][i])) for i in range(k)]
+        for j1 in range(lmbda1 * g1)
+        for j2 in range(lmbda2 * g2)
+    ]
 
-    return G,M
+    if check and not is_difference_matrix(M, G, k, lmbda, True):
+        raise RuntimeError(
+            "In the product construction, Sage built something which is not a ({},{},{})-DM!".format(
+                g, k, lmbda
+            )
+        )
+
+    return G, M
 
 
 def difference_matrix(g, k, lmbda=1, existence=False, check=True):
@@ -224,7 +235,11 @@ def difference_matrix(g, k, lmbda=1, existence=False, check=True):
     if lmbda == 1 and k is not None and k > g:
         if existence:
             return False
-        raise EmptySetError("No ({},{},{})-Difference Matrix exists as k(={})>g(={})".format(g,k,lmbda,k,g))
+        raise EmptySetError(
+            "No ({},{},{})-Difference Matrix exists as k(={})>g(={})".format(
+                g, k, lmbda, k, g
+            )
+        )
 
     # Prime powers
     elif lmbda == 1 and is_prime_power(g):
@@ -234,20 +249,20 @@ def difference_matrix(g, k, lmbda=1, existence=False, check=True):
             k = g
         elif existence:
             return True
-        F = FiniteField(g,'x')
+        F = FiniteField(g, 'x')
         F_set = list(F)
         F_k_set = F_set[:k]
 
         G = F
-        M = [[x*y for y in F_k_set] for x in F_set]
+        M = [[x * y for y in F_k_set] for x in F_set]
 
     # Treat the case k=None
     # (find the max k such that there exists a DM)
     elif k is None:
         i = 2
-        while difference_matrix(g=g,k=i,lmbda=lmbda,existence=True) is True:
+        while difference_matrix(g=g, k=i, lmbda=lmbda, existence=True) is True:
             i += 1
-        return i-1
+        return i - 1
 
     # From the database
     elif (g, lmbda) in DM_constructions and DM_constructions[g, lmbda][0] >= k:
@@ -264,15 +279,20 @@ def difference_matrix(g, k, lmbda=1, existence=False, check=True):
         (g1, lmbda1), (g2, lmbda2) = find_product_decomposition(g, k, lmbda)
         G1, M1 = difference_matrix(g1, k, lmbda1)
         G2, M2 = difference_matrix(g2, k, lmbda2)
-        G, M = difference_matrix_product(k, M1, G1, lmbda1,
-                                         M2, G2, lmbda2, check=False)
+        G, M = difference_matrix_product(k, M1, G1, lmbda1, M2, G2, lmbda2, check=False)
 
     else:
         if existence:
             return Unknown
-        raise NotImplementedError("I don't know how to build a ({},{},{})-Difference Matrix!".format(g,k,lmbda))
+        raise NotImplementedError(
+            "I don't know how to build a ({},{},{})-Difference Matrix!".format(
+                g, k, lmbda
+            )
+        )
 
     if check and not is_difference_matrix(M, G, k, lmbda, 1):
-        raise RuntimeError("Sage built something which is not a ({},{},{})-DM!".format(g, k, lmbda))
+        raise RuntimeError(
+            "Sage built something which is not a ({},{},{})-DM!".format(g, k, lmbda)
+        )
 
     return G, M

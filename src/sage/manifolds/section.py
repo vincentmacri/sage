@@ -10,7 +10,7 @@ AUTHORS:
 - Michael Jung (2019): initial version
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2019 Michael Jung <micjung@uni-potsdam.de>
 #
@@ -18,7 +18,7 @@ AUTHORS:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import ModuleElementWithMutability
@@ -211,6 +211,7 @@ class Section(ModuleElementWithMutability):
         ...
         ValueError: the name of an immutable element cannot be changed
     """
+
     def __init__(self, section_module, name=None, latex_name=None):
         r"""
         Construct a local section.
@@ -354,8 +355,8 @@ class Section(ModuleElementWithMutability):
             sage: s = E.section(name='s')
             sage: s._init_derived()
         """
-        self._restrictions = {} # dict. of restrictions of self on subdomains
-                                # of self._domain, with the subdomains as keys
+        self._restrictions = {}  # dict. of restrictions of self on subdomains
+        # of self._domain, with the subdomains as keys
         self._extensions_graph = {self._domain: self}
         self._restrictions_graph = {self._domain: self}
 
@@ -410,8 +411,7 @@ class Section(ModuleElementWithMutability):
             a
         """
         if self.is_immutable():
-            raise ValueError("the name of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the name of an immutable element cannot be changed")
         if name is not None:
             self._name = name
             if latex_name is None:
@@ -608,10 +608,12 @@ class Section(ModuleElementWithMutability):
             True
         """
         if self.is_immutable():
-            raise ValueError("the restrictions of an immutable element "
-                             "cannot be changed")
-        self._restrictions[rst._domain] = rst.copy(name=self._name,
-                                                   latex_name=self._latex_name)
+            raise ValueError(
+                "the restrictions of an immutable element cannot be changed"
+            )
+        self._restrictions[rst._domain] = rst.copy(
+            name=self._name, latex_name=self._latex_name
+        )
         self._is_zero = False  # a priori
 
     def restrict(self, subdomain):
@@ -697,8 +699,9 @@ class Section(ModuleElementWithMutability):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subset of " +
-                                 "the field's domain")
+                raise ValueError(
+                    "the provided domain is not a subset of " + "the field's domain"
+                )
 
             # First one tries to get the restriction from a tighter domain:
             for dom, rst in self._restrictions.items():
@@ -733,8 +736,9 @@ class Section(ModuleElementWithMutability):
 
             # If this fails, the restriction is created from scratch:
             smodule = self._vbundle.section_module(domain=subdomain)
-            res = smodule.element_class(smodule, name=self._name,
-                                        latex_name=self._latex_name)
+            res = smodule.element_class(
+                smodule, name=self._name, latex_name=self._latex_name
+            )
             res._extensions_graph.update(self._extensions_graph)
 
             for dom, ext in self._extensions_graph.items():
@@ -823,7 +827,7 @@ class Section(ModuleElementWithMutability):
         """
         if basis is None:
             basis = self._smodule.default_frame()
-            if basis is None: # should be "is still None" ;-)
+            if basis is None:  # should be "is still None" ;-)
                 raise ValueError("a frame must be provided for the display")
         rst = self.restrict(basis._domain)
         return rst._set_comp_unsafe(basis)
@@ -893,11 +897,10 @@ class Section(ModuleElementWithMutability):
              the Trivialization frame (E|_V, ((phi_V^*e_1),(phi_V^*e_2)))
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if basis is None:
             basis = self._smodule.default_frame()
-            if basis is None: # should be "is still None" ;-)
+            if basis is None:  # should be "is still None" ;-)
                 raise ValueError("a frame must be provided for the display")
         rst = self.restrict(basis._domain)
         self._is_zero = False  # a priori
@@ -965,7 +968,7 @@ class Section(ModuleElementWithMutability):
         """
         if basis is None:
             basis = self._smodule.default_frame()
-            if basis is None: # should be "is still None" ;-)
+            if basis is None:  # should be "is still None" ;-)
                 raise ValueError("a frame must be provided for the display")
         rst = self.restrict(basis._domain)
         return rst._add_comp_unsafe(basis)
@@ -1029,11 +1032,10 @@ class Section(ModuleElementWithMutability):
             s = (u + v) (phi_V^*e_1)
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if basis is None:
             basis = self._smodule.default_frame()
-            if basis is None: # should be "is still None" ;-)
+            if basis is None:  # should be "is still None" ;-)
                 raise ValueError("a frame must be provided for the display")
         rst = self.restrict(basis._domain)
         self._is_zero = False  # a priori
@@ -1110,18 +1112,19 @@ class Section(ModuleElementWithMutability):
         and `a` is defined on the entire manifold `S^2`.
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         dom = frame._domain
         if not dom.is_subset(self._domain):
-            raise ValueError("the local frame is not defined on a subset " +
-                             "of the section's domain")
+            raise ValueError(
+                "the local frame is not defined on a subset "
+                + "of the section's domain"
+            )
         if chart is None:
             chart = dom._def_chart
         sframe = frame.restrict(subdomain)
         schart = chart.restrict(subdomain)
         scomp = self.comp(sframe)
-        resu = self.add_comp(frame) # _del_derived is performed here
+        resu = self.add_comp(frame)  # _del_derived is performed here
         for ind in resu.non_redundant_index_generator():
             resu[[ind]] = dom.scalar_field({chart: scomp[[ind]].expr(schart)})
 
@@ -1193,15 +1196,19 @@ class Section(ModuleElementWithMutability):
             on V: (u, v) ↦ v/(u^2 + v^2)
         """
         if self.is_immutable():
-            raise ValueError("the expressions of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the expressions of an immutable element cannot be changed"
+            )
         dom = frame._domain
         if not dom.is_subset(self._domain):
-            raise ValueError("the local frame is not defined on a subset " +
-                             "of the section's domain")
+            raise ValueError(
+                "the local frame is not defined on a subset "
+                + "of the section's domain"
+            )
         if frame not in self.restrict(frame.domain())._components:
-            raise ValueError("the section doesn't have an expression in "
-                             "the frame " + frame._repr_())
+            raise ValueError(
+                "the section doesn't have an expression in the frame " + frame._repr_()
+            )
         comp = self.comp(frame)
         scomp = self.restrict(subdomain).comp(frame.restrict(subdomain))
         for ind in comp.non_redundant_index_generator():
@@ -1271,7 +1278,7 @@ class Section(ModuleElementWithMutability):
         """
         if basis is None:
             basis = self._smodule.default_frame()
-            if basis is None: # should be "is still None" ;-)
+            if basis is None:  # should be "is still None" ;-)
                 raise ValueError("a frame must be provided for the display")
 
         rst = self.restrict(basis._domain)
@@ -1429,8 +1436,7 @@ class Section(ModuleElementWithMutability):
             if frame is None:  # should be "is still None" ;-)
                 raise ValueError("a frame must be provided for the display")
         rst = self.restrict(frame.domain())
-        return rst.display_comp(frame=frame, chart=chart,
-                                only_nonzero=only_nonzero)
+        return rst.display_comp(frame=frame, chart=chart, only_nonzero=only_nonzero)
 
     def at(self, point):
         r"""
@@ -1495,8 +1501,10 @@ class Section(ModuleElementWithMutability):
             (5, -1)
         """
         if point not in self._domain:
-            raise ValueError("the {} is not a point in the ".format(point) +
-                             "domain of {}".format(self))
+            raise ValueError(
+                "the {} is not a point in the ".format(point)
+                + "domain of {}".format(self)
+            )
         for dom, rst in self._restrictions.items():
             if point in dom:
                 return rst.at(point)
@@ -1542,7 +1550,7 @@ class Section(ModuleElementWithMutability):
              Scalar field on the 3-dimensional topological manifold M,
              Scalar field on the 3-dimensional topological manifold M]
         """
-        if isinstance(args, str): # section with specified indices
+        if isinstance(args, str):  # section with specified indices
             return TensorWithIndices(self, args).update()
         if isinstance(args, list):  # case of [[...]] syntax
             if not isinstance(args[0], (int, Integer, slice)):
@@ -1663,16 +1671,15 @@ class Section(ModuleElementWithMutability):
             False
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if other not in self.parent():
-            raise TypeError("the original must be an element of "
-                            f"{self.parent()}")
+            raise TypeError(f"the original must be an element of {self.parent()}")
         self._del_derived()
-        self._del_restrictions() # delete restrictions
+        self._del_restrictions()  # delete restrictions
         for dom, rst in other._restrictions.items():
-            self._restrictions[dom] = rst.copy(name=self._name,
-                                               latex_name=self._latex_name)
+            self._restrictions[dom] = rst.copy(
+                name=self._name, latex_name=self._latex_name
+            )
         self._is_zero = other._is_zero
 
     def copy(self, name=None, latex_name=None):
@@ -1739,8 +1746,7 @@ class Section(ModuleElementWithMutability):
             resu._latex_name = latex_name
         # set restrictions
         for dom, rst in self._restrictions.items():
-            resu._restrictions[dom] = rst.copy(name=name,
-                                               latex_name=latex_name)
+            resu._restrictions[dom] = rst.copy(name=name, latex_name=latex_name)
         resu._is_zero = self._is_zero
         return resu
 
@@ -1837,7 +1843,7 @@ class Section(ModuleElementWithMutability):
         """
         if other is self:
             return True
-        if other in ZZ: # to compare with 0
+        if other in ZZ:  # to compare with 0
             if other == 0:
                 return self.is_zero()
             return False
@@ -1851,8 +1857,7 @@ class Section(ModuleElementWithMutability):
             resu = True
             for dom in oc:
                 try:
-                    resu = resu and \
-                            bool(self.restrict(dom) == other.restrict(dom))
+                    resu = resu and bool(self.restrict(dom) == other.restrict(dom))
                 except ValueError:
                     break
             else:
@@ -1872,7 +1877,7 @@ class Section(ModuleElementWithMutability):
                 resu = resu and bool(rst == other._restrictions[dom])
             else:
                 return False  # the restrictions are not on the same
-                              # subdomains
+                # subdomains
         return resu
 
     def __ne__(self, other):
@@ -1949,7 +1954,7 @@ class Section(ModuleElementWithMutability):
         """
         resu = self._new_instance()
         for dom, rst in self._restrictions.items():
-            resu._restrictions[dom] = + rst
+            resu._restrictions[dom] = +rst
         if self._name is not None:
             resu._name = '+' + self._name
         if self._latex_name is not None:
@@ -1997,7 +2002,7 @@ class Section(ModuleElementWithMutability):
         """
         resu = self._new_instance()
         for dom, rst in self._restrictions.items():
-            resu._restrictions[dom] = - rst
+            resu._restrictions[dom] = -rst
         if self._name is not None:
             resu._name = '-' + self._name
         if self._latex_name is not None:
@@ -2216,12 +2221,12 @@ class Section(ModuleElementWithMutability):
             format_mul_latex,
             format_mul_txt,
         )
+
         resu = self._new_instance()
         for dom, rst in self._restrictions.items():
             resu._restrictions[dom] = scalar.restrict(dom) * rst
         resu_name = format_mul_txt(scalar._name, '*', self._name)
-        resu_latex = format_mul_latex(scalar._latex_name, r' \cdot ',
-                                      self._latex_name)
+        resu_latex = format_mul_latex(scalar._latex_name, r' \cdot ', self._latex_name)
         resu.set_name(name=resu_name, latex_name=resu_latex)
         return resu
 
@@ -2250,7 +2255,8 @@ class Section(ModuleElementWithMutability):
             rst.set_immutable()
         super().set_immutable()
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class TrivialSection(FiniteRankFreeModuleElement, Section):
@@ -2332,6 +2338,7 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
         sage: isinstance(s.parent(), FiniteRankFreeModule)
         True
     """
+
     def __init__(self, section_module, name=None, latex_name=None):
         r"""
         Construct a section on a trivial vector bundle.
@@ -2357,8 +2364,9 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
              manifold M with values in the real vector bundle E of rank 2
             sage: TestSuite(s).run()
         """
-        FiniteRankFreeModuleElement.__init__(self, section_module,
-                                             name=name, latex_name=latex_name)
+        FiniteRankFreeModuleElement.__init__(
+            self, section_module, name=name, latex_name=latex_name
+        )
         self._domain = section_module.domain()
         self._vbundle = section_module.vector_bundle()
         self._base_space = section_module.base_space()
@@ -2402,7 +2410,7 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
         FiniteRankFreeModuleElement._del_derived(self)
         Section._del_derived(self, del_restrictions=del_restrictions)
 
-    def _repr_(self) :
+    def _repr_(self):
         r"""
         String representation of ``self``.
 
@@ -2516,8 +2524,7 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
 
         if basis._domain == self._domain:
             # Setting components on the section domain:
-            return FiniteRankFreeModuleElement._set_comp_unsafe(self,
-                                                                basis=basis)
+            return FiniteRankFreeModuleElement._set_comp_unsafe(self, basis=basis)
         # Setting components on a subdomain:
         #
         # Creating or saving the restriction to the subdomain:
@@ -2599,8 +2606,7 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
              in the Local frame (E|_M, (f_0,f_1))
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if basis is None:
             basis = self._smodule.default_frame()
 
@@ -2694,8 +2700,7 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
             # they are deleted by FreeModuleTensor.add_comp (which
             # invokes del_derived()), and restore them afterwards
             restrictions_save = self._restrictions.copy()
-            comp = FiniteRankFreeModuleElement._add_comp_unsafe(self,
-                                                                basis=basis)
+            comp = FiniteRankFreeModuleElement._add_comp_unsafe(self, basis=basis)
             self._restrictions = restrictions_save
             return comp
 
@@ -2771,8 +2776,7 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
             s = x f_0
         """
         if self.is_immutable():
-            raise ValueError("the components of an immutable element "
-                             "cannot be changed")
+            raise ValueError("the components of an immutable element cannot be changed")
         if basis is None:
             basis = self._smodule.default_frame()
 
@@ -2840,8 +2844,9 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
 
         if basis._domain == self._domain:
             # components on the local section domain:
-            return FiniteRankFreeModuleElement.comp(self, basis=basis,
-                                         from_basis=from_basis)
+            return FiniteRankFreeModuleElement.comp(
+                self, basis=basis, from_basis=from_basis
+            )
 
         # components on a subdomain:
         rst = self.restrict(basis._domain)
@@ -2906,8 +2911,9 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subset of " +
-                                 "the field's domain")
+                raise ValueError(
+                    "the provided domain is not a subset of " + "the field's domain"
+                )
             # First one tries to derive the restriction from a tighter domain:
             for dom, rst in self._restrictions.items():
                 if subdomain.is_subset(dom) and subdomain in rst._restrictions:
@@ -2941,13 +2947,13 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
 
             # If this fails, the restriction is created from scratch:
             smodule = self._vbundle.section_module(domain=subdomain)
-            res = smodule.element_class(smodule, name=self._name,
-                                        latex_name=self._latex_name)
+            res = smodule.element_class(
+                smodule, name=self._name, latex_name=self._latex_name
+            )
 
             for frame in self._components:
                 for sframe in self._vbundle._frames:
-                    if (sframe.domain() is subdomain and
-                            sframe in frame._subframes):
+                    if sframe.domain() is subdomain and sframe in frame._subframes:
                         comp_store = self._components[frame]._comp
                         scomp = res._new_comp(sframe)
                         scomp_store = scomp._comp
@@ -3049,9 +3055,9 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
             frame = self._smodule.default_basis()
         if chart is None:
             chart = self._domain.default_chart()
-        return FiniteRankFreeModuleElement.display_comp(self, basis=frame,
-                                                        format_spec=chart,
-                                                        only_nonzero=only_nonzero)
+        return FiniteRankFreeModuleElement.display_comp(
+            self, basis=frame, format_spec=chart, only_nonzero=only_nonzero
+        )
 
     def at(self, point):
         r"""
@@ -3097,11 +3103,11 @@ class TrivialSection(FiniteRankFreeModuleElement, Section):
             s = 3 e_0 + 4 e_1
         """
         if point not in self._domain:
-            raise ValueError("the {} is not in the domain of ".format(point) +
-                             "the {}".format(self))
+            raise ValueError(
+                "the {} is not in the domain of ".format(point) + "the {}".format(self)
+            )
         vbf = self._vbundle.fiber(point)
-        resu = vbf.tensor((1,0), name=self._name,
-                         latex_name=self._latex_name)
+        resu = vbf.tensor((1, 0), name=self._name, latex_name=self._latex_name)
         for frame, comp in self._components.items():
             comp_resu = resu.add_comp(frame.at(point))
             for ind, val in comp._comp.items():

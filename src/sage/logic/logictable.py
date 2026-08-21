@@ -133,6 +133,7 @@ class Truthtable:
     - ``vo`` -- list of the variables in the expression in order,
       with each variable occurring only once
     """
+
     def __init__(self, t, vo):
         r"""
         Initialize the data fields.

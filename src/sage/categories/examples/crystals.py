@@ -2,6 +2,7 @@
 r"""
 Example of a crystal
 """
+
 # ****************************************************************************
 #  Copyright (C) 2010 Anne Schilling <anne at math.ucdavis.edu>
 #
@@ -120,13 +121,14 @@ class HighestWeightCrystalOfTypeA(UniqueRepresentation, Parent):
             sage: Crystals().example()
             Highest weight crystal of type A_3 of highest weight omega_1
         """
-        return "Highest weight crystal of type A_%s of highest weight omega_1" % (self.n)
+        return "Highest weight crystal of type A_%s of highest weight omega_1" % (
+            self.n
+        )
 
     # temporary workaround while an_element is overridden by Parent
     _an_element_ = EnumeratedSets.ParentMethods._an_element_
 
     class Element(ElementWrapper):
-
         def e(self, i):
             r"""
             Return the action of `e_i` on ``self``.
@@ -138,8 +140,8 @@ class HighestWeightCrystalOfTypeA(UniqueRepresentation, Parent):
                 [[2, 1, 1], [3, 2, 2], [4, 3, 3], [5, 4, 4]]
             """
             assert i in self.index_set()
-            if self.value == i+1:
-                return self.parent()(self.value-1)
+            if self.value == i + 1:
+                return self.parent()(self.value - 1)
             return None
 
         def f(self, i):
@@ -154,7 +156,7 @@ class HighestWeightCrystalOfTypeA(UniqueRepresentation, Parent):
             """
             assert i in self.index_set()
             if self.value == i:
-                return self.parent()(self.value+1)
+                return self.parent()(self.value + 1)
             return None
 
 
@@ -180,6 +182,7 @@ class NaiveCrystal(UniqueRepresentation, Parent):
         sage: C.highest_weight_vector()
         0
     """
+
     def __init__(self):
         """
         EXAMPLES::
@@ -192,8 +195,9 @@ class NaiveCrystal(UniqueRepresentation, Parent):
         self.n = 2
         self._cartan_type = CartanType(['A', 2])
         self.G = DiGraph(5)
-        self.G.add_edges([[0, 1, 1], [1, 2, 1], [2, 3, 1],
-                          [3, 5, 1], [0, 4, 2], [4, 5, 2]])
+        self.G.add_edges(
+            [[0, 1, 1], [1, 2, 1], [2, 3, 1], [3, 5, 1], [0, 4, 2], [4, 5, 2]]
+        )
         self.module_generators = [self(0)]
 
     def __repr__(self):

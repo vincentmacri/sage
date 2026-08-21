@@ -1,13 +1,13 @@
 r"""
 Graded Algebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2008-2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.graded_modules import GradedModulesCategory
 from sage.categories.signed_tensor import SignedTensorProductsCategory
@@ -30,6 +30,7 @@ class GradedAlgebras(GradedModulesCategory):
 
         sage: TestSuite(GradedAlgebras(ZZ)).run()
     """
+
     class ParentMethods:
         def graded_algebra(self):
             """

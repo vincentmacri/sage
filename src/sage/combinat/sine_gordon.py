@@ -50,6 +50,7 @@ from sage.misc.flatten import flatten
 from sage.symbolic.ring import SR
 from sage.functions.other import real_part, imag_part
 from sage.misc.cachefunc import cached_method
+
 lazy_import("sage.plot.plot", "parametric_plot")
 lazy_import("sage.plot.graphics", "Graphics")
 lazy_import("sage.plot.polygon", "polygon2d")
@@ -127,15 +128,18 @@ class SineGordonYsystem(SageObject):
             raise ValueError("the type must be either 'A' or 'D'")
         self._type = X
         if na[0] <= 2:
-            raise ValueError("the first integer in the defining sequence "
-                             "must be greater than 2")
+            raise ValueError(
+                "the first integer in the defining sequence must be greater than 2"
+            )
         if any(x not in NN for x in na):
-            raise ValueError("the defining sequence must contain only "
-                             "positive integers")
+            raise ValueError(
+                "the defining sequence must contain only positive integers"
+            )
         self._na = tuple(na)
         if self._na == (3,) and self._type == 'A':
-            raise ValueError("the integer sequence (3,) in type 'A'"
-                             " is not allowed as input")
+            raise ValueError(
+                "the integer sequence (3,) in type 'A' is not allowed as input"
+            )
         self._F = len(self._na)
 
     def _repr_(self):
@@ -347,7 +351,9 @@ class SineGordonYsystem(SageObject):
                     else:
                         edge = (edge[0], edge[1] - vert(rk[a + 1]))
                     left = not left
-                    if (edge[1] >= last_ccw and edge[0] < last_cw) or (edge[1] > last_ccw and edge[0] <= last_cw):
+                    if (edge[1] >= last_ccw and edge[0] < last_cw) or (
+                        edge[1] > last_ccw and edge[0] <= last_cw
+                    ):
                         triangulation.append(edge)
                     else:
                         done = True
@@ -471,8 +477,7 @@ class SineGordonYsystem(SageObject):
         points_opts['size'] = kwds.get('points_size', 7)
         triangulation_opts = {}
         triangulation_opts['color'] = kwds.get('triangulation_color', 'black')
-        triangulation_opts['thickness'] = kwds.get('triangulation_thickness',
-                                                   0.5)
+        triangulation_opts['thickness'] = kwds.get('triangulation_thickness', 0.5)
         shading_opts = {}
         shading_opts['color'] = kwds.get('shading_color', 'lightgray')
         reflections_opts = {}
@@ -495,8 +500,10 @@ class SineGordonYsystem(SageObject):
             q = ZZ(q)
             t = SR.var('t')
             if p - q in [1, -1]:
+
                 def f(t):
                     return (radius * cos(t), radius * sin(t))
+
                 p, q = sorted([p, q])
                 angle_p = vertex_to_angle(p)
                 angle_q = vertex_to_angle(q)
@@ -513,16 +520,22 @@ class SineGordonYsystem(SageObject):
                 angle_center = (angle_p + angle_q) / 2
                 hypotenuse = radius / cos(internal_angle / 2)
                 radius_arc = hypotenuse * sin(internal_angle / 2)
-                center = (hypotenuse * cos(angle_center),
-                          hypotenuse * sin(angle_center))
+                center = (
+                    hypotenuse * cos(angle_center),
+                    hypotenuse * sin(angle_center),
+                )
                 center_angle_p = angle_p + pi / 2
                 center_angle_q = angle_q + 3 * pi / 2
 
                 def f(t):
-                    return (radius_arc * cos(t) + center[0],
-                            radius_arc * sin(t) + center[1])
-                return parametric_plot(f(t), (t, center_angle_p,
-                                              center_angle_q), **opts)
+                    return (
+                        radius_arc * cos(t) + center[0],
+                        radius_arc * sin(t) + center[1],
+                    )
+
+                return parametric_plot(
+                    f(t), (t, center_angle_p, center_angle_q), **opts
+                )
             if self.type() == 'D':
                 if p >= q:
                     q += self.r()
@@ -532,10 +545,14 @@ class SineGordonYsystem(SageObject):
                 arc_center = qx + arc_radius
 
                 def f(t):
-                    return exp(I * ((cos(t) + I * sin(t)) *
-                                    arc_radius + arc_center)) * radius
-                return parametric_plot((real_part(f(t)), imag_part(f(t))),
-                                       (t, 0, pi), **opts)
+                    return (
+                        exp(I * ((cos(t) + I * sin(t)) * arc_radius + arc_center))
+                        * radius
+                    )
+
+                return parametric_plot(
+                    (real_part(f(t)), imag_part(f(t))), (t, 0, pi), **opts
+                )
 
         def vertex_to_angle(v):
             # v==0 corresponds to pi/2
@@ -544,9 +561,11 @@ class SineGordonYsystem(SageObject):
         # Begin plotting
         P = Graphics()
         # Shade neuter intervals
-        neuter_intervals = [x for x in flatten(self.intervals()[:-1],
-                                               max_level=1)
-                            if x[2] in ["NR", "NL"]]
+        neuter_intervals = [
+            x
+            for x in flatten(self.intervals()[:-1], max_level=1)
+            if x[2] in ["NR", "NL"]
+        ]
         shaded_triangles = map(triangle, neuter_intervals)
         for p, q, r in shaded_triangles:
             points = list(plot_arc(radius, p, q)[0])
@@ -560,30 +579,40 @@ class SineGordonYsystem(SageObject):
             P += plot_arc(radius, p, q, **triangulation_opts)
         if self.type() == 'D':
             s = radius / 50.0
-            P += polygon2d([(s, 5 * s), (s, 7 * s),
-                            (3 * s, 5 * s), (3 * s, 7 * s)],
-                           color=triangulation_opts['color'])
-            P += bezier_path([[(0, 0), (2 * s, 1 * s), (2 * s, 6 * s)],
-                              [(2 * s, 10 * s), (s, 20 * s)],
-                              [(0, 30 * s), (0, radius)]],
-                             **triangulation_opts)
-            P += bezier_path([[(0, 0), (-2 * s, 1 * s), (-2 * s, 6 * s)],
-                              [(-2 * s, 10 * s), (-s, 20 * s)],
-                              [(0, 30 * s), (0, radius)]],
-                             **triangulation_opts)
+            P += polygon2d(
+                [(s, 5 * s), (s, 7 * s), (3 * s, 5 * s), (3 * s, 7 * s)],
+                color=triangulation_opts['color'],
+            )
+            P += bezier_path(
+                [
+                    [(0, 0), (2 * s, 1 * s), (2 * s, 6 * s)],
+                    [(2 * s, 10 * s), (s, 20 * s)],
+                    [(0, 30 * s), (0, radius)],
+                ],
+                **triangulation_opts,
+            )
+            P += bezier_path(
+                [
+                    [(0, 0), (-2 * s, 1 * s), (-2 * s, 6 * s)],
+                    [(-2 * s, 10 * s), (-s, 20 * s)],
+                    [(0, 30 * s), (0, radius)],
+                ],
+                **triangulation_opts,
+            )
             P += point((0, 0), zorder=len(P), **points_opts)
         # Vertices
-        v_points = [(radius * cos(vertex_to_angle(x)),
-                     radius * sin(vertex_to_angle(x)))
-                    for x in self.vertices()]
+        v_points = [
+            (radius * cos(vertex_to_angle(x)), radius * sin(vertex_to_angle(x)))
+            for x in self.vertices()
+        ]
         for coords in v_points:
             P += point(coords, zorder=len(P), **points_opts)
         # Reflection axes
-        P += line([(0, 1.1 * radius), (0, -1.1 * radius)],
-                  zorder=len(P), **reflections_opts)
+        P += line(
+            [(0, 1.1 * radius), (0, -1.1 * radius)], zorder=len(P), **reflections_opts
+        )
         axis_angle = vertex_to_angle(-0.5 * (self.rk() + (1, 1))[1])
-        a, b = (1.1 * radius * cos(axis_angle),
-                1.1 * radius * sin(axis_angle))
+        a, b = (1.1 * radius * cos(axis_angle), 1.1 * radius * sin(axis_angle))
         P += line([(a, b), (-a, -b)], zorder=len(P), **reflections_opts)
         # Wrap up
         P.set_aspect_ratio(1)

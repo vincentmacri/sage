@@ -71,8 +71,8 @@ def product(m):
     # n is the length of the element (we ignore sets of size 1)
     n = 0
 
-    new_m = []   # will be the set of upper bounds m_i different from 1
-    mm = []      # index of each set (we skip sets of cardinality 1)
+    new_m = []  # will be the set of upper bounds m_i different from 1
+    mm = []  # index of each set (we skip sets of cardinality 1)
     for k, i in enumerate(m):
         i = int(i)
         if i <= 0:
@@ -84,8 +84,8 @@ def product(m):
 
     m = new_m
     f = list(range(n + 1))  # focus pointer
-    o = [1] * n     # switch +1 or -1
-    a = [0] * n     # current element of the product
+    o = [1] * n  # switch +1 or -1
+    a = [0] * n  # current element of the product
 
     j = f[0]
     while j != n:
@@ -93,8 +93,8 @@ def product(m):
         oo = o[j]
         a[j] += oo
         if a[j] == 0 or a[j] == m[j]:
-            f[j] = f[j+1]
-            f[j+1] = j+1
+            f[j] = f[j + 1]
+            f[j + 1] = j + 1
             o[j] = -oo
 
         yield (mm[j], oo)
@@ -194,6 +194,7 @@ def combinations(n, t):
         AssertionError: t(=6) must be >=0 and <=n(=5)
     """
     from sage.rings.infinity import Infinity
+
     t = int(t)
     if n != Infinity:
         n = int(n)
@@ -220,12 +221,12 @@ def _revolving_door_odd(n, t):
         True
     """
     # note: the numbering of the steps below follows Knuth TAOCP
-    c = list(range(t)) + [n]    # the combination (ordered list of numbers of length t+1)
+    c = list(range(t)) + [n]  # the combination (ordered list of numbers of length t+1)
 
     while True:
         # R3 : easy case
         if c[0] + 1 < c[1]:
-            yield c[0], c[0]+1
+            yield c[0], c[0] + 1
             c[0] += 1
             continue
 
@@ -234,22 +235,22 @@ def _revolving_door_odd(n, t):
             # R4 : try to decrease c[j]
             # at this point c[j] = c[j-1] + 1
             if c[j] > j:
-                yield c[j], j-1
-                c[j] = c[j-1]
-                c[j-1] = j-1
+                yield c[j], j - 1
+                c[j] = c[j - 1]
+                c[j - 1] = j - 1
                 break
             j += 1
 
             # R5 : try to increase c[j]
             # at this point c[j-1] = j-1
-            if c[j] + 1 < c[j+1]:
-                yield c[j-1], c[j]+1
-                c[j-1] = c[j]
+            if c[j] + 1 < c[j + 1]:
+                yield c[j - 1], c[j] + 1
+                c[j - 1] = c[j]
                 c[j] += 1
                 break
             j += 1
 
-        else: # j == t
+        else:  # j == t
             break
 
 
@@ -267,21 +268,21 @@ def _revolving_door_even(n, t):
     """
     # note: the numbering of the steps below follows Knuth TAOCP
 
-    c = list(range(t)) + [n]    # the combination (ordered list of numbers of length t+1)
+    c = list(range(t)) + [n]  # the combination (ordered list of numbers of length t+1)
 
     while True:
         # R3 : easy case
         if c[0] > 0:
-            yield c[0], c[0]-1
+            yield c[0], c[0] - 1
             c[0] -= 1
             continue
 
         j = 1
         # R5 : try to increase c[j]
         # at this point c[j-1] = j-1
-        if c[j] + 1 < c[j+1]:
-            yield c[j-1], c[j]+1
-            c[j-1] = c[j]
+        if c[j] + 1 < c[j + 1]:
+            yield c[j - 1], c[j] + 1
+            c[j - 1] = c[j]
             c[j] += 1
             continue
         j += 1
@@ -290,20 +291,20 @@ def _revolving_door_even(n, t):
             # R4 : try to decrease c[j]
             # at this point c[j] = c[j-1] + 1
             if c[j] > j:
-                yield c[j], j-1
-                c[j] = c[j-1]
-                c[j-1] = j-1
+                yield c[j], j - 1
+                c[j] = c[j - 1]
+                c[j - 1] = j - 1
                 break
             j += 1
 
             # R5 : try to increase c[j]
             # at this point c[j-1] = j-1
-            if c[j] + 1 < c[j+1]:
-                yield c[j-1], c[j] + 1
-                c[j-1] = c[j]
+            if c[j] + 1 < c[j + 1]:
+                yield c[j - 1], c[j] + 1
+                c[j - 1] = c[j]
                 c[j] += 1
                 break
             j += 1
 
-        else: # j == t
+        else:  # j == t
             break

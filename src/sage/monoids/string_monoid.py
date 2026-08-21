@@ -18,7 +18,6 @@ Sage supports a wide range of specific free string monoids.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from .free_monoid import FreeMonoid
 from .string_monoid_element import StringMonoidElement
 from .string_ops import strip_encoding
@@ -108,14 +107,14 @@ class StringMonoid_class(FreeMonoid):
         """
         n = self.ngens()
         if i < 0 or not i < n:
-            raise IndexError(
-                f"Argument i (= {i}) must be between 0 and {n-1}.")
+            raise IndexError(f"Argument i (= {i}) must be between 0 and {n - 1}.")
         return StringMonoidElement(self, [int(i)])
 
 
 # ****************************************************************************
 # Specific global string monoids
 # ****************************************************************************
+
 
 class BinaryStringMonoid(StringMonoid_class):
     r"""
@@ -524,39 +523,68 @@ class AlphabeticStringMonoid(StringMonoid_class):
             ABCDEFGHIJKLMNOPQRSTUVWXYZ
         """
         from sage.rings.real_mpfr import RealField
+
         RR = RealField()
         # The characteristic frequency probability distribution of
         # Robert Edward Lewand.
         self._characteristic_frequency_lewand = {
-            "A": RR(0.08167), "B": RR(0.01492),
-            "C": RR(0.02782), "D": RR(0.04253),
-            "E": RR(0.12702), "F": RR(0.02228),
-            "G": RR(0.02015), "H": RR(0.06094),
-            "I": RR(0.06966), "J": RR(0.00153),
-            "K": RR(0.00772), "L": RR(0.04025),
-            "M": RR(0.02406), "N": RR(0.06749),
-            "O": RR(0.07507), "P": RR(0.01929),
-            "Q": RR(0.00095), "R": RR(0.05987),
-            "S": RR(0.06327), "T": RR(0.09056),
-            "U": RR(0.02758), "V": RR(0.00978),
-            "W": RR(0.02360), "X": RR(0.00150),
-            "Y": RR(0.01974), "Z": RR(0.00074)}
+            "A": RR(0.08167),
+            "B": RR(0.01492),
+            "C": RR(0.02782),
+            "D": RR(0.04253),
+            "E": RR(0.12702),
+            "F": RR(0.02228),
+            "G": RR(0.02015),
+            "H": RR(0.06094),
+            "I": RR(0.06966),
+            "J": RR(0.00153),
+            "K": RR(0.00772),
+            "L": RR(0.04025),
+            "M": RR(0.02406),
+            "N": RR(0.06749),
+            "O": RR(0.07507),
+            "P": RR(0.01929),
+            "Q": RR(0.00095),
+            "R": RR(0.05987),
+            "S": RR(0.06327),
+            "T": RR(0.09056),
+            "U": RR(0.02758),
+            "V": RR(0.00978),
+            "W": RR(0.02360),
+            "X": RR(0.00150),
+            "Y": RR(0.01974),
+            "Z": RR(0.00074),
+        }
         # The characteristic frequency probability distribution of
         # H. Beker and F. Piper.
         self._characteristic_frequency_beker_piper = {
-            "A": RR(0.082), "B": RR(0.015),
-            "C": RR(0.028), "D": RR(0.043),
-            "E": RR(0.127), "F": RR(0.022),
-            "G": RR(0.020), "H": RR(0.061),
-            "I": RR(0.070), "J": RR(0.002),
-            "K": RR(0.008), "L": RR(0.040),
-            "M": RR(0.024), "N": RR(0.067),
-            "O": RR(0.075), "P": RR(0.019),
-            "Q": RR(0.001), "R": RR(0.060),
-            "S": RR(0.063), "T": RR(0.091),
-            "U": RR(0.028), "V": RR(0.010),
-            "W": RR(0.023), "X": RR(0.001),
-            "Y": RR(0.020), "Z": RR(0.001)}
+            "A": RR(0.082),
+            "B": RR(0.015),
+            "C": RR(0.028),
+            "D": RR(0.043),
+            "E": RR(0.127),
+            "F": RR(0.022),
+            "G": RR(0.020),
+            "H": RR(0.061),
+            "I": RR(0.070),
+            "J": RR(0.002),
+            "K": RR(0.008),
+            "L": RR(0.040),
+            "M": RR(0.024),
+            "N": RR(0.067),
+            "O": RR(0.075),
+            "P": RR(0.019),
+            "Q": RR(0.001),
+            "R": RR(0.060),
+            "S": RR(0.063),
+            "T": RR(0.091),
+            "U": RR(0.028),
+            "V": RR(0.010),
+            "W": RR(0.023),
+            "X": RR(0.001),
+            "Y": RR(0.020),
+            "Z": RR(0.001),
+        }
         alph = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         StringMonoid_class.__init__(self, 26, [alph[i] for i in range(26)])
 
@@ -769,9 +797,9 @@ class AlphabeticStringMonoid(StringMonoid_class):
         """
         supported_tables = ["beker_piper", "lewand"]
         if table_name not in supported_tables:
-            raise ValueError(
-                "Table name must be either 'beker_piper' or 'lewand'.")
+            raise ValueError("Table name must be either 'beker_piper' or 'lewand'.")
         from copy import copy
+
         if table_name == "beker_piper":
             return copy(self._characteristic_frequency_beker_piper)
         if table_name == "lewand":

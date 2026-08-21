@@ -2,6 +2,7 @@
 """
 Contour plots
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 Alex Clemesha <clemesha@gmail.com>,
 #                          William Stein <wstein@gmail.com>,
@@ -62,6 +63,7 @@ class ContourPlot(GraphicPrimitive):
         ....:              plot_points=121, cmap='hsv')
         Graphics object consisting of 1 graphics primitive
     """
+
     def __init__(self, xy_data_array, xrange, yrange, options):
         """
         Initialize base class ``ContourPlot``.
@@ -98,6 +100,7 @@ class ContourPlot(GraphicPrimitive):
             3.0
         """
         from sage.plot.plot import minmax_data
+
         return minmax_data(self.xrange, self.yrange, dict=True)
 
     def _allowed_options(self):
@@ -111,24 +114,26 @@ class ContourPlot(GraphicPrimitive):
             sage: isinstance(C[0]._allowed_options(), dict)
             True
         """
-        return {'plot_points': 'How many points to use for plotting precision',
-                'cmap': """the name of a predefined colormap,
+        return {
+            'plot_points': 'How many points to use for plotting precision',
+            'cmap': """the name of a predefined colormap,
                         a list of colors, or an instance of a
                         matplotlib Colormap. Type: import matplotlib.cm;
                         matplotlib.cm.datad.keys()
                         for available colormap names.""",
-                'colorbar': "Include a colorbar indicating the levels",
-                'colorbar_options': "a dictionary of options for colorbars",
-                'fill': 'Fill contours or not',
-                'legend_label': 'The label for this item in the legend.',
-                'contours': """Either an integer specifying the number of
+            'colorbar': "Include a colorbar indicating the levels",
+            'colorbar_options': "a dictionary of options for colorbars",
+            'fill': 'Fill contours or not',
+            'legend_label': 'The label for this item in the legend.',
+            'contours': """Either an integer specifying the number of
                         contour levels, or a sequence of numbers giving
                         the actual contours to use.""",
-                'linewidths': 'the width of the lines to be plotted',
-                'linestyles': 'the style of the lines to be plotted',
-                'labels': 'show line labels or not',
-                'label_options': 'a dictionary of options for the labels',
-                'zorder': 'The layer level in which to draw'}
+            'linewidths': 'the width of the lines to be plotted',
+            'linestyles': 'the style of the lines to be plotted',
+            'labels': 'show line labels or not',
+            'label_options': 'a dictionary of options for the labels',
+            'zorder': 'The layer level in which to draw',
+        }
 
     def _repr_(self):
         """
@@ -156,6 +161,7 @@ class ContourPlot(GraphicPrimitive):
             Graphics object consisting of 1 graphics primitive
         """
         from sage.rings.integer import Integer
+
         options = self.options()
         fill = options['fill']
         contours = options['contours']
@@ -165,8 +171,7 @@ class ContourPlot(GraphicPrimitive):
             cmap = get_cmap('gray')
         else:
             if isinstance(contours, (int, Integer)):
-                cmap = get_cmap([(i, i, i)
-                                 for i in xsrange(0, 1, 1 / contours)])
+                cmap = get_cmap([(i, i, i) for i in xsrange(0, 1, 1 / contours)])
             else:
                 step = 1 / Integer(len(contours))
                 cmap = get_cmap([(i, i, i) for i in xsrange(0, 1, step)])
@@ -180,11 +185,17 @@ class ContourPlot(GraphicPrimitive):
         CSF = None
         if fill:
             if contours is None:
-                CSF = subplot.contourf(self.xy_data_array, cmap=cmap,
-                                       extent=(x0, x1, y0, y1))
+                CSF = subplot.contourf(
+                    self.xy_data_array, cmap=cmap, extent=(x0, x1, y0, y1)
+                )
             else:
-                CSF = subplot.contourf(self.xy_data_array, contours, cmap=cmap,
-                                       extent=(x0, x1, y0, y1), extend='both')
+                CSF = subplot.contourf(
+                    self.xy_data_array,
+                    contours,
+                    cmap=cmap,
+                    extent=(x0, x1, y0, y1),
+                    extend='both',
+                )
 
         linewidths = options.get('linewidths', None)
         if isinstance(linewidths, (int, Integer)):
@@ -193,20 +204,29 @@ class ContourPlot(GraphicPrimitive):
             linewidths = tuple(int(x) for x in linewidths)
 
         from sage.plot.misc import get_matplotlib_linestyle
+
         linestyles = options.get('linestyles', None)
         if isinstance(linestyles, (list, tuple)):
-            linestyles = [get_matplotlib_linestyle(i, 'long')
-                          for i in linestyles]
+            linestyles = [get_matplotlib_linestyle(i, 'long') for i in linestyles]
         else:
             linestyles = get_matplotlib_linestyle(linestyles, 'long')
         if contours is None:
-            CS = subplot.contour(self.xy_data_array, cmap=cmap,
-                                 extent=(x0, x1, y0, y1),
-                                 linewidths=linewidths, linestyles=linestyles)
+            CS = subplot.contour(
+                self.xy_data_array,
+                cmap=cmap,
+                extent=(x0, x1, y0, y1),
+                linewidths=linewidths,
+                linestyles=linestyles,
+            )
         else:
-            CS = subplot.contour(self.xy_data_array, contours, cmap=cmap,
-                                 extent=(x0, x1, y0, y1),
-                                 linewidths=linewidths, linestyles=linestyles)
+            CS = subplot.contour(
+                self.xy_data_array,
+                contours,
+                cmap=cmap,
+                extent=(x0, x1, y0, y1),
+                linewidths=linewidths,
+                linestyles=linestyles,
+            )
         if options.get('labels', False):
             label_options = options['label_options']
             label_options['fontsize'] = int(label_options['fontsize'])
@@ -216,6 +236,7 @@ class ContourPlot(GraphicPrimitive):
         if options.get('colorbar', False):
             colorbar_options = options['colorbar_options']
             from matplotlib import colorbar
+
             cax, kwds = colorbar.make_axes_gridspec(subplot, **colorbar_options)
             if CSF is None:
                 cb = colorbar.Colorbar(cax, CS, **kwds)
@@ -225,11 +246,23 @@ class ContourPlot(GraphicPrimitive):
 
 
 @suboptions('colorbar', orientation='vertical', format=None, spacing='uniform')
-@suboptions('label', fontsize=9, colors='blue', inline=None, inline_spacing=3,
-            fmt="%1.2f")
-@options(plot_points=100, fill=True, contours=None, linewidths=None,
-         linestyles=None, labels=False, frame=True, axes=False, colorbar=False,
-         legend_label=None, aspect_ratio=1, region=None)
+@suboptions(
+    'label', fontsize=9, colors='blue', inline=None, inline_spacing=3, fmt="%1.2f"
+)
+@options(
+    plot_points=100,
+    fill=True,
+    contours=None,
+    linewidths=None,
+    linestyles=None,
+    labels=False,
+    frame=True,
+    axes=False,
+    colorbar=False,
+    legend_label=None,
+    aspect_ratio=1,
+    region=None,
+)
 def contour_plot(f, xrange, yrange, **options):
     r"""
     ``contour_plot`` takes a function of two variables, `f(x,y)`
@@ -887,14 +920,14 @@ def contour_plot(f, xrange, yrange, **options):
     region = options.pop('region')
     ev = [f] if region is None else [f, region]
 
-    F, ranges = setup_for_eval_on_grid(ev, [xrange, yrange],
-                                       options['plot_points'])
+    F, ranges = setup_for_eval_on_grid(ev, [xrange, yrange], options['plot_points'])
     h = F[0]
     xrange, yrange = (r[:2] for r in ranges)
 
-    xy_data_array = [[h(x, y) for x in xsrange(*ranges[0],
-                                               include_endpoint=True)]
-                     for y in xsrange(*ranges[1], include_endpoint=True)]
+    xy_data_array = [
+        [h(x, y) for x in xsrange(*ranges[0], include_endpoint=True)]
+        for y in xsrange(*ranges[1], include_endpoint=True)
+    ]
 
     g = Graphics()
 
@@ -906,8 +939,7 @@ def contour_plot(f, xrange, yrange, **options):
     if scale in ('semilogy', 'semilogx'):
         options['aspect_ratio'] = 'automatic'
 
-    g._set_extra_kwds(Graphics._extract_kwds_for_show(options,
-                                                      ignore=['xmin', 'xmax']))
+    g._set_extra_kwds(Graphics._extract_kwds_for_show(options, ignore=['xmin', 'xmax']))
 
     # Was a single contour level explicitly given? If "contours" is
     # the integer 1, then there will be a single level, but we can't
@@ -916,9 +948,11 @@ def contour_plot(f, xrange, yrange, **options):
     # there's a single contour and fill=True, we fall through to let
     # matplotlib complain that "Filled contours require at least 2
     # levels."
-    if (isinstance(options["contours"], (list, tuple))
+    if (
+        isinstance(options["contours"], (list, tuple))
         and len(options["contours"]) == 1
-        and options.get("fill") is False):
+        and options.get("fill") is False
+    ):
         # When there's only one level (say, zero), matplotlib doesn't
         # handle it well. If all of the data lie on one side of that
         # level -- for example, if f(x,y) >= 0 for all x,y -- then it
@@ -930,6 +964,7 @@ def contour_plot(f, xrange, yrange, **options):
         # plots don't look great, but they're not empty, which is an
         # improvement.
         import numpy as np
+
         dx = ranges[0][2]
         dy = ranges[1][2]
         z0 = options["contours"][0]
@@ -978,36 +1013,44 @@ def contour_plot(f, xrange, yrange, **options):
             # Now we check if (a) all of the data lie on one side of
             # z0, and (b) if perturbing the data will actually help by
             # moving anything across z0.
-            if (np.all(xy_data_array >= z0) and
-                np.any(xy_data_array - z0 < tol)):
-
+            if np.all(xy_data_array >= z0) and np.any(xy_data_array - z0 < tol):
                 from warnings import warn
-                warn("pathological contour plot of a function whose "
-                     "values all lie on one side of the sole contour; "
-                     "we are adding more plot points and perturbing "
-                     "your function values.")
+
+                warn(
+                    "pathological contour plot of a function whose "
+                    "values all lie on one side of the sole contour; "
+                    "we are adding more plot points and perturbing "
+                    "your function values."
+                )
 
                 # The choice of "4" here is not based on much of anything.
                 # It works well enough for the examples in the doctests.
                 if not isinstance(options["plot_points"], (list, tuple)):
-                    options["plot_points"] = (options["plot_points"],
-                                              options["plot_points"])
-                    options["plot_points"] = (options["plot_points"][0] * 4,
-                                              options["plot_points"][1] * 4)
+                    options["plot_points"] = (
+                        options["plot_points"],
+                        options["plot_points"],
+                    )
+                    options["plot_points"] = (
+                        options["plot_points"][0] * 4,
+                        options["plot_points"][1] * 4,
+                    )
 
                 # Re-plot with more points...
-                F, ranges = setup_for_eval_on_grid(ev, [xrange, yrange],
-                                                   options['plot_points'])
+                F, ranges = setup_for_eval_on_grid(
+                    ev, [xrange, yrange], options['plot_points']
+                )
                 h = F[0]
                 xrange, yrange = (r[:2] for r in ranges)
 
                 # ...and a function whose values are shifted towards
                 # z0 by "tol".
-                xy_data_array = [[h(x, y) - c * tol
-                                  for x in xsrange(*ranges[0],
-                                                   include_endpoint=True)]
-                                 for y in xsrange(*ranges[1],
-                                                  include_endpoint=True)]
+                xy_data_array = [
+                    [
+                        h(x, y) - c * tol
+                        for x in xsrange(*ranges[0], include_endpoint=True)
+                    ]
+                    for y in xsrange(*ranges[1], include_endpoint=True)
+                ]
 
     if region is not None:
         import numpy
@@ -1016,12 +1059,13 @@ def contour_plot(f, xrange, yrange, **options):
 
         m = F[1]
 
-        mask = numpy.asarray([[m(x, y) <= 0
-                               for x in xsrange(*ranges[0],
-                                                include_endpoint=True)]
-                              for y in xsrange(*ranges[1],
-                                               include_endpoint=True)],
-                             dtype=bool)
+        mask = numpy.asarray(
+            [
+                [m(x, y) <= 0 for x in xsrange(*ranges[0], include_endpoint=True)]
+                for y in xsrange(*ranges[1], include_endpoint=True)
+            ],
+            dtype=bool,
+        )
 
         xy_data_array[mask] = numpy.ma.masked
 
@@ -1351,10 +1395,10 @@ def implicit_plot(f, xrange, yrange, **options):
         ValueError: only one of color or rgbcolor should be specified
     """
     from sage.structure.element import Expression
+
     if isinstance(f, Expression) and f.is_relational():
         if f.operator() != operator.eq:
-            raise ValueError("input to implicit plot must be function "
-                             "or equation")
+            raise ValueError("input to implicit plot must be function or equation")
         f = f.lhs() - f.rhs()
     linewidths = options.pop('linewidth', None)
     linestyles = options.pop('linestyle', None)
@@ -1373,25 +1417,49 @@ def implicit_plot(f, xrange, yrange, **options):
         incol = options.pop('fillcolor', 'blue')
         bordercol = options.pop('cmap', [None])[0]
         from sage.structure.element import Expression
+
         if not isinstance(f, Expression):
-            return region_plot(lambda x, y: f(x, y) < 0, xrange, yrange,
-                               borderwidth=linewidths, borderstyle=linestyles,
-                               incol=incol, bordercol=bordercol,
-                               **options)
-        return region_plot(f < 0, xrange, yrange, borderwidth=linewidths,
-                           borderstyle=linestyles,
-                           incol=incol, bordercol=bordercol,
-                           **options)
+            return region_plot(
+                lambda x, y: f(x, y) < 0,
+                xrange,
+                yrange,
+                borderwidth=linewidths,
+                borderstyle=linestyles,
+                incol=incol,
+                bordercol=bordercol,
+                **options,
+            )
+        return region_plot(
+            f < 0,
+            xrange,
+            yrange,
+            borderwidth=linewidths,
+            borderstyle=linestyles,
+            incol=incol,
+            bordercol=bordercol,
+            **options,
+        )
     if options['fill'] is False:
         options.pop('fillcolor', None)
-        return contour_plot(f, xrange, yrange, linewidths=linewidths,
-                            linestyles=linestyles, **options)
+        return contour_plot(
+            f, xrange, yrange, linewidths=linewidths, linestyles=linestyles, **options
+        )
     raise ValueError("fill=%s is not supported" % options['fill'])
 
 
-@options(plot_points=100, incol='blue', outcol=None, bordercol=None,
-         borderstyle=None, borderwidth=None, frame=False, axes=True,
-         legend_label=None, aspect_ratio=1, alpha=1)
+@options(
+    plot_points=100,
+    incol='blue',
+    outcol=None,
+    bordercol=None,
+    borderstyle=None,
+    borderwidth=None,
+    frame=False,
+    axes=True,
+    legend_label=None,
+    aspect_ratio=1,
+    alpha=1,
+)
 def region_plot(f, xrange, yrange, **options):
     r"""
     ``region_plot`` takes a boolean function of two variables, `f(x, y)`
@@ -1666,35 +1734,53 @@ def region_plot(f, xrange, yrange, **options):
     if not isinstance(f, (list, tuple)):
         f = [f]
 
-    feqs = [equify(g) for g in f
-            if isinstance(g, Expression) and g.operator() is operator.eq
-            and not equify(g).is_zero()]
-    f = [equify(g) for g in f
-         if not (isinstance(g, Expression) and g.operator() is operator.eq)]
+    feqs = [
+        equify(g)
+        for g in f
+        if isinstance(g, Expression)
+        and g.operator() is operator.eq
+        and not equify(g).is_zero()
+    ]
+    f = [
+        equify(g)
+        for g in f
+        if not (isinstance(g, Expression) and g.operator() is operator.eq)
+    ]
     neqs = len(feqs)
     if neqs > 1:
-        warn("There are at least 2 equations; "
-             "If the region is degenerated to points, "
-             "plotting might show nothing.")
+        warn(
+            "There are at least 2 equations; "
+            "If the region is degenerated to points, "
+            "plotting might show nothing."
+        )
         feqs = [sum([fn**2 for fn in feqs])]
         neqs = 1
     if neqs and not bordercol:
         bordercol = incol
     if not f:
-        return implicit_plot(feqs[0], xrange, yrange, fill=False,
-                             linewidth=borderwidth, linestyle=borderstyle,
-                             color=bordercol, **options)
-    f_all, ranges = setup_for_eval_on_grid(feqs + f,
-                                           [xrange, yrange],
-                                           plot_points)
+        return implicit_plot(
+            feqs[0],
+            xrange,
+            yrange,
+            fill=False,
+            linewidth=borderwidth,
+            linestyle=borderstyle,
+            color=bordercol,
+            **options,
+        )
+    f_all, ranges = setup_for_eval_on_grid(feqs + f, [xrange, yrange], plot_points)
     xrange, yrange = (r[:2] for r in ranges)
 
-    xy_data_arrays = numpy.asarray([[[func(x, y)
-                                      for x in xsrange(*ranges[0],
-                                                       include_endpoint=True)]
-                                     for y in xsrange(*ranges[1],
-                                                      include_endpoint=True)]
-                                    for func in f_all[neqs::]], dtype=float)
+    xy_data_arrays = numpy.asarray(
+        [
+            [
+                [func(x, y) for x in xsrange(*ranges[0], include_endpoint=True)]
+                for y in xsrange(*ranges[1], include_endpoint=True)
+            ]
+            for func in f_all[neqs::]
+        ],
+        dtype=float,
+    )
     xy_data_array = numpy.abs(xy_data_arrays.prod(axis=0))
     # Now we need to set entries to negative iff all
     # functions were negative at that point.
@@ -1702,6 +1788,7 @@ def region_plot(f, xrange, yrange, **options):
     xy_data_array[neg_indices] = -xy_data_array[neg_indices]
 
     from matplotlib.colors import ListedColormap
+
     incol = rgbcolor(incol)
     if outcol:
         outcol = rgbcolor(outcol)
@@ -1723,34 +1810,48 @@ def region_plot(f, xrange, yrange, **options):
     if scale in ('semilogy', 'semilogx'):
         options['aspect_ratio'] = 'automatic'
 
-    g._set_extra_kwds(Graphics._extract_kwds_for_show(options,
-                                                      ignore=['xmin', 'xmax']))
+    g._set_extra_kwds(Graphics._extract_kwds_for_show(options, ignore=['xmin', 'xmax']))
 
     if neqs == 0:
-        g.add_primitive(ContourPlot(xy_data_array, xrange, yrange,
-                                    dict(contours=[-1e-20, 0, 1e-20],
-                                         cmap=cmap,
-                                         fill=True, **options)))
+        g.add_primitive(
+            ContourPlot(
+                xy_data_array,
+                xrange,
+                yrange,
+                dict(contours=[-1e-20, 0, 1e-20], cmap=cmap, fill=True, **options),
+            )
+        )
     else:
-        mask = numpy.asarray([[elt > 0 for elt in rows]
-                              for rows in xy_data_array],
-                             dtype=bool)
-        xy_data_array = numpy.asarray([[f_all[0](x, y)
-                                        for x in xsrange(*ranges[0],
-                                                         include_endpoint=True)]
-                                       for y in xsrange(*ranges[1],
-                                                        include_endpoint=True)],
-                                      dtype=float)
+        mask = numpy.asarray(
+            [[elt > 0 for elt in rows] for rows in xy_data_array], dtype=bool
+        )
+        xy_data_array = numpy.asarray(
+            [
+                [f_all[0](x, y) for x in xsrange(*ranges[0], include_endpoint=True)]
+                for y in xsrange(*ranges[1], include_endpoint=True)
+            ],
+            dtype=float,
+        )
         xy_data_array[mask] = None
     if bordercol or borderstyle or borderwidth:
         cmap = [rgbcolor(bordercol)] if bordercol else ['black']
         linestyles = [borderstyle] if borderstyle else None
         linewidths = [borderwidth] if borderwidth else None
-        g.add_primitive(ContourPlot(xy_data_array, xrange, yrange,
-                                    dict(linestyles=linestyles,
-                                         linewidths=linewidths,
-                                         contours=[0], cmap=[bordercol],
-                                         fill=False, **options)))
+        g.add_primitive(
+            ContourPlot(
+                xy_data_array,
+                xrange,
+                yrange,
+                dict(
+                    linestyles=linestyles,
+                    linewidths=linewidths,
+                    contours=[0],
+                    cmap=[bordercol],
+                    fill=False,
+                    **options,
+                ),
+            )
+        )
 
     return g
 
@@ -1781,6 +1882,7 @@ def equify(f):
     """
     from sage.calculus.expr import symbolic_expression
     from sage.structure.element import Expression
+
     if not isinstance(f, Expression):
         return lambda x, y: -1 if f(x, y) else 1
 

@@ -97,6 +97,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
     r"""
     Elements of HeckeTriangleGroup.
     """
+
     def __init__(self, parent, M, check=True, **kwargs):
         r"""
         An element of HeckeTriangle group given by a matrix ``M``.
@@ -172,7 +173,11 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         # (after the preliminary checks).
         if check:
             if self._matrix.determinant() != 1:
-                raise TypeError("The matrix is not an element of {}, it has determinant {} != 1.".format(parent, self._matrix.determinant()))
+                raise TypeError(
+                    "The matrix is not an element of {}, it has determinant {} != 1.".format(
+                        parent, self._matrix.determinant()
+                    )
+                )
             self._word_S_T_data()
 
     @cached_method
@@ -222,23 +227,31 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
 
         while True:
             a, b, c, d = M.list()
-            mshift = coerce_AA((4*a*c + b*d) / (4*c*c + d*d))
+            mshift = coerce_AA((4 * a * c + b * d) / (4 * c * c + d * d))
             m = (mshift / lam + half).floor()
             if m != zero:
-                res.append((one, m),)
-                M = T**(-m) * M
+                res.append(
+                    (one, m),
+                )
+                M = T ** (-m) * M
                 a, b, c, d = M.list()
 
-            abs_t = coerce_AA((4*a*a + b*b) / (4*c*c + d*d))
+            abs_t = coerce_AA((4 * a * a + b * b) / (4 * c * c + d * d))
             if coerce_AA(abs_t) < 1:
                 M = (-S) * M
-                res.append((zero, one),)
+                res.append(
+                    (zero, one),
+                )
             elif M == ID:
                 return (tuple(res), one)
             elif M == -ID:
                 return (tuple(res), -one)
             else:
-                raise TypeError("The matrix is not an element of {}, up to equivalence it identifies two nonequivalent points.".format(self.parent()))
+                raise TypeError(
+                    "The matrix is not an element of {}, up to equivalence it identifies two nonequivalent points.".format(
+                        self.parent()
+                    )
+                )
 
     def word_S_T(self):
         r"""
@@ -470,7 +483,10 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         if method == "block":
             if self.parent().n() == infinity:
                 from warnings import warn
-                warn("The case n=infinity here is not verified at all and probably wrong!")
+
+                warn(
+                    "The case n=infinity here is not verified at all and probably wrong!"
+                )
 
             L, R, sgn = self._block_decomposition_data()
 
@@ -484,14 +500,19 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
                 repr_str = "{}{}".format("-" if sgn < 0 else "", repr_str)
             else:
                 R_str = "({})".format(R.string_repr(method='basic'))
-                repr_str = "{}{} * ({}) * {}^(-1)".format("-" if sgn < 0 else "", R_str, repr_str, R_str)
+                repr_str = "{}{} * ({}) * {}^(-1)".format(
+                    "-" if sgn < 0 else "", R_str, repr_str, R_str
+                )
 
             return repr_str
 
         if method == "conj":
             if self.parent().n() == infinity:
                 from warnings import warn
-                warn("The case n=infinity here is not verified at all and probably wrong!")
+
+                warn(
+                    "The case n=infinity here is not verified at all and probably wrong!"
+                )
 
             L, R, sgn = self._block_decomposition_data()
 
@@ -604,6 +625,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if self.is_identity():
@@ -634,12 +656,12 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             # elif self.is_elliptic():
             #    r = ZZ(emb(p/lam).real().floor() + 1)
             else:
-                emb_res = emb(p/lam)
+                emb_res = emb(p / lam)
                 emb_res.simplify()
                 emb_res.exactify()
                 r = emb_res.floor() + one
             L.append(r)
-            p = (S*TI**r).acton(p)
+            p = (S * TI**r).acton(p)
             cf_index += one
 
         preperiod_len = cf_dict[p]
@@ -772,6 +794,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         G = self.parent()
@@ -800,18 +823,20 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             if embw == QQbar.gen():
                 R = -R
                 L = (zero, one)
-            elif (embw == -one/G.rho()):
-                R = R*G.T().inverse()
+            elif embw == -one / G.rho():
+                R = R * G.T().inverse()
                 L = (one, one)
             else:
-                raise RuntimeError("There is something wrong in the method "
-                                   "_primitive_block_decomposition_data. Please contact sage-devel@googlegroups.com")
+                raise RuntimeError(
+                    "There is something wrong in the method "
+                    "_primitive_block_decomposition_data. Please contact sage-devel@googlegroups.com"
+                )
 
             return (L, R)
 
         # The identity case (consistent with the notation in the parabolic case):
         if self.is_identity():
-            return (((ZZ(self.parent().n()-one), zero),), G.I())
+            return (((ZZ(self.parent().n() - one), zero),), G.I())
 
         # The hyperbolic and parabolic case:
         # The parabolic case is much simpler but the same algorithm
@@ -849,8 +874,8 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         L_len = len(L)
         k = 0
         while k < L_len - 1:
-            if L[k][0] == L[k+1][0]:
-                k_entry = L.pop(k+1)
+            if L[k][0] == L[k + 1][0]:
+                k_entry = L.pop(k + 1)
                 L[k][1] += k_entry[1]
                 L_len -= 1
             else:
@@ -858,14 +883,17 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         if L_len > 1 and L[-1][0] == L[0][0]:
             k_entry = L.pop(-1)
             L[0][1] += k_entry[1]
-            R = G.V(L[0][0])**(-k_entry[1])
+            R = G.V(L[0][0]) ** (-k_entry[1])
         else:
             R = G.I()
 
         # This should determine whether self is conjugate to a positive power of V(1) or V(n-1)
         # sign((a+d)*(b-c)) is actually a conjugacy invariant for the parabolic subspace
         # and distinguishes the two (three) cases (sign(0):=0)
-        if self.is_parabolic() and coerce_AA(self.trace() * (self.b() - self.c())).sign() > 0:
+        if (
+            self.is_parabolic()
+            and coerce_AA(self.trace() * (self.b() - self.c())).sign() > 0
+        ):
             # In this case self should be conjugate to a positive power of V(1)
             # in either case L is / should be (at the moment) always equal to [n-1, 1]
             L[0][0] = 1
@@ -1026,6 +1054,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         G = self.parent()
@@ -1048,19 +1077,21 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         if method == "cf":
             preperiod, period = self.continued_fraction()
 
-            P = prod((G.T()**r * G.S() for r in period), G.I())
-            R = prod((G.T()**r * G.S() for r in preperiod), G.I())
+            P = prod((G.T() ** r * G.S() for r in period), G.I())
+            R = prod((G.T() ** r * G.S() for r in preperiod), G.I())
 
             return (P, R)
 
         if method == "block":
             data_list, R = self._primitive_block_decomposition_data()
-            P = prod((G.V(v[0])**v[1] for v in data_list), G.I())
+            P = prod((G.V(v[0]) ** v[1] for v in data_list), G.I())
 
             return (P, R)
 
-        raise ValueError("if the element is not elliptic, then method must "
-                         "be either be 'cf' or 'block'")
+        raise ValueError(
+            "if the element is not elliptic, then method must "
+            "be either be 'cf' or 'block'"
+        )
 
     def primitive_part(self, method='cf'):
         r"""
@@ -1147,6 +1178,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         P, R = self.primitive_representative(method=method)
@@ -1205,6 +1237,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         P, R = self.primitive_representative(method='cf')
@@ -1332,6 +1365,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         zero = ZZ.zero()
@@ -1362,17 +1396,19 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
                     # L = [one, ZZ(-j)]
                     break
             else:
-                raise RuntimeError("There is a problem in the method "
-                                   "'primitive_power'. Please contact sage-devel@googlegroups.com")
+                raise RuntimeError(
+                    "There is a problem in the method "
+                    "'primitive_power'. Please contact sage-devel@googlegroups.com"
+                )
 
-            if abs(j) < G.n()/two:
+            if abs(j) < G.n() / two:
                 return j
-            if two*j == G.n():
+            if two * j == G.n():
                 return j
             # for the cases from here on the sign has to be adjusted
             # to the
             # sign of self (in self._block_decomposition_data())
-            if two*j == -G.n():
+            if two * j == -G.n():
                 return -j
             if j > 0:
                 return j - G.n()
@@ -1392,7 +1428,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             M *= primitive_part
             power += 1
 
-        return power*power_sign
+        return power * power_sign
 
     def block_length(self, primitive=False):
         r"""
@@ -1491,6 +1527,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if primitive:
@@ -1631,6 +1668,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         L, R = self._primitive_block_decomposition_data()
@@ -1740,6 +1778,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         G = self.parent()
@@ -1760,8 +1799,8 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
                 P = G.S()
             else:
                 P = G.U()
-            return ((P**L[1],), R, sgn)
-        return (tuple(G.V(v[0])**v[1] for v in L), R, sgn)
+            return ((P ** L[1],), R, sgn)
+        return (tuple(G.V(v[0]) ** v[1] for v in L), R, sgn)
 
     def conjugacy_type(self, ignore_sign=True, primitive=False):
         r"""
@@ -1821,6 +1860,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if primitive:
@@ -1877,6 +1917,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if self.is_identity() or self.is_elliptic():
@@ -1894,7 +1935,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             if cur_period in period_set:
                 continue
             period_set.add(cur_period)
-            L.append(prod((G.T()**r * G.S() for r in cur_period), G.I()))
+            L.append(prod((G.T() ** r * G.S() for r in cur_period), G.I()))
 
         return L
 
@@ -1967,6 +2008,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if not self.is_hyperbolic():
@@ -2027,6 +2069,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if self.is_identity() or self.is_elliptic():
@@ -2056,7 +2099,12 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             sage: latex(V)
             \begin{pmatrix} \mathit{\lambda}^{3} - 2 \mathit{\lambda} & \mathit{\lambda}^{2} - 1 \\ \mathit{\lambda}^{4} - 3 \mathit{\lambda}^{2} + 1 & \mathit{\lambda}^{3} - 2 \mathit{\lambda} \end{pmatrix}
         """
-        latex_out = r"\begin{pmatrix} %s & %s \\ %s & %s \end{pmatrix}" % (latex(self.a()), latex(self.b()), latex(self.c()), latex(self.d()))
+        latex_out = r"\begin{pmatrix} %s & %s \\ %s & %s \end{pmatrix}" % (
+            latex(self.a()),
+            latex(self.b()),
+            latex(self.c()),
+            latex(self.d()),
+        )
         return latex_out.replace("lam", r"\lambda")
 
     def __neg__(self):
@@ -2177,7 +2225,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             sage: AA(G.V(3).discriminant())
             16.19566935808922?
         """
-        return self.trace()**2 - 4
+        return self.trace() ** 2 - 4
 
     def is_translation(self, exclude_one=False) -> bool:
         r"""
@@ -2331,6 +2379,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         pow = self.primitive_power()
@@ -2341,11 +2390,10 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
 
             # if this is not up-to-sign then a factor 2 should
             # be added before (the second) self.parent().n()
-            return (pow % (2*self.parent().n())).gcd(self.parent().n()) == 1
+            return (pow % (2 * self.parent().n())).gcd(self.parent().n()) == 1
         return abs(pow) <= 1
 
-    def is_reduced(self, require_primitive=True,
-                   require_hyperbolic=True) -> bool:
+    def is_reduced(self, require_primitive=True, require_hyperbolic=True) -> bool:
         r"""
         Return whether ``self`` is reduced.
 
@@ -2402,6 +2450,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if self.is_identity() or self.is_elliptic():
@@ -2476,7 +2525,12 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
 
         # The last condition is/should be equivalent to:
         a, b, c, d = self._matrix.list()
-        return (coerce_AA(a) > 0 and coerce_AA(b) > 0 and coerce_AA(c) > 0 and coerce_AA(d) > 0)
+        return (
+            coerce_AA(a) > 0
+            and coerce_AA(b) > 0
+            and coerce_AA(c) > 0
+            and coerce_AA(d) > 0
+        )
 
     def is_hecke_symmetric(self) -> bool:
         r"""
@@ -2527,6 +2581,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if self.is_identity() or self.is_elliptic():
@@ -2650,10 +2705,13 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
         if self.parent().n() == infinity:
             from warnings import warn
+
             warn("The case n=infinity here is not verified at all and probably wrong!")
 
         if self.is_identity() or self.is_elliptic():
-            raise NotImplementedError("This method is not implemented for the identity or elliptic element")
+            raise NotImplementedError(
+                "This method is not implemented for the identity or elliptic element"
+            )
 
         try:
             k = ZZ(k)
@@ -2663,6 +2721,7 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             raise ValueError(f"k={k} must be an even integer!")
 
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         P = PolynomialRing(self.parent().base_ring(), 'z')
         z = P.gen()
 
@@ -2671,13 +2730,13 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         # L1 = []
         for v in self.simple_elements():
             a, b, c, d = v._matrix.list()
-            Q = c*z**2 + (d - a)*z - b
-            s += Q**(-k/ZZ(2))
+            Q = c * z**2 + (d - a) * z - b
+            s += Q ** (-k / ZZ(2))
 
         for v in self.inverse().simple_elements():
             a, b, c, d = v._matrix.list()
-            Q = c*z**2 + (d - a)*z - b
-            s -= ZZ(-1)**(k/ZZ(2)) * Q**(-k/ZZ(2))
+            Q = c * z**2 + (d - a) * z - b
+            s -= ZZ(-1) ** (k / ZZ(2)) * Q ** (-k / ZZ(2))
 
         return s
 
@@ -2817,13 +2876,13 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         if self.is_elliptic():
             if L[0] == 0:
                 return ZZ(0)
-            if 2*L[1] == n:
+            if 2 * L[1] == n:
                 return ZZ(0)
-            return ZZ(-2*L[1])
+            return ZZ(-2 * L[1])
         t = sum(v[1] for v in L)
-        u = sum((v[0]-1) for v in L)
+        u = sum((v[0] - 1) for v in L)
 
-        return ZZ((n-2)*t - 2*u)
+        return ZZ((n - 2) * t - 2 * u)
 
     def root_extension_field(self):
         r"""
@@ -3056,8 +3115,8 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             d = coerce_AA(d)
             c = coerce_AA(c)
 
-        root1 = (a-d)/(2*c) + sgn*e/(2*c)
-        root2 = (a-d)/(2*c) - sgn*e/(2*c)
+        root1 = (a - d) / (2 * c) + sgn * e / (2 * c)
+        root2 = (a - d) / (2 * c) - sgn * e / (2 * c)
 
         if embedded:
             root1.simplify()
@@ -3143,11 +3202,11 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
         """
 
         if tau.parent() == self.parent():
-            return self*tau*self.inverse()
+            return self * tau * self.inverse()
 
         # if tau is a point of HyperbolicPlane then we use it's coordinates in the UHP model
         model = None
-        if (tau in HyperbolicPlane()):
+        if tau in HyperbolicPlane():
             model = tau.model()
             tau = tau.to_model('UHP').coordinates()
 
@@ -3157,11 +3216,11 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             if c.is_zero():
                 result = infinity
             else:
-                result = a/c
-        elif c*tau + d == 0:
+                result = a / c
+        elif c * tau + d == 0:
             result = infinity
         else:
-            result = (a*tau + b) / (c*tau + d)
+            result = (a * tau + b) / (c * tau + d)
 
         if model is None:
             return result
@@ -3203,8 +3262,8 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             lam
         """
 
-        if (self_on_left):
-            if (other == infinity or other in CC or other in HyperbolicPlane()):
+        if self_on_left:
+            if other == infinity or other in CC or other in HyperbolicPlane():
                 return self.acton(other)
         return None
 
@@ -3276,7 +3335,9 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
                     par = f.numerator().parent()
                     degf = par(f.numerator()).degree() - par(f.denominator()).degree()
                 except (ValueError, TypeError, AttributeError):
-                    raise ValueError("The weight k could not be determined automatically and needs to be specified manually!")
+                    raise ValueError(
+                        "The weight k could not be determined automatically and needs to be specified manually!"
+                    )
                 k = -degf
 
         try:
@@ -3290,12 +3351,16 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
             try:
                 tau = f.numerator().parent().gen()
             except (ValueError, TypeError, AttributeError):
-                raise ValueError("f={} is not a rational function or a polynomial in one variable, so tau has to be specified explicitly!".format(f))
+                raise ValueError(
+                    "f={} is not a rational function or a polynomial in one variable, so tau has to be specified explicitly!".format(
+                        f
+                    )
+                )
 
-        if (tau in HyperbolicPlane()):
+        if tau in HyperbolicPlane():
             tau = tau.to_model('UHP').coordinates()
 
-        return (self.c()*tau + self.d())**(-k) * f(self.acton(tau))
+        return (self.c() * tau + self.d()) ** (-k) * f(self.acton(tau))
 
     def as_hyperbolic_plane_isometry(self, model='UHP'):
         r"""
@@ -3322,4 +3387,5 @@ class HeckeTriangleGroupElement(MatrixGroupElement_generic):
                in Category of hyperbolic models of Hyperbolic plane
         """
         from sage.geometry.hyperbolic_space.hyperbolic_interface import HyperbolicPlane
+
         return HyperbolicPlane().UHP().get_isometry(self._matrix).to_model(model)

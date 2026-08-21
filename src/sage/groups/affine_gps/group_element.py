@@ -106,6 +106,7 @@ class AffineGroupElement(MultiplicativeGroupElement):
         x |-> [ 0 -1  0] x + [1]
               [-1  0  0]     [1]
     """
+
     def __init__(self, parent, A, b=0, convert=True, check=True):
         r"""
         Create element of an affine group.
@@ -125,7 +126,7 @@ class AffineGroupElement(MultiplicativeGroupElement):
             g = A
             d = parent.degree()
             A = g.submatrix(0, 0, d, d)
-            b = [g[i,d] for i in range(d)]
+            b = [g[i, d] for i in range(d)]
             convert = True
         if convert:
             A = parent.matrix_space()(A)
@@ -229,9 +230,10 @@ class AffineGroupElement(MultiplicativeGroupElement):
         parent = self.parent()
         d = parent.degree()
         from sage.matrix.constructor import matrix, zero_matrix, block_matrix
+
         zero = zero_matrix(parent.base_ring(), 1, d)
         one = matrix(parent.base_ring(), [[1]])
-        m = block_matrix(2,2, [A, b.column(), zero, one])
+        m = block_matrix(2, 2, [A, b.column(), zero, one])
         m.set_immutable()
         return m
 
@@ -255,10 +257,10 @@ class AffineGroupElement(MultiplicativeGroupElement):
         indices = range(deg)
         s = []
         for Ai, bi, i in zip(A.splitlines(), b.splitlines(), indices):
-            if i == deg//2:
-                s.append('x |-> '+Ai+' x + '+bi)
+            if i == deg // 2:
+                s.append('x |-> ' + Ai + ' x + ' + bi)
             else:
-                s.append('      '+Ai+'     '+bi)
+                s.append('      ' + Ai + '     ' + bi)
         return '\n'.join(s)
 
     def _latex_(self):
@@ -282,7 +284,12 @@ class AffineGroupElement(MultiplicativeGroupElement):
             1\n\\end{array}\\right)\\vec{x} + \\left(\\begin{array}{r}\n3
             \\\\\n4\n\\end{array}\\right)'
         """
-        return r'\vec{x}\mapsto '+self.A()._latex_()+r'\vec{x} + '+self.b().column()._latex_()
+        return (
+            r'\vec{x}\mapsto '
+            + self.A()._latex_()
+            + r'\vec{x} + '
+            + self.b().column()._latex_()
+        )
 
     def _ascii_art_(self):
         r"""
@@ -304,9 +311,10 @@ class AffineGroupElement(MultiplicativeGroupElement):
                   [ 0 10  2]     [5/2]
         """
         from sage.typeset.ascii_art import ascii_art
+
         deg = self.parent().degree()
-        A = ascii_art(self._A, baseline=deg//2)
-        b = ascii_art(self._b.column(), baseline=deg//2)
+        A = ascii_art(self._A, baseline=deg // 2)
+        b = ascii_art(self._b.column(), baseline=deg // 2)
         return ascii_art("x |-> ") + A + ascii_art(" x + ") + b
 
     def _unicode_art_(self):
@@ -329,9 +337,10 @@ class AffineGroupElement(MultiplicativeGroupElement):
                 ⎝ 0 10  2⎠     ⎝5/2⎠
         """
         from sage.typeset.unicode_art import unicode_art
+
         deg = self.parent().degree()
-        A = unicode_art(self._A, baseline=deg//2)
-        b = unicode_art(self._b.column(), baseline=deg//2)
+        A = unicode_art(self._A, baseline=deg // 2)
+        b = unicode_art(self._b.column(), baseline=deg // 2)
         return unicode_art("x ↦ ") + A + unicode_art(" x + ") + b
 
     def _mul_(self, other):
@@ -420,27 +429,31 @@ class AffineGroupElement(MultiplicativeGroupElement):
 
         # start with the most probable case, i.e., v is in the vector space
         if v in parent.vector_space():
-            return self._A*v + self._b
+            return self._A * v + self._b
 
         from sage.rings.polynomial.polynomial_element import Polynomial
+
         if isinstance(v, Polynomial) and parent.degree() == 1:
             ring = v.parent()
-            return ring([self._A[0,0], self._b[0]])
+            return ring([self._A[0, 0], self._b[0]])
 
         from sage.rings.polynomial.multi_polynomial import MPolynomial
+
         if isinstance(v, MPolynomial) and parent.degree() == v.parent().ngens():
             ring = v.parent()
             from sage.modules.free_module_element import vector
+
             image_coords = self._A * vector(ring, ring.gens()) + self._b
             return v(*image_coords)
 
         import sage.geometry.abc
+
         if isinstance(v, sage.geometry.abc.Polyhedron):
-            return self._A*v + self._b
+            return self._A * v + self._b
 
         # otherwise, coerce v into the vector space
         v = parent.vector_space()(v)
-        return self._A*v + self._b
+        return self._A * v + self._b
 
     def _act_on_(self, x, self_on_left):
         """

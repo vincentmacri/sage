@@ -118,14 +118,24 @@ def CoxeterGroup(data, implementation='reflection', base_ring=None, index_set=No
 
         sage: W = groups.misc.CoxeterGroup(["H",3])                                     # needs sage.graphs sage.groups
     """
-    if implementation not in ["permutation", "matrix", "coxeter3", "reflection", "chevie", None]:
+    if implementation not in [
+        "permutation",
+        "matrix",
+        "coxeter3",
+        "reflection",
+        "chevie",
+        None,
+    ]:
         raise ValueError("invalid type implementation")
 
     from sage.groups.matrix_gps.coxeter_group import CoxeterMatrixGroup
 
     try:
         cartan_type = CartanType(data)
-    except (TypeError, ValueError): # If it is not a Cartan type, try to see if we can represent it as a matrix group
+    except (
+        TypeError,
+        ValueError,
+    ):  # If it is not a Cartan type, try to see if we can represent it as a matrix group
         return CoxeterMatrixGroup(data, base_ring, index_set)
 
     if implementation is None:
@@ -153,8 +163,17 @@ def CoxeterGroup(data, implementation='reflection', base_ring=None, index_set=No
     if implementation == "chevie":
         return ReflectionGroup(cartan_type, index_set=index_set)
 
-    raise NotImplementedError("Coxeter group of type {} as {} group not implemented".format(cartan_type, implementation))
+    raise NotImplementedError(
+        "Coxeter group of type {} as {} group not implemented".format(
+            cartan_type, implementation
+        )
+    )
 
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.root_system.coxeter_group', 'CoxeterGroupAsPermutationGroup', ReflectionGroup)
+
+register_unpickle_override(
+    'sage.combinat.root_system.coxeter_group',
+    'CoxeterGroupAsPermutationGroup',
+    ReflectionGroup,
+)

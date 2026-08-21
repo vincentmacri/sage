@@ -364,6 +364,7 @@ class AffineConnection(SageObject):
         sage: nab_copy.is_immutable()
         False
     """
+
     def __init__(self, domain, name, latex_name=None):
         r"""
         Construct an affine connection.
@@ -382,8 +383,7 @@ class AffineConnection(SageObject):
             sage: TestSuite(nab).run()
         """
         if not isinstance(domain, DifferentiableManifold):
-            raise TypeError("the first argument must be a differentiable " +
-                            "manifold")
+            raise TypeError("the first argument must be a differentiable " + "manifold")
         self._is_immutable = False
         self._domain = domain
         self._name = name
@@ -392,7 +392,7 @@ class AffineConnection(SageObject):
         else:
             self._latex_name = latex_name
         self._coefficients = {}  # dict. of connection coefficients, with the
-                                 # vector frames as keys
+        # vector frames as keys
         # Initialization of derived quantities:
         self._init_derived()
 
@@ -445,17 +445,17 @@ class AffineConnection(SageObject):
             sage: nab = M.affine_connection('nabla', latex_name=r'\nabla')
             sage: nab._init_derived()
         """
-        self._restrictions = {} # dict. of restrictions of ``self`` on some
-                                # subdomains, with the subdomains as keys
+        self._restrictions = {}  # dict. of restrictions of ``self`` on some
+        # subdomains, with the subdomains as keys
         self._torsion = None
         self._riemann = None
         self._ricci = None
         self._connection_forms = {}  # dict. of dict. of connection 1-forms
-                                     # (key: vector frame)
+        # (key: vector frame)
         self._torsion_forms = {}  # dict. of dict. of torsion 1-forms
-                                  # (key: vector frame)
+        # (key: vector frame)
         self._curvature_forms = {}  # dict. of dict. of curvature 2-forms
-                                    # (key: vector frame)
+        # (key: vector frame)
 
     def _del_derived(self):
         r"""
@@ -605,9 +605,14 @@ class AffineConnection(SageObject):
         """
         from sage.manifolds.differentiable.scalarfield import DiffScalarField
         from sage.tensor.modules.comp import Components
-        return Components(frame._domain.scalar_field_algebra(), frame, 3,
-                          start_index=self._domain._sindex,
-                          output_formatter=DiffScalarField.coord_function)
+
+        return Components(
+            frame._domain.scalar_field_algebra(),
+            frame,
+            3,
+            start_index=self._domain._sindex,
+            output_formatter=DiffScalarField.coord_function,
+        )
 
     def coef(self, frame=None):
         r"""
@@ -677,14 +682,14 @@ class AffineConnection(SageObject):
             else:
                 # If not, the coefficients must be computed from scratch:
                 manif = self._domain
-                ev = frame        # the vector frame
-                ef = ev.coframe() # the dual frame
+                ev = frame  # the vector frame
+                ef = ev.coframe()  # the dual frame
                 gam = self._new_coef(ev)
                 for i in manif.irange():
                     nab_evi = self(ev[i])
                     for k in manif.irange():
                         for j in manif.irange():
-                            gam[[k,i,j]] = nab_evi(ef[k],ev[j])
+                            gam[[k, i, j]] = nab_evi(ef[k], ev[j])
                 self._coefficients[frame] = gam
         return self._coefficients[frame]
 
@@ -768,16 +773,19 @@ class AffineConnection(SageObject):
         To keep them, use the method :meth:`add_coef` instead.
         """
         if self.is_immutable():
-            raise ValueError("the coefficients of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the coefficients of an immutable element cannot be changed"
+            )
         if frame is None:
             frame = self._domain._def_frame
         if frame not in self._coefficients:
             if frame not in self._domain._frames:
-                raise ValueError("the {} is not".format(frame) +
-                                 " a frame on the {}".format(self._domain))
+                raise ValueError(
+                    "the {} is not".format(frame)
+                    + " a frame on the {}".format(self._domain)
+                )
             self._coefficients[frame] = self._new_coef(frame)
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         self.del_other_coef(frame)
         return self._coefficients[frame]
 
@@ -857,16 +865,19 @@ class AffineConnection(SageObject):
         To delete them, use the method :meth:`set_coef` instead.
         """
         if self.is_immutable():
-            raise ValueError("the coefficients of an immutable element "
-                             "cannot be changed")
+            raise ValueError(
+                "the coefficients of an immutable element cannot be changed"
+            )
         if frame is None:
             frame = self._domain._def_frame
         if frame not in self._coefficients:
             if frame not in self._domain._frames:
-                raise ValueError("the {} is not".format(frame) +
-                                 " a frame on the {}".format(self._domain))
+                raise ValueError(
+                    "the {} is not".format(frame)
+                    + " a frame on the {}".format(self._domain)
+                )
             self._coefficients[frame] = self._new_coef(frame)
-        self._del_derived() # deletes the derived quantities
+        self._del_derived()  # deletes the derived quantities
         return self._coefficients[frame]
 
     def del_other_coef(self, frame=None):
@@ -913,8 +924,9 @@ class AffineConnection(SageObject):
         if frame is None:
             frame = self._domain._def_frame
         if frame not in self._coefficients:
-            raise ValueError("the coefficients w.r.t. {}".format(frame) +
-                             " have not been defined")
+            raise ValueError(
+                "the coefficients w.r.t. {}".format(frame) + " have not been defined"
+            )
         to_be_deleted = []
         for other_frame in self._coefficients:
             if other_frame != frame:
@@ -1181,10 +1193,18 @@ class AffineConnection(SageObject):
                 frame = self._domain._def_frame
         self.set_coef(frame)[args] = value
 
-    def display(self, frame=None, chart=None, symbol=None, latex_symbol=None,
-                index_labels=None, index_latex_labels=None,
-                coordinate_labels=True, only_nonzero=True,
-                only_nonredundant=False):
+    def display(
+        self,
+        frame=None,
+        chart=None,
+        symbol=None,
+        latex_symbol=None,
+        index_labels=None,
+        index_latex_labels=None,
+        coordinate_labels=True,
+        only_nonzero=True,
+        only_nonredundant=False,
+    ):
         r"""
         Display all the connection coefficients w.r.t. to a given frame, one
         per line.
@@ -1308,6 +1328,7 @@ class AffineConnection(SageObject):
         """
         from sage.manifolds.differentiable.vectorframe import CoordFrame
         from sage.misc.latex import latex
+
         if frame is None:
             frame = self._domain.default_frame()
         if chart is None:
@@ -1316,16 +1337,20 @@ class AffineConnection(SageObject):
             symbol = 'Gam'
         if latex_symbol is None:
             latex_symbol = r'\Gamma'
-        if index_labels is None and isinstance(frame, CoordFrame) and \
-          coordinate_labels:
+        if index_labels is None and isinstance(frame, CoordFrame) and coordinate_labels:
             ch = frame.chart()
             index_labels = [str(z) for z in ch[:]]
             index_latex_labels = [latex(z) for z in ch[:]]
-        return self.coef(frame=frame).display(symbol,
-              latex_symbol=latex_symbol, index_positions='udd',
-              index_labels=index_labels, index_latex_labels=index_latex_labels,
-              format_spec=chart, only_nonzero=only_nonzero,
-              only_nonredundant=only_nonredundant)
+        return self.coef(frame=frame).display(
+            symbol,
+            latex_symbol=latex_symbol,
+            index_positions='udd',
+            index_labels=index_labels,
+            index_latex_labels=index_latex_labels,
+            format_spec=chart,
+            only_nonzero=only_nonzero,
+            only_nonredundant=only_nonredundant,
+        )
 
     def restrict(self, subdomain):
         r"""
@@ -1377,10 +1402,13 @@ class AffineConnection(SageObject):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("The provided domains is not a subset of " +
-                                 "the connection's domain.")
-            resu = AffineConnection(subdomain, name=self._name,
-                                    latex_name=self._latex_name)
+                raise ValueError(
+                    "The provided domains is not a subset of "
+                    + "the connection's domain."
+                )
+            resu = AffineConnection(
+                subdomain, name=self._name, latex_name=self._latex_name
+            )
             for frame in self._coefficients:
                 for sframe in subdomain._top_frames:
                     if sframe in frame._subframes:
@@ -1450,7 +1478,7 @@ class AffineConnection(SageObject):
         for frame in self._coefficients:
             for oframe in other._components:
                 if oframe in frame._subframes:
-                    self.coef(oframe) # update the coefficients of self in oframe
+                    self.coef(oframe)  # update the coefficients of self in oframe
                     return oframe
         #
         # 4/ Search for a common frame via one component transformation
@@ -1505,9 +1533,10 @@ class AffineConnection(SageObject):
         """
         from sage.manifolds.differentiable.tensorfield_paral import TensorFieldParal
         from sage.tensor.modules.format_utilities import format_unop_latex
+
         dom_resu = self._domain.intersection(tensor._domain)
         tensor_r = tensor.restrict(dom_resu)
-        if tensor_r._tensor_type == (0,0):  # scalar field case
+        if tensor_r._tensor_type == (0, 0):  # scalar field case
             return tensor_r.differential()
         if isinstance(tensor_r, TensorFieldParal):
             return self._derive_paral(tensor_r)
@@ -1521,8 +1550,7 @@ class AffineConnection(SageObject):
             else:
                 # dom is a not a subdomain and the computation is performed:
                 resu_rst.append(self.__call__(rst))
-        tensor_type_resu = (tensor_r._tensor_type[0],
-                            tensor_r._tensor_type[1]+1)
+        tensor_type_resu = (tensor_r._tensor_type[0], tensor_r._tensor_type[1] + 1)
         if tensor_r._name is None:
             name_resu = None
         else:
@@ -1530,13 +1558,17 @@ class AffineConnection(SageObject):
         if tensor_r._latex_name is None:
             latex_name_resu = None
         else:
-            latex_name_resu = format_unop_latex(self._latex_name + ' ',
-                                                          tensor_r._latex_name)
+            latex_name_resu = format_unop_latex(
+                self._latex_name + ' ', tensor_r._latex_name
+            )
         vmodule = dom_resu.vector_field_module()
-        resu = vmodule.tensor(tensor_type_resu, name=name_resu,
-                              latex_name=latex_name_resu,
-                              sym=resu_rst[0]._sym,
-                              antisym=resu_rst[0]._antisym)
+        resu = vmodule.tensor(
+            tensor_type_resu,
+            name=name_resu,
+            latex_name=latex_name_resu,
+            sym=resu_rst[0]._sym,
+            antisym=resu_rst[0]._antisym,
+        )
         for rst in resu_rst:
             resu._restrictions[rst._domain] = rst
         return resu
@@ -1566,6 +1598,7 @@ class AffineConnection(SageObject):
         from sage.manifolds.differentiable.scalarfield import DiffScalarField
         from sage.tensor.modules.comp import Components, CompWithSym
         from sage.tensor.modules.format_utilities import format_unop_latex
+
         manif = self._domain
         tdom = tensor._domain
         frame = self._common_frame(tensor)
@@ -1575,16 +1608,23 @@ class AffineConnection(SageObject):
         tc = tensor._components[frame]
         gam = self._coefficients[frame]
         if not tensor._sym and not tensor._antisym:
-            resc = Components(tdom.scalar_field_algebra(), frame,
-                              tensor._tensor_rank+1,
-                              start_index=self._domain._sindex,
-                              output_formatter=DiffScalarField.coord_function)
+            resc = Components(
+                tdom.scalar_field_algebra(),
+                frame,
+                tensor._tensor_rank + 1,
+                start_index=self._domain._sindex,
+                output_formatter=DiffScalarField.coord_function,
+            )
         else:
-            resc = CompWithSym(tdom.scalar_field_algebra(), frame,
-                              tensor._tensor_rank+1,
-                              start_index=self._domain._sindex,
-                              output_formatter=DiffScalarField.coord_function,
-                              sym=tensor._sym, antisym=tensor._antisym)
+            resc = CompWithSym(
+                tdom.scalar_field_algebra(),
+                frame,
+                tensor._tensor_rank + 1,
+                start_index=self._domain._sindex,
+                output_formatter=DiffScalarField.coord_function,
+                sym=tensor._sym,
+                antisym=tensor._antisym,
+            )
         n_con = tensor._tensor_type[0]
         n_cov = tensor._tensor_type[1]
 
@@ -1593,20 +1633,21 @@ class AffineConnection(SageObject):
             # !!!!! Seems to work only when a frame is chosen !!!!!!
 
             nproc = Parallelism().get('tensor')
-            lol = lambda lst, sz: [lst[i:i+sz] for i in range(0, len(lst), sz)]
+            lol = lambda lst, sz: [lst[i : i + sz] for i in range(0, len(lst), sz)]
 
             ind_list = list(resc.non_redundant_index_generator())
-            ind_step = max(1,int(len(ind_list)/nproc/2))
-            local_list = lol(ind_list,ind_step)
+            ind_step = max(1, int(len(ind_list) / nproc / 2))
+            local_list = lol(ind_list, ind_step)
 
             # definition of the list of input parameters
             listParalInput = []
             for ind_part in local_list:
-                listParalInput.append((ind_part,tc,gam,frame,n_con,
-                                       tensor._tensor_rank,manif))
+                listParalInput.append(
+                    (ind_part, tc, gam, frame, n_con, tensor._tensor_rank, manif)
+                )
 
             # definition of the parallel function
-            @parallel(p_iter='multiprocessing',ncpus=nproc)
+            @parallel(p_iter='multiprocessing', ncpus=nproc)
             def make_CovDerivative(ind_part, tc, gam, frame, n_con, rank, manif):
                 partial = []
                 for ind in ind_part:
@@ -1625,11 +1666,11 @@ class AffineConnection(SageObject):
                             indk = list(ind0)
                             indk[k] = i
                             rsum -= gam[[i, ind0[k], p]] * tc[[indk]]
-                    partial.append([ind,rsum])
+                    partial.append([ind, rsum])
                 return partial
 
             # Computation and Assignation of values
-            for ii,val in make_CovDerivative(listParalInput):
+            for ii, val in make_CovDerivative(listParalInput):
                 for jj in val:
                     resc[[jj[0]]] = jj[1]
 
@@ -1661,10 +1702,12 @@ class AffineConnection(SageObject):
         if tensor._latex_name is None:
             latex_name_resu = None
         else:
-            latex_name_resu = format_unop_latex(self._latex_name + ' ',
-                                                            tensor._latex_name)
-        return tdom.vector_field_module().tensor_from_comp((n_con, n_cov+1),
-                              resc, name=name_resu, latex_name=latex_name_resu)
+            latex_name_resu = format_unop_latex(
+                self._latex_name + ' ', tensor._latex_name
+            )
+        return tdom.vector_field_module().tensor_from_comp(
+            (n_con, n_cov + 1), resc, name=name_resu, latex_name=latex_name_resu
+        )
 
     def torsion(self):
         r"""
@@ -1791,8 +1834,9 @@ class AffineConnection(SageObject):
                 for k in manif.irange():
                     for i in manif.irange():
                         for j in manif.irange(start=i + 1):
-                            res[[k,i,j]] = gam[[k,j,i]] - gam[[k,i,j]] - \
-                                sc[[k,i,j]]
+                            res[[k, i, j]] = (
+                                gam[[k, j, i]] - gam[[k, i, j]] - sc[[k, i, j]]
+                            )
             self._torsion = resu
         return self._torsion
 
@@ -1921,7 +1965,7 @@ class AffineConnection(SageObject):
         """
         if self._riemann is None:
             manif = self._domain
-            resu = manif.tensor_field(1, 3, antisym=(2,3))
+            resu = manif.tensor_field(1, 3, antisym=(2, 3))
             for frame, gam in self._coefficients.items():
                 # The computation is performed only on the top frames:
                 for oframe in self._coefficients:
@@ -1936,34 +1980,44 @@ class AffineConnection(SageObject):
                     if Parallelism().get('tensor') != 1:
                         # parallel computation
                         nproc = Parallelism().get('tensor')
-                        lol = lambda lst, sz: [lst[i:i+sz] for i in range(0,
-                                                                 len(lst), sz)]
+                        lol = lambda lst, sz: [
+                            lst[i : i + sz] for i in range(0, len(lst), sz)
+                        ]
                         ind_list = []
                         for i in manif.irange():
                             for j in manif.irange():
                                 for k in manif.irange():
-                                    for l in manif.irange(start=k+1):
-                                        ind_list.append((i,j,k,l))
-                        ind_step = max(1, int(len(ind_list)/nproc/2))
+                                    for l in manif.irange(start=k + 1):
+                                        ind_list.append((i, j, k, l))
+                        ind_step = max(1, int(len(ind_list) / nproc / 2))
                         local_list = lol(ind_list, ind_step)
                         # definition of the list of input parameters
                         listParalInput = []
                         for ind_part in local_list:
-                            listParalInput.append((frame, gam, gam_gam, gam_sc,
-                                                   ind_part))
+                            listParalInput.append(
+                                (frame, gam, gam_gam, gam_sc, ind_part)
+                            )
 
                         # definition of the parallel function
                         @parallel(p_iter='multiprocessing', ncpus=nproc)
                         def make_Riem(frame, gam, gam_gam, gam_sc, local_list_ijkl):
                             partial = []
                             for i, j, k, l in local_list_ijkl:
-                                partial.append([i, j, k, l,
-                                                frame[k](gam[[i, j, l]]) -
-                                                frame[l](gam[[i, j, k]]) +
-                                                gam_gam[[i, k, j, l]] -
-                                                gam_gam[[i, l, j, k]] -
-                                                gam_sc[[i, j, k, l]]])
+                                partial.append(
+                                    [
+                                        i,
+                                        j,
+                                        k,
+                                        l,
+                                        frame[k](gam[[i, j, l]])
+                                        - frame[l](gam[[i, j, k]])
+                                        + gam_gam[[i, k, j, l]]
+                                        - gam_gam[[i, l, j, k]]
+                                        - gam_sc[[i, j, k, l]],
+                                    ]
+                                )
                             return partial
+
                         # Computation and assignation of values
                         for ii, val in make_Riem(listParalInput):
                             for jj in val:
@@ -1976,12 +2030,14 @@ class AffineConnection(SageObject):
                                 for k in manif.irange():
                                     # antisymmetry of the Riemann tensor taken
                                     # into account by l>k:
-                                    for l in manif.irange(start=k+1):
-                                        res[i,j,k,l] = frame[k](gam[[i,j,l]]) - \
-                                                       frame[l](gam[[i,j,k]]) + \
-                                                       gam_gam[[i,k,j,l]] - \
-                                                       gam_gam[[i,l,j,k]] - \
-                                                       gam_sc[[i,j,k,l]]
+                                    for l in manif.irange(start=k + 1):
+                                        res[i, j, k, l] = (
+                                            frame[k](gam[[i, j, l]])
+                                            - frame[l](gam[[i, j, k]])
+                                            + gam_gam[[i, k, j, l]]
+                                            - gam_gam[[i, l, j, k]]
+                                            - gam_sc[[i, j, k, l]]
+                                        )
             self._riemann = resu
         return self._riemann
 
@@ -2029,7 +2085,7 @@ class AffineConnection(SageObject):
             True
         """
         if self._ricci is None:
-            self._ricci = self.riemann().trace(0,2)
+            self._ricci = self.riemann().trace(0, 2)
         return self._ricci
 
     def connection_form(self, i, j, frame=None):
@@ -2158,18 +2214,22 @@ class AffineConnection(SageObject):
             coef_frame = self.coef(frame)
             for i1 in self._domain.irange():
                 for j1 in self._domain.irange():
-                    name = self._name + " connection 1-form (" + str(i1) + \
-                           "," + str(j1) + ")"
-                    latex_name = r"\omega^" + str(i1) + r"_{\ \, " + \
-                                 str(j1) + "}"
-                    omega = frame_dom.one_form(name=name,
-                                               latex_name=latex_name)
+                    name = (
+                        self._name
+                        + " connection 1-form ("
+                        + str(i1)
+                        + ","
+                        + str(j1)
+                        + ")"
+                    )
+                    latex_name = r"\omega^" + str(i1) + r"_{\ \, " + str(j1) + "}"
+                    omega = frame_dom.one_form(name=name, latex_name=latex_name)
                     comega = omega.set_comp(frame)
                     for k in self._domain.irange():
-                        comega[k] = coef_frame[[i1,j1,k]]
-                    forms[(i1,j1)] = omega
+                        comega[k] = coef_frame[[i1, j1, k]]
+                    forms[(i1, j1)] = omega
             self._connection_forms[frame] = forms
-        return self._connection_forms[frame][(i,j)]
+        return self._connection_forms[frame][(i, j)]
 
     def torsion_form(self, i, frame=None):
         r"""
@@ -2260,15 +2320,17 @@ class AffineConnection(SageObject):
             frame_dom = frame.domain()
             torsion_comp = self.torsion().comp(frame)
             for i1 in self._domain.irange():
-                name = "torsion ({}) of connection ".format(i1) + \
-                       self._name + " w.r.t. {}".format(frame)
+                name = (
+                    "torsion ({}) of connection ".format(i1)
+                    + self._name
+                    + " w.r.t. {}".format(frame)
+                )
                 latex_name = r"\theta^" + str(i1)
-                theta = frame_dom.diff_form(2, name=name,
-                                            latex_name=latex_name)
+                theta = frame_dom.diff_form(2, name=name, latex_name=latex_name)
                 ctheta = theta.set_comp(frame)
                 for k in self._domain.irange():
-                    for l in self._domain.irange(start=k+1):
-                        ctheta[k,l] = torsion_comp[[i1,k,l]]
+                    for l in self._domain.irange(start=k + 1):
+                        ctheta[k, l] = torsion_comp[[i1, k, l]]
                 forms[i1] = theta
             self._torsion_forms[frame] = forms
         return self._torsion_forms[frame][i]
@@ -2368,17 +2430,18 @@ class AffineConnection(SageObject):
             riemann_comp = self.riemann().comp(frame)
             for i1 in self._domain.irange():
                 for j1 in self._domain.irange():
-                    name = "curvature ({},{}) of connection ".format(i1,j1) + \
-                           self._name + " w.r.t. {}".format(frame)
-                    latex_name = r"\Omega^" + str(i1) + r"_{\ \, " + \
-                                str(j1) + "}"
-                    omega = frame_dom.diff_form(2, name=name,
-                                                latex_name=latex_name)
+                    name = (
+                        "curvature ({},{}) of connection ".format(i1, j1)
+                        + self._name
+                        + " w.r.t. {}".format(frame)
+                    )
+                    latex_name = r"\Omega^" + str(i1) + r"_{\ \, " + str(j1) + "}"
+                    omega = frame_dom.diff_form(2, name=name, latex_name=latex_name)
                     comega = omega.set_comp(frame)
                     for k in self._domain.irange():
-                        for l in self._domain.irange(start=k+1):
-                            comega[k,l] = riemann_comp[[i1,j1,k,l]]
-                    forms[(i1,j1)] = omega
+                        for l in self._domain.irange(start=k + 1):
+                            comega[k, l] = riemann_comp[[i1, j1, k, l]]
+                    forms[(i1, j1)] = omega
             self._curvature_forms[frame] = forms
         return self._curvature_forms[frame][(i, j)]
 
@@ -2469,6 +2532,5 @@ class AffineConnection(SageObject):
             2
         """
         if self.is_mutable():
-            raise ValueError('element must be immutable in order to be '
-                             'hashable')
+            raise ValueError('element must be immutable in order to be hashable')
         return hash((type(self).__name__, self._domain))

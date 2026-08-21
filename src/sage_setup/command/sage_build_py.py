@@ -2,7 +2,6 @@ from setuptools.command.build_py import build_py
 
 
 class sage_build_py(build_py):
-
     def find_package_modules(self, package, package_dir):
         r"""
         Do not expand packages to modules.

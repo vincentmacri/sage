@@ -9,10 +9,12 @@ Routines for computing special values of `L`-functions
 
 import sage.rings.abc
 
-from sage.arith.misc import (bernoulli,
-                             factorial,
-                             fundamental_discriminant,
-                             kronecker as kronecker_symbol)
+from sage.arith.misc import (
+    bernoulli,
+    factorial,
+    fundamental_discriminant,
+    kronecker as kronecker_symbol,
+)
 from sage.rings.infinity import infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
@@ -20,6 +22,7 @@ from sage.rings.rational_field import QQ
 
 
 # ---------------- The Gamma Function  ------------------
+
 
 def gamma__exact(n):
     r"""
@@ -91,6 +94,7 @@ def gamma__exact(n):
 
 # ------------- The Riemann Zeta Function  --------------
 
+
 def zeta__exact(n):
     r"""
     Return the exact value of the Riemann Zeta function.
@@ -149,12 +153,19 @@ def zeta__exact(n):
         if not n % 2:
             from sage.symbolic.constants import pi
 
-            return ZZ(-1)**(n // 2 + 1) * ZZ(2)**(n - 1) * pi**n * bernoulli(n) / factorial(n)
+            return (
+                ZZ(-1) ** (n // 2 + 1)
+                * ZZ(2) ** (n - 1)
+                * pi**n
+                * bernoulli(n)
+                / factorial(n)
+            )
         raise TypeError("n must be a critical value (i.e. even > 0 or odd < 0)")
     return infinity if n == 1 else QQ((-1, 2))
 
 
 # ---------- Dirichlet L-functions with quadratic characters ----------
+
 
 def QuadraticBernoulliNumber(k, d):
     r"""
@@ -192,7 +203,7 @@ def QuadraticBernoulliNumber(k, d):
 
     # Make the k-th quadratic Bernoulli number
     total = sum([kronecker_symbol(d1, i) * bp(i / f) for i in range(f)])
-    total *= f**(k - 1)
+    total *= f ** (k - 1)
 
     return total
 
@@ -241,9 +252,9 @@ def quadratic_L_function__exact(n, d):
 
         f = abs(fundamental_discriminant(d))
         GS = f.sqrt() if delta == 0 else I * f.sqrt()
-        ans = (2 * pi / f)**n
-        ans *= ZZ(-1)**(1 + (n - delta) // 2)
-        ans *= GS     # Evaluate the Gauss sum here! =0
+        ans = (2 * pi / f) ** n
+        ans *= ZZ(-1) ** (1 + (n - delta) // 2)
+        ans *= GS  # Evaluate the Gauss sum here! =0
         ans *= QQ.one() / (2 * I**delta)
         ans *= QuadraticBernoulliNumber(n, d) / factorial(n)
         return ans
@@ -296,6 +307,7 @@ def quadratic_L_function__numerical(n, d, num_terms=1000):
         R = n.parent()
     else:
         from sage.rings.real_mpfr import RealField
+
         R = RealField()
 
     if n < 0:
@@ -304,5 +316,5 @@ def quadratic_L_function__numerical(n, d, num_terms=1000):
     d1 = fundamental_discriminant(d)
     ans = R.zero()
     for i in range(1, num_terms):
-        ans += R(kronecker_symbol(d1, i) / R(i)**n)
+        ans += R(kronecker_symbol(d1, i) / R(i) ** n)
     return ans

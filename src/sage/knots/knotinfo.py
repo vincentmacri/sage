@@ -231,7 +231,6 @@ Thanks to Chuck Livingston and Allison Moore for their support. For further ackn
 #                  https://www.gnu.org/licenses/
 ##############################################################################
 
-
 from enum import Enum
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import lazy_import
@@ -349,6 +348,7 @@ class SymmetryMutant(Enum):
         the concordance inverse, `-K = (-S_3, -S_1)`, and the
         mirror image, `K^m = (-S_3, S_1)`.
     """
+
     itself = 's'
     reverse = 'r'
     concordance_inverse = 'c'
@@ -783,7 +783,7 @@ class KnotInfoBase(Enum):
 
         if not braid_notation:
             # don't forget the unknot
-            return (1, )
+            return (1,)
 
         braid_notation = eval_knotinfo(braid_notation)
         if type(braid_notation) in (list, tuple):
@@ -1052,8 +1052,11 @@ class KnotInfoBase(Enum):
         if not self.is_knot():
             raise NotImplementedError('this is only available for knots')
 
-        symmetry_type = self[self.items.symmetry_type].strip()  # for example K10_88 is a case with trailing whitespaces
+        symmetry_type = self[
+            self.items.symmetry_type
+        ].strip()  # for example K10_88 is a case with trailing whitespaces
         from sage.knots.knot import SymmetryType
+
         if not symmetry_type and self.crossing_number() == 0:
             return SymmetryType.ful_amphicheiral
         return SymmetryType(symmetry_type)
@@ -1076,6 +1079,7 @@ class KnotInfoBase(Enum):
         """
         if self.is_knot():
             from sage.knots.knot import SymmetryType
+
             symmetry_type = self.symmetry_type()
             if symmetry_type == SymmetryType.reversible:
                 return True
@@ -1139,6 +1143,7 @@ class KnotInfoBase(Enum):
         if self.is_knot():
             symmetry_type = self.symmetry_type()
             from sage.knots.knot import SymmetryType
+
             if positive:
                 if symmetry_type == SymmetryType.pos_amphicheiral:
                     return True
@@ -1214,7 +1219,7 @@ class KnotInfoBase(Enum):
             sage: KnotInfo.K5_2.is_almost_alternating() # optional - database_knotinfo
             False
         """
-        db._feature.require()    # column not available in demo-version
+        db._feature.require()  # column not available in demo-version
         return knotinfo_bool(self[self.items.almost_alternating])
 
     @cached_method
@@ -1227,7 +1232,7 @@ class KnotInfoBase(Enum):
             sage: KnotInfo.K5_2.is_quasi_alternating() # optional - database_knotinfo
             True
         """
-        db._feature.require()    # column not available in demo-version
+        db._feature.require()  # column not available in demo-version
         return knotinfo_bool(self[self.items.quasi_alternating])
 
     @cached_method
@@ -1240,7 +1245,7 @@ class KnotInfoBase(Enum):
             sage: KnotInfo.K5_2.is_adequate()         # optional - database_knotinfo
             True
         """
-        db._feature.require()    # column not available in demo-version
+        db._feature.require()  # column not available in demo-version
         return knotinfo_bool(self[self.items.adequate])
 
     @cached_method
@@ -1265,7 +1270,7 @@ class KnotInfoBase(Enum):
             sage: KnotInfo.K5_2.is_quasipositive()     # optional - database_knotinfo
             True
         """
-        db._feature.require()    # column not available in demo-version
+        db._feature.require()  # column not available in demo-version
         return knotinfo_bool(self[self.items.quasipositive])
 
     @cached_method
@@ -1278,7 +1283,7 @@ class KnotInfoBase(Enum):
             sage: KnotInfo.K5_2.is_strongly_quasipositive() # optional - database_knotinfo
             True
         """
-        db._feature.require()    # column not available in demo-version
+        db._feature.require()  # column not available in demo-version
         return knotinfo_bool(self[self.items.strongly_quasipositive])
 
     @cached_method
@@ -1291,7 +1296,7 @@ class KnotInfoBase(Enum):
             sage: KnotInfo.K5_2.is_positive_braid()         # optional - database_knotinfo
             False
         """
-        db._feature.require()    # column not available in demo-version
+        db._feature.require()  # column not available in demo-version
         return knotinfo_bool(self[self.items.positive_braid])
 
     @cached_method
@@ -1347,7 +1352,9 @@ class KnotInfoBase(Enum):
             return False
         if not knotinfo_bool(cosmetic_crossing):
             return True
-        raise AssertionError(f'{self} is a counterexample to the cosmetic crossing conjecture')
+        raise AssertionError(
+            f'{self} is a counterexample to the cosmetic crossing conjecture'
+        )
 
     @cached_method
     def homfly_polynomial(self, var1='v', var2='z', original=False):
@@ -1532,6 +1539,7 @@ class KnotInfoBase(Enum):
             return kauffman_polynomial
 
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+
         R = LaurentPolynomialRing(ZZ, (var1, var2))
         if not kauffman_polynomial and self.crossing_number() == 0:
             return R.one()
@@ -1541,7 +1549,14 @@ class KnotInfoBase(Enum):
         return R(eval_knotinfo(kauffman_polynomial, locals=lc))
 
     @cached_method
-    def jones_polynomial(self, variab=None, skein_normalization=False, puiseux=False, original=False, use_sqrt=False):
+    def jones_polynomial(
+        self,
+        variab=None,
+        skein_normalization=False,
+        puiseux=False,
+        original=False,
+        use_sqrt=False,
+    ):
         r"""
         Return the Jones polynomial according to the value of column
         ``jones_polynomial`` for this knot or link as an element of the symbolic
@@ -1695,7 +1710,10 @@ class KnotInfoBase(Enum):
         if skein_normalization:
             if not variab:
                 variab = 'A'
-            from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+            from sage.rings.polynomial.laurent_polynomial_ring import (
+                LaurentPolynomialRing,
+            )
+
             R = LaurentPolynomialRing(ZZ, variab)
         else:
             if not variab:
@@ -1704,10 +1722,14 @@ class KnotInfoBase(Enum):
                 else:
                     variab = 'x'
             if puiseux:
-                from sage.rings.puiseux_series_ring import PuiseuxSeriesRing  # since PuiseuxPolynomial is not available, so far
+                from sage.rings.puiseux_series_ring import (
+                    PuiseuxSeriesRing,
+                )  # since PuiseuxPolynomial is not available, so far
+
                 R = PuiseuxSeriesRing(ZZ, variab)
             else:
                 from sage.symbolic.ring import SR
+
                 R = SR
 
         if not jones_polynomial and self.crossing_number() == 0:
@@ -1723,9 +1745,10 @@ class KnotInfoBase(Enum):
             if self.is_knot():
                 lc = {'t': t}
             elif puiseux:
-                lc = {'x': t**(1/2)}
+                lc = {'x': t ** (1 / 2)}
             elif use_sqrt:
                 from sage.misc.functional import sqrt
+
                 lc = {'x': sqrt(t)}
             else:
                 lc = {'x': t}
@@ -1804,16 +1827,20 @@ class KnotInfoBase(Enum):
             return alexander_polynomial
 
         if laurent_poly:
-            from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+            from sage.rings.polynomial.laurent_polynomial_ring import (
+                LaurentPolynomialRing,
+            )
+
             R = LaurentPolynomialRing(ZZ, var)
         else:
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             R = PolynomialRing(ZZ, var)
 
         if not alexander_polynomial and self.crossing_number() == 0:
             return R.one()
 
-        t, = R.gens()
+        (t,) = R.gens()
         lc = {'t': t}
         ap = R(eval_knotinfo(alexander_polynomial, locals=lc))
         if not laurent_poly or ap.is_constant():
@@ -1879,18 +1906,28 @@ class KnotInfoBase(Enum):
             return conway_polynomial
 
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(ZZ, var)
 
         if not conway_polynomial and self.crossing_number() == 0:
             return R.one()
 
-        t, = R.gens()
+        (t,) = R.gens()
         lc = {'z': t}
         return R(eval_knotinfo(conway_polynomial, locals=lc))
 
     @cached_method
-    def khovanov_polynomial(self, var1='q', var2='t', torsion='T', ring=None, original=False,
-                            reduced=False, odd=False, base_ring=None):
+    def khovanov_polynomial(
+        self,
+        var1='q',
+        var2='t',
+        torsion='T',
+        ring=None,
+        original=False,
+        reduced=False,
+        odd=False,
+        base_ring=None,
+    ):
         r"""
         Return the Khovanov polynomial according to the value of columns
         ``khovanov_*`` for this knot or link as an instance of
@@ -2020,11 +2057,13 @@ class KnotInfoBase(Enum):
                 ring = ZZ
             else:
                 from sage.rings.rational_field import QQ
+
                 ring = QQ
 
         if base_ring:
             ring = base_ring
             from sage.misc.superseded import deprecation
+
             deprecation(40149, "base_ring is deprecated, use argument ring instead.")
 
         ch = ring.characteristic()
@@ -2034,36 +2073,53 @@ class KnotInfoBase(Enum):
             if ch == 0 and ring.is_field():
                 khovanov_polynomial = self[self.items.khovanov_polynomial]
             else:
-                raise NotImplementedError('Khovanov polynomial not available for multi-component links for this ring')
+                raise NotImplementedError(
+                    'Khovanov polynomial not available for multi-component links for this ring'
+                )
         else:
             if reduced:
                 if integral:
-                    khovanov_polynomial = self[self.items.khovanov_reduced_integral_polynomial]
+                    khovanov_polynomial = self[
+                        self.items.khovanov_reduced_integral_polynomial
+                    ]
                 elif ch == 0:
-                    khovanov_polynomial = self[self.items.khovanov_reduced_rational_polynomial]
+                    khovanov_polynomial = self[
+                        self.items.khovanov_reduced_rational_polynomial
+                    ]
                 elif ch == 2:
-                    khovanov_polynomial = self[self.items.khovanov_reduced_mod2_polynomial]
+                    khovanov_polynomial = self[
+                        self.items.khovanov_reduced_mod2_polynomial
+                    ]
                 else:
                     raise ValueError('characteristic %s of ring is not valid' % ch)
             elif odd:
                 if integral:
-                    khovanov_polynomial = self[self.items.khovanov_odd_integral_polynomial]
+                    khovanov_polynomial = self[
+                        self.items.khovanov_odd_integral_polynomial
+                    ]
                 elif ch == 0:
-                    khovanov_polynomial = self[self.items.khovanov_odd_rational_polynomial]
+                    khovanov_polynomial = self[
+                        self.items.khovanov_odd_rational_polynomial
+                    ]
                 elif ch == 2:
                     khovanov_polynomial = self[self.items.khovanov_odd_mod2_polynomial]
                 else:
                     raise ValueError('characteristic %s of ring is not valid' % ch)
             else:
                 if integral:
-                    khovanov_polynomial = self[self.items.khovanov_unreduced_integral_polynomial]
+                    khovanov_polynomial = self[
+                        self.items.khovanov_unreduced_integral_polynomial
+                    ]
                 else:
-                    raise NotImplementedError('unreduced Khovanov polynomial available only for integral homology')
+                    raise NotImplementedError(
+                        'unreduced Khovanov polynomial available only for integral homology'
+                    )
 
         if original:
             return khovanov_polynomial
 
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+
         if integral:
             var_names = [var1, var2, torsion]
         else:
@@ -2083,11 +2139,14 @@ class KnotInfoBase(Enum):
             raise NotImplementedError('Khovanov polynomial not available for this link')
 
         from sage.repl.preparse import implicit_mul
+
         # since implicit_mul does not know about the choice of variable names
         # we have to insert * between them separately
         for i in ['q', 't', 'T', ')']:
             for j in ['q', 't', 'T', '(']:
-                khovanov_polynomial = khovanov_polynomial.replace('%s%s' % (i, j), '%s*%s' % (i, j))
+                khovanov_polynomial = khovanov_polynomial.replace(
+                    '%s%s' % (i, j), '%s*%s' % (i, j)
+                )
         khovanov_polynomial = implicit_mul(khovanov_polynomial)
         gens = R.gens_dict()
         lc = {}
@@ -2218,10 +2277,13 @@ class KnotInfoBase(Enum):
             use_item = self.items.pd_notation
 
         if not isinstance(use_item, KnotInfoColumns):
-            raise TypeError('%s must be an instance of %s' % (use_item, KnotInfoColumns))
+            raise TypeError(
+                '%s must be an instance of %s' % (use_item, KnotInfoColumns)
+            )
 
         if snappy:
             from sage.interfaces.snappy import snappy
+
             Link = snappy.Link
         elif self.is_knot():
             from sage.knots.knot import Knot as Link
@@ -2239,6 +2301,7 @@ class KnotInfoBase(Enum):
         if self.is_knot() and not snappy:
             # Construction via Gauss and DT-Code only possible for knots
             from sage.knots.knot import Knots
+
             if use_item == self.items.dt_notation:
                 return Knots().from_dowker_code(self.dt_notation())
             if use_item == self.items.gauss_notation:
@@ -2328,6 +2391,7 @@ class KnotInfoBase(Enum):
             sage: KnotInfo.K12a_165.is_recoverable(unique=False)  # optional - database_knotinfo, long time
             True
         """
+
         def recover(sym_mut, braid):
             r"""
             Check if ``self`` can be recovered form its associated
@@ -2367,6 +2431,7 @@ class KnotInfoBase(Enum):
             return any(check_result(r) for r in res)
 
         from sage.misc.misc import some_tuples
+
         if SymmetryMutant.unknown.matches(self):
             sym_muts = [SymmetryMutant.unknown]
         else:
@@ -2394,6 +2459,7 @@ class KnotInfoBase(Enum):
         if verbose:
             print("Defining %s" % (name))
         from sage.repl.user_globals import set_global
+
         set_global(name, self)
 
     @cached_method
@@ -2426,9 +2492,16 @@ class KnotInfoBase(Enum):
             <KnotInfo.L4a1_1: 'L4a1{1}'>
         """
         if oriented:
-            S = KnotInfoSeries(self.crossing_number(), self.is_knot(), self.is_alternating(), self.name_unoriented())
+            S = KnotInfoSeries(
+                self.crossing_number(),
+                self.is_knot(),
+                self.is_alternating(),
+                self.name_unoriented(),
+            )
         else:
-            S = KnotInfoSeries(self.crossing_number(), self.is_knot(), self.is_alternating())
+            S = KnotInfoSeries(
+                self.crossing_number(), self.is_knot(), self.is_alternating()
+            )
         return S
 
     def diagram(self, single=False, new=0, autoraise=True):
@@ -2452,14 +2525,21 @@ class KnotInfoBase(Enum):
             True
         """
         import webbrowser
+
         if self.is_knot():
             filename = db.filename.knots
         else:
             filename = db.filename.links
 
         if single:
-            return webbrowser.open(filename.diagram_url(self[self.items.diagram], single=single), new=new, autoraise=autoraise)
-        return webbrowser.open(filename.diagram_url(self[self.items.name]), new=new, autoraise=autoraise)
+            return webbrowser.open(
+                filename.diagram_url(self[self.items.diagram], single=single),
+                new=new,
+                autoraise=autoraise,
+            )
+        return webbrowser.open(
+            filename.diagram_url(self[self.items.name]), new=new, autoraise=autoraise
+        )
 
     def knot_atlas_webpage(self, new=0, autoraise=True):
         r"""
@@ -2478,7 +2558,10 @@ class KnotInfoBase(Enum):
             True
         """
         import webbrowser
-        return webbrowser.open(self[self.items.knot_atlas_anon], new=new, autoraise=autoraise)
+
+        return webbrowser.open(
+            self[self.items.knot_atlas_anon], new=new, autoraise=autoraise
+        )
 
     def knotilus_webpage(self, new=0, autoraise=True):
         r"""
@@ -2497,7 +2580,10 @@ class KnotInfoBase(Enum):
             True
         """
         import webbrowser
-        return webbrowser.open(self[self.items.knotilus_page_anon], new=new, autoraise=autoraise)
+
+        return webbrowser.open(
+            self[self.items.knotilus_page_anon], new=new, autoraise=autoraise
+        )
 
 
 # --------------------------------------------------------------------------------------------
@@ -2640,7 +2726,9 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
                     res.append(K)
                 elif this_n_unori != curr_n_unori:
                     if curr_n_unori:
-                        res.append(KnotInfoSeries(cross_nr, is_knot, is_alt, curr_n_unori))
+                        res.append(
+                            KnotInfoSeries(cross_nr, is_knot, is_alt, curr_n_unori)
+                        )
                     curr_n_unori = this_n_unori
                 else:
                     continue
@@ -2689,7 +2777,9 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
         l = []
         cr = self._crossing_number
         if cr > 0:
-            LS = type(self)(cr - 1, self._is_knot, self._is_alternating, self._name_unoriented)
+            LS = type(self)(
+                cr - 1, self._is_knot, self._is_alternating, self._name_unoriented
+            )
             l = LS.lower_list(oriented=oriented, comp=comp, det=det, homfly=homfly)
         return l + self.list(oriented=oriented, comp=comp, det=det, homfly=homfly)
 
@@ -2723,12 +2813,15 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
             [<KnotInfo.K6_1: '6_1'>, <KnotInfo.K6_2: '6_2'>, <KnotInfo.K6_3: '6_3'>]
         """
         from sage.rings.integer import Integer
+
         if type(item) not in (int, Integer):
             raise ValueError('item must be an integer')
         l = self.list()
         max_item = len(l)
         if item < 0 or item > max_item:
-            raise ValueError('item must be nonnegative and smaller than %s' % (max_item))
+            raise ValueError(
+                'item must be nonnegative and smaller than %s' % (max_item)
+            )
 
         return l[item]
 
@@ -2766,6 +2859,7 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
             return self[item]
 
         from sage.rings.integer import Integer
+
         if type(item) not in (int, Integer):
             raise ValueError('item must be an integer')
         l = self.list()
@@ -2773,7 +2867,7 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
         if item < 1 or item > max_item:
             raise ValueError('item must be positive and smaller than %s' % (max_item))
 
-        return l[item-1]
+        return l[item - 1]
 
     def _name(self):
         r"""
@@ -2838,9 +2932,13 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
             True
         """
         from sage.misc.misc import some_tuples
+
         l = self.list(oriented=True)
         bound = len(l)
-        return all(L.is_recoverable(unique=unique) for L, in some_tuples(l, 1, bound, max_samples=max_samples))
+        return all(
+            L.is_recoverable(unique=unique)
+            for (L,) in some_tuples(l, 1, bound, max_samples=max_samples)
+        )
 
     def _test_recover(self, **options):
         r"""
@@ -2864,9 +2962,12 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
         tester = options['tester']
         max_samples = tester._max_samples
         from sage.features.libhomfly import Libhomfly
+
         if Libhomfly().is_present():
             if max_samples:
-                tester.assertTrue(self.is_recoverable(unique=False, max_samples=max_samples))
+                tester.assertTrue(
+                    self.is_recoverable(unique=False, max_samples=max_samples)
+                )
             else:
                 tester.assertTrue(self.is_recoverable(unique=False))
 
@@ -2891,6 +2992,7 @@ class KnotInfoSeries(UniqueRepresentation, SageObject):
         if verbose:
             print("Defining %s" % (name))
         from sage.repl.user_globals import set_global
+
         set_global(name, self)
 
 

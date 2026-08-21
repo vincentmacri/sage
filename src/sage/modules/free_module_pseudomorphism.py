@@ -125,6 +125,7 @@ class FreeModulePseudoMorphism(Morphism):
         sage: phi(v)
         (2*z + 1, 6*z^2 + 4*z + 5)
     """
+
     def __init__(self, parent, f, side):
         """
         Constructs a pseudomorphism of free modules.
@@ -213,10 +214,13 @@ class FreeModulePseudoMorphism(Morphism):
         if side != "left" and side != "right":
             raise ValueError("the side must be either 'left' or 'right'")
         matrix_space = parent.matrix_space()
-        if ((isinstance(f, FreeModulePseudoMorphism) and f.parent() is parent)
-         or (isinstance(f, FreeModuleMorphism)
-          and f.domain() is dom and f.codomain() is codom
-          and parent._morphism is None and parent._derivation is None)):
+        if (isinstance(f, FreeModulePseudoMorphism) and f.parent() is parent) or (
+            isinstance(f, FreeModuleMorphism)
+            and f.domain() is dom
+            and f.codomain() is codom
+            and parent._morphism is None
+            and parent._derivation is None
+        ):
             if f.side() == 'right':
                 self._matrix = f.matrix().transpose()
             else:
@@ -565,8 +569,11 @@ class FreeModulePseudoMorphism(Morphism):
                     Domain: Ambient free module of rank 2 over the integral domain Univariate Polynomial Ring in x over Integer Ring
                     Codomain: Ambient free module of rank 2 over the integral domain Univariate Polynomial Ring in x over Integer Ring
         """
-        if (isinstance(right, FreeModulePseudoMorphism)
-        and self._derivation is None and right._derivation is None):
+        if (
+            isinstance(right, FreeModulePseudoMorphism)
+            and self._derivation is None
+            and right._derivation is None
+        ):
             if self._morphism is None:
                 morphism = right._morphism
                 mat = right._matrix * self._matrix
@@ -646,6 +653,7 @@ class FreeModulePseudoMorphism(Morphism):
             :mod:`sage.modules.ore_module`
         """
         from sage.modules.ore_module import OreModule
+
         return OreModule(self._matrix, self.parent()._ore, names=names)
 
     def _test_nonzero_equal(self, tester):

@@ -160,14 +160,18 @@ class Polyhedron_base3(Polyhedron_base2):
             Number Field in a with defining polynomial x^2 - 2 with a = 1.41...
         """
         if not self.n_Vrepresentation() or not self.n_Hrepresentation():
-            slack_matrix = matrix(self.base_ring(), self.n_Vrepresentation(),
-                                  self.n_Hrepresentation(), 0)
+            slack_matrix = matrix(
+                self.base_ring(), self.n_Vrepresentation(), self.n_Hrepresentation(), 0
+            )
         else:
             Vrep_matrix = matrix(self.base_ring(), self.Vrepresentation())
             Hrep_matrix = matrix(self.base_ring(), self.Hrepresentation())
 
             # Getting homogeneous coordinates of the Vrepresentation.
-            hom_helper = matrix(self.base_ring(), [1 if v.is_vertex() else 0 for v in self.Vrepresentation()])
+            hom_helper = matrix(
+                self.base_ring(),
+                [1 if v.is_vertex() else 0 for v in self.Vrepresentation()],
+            )
             hom_Vrep = hom_helper.stack(Vrep_matrix.transpose())
 
             slack_matrix = (Hrep_matrix * hom_Vrep).transpose()
@@ -302,18 +306,20 @@ class Polyhedron_base3(Polyhedron_base2):
             incidence_matrix.set_immutable()
             return incidence_matrix
 
-        incidence_matrix = matrix(ZZ, self.n_Vrepresentation(),
-                                  self.n_Hrepresentation(), 0)
+        incidence_matrix = matrix(
+            ZZ, self.n_Vrepresentation(), self.n_Hrepresentation(), 0
+        )
 
-        Vvectors_vertices = tuple((v.vector(), v.index())
-                                  for v in self.Vrep_generator()
-                                  if v.is_vertex())
-        Vvectors_rays_lines = tuple((v.vector(), v.index())
-                                    for v in self.Vrep_generator()
-                                    if not v.is_vertex())
+        Vvectors_vertices = tuple(
+            (v.vector(), v.index()) for v in self.Vrep_generator() if v.is_vertex()
+        )
+        Vvectors_rays_lines = tuple(
+            (v.vector(), v.index()) for v in self.Vrep_generator() if not v.is_vertex()
+        )
 
         # Determine ``is_zero`` to save lots of time.
         if self.base_ring().is_exact():
+
             def is_zero(x):
                 return not x
         else:
@@ -324,13 +330,13 @@ class Polyhedron_base3(Polyhedron_base2):
             Hvec = H.A()
             Hindex = H.index()
             for Vvec, Vindex in Vvectors_vertices:
-                if is_zero(Hvec*Vvec + Hconst):
+                if is_zero(Hvec * Vvec + Hconst):
                     incidence_matrix[Vindex, Hindex] = 1
 
             # A ray or line is considered incident with a hyperplane,
             # if it is orthogonal to the normal vector of the hyperplane.
             for Vvec, Vindex in Vvectors_rays_lines:
-                if is_zero(Hvec*Vvec):
+                if is_zero(Hvec * Vvec):
                     incidence_matrix[Vindex, Hindex] = 1
 
         incidence_matrix.set_immutable()
@@ -354,7 +360,10 @@ class Polyhedron_base3(Polyhedron_base2):
             sage: Polyhedron(rays=[[0,1], [1,0]]).combinatorial_polyhedron()
             A 2-dimensional combinatorial polyhedron with 2 facets
         """
-        from sage.geometry.polyhedron.combinatorial_polyhedron.base import CombinatorialPolyhedron
+        from sage.geometry.polyhedron.combinatorial_polyhedron.base import (
+            CombinatorialPolyhedron,
+        )
+
         return CombinatorialPolyhedron(self)
 
     def _test_combinatorial_polyhedron(self, tester=None, **options):
@@ -369,8 +378,9 @@ class Polyhedron_base3(Polyhedron_base2):
 
         tester = self._tester(tester=tester, **options)
         tester.info("\n  Running the test suite of self.combinatorial_polyhedron()")
-        TestSuite(self.combinatorial_polyhedron()).run(verbose=tester._verbose,
-                                                       prefix=tester._prefix+"  ")
+        TestSuite(self.combinatorial_polyhedron()).run(
+            verbose=tester._verbose, prefix=tester._prefix + "  "
+        )
         tester.info(tester._prefix + " ", newline=False)
 
     def face_generator(self, face_dimension=None, algorithm=None):
@@ -606,7 +616,10 @@ class Polyhedron_base3(Polyhedron_base2):
         elif algorithm is not None:
             raise ValueError("algorithm must be 'primal', 'dual' or None")
 
-        from sage.geometry.polyhedron.combinatorial_polyhedron.face_iterator import FaceIterator_geom
+        from sage.geometry.polyhedron.combinatorial_polyhedron.face_iterator import (
+            FaceIterator_geom,
+        )
+
         return FaceIterator_geom(self, output_dimension=face_dimension, dual=dual)
 
     def faces(self, face_dimension):
@@ -756,7 +769,7 @@ class Polyhedron_base3(Polyhedron_base2):
         """
         if self.dimension() == 0:
             return ()
-        return self.faces(self.dimension()-1)
+        return self.faces(self.dimension() - 1)
 
     @cached_method(do_pickle=True, key=lambda self, x, y, z: None)
     def f_vector(self, num_threads=None, parallelization_depth=None, algorithm=None):
@@ -833,7 +846,9 @@ class Polyhedron_base3(Polyhedron_base2):
             sage: Q.f_vector.is_in_cache()
             True
         """
-        return self.combinatorial_polyhedron().f_vector(num_threads, parallelization_depth, algorithm=algorithm)
+        return self.combinatorial_polyhedron().f_vector(
+            num_threads, parallelization_depth, algorithm=algorithm
+        )
 
     def bounded_edges(self):
         """
@@ -853,7 +868,7 @@ class Polyhedron_base3(Polyhedron_base2):
         for i in range(len(obj)):
             if not obj[i].is_vertex():
                 continue
-            for j in range(i+1, len(obj)):
+            for j in range(i + 1, len(obj)):
                 if not obj[j].is_vertex():
                     continue
                 if self.vertex_adjacency_matrix()[i, j] == 0:
@@ -994,7 +1009,9 @@ class Polyhedron_base3(Polyhedron_base2):
                 sage: P.adjacency_matrix().is_immutable()
                 True
         """
-        return self.combinatorial_polyhedron().vertex_adjacency_matrix(algorithm=algorithm)
+        return self.combinatorial_polyhedron().vertex_adjacency_matrix(
+            algorithm=algorithm
+        )
 
     adjacency_matrix = vertex_adjacency_matrix
 
@@ -1053,7 +1070,9 @@ class Polyhedron_base3(Polyhedron_base2):
             [1 0 1]
             [1 1 0]
         """
-        return self.combinatorial_polyhedron().facet_adjacency_matrix(algorithm=algorithm)
+        return self.combinatorial_polyhedron().facet_adjacency_matrix(
+            algorithm=algorithm
+        )
 
     def a_maximal_chain(self):
         r"""
@@ -1089,16 +1108,18 @@ class Polyhedron_base3(Polyhedron_base2):
         comb_chain = self.combinatorial_polyhedron().a_maximal_chain()
 
         from sage.geometry.polyhedron.face import combinatorial_face_to_polyhedral_face
+
         empty_face = self.faces(-1)[0]
         universe = self.faces(self.dim())[0]
 
         if self.dim() == -1:
             return [empty_face]
 
-        return [empty_face] + \
-               [combinatorial_face_to_polyhedral_face(self, face)
-                for face in comb_chain] + \
-               [universe]
+        return (
+            [empty_face]
+            + [combinatorial_face_to_polyhedral_face(self, face) for face in comb_chain]
+            + [universe]
+        )
 
     def is_simplex(self) -> bool:
         r"""
@@ -1116,7 +1137,7 @@ class Polyhedron_base3(Polyhedron_base2):
             sage: polytopes.hypercube(3).is_simplex()
             False
         """
-        return self.is_compact() and (self.dim()+1 == self.n_vertices())
+        return self.is_compact() and (self.dim() + 1 == self.n_vertices())
 
     def simplicity(self):
         r"""
@@ -1635,7 +1656,7 @@ class Polyhedron_base3(Polyhedron_base2):
         from sage.geometry.polyhedron.representation import Vrepresentation
         from sage.geometry.polyhedron.face import PolyhedronFace
 
-        new_indices = [0]*len(Vrepresentatives)
+        new_indices = [0] * len(Vrepresentatives)
         for i, v in enumerate(Vrepresentatives):
             if isinstance(v, PolyhedronFace) and v.dim() == 0:
                 if v.polyhedron() is not self:
@@ -1792,7 +1813,9 @@ class Polyhedron_base3(Polyhedron_base2):
 
     greatest_common_subface_of_Hrep = meet_of_Hrep
 
-    def _test_combinatorial_face_as_combinatorial_polyhedron(self, tester=None, **options):
+    def _test_combinatorial_face_as_combinatorial_polyhedron(
+        self, tester=None, **options
+    ):
         """
         Run tests on obtaining the combinatorial face as combinatorial polyhedron.
 
@@ -1836,9 +1859,18 @@ class Polyhedron_base3(Polyhedron_base2):
             D2._test_bitsets(tester, **options)
             try:
                 import sage.graphs.graph
+
                 assert sage.graphs.graph  # to muffle pyflakes
             except ImportError:
                 pass
             else:
-                tester.assertTrue(P.combinatorial_polyhedron().vertex_facet_graph().is_isomorphic(D1.vertex_facet_graph()))
-                tester.assertTrue(P.combinatorial_polyhedron().vertex_facet_graph().is_isomorphic(D2.vertex_facet_graph()))
+                tester.assertTrue(
+                    P.combinatorial_polyhedron()
+                    .vertex_facet_graph()
+                    .is_isomorphic(D1.vertex_facet_graph())
+                )
+                tester.assertTrue(
+                    P.combinatorial_polyhedron()
+                    .vertex_facet_graph()
+                    .is_isomorphic(D2.vertex_facet_graph())
+                )

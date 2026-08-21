@@ -77,24 +77,24 @@ Letters::
 
 # Operators:
 
-unicode_otimes = '\u2297'          # '⊗'
+unicode_otimes = '\u2297'  # '⊗'
 
-unicode_bigotimes = '\u2A02'       # '⨂'
+unicode_bigotimes = '\u2a02'  # '⨂'
 
-unicode_wedge = '\u2227'           # '∧'
+unicode_wedge = '\u2227'  # '∧'
 
-unicode_bigwedge = '\u22C0'        # '⋀'
+unicode_bigwedge = '\u22c0'  # '⋀'
 
-unicode_partial = '\u2202'         # '∂'
+unicode_partial = '\u2202'  # '∂'
 
 # Arrows:
 
-unicode_to = '\u2192'              # '→'
+unicode_to = '\u2192'  # '→'
 
-unicode_mapsto = '\u21A6'          # '↦'
+unicode_mapsto = '\u21a6'  # '↦'
 
 # Letters:
 
-unicode_mathbbR = '\u211D'         # 'ℝ'
+unicode_mathbbR = '\u211d'  # 'ℝ'
 
-unicode_mathbbC = '\u2102'         # 'ℂ'
+unicode_mathbbC = '\u2102'  # 'ℂ'

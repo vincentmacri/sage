@@ -25,7 +25,12 @@ from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.structure.list_clone import ClonableIntArray
 from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet_forest
 
-from sage.combinat.enumeration_mod_permgroup import is_canonical, orbit, canonical_children, canonical_representative_of_orbit_of
+from sage.combinat.enumeration_mod_permgroup import (
+    is_canonical,
+    orbit,
+    canonical_children,
+    canonical_representative_of_orbit_of,
+)
 
 from sage.combinat.integer_vector import IntegerVectors
 
@@ -244,6 +249,7 @@ class IntegerVectorsModPermutationGroup(UniqueRepresentation):
         1287
         2002
     """
+
     @staticmethod
     def __classcall__(cls, G, sum=None, max_part=None, sgs=None):
         r"""
@@ -265,17 +271,21 @@ class IntegerVectorsModPermutationGroup(UniqueRepresentation):
                 return IntegerVectorsModPermutationGroup_All(G, sgs=sgs)
             # Empty domain, singleton set.
             return IntegerVectorsModPermutationGroup_with_constraints(
-                G, 0, max_part=-1, sgs=sgs)
+                G, 0, max_part=-1, sgs=sgs
+            )
         # Some constraints, either sum or max_part or both.
         if sum is not None:
             assert sum == NN(sum)
         if max_part is not None:
             assert max_part == NN(max_part)
         return IntegerVectorsModPermutationGroup_with_constraints(
-            G, sum, max_part, sgs=sgs)
+            G, sum, max_part, sgs=sgs
+        )
 
 
-class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnumeratedSet_forest):
+class IntegerVectorsModPermutationGroup_All(
+    UniqueRepresentation, RecursivelyEnumeratedSet_forest
+):
     r"""
     A class for integer vectors enumerated up to the action of a
     permutation group.
@@ -324,7 +334,9 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             Category of infinite enumerated quotients of sets
             sage: TestSuite(I).run()
         """
-        RecursivelyEnumeratedSet_forest.__init__(self, algorithm='breadth', category=InfiniteEnumeratedSets().Quotients())
+        RecursivelyEnumeratedSet_forest.__init__(
+            self, algorithm='breadth', category=InfiniteEnumeratedSets().Quotients()
+        )
         self._permgroup = G
         self.n = G.degree()
 
@@ -341,7 +353,10 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             sage: IntegerVectorsModPermutationGroup(PermutationGroup([[(1,2,3)]]))
             Integer vectors of length 3 enumerated up to the action of Permutation Group with generators [(1,2,3)]
         """
-        return "Integer vectors of length %s enumerated up to the action of %r" % (self.n, self._permgroup)
+        return "Integer vectors of length %s enumerated up to the action of %r" % (
+            self.n,
+            self._permgroup,
+        )
 
     def ambient(self):
         r"""
@@ -410,7 +425,9 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
         # based on ClonableIntArray, remove the conversion intarray
         assert len(elt) == self.n, "%s is a quotient set of %s" % (self, self.ambient())
         intarray = self.element_class(self, elt, check=False)
-        return self.element_class(self, canonical_representative_of_orbit_of(self._sgs, intarray), check=False)
+        return self.element_class(
+            self, canonical_representative_of_orbit_of(self._sgs, intarray), check=False
+        )
 
     def roots(self):
         r"""
@@ -424,7 +441,16 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             sage: I.roots()
             [[0, 0, 0, 0]]
         """
-        return [self.element_class(self, self.n*[0,], check=False)]
+        return [
+            self.element_class(
+                self,
+                self.n
+                * [
+                    0,
+                ],
+                check=False,
+            )
+        ]
 
     def children(self, x):
         r"""
@@ -476,10 +502,12 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             False
         """
         if check:
-            assert isinstance(v, (ClonableIntArray, list)), '%s should be a list or an integer vector' % v
-            assert (self.n == len(v)), '%s should be of length %s' % (v, self.n)
+            assert isinstance(v, (ClonableIntArray, list)), (
+                '%s should be a list or an integer vector' % v
+            )
+            assert self.n == len(v), '%s should be of length %s' % (v, self.n)
             for p in v:
-                assert (p == NN(p)), 'Elements of %s should be integers' % v
+                assert p == NN(p), 'Elements of %s should be integers' % v
         return is_canonical(self._sgs, self.element_class(self, list(v), check=False))
 
     def __contains__(self, v):
@@ -499,7 +527,9 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             False
         """
         try:
-            return self.is_canonical(self.element_class(self, list(v), check=False), check=False)
+            return self.is_canonical(
+                self.element_class(self, list(v), check=False), check=False
+            )
         except Exception:
             return False
 
@@ -543,7 +573,9 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             sage: I.orbit([1,1,1,1])
             {[1, 1, 1, 1]}
         """
-        assert isinstance(v, (list, ClonableIntArray)), '%s should be a Python list or an element of %s' % (v, self)
+        assert isinstance(v, (list, ClonableIntArray)), (
+            '%s should be a Python list or an element of %s' % (v, self)
+        )
         try:
             if v.parent() is self:
                 return orbit(self._sgs, v)
@@ -564,7 +596,9 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             the action of Permutation Group with generators
             [(1,2,3,4)]
         """
-        return IntegerVectorsModPermutationGroup_with_constraints(self.permutation_group(), sum, max_part)
+        return IntegerVectorsModPermutationGroup_with_constraints(
+            self.permutation_group(), sum, max_part
+        )
 
     class Element(ClonableIntArray):
         r"""
@@ -605,7 +639,9 @@ class IntegerVectorsModPermutationGroup_All(UniqueRepresentation, RecursivelyEnu
             assert self.parent().is_canonical(self)
 
 
-class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, RecursivelyEnumeratedSet_forest):
+class IntegerVectorsModPermutationGroup_with_constraints(
+    UniqueRepresentation, RecursivelyEnumeratedSet_forest
+):
     r"""
     This class models finite enumerated sets of integer vectors with
     constraint enumerated up to the action of a permutation group.
@@ -650,7 +686,11 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
 
             sage: I = IntegerVectorsModPermutationGroup(PermutationGroup([[(1,2,3,4)]]), 6, max_part=4)
         """
-        RecursivelyEnumeratedSet_forest.__init__(self, algorithm='breadth', category=(FiniteEnumeratedSets(), FiniteEnumeratedSets().Quotients()))
+        RecursivelyEnumeratedSet_forest.__init__(
+            self,
+            algorithm='breadth',
+            category=(FiniteEnumeratedSets(), FiniteEnumeratedSets().Quotients()),
+        )
         self._permgroup = G
         self.n = G.degree()
         self._sum = d
@@ -680,19 +720,24 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
         """
         if self._sum is not None:
             if self._max_part >= 0:
-                return ("Vectors of length %s and of sum %s"
-                        " whose entries are in {0, ..., %s}"
-                        " enumerated up to the action of %s"
-                        % (self.n, self._sum, self._max_part,
-                           self.permutation_group()))
-            return ("Integer vectors of length %s"
-                    " and of sum %s"
+                return (
+                    "Vectors of length %s and of sum %s"
+                    " whose entries are in {0, ..., %s}"
                     " enumerated up to the action of %s"
-                    % (self.n, self._sum, self.permutation_group()))
-        return ("Integer vectors of length %s"
-                " whose entries are in {0, ..., %s}"
+                    % (self.n, self._sum, self._max_part, self.permutation_group())
+                )
+            return (
+                "Integer vectors of length %s"
+                " and of sum %s"
                 " enumerated up to the action of %s"
-                % (self.n, self._max_part, self.permutation_group()))
+                % (self.n, self._sum, self.permutation_group())
+            )
+        return (
+            "Integer vectors of length %s"
+            " whose entries are in {0, ..., %s}"
+            " enumerated up to the action of %s"
+            % (self.n, self._max_part, self.permutation_group())
+        )
 
     def roots(self):
         r"""
@@ -709,7 +754,16 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
             sage: I.roots()
             [[0, 0, 0, 0]]
         """
-        return [self.element_class(self, self.n*[0,], check=False)]
+        return [
+            self.element_class(
+                self,
+                self.n
+                * [
+                    0,
+                ],
+                check=False,
+            )
+        ]
 
     def children(self, x):
         r"""
@@ -839,11 +893,13 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
         if self._max_part < 0:
             return self.elements_of_depth_iterator(self._sum)
         SF = RecursivelyEnumeratedSet_forest(
-            (self([0]*(self.n), check=False),),
-            lambda x: [self(y, check=False)
-                       for y in canonical_children(
-                               self._sgs, x, self._max_part)],
-            algorithm='breadth')
+            (self([0] * (self.n), check=False),),
+            lambda x: [
+                self(y, check=False)
+                for y in canonical_children(self._sgs, x, self._max_part)
+            ],
+            algorithm='breadth',
+        )
         if self._sum is None:
             return iter(SF)
         return SF.elements_of_depth_iterator(self._sum)
@@ -936,11 +992,11 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
             4263421511271
         """
         G = self._permgroup
-        k = G.degree()          # Vector length
-        d = self._sum           # Required sum
-        m = self._max_part      # Max of one entry, -1 for no limit
+        k = G.degree()  # Vector length
+        d = self._sum  # Required sum
+        m = self._max_part  # Max of one entry, -1 for no limit
         if m == -1:
-            m = d               # Any entry cannot exceed total
+            m = d  # Any entry cannot exceed total
 
         # Some easy special cases.
         if k == 0:
@@ -972,15 +1028,14 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
 
         if d is None:
             # Case 1.  Without a fixed sum, the sum can be up to k*m.
-            result = sum(coeff * (m+1)**len(cycle_type)
-                         for cycle_type, coeff in Z)
+            result = sum(coeff * (m + 1) ** len(cycle_type) for cycle_type, coeff in Z)
             # Computed as Rational, but should have an integer value
             # by now.
             return Integer(result)
 
         # Case 2.  Fixed sum d.  Work with power series with enough
         # precision that x^d is valid.
-        R = PowerSeriesRing(QQ, 'x', default_prec=d+1)
+        R = PowerSeriesRing(QQ, 'x', default_prec=d + 1)
         x = R.gen()
 
         # The figure-counting series, for max_part==m, is (1-t**(m+1))
@@ -988,9 +1043,13 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
         # we substitute x**cycle_length for t.
         #
         funcount = sum(
-            coeff * prod((1 - x**((m+1)*cycle_len)) / (1 - x**cycle_len)
-                         for cycle_len in cycle_type)
-            for cycle_type, coeff in Z)
+            coeff
+            * prod(
+                (1 - x ** ((m + 1) * cycle_len)) / (1 - x**cycle_len)
+                for cycle_len in cycle_type
+            )
+            for cycle_type, coeff in Z
+        )
 
         # Extract the d'th degree coefficient.  Computed as Rational,
         # but should have an integer value by now.
@@ -1019,10 +1078,12 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
             True
         """
         if check:
-            assert isinstance(v, (ClonableIntArray, list)), '%s should be a list or an integer vector' % v
-            assert (self.n == len(v)), '%s should be of length %s' % (v, self.n)
+            assert isinstance(v, (ClonableIntArray, list)), (
+                '%s should be a list or an integer vector' % v
+            )
+            assert self.n == len(v), '%s should be of length %s' % (v, self.n)
             for p in v:
-                assert (p == NN(p)), 'Elements of %s should be integers' % v
+                assert p == NN(p), 'Elements of %s should be integers' % v
         return is_canonical(self._sgs, self.element_class(self, list(v), check=False))
 
     def ambient(self):
@@ -1104,11 +1165,19 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
         # based on ClonableIntArray, remove the conversion intarray
         assert len(elt) == self.n, "%s is a quotient set of %s" % (self, self.ambient())
         if self._sum is not None:
-            assert sum(elt) == self._sum, "%s is a quotient set of %s" % (self, self.ambient())
+            assert sum(elt) == self._sum, "%s is a quotient set of %s" % (
+                self,
+                self.ambient(),
+            )
         if self._max_part >= 0:
-            assert max(elt) <= self._max_part, "%s is a quotient set of %s" % (self, self.ambient())
+            assert max(elt) <= self._max_part, "%s is a quotient set of %s" % (
+                self,
+                self.ambient(),
+            )
         intarray = self.element_class(self, elt, check=False)
-        return self.element_class(self, canonical_representative_of_orbit_of(self._sgs, intarray), check=False)
+        return self.element_class(
+            self, canonical_representative_of_orbit_of(self._sgs, intarray), check=False
+        )
 
     def _an_element_(self):
         r"""
@@ -1146,12 +1215,13 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
             EmptySetError
         """
         if self._max_part < 0:
-            return self([self._sum]+(self.n-1)*[0], check=False)
+            return self([self._sum] + (self.n - 1) * [0], check=False)
         try:
             v = iter(self)
             return next(v)
         except StopIteration:
             from sage.categories.sets_cat import EmptySetError
+
             raise EmptySetError
 
     def orbit(self, v):
@@ -1175,7 +1245,9 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
             sage: sorted(I.orbit([3,0,0,1]))
             [[0, 0, 1, 3], [0, 1, 3, 0], [1, 3, 0, 0], [3, 0, 0, 1]]
         """
-        assert isinstance(v, (list, ClonableIntArray)), '%s should be a Python list or an element of %s' % (v, self)
+        assert isinstance(v, (list, ClonableIntArray)), (
+            '%s should be a Python list or an element of %s' % (v, self)
+        )
         try:
             if v.parent() is self:
                 return orbit(self._sgs, v)
@@ -1218,7 +1290,13 @@ class IntegerVectorsModPermutationGroup_with_constraints(UniqueRepresentation, R
                 AssertionError
             """
             if self.parent()._sum is not None:
-                assert sum(self) == self.parent()._sum, '%s should be an integer vector of sum %s' % (self, self.parent()._sum)
+                assert sum(self) == self.parent()._sum, (
+                    '%s should be an integer vector of sum %s'
+                    % (self, self.parent()._sum)
+                )
             if self.parent()._max_part >= 0:
-                assert max(self) <= self.parent()._max_part, 'Entries of %s must be inferior to %s' % (self, self.parent()._max_part)
+                assert max(self) <= self.parent()._max_part, (
+                    'Entries of %s must be inferior to %s'
+                    % (self, self.parent()._max_part)
+                )
             assert self.parent().is_canonical(self)

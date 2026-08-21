@@ -87,13 +87,15 @@ def tdesign_params(t, v, k, L):
     x = binomial(v, t)
     y = binomial(k, t)
     b = divmod(L * x, y)[0]
-    x = binomial(v-1, t-1)
-    y = binomial(k-1, t-1)
-    r = integer_floor(L * x/y)
+    x = binomial(v - 1, t - 1)
+    y = binomial(k - 1, t - 1)
+    r = integer_floor(L * x / y)
     return (t, v, b, r, k, L)
 
 
-def are_hyperplanes_in_projective_geometry_parameters(v, k, lmbda, return_parameters=False):
+def are_hyperplanes_in_projective_geometry_parameters(
+    v, k, lmbda, return_parameters=False
+):
     r"""
     Return ``True`` if the parameters ``(v,k,lmbda)`` are the one of hyperplanes in
     a (finite Desarguesian) projective space.
@@ -153,24 +155,30 @@ def are_hyperplanes_in_projective_geometry_parameters(v, k, lmbda, return_parame
     q1 = Integer(v - k)
     q2 = Integer(k - lmbda)
 
-    if (lmbda <= 0 or q1 < 4 or q2 < 2 or
-        not q1.is_prime_power() or
-        not q2.is_prime_power()):
-        return (False,(None,None)) if return_parameters else False
+    if (
+        lmbda <= 0
+        or q1 < 4
+        or q2 < 2
+        or not q1.is_prime_power()
+        or not q2.is_prime_power()
+    ):
+        return (False, (None, None)) if return_parameters else False
 
-    p1,e1 = q1.factor()[0]
-    p2,e2 = q2.factor()[0]
+    p1, e1 = q1.factor()[0]
+    p2, e2 = q2.factor()[0]
 
-    k = gcd(e1,e2)
-    d = e1//k
+    k = gcd(e1, e2)
+    d = e1 // k
     q = p1**k
-    if e2//k != d-1 or lmbda != (q**(d-1)-1)//(q-1):
-        return (False,(None,None)) if return_parameters else False
+    if e2 // k != d - 1 or lmbda != (q ** (d - 1) - 1) // (q - 1):
+        return (False, (None, None)) if return_parameters else False
 
-    return (True, (q,d)) if return_parameters else True
+    return (True, (q, d)) if return_parameters else True
 
 
-def ProjectiveGeometryDesign(n, d, F, algorithm=None, point_coordinates=True, check=True):
+def ProjectiveGeometryDesign(
+    n, d, F, algorithm=None, point_coordinates=True, check=True
+):
     r"""
     Return a projective geometry design.
 
@@ -258,26 +266,36 @@ def ProjectiveGeometryDesign(n, d, F, algorithm=None, point_coordinates=True, ch
         q = F.cardinality()
     else:
         from sage.rings.finite_rings.finite_field_constructor import GF
+
         F = GF(q)
 
     if algorithm is None:
         from sage.matrix.echelon_matrix import reduced_echelon_matrix_iterator
 
-        points = {p:i for i,p in enumerate(reduced_echelon_matrix_iterator(F,1,n+1,copy=True,set_immutable=True))}
+        points = {
+            p: i
+            for i, p in enumerate(
+                reduced_echelon_matrix_iterator(
+                    F, 1, n + 1, copy=True, set_immutable=True
+                )
+            )
+        }
         blocks = []
-        for m1 in reduced_echelon_matrix_iterator(F,d+1,n+1,copy=False):
+        for m1 in reduced_echelon_matrix_iterator(F, d + 1, n + 1, copy=False):
             b = []
-            for m2 in reduced_echelon_matrix_iterator(F,1,d+1,copy=False):
-                m = m2*m1
+            for m2 in reduced_echelon_matrix_iterator(F, 1, d + 1, copy=False):
+                m = m2 * m1
                 m.echelonize()
                 m.set_immutable()
                 b.append(points[m])
             blocks.append(b)
-        B = BlockDesign(len(points), blocks, name='ProjectiveGeometryDesign', check=check)
+        B = BlockDesign(
+            len(points), blocks, name='ProjectiveGeometryDesign', check=check
+        )
         if point_coordinates:
-            B.relabel({i:p[0] for p,i in points.items()})
+            B.relabel({i: p[0] for p, i in points.items()})
 
-    elif algorithm == "gap":   # Requires GAP's Design
+    elif algorithm == "gap":  # Requires GAP's Design
         libgap.load_package("design")
         D = libgap.PGPointFlatBlockDesign(n, F.order(), d)
         v = D['v'].sage()
@@ -289,12 +307,18 @@ def ProjectiveGeometryDesign(n, d, F, algorithm=None, point_coordinates=True, ch
 
     if check:
         from sage.combinat.q_analogues import q_binomial
+
         q = F.cardinality()
-        if not B.is_t_design(t=2, v=q_binomial(n+1,1,q),
-                                  k=q_binomial(d+1,1,q),
-                                  l=q_binomial(n-1, d-1, q)):
-            raise RuntimeError("error in ProjectiveGeometryDesign "
-                    "construction. Please e-mail sage-devel@googlegroups.com")
+        if not B.is_t_design(
+            t=2,
+            v=q_binomial(n + 1, 1, q),
+            k=q_binomial(d + 1, 1, q),
+            l=q_binomial(n - 1, d - 1, q),
+        ):
+            raise RuntimeError(
+                "error in ProjectiveGeometryDesign "
+                "construction. Please e-mail sage-devel@googlegroups.com"
+            )
     return B
 
 
@@ -348,7 +372,7 @@ def DesarguesianProjectivePlaneDesign(n, point_coordinates=True, check=True):
     # we relabel the points with the integers from 0 to n^2 + n as follows:
     # - the affine plane is the set of points [x:y:1] (i.e. the third coordinate
     #   is nonzero) and gets relabeled from 0 to n^2-1
-    affine_plane = lambda x,y: relabel[x] + n * relabel[y]
+    affine_plane = lambda x, y: relabel[x] + n * relabel[y]
 
     # - the affine line is the set of points [x:1:0] (i.e. the third coordinate is
     #   zero but not the second one) and gets relabeled from n^2 to n^2 + n - 1
@@ -363,35 +387,36 @@ def DesarguesianProjectivePlaneDesign(n, point_coordinates=True, check=True):
     for s in Kiter:
         for a in Kiter:
             # points in the affine plane
-            blcks.append([affine_plane(s*y+a, y) for y in Kiter])
+            blcks.append([affine_plane(s * y + a, y) for y in Kiter])
             # point at infinity
             blcks[-1].append(line_infinity(s))
 
     # the n horizontals of the form "y = az"
     for a in Kiter:
         # points in the affine plane
-        blcks.append([affine_plane(x,a) for x in Kiter])
+        blcks.append([affine_plane(x, a) for x in Kiter])
         # point at infinity
         blcks[-1].append(point_infinity)
 
     # the line at infinity "z = 0"
-    blcks.append(range(n2,n2+n+1))
+    blcks.append(range(n2, n2 + n + 1))
     if check:
         from .designs_pyx import is_projective_plane
+
         if not is_projective_plane(blcks):
-            raise RuntimeError('There is a problem in the function DesarguesianProjectivePlane')
+            raise RuntimeError(
+                'There is a problem in the function DesarguesianProjectivePlane'
+            )
     from .bibd import BalancedIncompleteBlockDesign
-    B = BalancedIncompleteBlockDesign(n2+n+1, blcks, check=check)
+
+    B = BalancedIncompleteBlockDesign(n2 + n + 1, blcks, check=check)
 
     if point_coordinates:
         zero = K.zero()
         one = K.one()
-        d = {affine_plane(x,y): (x,y,one)
-             for x in Kiter
-             for y in Kiter}
-        d.update({line_infinity(x): (x,one,zero)
-                  for x in Kiter})
-        d[n2+n] = (one,zero,zero)
+        d = {affine_plane(x, y): (x, y, one) for x in Kiter for y in Kiter}
+        d.update({line_infinity(x): (x, one, zero) for x in Kiter})
+        d[n2 + n] = (one, zero, zero)
         B.relabel(d)
 
     return B
@@ -427,19 +452,20 @@ def q3_minus_one_matrix(K):
 
     if q.is_prime():
         from sage.rings.finite_rings.conway_polynomials import conway_polynomial
+
         try:
-            a,b,c,_ = conway_polynomial(q, 3)
+            a, b, c, _ = conway_polynomial(q, 3)
         except RuntimeError:  # the polynomial is not in the database
             pass
         else:
-            return M([0,0,-a,1,0,-b,0,1,-c])
+            return M([0, 0, -a, 1, 0, -b, 0, 1, -c])
 
     m = M()
-    m[1,0] = m[2,1] = K.one()
+    m[1, 0] = m[2, 1] = K.one()
     while True:
-        m[0,2] = K._random_nonzero_element()
-        m[1,2] = K.random_element()
-        m[2,2] = K.random_element()
+        m[0, 2] = K._random_nonzero_element()
+        m[1, 2] = K.random_element()
+        m[2, 2] = K.random_element()
         if m.multiplicative_order() == q**3 - 1:
             return m
 
@@ -477,14 +503,14 @@ def normalize_hughes_plane_point(p, q):
         sage: normalize_hughes_plane_point((2*x, one, zero), 9)
         (2*x, 1, 0)
     """
-    for i in [2,1,0]:
+    for i in [2, 1, 0]:
         if p[i].is_one():
             return tuple(p)
         if not p[i].is_zero():
             k = ~p[i]
             if k.is_square():
-                return (p[0] * k,p[1] * k,p[2] * k)
-            return ((p[0] * k)**q,(p[1]*k)**q,(p[2]*k)**q)
+                return (p[0] * k, p[1] * k, p[2] * k)
+            return ((p[0] * k) ** q, (p[1] * k) ** q, (p[2] * k) ** q)
 
 
 def HughesPlane(q2, check=True):
@@ -602,10 +628,12 @@ def HughesPlane(q2, check=True):
     V = VectorSpace(K, 3)
     zero = K.zero()
     one = K.one()
-    points = [(x, y, one) for x in m for y in m] + \
-             [(x, one, zero) for x in m] + \
-             [(one, zero, zero)]
-    relabel = {tuple(p):i for i,p in enumerate(points)}
+    points = (
+        [(x, y, one) for x in m for y in m]
+        + [(x, one, zero) for x in m]
+        + [(one, zero, zero)]
+    )
+    relabel = {tuple(p): i for i, p in enumerate(points)}
     blcks = []
     for a in m:
         if a not in F or a == 1:
@@ -614,17 +642,18 @@ def HughesPlane(q2, check=True):
             l = []
             l.append(V((-a, one, zero)))
             for x in m:
-                y = - aa * (x+one)
+                y = -aa * (x + one)
                 if not y.is_square():
-                    y *= aa**(q-1)
+                    y *= aa ** (q - 1)
                 l.append(V((x, y, one)))
             # compute the orbit of L(a)
-            blcks.append([relabel[normalize_hughes_plane_point(p,q)] for p in l])
+            blcks.append([relabel[normalize_hughes_plane_point(p, q)] for p in l])
             for i in range(q2 + q):
-                l = [A*j for j in l]
-                blcks.append([relabel[normalize_hughes_plane_point(p,q)] for p in l])
+                l = [A * j for j in l]
+                blcks.append([relabel[normalize_hughes_plane_point(p, q)] for p in l])
     from .bibd import BalancedIncompleteBlockDesign
-    return BalancedIncompleteBlockDesign(q2**2+q2+1, blcks, check=check)
+
+    return BalancedIncompleteBlockDesign(q2**2 + q2 + 1, blcks, check=check)
 
 
 def projective_plane_to_OA(pplane, pt=None, check=True):
@@ -671,23 +700,25 @@ def projective_plane_to_OA(pplane, pt=None, check=True):
         sage: _ = projective_plane_to_OA(pp, pt=7)
     """
     from .bibd import _relabel_bibd
+
     pplane = pplane.blocks()
     n = len(pplane[0]) - 1
 
     if pt is None:
-        pt = n**2+n
+        pt = n**2 + n
 
-    assert len(pplane) == n**2+n+1, "pplane is not a projective plane"
-    assert all(len(B) == n+1 for B in pplane), "pplane is not a projective plane"
+    assert len(pplane) == n**2 + n + 1, "pplane is not a projective plane"
+    assert all(len(B) == n + 1 for B in pplane), "pplane is not a projective plane"
 
-    pplane = _relabel_bibd(pplane,n**2+n+1,p=n**2+n)
-    OA = [[x % n for x in sorted(X)] for X in pplane if n**2+n not in X]
+    pplane = _relabel_bibd(pplane, n**2 + n + 1, p=n**2 + n)
+    OA = [[x % n for x in sorted(X)] for X in pplane if n**2 + n not in X]
 
     assert len(OA) == n**2, "pplane is not a projective plane"
 
     if check:
         from .designs_pyx import is_orthogonal_array
-        is_orthogonal_array(OA,n+1,n,2)
+
+        is_orthogonal_array(OA, n + 1, n, 2)
 
     return OA
 
@@ -761,21 +792,26 @@ def projective_plane(n, check=True, existence=False):
     if n == 10:
         if existence:
             return False
-        ref = ("C. Lam, L. Thiel and S. Swiercz \"The nonexistence of finite "
-               "projective planes of order 10\" (1989), Canad. J. Math.")
+        ref = (
+            "C. Lam, L. Thiel and S. Swiercz \"The nonexistence of finite "
+            "projective planes of order 10\" (1989), Canad. J. Math."
+        )
         raise EmptySetError("No projective plane of order 10 exists by %s" % ref)
 
-    if BruckRyserChowla_check(n*n+n+1, n+1, 1) is False:
+    if BruckRyserChowla_check(n * n + n + 1, n + 1, 1) is False:
         if existence:
             return False
-        raise EmptySetError("By the Bruck-Ryser theorem, no projective"
-                         " plane of order {} exists.".format(n))
+        raise EmptySetError(
+            "By the Bruck-Ryser theorem, no projective"
+            " plane of order {} exists.".format(n)
+        )
 
     if not is_prime_power(n):
         if existence:
             return Unknown
-        raise NotImplementedError("If such a projective plane exists, we do "
-                                  "not know how to build it.")
+        raise NotImplementedError(
+            "If such a projective plane exists, we do not know how to build it."
+        )
 
     if existence:
         return True
@@ -853,6 +889,7 @@ def AffineGeometryDesign(n, d, F, point_coordinates=True, check=True):
         q = F.cardinality()
     else:
         from sage.rings.finite_rings.finite_field_constructor import GF
+
         F = GF(q)
 
     n = int(n)
@@ -862,17 +899,25 @@ def AffineGeometryDesign(n, d, F, point_coordinates=True, check=True):
     from sage.combinat.q_analogues import q_binomial
     from sage.matrix.echelon_matrix import reduced_echelon_matrix_iterator
 
-    points = {p:i for i,p in enumerate(reduced_echelon_matrix_iterator(F,1,n+1,copy=True,set_immutable=True)) if p[0,0]}
+    points = {
+        p: i
+        for i, p in enumerate(
+            reduced_echelon_matrix_iterator(F, 1, n + 1, copy=True, set_immutable=True)
+        )
+        if p[0, 0]
+    }
 
     blocks = []
-    l1 = int(q_binomial(n+1, d+1, q) - q_binomial(n, d+1, q))
+    l1 = int(q_binomial(n + 1, d + 1, q) - q_binomial(n, d + 1, q))
     l2 = q**d
-    for m1 in islice(reduced_echelon_matrix_iterator(F,d+1,n+1,copy=False),
-                     int(l1)):
+    for m1 in islice(
+        reduced_echelon_matrix_iterator(F, d + 1, n + 1, copy=False), int(l1)
+    ):
         b = []
-        for m2 in islice(reduced_echelon_matrix_iterator(F,1,d+1,copy=False),
-                         int(l2)):
-            m = m2*m1
+        for m2 in islice(
+            reduced_echelon_matrix_iterator(F, 1, d + 1, copy=False), int(l2)
+        ):
+            m = m2 * m1
             m.echelonize()
             m.set_immutable()
             b.append(points[m])
@@ -887,9 +932,11 @@ def AffineGeometryDesign(n, d, F, point_coordinates=True, check=True):
         B.relabel(rd)
 
     if check:
-        if not B.is_t_design(t=2, v=q**n, k=q**d, l=q_binomial(n-1, d-1, q)):
-            raise RuntimeError("error in AffineGeometryDesign "
-                    "construction. Please e-mail sage-devel@googlegroups.com")
+        if not B.is_t_design(t=2, v=q**n, k=q**d, l=q_binomial(n - 1, d - 1, q)):
+            raise RuntimeError(
+                "error in AffineGeometryDesign "
+                "construction. Please e-mail sage-devel@googlegroups.com"
+            )
     return B
 
 
@@ -915,9 +962,9 @@ def CremonaRichmondConfiguration():
     """
     from sage.graphs.generators.smallgraphs import TutteCoxeterGraph
     from sage.combinat.designs.incidence_structures import IncidenceStructure
+
     g = TutteCoxeterGraph()
-    H = IncidenceStructure([g.neighbors(v)
-                            for v in g.bipartite_sets()[0]])
+    H = IncidenceStructure([g.neighbors(v) for v in g.bipartite_sets()[0]])
     H.relabel()
     return H
 
@@ -995,12 +1042,13 @@ def HadamardDesign(n):
     """
     from sage.combinat.matrices.hadamard_matrix import hadamard_matrix
     from sage.matrix.constructor import matrix
+
     H = hadamard_matrix(n + 1)  # assumed to be normalised.
-    H1 = H.matrix_from_columns(range(1,n+1))
-    H2 = H1.matrix_from_rows(range(1,n+1))
-    J = matrix(ZZ,n,n,[1]*n*n)
+    H1 = H.matrix_from_columns(range(1, n + 1))
+    H2 = H1.matrix_from_rows(range(1, n + 1))
+    J = matrix(ZZ, n, n, [1] * n * n)
     MS = J.parent()
-    A = MS((H2+J)/2)  # convert -1's to 0's; coerce entries to ZZ
+    A = MS((H2 + J) / 2)  # convert -1's to 0's; coerce entries to ZZ
     # A is the incidence matrix of the block design
     return IncidenceStructure(incidence_matrix=A, name='HadamardDesign')
 
@@ -1056,12 +1104,15 @@ def Hadamard3Design(n):
       their links, London Math. Soc., 1991.
     """
     if n == 1 or n == 4:
-        raise ValueError("The Hadamard design with n = %s does not extend to a three design." % n)
+        raise ValueError(
+            "The Hadamard design with n = %s does not extend to a three design." % n
+        )
     from sage.combinat.matrices.hadamard_matrix import hadamard_matrix
     from sage.matrix.constructor import matrix, block_matrix
+
     H = hadamard_matrix(n)  # assumed to be normalised.
     H1 = H.matrix_from_columns(range(1, n))
-    J = matrix(ZZ, n, n-1, [1]*(n-1)*n)
+    J = matrix(ZZ, n, n - 1, [1] * (n - 1) * n)
     A1 = (H1 + J) / 2
     A2 = (J - H1) / 2
     A = block_matrix(1, 2, [A1, A2])  # the incidence matrix of the design.

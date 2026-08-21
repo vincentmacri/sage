@@ -66,7 +66,9 @@ class PBWCrystalElement(Element):
             PBW monomial with Lusztig datum
             (0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 1, 2)
         """
-        pbw_datum = self._pbw_datum.convert_to_new_long_word(self.parent()._default_word)
+        pbw_datum = self._pbw_datum.convert_to_new_long_word(
+            self.parent()._default_word
+        )
         return "PBW monomial with Lusztig datum {}".format(pbw_datum.lusztig_datum)
 
     def _latex_(self):
@@ -85,12 +87,20 @@ class PBWCrystalElement(Element):
              f_{\alpha_{1} + \alpha_{2}}
              f_{\alpha_{2}}^{2}
         """
-        pbw_datum = self._pbw_datum.convert_to_new_long_word(self.parent()._default_word)
+        pbw_datum = self._pbw_datum.convert_to_new_long_word(
+            self.parent()._default_word
+        )
         lusztig_datum = list(pbw_datum.lusztig_datum)
-        al = self.parent()._pbw_datum_parent._root_list_from(self.parent()._default_word)
+        al = self.parent()._pbw_datum_parent._root_list_from(
+            self.parent()._default_word
+        )
         from sage.misc.latex import latex
-        ret_str = ' '.join("f_{%s}%s" % (latex(al[i]), "^{%s}" % latex(exp) if exp > 1 else "")
-                           for i, exp in enumerate(lusztig_datum) if exp)
+
+        ret_str = ' '.join(
+            "f_{%s}%s" % (latex(al[i]), "^{%s}" % latex(exp) if exp > 1 else "")
+            for i, exp in enumerate(lusztig_datum)
+            if exp
+        )
         if ret_str == '':
             return '1'
         return ret_str
@@ -172,8 +182,12 @@ class PBWCrystalElement(Element):
         """
         i = self.parent().index_set()[0]
         word = self.parent()._pbw_datum_parent._long_word_begin_with(i)
-        lusztig_datum = tuple(self._pbw_datum.convert_to_new_long_word(word).lusztig_datum)
-        other_lusztig_datum = tuple(other._pbw_datum.convert_to_new_long_word(word).lusztig_datum)
+        lusztig_datum = tuple(
+            self._pbw_datum.convert_to_new_long_word(word).lusztig_datum
+        )
+        other_lusztig_datum = tuple(
+            other._pbw_datum.convert_to_new_long_word(word).lusztig_datum
+        )
         return richcmp(lusztig_datum, other_lusztig_datum, op)
 
     @cached_method
@@ -283,7 +297,7 @@ class PBWCrystalElement(Element):
         """
         WLR = self.parent().weight_lattice_realization()
         al = WLR.simple_roots()
-        return WLR.sum(c*al[i] for i,c in self._pbw_datum.weight())
+        return WLR.sum(c * al[i] for i, c in self._pbw_datum.weight())
 
     def star(self):
         r"""
@@ -339,8 +353,9 @@ class PBWCrystalElement(Element):
             sage: test_star(P, 5)
         """
         starred_pbw_datum = self._pbw_datum.star()
-        return type(self)(self.parent(), starred_pbw_datum.lusztig_datum,
-                             starred_pbw_datum.long_word)
+        return type(self)(
+            self.parent(), starred_pbw_datum.lusztig_datum, starred_pbw_datum.long_word
+        )
 
 
 class PBWCrystal(Parent, UniqueRepresentation):
@@ -387,6 +402,7 @@ class PBWCrystal(Parent, UniqueRepresentation):
         sage: x.to_highest_weight()[1]
         [1, 2, 2, 2, 2, 2, 1, 3, 3, 3, 3, 2, 3, 2, 3, 3, 2, 3, 3, 2, 1, 3]
     """
+
     @staticmethod
     def __classcall__(cls, cartan_type):
         """
@@ -422,10 +438,10 @@ class PBWCrystal(Parent, UniqueRepresentation):
         # There must be a better way to do the following
         i = self._cartan_type.index_set()[0]
         self._default_word = self._pbw_datum_parent._long_word_begin_with(i)
-        zero_lusztig_datum = [0]*len(self._default_word)
-        self.module_generators = (self.element_class(self,
-                                                     zero_lusztig_datum,
-                                                     self._default_word),)
+        zero_lusztig_datum = [0] * len(self._default_word)
+        self.module_generators = (
+            self.element_class(self, zero_lusztig_datum, self._default_word),
+        )
 
     def _repr_(self):
         """
@@ -474,8 +490,10 @@ class PBWCrystal(Parent, UniqueRepresentation):
             ValueError: not a reduced word of the long element
         """
         W = self._pbw_datum_parent.weyl_group
-        if (len(word) != len(self._default_word)
-            or W.from_reduced_word(word) != W.long_element()):
+        if (
+            len(word) != len(self._default_word)
+            or W.from_reduced_word(word) != W.long_element()
+        ):
             raise ValueError("not a reduced word of the long element")
 
     def set_default_long_word(self, word):

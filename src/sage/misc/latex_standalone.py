@@ -288,9 +288,16 @@ class Standalone(SageObject):
         Test
         \end{document}
     """
-    def __init__(self, content, document_class_options=None,
-                 standalone_config=None, usepackage=None, macros=None,
-                 use_sage_preamble=False) -> None:
+
+    def __init__(
+        self,
+        content,
+        document_class_options=None,
+        standalone_config=None,
+        usepackage=None,
+        macros=None,
+        use_sage_preamble=False,
+    ) -> None:
         r"""
         See :class:`Standalone` for full information.
 
@@ -301,17 +308,21 @@ class Standalone(SageObject):
             sage: t = Standalone(content)
         """
         self._content = content
-        self._document_class_options = [] if document_class_options is None else list(document_class_options)
+        self._document_class_options = (
+            [] if document_class_options is None else list(document_class_options)
+        )
         self._standalone_config = [] if standalone_config is None else standalone_config
         self._usepackage = [] if usepackage is None else usepackage
         self._macros = [] if macros is None else macros
         if use_sage_preamble:
             from sage.misc.latex import _Latex_prefs
+
             for key in ['preamble', 'macros']:
                 s = _Latex_prefs._option[key]
                 if s:
                     self._macros.append(s)
             from sage.misc.latex_macros import sage_latex_macros
+
             self._macros.extend(sage_latex_macros())
 
     def _latex_file_header_lines(self) -> list[str]:
@@ -336,10 +347,13 @@ class Standalone(SageObject):
             lines.append(r"\documentclass[{}]{{standalone}}".format(options))
         else:
             lines.append(r"\documentclass{standalone}")
-        lines.extend(r"\standaloneconfig{{{}}}".format(config)
-                     for config in self._standalone_config)
-        lines.extend(r"\usepackage{{{}}}".format(package)
-                     for package in self._usepackage)
+        lines.extend(
+            r"\standaloneconfig{{{}}}".format(config)
+            for config in self._standalone_config
+        )
+        lines.extend(
+            r"\usepackage{{{}}}".format(package) for package in self._usepackage
+        )
         lines.extend(self._macros)
         return lines
 
@@ -409,8 +423,10 @@ class Standalone(SageObject):
         else:
             lines.extend(L[:5])
             lines.append('---')
-            lines.append(f'{len(L) - 10} lines not printed ({len(self._content)} '
-                         'characters in total).')
+            lines.append(
+                f'{len(L) - 10} lines not printed ({len(self._content)} '
+                'characters in total).'
+            )
             lines.append('Use print to see the full content.')
             lines.append('---')
             lines.extend(L[-5:])
@@ -452,13 +468,12 @@ class Standalone(SageObject):
             return
         # Do not use rich output if not in IPython notebook (Jupyter)
         from sage.repl.rich_output.backend_ipython import BackendIPythonNotebook
+
         if not isinstance(display_manager._backend, BackendIPythonNotebook):
             return
 
         types = display_manager.types
-        prefer_raster = (
-            ('png', types.OutputImagePng),
-        )
+        prefer_raster = (('png', types.OutputImagePng),)
         prefer_vector = (
             ('svg', types.OutputImageSvg),
             ('pdf', types.OutputImagePdf),
@@ -477,6 +492,7 @@ class Standalone(SageObject):
             if output_container in display_manager.supported_output():
                 filename = getattr(self, format)(view=False, **kwds)
                 from sage.repl.rich_output.buffer import OutputBuffer
+
                 buf = OutputBuffer.from_file(filename)
                 return output_container(buf)
 
@@ -693,10 +709,13 @@ class Standalone(SageObject):
         elif program == 'lualatex':
             lualatex().require()
         else:
-            raise ValueError("program(={}) should be pdflatex or lualatex".format(program))
+            raise ValueError(
+                "program(={}) should be pdflatex or lualatex".format(program)
+            )
 
         # set up filenames
         from sage.misc.temporary_file import tmp_filename
+
         temp_filename_tex = tmp_filename('tikz_', '.tex')
         with open(temp_filename_tex, 'w') as f:
             f.write(str(self))
@@ -709,15 +728,19 @@ class Standalone(SageObject):
 
         # If a problem with the tex source occurs, provide the log
         if result.returncode != 0:
-            print("Command \n"
-                  "   '{}'\n"
-                  "returned nonzero exit status {}.\n"
-                  "Here is the content of the stderr:{}\n"
-                  "Here is the content of the stdout:"
-                  "{}\n".format(' '.join(result.args),
-                                result.returncode,
-                                result.stderr.strip(),
-                                result.stdout.strip()))
+            print(
+                "Command \n"
+                "   '{}'\n"
+                "returned nonzero exit status {}.\n"
+                "Here is the content of the stderr:{}\n"
+                "Here is the content of the stdout:"
+                "{}\n".format(
+                    ' '.join(result.args),
+                    result.returncode,
+                    result.stderr.strip(),
+                    result.stdout.strip(),
+                )
+            )
         result.check_returncode()
         temp_filename_pdf = os.path.join(base, temp_filename + '.pdf')
 
@@ -725,12 +748,14 @@ class Standalone(SageObject):
         if filename:
             filename = os.path.abspath(filename)
             import shutil
+
             shutil.move(temp_filename_pdf, filename)
             return filename
 
         # open the tmp pdf
         if view:
             from sage.misc.viewer import pdf_viewer
+
             cmd = pdf_viewer().split()
             cmd.append(temp_filename_pdf)
             # we use check_call as opposed to run, because
@@ -738,6 +763,7 @@ class Standalone(SageObject):
             # see https://stackoverflow.com/a/71342967
             # run(cmd, cwd=base, capture_output=True, check=True)
             from subprocess import check_call, PIPE
+
             check_call(cmd, cwd=base, stdout=PIPE, stderr=PIPE)
 
         return temp_filename_pdf
@@ -821,6 +847,7 @@ class Standalone(SageObject):
 
         # set up filenames
         from sage.misc.temporary_file import tmp_filename
+
         temp_filename_tex = tmp_filename('tikz_', '.tex')
         with open(temp_filename_tex, 'w') as f:
             f.write(str(self))
@@ -833,15 +860,19 @@ class Standalone(SageObject):
 
         # If a problem with the tex source occurs, provide the log
         if result.returncode != 0:
-            print("Command \n"
-                  "   '{}'\n"
-                  "returned nonzero exit status {}.\n"
-                  "Here is the content of the stderr:{}\n"
-                  "Here is the content of the stdout:"
-                  "{}\n".format(' '.join(result.args),
-                                result.returncode,
-                                result.stderr.strip(),
-                                result.stdout.strip()))
+            print(
+                "Command \n"
+                "   '{}'\n"
+                "returned nonzero exit status {}.\n"
+                "Here is the content of the stderr:{}\n"
+                "Here is the content of the stdout:"
+                "{}\n".format(
+                    ' '.join(result.args),
+                    result.returncode,
+                    result.stderr.strip(),
+                    result.stdout.strip(),
+                )
+            )
         result.check_returncode()
         temp_filename_dvi = os.path.join(base, temp_filename + '.dvi')
 
@@ -849,12 +880,14 @@ class Standalone(SageObject):
         if filename:
             filename = os.path.abspath(filename)
             import shutil
+
             shutil.move(temp_filename_dvi, filename)
             return filename
 
         # open the tmp dvi
         if view:
             from sage.misc.viewer import dvi_viewer
+
             cmd = dvi_viewer().split()
             cmd.append(temp_filename_dvi)
             # we use check_call as opposed to run, because
@@ -862,6 +895,7 @@ class Standalone(SageObject):
             # see https://stackoverflow.com/a/71342967
             # run(cmd, cwd=base, capture_output=True, check=True)
             from subprocess import check_call, PIPE
+
             check_call(cmd, cwd=base, stdout=PIPE, stderr=PIPE)
 
         return temp_filename_dvi
@@ -906,6 +940,7 @@ class Standalone(SageObject):
             '.png'
         """
         from sage.features.imagemagick import ImageMagick
+
         ImageMagick().require()
 
         temp_filename_pdf = self.pdf(filename=None, view=False)
@@ -913,34 +948,45 @@ class Standalone(SageObject):
         temp_filename_png = temp_filename + '.png'
 
         # convert to png
-        cmd = ['convert', '-density',
-               '{0}x{0}'.format(density), '-trim', temp_filename_pdf,
-               temp_filename_png]
+        cmd = [
+            'convert',
+            '-density',
+            '{0}x{0}'.format(density),
+            '-trim',
+            temp_filename_pdf,
+            temp_filename_png,
+        ]
         result = run(cmd, capture_output=True, text=True, check=False)
 
         # If a problem occurs, provide the log
         if result.returncode != 0:
-            print("Command \n"
-                  "   '{}'\n"
-                  "returned nonzero exit status {}.\n"
-                  "Here is the content of the stderr:{}\n"
-                  "Here is the content of the stdout:"
-                  "{}\n".format(' '.join(result.args),
-                                result.returncode,
-                                result.stderr.strip(),
-                                result.stdout.strip()))
+            print(
+                "Command \n"
+                "   '{}'\n"
+                "returned nonzero exit status {}.\n"
+                "Here is the content of the stderr:{}\n"
+                "Here is the content of the stdout:"
+                "{}\n".format(
+                    ' '.join(result.args),
+                    result.returncode,
+                    result.stderr.strip(),
+                    result.stdout.strip(),
+                )
+            )
         result.check_returncode()
 
         # move the png into the good location
         if filename:
             filename = os.path.abspath(filename)
             import shutil
+
             shutil.move(temp_filename_png, filename)
             return filename
 
         # open the tmp png
         if view:
             from sage.misc.viewer import png_viewer
+
             cmd = png_viewer().split()
             cmd.append(temp_filename_png)
             # we use check_call as opposed to run, because
@@ -948,6 +994,7 @@ class Standalone(SageObject):
             # see https://stackoverflow.com/a/71342967
             # run(cmd, capture_output=True, check=True)
             from subprocess import check_call, PIPE
+
             check_call(cmd, stdout=PIPE, stderr=PIPE)
 
         return temp_filename_png
@@ -998,6 +1045,7 @@ class Standalone(SageObject):
         temp_filename_svg = temp_filename + '.svg'
 
         from sage.features.poppler import pdftocairo
+
         pdftocairo().require()
         cmd = ['pdftocairo', '-svg', temp_filename_pdf, temp_filename_svg]
 
@@ -1006,27 +1054,33 @@ class Standalone(SageObject):
 
         # If a problem occurs, provide the log
         if result.returncode != 0:
-            print("Command \n"
-                  "   '{}'\n"
-                  "returned nonzero exit status {}.\n"
-                  "Here is the content of the stderr:{}\n"
-                  "Here is the content of the stdout:"
-                  "{}\n".format(' '.join(result.args),
-                                result.returncode,
-                                result.stderr.strip(),
-                                result.stdout.strip()))
+            print(
+                "Command \n"
+                "   '{}'\n"
+                "returned nonzero exit status {}.\n"
+                "Here is the content of the stderr:{}\n"
+                "Here is the content of the stdout:"
+                "{}\n".format(
+                    ' '.join(result.args),
+                    result.returncode,
+                    result.stderr.strip(),
+                    result.stdout.strip(),
+                )
+            )
         result.check_returncode()
 
         # move the svg into the good location
         if filename:
             filename = os.path.abspath(filename)
             import shutil
+
             shutil.move(temp_filename_svg, filename)
             return filename
 
         # open the tmp svg
         if view:
             from sage.misc.viewer import browser
+
             cmd = browser().split()
             cmd.append(temp_filename_svg)
             # we use check_call as opposed to run, because
@@ -1034,6 +1088,7 @@ class Standalone(SageObject):
             # see https://stackoverflow.com/a/71342967
             # run(cmd, capture_output=True, check=True)
             from subprocess import check_call, PIPE
+
             check_call(cmd, stdout=PIPE, stderr=PIPE)
 
         return temp_filename_svg
@@ -1095,6 +1150,7 @@ class Standalone(SageObject):
 
         if program == 'pdftocairo':
             from sage.features.poppler import pdftocairo
+
             pdftocairo().require()
             # set the temporary filenames
             temp_filename_pdf = self.pdf(filename=None, view=False)
@@ -1104,6 +1160,7 @@ class Standalone(SageObject):
             cmd = ['pdftocairo', '-eps', temp_filename_pdf, temp_filename_eps]
         elif program == 'dvips':
             from sage.features.latex import dvips
+
             dvips().require()
             # set the temporary filenames
             temp_filename_dvi = self.dvi(filename=None, view=False)
@@ -1112,35 +1169,42 @@ class Standalone(SageObject):
             # set the command
             cmd = ['dvips', '-E', '-o', temp_filename_eps, temp_filename_dvi]
         else:
-            raise ValueError("program(={}) should be 'pdftocairo' or"
-                             " 'dvips'".format(program))
+            raise ValueError(
+                "program(={}) should be 'pdftocairo' or 'dvips'".format(program)
+            )
 
         # convert to eps
         result = run(cmd, capture_output=True, text=True, check=False)
 
         # If a problem occurs, provide the log
         if result.returncode != 0:
-            print("Command \n"
-                  "   '{}'\n"
-                  "returned nonzero exit status {}.\n"
-                  "Here is the content of the stderr:{}\n"
-                  "Here is the content of the stdout:"
-                  "{}\n".format(' '.join(result.args),
-                                result.returncode,
-                                result.stderr.strip(),
-                                result.stdout.strip()))
+            print(
+                "Command \n"
+                "   '{}'\n"
+                "returned nonzero exit status {}.\n"
+                "Here is the content of the stderr:{}\n"
+                "Here is the content of the stdout:"
+                "{}\n".format(
+                    ' '.join(result.args),
+                    result.returncode,
+                    result.stderr.strip(),
+                    result.stdout.strip(),
+                )
+            )
         result.check_returncode()
 
         # move the eps into the good location
         if filename:
             filename = os.path.abspath(filename)
             import shutil
+
             shutil.move(temp_filename_eps, filename)
             return filename
 
         # open the tmp eps
         if view:
             from sage.misc.viewer import viewer
+
             cmd = viewer().split()
             cmd.append(temp_filename_eps)
             # we use check_call as opposed to run, because
@@ -1148,6 +1212,7 @@ class Standalone(SageObject):
             # see https://stackoverflow.com/a/71342967
             # run(cmd, capture_output=True, check=True)
             from subprocess import check_call, PIPE
+
             check_call(cmd, stdout=PIPE, stderr=PIPE)
 
         return temp_filename_eps
@@ -1191,6 +1256,7 @@ class Standalone(SageObject):
         """
         if filename is None:
             from sage.misc.temporary_file import tmp_filename
+
             filename = tmp_filename('tikz_', '.tex')
         else:
             filename = os.path.abspath(filename)
@@ -1258,8 +1324,9 @@ class Standalone(SageObject):
         elif ext == '.dvi':
             self.dvi(filename, **kwds)
         else:
-            raise ValueError("allowed file extensions for images are "
-                             ".pdf, .png, .svg, .eps, .dvi!")
+            raise ValueError(
+                "allowed file extensions for images are .pdf, .png, .svg, .eps, .dvi!"
+            )
 
 
 class TikzPicture(Standalone):
@@ -1338,8 +1405,16 @@ class TikzPicture(Standalone):
         ....:        usetikzlibrary=tikzlib, macros=macros)
         sage: _ = t.pdf(view=False)                     # long time (2s), optional - latex
     """
-    def __init__(self, content, standalone_config=None, usepackage=None,
-                 usetikzlibrary=None, macros=None, use_sage_preamble=False) -> None:
+
+    def __init__(
+        self,
+        content,
+        standalone_config=None,
+        usepackage=None,
+        usetikzlibrary=None,
+        macros=None,
+        use_sage_preamble=False,
+    ) -> None:
         r"""
         See :class:`TikzPicture` for full information.
 
@@ -1349,9 +1424,15 @@ class TikzPicture(Standalone):
             sage: s = "\\begin{tikzpicture}\n\\draw (0,0) -- (1,1);\n\\end{tikzpicture}"
             sage: t = TikzPicture(s)
         """
-        Standalone.__init__(self, content, document_class_options=['tikz'],
-                            standalone_config=standalone_config, usepackage=usepackage,
-                            macros=macros, use_sage_preamble=use_sage_preamble)
+        Standalone.__init__(
+            self,
+            content,
+            document_class_options=['tikz'],
+            standalone_config=standalone_config,
+            usepackage=usepackage,
+            macros=macros,
+            use_sage_preamble=use_sage_preamble,
+        )
 
         self._usetikzlibrary = [] if usetikzlibrary is None else usetikzlibrary
 
@@ -1448,24 +1529,26 @@ class TikzPicture(Standalone):
             sage: _ = tikz.pdf()      # not tested
         """
         from sage.features import PythonModule
+
         PythonModule("dot2tex").require()
         from sage.features.graphviz import Graphviz
+
         Graphviz().require()
 
         import dot2tex
-        tikz = dot2tex.dot2tex(dotdata,
-                               format='tikz',
-                               autosize=True,
-                               crop=True,
-                               figonly='True',
-                               prog=prog).strip()
-        return TikzPicture(tikz, standalone_config=["border=4mm"],
-                           usetikzlibrary=['shapes'])
+
+        tikz = dot2tex.dot2tex(
+            dotdata, format='tikz', autosize=True, crop=True, figonly='True', prog=prog
+        ).strip()
+        return TikzPicture(
+            tikz, standalone_config=["border=4mm"], usetikzlibrary=['shapes']
+        )
 
     @classmethod
     @experimental(issue_number=20343)
-    def from_graph(cls, graph, merge_multiedges=True,
-                   merge_label_function=tuple, **kwds):
+    def from_graph(
+        cls, graph, merge_multiedges=True, merge_label_function=tuple, **kwds
+    ):
         r"""
         Convert a graph to a tikzpicture using graphviz and dot2tex.
 
@@ -1586,28 +1669,42 @@ class TikzPicture(Standalone):
             sage: _ = tikz.pdf()      # not tested
         """
         from sage.features.latex import pdflatex
+
         pdflatex().require()
         from sage.features.graphviz import Graphviz
+
         Graphviz().require()
         from sage.features import PythonModule
+
         PythonModule("dot2tex").require()
 
         if merge_multiedges and graph.has_multiple_edges():
             from collections import defaultdict
+
             d = defaultdict(list)
             for u, v, label in graph.edges(sort=False):
                 d[(u, v)].append(label)
-            edges = [(u, v, merge_label_function(label_list)) for (u, v), label_list in d.items()]
+            edges = [
+                (u, v, merge_label_function(label_list))
+                for (u, v), label_list in d.items()
+            ]
             loops = graph.has_loops()
             if graph.is_directed():
                 from sage.graphs.digraph import DiGraph
+
                 graph = DiGraph(edges, format='list_of_edges', loops=loops)
             else:
                 from sage.graphs.graph import Graph
+
                 graph = Graph(edges, format='list_of_edges', loops=loops)
 
-        options = {'format': 'dot2tex', 'edge_labels': True,
-                   'color_by_label': False, 'prog': 'dot', 'rankdir': 'down'}
+        options = {
+            'format': 'dot2tex',
+            'edge_labels': True,
+            'color_by_label': False,
+            'prog': 'dot',
+            'rankdir': 'down',
+        }
         options.update(kwds)
 
         graph.latex_options().set_options(**options)
@@ -1616,8 +1713,9 @@ class TikzPicture(Standalone):
 
     @classmethod
     @experimental(issue_number=20343)
-    def from_graph_with_pos(cls, graph, scale=1, merge_multiedges=True,
-                            merge_label_function=tuple):
+    def from_graph_with_pos(
+        cls, graph, scale=1, merge_multiedges=True, merge_label_function=tuple
+    ):
         r"""
         Convert a graph with positions defined for vertices to a tikzpicture.
 
@@ -1690,16 +1788,22 @@ class TikzPicture(Standalone):
 
         if merge_multiedges and graph.has_multiple_edges():
             from collections import defaultdict
+
             d = defaultdict(list)
             for u, v, label in graph.edges(sort=True):
                 d[(u, v)].append(label)
-            edges = [(u, v, merge_label_function(label_list)) for (u, v), label_list in d.items()]
+            edges = [
+                (u, v, merge_label_function(label_list))
+                for (u, v), label_list in d.items()
+            ]
             loops = graph.has_loops()
             if graph.is_directed():
                 from sage.graphs.digraph import DiGraph
+
                 graph = DiGraph(edges, format='list_of_edges', loops=loops)
             else:
                 from sage.graphs.graph import Graph
+
                 graph = Graph(edges, format='list_of_edges', loops=loops)
 
         keys_for_vertices = graph._keys_for_vertices()
@@ -1711,8 +1815,7 @@ class TikzPicture(Standalone):
         # vertices
         lines.append(r'% vertices')
         for u in graph.vertices(sort=False):
-            line = r'\node ({}) at {} {{{}}};'.format(keys_for_vertices(u),
-                                                      pos[u], u)
+            line = r'\node ({}) at {} {{{}}};'.format(keys_for_vertices(u), pos[u], u)
             lines.append(line)
 
         # edges
@@ -1724,22 +1827,20 @@ class TikzPicture(Standalone):
                 continue
             if label:
                 line = r'\draw[{}] ({}) -- node {{{}}} ({});'.format(
-                    arrow,
-                    keys_for_vertices(u),
-                    label,
-                    keys_for_vertices(v))
+                    arrow, keys_for_vertices(u), label, keys_for_vertices(v)
+                )
             else:
                 line = r'\draw[{}] ({}) -- ({});'.format(
-                    arrow,
-                    keys_for_vertices(u),
-                    keys_for_vertices(v))
+                    arrow, keys_for_vertices(u), keys_for_vertices(v)
+                )
             lines.append(line)
 
         # loops
         lines.append(r'% loops')
         for u, v, label in graph.loop_edges():
             line = r'\draw ({}) edge [loop above] node {{{}}} ();'.format(
-                keys_for_vertices(u), label)
+                keys_for_vertices(u), label
+            )
             lines.append(line)
 
         lines.append(r'\end{tikzpicture}')

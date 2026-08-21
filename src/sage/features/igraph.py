@@ -27,6 +27,7 @@ class python_igraph(JoinFeature):
         sage: python_igraph().is_present()                    # optional - python_igraph
         FeatureTestResult('python_igraph', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -35,9 +36,11 @@ class python_igraph(JoinFeature):
             sage: isinstance(python_igraph(), python_igraph)
             True
         """
-        JoinFeature.__init__(self, 'python_igraph',
-                             [PythonModule('igraph', spkg='python_igraph',
-                                            url='http://igraph.org')])
+        JoinFeature.__init__(
+            self,
+            'python_igraph',
+            [PythonModule('igraph', spkg='python_igraph', url='http://igraph.org')],
+        )
 
 
 def all_features():

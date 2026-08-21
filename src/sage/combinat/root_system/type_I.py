@@ -1,12 +1,12 @@
 """
 Root system data for type I
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .cartan_type import CartanType_standard_finite, CartanType_simple
 
@@ -93,7 +93,8 @@ class CartanType(CartanType_standard_finite, CartanType_simple):
             [4 1]
         """
         from sage.graphs.graph import Graph
-        return Graph([[1,2,self.n]], multiedges=False)
+
+        return Graph([[1, 2, self.n]], multiedges=False)
 
     def coxeter_number(self):
         """

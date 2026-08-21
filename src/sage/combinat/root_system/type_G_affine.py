@@ -1,14 +1,14 @@
 """
 Root system data for (untwisted) type G affine
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008-2009 Daniel Bump
 #       Copyright (C) 2008-2009 Justin Walker
 #       Copyright (C) 2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .cartan_type import CartanType_standard_untwisted_affine
 
@@ -47,7 +47,7 @@ class CartanType(CartanType_standard_untwisted_affine):
 
             sage: TestSuite(ct).run()
         """
-        CartanType_standard_untwisted_affine.__init__(self, "G",2)
+        CartanType_standard_untwisted_affine.__init__(self, "G", 2)
 
     def dynkin_diagram(self):
         """
@@ -64,9 +64,10 @@ class CartanType(CartanType_standard_untwisted_affine):
             [(0, 2, 1), (1, 2, 1), (2, 0, 1), (2, 1, 3)]
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         g = DynkinDiagram_class(self)
         g.add_edge(1, 2)
-        g.set_edge_label(2,1,3)
+        g.set_edge_label(2, 1, 3)
         g.add_edge(0, 2)
         return g
 
@@ -93,11 +94,11 @@ class CartanType(CartanType_standard_untwisted_affine):
             label = lambda x: x
         if node is None:
             node = self._latex_draw_node
-        ret = "\\draw (%s cm,0) -- (%s cm,0);\n" % (node_dist, node_dist*2.0)
+        ret = "\\draw (%s cm,0) -- (%s cm,0);\n" % (node_dist, node_dist * 2.0)
         ret += "\\draw (0, 0.15 cm) -- +(%s cm,0);\n" % node_dist
         ret += "\\draw (0, -0.15 cm) -- +(%s cm,0);\n" % node_dist
         ret += self.classical()._latex_dynkin_diagram(label, node, node_dist, dual)
-        ret += node(2*node_dist, 0, label(0))
+        ret += node(2 * node_dist, 0, label(0))
         return ret
 
     def ascii_art(self, label=None, node=None):
@@ -128,4 +129,5 @@ class CartanType(CartanType_standard_untwisted_affine):
             ['G', 2, 1] as a folding of ['D', 4, 1]
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         return CartanTypeFolded(self, ['D', 4, 1], [[0], [1, 3, 4], [2]])

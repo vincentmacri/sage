@@ -63,6 +63,7 @@ AUTHORS:
 Methods
 =======
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Rudi Pendavingh <rudi.pendavingh@gmail.com>
 #       Copyright (C) 2013 Michael Welsh <michael@welsh.co.nz>
@@ -144,7 +145,9 @@ class MinorMatroid(Matroid):
         self._deletions = frozenset(deletions)
         self._delsize = len(self._deletions)
         self._consize = len(self._contractions)
-        self._groundset = matroid.groundset().difference(self._deletions.union(self._contractions))
+        self._groundset = matroid.groundset().difference(
+            self._deletions.union(self._contractions)
+        )
 
     def groundset(self):
         """
@@ -247,7 +250,9 @@ class MinorMatroid(Matroid):
             sage: sorted(M._closure(frozenset(['a', 'e', 'd'])))
             ['a', 'd', 'e', 'g', 'h']
         """
-        return self._matroid._closure(self._contractions.union(X)).difference(self._contractions.union(self._deletions))
+        return self._matroid._closure(self._contractions.union(X)).difference(
+            self._contractions.union(self._deletions)
+        )
 
     def _max_coindependent(self, X):
         """
@@ -273,7 +278,9 @@ class MinorMatroid(Matroid):
             sage: all(M.is_codependent(X.union([y])) for y in M.groundset() if y not in X)
             True
         """
-        return X - self._matroid._augment(self._contractions.union(self._groundset - X), X)
+        return X - self._matroid._augment(
+            self._contractions.union(self._groundset - X), X
+        )
 
     def _coclosure(self, X):
         """
@@ -294,7 +301,9 @@ class MinorMatroid(Matroid):
             sage: sorted(M._coclosure(frozenset(['a', 'b', 'c'])))
             ['a', 'd', 'e', 'g', 'h']
         """
-        return self._matroid._coclosure(self._deletions.union(X)).difference(self._contractions.union(self._deletions))
+        return self._matroid._coclosure(self._deletions.union(X)).difference(
+            self._contractions.union(self._deletions)
+        )
 
     def _minor(self, contractions, deletions):
         r"""
@@ -333,7 +342,11 @@ class MinorMatroid(Matroid):
                  {'e', 'f', 'g', 'h'}},
              4: {{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}}}
         """
-        return MinorMatroid(self._matroid, self._contractions.union(contractions), self._deletions.union(deletions))
+        return MinorMatroid(
+            self._matroid,
+            self._contractions.union(contractions),
+            self._deletions.union(deletions),
+        )
 
     # representation
 
@@ -422,7 +435,11 @@ class MinorMatroid(Matroid):
         """
         if not isinstance(other, MinorMatroid):
             return False
-        return (self._contractions == other._contractions) and (self._deletions == other._deletions) and (self._matroid == other._matroid)
+        return (
+            (self._contractions == other._contractions)
+            and (self._deletions == other._deletions)
+            and (self._matroid == other._matroid)
+        )
 
     def __ne__(self, other):
         """
@@ -474,6 +491,12 @@ class MinorMatroid(Matroid):
              4: {{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}}}
         """
         import sage.matroids.unpickling
-        data = (self._matroid, self._contractions, self._deletions, self.get_custom_name())
+
+        data = (
+            self._matroid,
+            self._contractions,
+            self._deletions,
+            self.get_custom_name(),
+        )
         version = 0
         return sage.matroids.unpickling.unpickle_minor_matroid, (version, data)

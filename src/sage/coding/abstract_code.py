@@ -110,14 +110,14 @@ def _explain_constructor(cl):
     """
     if inspect.isclass(cl):
         argspec = sage_getargspec(cl.__init__)
-        skip = 2 # skip the self and code arguments
+        skip = 2  # skip the self and code arguments
     else:
         # Not a class, assume it's a factory function posing as a class
         argspec = sage_getargspec(cl)
-        skip = 1 # skip code argument
+        skip = 1  # skip code argument
     if argspec.defaults:
-        args = argspec.args[skip:-len(argspec.defaults)]
-        kwargs = argspec.args[-len(argspec.defaults):]
+        args = argspec.args[skip : -len(argspec.defaults)]
+        kwargs = argspec.args[-len(argspec.defaults) :]
         opts = "It takes the optional arguments {}.".format(kwargs)
     else:
         args = argspec.args[skip:]
@@ -130,8 +130,9 @@ def _explain_constructor(cl):
         var = "It accepts unspecified arguments as well.\n"
     else:
         var = ""
-    return ("{}\n{}\n{}See the documentation of {}.{} for more details."
-            .format(reqs, opts, var, cl.__module__, cl.__name__))
+    return "{}\n{}\n{}See the documentation of {}.{} for more details.".format(
+        reqs, opts, var, cl.__module__, cl.__name__
+    )
 
 
 class AbstractCode(Parent):
@@ -204,8 +205,13 @@ class AbstractCode(Parent):
     and ``_latex_`` methods in the subclass.
     """
 
-    def __init__(self, length, default_encoder_name=None,
-                 default_decoder_name=None, metric='Hamming') -> None:
+    def __init__(
+        self,
+        length,
+        default_encoder_name=None,
+        default_decoder_name=None,
+        metric='Hamming',
+    ) -> None:
         r"""
         Initialize mandatory parameters that any code shares.
 
@@ -353,7 +359,9 @@ class AbstractCode(Parent):
             ...
             RuntimeError: Please override __iter__ in the implementation of <class '__main__.MyCode'>
         """
-        raise RuntimeError("Please override __iter__ in the implementation of {}".format(self.parent()))
+        raise RuntimeError(
+            "Please override __iter__ in the implementation of {}".format(self.parent())
+        )
 
     def __contains__(self, c) -> bool:
         r"""
@@ -381,7 +389,11 @@ class AbstractCode(Parent):
             ...
             RuntimeError: Please override __contains__ in the implementation of <class '__main__.MyCode'>
         """
-        raise RuntimeError("Please override __contains__ in the implementation of {}".format(self.parent()))
+        raise RuntimeError(
+            "Please override __contains__ in the implementation of {}".format(
+                self.parent()
+            )
+        )
 
     def ambient_space(self):
         r"""
@@ -447,7 +459,9 @@ class AbstractCode(Parent):
         if m in self.ambient_space():
             if m in self:
                 return m
-            raise ValueError("If the input is a vector which belongs to the ambient space, it has to be a codeword")
+            raise ValueError(
+                "If the input is a vector which belongs to the ambient space, it has to be a codeword"
+            )
         else:
             return self.encode(m)
 
@@ -477,7 +491,9 @@ class AbstractCode(Parent):
             ...
             RuntimeError: Please override _repr_ in the implementation of <class '__main__.MyCode'>
         """
-        raise RuntimeError("Please override _repr_ in the implementation of {}".format(self.parent()))
+        raise RuntimeError(
+            "Please override _repr_ in the implementation of {}".format(self.parent())
+        )
 
     def _latex_(self):
         r"""
@@ -505,7 +521,9 @@ class AbstractCode(Parent):
             ...
             RuntimeError: Please override _latex_ in the implementation of <class '__main__.MyCode'>
         """
-        raise RuntimeError("Please override _latex_ in the implementation of {}".format(self.parent()))
+        raise RuntimeError(
+            "Please override _latex_ in the implementation of {}".format(self.parent())
+        )
 
     def list(self):
         r"""
@@ -545,7 +563,7 @@ class AbstractCode(Parent):
         """
         return self._metric
 
-###################### Encoding-Decoding #######################################
+    ###################### Encoding-Decoding #######################################
 
     def add_decoder(self, name, decoder):
         r"""
@@ -739,7 +757,9 @@ class AbstractCode(Parent):
             sage: C.decode_to_message(word, 'NearestNeighbor')
             (1, 1, 0, 0)
         """
-        return self.unencode(self.decode_to_code(word, decoder_name, *args, **kwargs), **kwargs)
+        return self.unencode(
+            self.decode_to_code(word, decoder_name, *args, **kwargs), **kwargs
+        )
 
     @cached_method
     def decoder(self, decoder_name=None, *args, **kwargs):
@@ -822,13 +842,17 @@ class AbstractCode(Parent):
                 return decClass(self, *args, **kwargs)
             except TypeError:
                 raise ValueError(
-                        "Constructing the {0} decoder failed, possibly due "
-                        "to missing or incorrect parameters.\n{1}".format(
-                            decoder_name, _explain_constructor(decClass)))
+                    "Constructing the {0} decoder failed, possibly due "
+                    "to missing or incorrect parameters.\n{1}".format(
+                        decoder_name, _explain_constructor(decClass)
+                    )
+                )
         else:
             raise ValueError(
-                    "There is no Decoder named '{0}'. The known Decoders are: "
-                    "{1}".format(decoder_name, self.decoders_available()))
+                "There is no Decoder named '{0}'. The known Decoders are: {1}".format(
+                    decoder_name, self.decoders_available()
+                )
+            )
 
     def decoders_available(self, classes=False):
         r"""
@@ -997,13 +1021,17 @@ class AbstractCode(Parent):
                 return encClass(self, *args, **kwargs)
             except TypeError:
                 raise ValueError(
-                        "Constructing the {0} encoder failed, possibly due "
-                        "to missing or incorrect parameters.\n{1}".format(
-                            encoder_name, _explain_constructor(encClass)))
+                    "Constructing the {0} encoder failed, possibly due "
+                    "to missing or incorrect parameters.\n{1}".format(
+                        encoder_name, _explain_constructor(encClass)
+                    )
+                )
         else:
             raise ValueError(
-                    "There is no Encoder named '{0}'. The known Encoders are: "
-                    "{1}".format(encoder_name, self.encoders_available()))
+                "There is no Encoder named '{0}'. The known Encoders are: {1}".format(
+                    encoder_name, self.encoders_available()
+                )
+            )
 
     def encoders_available(self, classes=False):
         r"""

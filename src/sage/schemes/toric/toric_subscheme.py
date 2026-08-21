@@ -134,6 +134,7 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
                     [t : t : x : y]
         """
         from sage.schemes.toric.morphism import SchemeMorphism_polynomial_toric_variety
+
         return SchemeMorphism_polynomial_toric_variety(*args, **kwds)
 
     def _point_homset(self, *args, **kwds):
@@ -159,6 +160,7 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
             <class 'sage.schemes.toric.homset.SchemeHomset_points_subscheme_toric_field_with_category'>
         """
         from sage.schemes.toric.homset import SchemeHomset_points_subscheme_toric_field
+
         return SchemeHomset_points_subscheme_toric_field(*args, **kwds)
 
     def fan(self):
@@ -216,7 +218,7 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
             Closed subscheme of 2-d affine toric variety defined by:
               x - 1
         """
-        i = int(i)   # implicit type checking
+        i = int(i)  # implicit type checking
         try:
             return self._affine_patches[i]
         except AttributeError:
@@ -225,8 +227,7 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
             pass
         ambient_patch = self.ambient_space().affine_patch(i)
         phi_p = ambient_patch.embedding_morphism().defining_polynomials()
-        patch = ambient_patch.subscheme(
-                            [p(phi_p) for p in self.defining_polynomials()])
+        patch = ambient_patch.subscheme([p(phi_p) for p in self.defining_polynomials()])
         patch._embedding_morphism = patch.hom(phi_p, self, check=False)
         self._affine_patches[i] = patch
         return patch
@@ -304,6 +305,7 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
         """
         from sage.modules.free_module_element import vector
         from sage.misc.misc_c import prod
+
         ambient = self.ambient_space()
         fan = ambient.fan()
         if cone is None:
@@ -315,9 +317,11 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
         R, I, dualcone = ambient._semigroup_ring(cone, names)
 
         # inhomogenize the Cox homogeneous polynomial with respect to the given cone
-        inhomogenize = {ambient.coordinate_ring().gen(i): 1
-                        for i in range(fan.nrays())
-                        if i not in cone.ambient_ray_indices()}
+        inhomogenize = {
+            ambient.coordinate_ring().gen(i): 1
+            for i in range(fan.nrays())
+            if i not in cone.ambient_ray_indices()
+        }
         polynomials = [p.subs(inhomogenize) for p in self.defining_polynomials()]
 
         # map the monomial x^{D_m} to m, see reference.
@@ -330,16 +334,19 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
                 exponent = [exponent[i] for i in cone.ambient_ray_indices()]
                 exponent = vector(ZZ, exponent)
                 m = n_rho_matrix.solve_right(exponent)
-                assert all(x in ZZ for x in m), \
+                assert all(x in ZZ for x in m), (
                     f'The polynomial {p} does not define a ZZ-divisor!'
+                )
                 m_coeffs = dualcone.Hilbert_coefficients(m)
-                result += coefficient * prod(R.gen(i)**m_coeffs[i]
-                                             for i in range(R.ngens()))
+                result += coefficient * prod(
+                    R.gen(i) ** m_coeffs[i] for i in range(R.ngens())
+                )
             return result
 
         # construct the affine algebraic scheme to use as patch
         polynomials = [pullback_polynomial(_) for _ in polynomials]
         from sage.schemes.affine.affine_space import AffineSpace
+
         patch_cover = AffineSpace(R)
         polynomials = list(I.gens()) + polynomials
         polynomials = [x for x in polynomials if not x.is_zero()]
@@ -359,8 +366,10 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
                     phi.append(1)
             patch._embedding_morphism = patch.hom(phi, self)
         else:
-            patch._embedding_morphism = (NotImplementedError,
-               'I only know how to construct embedding morphisms for smooth patches')
+            patch._embedding_morphism = (
+                NotImplementedError,
+                'I only know how to construct embedding morphisms for smooth patches',
+            )
 
         try:
             point = self.embedding_center()
@@ -370,9 +379,10 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
         # it remains to find the preimage of point
         # map m to the monomial x^{D_m}, see reference.
         F = ambient.coordinate_ring().fraction_field()
-        image = [prod([F.gen(i)**(m * n)
-                       for i, n in enumerate(fan.rays())])
-                 for m in dualcone.Hilbert_basis()]
+        image = [
+            prod([F.gen(i) ** (m * n) for i, n in enumerate(fan.rays())])
+            for m in dualcone.Hilbert_basis()
+        ]
         patch._embedding_center = tuple(f(list(point)) for f in image)
         return patch
 
@@ -580,8 +590,7 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
         if '_smooth' in self.__dict__:
             return self._smooth
         npatches = self.ambient_space().fan().ngenerating_cones()
-        self._smooth = all(self.affine_patch(i).is_smooth()
-                           for i in range(npatches))
+        self._smooth = all(self.affine_patch(i).is_smooth() for i in range(npatches))
         return self._smooth
 
     def is_nondegenerate(self) -> bool:
@@ -669,26 +678,30 @@ class AlgebraicScheme_subscheme_toric(AlgebraicScheme_subscheme):
         fan = X.fan()
         SR = X.Stanley_Reisner_ideal()
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         R = PolynomialRing(X.base_ring(), fan.nrays() + SR.ngens(), 't')
-        slack = R.gens()[fan.nrays():]
+        slack = R.gens()[fan.nrays() :]
         SR = SR.change_ring(R)
 
         def restrict(cone):
             patch = {}
             divide = {}
             for i in cone.ambient_ray_indices():
-                patch[R.gen(i)] = R.zero()   # restrict to torus orbit
+                patch[R.gen(i)] = R.zero()  # restrict to torus orbit
                 # divide out highest power of R.gen(i)
                 divide[R.gen(i)] = R.one()
             ideal = self.defining_ideal().change_ring(R)
             ideal = ideal.subs(patch)
-            mat = jacobian(ideal.gens(), R.gens()[:fan.nrays()])
+            mat = jacobian(ideal.gens(), R.gens()[: fan.nrays()])
             minors = mat.minors(self.codimension())
             minors = tuple([ideal.reduce(m) for m in minors])
             Jac_patch = R.ideal(ideal.gens() + minors)
-            SR_patch = R.ideal([monomial * slack[i] - R.one()
-                                for i, monomial in
-                                enumerate(SR.subs(divide).gens())])
+            SR_patch = R.ideal(
+                [
+                    monomial * slack[i] - R.one()
+                    for i, monomial in enumerate(SR.subs(divide).gens())
+                ]
+            )
             return ideal, Jac_patch + SR_patch
 
         for dim in range(fan.dim() + 1):
@@ -894,7 +907,7 @@ class AlgebraicScheme_subscheme_affine_toric(AlgebraicScheme_subscheme_toric):
 
         if self.ambient_space().is_smooth():
             sing_dim = self.Jacobian().dimension()
-            self._smooth = (sing_dim == -1)
+            self._smooth = sing_dim == -1
         else:
             self._smooth = self.affine_algebraic_patch().is_smooth()
 

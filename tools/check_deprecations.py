@@ -54,9 +54,7 @@ def main():
     parser.add_argument(
         "--token", help="GitHub API token", default=os.getenv('GITHUB_TOKEN'), type=str
     )
-    parser.add_argument(
-        "--verbose", help="increase verbosity", action="store_true"
-    )
+    parser.add_argument("--verbose", help="increase verbosity", action="store_true")
     options = parser.parse_args()
 
     deprecations = search_deprecations(options.sourcedir)

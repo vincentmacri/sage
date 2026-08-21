@@ -20,6 +20,7 @@ def rank(data):
             return res[v]
         my_res = res[v] = max((do_rank(p) + 1 for p in parents[v]), default=0)
         return my_res
+
     for v in parents:
         do_rank(v)
     return res

@@ -18,12 +18,17 @@ AUTHORS:
 from sage.categories.hopf_algebras import HopfAlgebras
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.combinat.words.alphabet import Alphabet
-from sage.combinat.binary_tree import (BinaryTrees, BinaryTree,
-                                       LabelledBinaryTrees,
-                                       LabelledBinaryTree)
-from sage.categories.pushout import (ConstructionFunctor,
-                                     CompositeConstructionFunctor,
-                                     IdentityConstructionFunctor)
+from sage.combinat.binary_tree import (
+    BinaryTrees,
+    BinaryTree,
+    LabelledBinaryTrees,
+    LabelledBinaryTree,
+)
+from sage.categories.pushout import (
+    ConstructionFunctor,
+    CompositeConstructionFunctor,
+    IdentityConstructionFunctor,
+)
 from sage.categories.rings import Rings
 from sage.categories.functor import Functor
 from sage.misc.lazy_attribute import lazy_attribute
@@ -132,6 +137,7 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
 
     - [LR1998]_
     """
+
     @staticmethod
     def __classcall_private__(cls, R, names=None):
         """
@@ -179,10 +185,9 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
         # so that one can restrict the labels to some fixed set
 
         cat = HopfAlgebras(R).WithBasis().Graded().Connected()
-        CombinatorialFreeModule.__init__(self, R, Trees,
-                                         latex_prefix='',
-                                         sorting_key=key,
-                                         category=cat)
+        CombinatorialFreeModule.__init__(
+            self, R, Trees, latex_prefix='', sorting_key=key, category=cat
+        )
 
     def variable_names(self):
         r"""
@@ -427,19 +432,19 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
         """
         if y.is_empty():
             if x.is_empty():
-                raise ValueError("dendriform products | < | and | > | are "
-                                 "not defined")
+                raise ValueError("dendriform products | < | and | > | are not defined")
             else:
                 return []
         if x.is_empty():
             return [y]
         K = self.basis().keys()
         if hasattr(y, 'label'):
-            return self.sum(self.basis()[K([u, y[1]], y.label())]
-                            for u in x.dendriform_shuffle(y[0]))
+            return self.sum(
+                self.basis()[K([u, y[1]], y.label())]
+                for u in x.dendriform_shuffle(y[0])
+            )
 
-        return self.sum(self.basis()[K([u, y[1]])]
-                        for u in x.dendriform_shuffle(y[0]))
+        return self.sum(self.basis()[K([u, y[1]])] for u in x.dendriform_shuffle(y[0]))
 
     @lazy_attribute
     def succ(self):
@@ -466,9 +471,9 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
             B[[[., .], .]]
         """
         suc = self.succ_product_on_basis
-        return self._module_morphism(self._module_morphism(suc, position=0,
-                                                           codomain=self),
-                                     position=1)
+        return self._module_morphism(
+            self._module_morphism(suc, position=0, codomain=self), position=1
+        )
 
     def prec_product_on_basis(self, x, y):
         r"""
@@ -502,19 +507,19 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
             ValueError: dendriform products | < | and | > | are not defined
         """
         if x.is_empty() and y.is_empty():
-            raise ValueError("dendriform products | < | and | > | are "
-                             "not defined")
+            raise ValueError("dendriform products | < | and | > | are not defined")
         if x.is_empty():
             return []
         if y.is_empty():
             return [x]
         K = self.basis().keys()
         if hasattr(y, 'label'):
-            return self.sum(self.basis()[K([x[0], u], x.label())]
-                            for u in x[1].dendriform_shuffle(y))
+            return self.sum(
+                self.basis()[K([x[0], u], x.label())]
+                for u in x[1].dendriform_shuffle(y)
+            )
 
-        return self.sum(self.basis()[K([x[0], u])]
-                        for u in x[1].dendriform_shuffle(y))
+        return self.sum(self.basis()[K([x[0], u])] for u in x[1].dendriform_shuffle(y))
 
     @lazy_attribute
     def prec(self):
@@ -540,9 +545,9 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
             B[[., [., .]]]
         """
         pre = self.prec_product_on_basis
-        return self._module_morphism(self._module_morphism(pre, position=0,
-                                                           codomain=self),
-                                     position=1)
+        return self._module_morphism(
+            self._module_morphism(pre, position=0, codomain=self), position=1
+        )
 
     @lazy_attribute
     def over(self):
@@ -566,11 +571,13 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
             sage: A.over(x, x)
             B[[., [., .]]]
         """
+
         def ov(x, y):
             return self._monomial(x.over(y))
-        return self._module_morphism(self._module_morphism(ov, position=0,
-                                                           codomain=self),
-                                     position=1)
+
+        return self._module_morphism(
+            self._module_morphism(ov, position=0, codomain=self), position=1
+        )
 
     @lazy_attribute
     def under(self):
@@ -594,11 +601,13 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
             sage: A.under(x, x)
             B[[[., .], .]]
         """
+
         def und(x, y):
             return self._monomial(x.under(y))
-        return self._module_morphism(self._module_morphism(und, position=0,
-                                                           codomain=self),
-                                     position=1)
+
+        return self._module_morphism(
+            self._module_morphism(und, position=0, codomain=self), position=1
+        )
 
     def coproduct_on_basis(self, x):
         """
@@ -635,11 +644,15 @@ class FreeDendriformAlgebra(CombinatorialFreeModule):
         except AttributeError:
             root = '@'
         resu = self.one().tensor(self.monomial(x))
-        resu += sum(cL * cR *
-                    self.monomial(Trees([LL[0], RR[0]], root)).tensor(
-                        self.monomial(LL[1]) * self.monomial(RR[1]))
-                    for LL, cL in self.coproduct_on_basis(L)
-                    for RR, cR in self.coproduct_on_basis(R))
+        resu += sum(
+            cL
+            * cR
+            * self.monomial(Trees([LL[0], RR[0]], root)).tensor(
+                self.monomial(LL[1]) * self.monomial(RR[1])
+            )
+            for LL, cL in self.coproduct_on_basis(L)
+            for RR, cR in self.coproduct_on_basis(R)
+        )
         return resu
 
     # after this line : coercion
@@ -792,6 +805,7 @@ class DendriformFunctor(ConstructionFunctor):
         sage: F(f)(a * F(A)(x))
         (a+b)*B[x[., .]]
     """
+
     rank = 9
 
     def __init__(self, vars):
@@ -839,9 +853,10 @@ class DendriformFunctor(ConstructionFunctor):
         codom = self(f.codomain())
 
         def action(x):
-            return codom._from_dict({a: f(b)
-                                     for a, b in
-                                     x.monomial_coefficients().items()})
+            return codom._from_dict(
+                {a: f(b) for a, b in x.monomial_coefficients().items()}
+            )
+
         return dom.module_morphism(function=action, codomain=codom)
 
     def __eq__(self, other):
@@ -894,13 +909,14 @@ class DendriformFunctor(ConstructionFunctor):
             return self
         if isinstance(other, DendriformFunctor):
             if set(self.vars).intersection(other.vars):
-                raise CoercionException("Overlapping variables (%s,%s)" %
-                                        (self.vars, other.vars))
+                raise CoercionException(
+                    "Overlapping variables (%s,%s)" % (self.vars, other.vars)
+                )
             return DendriformFunctor(other.vars + self.vars)
-        if (isinstance(other, CompositeConstructionFunctor) and
-              isinstance(other.all[-1], DendriformFunctor)):
-            return CompositeConstructionFunctor(other.all[:-1],
-                                                self * other.all[-1])
+        if isinstance(other, CompositeConstructionFunctor) and isinstance(
+            other.all[-1], DendriformFunctor
+        ):
+            return CompositeConstructionFunctor(other.all[:-1], self * other.all[-1])
         return CompositeConstructionFunctor(other, self)
 
     def merge(self, other):

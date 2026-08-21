@@ -29,20 +29,22 @@ def setenv():
     # We assume that compiling/linking against libraries installed in SAGE_VENV
     # works -- that's the responsibility of the venv activation, not ours.
     if SAGE_LOCAL and Path(SAGE_VENV).resolve() != Path(SAGE_LOCAL).resolve():
-        _environ_prepend('PATH',         f'{SAGE_LOCAL}/bin')
+        _environ_prepend('PATH', f'{SAGE_LOCAL}/bin')
         _environ_prepend('LIBRARY_PATH', f'{SAGE_LOCAL}/lib')
-        _environ_prepend('CPATH',        f'{SAGE_LOCAL}/include')
-        _environ_prepend('LDFLAGS',      f'-L{SAGE_LOCAL}/lib -Wl,-rpath,{SAGE_LOCAL}/lib',
-                         separator=' ')
+        _environ_prepend('CPATH', f'{SAGE_LOCAL}/include')
+        _environ_prepend(
+            'LDFLAGS', f'-L{SAGE_LOCAL}/lib -Wl,-rpath,{SAGE_LOCAL}/lib', separator=' '
+        )
         if platform.system() == 'Linux':
-            _environ_prepend('LDFLAGS',      f'-Wl,-rpath-link,{SAGE_LOCAL}/lib',
-                             separator=' ')
+            _environ_prepend(
+                'LDFLAGS', f'-Wl,-rpath-link,{SAGE_LOCAL}/lib', separator=' '
+            )
         if Path(SAGE_VENV).resolve() != Path(SAGE_LOCAL).resolve():
             # This condition is always true, but we are keeping it for clarity.
-            _environ_prepend('PATH',         f'{SAGE_VENV}/bin')
+            _environ_prepend('PATH', f'{SAGE_VENV}/bin')
             # the following two are not done by sage-env
-            #_environ_prepend('LIBRARY_PATH', f'{SAGE_VENV}/lib')
-            #_environ_prepend('CPATH',        f'{SAGE_VENV}/include')
+            # _environ_prepend('LIBRARY_PATH', f'{SAGE_VENV}/lib')
+            # _environ_prepend('CPATH',        f'{SAGE_VENV}/include')
 
     # not done: PATH prepend of SAGE_SRC/bin, SAGE_ROOT/build/bin
     # not done: MACOSX_DEPLOYMENT_TARGET

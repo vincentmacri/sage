@@ -115,6 +115,7 @@ class VectorPartition(CombinatorialElement):
     r"""
     A vector partition is a multiset of integer vectors.
     """
+
     @staticmethod
     def __classcall_private__(cls, vecpar):
         """
@@ -250,8 +251,11 @@ class VectorPartitions(UniqueRepresentation, Parent):
         sage: list(Vector_Partitions)
         [[[0, 1], [0, 1], [1, 0], [1, 0]], [[0, 1], [1, 0], [1, 1]]]
     """
+
     @staticmethod
-    def __classcall_private__(cls, vec, min=None, parts=None, distinct=False, is_repeatable=None):
+    def __classcall_private__(
+        cls, vec, min=None, parts=None, distinct=False, is_repeatable=None
+    ):
         r"""
         Create the class of vector partitions of ``vec`` where all parts
         are greater than or equal to the vector ``min``.
@@ -276,11 +280,13 @@ class VectorPartitions(UniqueRepresentation, Parent):
         parts = list(parts)
         for part_index in range(len(parts)):
             parts[part_index] = tuple(parts[part_index])
-        return super().__classcall__(cls, tuple(vec), tuple(min), tuple(parts),
-                                     distinct, is_repeatable)
+        return super().__classcall__(
+            cls, tuple(vec), tuple(min), tuple(parts), distinct, is_repeatable
+        )
 
-    def __init__(self, vec, min=None, parts=None, distinct=False,
-                 is_repeatable=None) -> None:
+    def __init__(
+        self, vec, min=None, parts=None, distinct=False, is_repeatable=None
+    ) -> None:
         r"""
         Initialize ``self``.
 
@@ -323,7 +329,9 @@ class VectorPartitions(UniqueRepresentation, Parent):
             9
         """
         if all(coord == 0 for coord in self._vec):
-            yield self.element_class(self, [])  # the zero vector has only the empty partition
+            yield self.element_class(
+                self, []
+            )  # the zero vector has only the empty partition
         else:
             for part in self._parts:  # choose the first part
                 if tuple(part) == self._vec:
@@ -331,18 +339,25 @@ class VectorPartitions(UniqueRepresentation, Parent):
                 elif any(part[i] > self._vec[i] for i in range(len(self._vec))):
                     pass
                 else:  # recursively find all possibilities for the rest of the vector partition
-                    new_vec = tuple(self._vec[i] - part[i]
-                                    for i in range(len(self._vec)))
+                    new_vec = tuple(
+                        self._vec[i] - part[i] for i in range(len(self._vec))
+                    )
                     i = self._parts.index(part)
                     if self._is_repeatable is None:
                         if self._distinct:
-                            new_parts = self._parts[i + 1:]
+                            new_parts = self._parts[i + 1 :]
                         else:
                             new_parts = self._parts[i:]
                     else:
                         if self._is_repeatable(part):
                             new_parts = self._parts[i:]
                         else:
-                            new_parts = self._parts[i + 1:]
-                    for vecpar in VectorPartitions(new_vec, min=self._min, parts=new_parts, distinct=self._distinct, is_repeatable=self._is_repeatable):
+                            new_parts = self._parts[i + 1 :]
+                    for vecpar in VectorPartitions(
+                        new_vec,
+                        min=self._min,
+                        parts=new_parts,
+                        distinct=self._distinct,
+                        is_repeatable=self._is_repeatable,
+                    ):
                         yield self.element_class(self, [list(part)] + list(vecpar))

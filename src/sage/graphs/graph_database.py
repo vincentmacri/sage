@@ -98,6 +98,7 @@ def data_to_degseq(data, graph6=None):
     if not degseq:
         # compute number of 0s in list from graph6 string
         from sage.graphs.generic_graph_pyx import length_and_string_from_graph6
+
         return length_and_string_from_graph6(str(graph6))[0] * [0]
     return degseq
 
@@ -121,7 +122,9 @@ def graph6_to_plot(graph6):
         <class 'sage.plot.graphics.Graphics'>
     """
     g = Graph(str(graph6))
-    return g.plot(layout='circular', vertex_size=30, vertex_labels=False, graph_border=False)
+    return g.plot(
+        layout='circular', vertex_size=30, vertex_labels=False, graph_border=False
+    )
 
 
 def subgraphs_to_query(subgraphs, db):
@@ -163,57 +166,71 @@ def subgraphs_to_query(subgraphs, db):
     q = GraphQuery(graph_db=db, induced_subgraphs=subgraphs[1])
     if subgraphs[0] == 'all_of':
         for i in range(2, len(subgraphs)):
-            q.intersect(GraphQuery(graph_db=db, induced_subgraphs=subgraphs[i]),
-                        in_place=True)
+            q.intersect(
+                GraphQuery(graph_db=db, induced_subgraphs=subgraphs[i]), in_place=True
+            )
     elif subgraphs[0] == 'one_of':
         for i in range(2, len(subgraphs)):
-            q.union(GraphQuery(graph_db=db, induced_subgraphs=subgraphs[i]),
-                    in_place=True)
+            q.union(
+                GraphQuery(graph_db=db, induced_subgraphs=subgraphs[i]), in_place=True
+            )
     else:
-        raise KeyError('unable to initiate query: illegal input format for induced_subgraphs')
+        raise KeyError(
+            'unable to initiate query: illegal input format for induced_subgraphs'
+        )
     return q
 
 
 # tables     columns                    input data type     sqlite data type
 # -----------------------------------------------------------------------------
-aut_grp = ['aut_grp_size',             # Integer           INTEGER
-           'num_orbits',               # Integer           INTEGER
-           'num_fixed_points',         # Integer           INTEGER
-           'vertex_transitive',        # bool              BOOLEAN
-           'edge_transitive']          # bool              BOOLEAN
-degrees = ['degree_sequence',          # list              INTEGER (see degseq_to_data module function)
-           'min_degree',               # Integer           INTEGER
-           'max_degree',               # Integer           INTEGER
-           'average_degree',           # Real              REAL
-           'degrees_sd',               # Real              REAL
-           'regular']                  # bool              BOOLEAN
-misc = ['vertex_connectivity',      # Integer           INTEGER
-        'edge_connectivity',        # Integer           INTEGER
-        'num_components',           # Integer           INTEGER
-        'girth',                    # Integer           INTEGER
-        'radius',                   # Integer           INTEGER
-        'diameter',                 # Integer           INTEGER
-        'clique_number',            # Integer           INTEGER
-        'independence_number',      # Integer           INTEGER
-        'num_cut_vertices',         # Integer           INTEGER
-        'min_vertex_cover_size',    # Integer           INTEGER
-        'num_spanning_trees',       # Integer           INTEGER
-        'induced_subgraphs']        # String            STRING
-spectrum = ['spectrum',                 # String            STRING
-            'min_eigenvalue',           # Real              REAL
-            'max_eigenvalue',           # Real              REAL
-            'eigenvalues_sd',           # Real              REAL
-            'energy']                   # Real              REAL
-graph_data = ['complement_graph6',        # String            STRING
-              'eulerian',                 # bool              BOOLEAN
-              'graph6',                   # String            STRING
-              'lovasz_number',            # Real              REAL
-              'num_cycles',               # Integer           INTEGER
-              'num_edges',                # Integer           INTEGER
-              'num_hamiltonian_cycles',   # Integer           INTEGER
-              'num_vertices',             # Integer           INTEGER
-              'perfect',                  # bool              BOOLEAN
-              'planar']                   # bool              BOOLEAN
+aut_grp = [
+    'aut_grp_size',  # Integer           INTEGER
+    'num_orbits',  # Integer           INTEGER
+    'num_fixed_points',  # Integer           INTEGER
+    'vertex_transitive',  # bool              BOOLEAN
+    'edge_transitive',
+]  # bool              BOOLEAN
+degrees = [
+    'degree_sequence',  # list              INTEGER (see degseq_to_data module function)
+    'min_degree',  # Integer           INTEGER
+    'max_degree',  # Integer           INTEGER
+    'average_degree',  # Real              REAL
+    'degrees_sd',  # Real              REAL
+    'regular',
+]  # bool              BOOLEAN
+misc = [
+    'vertex_connectivity',  # Integer           INTEGER
+    'edge_connectivity',  # Integer           INTEGER
+    'num_components',  # Integer           INTEGER
+    'girth',  # Integer           INTEGER
+    'radius',  # Integer           INTEGER
+    'diameter',  # Integer           INTEGER
+    'clique_number',  # Integer           INTEGER
+    'independence_number',  # Integer           INTEGER
+    'num_cut_vertices',  # Integer           INTEGER
+    'min_vertex_cover_size',  # Integer           INTEGER
+    'num_spanning_trees',  # Integer           INTEGER
+    'induced_subgraphs',
+]  # String            STRING
+spectrum = [
+    'spectrum',  # String            STRING
+    'min_eigenvalue',  # Real              REAL
+    'max_eigenvalue',  # Real              REAL
+    'eigenvalues_sd',  # Real              REAL
+    'energy',
+]  # Real              REAL
+graph_data = [
+    'complement_graph6',  # String            STRING
+    'eulerian',  # bool              BOOLEAN
+    'graph6',  # String            STRING
+    'lovasz_number',  # Real              REAL
+    'num_cycles',  # Integer           INTEGER
+    'num_edges',  # Integer           INTEGER
+    'num_hamiltonian_cycles',  # Integer           INTEGER
+    'num_vertices',  # Integer           INTEGER
+    'perfect',  # bool              BOOLEAN
+    'planar',
+]  # bool              BOOLEAN
 
 valid_kwds = aut_grp + degrees + misc + spectrum + graph_data
 
@@ -245,18 +262,19 @@ def graph_db_info(tablename=None):
          'perfect',
          'planar']
     """
-    info = {'graph_data': graph_data,
-            'aut_grp': aut_grp,
-            'degrees': degrees,
-            'misc': misc,
-            'spectrum': spectrum}
+    info = {
+        'graph_data': graph_data,
+        'aut_grp': aut_grp,
+        'degrees': degrees,
+        'misc': misc,
+        'spectrum': spectrum,
+    }
     if tablename is not None:
         info = info[tablename]
     return info
 
 
 class GenericGraphQuery(SQLQuery):
-
     def __init__(self, query_string, database=None, param_tuple=None):
         """
         A query for a :class:`~GraphDatabase`.
@@ -317,9 +335,9 @@ class GenericGraphQuery(SQLQuery):
 
 
 class GraphQuery(GenericGraphQuery):
-
-    def __init__(self, graph_db=None, query_dict=None, display_cols=None,
-                 immutable=False, **kwds):
+    def __init__(
+        self, graph_db=None, query_dict=None, display_cols=None, immutable=False, **kwds
+    ):
         r"""
         A query for an instance of :class:`~GraphDatabase`.
 
@@ -430,9 +448,13 @@ class GraphQuery(GenericGraphQuery):
             graph_db = GraphDatabase()
         if query_dict is not None:
             if query_dict['expression'][0] == 'degree_sequence':
-                query_dict['expression'][3] = degseq_to_data(query_dict['expression'][3])
+                query_dict['expression'][3] = degseq_to_data(
+                    query_dict['expression'][3]
+                )
             elif query_dict['expression'][0] == 'induced_subgraphs':
-                query_dict['expression'][3] = subgraphs_to_data(query_dict['expression'][3])
+                query_dict['expression'][3] = subgraphs_to_data(
+                    query_dict['expression'][3]
+                )
             SQLQuery.__init__(self, graph_db, query_dict)
         else:
             # construct a query from the given parameters
@@ -446,7 +468,9 @@ class GraphQuery(GenericGraphQuery):
             for key in kwds:
                 # check validity
                 if key not in valid_kwds:
-                    raise KeyError('%s is not a valid key for this database.' % str(key))
+                    raise KeyError(
+                        '%s is not a valid key for this database.' % str(key)
+                    )
 
                 # designate a query_dict and reserve display_cols until end
                 # (database.py currently concatenates them including repeats)
@@ -479,11 +503,19 @@ class GraphQuery(GenericGraphQuery):
                 # add key parameter to query
                 join_dict = {qdict['table_name']: ('graph_id', 'graph_id')}
                 if key == 'induced_subgraphs' and isinstance(kwds[key], list):
-                    self.intersect(subgraphs_to_query(kwds[key], graph_db),
-                                   'graph_data', join_dict, in_place=True)
+                    self.intersect(
+                        subgraphs_to_query(kwds[key], graph_db),
+                        'graph_data',
+                        join_dict,
+                        in_place=True,
+                    )
                 else:
-                    self.intersect(SQLQuery(graph_db, qdict), 'graph_data',
-                                   join_dict, in_place=True)
+                    self.intersect(
+                        SQLQuery(graph_db, qdict),
+                        'graph_data',
+                        join_dict,
+                        in_place=True,
+                    )
 
                 # include search params (keys) in join clause
                 # again, we exclude graph_data because it is the base table
@@ -522,7 +554,10 @@ class GraphQuery(GenericGraphQuery):
                 # join clause for display tables
                 join_str = 'FROM graph_data '
                 for tab in master_join:
-                    join_str += 'INNER JOIN %s ON graph_data.graph_id=%s.graph_id ' % (tab, tab)
+                    join_str += 'INNER JOIN %s ON graph_data.graph_id=%s.graph_id ' % (
+                        tab,
+                        tab,
+                    )
 
                 # construct sql syntax substring for display cols
                 disp_list = ['SELECT graph_data.graph6, ']
@@ -541,9 +576,11 @@ class GraphQuery(GenericGraphQuery):
                 disp_str = ''.join(disp_list)
 
                 # substitute disp_str and join_str back into self's query string
-                self.__query_string__ = re.sub('SELECT.*WHERE ',
-                                               disp_str + join_str + 'WHERE ',
-                                               self.__query_string__)
+                self.__query_string__ = re.sub(
+                    'SELECT.*WHERE ',
+                    disp_str + join_str + 'WHERE ',
+                    self.__query_string__,
+                )
                 self.__query_string__ += ' ORDER BY graph_data.graph6'
 
     def query_iterator(self, immutable=None):
@@ -715,14 +752,22 @@ class GraphQuery(GenericGraphQuery):
         else:
             format_cols = {}
         if with_picture:
-            SQLQuery.show(self, max_field_size=max_field_size,
-                          plot_cols={'graph6': graph6_to_plot},
-                          format_cols=format_cols, id_col='graph6',
-                          relabel_cols=relabel)
+            SQLQuery.show(
+                self,
+                max_field_size=max_field_size,
+                plot_cols={'graph6': graph6_to_plot},
+                format_cols=format_cols,
+                id_col='graph6',
+                relabel_cols=relabel,
+            )
         else:
-            SQLQuery.show(self, max_field_size=max_field_size,
-                          format_cols=format_cols, relabel_cols=relabel,
-                          id_col='graph6')
+            SQLQuery.show(
+                self,
+                max_field_size=max_field_size,
+                format_cols=format_cols,
+                relabel_cols=relabel,
+                id_col='graph6',
+            )
 
     def get_graphs_list(self, immutable=None):
         """
@@ -778,7 +823,6 @@ class GraphQuery(GenericGraphQuery):
 
 
 class GraphDatabase(SQLDatabase):
-
     def __init__(self):
         """
         Graph Database.
@@ -993,6 +1037,7 @@ class GraphDatabase(SQLDatabase):
                'unique': False}}}
         """
         from sage.features.databases import DatabaseGraphs
+
         dblocation = DatabaseGraphs().absolute_filename()
         SQLDatabase.__init__(self, dblocation)
 
@@ -1006,7 +1051,9 @@ class GraphDatabase(SQLDatabase):
         function_name = '__temporary_interact_function'
         arg = ['%s=%s' % (word, kwds[word]) for word in kwds]
         boxes = ["%s=input_grid(1,2,['=',%s])" % (word, kwds[word]) for word in kwds]
-        params = ['%s=%s[0]' % tuple(2 * [arg[i].split('=')[0]]) for i in range(len(arg))]
+        params = [
+            '%s=%s[0]' % tuple(2 * [arg[i].split('=')[0]]) for i in range(len(arg))
+        ]
 
         s = 'def %s(%s):' % (function_name, ','.join(boxes))
         t = """

@@ -8,8 +8,7 @@ from sage.modular.hecke.degenmap import DegeneracyMap
 
 from sage.modular.hecke.algebra import HeckeAlgebra
 
-from sage.modular.hecke.morphism import (HeckeModuleMorphism,
-                                         HeckeModuleMorphism_matrix)
+from sage.modular.hecke.morphism import HeckeModuleMorphism, HeckeModuleMorphism_matrix
 
 from sage.modular.hecke.element import HeckeModuleElement
 

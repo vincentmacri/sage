@@ -38,7 +38,7 @@ REFERENCES:
 .. autoclass:: sage.algebras.hecke_algebras.ariki_koike_algebra::_Basis
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2016-2018 Travis Scrimshaw <tcscrims at gmail.com>
 #                2016-2018 Andrew Mathas <andrew.mathas at sydney.edu.au>
 #
@@ -47,8 +47,7 @@ REFERENCES:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
@@ -75,6 +74,7 @@ class _Basis(CombinatorialFreeModule, BindableClass):
     r"""
     Abstract base class for bases of the Ariki-Koike algebra.
     """
+
     def __init__(self, algebra, prefix='AK'):
         r"""
         Initialize ``self``.
@@ -94,9 +94,13 @@ class _Basis(CombinatorialFreeModule, BindableClass):
         self._one_perm = self._Pn.one()
         C = cartesian_product([range(self._r)] * self._n)
         indices = cartesian_product([C, self._Pn])
-        CombinatorialFreeModule.__init__(self, algebra.base_ring(), indices,
-                                         prefix=prefix,
-                                         category=algebra._BasesCategory())
+        CombinatorialFreeModule.__init__(
+            self,
+            algebra.base_ring(),
+            indices,
+            prefix=prefix,
+            category=algebra._BasesCategory(),
+        )
 
     @cached_method
     def one_basis(self):
@@ -268,8 +272,11 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
         sage: all(Ji^3 == A.one() for Ji in J)
         True
     """
+
     @staticmethod
-    def __classcall_private__(cls, r, n, q=None, u=None, R=None, use_fraction_field=False):
+    def __classcall_private__(
+        cls, r, n, q=None, u=None, R=None, use_fraction_field=False
+    ):
         r"""
         Standardize input to ensure a unique representation.
 
@@ -299,10 +306,11 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 if q is None:
                     q = 'q'
         else:
-            if not isinstance(u, (list,tuple)):
-                u = [u]*r
+            if not isinstance(u, (list, tuple)):
+                u = [u] * r
             if R is None:
                 from sage.structure.element import get_coercion_model
+
                 cm = get_coercion_model()
                 if q is None:
                     R = cm.common_parent(*[val.parent() for val in u])
@@ -361,7 +369,8 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
              over Integer Ring
         """
         return "Ariki-Koike algebra of rank {} and order {} with q={} and u={} over {}".format(
-            self._r, self._n, self._q, self._u, self.base_ring())
+            self._r, self._n, self._q, self._u, self.base_ring()
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -429,12 +438,14 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
              over ... over Integer Ring
         """
         from sage.algebras.hecke_algebras.ariki_koike_specht_modules import SpechtModule
+
         return SpechtModule(self, la)
 
     class _BasesCategory(Category_realization_of_parent):
         r"""
         The category of bases of a Ariki-Koike algebra.
         """
+
         def __init__(self, base):
             r"""
             Initialize ``self``.
@@ -486,6 +497,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             cases, these are just default implementations that will get
             specialized in a basis.
             """
+
             def _repr_(self) -> str:
                 r"""
                 Text representation of this basis of Iwahori-Hecke algebra.
@@ -500,7 +512,10 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                     Ariki-Koike algebra of rank 5 and order 2
                      with q=q and u=(u0, u1, u2, u3, u4) ... in the LT-basis
                 """
-                return "%s in the %s-basis" % (self.realization_of(), self._realization_name())
+                return "%s in the %s-basis" % (
+                    self.realization_of(),
+                    self._realization_name(),
+                )
 
             def hecke_parameter(self):
                 r"""
@@ -562,6 +577,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                     29160
                 """
                 from sage.arith.misc import factorial
+
                 return self._r**self._n * factorial(self._n)
 
             def some_elements(self):
@@ -577,9 +593,9 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 """
                 G = self.algebra_generators()
                 elts = [self.an_element()] + list(G)
-                elts += [self.L(1)**2]
+                elts += [self.L(1) ** 2]
                 if self._n > 1:
-                    elts += [self.L(2)**(self._r//2)]
+                    elts += [self.L(2) ** (self._r // 2)]
                 return elts
 
             def specht_module(self, la):
@@ -597,7 +613,10 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                     sage: S1 is S2
                     True
                 """
-                from sage.algebras.hecke_algebras.ariki_koike_specht_modules import SpechtModule
+                from sage.algebras.hecke_algebras.ariki_koike_specht_modules import (
+                    SpechtModule,
+                )
+
                 return SpechtModule(self.realization_of(), la)
 
     # -----------------------------------------------------
@@ -613,6 +632,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
         This was the basis defined in [AK1994]_ except using the
         renormalized Jucys-Murphy elements.
         """
+
         def __init__(self, algebra):
             r"""
             Initialize ``self``.
@@ -642,8 +662,9 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 'L1*L3^2*T[2,1,2]'
             """
             gen_str = lambda e: '' if e == 1 else '^%s' % e
-            lhs = '*'.join('L%s' % (j+1) + gen_str(i)
-                           for j,i in enumerate(m[0]) if i > 0)
+            lhs = '*'.join(
+                'L%s' % (j + 1) + gen_str(i) for j, i in enumerate(m[0]) if i > 0
+            )
             redword = m[1].reduced_word()
             if not redword:
                 if not lhs:
@@ -665,8 +686,9 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 'L_{1} L_{3}^{2} T_{2} T_{1} T_{2}'
             """
             gen_str = lambda e: '' if e == 1 else '^{%s}' % e
-            lhs = ' '.join('L_{%s}' % (j+1) + gen_str(i)
-                           for j,i in enumerate(m[0]) if i > 0)
+            lhs = ' '.join(
+                'L_{%s}' % (j + 1) + gen_str(i) for j, i in enumerate(m[0]) if i > 0
+            )
             redword = m[1].reduced_word()
             if not redword:
                 if not lhs:
@@ -703,19 +725,23 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             ret = self.one()
             T = list(self._zero_tuple)
             one = self.base_ring().one()
-            for i,k in enumerate(t[0]):
+            for i, k in enumerate(t[0]):
                 if k == 0:
                     continue
-                perm = self._Pn.prod(self._Pn.simple_reflection(j)
-                                     for j in range(1,i+1))
-                ret = ret * self._from_dict({(self._zero_tuple, perm): one},
-                                            remove_zeros=False, coerce=False)
+                perm = self._Pn.prod(
+                    self._Pn.simple_reflection(j) for j in range(1, i + 1)
+                )
+                ret = ret * self._from_dict(
+                    {(self._zero_tuple, perm): one}, remove_zeros=False, coerce=False
+                )
                 T[0] = k
-                ret = ret * self._from_dict({(tuple(T), self._one_perm): one},
-                                            remove_zeros=False, coerce=False)
+                ret = ret * self._from_dict(
+                    {(tuple(T), self._one_perm): one}, remove_zeros=False, coerce=False
+                )
 
-            return ret * self._from_dict({(self._zero_tuple, t[1]): one},
-                                         remove_zeros=False, coerce=False)
+            return ret * self._from_dict(
+                {(self._zero_tuple, t[1]): one}, remove_zeros=False, coerce=False
+            )
 
         @cached_method
         def algebra_generators(self):
@@ -735,9 +761,9 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             d = {}
             if self._r != 1:
                 for i in range(self._n):
-                    r = list(self._zero_tuple) # Make a copy
+                    r = list(self._zero_tuple)  # Make a copy
                     r[i] = 1
-                    d['L%s' % (i+1)] = self.monomial((tuple(r), self._one_perm))
+                    d['L%s' % (i + 1)] = self.monomial((tuple(r), self._one_perm))
             G = self._Pn.group_generators()
             for i in range(1, self._n):
                 d['T%s' % i] = self.monomial((self._zero_tuple, G[i]))
@@ -797,8 +823,8 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             G = self.algebra_generators()
             if i is None:
                 if self._r == 1:
-                    return [self._Li_power(j, 1) for j in range(1, self._n+1)]
-                return [G['L%s' % j] for j in range(1, self._n+1)]
+                    return [self._Li_power(j, 1) for j in range(1, self._n + 1)]
+                return [G['L%s' % j] for j in range(1, self._n + 1)]
             if self._r == 1:
                 return self._Li_power(i, 1)
             return G['L%s' % i]
@@ -854,21 +880,22 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             #   otherwise we may end up in an infinite loop...
 
             # Product is of the form L1*T1*L2*T2: separate the L's and permutations
-            L1,T1 = m1
-            L2,T2 = m2
+            L1, T1 = m1
+            L2, T2 = m2
 
             if sum(L2) == 0:
                 # Compute and return the product of T1 and T2, whilst fixing L
-                return self._from_dict(self._product_LTwTv(L1, T1, T2),
-                                       remove_zeros=False, coerce=False)
+                return self._from_dict(
+                    self._product_LTwTv(L1, T1, T2), remove_zeros=False, coerce=False
+                )
 
             # If T1 is trivial then we just have L1*L2*T2 we only need to rewrite
             # all of the "large" powers that appear in L1*L2. Unfortunately, this
             # will almost certainly introduce more T_w's and it will be recursive
             # because L_n^r, for example, will introduce many powers of L_k for k<n.
             if T1 == self._one_perm:
-                Lbig = list(self._zero_tuple)   # separate the "big" and small
-                Lsmall = list(self._zero_tuple) # powers of the Lk's
+                Lbig = list(self._zero_tuple)  # separate the "big" and small
+                Lsmall = list(self._zero_tuple)  # powers of the Lk's
                 for i in range(self._n):
                     s = L1[i] + L2[i]
                     if s < self._r:
@@ -884,20 +911,26 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 # the left as soon as we can. For efficiency, we multiply the
                 # "big" powers in the order L_n^N L_{n-1}^N...L_1^N as this
                 # way we have to expand few powers the of the Lk's later.
-                return (self.monomial((tuple(Lsmall), self._one_perm))
-                        * prod(self._Li_power(i+1, Lbig[i])
-                               for i in reversed(range(self._n)) if Lbig[i] > 0)
-                        * self.monomial((self._zero_tuple, T2))
-                        )
+                return (
+                    self.monomial((tuple(Lsmall), self._one_perm))
+                    * prod(
+                        self._Li_power(i + 1, Lbig[i])
+                        for i in reversed(range(self._n))
+                        if Lbig[i] > 0
+                    )
+                    * self.monomial((self._zero_tuple, T2))
+                )
 
             # If we are still here then both T1 and L2 are non-trivial. Using the
             # method _product_Tw_L we expand the product T1*L2 as a linear
             # combination of standard basis elements using the method and then,
             # recursively, multiply on the left and right by L1 and T2,
             # respectively. In other words, we multiply as L1*(T1*L2)*T2.
-            return (self.monomial((L1, self._one_perm))
-                     * self._product_Tw_L(T1, L2)
-                     * self.monomial((self._zero_tuple, T2)))
+            return (
+                self.monomial((L1, self._one_perm))
+                * self._product_Tw_L(T1, L2)
+                * self.monomial((self._zero_tuple, T2))
+            )
 
         def _product_LTwTv(self, L, w, v):
             r"""
@@ -1013,26 +1046,32 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 for lv, c in wL.items():
                     L = list(lv[0])  # make a copy
                     v = lv[1]
-                    a, b = L[i-1], L[i]
-                    L[i-1], L[i] = L[i], L[i-1] # swap L_i=L[i-1] and L_{i+1}=L[i]
+                    a, b = L[i - 1], L[i]
+                    L[i - 1], L[i] = L[i], L[i - 1]  # swap L_i=L[i-1] and L_{i+1}=L[i]
                     # the term L_1^{a_1} ... L_i^{a_{i+1}} L_{i+1}^{a_i} ... L_n^{a_n} T_i T_v
                     # always appears
-                    iaxpy(c, self._product_LTwTv(tuple(L), self._Pn.simple_reflections()[i], v), iL) # need T_i*T_v
+                    iaxpy(
+                        c,
+                        self._product_LTwTv(
+                            tuple(L), self._Pn.simple_reflections()[i], v
+                        ),
+                        iL,
+                    )  # need T_i*T_v
 
                     if a < b:
-                        Ls = [list(L) for k in range(b-a)] # make copies of L
-                        for k in range(b-a):
-                            Ls[k][i-1] = a + k
+                        Ls = [list(L) for k in range(b - a)]  # make copies of L
+                        for k in range(b - a):
+                            Ls[k][i - 1] = a + k
                             Ls[k][i] = b - k
-                        c *= (q - one)
+                        c *= q - one
                         iaxpy(1, {(tuple(l), v): c for l in Ls}, iL)
 
                     elif a > b:
-                        Ls = [list(L) for k in range(a-b)] # make copies of L
-                        for k in range(a-b):
-                            Ls[k][i-1] = b + k
+                        Ls = [list(L) for k in range(a - b)]  # make copies of L
+                        for k in range(a - b):
+                            Ls[k][i - 1] = b + k
                             Ls[k][i] = a - k
-                        c *= (one - q)
+                        c *= one - q
                         iaxpy(1, {(tuple(l), v): c for l in Ls}, iL)
 
                 wL = iL  # replace wL with iL and repeat
@@ -1099,35 +1138,50 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 - (q^-2-2*q^-1+1)*L1*L2*L3*T[1,2] - (q^-2-2*q^-1+1)*L1^2*L3*T[1,2]
                 - (q^-2-q^-1)*L1^2*L3*T[2,1,2]
             """
+
             # shorthand for returning a tuple of the form (0,...,a,b,...,0) with a,b
             # in the (i-1)th and i-th positions, respectively
             def Ltuple(a, b):
-                return tuple([b if j == i else a if j == i-1 else 0
-                              for j in range(1,self._n+1)])
+                return tuple(
+                    [
+                        b if j == i else a if j == i - 1 else 0
+                        for j in range(1, self._n + 1)
+                    ]
+                )
 
             # return "small" powers of the generators without change
             if m < self._r:
                 return self.monomial((Ltuple(0, m), self._one_perm))
 
             if i > 1:
-                si = self._Pn.simple_reflections()[i-1]
+                si = self._Pn.simple_reflections()[i - 1]
                 qsum = self.base_ring().one() - self._q**-1
                 # by calling _Li_power we avoid infinite recursion here
-                return (self.sum_of_terms(((Ltuple(c, m-c), si), qsum) for c in range(1, m))
-                         + self._q**-1 * self.T(i-1) * self._Li_power(i-1, m) * self.T(i-1))
+                return self.sum_of_terms(
+                    ((Ltuple(c, m - c), si), qsum) for c in range(1, m)
+                ) + self._q**-1 * self.T(i - 1) * self._Li_power(i - 1, m) * self.T(
+                    i - 1
+                )
 
             # now left with the case i = 1 and m >= r
             if m > self._r:
-                return self.monomial((Ltuple(0, 1), self._one_perm)) * self._Li_power(i,m-1)
+                return self.monomial((Ltuple(0, 1), self._one_perm)) * self._Li_power(
+                    i, m - 1
+                )
 
             z = PolynomialRing(self.base_ring(), 'DUMMY').gen()
             p = list(prod(z - val for val in self._u))  # [:-1]
             p.pop()  # remove the highest power
             zero = self.base_ring().zero()
-            return self._from_dict({(Ltuple(0, exp), self._one_perm): -coeff
-                                    for exp, coeff in enumerate(p)
-                                    if coeff != zero},
-                                   remove_zeros=False, coerce=False)
+            return self._from_dict(
+                {
+                    (Ltuple(0, exp), self._one_perm): -coeff
+                    for exp, coeff in enumerate(p)
+                    if coeff != zero
+                },
+                remove_zeros=False,
+                coerce=False,
+            )
 
         @cached_method
         def inverse_T(self, i):
@@ -1178,11 +1232,15 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 """
                 if len(self) != 1:
                     raise NotImplementedError("inverse only implemented for monomials")
-                l,w = self.support_of_term()
+                l, w = self.support_of_term()
                 if sum(l) != 0:
-                    raise NotImplementedError("inverse only implemented for monomials in T variables")
+                    raise NotImplementedError(
+                        "inverse only implemented for monomials in T variables"
+                    )
                 H = self.parent()
-                return ~self[l,w] * H.prod(H.inverse_T(i) for i in reversed(w.reduced_word()))
+                return ~self[l, w] * H.prod(
+                    H.inverse_T(i) for i in reversed(w.reduced_word())
+                )
 
     class T(_Basis):
         r"""
@@ -1199,6 +1257,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
         `T_{1,k} = T_0^k`) and `w` is a reduced expression of an
         element in `\mathfrak{S}_n`.
         """
+
         def __init__(self, algebra):
             r"""
             Initialize ``self``.
@@ -1225,7 +1284,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             for i, k in enumerate(t[0]):
                 if not k:
                     continue
-                redword.extend(list(range(i, 0, -1)) + [0]*k)
+                redword.extend(list(range(i, 0, -1)) + [0] * k)
             redword.extend(t[1].reduced_word())
             return redword
 
@@ -1242,8 +1301,9 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             redword = self._basis_to_word(t)
             if not redword:
                 return "1"
-            return (self._print_options['prefix']
-                    + '[%s]' % ','.join('%d' % i for i in redword))
+            return self._print_options['prefix'] + '[%s]' % ','.join(
+                '%d' % i for i in redword
+            )
 
         def _latex_term(self, t) -> str:
             r"""
@@ -1258,8 +1318,9 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             redword = self._basis_to_word(t)
             if not redword:
                 return "1"
-            return ''.join("%s_{%d}" % (self._print_options['prefix'], i)
-                           for i in redword)
+            return ''.join(
+                "%s_{%d}" % (self._print_options['prefix'], i) for i in redword
+            )
 
         def _from_LT_basis(self, m):
             r"""
@@ -1291,7 +1352,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 sage: all(T(LT(b)) == b for b in T.basis())  # indirect doctest
                 True
             """
-            ret = self.prod(self.L(i+1)**k for i,k in enumerate(m[0]))
+            ret = self.prod(self.L(i + 1) ** k for i, k in enumerate(m[0]))
             return ret * self.monomial((self._zero_tuple, m[1]))
 
         @cached_method
@@ -1402,14 +1463,14 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 True
             """
             if i is None:
-                return [self.L(j) for j in range(1, self._n+1)]
+                return [self.L(j) for j in range(1, self._n + 1)]
 
             if i == 1:
                 if self._r == 1:
                     return self.from_base_ring(self._u[0])
                 return self.T(0)
             T = self.T()
-            return self._q**-1 * T[i-1] * self.L(i-1) * T[i-1]
+            return self._q**-1 * T[i - 1] * self.L(i - 1) * T[i - 1]
 
         @cached_method
         def product_on_basis(self, m1, m2):
@@ -1493,8 +1554,8 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                     return self._from_dict({m2: one}, remove_zeros=False)
                 if t2 == self._zero_tuple:
                     return self._from_dict({(t1, s2): one}, remove_zeros=False)
-                k1 = max(k for k,a in enumerate(t1) if a != 0)
-                k2 = min(k for k,a in enumerate(t2) if a != 0)
+                k1 = max(k for k, a in enumerate(t1) if a != 0)
+                k2 = min(k for k, a in enumerate(t2) if a != 0)
                 if k1 < k2:
                     T = list(t1)
                     for k in range(k2, len(t2)):
@@ -1506,7 +1567,9 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 t2 = list(t2)
                 t1[k1] = 0
                 t2[k2] = 0
-                L = self._from_dict({(tuple(t1), self._one_perm): one}, remove_zeros=False)
+                L = self._from_dict(
+                    {(tuple(t1), self._one_perm): one}, remove_zeros=False
+                )
                 R = self._from_dict({(tuple(t2), s2): one}, remove_zeros=False)
                 return L * M * R
 
@@ -1531,13 +1594,13 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                             # So S_{k-1} T_{k,a} = (q-1) T_{k,a} + q T_{k-1,a}
                             # Make a copy of T since we need to mutate it
                             new_t.append((list(T), {s: q * sprod[s] for s in sprod}))
-                            new_t[-1][0][ind] = (k-1, a)
+                            new_t[-1][0][ind] = (k - 1, a)
                             for s in sprod:
                                 sprod[s] *= qm1
                             break
                         elif j == k + 1:
                             absorbed = True
-                            T[ind] = (k+1, a)
+                            T[ind] = (k + 1, a)
                             break
                         # elif j > k: pass
                     if absorbed:
@@ -1546,7 +1609,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                         continue
 
                     # Do the usual Hecke product of S_j * S
-                    temp = {} # start from 0
+                    temp = {}  # start from 0
                     for p in sprod:
                         c = sprod[p]
                         # We have to flip the side due to Sage's
@@ -1562,11 +1625,17 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
             # Compute t1 * T * sprod
             def compute(T, sprod):
                 if not T:  # T=1, so just do t1 * sprod, each of which is in order
-                    return self._from_dict({(t1, s): sprod[s] for s in sprod},
-                                           remove_zeros=False, coerce=False)
+                    return self._from_dict(
+                        {(t1, s): sprod[s] for s in sprod},
+                        remove_zeros=False,
+                        coerce=False,
+                    )
 
-                s_elt = self._from_dict({(self._zero_tuple, s): sprod[s] for s in sprod},
-                                         remove_zeros=False, coerce=False)
+                s_elt = self._from_dict(
+                    {(self._zero_tuple, s): sprod[s] for s in sprod},
+                    remove_zeros=False,
+                    coerce=False,
+                )
                 # Break T into basis vectors as much as possible to best take
                 #   advantage of the caching
                 cur = list(t1)
@@ -1575,7 +1644,7 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                     K = max(k for k, a in enumerate(t1) if a != 0)
                 else:
                     K = -1
-                T.reverse() # reverse the list so we can pop off the front
+                T.reverse()  # reverse the list so we can pop off the front
                 while T:
                     k, a = T.pop()
                     if k > K:
@@ -1585,9 +1654,17 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                         cur[k] = a
                         product.append(cur)
                     K = k
-                return self.prod(self._from_dict({(tuple(p), self._one_perm): one},
-                                                 remove_zeros=False, coerce=False)
-                                 for p in product) * s_elt
+                return (
+                    self.prod(
+                        self._from_dict(
+                            {(tuple(p), self._one_perm): one},
+                            remove_zeros=False,
+                            coerce=False,
+                        )
+                        for p in product
+                    )
+                    * s_elt
+                )
 
             return self.sum(compute(T, sprod) for T, sprod in tprod)
 
@@ -1636,11 +1713,12 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 return self.base_ring().one()
             PR = self._T0_polynomial.parent()
             z = PR.gen()
-            cur = z ** exp
+            cur = z**exp
             while cur.degree() >= self._r:
-                cur = (PR.sum(coeff * self._T0_polynomial * z**e
-                             for e, coeff in enumerate(cur.list()[self._r:]))
-                       + cur.truncate(self._r))
+                cur = PR.sum(
+                    coeff * self._T0_polynomial * z**e
+                    for e, coeff in enumerate(cur.list()[self._r :])
+                ) + cur.truncate(self._r)
             return cur
 
         @cached_method
@@ -1716,8 +1794,11 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 if a + b < self._r:
                     T = list(self._zero_tuple)
                     T[kp] = a + b
-                    return self._from_dict({(tuple(T), self._one_perm): one},
-                                           remove_zeros=False, coerce=False)
+                    return self._from_dict(
+                        {(tuple(T), self._one_perm): one},
+                        remove_zeros=False,
+                        coerce=False,
+                    )
 
                 def key(exp):
                     if exp > 0 or kp == 0:
@@ -1727,22 +1808,24 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                     # Note that kp is 0-based, but our 0-index in the T portion
                     #   is the power of T_0
                     perm = self._Pn.one()
-                    for j in range(1, kp+1):
+                    for j in range(1, kp + 1):
                         perm = perm.apply_simple_reflection_left(j)
                     return (self._zero_tuple, perm)
+
                 p = self._reduced_T0_power(a + b)
                 zero = self.base_ring().zero()
-                return self._from_dict({key(exp): coeff
-                                        for exp, coeff in enumerate(p)
-                                        if coeff != zero},
-                                       remove_zeros=False, coerce=False)
+                return self._from_dict(
+                    {key(exp): coeff for exp, coeff in enumerate(p) if coeff != zero},
+                    remove_zeros=False,
+                    coerce=False,
+                )
 
             # Otherwise k > 0
             assert kp >= k
             s1 = self._Pn.simple_reflection(1)
             qm1 = self._q - one
             T = list(self._zero_tuple)
-            T[k-1] = b
+            T[k - 1] = b
             T[kp] = a
             ret = {(tuple(T), s1): one}
             zero = self.base_ring().zero()
@@ -1752,40 +1835,49 @@ class ArikiKoikeAlgebra(Parent, UniqueRepresentation):
                 T[ind] = exp
                 T[indp] = i
                 return tuple(T)
-            for i in range(1, b+1):
+
+            for i in range(1, b + 1):
                 if a + b - i == i:
                     continue
                 if a + b - i < self._r:
-                    T[k-1] = a + b - i
+                    T[k - 1] = a + b - i
                     T[kp] = i
                     m = (tuple(T), self._one_perm)
-                    T[k-1] = i
+                    T[k - 1] = i
                     T[kp] = a + b - i
                     mp = (tuple(T), self._one_perm)
                     iaxpy(1, {m: qm1, mp: -qm1}, ret)
                 else:
                     p = self._reduced_T0_power(a + b - i)
-                    temp = {(T_index(exp, k-1, i, kp), self._one_perm): qm1 * coeff
-                            for exp, coeff in enumerate(p) if coeff != zero}
+                    temp = {
+                        (T_index(exp, k - 1, i, kp), self._one_perm): qm1 * coeff
+                        for exp, coeff in enumerate(p)
+                        if coeff != zero
+                    }
                     if p[0] != zero and k > 1:
                         # We need to add back in the permutation for the "T_{k-1,0}"
                         #    in the reduction from T_{k-1,a+b-i}
                         perm = self._Pn.one()
-                        for j in range(2, k+1):  # Recall k is 0-based, we add 1 back from Lemma 2.3(a)
+                        for j in range(
+                            2, k + 1
+                        ):  # Recall k is 0-based, we add 1 back from Lemma 2.3(a)
                             perm = perm.apply_simple_reflection_left(j)
-                        tind = T_index(0, k-1, i, kp)
+                        tind = T_index(0, k - 1, i, kp)
                         temp[(tind, perm)] = temp[(tind, self._one_perm)]
                         del temp[(tind, self._one_perm)]
                     iaxpy(1, temp, ret)
-                    temp = {(T_index(exp, kp, i, k-1), self._one_perm): -qm1 * coeff
-                            for exp, coeff in enumerate(p) if coeff != zero}
+                    temp = {
+                        (T_index(exp, kp, i, k - 1), self._one_perm): -qm1 * coeff
+                        for exp, coeff in enumerate(p)
+                        if coeff != zero
+                    }
                     if p[0] != zero:
                         # We need to add back in the permutation for the "T_{k',0}"
                         #    in the reduction from T_{k',a+b-i}
                         perm = self._Pn.one()
-                        for j in range(1, kp+1):  # Recall kp is 0-based
+                        for j in range(1, kp + 1):  # Recall kp is 0-based
                             perm = perm.apply_simple_reflection_left(j)
-                        tind = T_index(0, kp, i, k-1)
+                        tind = T_index(0, kp, i, k - 1)
                         temp[(tind, perm)] = temp[(tind, self._one_perm)]
                         del temp[(tind, self._one_perm)]
                     iaxpy(1, temp, ret)

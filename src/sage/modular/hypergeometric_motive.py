@@ -174,7 +174,7 @@ def characteristic_polynomial_from_traces(traces, d, q, i, sign, deg=None, use_f
     t = PowerSeriesRing(QQ, 't').gen()
     ring = PolynomialRing(ZZ, 'T')
 
-    series = sum(- api * t**(i + 1) / (i + 1) for i, api in enumerate(traces))
+    series = sum(-api * t ** (i + 1) / (i + 1) for i, api in enumerate(traces))
     series = series.O(bound + 1).exp()
     coeffs = list(series)
     coeffs += [0] * max(0, bound + 1 - len(coeffs))
@@ -184,7 +184,7 @@ def characteristic_polynomial_from_traces(traces, d, q, i, sign, deg=None, use_f
     for k in range(bound + 1):
         data[k] = coeffs[k]
     for k in range(bound + 1, fulldeg + 1):
-        data[k] = sign * coeffs[d - k] * q**(i * (k - d / 2))
+        data[k] = sign * coeffs[d - k] * q ** (i * (k - d / 2))
     return ring(data)
 
 
@@ -206,8 +206,7 @@ def enumerate_hypergeometric_data(d, weight=None):
         112
     """
     bound = 2 * d * d  # to make sure that phi(n) <= d
-    possible = [(i, euler_phi(i)) for i in range(1, bound + 1)
-                if euler_phi(i) <= d]
+    possible = [(i, euler_phi(i)) for i in range(1, bound + 1) if euler_phi(i) <= d]
     poids = [z[1] for z in possible]
     N = len(poids)
     vectors = WeightedIntegerVectors(d, poids)
@@ -267,8 +266,7 @@ def cyclotomic_to_alpha(cyclo) -> list:
         sage: cyclotomic_to_alpha([2, 3])
         [1/3, 1/2, 2/3]
     """
-    alpha = [QQ((k, d)) for d in cyclo
-             for k in ZZ(d).coprime_integers(d)]
+    alpha = [QQ((k, d)) for d in cyclo for k in ZZ(d).coprime_integers(d)]
     return sorted(alpha)
 
 
@@ -405,8 +403,10 @@ def gamma_list_to_cyclotomic(galist):
         for d in divisors(abs(n)):
             resu[d] += eps
 
-    return (sorted(d for d in resu for k in range(resu[d])),
-            sorted(d for d in resu for k in range(-resu[d])))
+    return (
+        sorted(d for d in resu for k in range(resu[d])),
+        sorted(d for d in resu for k in range(-resu[d])),
+    )
 
 
 class HypergeometricData:
@@ -493,11 +493,13 @@ class HypergeometricData:
             self._sign_param = 1
         else:
             if (deg % 2) != (0 in alpha):
-                self._sign_param = prod(cyclotomic_polynomial(v).disc()
-                                        for v in cyclo_down)
+                self._sign_param = prod(
+                    cyclotomic_polynomial(v).disc() for v in cyclo_down
+                )
             else:
-                self._sign_param = prod(cyclotomic_polynomial(v).disc()
-                                        for v in cyclo_up)
+                self._sign_param = prod(
+                    cyclotomic_polynomial(v).disc() for v in cyclo_up
+                )
 
     # --- Internals ---
     def __repr__(self) -> str:
@@ -529,8 +531,7 @@ class HypergeometricData:
             sage: H1 == H2
             False
         """
-        return (self._alpha == other._alpha and
-                self._beta == other._beta)
+        return self._alpha == other._alpha and self._beta == other._beta
 
     def __ne__(self, other) -> bool:
         """
@@ -705,10 +706,8 @@ class HypergeometricData:
         alpha = self._alpha
         beta = self._beta
         if flip_beta:
-            return (sum(1 for a in alpha if a <= x) -
-                    sum(1 for b in beta if 1 - b <= x))
-        return (sum(1 for a in alpha if a <= x) -
-                sum(1 for b in beta if b <= x))
+            return sum(1 for a in alpha if a <= x) - sum(1 for b in beta if 1 - b <= x)
+        return sum(1 for a in alpha if a <= x) - sum(1 for b in beta if b <= x)
 
     def weight(self):
         """
@@ -857,9 +856,10 @@ class HypergeometricData:
             return alpha.count(x)
 
         T = polygen(ZZ, 'T')
-        return sum(T ** (self.zigzag(a, flip_beta=True) - z(a)) *
-                   (T**z(a) - 1) // (T - 1)
-                   for a in set(alpha))
+        return sum(
+            T ** (self.zigzag(a, flip_beta=True) - z(a)) * (T ** z(a) - 1) // (T - 1)
+            for a in set(alpha)
+        )
 
     def hodge_function(self, x):
         """
@@ -885,7 +885,7 @@ class HypergeometricData:
         i = 0
         j = 0
         k = 0
-        while (i < d and i < x):
+        while i < d and i < x:
             i += hn[k]
             j += k * hn[k]
             k += 1
@@ -961,11 +961,9 @@ class HypergeometricData:
 
         domain = {d for g in gamma for d in divisors(g.abs())}
 
-        m_plus = {d: len([1 for g in gamma_plus if not g % d])
-                  for d in domain}
+        m_plus = {d: len([1 for g in gamma_plus if not g % d]) for d in domain}
 
-        m_minus = {d: len([1 for g in gamma_minus if not g % d])
-                   for d in domain}
+        m_minus = {d: len([1 for g in gamma_minus if not g % d]) for d in domain}
 
         if vars is None:
             u, v = polygens(ZZ, 'u,v')
@@ -975,19 +973,26 @@ class HypergeometricData:
         uv = u * v
 
         A = u.parent()
-        delta_sharp_N = {d: A.sum(uqv**sum(frac(j * gi / d) for gi in gamma)
-                                  for j in d.coprime_integers(d))
-                         for d in domain}
+        delta_sharp_N = {
+            d: A.sum(
+                uqv ** sum(frac(j * gi / d) for gi in gamma)
+                for j in d.coprime_integers(d)
+            )
+            for d in domain
+        }
 
         loop = [(d, m_plus[d], m_minus[d]) for d in domain]
 
-        delta_sharp = sum((uqv**m - uqv**p) // (uqv - 1) * v**(ell - 1)
-                          * delta_sharp_N[d]
-                          for d, p, m in loop if m > p)
+        delta_sharp = sum(
+            (uqv**m - uqv**p) // (uqv - 1) * v ** (ell - 1) * delta_sharp_N[d]
+            for d, p, m in loop
+            if m > p
+        )
 
-        delta_zero = sum((uv**min(m, p) - 1) // (uv - 1) * v**(ell - m - p)
-                         * delta_sharp_N[d]
-                         for d, p, m in loop)
+        delta_zero = sum(
+            (uv ** min(m, p) - 1) // (uv - 1) * v ** (ell - m - p) * delta_sharp_N[d]
+            for d, p, m in loop
+        )
 
         return (delta_sharp + delta_zero - 1).numerator() // (u * v)
 
@@ -1092,6 +1097,7 @@ class HypergeometricData:
             0.997734256321692
         """
         from sage.lfunctions.pari import lfun_hgm, LFunction
+
         Z = LFunction(lfun_hgm(self, t), prec=prec)
         Z.rename('PARI L-function associated to %s' % self)
         return Z
@@ -1178,10 +1184,8 @@ class HypergeometricData:
         m = matrix(ZZ, l, 1, self.gamma_list())
         ext_ker = m.kernel().basis_matrix().insert_row(0, vector(ZZ, [1] * l))
         unique_relation = ext_ker.kernel().basis()[0]
-        removed = next(i for i, ci in enumerate(unique_relation)
-                       if i and abs(ci) == 1)
-        mat = matrix(ZZ, [v for i, v in enumerate(ext_ker)
-                          if i and i != removed])
+        removed = next(i for i, ci in enumerate(unique_relation) if i and abs(ci) == 1)
+        mat = matrix(ZZ, [v for i, v in enumerate(ext_ker) if i and i != removed])
         return LatticePolytope(mat.transpose())
 
     # --- Operations on data ---
@@ -1266,7 +1270,7 @@ class HypergeometricData:
             if prec1 < prec:
                 raise KeyError
         except KeyError:
-            use_longs = (p ** prec < 2 ** 31)
+            use_longs = p**prec < 2**31
             gtab = gauss_table(p, f, prec, use_longs)
             self._gauss_table[p, f] = (prec, gtab)
             prec1 = prec
@@ -1419,8 +1423,8 @@ class HypergeometricData:
 
         if 0 in alpha:
             return self._swap.padic_H_value(p, f, ~t, prec)
-        q = p ** f
-        if q > 2 ** 31:
+        q = p**f
+        if q > 2**31:
             raise ValueError("p^f cannot exceed 2^31")
 
         m: dict[int, int] = defaultdict(int)
@@ -1434,7 +1438,7 @@ class HypergeometricData:
 
         if prec is None:
             prec = ceil((self.weight() * f) / 2 + log(2 * self.degree() + 1, p))
-        use_longs = (p ** prec < 2 ** 31)
+        use_longs = p**prec < 2**31
 
         gamma = self._gamma_array
         if cache_p:
@@ -1442,7 +1446,9 @@ class HypergeometricData:
                 trcoeffs = self._trace_coeffs[p, f]
             except KeyError:
                 gtab_prec, gtab = self.gauss_table(p, f, prec)
-                trcoeffs = hgm_coeffs(p, f, prec, gamma, m, D, gtab, gtab_prec, use_longs)
+                trcoeffs = hgm_coeffs(
+                    p, f, prec, gamma, m, D, gtab, gtab_prec, use_longs
+                )
                 self._trace_coeffs[p, f] = trcoeffs
         else:
             gtab = gauss_table(p, f, prec, use_longs)
@@ -1559,7 +1565,7 @@ class HypergeometricData:
             raise ValueError('p not prime')
         if not all(x.denominator() % p for x in self._alpha + self._beta):
             raise NotImplementedError('p is wild')
-        if (t.numerator() * t.denominator() % p == 0 or (t - 1) % p == 0):
+        if t.numerator() * t.denominator() % p == 0 or (t - 1) % p == 0:
             raise NotImplementedError('p is tame')
 
         if 0 in alpha:
@@ -1580,17 +1586,18 @@ class HypergeometricData:
 
         tM = Fq(M / t)
         for k in range(q - 1):
-            if gen ** k == tM:
-                teich = zeta_q ** k
+            if gen**k == tM:
+                teich = zeta_q**k
                 break
 
-        gauss_table = [gauss_sum(zeta_q ** r, Fq) for r in range(q - 1)]
+        gauss_table = [gauss_sum(zeta_q**r, Fq) for r in range(q - 1)]
 
-        sigma = sum(q**(D + m[0] - m[r]) *
-                    prod(gauss_table[(-v * r) % (q - 1)]**gv
-                         for v, gv in gamma.items()) *
-                    teich ** r
-                    for r in range(q - 1))
+        sigma = sum(
+            q ** (D + m[0] - m[r])
+            * prod(gauss_table[(-v * r) % (q - 1)] ** gv for v, gv in gamma.items())
+            * teich**r
+            for r in range(q - 1)
+        )
         resu = ZZ(-1) ** m[0] / (1 - q) * sigma
         if not ring.is_exact():
             resu = resu.real_part().round()
@@ -1702,10 +1709,10 @@ class HypergeometricData:
             deg = d
         if deg < f:
             return ZZ.one()
-        q = p ** f
-        prec = ceil(deg*(self.weight()+1-mul)/2 + log(2*d + 1, p))
+        q = p**f
+        prec = ceil(deg * (self.weight() + 1 - mul) / 2 + log(2 * d + 1, p))
         k = (q - 1) // mo
-        flip = (f == 1 and prec == 1)
+        flip = f == 1 and prec == 1
         gtab_prec, gtab = self.gauss_table(p, f, prec)
         try:
             p_ring = gtab[0].parent()
@@ -1714,29 +1721,30 @@ class HypergeometricData:
         M = self.M_value()
         teich = p_ring.teichmuller(M / t0)
         m = {r: self._beta.count(QQ((r, q - 1))) for r in range(q - 1)}
-        D = -min(self.zigzag(x, flip_beta=True)
-                 for x in self._alpha + self._beta)
+        D = -min(self.zigzag(x, flip_beta=True) for x in self._alpha + self._beta)
         gamma = self.gamma_array()
         l = []
         for j in range(mo):
             if gcd(j, mo) == 1:
                 r = j * k
-                term = teich**r * ZZ(-1)**m[0]
+                term = teich**r * ZZ(-1) ** m[0]
                 ct = 0
                 for v, gv in gamma.items():
-                    r1 = v * r % (q-1)
+                    r1 = v * r % (q - 1)
                     ct += gv * sum(r1.digits(p))
                     term *= p_ring(gtab[r1]) ** (-gv if flip else gv)
                 ct //= p - 1
-                term *= ZZ(-1)**ct
+                term *= ZZ(-1) ** ct
                 ct += f * (D + m[0] - m[r])
                 l.append(term * p**ct)
-        traces = [0 if j % f else sum(i**(j // f) for i in l)
-                  for j in range(1, d + 1)]
+        traces = [
+            0 if j % f else sum(i ** (j // f) for i in l) for j in range(1, d + 1)
+        ]
         R = IntegerModRing(p**prec)
         traces = [R(i).lift_centered() for i in traces]
-        return characteristic_polynomial_from_traces(traces, d, p, 0, 1,
-                                                     deg, use_fe=False)
+        return characteristic_polynomial_from_traces(
+            traces, d, p, 0, 1, deg, use_fe=False
+        )
 
     @cached_method
     def euler_factor(self, t, p, deg=None, cache_p=False):
@@ -1957,11 +1965,12 @@ class HypergeometricData:
         if deg is not None:
             bound = min(deg, bound)
 
-        if p ** bound > 2 ** 31:
+        if p**bound > 2**31:
             raise ValueError("p^f cannot exceed 2^31")
 
-        traces = [self.padic_H_value(p, i + 1, t, cache_p=cache_p)
-                  for i in range(bound)]
+        traces = [
+            self.padic_H_value(p, i + 1, t, cache_p=cache_p) for i in range(bound)
+        ]
 
         w = self.weight()
         m1 = self.cyclotomic_data()[1].count(1)
@@ -1973,30 +1982,30 @@ class HypergeometricData:
                 sign = 1
                 if w % 2:
                     assert m1 % 2 == 0
-                    u = (-1) ** (m1//2)
-                    u *= prod(v ** gv for v, gv in self.gamma_array().items())
-                    c = kronecker_symbol(u, p) * p**((w-1)//2)
+                    u = (-1) ** (m1 // 2)
+                    u *= prod(v**gv for v, gv in self.gamma_array().items())
+                    c = kronecker_symbol(u, p) * p ** ((w - 1) // 2)
                 else:
-                    u = (-1) ** (1 + self.degree()//2 + (m1-1)//2)
+                    u = (-1) ** (1 + self.degree() // 2 + (m1 - 1) // 2)
                     num, den = self.defining_polynomials()
                     x = num.parent().gen()
                     num = num(-x)
-                    num /= (x-1) ** num.valuation(x-1)
-                    den /= (x-1) ** den.valuation(x-1)
+                    num /= (x - 1) ** num.valuation(x - 1)
+                    den /= (x - 1) ** den.valuation(x - 1)
                     u *= 2 * num(1) / den(1)
-                    c = kronecker_symbol(u, p) * p**(w//2)
+                    c = kronecker_symbol(u, p) * p ** (w // 2)
                 cpow = c
                 for j in range(len(traces)):
                     traces[j] -= cpow
                     cpow *= c
-                tmp = 1 - c*P.gen()
+                tmp = 1 - c * P.gen()
             else:
-                u = (-1) ** (1+(self.degree()-1)//2)
+                u = (-1) ** (1 + (self.degree() - 1) // 2)
                 num, den = self.defining_polynomials()
                 x = num.parent().gen()
                 den = den(-x)
-                num /= (x-1) ** num.valuation(x-1)
-                den /= (x-1) ** den.valuation(x-1)
+                num /= (x - 1) ** num.valuation(x - 1)
+                den /= (x - 1) ** den.valuation(x - 1)
                 u *= num(1) / den(1)
                 sign = kronecker_symbol(u, p)
         else:
@@ -2008,11 +2017,15 @@ class HypergeometricData:
         if typ == "mult" and t != 1:
             if self.degree() % 2 == 0:
                 ans *= tmp
-            if w % 2 == 0 and (t-1).valuation(p) % 2 == 0:
-                K = (-1) ** ((m1-1)//2)*2*prod(abs(x) for x in self.gamma_list())
-                t0 = (~t-1) / p**((t-1).valuation(p))
-                c = kronecker_symbol(K*t0, p) * p**(w//2)
-                ans *= 1 - c*P.gen()
+            if w % 2 == 0 and (t - 1).valuation(p) % 2 == 0:
+                K = (
+                    (-1) ** ((m1 - 1) // 2)
+                    * 2
+                    * prod(abs(x) for x in self.gamma_list())
+                )
+                t0 = (~t - 1) / p ** ((t - 1).valuation(p))
+                c = kronecker_symbol(K * t0, p) * p ** (w // 2)
+                ans *= 1 - c * P.gen()
             if deg is not None:
                 ans = ans.truncate(deg + 1)
         return ans

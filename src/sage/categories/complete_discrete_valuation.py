@@ -1,13 +1,12 @@
 r"""
 Complete Discrete Valuation Rings (CDVR) and Fields (CDVF)
 """
-#**************************************************************************
+# **************************************************************************
 #  Copyright (C) 2013 Xavier Caruso <xavier.caruso@normalesup.org>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#**************************************************************************
-
+# **************************************************************************
 
 from typing import Self
 
@@ -18,7 +17,7 @@ from sage.categories.discrete_valuation import (
 )
 from sage.misc.abstract_method import abstract_method
 
-#from sage.misc.cachefunc import cached_method
+# from sage.misc.cachefunc import cached_method
 
 
 class CompleteDiscreteValuationRings(Category_singleton):
@@ -37,6 +36,7 @@ class CompleteDiscreteValuationRings(Category_singleton):
         False
         sage: TestSuite(CompleteDiscreteValuationRings()).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::

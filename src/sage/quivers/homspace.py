@@ -58,6 +58,7 @@ class QuiverHomSpace(Homset):
         (Homomorphism of representations of Multi-digraph on 2 vertices,
          Homomorphism of representations of Multi-digraph on 2 vertices)
     """
+
     Element = QuiverRepHom
 
     ###########################################################################
@@ -106,8 +107,9 @@ class QuiverHomSpace(Homset):
         # Check that the bases are compatible, and then initialise the homset:
         if codomain.base_ring() != domain.base_ring():
             raise ValueError("representations are not over the same base ring")
-        Homset.__init__(self, domain, codomain, category=category,
-                        base=domain.base_ring())
+        Homset.__init__(
+            self, domain, codomain, category=category, base=domain.base_ring()
+        )
 
         # To compute the Hom Space we set up a 'generic' homomorphism where the
         # maps at each vertex are described by matrices whose entries are
@@ -129,7 +131,9 @@ class QuiverHomSpace(Homset):
         # First assign to varstart the dimension of the matrix assigned to the
         # previous vertex.
         for v in verts:
-            varstart[verts.index(v) + 1] = domain._spaces[v].dimension() * codomain._spaces[v].dimension()
+            varstart[verts.index(v) + 1] = (
+                domain._spaces[v].dimension() * codomain._spaces[v].dimension()
+            )
         for e in domain._semigroup._sorted_edges:
             eqs += domain._spaces[e[0]].dimension() * codomain._spaces[e[1]].dimension()
 
@@ -145,6 +149,7 @@ class QuiverHomSpace(Homset):
         # the rows correspond to variables, and .kernel() will give a right
         # kernel as is needed.
         from sage.matrix.constructor import Matrix
+
         coef_mat = Matrix(codomain.base_ring(), varstart[-1], eqs)
 
         # eqn keeps track of what equation we are on.  If the maps X and Y are
@@ -164,9 +169,13 @@ class QuiverHomSpace(Homset):
             for i in range(X.nrows()):
                 for j in range(Y.ncols()):
                     for k in range(Y.nrows()):
-                        coef_mat[varstart[verts.index(e[0])] + i * Y.nrows() + k, eqn] = Y[k, j]
+                        coef_mat[
+                            varstart[verts.index(e[0])] + i * Y.nrows() + k, eqn
+                        ] = Y[k, j]
                     for k in range(X.ncols()):
-                        coef_mat[varstart[verts.index(e[1])] + k * Y.ncols() + j, eqn] = -X[i, k]
+                        coef_mat[
+                            varstart[verts.index(e[1])] + k * Y.ncols() + j, eqn
+                        ] = -X[i, k]
                     eqn += 1
 
         # Now we can create the hom space
@@ -397,10 +406,15 @@ class QuiverHomSpace(Homset):
             True
         """
         from sage.matrix.constructor import Matrix
-        maps = {v: Matrix(self._domain._spaces[v].dimension(),
-                          self._domain._spaces[v].dimension(),
-                          self._base.one())
-                for v in self._quiver}
+
+        maps = {
+            v: Matrix(
+                self._domain._spaces[v].dimension(),
+                self._domain._spaces[v].dimension(),
+                self._base.one(),
+            )
+            for v in self._quiver
+        }
         return self.element_class(self._domain, self._codomain, maps)
 
     ###########################################################################
@@ -510,8 +524,12 @@ class QuiverHomSpace(Homset):
             (Homomorphism of representations of Multi-digraph on 2 vertices,
              Homomorphism of representations of Multi-digraph on 2 vertices)
         """
-        return tuple([self.element_class(self._domain, self._codomain, f)
-                      for f in self._space.gens()])
+        return tuple(
+            [
+                self.element_class(self._domain, self._codomain, f)
+                for f in self._space.gens()
+            ]
+        )
 
     def coordinates(self, hom):
         """
@@ -561,7 +579,9 @@ class QuiverHomSpace(Homset):
             sage: H.an_element() in H   # indirect doctest
             True
         """
-        return self.element_class(self._domain, self._codomain, self._space.an_element())
+        return self.element_class(
+            self._domain, self._codomain, self._space.an_element()
+        )
 
     def left_module(self, basis=False):
         """
@@ -614,15 +634,22 @@ class QuiverHomSpace(Homset):
             True
         """
         from sage.quivers.representation import QuiverRep
+
         if not self._codomain.is_left_module():
             raise ValueError("the codomain must be a left module")
 
         # Create the spaces
         spaces = {}
         for v in self._quiver:
-            im_gens = [self([self._codomain.left_edge_action((v, v), f(x))
-                             for x in self._domain.gens()])._vector
-                       for f in self.gens()]
+            im_gens = [
+                self(
+                    [
+                        self._codomain.left_edge_action((v, v), f(x))
+                        for x in self._domain.gens()
+                    ]
+                )._vector
+                for f in self.gens()
+            ]
             spaces[v] = self._space.submodule(im_gens)
 
         # Create the maps
@@ -631,15 +658,26 @@ class QuiverHomSpace(Homset):
             e_op = (e[1], e[0], e[2])
             maps[e_op] = []
             for vec in spaces[e[1]].gens():
-                vec_im = spaces[e_op[1]].coordinate_vector(self([self._codomain.left_edge_action(e, self(vec)(x))
-                                                                 for x in self._domain.gens()])._vector)
+                vec_im = spaces[e_op[1]].coordinate_vector(
+                    self(
+                        [
+                            self._codomain.left_edge_action(e, self(vec)(x))
+                            for x in self._domain.gens()
+                        ]
+                    )._vector
+                )
                 maps[e_op].append(vec_im)
 
         # Create and return the module (and the dict if desired)
         if basis:
             basis_dict = {}
             for v in self._quiver:
-                basis_dict[v] = [self.element_class(self._domain, self._codomain, vec)
-                                 for vec in spaces[v].gens()]
-            return (QuiverRep(self._base, self._semigroup.reverse(), spaces, maps), basis_dict)
+                basis_dict[v] = [
+                    self.element_class(self._domain, self._codomain, vec)
+                    for vec in spaces[v].gens()
+                ]
+            return (
+                QuiverRep(self._base, self._semigroup.reverse(), spaces, maps),
+                basis_dict,
+            )
         return QuiverRep(self._base, self._semigroup.reverse(), spaces, maps)

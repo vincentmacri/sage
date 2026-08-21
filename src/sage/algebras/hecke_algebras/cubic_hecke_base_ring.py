@@ -11,6 +11,7 @@ AUTHORS:
 
 - Sebastian Oehms May 2020: initial version
 """
+
 # ###########################################################################
 #       Copyright (C) 2020 Sebastian Oehms <seb.oehms@gmail.com>
 #
@@ -95,9 +96,15 @@ def register_ring_hom(ring_hom):
         test_map = codomain.convert_map_from(domain)
         try:
             if test_map != ring_hom:
-                verbose('\nConversion:\n%s\n already exists and is different from:\n%s\n' % (test_map, ring_hom))
+                verbose(
+                    '\nConversion:\n%s\n already exists and is different from:\n%s\n'
+                    % (test_map, ring_hom)
+                )
         except TypeError:
-            verbose('\n Conversion:\n%s\n already exists and is not comparable to:\n%s\n' % (test_map, ring_hom))
+            verbose(
+                '\n Conversion:\n%s\n already exists and is not comparable to:\n%s\n'
+                % (test_map, ring_hom)
+            )
     else:
         try:
             codomain.register_conversion(ring_hom)
@@ -126,6 +133,7 @@ class GaloisGroupAction(Action):
         sage: s*p
         3*x^2 + 5*y*z
     """
+
     def _act_(self, perm, pol):
         r"""
         Application of the action.
@@ -207,7 +215,15 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
         sage: _.an_element()
         b^2*c^-1 + e3*a
     """
-    def __init__(self, names, order='degrevlex', ring_of_definition=None, third_unity_root_name='e3', markov_trace_version=False):
+
+    def __init__(
+        self,
+        names,
+        order='degrevlex',
+        ring_of_definition=None,
+        third_unity_root_name='e3',
+        markov_trace_version=False,
+    ):
         r"""
         Initialize ``self``.
 
@@ -225,7 +241,9 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
 
         if ring_of_definition is not None:
             if not isinstance(ring_of_definition, CubicHeckeRingOfDefinition):
-                raise TypeError("generic base ring must be an instance of CubicHeckeRingOfDefinition")
+                raise TypeError(
+                    "generic base ring must be an instance of CubicHeckeRingOfDefinition"
+                )
             self._ring_of_definition = ring_of_definition
 
         # ----------------------------------------------------------------------
@@ -241,7 +259,9 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
         self._names = normalize_names_markov(names, markov_trace_version)
         self._order = order
 
-        pol_ring = PolynomialRing(base_ring, names=self._names, order=self._order, implementation=None)
+        pol_ring = PolynomialRing(
+            base_ring, names=self._names, order=self._order, implementation=None
+        )
         LaurentPolynomialRing_mpair.__init__(self, pol_ring)
 
         # ----------------------------------------------------------------------
@@ -249,6 +269,7 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
         # ----------------------------------------------------------------------
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
         from operator import mul
+
         self._galois_group = SymmetricGroup(3)
         galois_group_action = GaloisGroupAction(self._galois_group, self, op=mul)
         self._unset_coercions_used()
@@ -285,7 +306,11 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
             sage: loads(dumps(ER)) == ER
             True
         """
-        return CubicHeckeExtensionRing, (self._names, self._order, self._ring_of_definition)
+        return CubicHeckeExtensionRing, (
+            self._names,
+            self._order,
+            self._ring_of_definition,
+        )
 
     def _element_constructor_(self, x, mon=None):
         r"""
@@ -307,6 +332,7 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
             [-b  c]
         """
         from sage.interfaces.gap3 import GAP3Element
+
         if isinstance(x, GAP3Element):
             return self._convert_from_gap3_mvp(x)
         return super()._element_constructor_(x, mon=mon)
@@ -377,13 +403,19 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
 
         if len(im_gens) == num_gens + 1:
             e3, *im_remain = im_gens
-            hom_cycl_gen = self.base_ring().hom([e3], codomain=e3.parent(), check=check, base_map=base_map)
+            hom_cycl_gen = self.base_ring().hom(
+                [e3], codomain=e3.parent(), check=check, base_map=base_map
+            )
             verbose("hom_cycl_gen %s" % hom_cycl_gen, level=2)
-            return super().hom(im_remain, codomain=codomain, check=check, base_map=hom_cycl_gen)
+            return super().hom(
+                im_remain, codomain=codomain, check=check, base_map=hom_cycl_gen
+            )
         if base_map is None:
-            raise ValueError('number of images must be four (including a '
-                             'third root of unity at first position) or a '
-                             'base_map (on %s) must be given' % self.base_ring())
+            raise ValueError(
+                'number of images must be four (including a '
+                'third root of unity at first position) or a '
+                'base_map (on %s) must be given' % self.base_ring()
+            )
         return super().hom(im_gens, codomain=codomain, check=check, base_map=base_map)
 
     def _an_element_(self):
@@ -405,7 +437,7 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
         s = self.one()
         if rem:
             s = rem[0]
-        return b**2/c + a*e3/s
+        return b**2 / c + a * e3 / s
 
     ############################################################################
     # local methods
@@ -451,6 +483,7 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
             a*b*c^-2 + a^2*b^-1*c^-1 + a^-1*b^2*c^-1 + 2 + a*b^-2*c + a^-2*b*c + a^-1*b^-1*c^2
         """
         from sage.misc.sage_eval import sage_eval
+
         E3 = self.cyclotomic_generator()
         a, b, c, *rem = self.gens()
         na, nb, nc = self.variable_names()
@@ -574,7 +607,13 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
 
         return self._mirror
 
-    def create_specialization(self, im_cubic_equation_roots, im_writhe_parameter=None, var='T', third_unity_root_name='E3'):
+    def create_specialization(
+        self,
+        im_cubic_equation_roots,
+        im_writhe_parameter=None,
+        var='T',
+        third_unity_root_name='E3',
+    ):
         r"""
         Return an appropriate ring containing the elements from the list
         ``im_cubic_equation_roots`` defining a conversion map from ``self`` mapping
@@ -641,12 +680,16 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
         num_gens = len(gens)
         if im_writhe_parameter:
             if num_gens < 4:
-                raise ValueError('im_writhe_parameter only possible for Markov-trace extension')
+                raise ValueError(
+                    'im_writhe_parameter only possible for Markov-trace extension'
+                )
             im_gens = im_cubic_equation_roots + [im_writhe_parameter]
             a, b, c, s = im_gens
         else:
             if num_gens == 4:
-                raise ValueError('im_writhe_parameter must be given for Markov-trace extension')
+                raise ValueError(
+                    'im_writhe_parameter must be given for Markov-trace extension'
+                )
             im_gens = im_cubic_equation_roots
             a, b, c = im_gens
 
@@ -667,7 +710,11 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
         image_ring_base = image_ring.base_ring()
         image_ring_map = None
 
-        verbose('first choice: image_ring %s, image_ring_base %s' % (image_ring, image_ring_base), level=2)
+        verbose(
+            'first choice: image_ring %s, image_ring_base %s'
+            % (image_ring, image_ring_base),
+            level=2,
+        )
 
         # ----------------------------------------------------------------------
         # make sure that a third root of unity belongs to image_ring
@@ -675,14 +722,18 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
 
         E3 = None
         cp3 = cyclotomic_polynomial(3, var=var).change_ring(image_ring)
-        cyclotomic_roots = solve_with_extension(cp3, [third_unity_root_name], var=var, flatten=True, warning=False)
+        cyclotomic_roots = solve_with_extension(
+            cp3, [third_unity_root_name], var=var, flatten=True, warning=False
+        )
 
         if len(cyclotomic_roots) > 0:
             E3 = cyclotomic_roots[0]
             verbose('third root of unity %s found in %s' % (E3, E3.parent()), level=2)
 
         if E3 is None:
-            raise RuntimeError('cannot find a ring containing a third root of unity for the this choice of cubic roots!')
+            raise RuntimeError(
+                'cannot find a ring containing a third root of unity for the this choice of cubic roots!'
+            )
 
         hom_gens = [E3] + im_gens
         verbose('hom_gens %s' % hom_gens, level=2)
@@ -694,7 +745,11 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
 
         image_ring_base = image_ring.base_ring()
 
-        verbose('second choice: image_ring %s, image_ring_base %s' % (image_ring, image_ring_base), level=2)
+        verbose(
+            'second choice: image_ring %s, image_ring_base %s'
+            % (image_ring, image_ring_base),
+            level=2,
+        )
 
         try:
             image_ring_map = self.hom(hom_gens, codomain=image_ring)
@@ -777,10 +832,12 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
             # check of embedding fails in this case as long as the images of
             # ``iu`` and ``iv`` need to be invertible (see comment in
             # :meth:`__init__` of :class:`CubicHeckeRingOfDefinition`).
-            map_back = S.hom([e3, b, a, a + b + c, a*b+a*c+b*c, a*b*c, s], check=False)
+            map_back = S.hom(
+                [e3, b, a, a + b + c, a * b + a * c + b * c, a * b * c, s], check=False
+            )
         else:
             S = self.create_specialization([A, B, C])
-            map_back = S.hom([e3, b, a, a + b + c, a*b+a*c+b*c, a*b*c])
+            map_back = S.hom([e3, b, a, a + b + c, a * b + a * c + b * c, a * b * c])
         self.register_coercion(map_back)
         self._splitting_algebra = S
         return self._splitting_algebra
@@ -842,6 +899,7 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
         """
         if characteristic == 0:
             from sage.rings.number_field.number_field import CyclotomicField
+
             C3 = CyclotomicField(3)
             E3 = C3.gen()
         else:
@@ -849,6 +907,7 @@ class CubicHeckeExtensionRing(LaurentPolynomialRing_mpair):
                 raise ValueError('characteristic must be a prime integer')
             from sage.rings.finite_rings.finite_field_constructor import GF
             from sage.misc.functional import cyclotomic_polynomial
+
             G = GF(characteristic)
             c3 = cyclotomic_polynomial(3).change_ring(G)
             C3 = c3.splitting_field('a')
@@ -959,7 +1018,10 @@ class CubicHeckeRingOfDefinition(Localization):
         - 5*E(105)^62 - 5*E(105)^68 - 8*E(105)^71 - 5*E(105)^74 - 5*E(105)^83
         - 5*E(105)^86 - 5*E(105)^89 - 5*E(105)^92 - 5*E(105)^101 - 5*E(105)^104
     """
-    def __init__(self, names=('u', 'v', 'w', 's'), order='degrevlex', markov_trace_version=False):
+
+    def __init__(
+        self, names=('u', 'v', 'w', 's'), order='degrevlex', markov_trace_version=False
+    ):
         r"""
         Initialize ``self``.
 
@@ -1041,7 +1103,7 @@ class CubicHeckeRingOfDefinition(Localization):
         s = self.one()
         if rem:
             s = rem[0]
-        return u**2/w+v/s
+        return u**2 / w + v / s
 
     ############################################################################
     # Local Methods
@@ -1152,7 +1214,9 @@ class CubicHeckeRingOfDefinition(Localization):
                 self._mirror = self.hom([v / w, u / w, ~w])
         return self._mirror
 
-    def create_specialization(self, im_cubic_equation_parameters, im_writhe_parameter=None):
+    def create_specialization(
+        self, im_cubic_equation_parameters, im_writhe_parameter=None
+    ):
         r"""
         Return an appropriate Ring containing the elements from the list
         ``im_cubic_equation_parameters`` having a conversion map from ``self``
@@ -1214,7 +1278,9 @@ class CubicHeckeRingOfDefinition(Localization):
             im_cubic_equation_parameters = list(im_cubic_equation_parameters)
 
         if not isinstance(im_cubic_equation_parameters, list):
-            raise TypeError('cubic_equation_parameters must be a list of three elements')
+            raise TypeError(
+                'cubic_equation_parameters must be a list of three elements'
+            )
 
         if len(im_cubic_equation_parameters) != 3:
             raise ValueError('there must be exactly three cubic_equation_parameters')
@@ -1223,12 +1289,16 @@ class CubicHeckeRingOfDefinition(Localization):
         num_gens = len(gens)
         if im_writhe_parameter:
             if num_gens < 4:
-                raise ValueError('im_writhe_parameter only possible for Markov-trace extension')
+                raise ValueError(
+                    'im_writhe_parameter only possible for Markov-trace extension'
+                )
             im_gens = im_cubic_equation_parameters + [im_writhe_parameter]
             u, v, w, s = im_gens
         else:
             if num_gens == 4:
-                raise ValueError('im_writhe_parameter must be given for Markov-trace extension')
+                raise ValueError(
+                    'im_writhe_parameter must be given for Markov-trace extension'
+                )
             im_gens = im_cubic_equation_parameters
             u, v, w = im_gens
 
@@ -1287,7 +1357,9 @@ class CubicHeckeRingOfDefinition(Localization):
               over Integer Ring
         """
         markov = self._is_markov_trace_version()
-        return CubicHeckeExtensionRing(names, ring_of_definition=self, markov_trace_version=markov)
+        return CubicHeckeExtensionRing(
+            names, ring_of_definition=self, markov_trace_version=markov
+        )
 
     def markov_trace_version(self):
         r"""
@@ -1354,6 +1426,7 @@ class CubicHeckeRingOfDefinition(Localization):
         if not self._is_markov_trace_version():
             raise ValueError('functionality only available for Markov trace version')
         from sage.knots.link import Link
+
         H = Link([]).homfly_polynomial().parent()
         L, M = H.gens()
         HL = H.localization(1 - M)
@@ -1405,6 +1478,7 @@ class CubicHeckeRingOfDefinition(Localization):
         if not self._is_markov_trace_version():
             raise ValueError('functionality only available for Markov trace version')
         from sage.knots.knotinfo import KnotInfo
+
         K = KnotInfo.L2a1_1.kauffman_polynomial().parent()
         a, z = K.gens()
         ku = z * a + 1
@@ -1457,6 +1531,7 @@ class CubicHeckeRingOfDefinition(Localization):
         if not self._is_markov_trace_version():
             raise ValueError('functionality only available for Markov trace version')
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+
         L = LaurentPolynomialRing(ZZ, 't0, t1')
         t0, t1 = L.gens()
         lu = t0 + t1 - 1

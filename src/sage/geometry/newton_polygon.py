@@ -30,6 +30,7 @@ class NewtonPolygon_element(Element):
     """
     Class for infinite Newton polygons with last slope.
     """
+
     def __init__(self, polyhedron, parent):
         """
         Initialize a Newton polygon.
@@ -78,11 +79,20 @@ class NewtonPolygon_element(Element):
                 return "Empty Newton polygon"
             if length == 1:
                 return "Finite Newton polygon with 1 vertex: %s" % str(vertices[0])
-            return "Finite Newton polygon with %s vertices: %s" % (length, str(vertices)[1:-1])
+            return "Finite Newton polygon with %s vertices: %s" % (
+                length,
+                str(vertices)[1:-1],
+            )
 
         if length == 1:
-            return "Newton Polygon consisting of a unique infinite line of slope %s starting at %s" % (self.last_slope(), str(vertices[0]))
-        return "Infinite Newton polygon with %s vertices: %s ending by an infinite line of slope %s" % (length, str(vertices)[1:-1], self.last_slope())
+            return (
+                "Newton Polygon consisting of a unique infinite line of slope %s starting at %s"
+                % (self.last_slope(), str(vertices[0]))
+            )
+        return (
+            "Infinite Newton polygon with %s vertices: %s ending by an infinite line of slope %s"
+            % (length, str(vertices)[1:-1], self.last_slope())
+        )
 
     def vertices(self, copy=True) -> list:
         """
@@ -147,7 +157,7 @@ class NewtonPolygon_element(Element):
         rays = self._polyhedron.rays()
         for r in rays:
             if r[0] > 0:
-                return r[1]/r[0]
+                return r[1] / r[0]
         return Infinity
 
     def slopes(self, repetition=True) -> list:
@@ -181,9 +191,9 @@ class NewtonPolygon_element(Element):
         slopes = []
         vertices = self.vertices(copy=False)
         for i in range(1, len(vertices)):
-            dx = vertices[i][0] - vertices[i-1][0]
-            dy = vertices[i][1] - vertices[i-1][1]
-            slope = dy/dx
+            dx = vertices[i][0] - vertices[i - 1][0]
+            dy = vertices[i][1] - vertices[i - 1][1]
+            slope = dy / dx
             if repetition:
                 slopes.extend(dx * [slope])
             else:
@@ -375,7 +385,7 @@ class NewtonPolygon_element(Element):
                 b = c
         xg, yg = vertices[a]
         xd, yd = vertices[b]
-        return ((x-xg)*yd + (xd-x)*yg) / (xd-xg)
+        return ((x - xg) * yd + (xd - x) * yg) / (xd - xg)
 
     def _richcmp_(self, other, op) -> bool:
         r"""
@@ -464,24 +474,44 @@ class NewtonPolygon_element(Element):
         vertices = self.vertices()
         if len(vertices) == 0:
             from sage.plot.graphics import Graphics
+
             return Graphics()
 
         from sage.plot.line import line
+
         xstart, ystart = vertices[0]
         xend, yend = vertices[-1]
         if self.last_slope() is Infinity:
-            return line([(xstart, ystart+1), (xstart, ystart+0.5)],
-                        linestyle='--', **kwargs) \
-                 + line([(xstart, ystart+0.5)] + vertices
-                        + [(xend, yend+0.5)], **kwargs) \
-                 + line([(xend, yend+0.5), (xend, yend+1)],
-                        linestyle='--', **kwargs)
-        return line([(xstart, ystart+1), (xstart, ystart+0.5)],
-                    linestyle='--', **kwargs) \
-             + line([(xstart, ystart+0.5)] + vertices
-                    + [(xend+0.5, yend + 0.5*self.last_slope())], **kwargs) \
-             + line([(xend+0.5, yend + 0.5*self.last_slope()), (xend+1, yend+self.last_slope())],
-                    linestyle='--', **kwargs)
+            return (
+                line(
+                    [(xstart, ystart + 1), (xstart, ystart + 0.5)],
+                    linestyle='--',
+                    **kwargs,
+                )
+                + line(
+                    [(xstart, ystart + 0.5)] + vertices + [(xend, yend + 0.5)], **kwargs
+                )
+                + line([(xend, yend + 0.5), (xend, yend + 1)], linestyle='--', **kwargs)
+            )
+        return (
+            line(
+                [(xstart, ystart + 1), (xstart, ystart + 0.5)], linestyle='--', **kwargs
+            )
+            + line(
+                [(xstart, ystart + 0.5)]
+                + vertices
+                + [(xend + 0.5, yend + 0.5 * self.last_slope())],
+                **kwargs,
+            )
+            + line(
+                [
+                    (xend + 0.5, yend + 0.5 * self.last_slope()),
+                    (xend + 1, yend + self.last_slope()),
+                ],
+                linestyle='--',
+                **kwargs,
+            )
+        )
 
     def reverse(self, degree=None):
         r"""
@@ -519,8 +549,9 @@ class NewtonPolygon_element(Element):
         vertices = [(degree - x, y) for x, y in self.vertices()]
         vertices.reverse()
         parent = self.parent()
-        polyhedron = Polyhedron(base_ring=parent.base_ring(),
-                                vertices=vertices, rays=[(0, 1)])
+        polyhedron = Polyhedron(
+            base_ring=parent.base_ring(), vertices=vertices, rays=[(0, 1)]
+        )
         return parent(polyhedron)
 
 
@@ -650,6 +681,7 @@ class ParentNewtonPolygon(Parent, UniqueRepresentation):
         """
         from sage.categories.semirings import Semirings
         from sage.rings.rational_field import QQ
+
         Parent.__init__(self, category=Semirings(), base=QQ)
 
     def _repr_(self) -> str:
@@ -680,8 +712,7 @@ class ParentNewtonPolygon(Parent, UniqueRepresentation):
         """
         return self(Polyhedron(base_ring=self.base_ring(), ambient_dim=2))
 
-    def _element_constructor_(self, arg, sort_slopes=True,
-                              last_slope=Infinity):
+    def _element_constructor_(self, arg, sort_slopes=True, last_slope=Infinity):
         r"""
         INPUT:
 
@@ -724,15 +755,18 @@ class ParentNewtonPolygon(Parent, UniqueRepresentation):
             polyhedron = Polyhedron(base_ring=self.base_ring(), ambient_dim=2)
             return self.element_class(polyhedron, parent=self)
         if arg == 1:
-            polyhedron = Polyhedron(base_ring=self.base_ring(),
-                                    vertices=[(0, 0)], rays=[(0, 1)])
+            polyhedron = Polyhedron(
+                base_ring=self.base_ring(), vertices=[(0, 0)], rays=[(0, 1)]
+            )
             return self.element_class(polyhedron, parent=self)
         if not isinstance(arg, list):
             try:
                 arg = list(arg)
             except TypeError:
-                raise TypeError("argument must be a list of coordinates "
-                                "or a list of (rational) slopes")
+                raise TypeError(
+                    "argument must be a list of coordinates "
+                    "or a list of (rational) slopes"
+                )
         if arg and arg[0] in self.base_ring():
             if sort_slopes:
                 arg.sort()
@@ -740,8 +774,10 @@ class ParentNewtonPolygon(Parent, UniqueRepresentation):
             vertices = [(x, y)]
             for slope in arg:
                 if slope not in self.base_ring():
-                    raise TypeError("argument must be a list of coordinates "
-                                    "or a list of (rational) slopes")
+                    raise TypeError(
+                        "argument must be a list of coordinates "
+                        "or a list of (rational) slopes"
+                    )
                 x += 1
                 y += slope
                 vertices.append((x, y))
@@ -754,8 +790,9 @@ class ParentNewtonPolygon(Parent, UniqueRepresentation):
             rays = [(0, 1)]
             if last_slope is not Infinity:
                 rays.append((1, last_slope))
-            polyhedron = Polyhedron(base_ring=self.base_ring(),
-                                    vertices=vertices, rays=rays)
+            polyhedron = Polyhedron(
+                base_ring=self.base_ring(), vertices=vertices, rays=rays
+            )
         return self.element_class(polyhedron, parent=self)
 
 

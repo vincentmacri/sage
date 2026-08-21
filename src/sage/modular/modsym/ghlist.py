@@ -2,6 +2,7 @@
 r"""
 List of coset representatives for `\Gamma_H(N)` in `\SL_2(\ZZ)`
 """
+
 ###########################################################################
 #       Sage: Open Source Mathematical Software
 #
@@ -36,6 +37,7 @@ class GHlist(SageObject):
         sage: loads(dumps(L)) == L
         True
     """
+
     def __init__(self, group) -> None:
         """
         EXAMPLES::
@@ -48,8 +50,11 @@ class GHlist(SageObject):
         v = group._coset_reduction_data()[0]
         N = group.level()
         coset_reps = {a for a, b, _ in v if b == 1}
-        w = [group._reduce_coset(x * u, x * v)
-             for x in coset_reps for u, v in p1list.P1List(N).list()]
+        w = [
+            group._reduce_coset(x * u, x * v)
+            for x in coset_reps
+            for u, v in p1list.P1List(N).list()
+        ]
         w = sorted(set(w))
         self.__list = w
 
@@ -143,6 +148,7 @@ class _GHlist_old_pickle(GHlist):
     no input to the class on the initial ``__init__`` call, and the
     new class pickles, we need to have ``__setstate__`` handle it.
     """
+
     def __init__(self) -> None:
         """
         For unpickling old pickles.
@@ -176,5 +182,4 @@ class _GHlist_old_pickle(GHlist):
         self.__dict__ = state  # Default pickling is ``state = self.__dict__``
 
 
-register_unpickle_override('sage.modular.modsym.ghlist', 'GHlist',
-                           _GHlist_old_pickle)
+register_unpickle_override('sage.modular.modsym.ghlist', 'GHlist', _GHlist_old_pickle)

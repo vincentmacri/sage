@@ -31,7 +31,6 @@ EXAMPLES::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.categories.algebras import Algebras
 from sage.categories.complete_discrete_valuation import CompleteDiscreteValuationFields
 from sage.categories.fields import Fields
@@ -51,8 +50,13 @@ try:
 except ImportError:
     pari_gen = ()
 
-lazy_import('sage.rings.polynomial.laurent_polynomial_ring_base', 'LaurentPolynomialRing_generic')
-lazy_import('sage.rings.lazy_series_ring', ('LazyPowerSeriesRing', 'LazyLaurentSeriesRing'))
+lazy_import(
+    'sage.rings.polynomial.laurent_polynomial_ring_base',
+    'LaurentPolynomialRing_generic',
+)
+lazy_import(
+    'sage.rings.lazy_series_ring', ('LazyPowerSeriesRing', 'LazyLaurentSeriesRing')
+)
 lazy_import('sage.rings.polynomial.polynomial_ring', 'PolynomialRing_generic')
 lazy_import('sage.rings.power_series_ring', 'PowerSeriesRing_generic')
 
@@ -174,6 +178,7 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
         ....:     else:
         ....:         print("wrong coercion {}".format(P))
     """
+
     Element = LaurentSeries
 
     @staticmethod
@@ -194,7 +199,11 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
         """
         from .power_series_ring import PowerSeriesRing
 
-        if not kwds and len(args) == 1 and isinstance(args[0], (PowerSeriesRing_generic, LazyPowerSeriesRing)):
+        if (
+            not kwds
+            and len(args) == 1
+            and isinstance(args[0], (PowerSeriesRing_generic, LazyPowerSeriesRing))
+        ):
             power_series = args[0]
         else:
             power_series = PowerSeriesRing(*args, **kwds)
@@ -262,9 +271,9 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
 
         self._power_series_ring = power_series
         self._one_element = self.element_class(self, power_series.one())
-        Parent.__init__(self, base_ring,
-                        names=power_series.variable_names(),
-                        category=category)
+        Parent.__init__(
+            self, base_ring, names=power_series.variable_names(), category=category
+        )
 
     def base_extend(self, R):
         """
@@ -305,12 +314,15 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
         """
         from sage.categories.fields import Fields
         from sage.categories.integral_domains import IntegralDomains
+
         if self in Fields():
             return self
         if self in IntegralDomains():
-            return LaurentSeriesRing(self.base_ring().fraction_field(),
-                    self.variable_names(),
-                    self.default_prec())
+            return LaurentSeriesRing(
+                self.base_ring().fraction_field(),
+                self.variable_names(),
+                self.default_prec(),
+            )
         raise ValueError('must be an integral domain')
 
     def change_ring(self, R):
@@ -323,9 +335,12 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
             sage: R.default_prec()
             4
         """
-        return LaurentSeriesRing(R, self.variable_names(),
-                                 default_prec=self.default_prec(),
-                                 sparse=self.is_sparse())
+        return LaurentSeriesRing(
+            R,
+            self.variable_names(),
+            default_prec=self.default_prec(),
+            sparse=self.is_sparse(),
+        )
 
     def is_sparse(self):
         """
@@ -372,7 +387,10 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
             sage: LaurentSeriesRing(ZZ, 't', sparse=True)
             Sparse Laurent Series Ring in t over Integer Ring
         """
-        s = "Laurent Series Ring in %s over %s" % (self.variable_name(), self.base_ring())
+        s = "Laurent Series Ring in %s over %s" % (
+            self.variable_name(),
+            self.base_ring(),
+        )
         if self.is_sparse():
             s = 'Sparse ' + s
         return s
@@ -531,7 +549,9 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
 
         P = parent(x)
         if isinstance(x, self.element_class) and n == 0 and P is self:
-            return x.add_bigoh(prec)  # ok, since Laurent series are immutable (no need to make a copy)
+            return x.add_bigoh(
+                prec
+            )  # ok, since Laurent series are immutable (no need to make a copy)
         if P is self.base_ring():
             # Convert x into a power series; if P is itself a Laurent
             # series ring A((t)), this prevents the implementation of
@@ -545,20 +565,23 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
             x = self.power_series_ring()(x)
         elif isinstance(x, pari_gen):
             t = x.type()
-            if t == "t_RFRAC":   # Rational function
-                x = self(self.polynomial_ring()(x.numerator())) / \
-                    self(self.polynomial_ring()(x.denominator()))
+            if t == "t_RFRAC":  # Rational function
+                x = self(self.polynomial_ring()(x.numerator())) / self(
+                    self.polynomial_ring()(x.denominator())
+                )
                 return (x << n).add_bigoh(prec)
-            if t == "t_SER":   # Laurent series
+            if t == "t_SER":  # Laurent series
                 n += x._valp()
                 bigoh = n + x.length()
                 x = self(self.polynomial_ring()(x.Vec()))
                 return (x << n).add_bigoh(bigoh)
             # General case, pretend to be a polynomial
             return (self(self.polynomial_ring()(x)) << n).add_bigoh(prec)
-        elif (isinstance(x, FractionFieldElement)
-              and (x.base_ring() is self.base_ring() or x.base_ring() == self.base_ring())
-              and isinstance(x.numerator(), (Polynomial, MPolynomial))):
+        elif (
+            isinstance(x, FractionFieldElement)
+            and (x.base_ring() is self.base_ring() or x.base_ring() == self.base_ring())
+            and isinstance(x.numerator(), (Polynomial, MPolynomial))
+        ):
             x = self(x.numerator()) / self(x.denominator())
             return (x << n).add_bigoh(prec)
         elif isinstance(x, (LazyPowerSeries, LazyLaurentSeries)):
@@ -571,15 +594,19 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
                 x = x.add_bigoh(prec)
         elif isinstance(x, Expression):
             from sage.symbolic.expression import SymbolicSeries
+
             if isinstance(x, SymbolicSeries):
                 v = x.default_variable()
                 if str(v) == self.variable_name():
                     R = self.base_ring()
                     g = self.gen()
                     return sum(
-                            (R(a)*g**ZZ(e) for a, e in x.coefficients(v, sparse=True)), self.zero()
-                            ).add_bigoh(x.degree(x.default_variable()))
-                raise TypeError("can only convert series into ring with same variable name")
+                        (R(a) * g ** ZZ(e) for a, e in x.coefficients(v, sparse=True)),
+                        self.zero(),
+                    ).add_bigoh(x.degree(x.default_variable()))
+                raise TypeError(
+                    "can only convert series into ring with same variable name"
+                )
         return self.element_class(self, x, n).add_bigoh(prec)
 
     def random_element(self, algorithm='default'):
@@ -606,9 +633,10 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
         """
         if algorithm == 'default':
             shift = ZZ.random_element()
-            return self([self.base_ring().random_element()
-                         for k in range(self.default_prec())],
-                        shift).O(shift + self.default_prec())
+            return self(
+                [self.base_ring().random_element() for k in range(self.default_prec())],
+                shift,
+            ).O(shift + self.default_prec())
         raise ValueError("algorithm cannot be %s" % algorithm)
 
     def construction(self):
@@ -642,6 +670,7 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
         """
         from sage.categories.pushout import CompletionFunctor
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+
         L = LaurentPolynomialRing(self.base_ring(), self._names[0])
         return CompletionFunctor(self._names[0], self.default_prec()), L
 
@@ -713,15 +742,25 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
             True
         """
         from sage.rings.fraction_field import FractionField_generic
+
         A = self.base_ring()
         if isinstance(P, FractionField_generic) and A.is_field():
             return self.has_coerce_map_from(P.base())
-        if (isinstance(P, (LaurentSeriesRing, LazyLaurentSeriesRing,
-                           LaurentPolynomialRing_generic,
-                           PowerSeriesRing_generic, LazyPowerSeriesRing,
-                           PolynomialRing_generic))
-                and P.variable_name() == self.variable_name()
-                and A.has_coerce_map_from(P.base_ring())):
+        if (
+            isinstance(
+                P,
+                (
+                    LaurentSeriesRing,
+                    LazyLaurentSeriesRing,
+                    LaurentPolynomialRing_generic,
+                    PowerSeriesRing_generic,
+                    LazyPowerSeriesRing,
+                    PolynomialRing_generic,
+                ),
+            )
+            and P.variable_name() == self.variable_name()
+            and A.has_coerce_map_from(P.base_ring())
+        ):
             return True
 
     def _is_valid_homomorphism_(self, codomain, im_gens, base_map=None):
@@ -886,8 +925,10 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
             Univariate Polynomial Ring in x over Rational Field
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-        return PolynomialRing(self.base_ring(), self.variable_name(),
-                              sparse=self.is_sparse())
+
+        return PolynomialRing(
+            self.base_ring(), self.variable_name(), sparse=self.is_sparse()
+        )
 
     def laurent_polynomial_ring(self):
         r"""
@@ -901,8 +942,10 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
             Univariate Laurent Polynomial Ring in x over Rational Field
         """
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
-        return LaurentPolynomialRing(self.base_ring(), self.variable_name(),
-                                     sparse=self.is_sparse())
+
+        return LaurentPolynomialRing(
+            self.base_ring(), self.variable_name(), sparse=self.is_sparse()
+        )
 
     def power_series_ring(self):
         r"""

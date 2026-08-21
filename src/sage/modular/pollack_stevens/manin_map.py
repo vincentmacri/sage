@@ -189,6 +189,7 @@ class ManinMap:
         sage: f(M2Z([1,0,0,1]))
         (1 + O(11^2), 2 + O(11))
     """
+
     def __init__(self, codomain, manin_relations, defining_data, check=True):
         """
         INPUT:
@@ -225,7 +226,9 @@ class ManinMap:
             self._dict = {}
             if isinstance(defining_data, (list, tuple)):
                 if len(defining_data) != manin_relations.ngens():
-                    raise ValueError("length of defining data must be the same as number of Manin generators")
+                    raise ValueError(
+                        "length of defining data must be the same as number of Manin generators"
+                    )
                 for i in range(len(defining_data)):
                     self._dict[manin_relations.gen(i)] = codomain(defining_data[i])
             elif isinstance(defining_data, dict):
@@ -236,7 +239,9 @@ class ManinMap:
                 try:
                     c = codomain(defining_data)
                 except TypeError:
-                    raise TypeError("unrecognized type %s for defining_data" % type(defining_data))
+                    raise TypeError(
+                        "unrecognized type %s for defining_data" % type(defining_data)
+                    )
                 g = manin_relations.gens()
                 self._dict = dict(zip(g, [c] * len(g)))
         else:
@@ -497,7 +502,10 @@ class ManinMap:
             sage: f.__repr__()
             'Map from the set of right cosets of Gamma0(11) in SL_2(Z) to Space of 11-adic distributions with k=0 action and precision cap 10'
         """
-        return "Map from the set of right cosets of Gamma0(%s) in SL_2(Z) to %s" % (self._manin.level(), self._codomain)
+        return "Map from the set of right cosets of Gamma0(%s) in SL_2(Z) to %s" % (
+            self._manin.level(),
+            self._codomain,
+        )
 
     def _eval_sl2(self, A):
         r"""
@@ -617,8 +625,9 @@ class ManinMap:
             codomain = self._codomain
         for ky, val in sd.items():
             if to_moments:
-                D[ky] = codomain([f(val.moment(a))
-                                  for a in range(val.precision_absolute())])
+                D[ky] = codomain(
+                    [f(val.moment(a)) for a in range(val.precision_absolute())]
+                )
             else:
                 D[ky] = f(val)
         return self.__class__(codomain, self._manin, D, check=False)
@@ -761,8 +770,9 @@ class ManinMap:
         D = {}
         for ky, val in self._dict.items():
             D[ky] = val.specialize(*args)
-        return self.__class__(self._codomain.specialize(*args), self._manin,
-                              D, check=False)
+        return self.__class__(
+            self._codomain.specialize(*args), self._manin, D, check=False
+        )
 
     def hecke(self, ell, algorithm='prep'):
         r"""
@@ -797,11 +807,15 @@ class ManinMap:
             # psi will denote self | T_ell
             psi = {}
             for g in M.gens():
-                psi_g = sum((self[h] * A for h, A in M.prep_hecke_on_gen_list(ell, g)), self._codomain(0))
+                psi_g = sum(
+                    (self[h] * A for h, A in M.prep_hecke_on_gen_list(ell, g)),
+                    self._codomain(0),
+                )
                 psi_g.normalize()
                 psi[g] = psi_g
-            return self.__class__(self._codomain, self._manin,
-                                  psi, check=False).normalize()
+            return self.__class__(
+                self._codomain, self._manin, psi, check=False
+            ).normalize()
         if algorithm == 'naive':
             S0N = Sigma0(self._manin.level())
             psi = self._right_action(S0N([1, 0, 0, ell]))

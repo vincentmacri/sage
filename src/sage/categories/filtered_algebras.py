@@ -1,12 +1,12 @@
 r"""
 Filtered Algebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.abstract_method import abstract_method
 from sage.categories.filtered_modules import FilteredModulesCategory
@@ -40,6 +40,7 @@ class FilteredAlgebras(FilteredModulesCategory):
 
     - :wikipedia:`Filtered_algebra`
     """
+
     class ParentMethods:
         @abstract_method(optional=True)
         def graded_algebra(self):

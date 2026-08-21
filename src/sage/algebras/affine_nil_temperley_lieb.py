@@ -1,6 +1,7 @@
 """
 Affine nilTemperley Lieb Algebra of type A
 """
+
 # ****************************************************************************
 #  Copyright (C) 2010 Anne Schilling <anne at math.ucdavis.edu>
 #
@@ -87,7 +88,10 @@ class AffineNilTemperleyLiebTypeA(CombinatorialFreeModule):
         W = self.weyl_group()
         assert w in W
         word = w.reduced_word()
-        if all(self.has_no_braid_relation(W.from_reduced_word(word[:i]), word[i]) for i in range(len(word))):
+        if all(
+            self.has_no_braid_relation(W.from_reduced_word(word[:i]), word[i])
+            for i in range(len(word))
+        ):
             return self.monomial(w)
         return self.zero()
 
@@ -119,7 +123,10 @@ class AffineNilTemperleyLiebTypeA(CombinatorialFreeModule):
             sage: A = AffineNilTemperleyLiebTypeA(3); A
             The affine nilTemperley Lieb algebra A3 over the ring Integer Ring
         """
-        return "The affine nilTemperley Lieb algebra A%s over the ring %s" % (self._n, self._base_ring)
+        return "The affine nilTemperley Lieb algebra A%s over the ring %s" % (
+            self._n,
+            self._base_ring,
+        )
 
     def weyl_group(self):
         """
@@ -234,8 +241,7 @@ class AffineNilTemperleyLiebTypeA(CombinatorialFreeModule):
             return False
         s = w.parent().simple_reflections()
         wi = w * s[i]
-        adjacent = [(i - 1) % w.parent().n,
-                    (i + 1) % w.parent().n]
+        adjacent = [(i - 1) % w.parent().n, (i + 1) % w.parent().n]
         for j in adjacent:
             if j in w.descents():
                 return j not in wi.descents()

@@ -33,6 +33,7 @@ class Lseries_ell(SageObject):
     """
     An elliptic curve `L`-series.
     """
+
     def __init__(self, E) -> None:
         r"""
         Create an elliptic curve `L`-series.
@@ -97,10 +98,9 @@ class Lseries_ell(SageObject):
         """
         return "Complex L-series of the %s" % self.__E
 
-    def dokchitser(self, prec=53,
-                   max_imaginary_part=0,
-                   max_asymp_coeffs=40,
-                   algorithm=None):
+    def dokchitser(
+        self, prec=53, max_imaginary_part=0, max_asymp_coeffs=40, algorithm=None
+    ):
         r"""
         Return an interface for computing with the `L`-series
         of this elliptic curve.
@@ -158,10 +158,12 @@ class Lseries_ell(SageObject):
 
         if algorithm == 'magma':
             from sage.interfaces.magma import magma
+
             return magma(self.__E).LSeries(Precision=prec)
 
         if algorithm == 'pari':
             from sage.lfunctions.pari import LFunction, lfun_elliptic_curve
+
             L = LFunction(lfun_elliptic_curve(self.__E), prec=prec)
             L.rename('PARI L-function associated to %s' % self.__E)
             return L
@@ -198,6 +200,7 @@ class Lseries_ell(SageObject):
             2.49226204427365
         """
         from sage.lfunctions.sympow import sympow
+
         return sympow.L(self.__E, n, prec)
 
     def sympow_derivs(self, n, prec, d):
@@ -248,6 +251,7 @@ class Lseries_ell(SageObject):
              1w2: 1.545605024269432E-01
         """
         from sage.lfunctions.sympow import sympow
+
         return sympow.Lderivs(self.__E, n, prec, d)
 
     def zeros(self, n):
@@ -269,6 +273,7 @@ class Lseries_ell(SageObject):
         AUTHORS: Uses Rubinstein's L-functions calculator.
         """
         from sage.lfunctions.lcalc import lcalc
+
         return lcalc.zeros(n, L=self.__E)
 
     def zeros_in_interval(self, x, y, stepsize):
@@ -300,6 +305,7 @@ class Lseries_ell(SageObject):
             [(6.87039122, 0.248922780), (8.01433081, -0.140168533), (9.93309835, -0.129943029)]
         """
         from sage.lfunctions.lcalc import lcalc
+
         return lcalc.zeros_in_interval(x, y, stepsize, L=self.__E)
 
     def values_along_line(self, s0, s1, number_samples):
@@ -335,9 +341,13 @@ class Lseries_ell(SageObject):
              (0.100000000 + 16.0000000*I, -3.87043288 - 1.88049411*I)]
         """
         from sage.lfunctions.lcalc import lcalc
-        return lcalc.values_along_line(s0-RationalField()('1/2'),
-                                       s1-RationalField()('1/2'),
-                                       number_samples, L=self.__E)
+
+        return lcalc.values_along_line(
+            s0 - RationalField()('1/2'),
+            s1 - RationalField()('1/2'),
+            number_samples,
+            L=self.__E,
+        )
 
     def twist_values(self, s, dmin, dmax):
         r"""
@@ -389,6 +399,7 @@ class Lseries_ell(SageObject):
             0
         """
         from sage.lfunctions.lcalc import lcalc
+
         return lcalc.twist_values(s - RationalField()('1/2'), dmin, dmax, L=self.__E)
 
     def twist_zeros(self, n, dmin, dmax):
@@ -422,6 +433,7 @@ class Lseries_ell(SageObject):
             {-4: [1.60813783, 2.96144840, 3.89751747], -3: [2.06170900, 3.48216881, 4.45853219]}
         """
         from sage.lfunctions.lcalc import lcalc
+
         return lcalc.twist_zeros(n, dmin, dmax, L=self.__E)
 
     def at1(self, k=None, prec=None):
@@ -519,7 +531,7 @@ class Lseries_ell(SageObject):
         else:
             # Use the same precision as deriv_at1() below for
             # consistency
-            prec = int(9.065*k/sqrtN + 1.443*log(k)) + 12
+            prec = int(9.065 * k / sqrtN + 1.443 * log(k)) + 12
         R = RealField(prec)
         # Compute error term with bounded precision of 24 bits and
         # round towards +infinity
@@ -532,14 +544,14 @@ class Lseries_ell(SageObject):
         pi = R.pi()
         sqrtN = R(self.__E.conductor()).sqrt()
 
-        z = (-2*pi/sqrtN).exp()
+        z = (-2 * pi / sqrtN).exp()
         zpow = z
         # Compute series sum and accumulate floating point errors
         L = R.zero()
         error = Rerror.zero()
 
         for n in range(1, k + 1):
-            term = (zpow * an[n])/n
+            term = (zpow * an[n]) / n
             zpow *= z
             L += term
             # We express relative error in units of epsilon, where
@@ -562,12 +574,12 @@ class Lseries_ell(SageObject):
             # result.
             #
             # Multiplying everything by two gives:
-            error += term.epsilon(Rerror)*(16*n + 3) + L.ulp(Rerror)
+            error += term.epsilon(Rerror) * (16 * n + 3) + L.ulp(Rerror)
         L *= 2
 
         # Add series error (we use (-2)/(z-1) instead of 2/(1-z)
         # because this causes 1/(1-z) to be rounded up)
-        error += ((-2)*Rerror(zpow)) / Rerror(z - 1)
+        error += ((-2) * Rerror(zpow)) / Rerror(z - 1)
         return (L, error)
 
     def deriv_at1(self, k=None, prec=None):
@@ -672,7 +684,7 @@ class Lseries_ell(SageObject):
             # 12 is an arbitrary extra number of bits (it is chosen
             #    such that the precision is 24 bits when the conductor
             #    equals 11 and k is the default value 4)
-            prec = int(9.065*k/sqrtN + 1.443*log(k)) + 12
+            prec = int(9.065 * k / sqrtN + 1.443 * log(k)) + 12
         R = RealField(prec)
         # Compute error term with bounded precision of 24 bits and
         # round towards +infinity
@@ -688,7 +700,7 @@ class Lseries_ell(SageObject):
         an = self.__E.anlist(k)  # list of Sage Integers
         pi = R.pi()
         sqrtN = R(self.__E.conductor()).sqrt()
-        v = exponential_integral_1(2*pi/sqrtN, k)
+        v = exponential_integral_1(2 * pi / sqrtN, k)
 
         # Compute series sum and accumulate floating point errors
         L = R.zero()
@@ -697,23 +709,23 @@ class Lseries_ell(SageObject):
         sumann = Rerror.zero()
 
         for n in range(1, k + 1):
-            term = (v[n-1] * an[n])/n
+            term = (v[n - 1] * an[n]) / n
             L += term
-            error += term.epsilon(Rerror)*5 + L.ulp(Rerror)
-            sumann += Rerror(an[n].abs())/n
+            error += term.epsilon(Rerror) * 5 + L.ulp(Rerror)
+            sumann += Rerror(an[n].abs()) / n
         L *= 2
 
         # Add error term for exponential_integral_1() errors.
         # Absolute error for 2*v[i] is 4*max(1, v[0])*2^-prec
         if v[0] > 1.0:
             sumann *= Rerror(v[0])
-        error += (sumann >> (prec - 2))
+        error += sumann >> (prec - 2)
 
         # Add series error (we use (-2)/(z-1) instead of 2/(1-z)
         # because this causes 1/(1-z) to be rounded up)
-        z = (-2*pi/sqrtN).exp()
-        zpow = ((-2*(k+1))*pi/sqrtN).exp()
-        error += ((-2)*Rerror(zpow)) / Rerror(z - 1)
+        z = (-2 * pi / sqrtN).exp()
+        zpow = ((-2 * (k + 1)) * pi / sqrtN).exp()
+        error += ((-2) * Rerror(zpow)) / Rerror(z - 1)
         return (L, error)
 
     def __call__(self, s):
@@ -907,4 +919,5 @@ class Lseries_ell(SageObject):
              Elliptic Curve defined by y^2 + y = x^3 - 7*x + 6 over Rational Field
         """
         from sage.lfunctions.zero_sums import LFunctionZeroSum
+
         return LFunctionZeroSum(self.__E, N=N)

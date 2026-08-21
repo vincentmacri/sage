@@ -38,7 +38,9 @@ AUTHORS:
 # (at your option) any later version.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.categories.action import Action
 
 
@@ -89,11 +91,17 @@ class GroupOfIsometries(FinitelyGeneratedMatrixGroup_gap):
         +Infinity
     """
 
-    def __init__(self, degree, base_ring,
-                 gens, invariant_bilinear_form,
-                 category=None, check=True,
-                 invariant_submodule=None,
-                 invariant_quotient_module=None):
+    def __init__(
+        self,
+        degree,
+        base_ring,
+        gens,
+        invariant_bilinear_form,
+        category=None,
+        check=True,
+        invariant_submodule=None,
+        invariant_quotient_module=None,
+    ):
         r"""
         Create this orthogonal group from the input.
 
@@ -107,6 +115,7 @@ class GroupOfIsometries(FinitelyGeneratedMatrixGroup_gap):
             sage: TestSuite(O).run()
         """
         from copy import copy
+
         G = copy(invariant_bilinear_form)
         G.set_immutable()
         self._invariant_bilinear_form = G
@@ -119,18 +128,17 @@ class GroupOfIsometries(FinitelyGeneratedMatrixGroup_gap):
                 self._check_matrix(f)
                 if (I is not None) and I * f != I:
                     raise ValueError("the submodule is not preserved")
-                if Q is not None and (Q.W() != Q.W()*f or Q.V()*f != Q.V()):
+                if Q is not None and (Q.W() != Q.W() * f or Q.V() * f != Q.V()):
                     raise ValueError("the quotient module is not preserved")
-        if len(gens) == 0:    # handle the trivial group
+        if len(gens) == 0:  # handle the trivial group
             gens = [G.parent().identity_matrix()]
         from sage.libs.gap.libgap import libgap
+
         gap_gens = [libgap(matrix_gen) for matrix_gen in gens]
         gap_group = libgap.Group(gap_gens)
-        FinitelyGeneratedMatrixGroup_gap.__init__(self,
-                                                  degree,
-                                                  base_ring,
-                                                  gap_group,
-                                                  category=category)
+        FinitelyGeneratedMatrixGroup_gap.__init__(
+            self, degree, base_ring, gap_group, category=category
+        )
 
     def _repr_(self):
         r"""
@@ -152,11 +160,18 @@ class GroupOfIsometries(FinitelyGeneratedMatrixGroup_gap):
         """
         n = self.ngens()
         from sage.repl.display.util import format_list
+
         if n > 5:
             return 'Group of isometries with %s generators ' % n
         if n == 1:
-            return 'Group of isometries with %s generator %s' % (n, format_list(self.gens()))
-        return 'Group of isometries with %s generators %s' % (n, format_list(self.gens()))
+            return 'Group of isometries with %s generator %s' % (
+                n,
+                format_list(self.gens()),
+            )
+        return 'Group of isometries with %s generators %s' % (
+            n,
+            format_list(self.gens()),
+        )
 
     def __reduce__(self):
         r"""
@@ -172,12 +187,16 @@ class GroupOfIsometries(FinitelyGeneratedMatrixGroup_gap):
             sage: loads(dumps(O)) == O
             True
         """
-        args = (self.degree(), self.base_ring(),
-                tuple(g.matrix() for g in self.gens()), self._invariant_bilinear_form,
-                self.category(),
-                False,
-                self._invariant_submodule,
-                self._invariant_quotient_module)
+        args = (
+            self.degree(),
+            self.base_ring(),
+            tuple(g.matrix() for g in self.gens()),
+            self._invariant_bilinear_form,
+            self.category(),
+            False,
+            self._invariant_submodule,
+            self._invariant_quotient_module,
+        )
         return (GroupOfIsometries, args)
 
     def invariant_bilinear_form(self):
@@ -222,12 +241,14 @@ class GroupOfIsometries(FinitelyGeneratedMatrixGroup_gap):
             (0, 2)
         """
         import operator
+
         if op == operator.mul and not self_on_left:
             if S is self._invariant_submodule:
                 return GroupActionOnSubmodule(self, S)
             if S is self._invariant_quotient_module:
                 return GroupActionOnQuotientModule(self, S)
             from sage.modules.fg_pid.fgp_module import FGP_Module_class
+
             T = self._invariant_quotient_module
             if isinstance(S, FGP_Module_class):
                 if S.is_submodule(T):
@@ -257,8 +278,9 @@ class GroupOfIsometries(FinitelyGeneratedMatrixGroup_gap):
         """
         F = self.invariant_bilinear_form()
         if x * F * x.transpose() != F:
-            raise TypeError('matrix must be orthogonal '
-                'with respect to the invariant form')
+            raise TypeError(
+                'matrix must be orthogonal with respect to the invariant form'
+            )
 
 
 class GroupActionOnSubmodule(Action):
@@ -288,6 +310,7 @@ class GroupActionOnSubmodule(Action):
         Echelon basis matrix:
         [0 1]
     """
+
     def __init__(self, MatrixGroup, submodule, is_left=False):
         r"""
         Initialize the action.
@@ -308,6 +331,7 @@ class GroupActionOnSubmodule(Action):
             [0 1]
         """
         import operator
+
         Action.__init__(self, MatrixGroup, submodule, is_left, operator.mul)
 
     def _act_(self, g, a):
@@ -375,6 +399,7 @@ class GroupActionOnQuotientModule(Action):
         sage: (x*g).parent()
         Finitely generated module V/W over Integer Ring with invariants (6)
     """
+
     def __init__(self, MatrixGroup, quotient_module, is_left=False):
         r"""
         Initialize the action.
@@ -392,6 +417,7 @@ class GroupActionOnQuotientModule(Action):
             ((1), (5))
         """
         import operator
+
         Action.__init__(self, MatrixGroup, quotient_module, is_left, operator.mul)
 
     def _act_(self, g, a):

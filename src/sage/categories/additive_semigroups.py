@@ -48,10 +48,17 @@ class AdditiveSemigroups(CategoryWithAxiom_singleton):
 
         sage: TestSuite(C).run()
     """
+
     _base_category_class_and_axiom = (AdditiveMagmas, "AdditiveAssociative")
 
-    AdditiveCommutative = LazyImport('sage.categories.commutative_additive_semigroups', 'CommutativeAdditiveSemigroups', at_startup=True)
-    AdditiveUnital = LazyImport('sage.categories.additive_monoids', 'AdditiveMonoids', at_startup=True)
+    AdditiveCommutative = LazyImport(
+        'sage.categories.commutative_additive_semigroups',
+        'CommutativeAdditiveSemigroups',
+        at_startup=True,
+    )
+    AdditiveUnital = LazyImport(
+        'sage.categories.additive_monoids', 'AdditiveMonoids', at_startup=True
+    )
 
     class ParentMethods:
         def _test_additive_associativity(self, **options):
@@ -82,11 +89,11 @@ class AdditiveSemigroups(CategoryWithAxiom_singleton):
             tester = self._tester(**options)
             S = tester.some_elements()
             from sage.misc.misc import some_tuples
+
             for x, y, z in some_tuples(S, 3, tester._max_runs):
                 tester.assertEqual((x + y) + z, x + (y + z))
 
     class Homsets(HomsetsCategory):
-
         def extra_super_categories(self):
             r"""
             Implement the fact that a homset between two semigroups is a
@@ -103,7 +110,6 @@ class AdditiveSemigroups(CategoryWithAxiom_singleton):
             return [AdditiveSemigroups()]
 
     class CartesianProducts(CartesianProductsCategory):
-
         def extra_super_categories(self):
             """
             Implement the fact that a Cartesian product of additive semigroups
@@ -121,7 +127,6 @@ class AdditiveSemigroups(CategoryWithAxiom_singleton):
             return [AdditiveSemigroups()]
 
     class Algebras(AlgebrasCategory):
-
         def extra_super_categories(self):
             """
             EXAMPLES::
@@ -134,10 +139,10 @@ class AdditiveSemigroups(CategoryWithAxiom_singleton):
                  Category of additive commutative additive magma algebras over Rational Field]
             """
             from sage.categories.semigroups import Semigroups
+
             return [Semigroups()]
 
         class ParentMethods:
-
             @cached_method
             def algebra_generators(self):
                 r"""
@@ -156,7 +161,12 @@ class AdditiveSemigroups(CategoryWithAxiom_singleton):
                     sage: A.algebra_generators()                                        # needs sage.modules
                     Family (B[a], B[b], B[c], B[d])
                 """
-                return self.basis().keys().additive_semigroup_generators().map(self.monomial)
+                return (
+                    self.basis()
+                    .keys()
+                    .additive_semigroup_generators()
+                    .map(self.monomial)
+                )
 
             def product_on_basis(self, g1, g2):
                 r"""

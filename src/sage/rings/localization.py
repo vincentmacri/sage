@@ -170,7 +170,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.categories.integral_domains import IntegralDomains
 from sage.structure.parent import Parent
@@ -233,6 +232,7 @@ def normalize_extra_units(base_ring, add_units, warning=True):
             # if :meth:`is_unit` or :meth:`~sage.rings.localization.LocalizationElement.factor` are not available we can't do any more.
             if warning:
                 from warnings import warn
+
                 warn('Localization may not be represented uniquely')
             add_units_result = add_units
             break
@@ -407,7 +407,8 @@ class LocalizationElement(IntegralDomainElement):
         P = self.parent()
         fac = [(P(f), e) for (f, e) in F]
         from sage.structure.factorization import Factorization
-        return Factorization(fac, unit=~P(den)*F.unit())
+
+        return Factorization(fac, unit=~P(den) * F.unit())
 
     def _im_gens_(self, codomain, im_gens, base_map=None):
         """
@@ -460,7 +461,11 @@ class LocalizationElement(IntegralDomainElement):
             sage: L(x*y*z).is_unit()
             True
         """
-        return self.parent()._cut_off_extra_units_from_base_ring_element(self._value.numerator()).is_unit()
+        return (
+            self.parent()
+            ._cut_off_extra_units_from_base_ring_element(self._value.numerator())
+            .is_unit()
+        )
 
     def inverse_of_unit(self):
         """
@@ -524,6 +529,7 @@ class LocalizationElement(IntegralDomainElement):
             Number Field in t with defining polynomial x^2 + x + 1
         """
         from sage.rings.rational_field import QQ
+
         if not self._value.parent() == QQ:
             raise ValueError('{} is not a rational'.format(self))
         return self._value
@@ -544,6 +550,7 @@ class LocalizationElement(IntegralDomainElement):
             True
         """
         from sage.rings.rational_field import QQ
+
         if not self._value.parent() == QQ:
             raise ValueError('{} is not a rational'.format(self))
         return self._value._integer_(Z=Z)
@@ -656,7 +663,15 @@ class Localization(Parent, UniqueRepresentation):
 
     Element = LocalizationElement
 
-    def __init__(self, base_ring, extra_units, names=None, normalize=True, category=None, warning=True):
+    def __init__(
+        self,
+        base_ring,
+        extra_units,
+        names=None,
+        normalize=True,
+        category=None,
+        warning=True,
+    ):
         """
         Python constructor of Localization.
 
@@ -674,7 +689,9 @@ class Localization(Parent, UniqueRepresentation):
         elif not isinstance(extra_units, list):
             extra_units = [extra_units]
 
-        from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
+        from sage.rings.polynomial.laurent_polynomial_ring_base import (
+            LaurentPolynomialRing_generic,
+        )
 
         if isinstance(base_ring, LaurentPolynomialRing_generic):
             extra_units += list(base_ring.gens())
@@ -682,8 +699,9 @@ class Localization(Parent, UniqueRepresentation):
 
         if isinstance(base_ring, Localization):
             # don't allow recursive constructions
-            extra_units = [u for u in extra_units
-                           if ~u not in base_ring._extra_units]  # :issue:`33463`
+            extra_units = [
+                u for u in extra_units if ~u not in base_ring._extra_units
+            ]  # :issue:`33463`
             extra_units += base_ring._extra_units
             base_ring = base_ring.base_ring()
 
@@ -696,7 +714,9 @@ class Localization(Parent, UniqueRepresentation):
             # since by construction the base ring must contain non units self must be infinite
             category = IntegralDomains().Infinite()
 
-        Parent.__init__(self, base=base_ring, names=names, normalize=normalize, category=category)
+        Parent.__init__(
+            self, base=base_ring, names=names, normalize=normalize, category=category
+        )
         self._extra_units = tuple(extra_units)
         self._fraction_field = base_ring.fraction_field()
         self._populate_coercion_lists_()
@@ -776,9 +796,13 @@ class Localization(Parent, UniqueRepresentation):
             if base_map.domain() is not B:
                 raise ValueError('domain of base_map must be %s' % B)
             if base_map.codomain() is not codomain.base_ring():
-                raise ValueError('codomain of base_map must be %s' % codomain.base_ring())
+                raise ValueError(
+                    'codomain of base_map must be %s' % codomain.base_ring()
+                )
             bas_gens = B.gens()
-            if im_gens and not all(base_map(g) == im_gens[bas_gens.index(g)] for g in bas_gens):
+            if im_gens and not all(
+                base_map(g) == im_gens[bas_gens.index(g)] for g in bas_gens
+            ):
                 raise ValueError('given base_map is not compatible with im_gens')
             im_gens = [base_map(g) for g in bas_gens]
             if not all(base_map(au).is_unit() for au in self._extra_units):
@@ -907,10 +931,14 @@ class Localization(Parent, UniqueRepresentation):
 
             sage: TestSuite(L).run()                                                    # needs sage.libs.pari sage.libs.singular
         """
-        potential_non_unit_denom = self._cut_off_extra_units_from_base_ring_element(x.denominator())
+        potential_non_unit_denom = self._cut_off_extra_units_from_base_ring_element(
+            x.denominator()
+        )
         if potential_non_unit_denom.is_unit():
             return self.element_class(self, x)
-        raise ValueError("factor %s of denominator is not a unit" % potential_non_unit_denom)
+        raise ValueError(
+            "factor %s of denominator is not a unit" % potential_non_unit_denom
+        )
 
     def _coerce_map_from_(self, S):
         """

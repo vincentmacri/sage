@@ -100,6 +100,7 @@ class OrlikTeraoAlgebra(CombinatorialFreeModule):
     - [FL2001]_
     - [CF2005]_
     """
+
     @staticmethod
     def __classcall_private__(cls, R, M, ordering=None):
         """
@@ -159,10 +160,15 @@ class OrlikTeraoAlgebra(CombinatorialFreeModule):
             self._broken_circuits[frozenset(L[1:])] = L[0]
 
         cat = Algebras(R).FiniteDimensional().Commutative().WithBasis().Graded()
-        CombinatorialFreeModule.__init__(self, R, list(M.no_broken_circuits_sets(ordering)),
-                                         prefix='OT', bracket='{',
-                                         sorting_key=self._sort_key,
-                                         category=cat)
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            list(M.no_broken_circuits_sets(ordering)),
+            prefix='OT',
+            bracket='{',
+            sorting_key=self._sort_key,
+            category=cat,
+        )
 
     def _sort_key(self, x):
         r"""
@@ -212,6 +218,7 @@ class OrlikTeraoAlgebra(CombinatorialFreeModule):
 
         from sage.misc.latex import latex
         from sage.sets.set import Set
+
         return "e_{{{}}}".format(latex(Set(sorted(m))))
 
     def _repr_(self) -> str:
@@ -269,8 +276,9 @@ class OrlikTeraoAlgebra(CombinatorialFreeModule):
             Finite family {'a': OT{a}, 'b': OT{b}, 'c': OT{c}, 'd': OT{d},
                            'e': OT{e}, 'f': OT{f}, 'g': OT{g}}
         """
-        return Family(sorted(self._M.groundset()),
-                      lambda i: self.subset_image(frozenset([i])))
+        return Family(
+            sorted(self._M.groundset()), lambda i: self.subset_image(frozenset([i]))
+        )
 
     def degree_on_basis(self, m):
         r"""
@@ -467,7 +475,11 @@ class OrlikTeraoAlgebra(CombinatorialFreeModule):
                 for ind, j in enumerate(sorted(bc, key=self._sorting.__getitem__)):
                     coeff = self._chi(C.difference({j}))
                     if coeff:
-                        r += mone**ind * R(coeff / lc) * self.subset_image(Si.difference({j}))
+                        r += (
+                            mone**ind
+                            * R(coeff / lc)
+                            * self.subset_image(Si.difference({j}))
+                        )
                 return r
         # So ``S`` is an NBC set.
         return self.monomial(S)
@@ -488,7 +500,9 @@ class OrlikTeraoAlgebra(CombinatorialFreeModule):
             [0 1 0]
         """
         rep_vecs = self._M.representation_vectors()
-        return matrix(self.base_ring().fraction_field(), [rep_vecs[x] for x in F]).row_module()
+        return matrix(
+            self.base_ring().fraction_field(), [rep_vecs[x] for x in F]
+        ).row_module()
 
     @cached_method
     def _chi(self, X):
@@ -505,7 +519,7 @@ class OrlikTeraoAlgebra(CombinatorialFreeModule):
         """
         R = self.base_ring()
         assert self._M.is_independent(X)
-        #if not self._M.is_independent(X):
+        # if not self._M.is_independent(X):
         #    return R.zero()
         M = self._M
         rep_vecs = M.representation_vectors()
@@ -601,6 +615,7 @@ class OrlikTeraoInvariantAlgebra(FiniteDimensionalInvariantModule):
         sage: [OTG.lift(b) for b in OTG.basis()]
         [OT{}, OT{0} + OT{1} + OT{2} + OT{3} + OT{4} + OT{5}]
     """
+
     def __init__(self, R, M, G, action_on_groundset=None, *args, **kwargs):
         r"""
         Initialize ``self``.
@@ -635,29 +650,37 @@ class OrlikTeraoInvariantAlgebra(FiniteDimensionalInvariantModule):
             category = kwargs.pop('category')
         else:
             from sage.categories.modules import Modules
+
             category = Modules(R).FiniteDimensional().WithBasis().Subobjects()
 
         def action(g, m):
-            return OT.sum(c * self._basis_action(g, x)
-                          for x, c in m._monomial_coefficients.items())
+            return OT.sum(
+                c * self._basis_action(g, x)
+                for x, c in m._monomial_coefficients.items()
+            )
 
         self._action = action
 
         max_deg = max([b.degree() for b in OT.basis()])
         B = []
         # compute invariant degree-by-degree
-        for d in range(max_deg+1):
+        for d in range(max_deg + 1):
             OT_d = OT.homogeneous_component(d)
             OTG_d = OT_d.invariant_module(G, action=action, category=category)
             B += [OT_d.lift(OTG_d.lift(b)) for b in OTG_d.basis()]
 
         from sage.modules.with_basis.subquotient import SubmoduleWithBasis
-        SubmoduleWithBasis.__init__(self, Family(B),
-                                    support_order=OT._compute_support_order(B),
-                                    ambient=OT,
-                                    unitriangular=False,
-                                    category=category,
-                                    *args, **kwargs)
+
+        SubmoduleWithBasis.__init__(
+            self,
+            Family(B),
+            support_order=OT._compute_support_order(B),
+            ambient=OT,
+            unitriangular=False,
+            category=category,
+            *args,
+            **kwargs,
+        )
 
         self._semigroup = G
 

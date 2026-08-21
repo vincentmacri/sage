@@ -39,18 +39,20 @@ from sage.misc.abstract_method import abstract_method
 from sage.categories.sets_cat import Sets
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.parent import Parent
-#from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet_graded
+
+# from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet_graded
 from sage.structure.sage_object import SageObject
 from sage.structure.list_clone import ClonableArray
 from sage.misc.latex import latex
-#from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
-#from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+# from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
+# from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 
 
 class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
     r"""
     This is the abstract base class for a path tableau.
     """
+
     @abstract_method
     def local_rule(self, i):
         r"""
@@ -119,7 +121,7 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             [0, 1, 2, 1, 0, 1, 0]
         """
         with self.clone() as result:
-            for i in range(1,self.size()-1):
+            for i in range(1, self.size() - 1):
                 result = result.local_rule(i)
 
         return result
@@ -202,19 +204,19 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
         row = list(other)
         col = list(self)
         if col[-1] != row[0]:
-            raise ValueError("%s, %s is not a composable pair" % (self,other))
+            raise ValueError("%s, %s is not a composable pair" % (self, other))
 
         path = P(col + row[1:])
 
-        for i in range(1,n):
+        for i in range(1, n):
             if verbose:
-                print(path[n-i:n+m-i])
-            for j in range(m-1):
-                path = path.local_rule(n+j-i)
+                print(path[n - i : n + m - i])
+            for j in range(m - 1):
+                path = path.local_rule(n + j - i)
         if verbose:
             print(path[:m])
 
-        return (P(path[:m]), P(path[m-1:]))
+        return (P(path[:m]), P(path[m - 1 :]))
 
     def cactus(self, i, j):
         r"""
@@ -265,7 +267,7 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             L = list(T.evacuation()) + t
             return self.parent()(L)
 
-        return self.cactus(1,j).cactus(1,j-i+1).cactus(1,j)
+        return self.cactus(1, j).cactus(1, j - i + 1).cactus(1, j)
 
     ########################### Visualisation and checking ####################
 
@@ -279,8 +281,8 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             sage: t._test_involution_rule()
         """
         tester = self._tester(**options)
-        for i in range(self.size()-2):
-            tester.assertEqual(self.local_rule(i+1).local_rule(i + 1), self)
+        for i in range(self.size() - 2):
+            tester.assertEqual(self.local_rule(i + 1).local_rule(i + 1), self)
 
     def _test_involution_cactus(self, **options):
         """
@@ -292,8 +294,8 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             sage: t._test_involution_cactus()
         """
         tester = self._tester(**options)
-        for i in range(2, self.size()+1):
-            tester.assertEqual(self.cactus(1,i).cactus(1,i), self)
+        for i in range(2, self.size() + 1):
+            tester.assertEqual(self.cactus(1, i).cactus(1, i), self)
 
     def _test_promotion(self, **options):
         """
@@ -306,7 +308,7 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
         """
         tester = self._tester(**options)
         n = self.size()
-        tester.assertEqual(self.cactus(1,n-1).cactus(1,n).promotion(), self)
+        tester.assertEqual(self.cactus(1, n - 1).cactus(1, n).promotion(), self)
 
     def _test_commutation(self, **options):
         """
@@ -318,12 +320,13 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             sage: t._test_commutation()
         """
         from itertools import combinations
+
         tester = self._tester(**options)
 
         n = self.size()
         if n < 5:
             return
-        for i,j,r,s in combinations(range(1,n+1), 4):
+        for i, j, r, s in combinations(range(1, n + 1), 4):
             lhs = self.cactus(i, j).cactus(r, s)
             rhs = self.cactus(r, s).cactus(i, j)
             tester.assertEqual(lhs, rhs)
@@ -338,14 +341,15 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
             sage: t._test_coboundary()
         """
         from itertools import combinations
+
         tester = self._tester(**options)
 
         n = self.size()
         if n < 4:
             return
-        for i,j,r,s in combinations(range(1,n+3), 4):
-            lhs = self.cactus(i, s-2).cactus(j-1, r-1)
-            rhs = self.cactus(i+s-r-1, i+s-j-1).cactus(i, s-2)
+        for i, j, r, s in combinations(range(1, n + 3), 4):
+            lhs = self.cactus(i, s - 2).cactus(j - 1, r - 1)
+            rhs = self.cactus(i + s - r - 1, i + s - j - 1).cactus(i, s - 2)
             tester.assertEqual(lhs, rhs)
 
     def orbit(self):
@@ -423,14 +427,14 @@ class PathTableau(ClonableArray, metaclass=InheritComparisonClasscallMetaclass):
         orb = self.orbit()
 
         for a in orb:
-            for i,j in combinations(range(1,self.size()+1),2):
-                b = a.cactus(i,j)
+            for i, j in combinations(range(1, self.size() + 1), 2):
+                b = a.cactus(i, j)
                 if a != b:
-                    G.add_edge(a,b,"%d,%d" % (i,j))
+                    G.add_edge(a, b, "%d,%d" % (i, j))
         return G
 
 
-class PathTableaux(UniqueRepresentation,Parent):
+class PathTableaux(UniqueRepresentation, Parent):
     """
     The abstract parent class for PathTableau.
     """
@@ -498,9 +502,9 @@ class CylindricalDiagram(SageObject):
         if not isinstance(T, PathTableau):
             raise ValueError('{0} must be a path tableau'.format(str(T)))
         n = len(T)
-        result = [[None]*(2*n-1)] * n
+        result = [[None] * (2 * n - 1)] * n
         for i in range(n):
-            result[i] = [""]*i + list(T)
+            result[i] = [""] * i + list(T)
             T = T.promotion()
 
         self.path_tableau = T
@@ -537,8 +541,10 @@ class CylindricalDiagram(SageObject):
         if not data[0]:
             data[0] = ['']  # Put sometime there
         max_width = max(max(len(x) for x in row) for row in data if row)
-        return '\n'.join('[' + ', '.join(' '*(max_width-len(x)) + x for x in row)
-                         + ']' for row in data)
+        return '\n'.join(
+            '[' + ', '.join(' ' * (max_width - len(x)) + x for x in row) + ']'
+            for row in data
+        )
 
     def __eq__(self, other):
         """
@@ -606,7 +612,7 @@ class CylindricalDiagram(SageObject):
         """
         D = self.diagram
         m = len(D[-1])
-        result = "\\begin{array}{"+"c"*m + "}\n"
+        result = "\\begin{array}{" + "c" * m + "}\n"
         result += "\\\\ \n".join(" & ".join(latex(a) for a in x) for x in D)
         result += "\n \\end{array}\n"
         return result
@@ -651,12 +657,21 @@ class CylindricalDiagram(SageObject):
         """
         from sage.typeset.ascii_art import ascii_art
         from sage.misc.misc_c import prod
+
         data = [[ascii_art(x) for x in row] for row in self.diagram]
         if not data[0]:
             data[0] = [ascii_art('')]  # Put sometime there
         max_width = max(max(len(x) for x in row) for row in data if row)
-        return prod((sum((ascii_art(' '*(max_width-len(x)+1)) + x for x in row), ascii_art(''))
-                    for row in data), ascii_art(''))
+        return prod(
+            (
+                sum(
+                    (ascii_art(' ' * (max_width - len(x) + 1)) + x for x in row),
+                    ascii_art(''),
+                )
+                for row in data
+            ),
+            ascii_art(''),
+        )
 
     def _unicode_art_(self):
         r"""
@@ -686,12 +701,21 @@ class CylindricalDiagram(SageObject):
         """
         from sage.typeset.unicode_art import unicode_art
         from sage.misc.misc_c import prod
+
         data = [[unicode_art(x) for x in row] for row in self.diagram]
         if not data[0]:
             data[0] = [unicode_art('')]  # Put sometime there
         max_width = max(max(len(x) for x in row) for row in data if row)
-        return prod((sum((unicode_art(' '*(max_width-len(x)+1)) + x for x in row), unicode_art(''))
-                    for row in data), unicode_art(''))
+        return prod(
+            (
+                sum(
+                    (unicode_art(' ' * (max_width - len(x) + 1)) + x for x in row),
+                    unicode_art(''),
+                )
+                for row in data
+            ),
+            unicode_art(''),
+        )
 
     def pp(self):
         r"""
@@ -723,5 +747,8 @@ class CylindricalDiagram(SageObject):
         if not data[0]:
             data[0] = ['']  # Put sometime there
         max_width = max(max(len(x) for x in row) for row in data if row)
-        print('\n'.join(' '.join(' '*(max_width-len(x)) + x for x in row)
-                        for row in data))
+        print(
+            '\n'.join(
+                ' '.join(' ' * (max_width - len(x)) + x for x in row) for row in data
+            )
+        )

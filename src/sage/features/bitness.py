@@ -1,6 +1,7 @@
 r"""
 Feature for testing if the machine is 32-bit.
 """
+
 from . import Feature, FeatureTestResult
 import sys
 
@@ -17,6 +18,7 @@ class Is32Bit(Feature):
         sage: Is32Bit() is Is32Bit()
         True
     """
+
     def __init__(self):
         Feature.__init__(self, '32_bit')
 

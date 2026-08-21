@@ -32,6 +32,7 @@ are also available directly using the catalogue of posets, as follows::
     For more detailed information see :meth:`TamariLattice`,
     :meth:`GeneralizedTamariLattice`.
 """
+
 # ****************************************************************************
 #    Copyright (C) 2012-2018 Frédéric Chapoton <chapoton@math.unistra.fr>
 #
@@ -224,8 +225,7 @@ def GeneralizedTamariLattice(a, b, m=1):
         raise ValueError("the condition a>=b*m does not hold")
 
     def covers(p):
-        return [swap(p, i, m) for i in range(len(p) - 1)
-                if not p[i] and p[i + 1]]
+        return [swap(p, i, m) for i in range(len(p) - 1) if not p[i] and p[i + 1]]
 
     # TODO check the exact best categories to use
     if m == 0:  # generalized Dyck lattices
@@ -235,9 +235,9 @@ def GeneralizedTamariLattice(a, b, m=1):
     else:
         cat = FiniteLatticePosets()
 
-    return LatticePoset({p: covers(p)
-                         for p in paths_in_triangle(a, b, a, b)},
-                        check=False, category=cat)
+    return LatticePoset(
+        {p: covers(p) for p in paths_in_triangle(a, b, a, b)}, check=False, category=cat
+    )
 
 
 def TamariLattice(n, m=1):
@@ -344,7 +344,7 @@ def swap_dexter(p, i) -> list[tuple[int, ...]]:
     tp = tuple(p)
     for deb in range(i, 0, -1):
         if not p[deb]:
-            q = tp[:deb] + tp[i + 1: j + 1] + tp[deb: i + 1] + tp[j + 1:]
+            q = tp[:deb] + tp[i + 1 : j + 1] + tp[deb : i + 1] + tp[j + 1 :]
             resu.append(q)
         else:
             break
@@ -387,9 +387,9 @@ def DexterSemilattice(n):
     b = n
 
     def covers_dexter(p):
-        data = [swap_dexter(p, i) for i in range(len(p) - 1)
-                if not p[i] and p[i + 1]]
+        data = [swap_dexter(p, i) for i in range(len(p) - 1) if not p[i] and p[i + 1]]
         return [cov for L in data for cov in L]
-    return MeetSemilattice({p: covers_dexter(p)
-                            for p in paths_in_triangle(a, b, a, b)},
-                           check=False)
+
+    return MeetSemilattice(
+        {p: covers_dexter(p) for p in paths_in_triangle(a, b, a, b)}, check=False
+    )

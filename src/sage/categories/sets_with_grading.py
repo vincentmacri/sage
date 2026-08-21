@@ -114,7 +114,6 @@ class SetsWithGrading(Category):
         return [Sets()]
 
     class ParentMethods:
-
         def _test_graded_components(self, **options):
             r"""
             Test that some graded components of ``self`` are parent with
@@ -146,6 +145,7 @@ class SetsWithGrading(Category):
                 Non negative integers
             """
             from sage.sets.non_negative_integers import NonNegativeIntegers
+
             return NonNegativeIntegers()
 
         # TODO:
@@ -223,6 +223,7 @@ class SetsWithGrading(Category):
             from sage.rings.integer_ring import ZZ
             from sage.rings.lazy_series_ring import LazyPowerSeriesRing
             from sage.sets.non_negative_integers import NonNegativeIntegers
+
             if isinstance(self.grading_set(), NonNegativeIntegers):
                 R = LazyPowerSeriesRing(ZZ, names='z')
                 return R(lambda n: self.graded_component(n).cardinality())

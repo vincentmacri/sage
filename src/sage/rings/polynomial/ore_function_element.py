@@ -29,6 +29,7 @@ class OreFunction(AlgebraElement):
     r"""
     An element in a Ore function field.
     """
+
     def __init__(self, parent, numerator, denominator=None, simplify=True):
         r"""
         Initialize this element.
@@ -61,8 +62,8 @@ class OreFunction(AlgebraElement):
             s = denominator.leading_coefficient()
             if s != 1:
                 s = ~s
-                numerator = s*numerator
-                denominator = s*denominator
+                numerator = s * numerator
+                denominator = s * denominator
             self._numerator = numerator
             self._denominator = denominator
         else:
@@ -121,7 +122,10 @@ class OreFunction(AlgebraElement):
         if self._denominator == 1:
             return latex(self._numerator)
         if self._denominator.is_monomial():
-            s = "%s^{-%s}" % (self.parent().latex_variable_names()[0], self._denominator.degree())
+            s = "%s^{-%s}" % (
+                self.parent().latex_variable_names()[0],
+                self._denominator.degree(),
+            )
         else:
             s = "\\left(%s\\right)^{-1}" % self._denominator
         if self._numerator == 1:
@@ -165,7 +169,11 @@ class OreFunction(AlgebraElement):
             True
         """
         if self.parent()._simplification:
-            return richcmp((self._numerator, self._denominator), (other._numerator, other._denominator), op)
+            return richcmp(
+                (self._numerator, self._denominator),
+                (other._numerator, other._denominator),
+                op,
+            )
         if op == op_EQ or op == op_NE:
             _, U, V = self._denominator.left_xlcm(other._denominator)
             return richcmp(U * self._numerator, V * other._numerator, op)
@@ -293,7 +301,9 @@ class OreFunction(AlgebraElement):
             sage: f == f.left_numerator() / f.right_denominator()   # indirect doctest
             True
         """
-        _, denominator, numerator = self._numerator.right_xlcm(self._denominator, monic=False)
+        _, denominator, numerator = self._numerator.right_xlcm(
+            self._denominator, monic=False
+        )
         d = denominator.degree()
         s = ~(denominator.leading_coefficient())
         morphism = self.parent().twisting_morphism(-d)
@@ -663,6 +673,7 @@ class ConstantOreFunctionSection(Map):
                 twisted by a |--> a^5
           To:   Finite Field in a of size 5^3
     """
+
     def _call_(self, x):
         r"""
         Return `x` viewed in the base field,
@@ -686,7 +697,9 @@ class ConstantOreFunctionSection(Map):
         """
         numerator = x._numerator
         denominator = x._denominator
-        if numerator.degree() == denominator.degree() and denominator.right_divides(numerator):
+        if numerator.degree() == denominator.degree() and denominator.right_divides(
+            numerator
+        ):
             return numerator.leading_coefficient() / denominator.leading_coefficient()
         raise TypeError(f"{x} is not a constant function")
 
@@ -698,6 +711,7 @@ class OreFunctionBaseringInjection(Morphism):
 
     This class is needed by the coercion system.
     """
+
     def __init__(self, domain, codomain):
         r"""
         Initialize this morphism.
@@ -713,9 +727,10 @@ class OreFunctionBaseringInjection(Morphism):
               From: Fraction Field of Univariate Polynomial Ring in t over Rational Field
               To:   Ore Function Field in x over Fraction Field of Univariate Polynomial Ring in t over Rational Field twisted by t |--> t + 1
         """
-        assert codomain.base_ring() is domain, \
+        assert codomain.base_ring() is domain, (
             "the domain of the injection must be the base ring of the Ore function field"
-        Morphism.__init__(self, Hom(domain,codomain))
+        )
+        Morphism.__init__(self, Hom(domain, codomain))
         self._an_element = codomain.gen()
         self._repr_type_str = "Ore Function base injection"
 
@@ -785,6 +800,7 @@ class OreFunctionBaseringInjection(Morphism):
 # Ore functions over Ore function field with finite index center
 ################################################################
 
+
 class OreFunction_with_large_center(OreFunction):
     r"""
     A special class for elements of Ore function fields whose
@@ -803,6 +819,7 @@ class OreFunction_with_large_center(OreFunction):
 
         sage: # TestSuite(f).run()
     """
+
     def reduced_trace(self, var=None):
         r"""
         Return the reduced trace of this element.
@@ -861,7 +878,7 @@ class OreFunction_with_large_center(OreFunction):
         denominator = self._denominator.reduced_norm(var)
         cofactor, _ = ring(denominator).right_quo_rem(self._denominator)
         numerator = (cofactor * self._numerator).reduced_trace(var)
-        return numerator/denominator
+        return numerator / denominator
 
     def reduced_norm(self, var=None):
         r"""
@@ -914,4 +931,4 @@ class OreFunction_with_large_center(OreFunction):
         """
         numerator = self._numerator.reduced_norm(var)
         denominator = self._denominator.reduced_norm(var)
-        return numerator/denominator
+        return numerator / denominator

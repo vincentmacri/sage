@@ -31,8 +31,8 @@ class BialgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
         sage: TestSuite(BialgebrasWithBasis(ZZ)).run()
     """
-    class ParentMethods:
 
+    class ParentMethods:
         def convolution_product(self, *maps):
             r"""
             Return the convolution product (a map) of the given maps.
@@ -146,7 +146,6 @@ class BialgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             return self.module_morphism(on_basis=onbasis, codomain=self)
 
     class ElementMethods:
-
         def convolution_power_of_id(self, n):
             r"""
             Compute the `n`-th convolution power of the identity morphism
@@ -207,7 +206,11 @@ class BialgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     T = lambda x: x.antipode()
                     n = abs(n)
                 else:
-                    raise ValueError("antipode not defined; cannot take negative convolution powers: {} < 0".format(n))
+                    raise ValueError(
+                        "antipode not defined; cannot take negative convolution powers: {} < 0".format(
+                            n
+                        )
+                    )
             else:
                 T = lambda x: x
             return self.convolution_product([T] * n)
@@ -400,10 +403,17 @@ class BialgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 # ``split_convolve`` moves terms of the form x # y to x*Ti(y1) # y2 in Sweedler notation.
                 def split_convolve(x_y):
                     x, y = x_y
-                    return (((xy1, y2), c * d)
-                            for ((y1, y2), d) in H.term(y).coproduct()
-                            for (xy1, c) in H.term(x) * mor(H.term(y1)))
-                out = HH.module_morphism(on_basis=lambda t: HH.sum_of_terms(split_convolve(t)), codomain=HH)(out)
+                    return (
+                        ((xy1, y2), c * d)
+                        for ((y1, y2), d) in H.term(y).coproduct()
+                        for (xy1, c) in H.term(x) * mor(H.term(y1))
+                    )
+
+                out = HH.module_morphism(
+                    on_basis=lambda t: HH.sum_of_terms(split_convolve(t)), codomain=HH
+                )(out)
 
             # Apply final map `T_n` to last term, `y`, and multiply.
-            return HH.module_morphism(on_basis=lambda xy: H.term(xy[0]) * T[-1](H.term(xy[1])), codomain=H)(out)
+            return HH.module_morphism(
+                on_basis=lambda xy: H.term(xy[0]) * T[-1](H.term(xy[1])), codomain=H
+            )(out)

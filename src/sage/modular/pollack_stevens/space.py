@@ -56,6 +56,7 @@ classical modular symbols (or even elliptic curves) as follows::
     sage: phi.parent()
     Space of modular symbols for Congruence Subgroup Gamma0(37) with sign 0 and values in Sym^0 Q^2
 """
+
 # ****************************************************************************
 #       Copyright (C) 2012 Robert Pollack <rpollack@math.bu.edu>
 #
@@ -75,8 +76,12 @@ from sage.rings.infinity import infinity as oo
 from sage.structure.factory import UniqueFactory
 
 from .distributions import OverconvergentDistributions, Symk
-from .modsym import (PSModularSymbolElement, PSModularSymbolElement_symk,
-                     PSModularSymbolElement_dist, PSModSymAction)
+from .modsym import (
+    PSModularSymbolElement,
+    PSModularSymbolElement_symk,
+    PSModularSymbolElement_dist,
+    PSModSymAction,
+)
 from .manin_map import ManinMap
 from .sigma0 import Sigma0, Sigma0Element
 
@@ -128,7 +133,17 @@ class PollackStevensModularSymbols_factory(UniqueFactory):
 
         sage: TestSuite(PollackStevensModularSymbols).run()
     """
-    def create_key(self, group, weight=None, sign=0, base_ring=None, p=None, prec_cap=None, coefficients=None):
+
+    def create_key(
+        self,
+        group,
+        weight=None,
+        sign=0,
+        base_ring=None,
+        p=None,
+        prec_cap=None,
+        coefficients=None,
+    ):
         r"""
         Sanitize input.
 
@@ -153,19 +168,26 @@ class PollackStevensModularSymbols_factory(UniqueFactory):
                 character = None
 
             if weight is None:
-                raise ValueError("you must specify a weight "
-                                 "or coefficient module")
+                raise ValueError("you must specify a weight or coefficient module")
 
             if prec_cap is None:
                 coefficients = Symk(weight, base_ring, character)
             else:
-                coefficients = OverconvergentDistributions(weight, p, prec_cap, base_ring,
-                                             character)
+                coefficients = OverconvergentDistributions(
+                    weight, p, prec_cap, base_ring, character
+                )
         else:
-            if weight is not None or base_ring is not None or p is not None or prec_cap is not None:
-                raise ValueError("if coefficients are specified, then weight, "
-                                 "base_ring, p, and prec_cap must take their "
-                                 "default value None")
+            if (
+                weight is not None
+                or base_ring is not None
+                or p is not None
+                or prec_cap is not None
+            ):
+                raise ValueError(
+                    "if coefficients are specified, then weight, "
+                    "base_ring, p, and prec_cap must take their "
+                    "default value None"
+                )
 
         return (group, coefficients, sign)
 
@@ -190,7 +212,9 @@ class PollackStevensModularSymbols_factory(UniqueFactory):
         return PollackStevensModularSymbolspace(*key)
 
 
-PollackStevensModularSymbols = PollackStevensModularSymbols_factory('PollackStevensModularSymbols')
+PollackStevensModularSymbols = PollackStevensModularSymbols_factory(
+    'PollackStevensModularSymbols'
+)
 
 
 class PollackStevensModularSymbolspace(Module):
@@ -217,6 +241,7 @@ class PollackStevensModularSymbolspace(Module):
         sage: M = PollackStevensModularSymbols(Gamma0(2), coefficients=D, sign=1); M.sign()
         1
     """
+
     def __init__(self, group, coefficients, sign=0):
         r"""
         INPUT:
@@ -300,8 +325,12 @@ class PollackStevensModularSymbolspace(Module):
             True
         """
         if isinstance(other, PollackStevensModularSymbolspace):
-            return (other.group() == self.group()
-                    and self.coefficient_module().has_coerce_map_from(other.coefficient_module()))
+            return (
+                other.group() == self.group()
+                and self.coefficient_module().has_coerce_map_from(
+                    other.coefficient_module()
+                )
+            )
 
         return False
 
@@ -320,8 +349,11 @@ class PollackStevensModularSymbolspace(Module):
             s = "Space of modular symbols for "
         else:
             s = "Space of overconvergent modular symbols for "
-        s += "%s with sign %s and values in %s" % (self.group(), self.sign(),
-                                                   self.coefficient_module())
+        s += "%s with sign %s and values in %s" % (
+            self.group(),
+            self.sign(),
+            self.coefficient_module(),
+        )
         return s
 
     def source(self):
@@ -552,9 +584,18 @@ class PollackStevensModularSymbolspace(Module):
         N = self.level()
         if N % p == 0:
             raise ValueError("the level is not prime to p")
-        from sage.modular.arithgroup.congroup_gamma0 import Gamma0_class, Gamma0_constructor as Gamma0
-        from sage.modular.arithgroup.congroup_gamma1 import Gamma1_class, Gamma1_constructor as Gamma1
-        from sage.modular.arithgroup.congroup_gamma import Gamma_class, Gamma_constructor as Gamma
+        from sage.modular.arithgroup.congroup_gamma0 import (
+            Gamma0_class,
+            Gamma0_constructor as Gamma0,
+        )
+        from sage.modular.arithgroup.congroup_gamma1 import (
+            Gamma1_class,
+            Gamma1_constructor as Gamma1,
+        )
+        from sage.modular.arithgroup.congroup_gamma import (
+            Gamma_class,
+            Gamma_constructor as Gamma,
+        )
 
         G = self.group()
         if isinstance(G, Gamma0_class):
@@ -565,7 +606,11 @@ class PollackStevensModularSymbolspace(Module):
             G = Gamma(N * p)
         else:
             raise NotImplementedError
-        return PollackStevensModularSymbols(G, coefficients=self.coefficient_module().change_ring(new_base_ring), sign=self.sign())
+        return PollackStevensModularSymbols(
+            G,
+            coefficients=self.coefficient_module().change_ring(new_base_ring),
+            sign=self.sign(),
+        )
 
     def _specialize_parent_space(self, new_base_ring):
         r"""
@@ -591,7 +636,11 @@ class PollackStevensModularSymbolspace(Module):
             sage: M._specialize_parent_space(QQ).base_ring()
             Rational Field
         """
-        return PollackStevensModularSymbols(self.group(), coefficients=self.coefficient_module().specialize(new_base_ring), sign=self.sign())
+        return PollackStevensModularSymbols(
+            self.group(),
+            coefficients=self.coefficient_module().specialize(new_base_ring),
+            sign=self.sign(),
+        )
 
     def _lift_parent_space(self, p, M, new_base_ring):
         r"""
@@ -619,7 +668,11 @@ class PollackStevensModularSymbolspace(Module):
             Space of overconvergent modular symbols for Congruence Subgroup Gamma1(3) with sign 0 and values in Space of 17-adic distributions with k=1 action and precision cap 10
         """
         if self.coefficient_module().is_symk():
-            return PollackStevensModularSymbols(self.group(), coefficients=self.coefficient_module().lift(p, M, new_base_ring), sign=self.sign())
+            return PollackStevensModularSymbols(
+                self.group(),
+                coefficients=self.coefficient_module().lift(p, M, new_base_ring),
+                sign=self.sign(),
+            )
         raise TypeError("Coefficient module must be a Symk")
 
     def change_ring(self, new_base_ring):
@@ -641,7 +694,11 @@ class PollackStevensModularSymbolspace(Module):
             sage: M.change_ring(Qp(5,8))
             Space of modular symbols for Congruence Subgroup Gamma(6) with sign 0 and values in Sym^4 Q_5^2
         """
-        return PollackStevensModularSymbols(self.group(), coefficients=self.coefficient_module().change_ring(new_base_ring), sign=self.sign())
+        return PollackStevensModularSymbols(
+            self.group(),
+            coefficients=self.coefficient_module().change_ring(new_base_ring),
+            sign=self.sign(),
+        )
 
     def _an_element_(self):
         r"""
@@ -707,14 +764,14 @@ class PollackStevensModularSymbolspace(Module):
         # p = self.prime()
         manin = self.source()
 
-#        # There must be a problem here with that +1 -- should be
-#        # variable depending on a c of some matrix We'll need to
-#        # divide by some power of p and so we add extra accuracy
-#        # here.
-#        if k != 0:
-#            MM = M + valuation(k,p) + 1 + M.exact_log(p)
-#        else:
-#            MM = M + M.exact_log(p) + 1
+        #        # There must be a problem here with that +1 -- should be
+        #        # variable depending on a c of some matrix We'll need to
+        #        # divide by some power of p and so we add extra accuracy
+        #        # here.
+        #        if k != 0:
+        #            MM = M + valuation(k,p) + 1 + M.exact_log(p)
+        #        else:
+        #            MM = M + M.exact_log(p) + 1
 
         # this loop runs thru all of the generators (except
         # (0)-(infty)) and randomly chooses a distribution to assign
@@ -723,7 +780,10 @@ class PollackStevensModularSymbolspace(Module):
         D = {}
         for g in manin.gens():
             D[g] = self.coefficient_module().random_element(M)
-            if g in manin.reps_with_two_torsion() and g in manin.reps_with_three_torsion():
+            if (
+                g in manin.reps_with_two_torsion()
+                and g in manin.reps_with_three_torsion()
+            ):
                 raise ValueError("Level 1 not implemented")
             if g in manin.reps_with_two_torsion():
                 gamg = manin.two_torsion_matrix(g)
@@ -731,13 +791,15 @@ class PollackStevensModularSymbolspace(Module):
             else:
                 if g in manin.reps_with_three_torsion():
                     gamg = manin.three_torsion_matrix(g)
-                    D[g] = 2 * D[g] - D[g] * gamg - D[g] * gamg ** 2
+                    D[g] = 2 * D[g] - D[g] * gamg - D[g] * gamg**2
                     #            print("post:",D[g])
 
         # now we compute nu_infty of Prop 5.1 of [PS1]
         t = self.coefficient_module().zero()
         for g in manin.gens()[1:]:
-            if (g not in manin.reps_with_two_torsion()) and (g not in manin.reps_with_three_torsion()):
+            if (g not in manin.reps_with_two_torsion()) and (
+                g not in manin.reps_with_three_torsion()
+            ):
                 t += D[g] * manin.gammas[g] - D[g]
             else:
                 # this was previously MR.reps_with_two_torsion() but there is no variable MR defined...
@@ -755,11 +817,17 @@ class PollackStevensModularSymbolspace(Module):
         if k != 0:
             j = 1
             g = manin.gens()[j]
-            while (g in manin.reps_with_two_torsion()) or (g in manin.reps_with_three_torsion()) and (j < len(manin.gens())):
+            while (
+                (g in manin.reps_with_two_torsion())
+                or (g in manin.reps_with_three_torsion())
+                and (j < len(manin.gens()))
+            ):
                 j = j + 1
                 g = manin.gens()[j]
             if j == len(manin.gens()):
-                raise ValueError("everything is 2 or 3 torsion!  NOT YET IMPLEMENTED IN THIS CASE")
+                raise ValueError(
+                    "everything is 2 or 3 torsion!  NOT YET IMPLEMENTED IN THIS CASE"
+                )
 
             gam = manin.gammas[g]
             a = gam.matrix()[0, 0]
@@ -870,8 +938,7 @@ def ps_modsym_from_elliptic_curve(E, sign=0, implementation='eclib'):
         [-1/6, 1/3, 1/2, 1/6, -1/6, 1/3, -1/3, -1/2, -1/6, 1/6, 0, -1/6, -1/6]
     """
     if E.base_ring() is not QQ:
-        raise ValueError("The elliptic curve must be defined over the "
-                         "rationals.")
+        raise ValueError("The elliptic curve must be defined over the rationals.")
     sign = Integer(sign)
     if sign not in [0, 1, -1]:
         raise ValueError("The sign must be either 0, 1 or -1")
@@ -1043,8 +1110,7 @@ def ps_modsym_from_simple_modsym_space(A, name='alpha'):
         raise ValueError("A must have positive dimension")
 
     if A.sign() == 0:
-        raise ValueError("A must have sign +1 or -1 (otherwise it is"
-                         " not simple)")
+        raise ValueError("A must have sign +1 or -1 (otherwise it is not simple)")
 
     if not A.is_new():
         raise ValueError("A must be new")
@@ -1067,6 +1133,8 @@ def ps_modsym_from_simple_modsym_space(A, name='alpha'):
         v = []
         for j in range(k + 1):
             # TODO: The following might be backward: it should be the coefficient of X^j Y^(k-j)
-            v.append(w.dot_product(M.modular_symbol([j, ac, bd]).element()) * (-1) ** (k - j))
+            v.append(
+                w.dot_product(M.modular_symbol([j, ac, bd]).element()) * (-1) ** (k - j)
+            )
         val[g] = D(v)
     return V(val)

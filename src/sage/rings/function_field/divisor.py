@@ -124,7 +124,10 @@ def prime_divisor(field, place, m=1):
         sage: 3 * d == prime_divisor(F, p, 3)
         True
     """
-    deprecation(41453, 'this method is deprecated, call the .divisor() method on the place instead')
+    deprecation(
+        41453,
+        'this method is deprecated, call the .divisor() method on the place instead',
+    )
     divisor_group = field.divisor_group()
     return divisor_group.element_class(divisor_group, {place: m})
 
@@ -150,7 +153,10 @@ class FunctionFieldDivisor(ModuleElement):
          + 3*Place (x, (1/(x^3 + x^2 + x))*y^2)
          - 6*Place (x + 1, y + 1)
     """
-    def __init__(self, parent: DivisorGroup, data: dict[FunctionFieldPlace, Integer | int]) -> None:
+
+    def __init__(
+        self, parent: DivisorGroup, data: dict[FunctionFieldPlace, Integer | int]
+    ) -> None:
         """
         Initialize.
 
@@ -164,7 +170,9 @@ class FunctionFieldDivisor(ModuleElement):
         ModuleElement.__init__(self, parent)
         # Removing 0 in the constructor allows us to make additional
         # assumptions to simplify some logic for prime divisors.
-        self._data: dict[FunctionFieldPlace, Integer] = {k: Integer(v) for k, v in data.items() if v != 0}
+        self._data: dict[FunctionFieldPlace, Integer] = {
+            k: Integer(v) for k, v in data.items() if v != 0
+        }
 
     def __hash__(self) -> int:
         """
@@ -680,7 +688,7 @@ class FunctionFieldDivisor(ModuleElement):
         basis, coordinates = self._function_space()
 
         n = len(basis)
-        V = k ** n
+        V = k**n
 
         def from_V(v):
             return sum(v[i] * basis[i] for i in range(n))
@@ -785,7 +793,7 @@ class FunctionFieldDivisor(ModuleElement):
         fbasis, coordinates = self._differential_space()
 
         n = len(fbasis)
-        V = k ** n
+        V = k**n
 
         def from_V(v):
             f = sum(v[i] * fbasis[i] for i in range(n))
@@ -975,6 +983,7 @@ class DivisorGroup(UniqueRepresentation, Parent):
         sage: F.divisor_group()
         Divisor group of Function field in y defined by y^2 + 4*x^3 + 4
     """
+
     Element = FunctionFieldDivisor
 
     def __init__(self, field) -> None:
@@ -1057,7 +1066,12 @@ class DivisorGroup(UniqueRepresentation, Parent):
         """
         return self._field
 
-    def effective_divisors(self, of_degree=None, max_degree=None, avoid: Container[FunctionFieldPlace] | None = None) -> Iterable[FunctionFieldDivisor]:
+    def effective_divisors(
+        self,
+        of_degree=None,
+        max_degree=None,
+        avoid: Container[FunctionFieldPlace] | None = None,
+    ) -> Iterable[FunctionFieldDivisor]:
         r"""
         Return an iterator of all effective divisors either of ``of_degree``
         or up to ``max_degree``. Exactly one of these must be specified.
@@ -1113,11 +1127,16 @@ class DivisorGroup(UniqueRepresentation, Parent):
                     places.append([P for P in self._field.places(d) if P not in avoid])
 
             from sage.combinat.integer_vector_weighted import WeightedIntegerVectors
-            weighted_vectors = WeightedIntegerVectors(of_degree, range(1, of_degree + 1))
+
+            weighted_vectors = WeightedIntegerVectors(
+                of_degree, range(1, of_degree + 1)
+            )
             for weights in weighted_vectors:
                 component_divisors = []
                 for i, w in enumerate(weights):
-                    w_sums_of_places = [sum(ps) for ps in itertools.product(places[i], repeat=w)]
+                    w_sums_of_places = [
+                        sum(ps) for ps in itertools.product(places[i], repeat=w)
+                    ]
                     component_divisors.append(w_sums_of_places)
 
                 for divisors in itertools.product(*component_divisors):

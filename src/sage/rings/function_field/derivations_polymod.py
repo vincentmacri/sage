@@ -39,6 +39,7 @@ class FunctionFieldDerivation_separable(FunctionFieldDerivation):
         sage: L.derivation()
         d/dx
     """
+
     def __init__(self, parent, d) -> None:
         """
         Initialize a derivation.
@@ -81,7 +82,10 @@ class FunctionFieldDerivation_separable(FunctionFieldDerivation):
             self._d = parent._base_derivation([coeff])
             self._gen_image = C.one()
         else:
-            if isinstance(d, RingDerivationWithoutTwist) and d.domain() is L.base_ring():
+            if (
+                isinstance(d, RingDerivationWithoutTwist)
+                and d.domain() is L.base_ring()
+            ):
                 self._d = d
             else:
                 self._d = d = parent._base_derivation(d)
@@ -207,7 +211,9 @@ class FunctionFieldDerivation_inseparable(FunctionFieldDerivation):
             else:
                 raise ValueError("the length does not match")
         else:
-            raise ValueError("you must pass in either a name of a variable or a list of coefficients")
+            raise ValueError(
+                "you must pass in either a name of a variable or a list of coefficients"
+            )
 
     def _call_(self, x):
         r"""
@@ -286,6 +292,7 @@ class FunctionFieldHigherDerivation(Map):
           From: Rational function field in x over Finite Field of size 2
           To:   Rational function field in x over Finite Field of size 2
     """
+
     def __init__(self, field) -> None:
         """
         Initialize.
@@ -386,6 +393,7 @@ class RationalFunctionFieldHigherDerivation_global(FunctionFieldHigherDerivation
         sage: h(x^2, 2)
         1
     """
+
     def __init__(self, field) -> None:
         """
         Initialize.
@@ -523,8 +531,7 @@ class RationalFunctionFieldHigherDerivation_global(FunctionFieldHigherDerivation
         b = a
         j = p - 2
         while j >= 0:
-            b[j] -= sum(binomial(i, j) * b[i] * x**(i - j)
-                        for i in range(j + 1, p))
+            b[j] -= sum(binomial(i, j) * b[i] * x ** (i - j) for i in range(j + 1, p))
             j -= 1
         # Step 3
         return [self._pth_root(c) for c in b]
@@ -550,11 +557,9 @@ class RationalFunctionFieldHigherDerivation_global(FunctionFieldHigherDerivation
         R = K._field.ring()
 
         poly = c.numerator()
-        num = R([self._pth_root_func(poly[i])
-                 for i in range(0, poly.degree() + 1, p)])
+        num = R([self._pth_root_func(poly[i]) for i in range(0, poly.degree() + 1, p)])
         poly = c.denominator()
-        den = R([self._pth_root_func(poly[i])
-                 for i in range(0, poly.degree() + 1, p)])
+        den = R([self._pth_root_func(poly[i]) for i in range(0, poly.degree() + 1, p)])
         return K.element_class(K, num / den)
 
 
@@ -601,8 +606,9 @@ class FunctionFieldHigherDerivation_global(FunctionFieldHigherDerivation):
         y = field.gen()
 
         # matrix for pth power map; used in _prime_power_representation method
-        self.__pth_root_matrix = matrix([(y**(i * p)).list()
-                                         for i in range(field.degree())]).transpose()
+        self.__pth_root_matrix = matrix(
+            [(y ** (i * p)).list() for i in range(field.degree())]
+        ).transpose()
 
         # cache computed higher derivatives to speed up later computations
         self._cache = {}
@@ -701,8 +707,9 @@ class FunctionFieldHigherDerivation_global(FunctionFieldHigherDerivation):
                 b = a
                 j = p - 2
                 while j >= 0:
-                    b[j] -= sum(binomial(k, j) * b[k] * x**(k - j)
-                                for k in range(j + 1, p))
+                    b[j] -= sum(
+                        binomial(k, j) * b[k] * x ** (k - j) for k in range(j + 1, p)
+                    )
                     j -= 1
                 lambdas = [self._pth_root(c) for c in b]
 
@@ -763,8 +770,7 @@ class FunctionFieldHigherDerivation_global(FunctionFieldHigherDerivation):
         b = a
         j = p - 2
         while j >= 0:
-            b[j] -= sum(binomial(i, j) * b[i] * x**(i - j)
-                        for i in range(j + 1, p))
+            b[j] -= sum(binomial(i, j) * b[i] * x ** (i - j) for i in range(j + 1, p))
             j -= 1
         # Step 3
         return [self._pth_root(c) for c in b]
@@ -789,11 +795,13 @@ class FunctionFieldHigherDerivation_global(FunctionFieldHigherDerivation):
         coeffs = []
         for d in self.__pth_root_matrix.solve_right(vector(c.list())):
             poly = d.numerator()
-            num = K([self._pth_root_func(poly[i])
-                     for i in range(0, poly.degree() + 1, p)])
+            num = K(
+                [self._pth_root_func(poly[i]) for i in range(0, poly.degree() + 1, p)]
+            )
             poly = d.denominator()
-            den = K([self._pth_root_func(poly[i])
-                     for i in range(0, poly.degree() + 1, p)])
+            den = K(
+                [self._pth_root_func(poly[i]) for i in range(0, poly.degree() + 1, p)]
+            )
             coeffs.append(num / den)
         return self._field(coeffs)
 
@@ -825,6 +833,7 @@ class FunctionFieldHigherDerivation_char_zero(FunctionFieldHigherDerivation):
         sage: h(h(h(e,1),1),1) == 3*2*h(e,3)
         True
     """
+
     def __init__(self, field) -> None:
         """
         Initialize.

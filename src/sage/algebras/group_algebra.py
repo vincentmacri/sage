@@ -22,7 +22,7 @@ Check that unpicking old group algebra classes works::
     <class 'sage.algebras.group_algebra.GroupAlgebra_class_with_category'>
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008 William Stein <wstein@gmail.com>
 #                     2008 David Loeffler <d.loeffler.01@cantab.net>
 #                     2009 Martin Raum <mraum@mpim-bonn.mpg.de>
@@ -33,7 +33,7 @@ Check that unpicking old group algebra classes works::
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.rings.integer_ring import IntegerRing
 from sage.categories.rings import Rings
@@ -206,6 +206,7 @@ class GroupAlgebra_class(CombinatorialFreeModule):
         G_coercion = G.coerce_map_from(S)
         if G_coercion is not None:
             from sage.categories.groups import Groups
+
             # No coercion for additive groups because of ambiguity of +
             #   being the group action or addition of a new term.
             if not self.category().is_subcategory(Groups().Algebras(K)):
@@ -220,10 +221,14 @@ class GroupAlgebra_class(CombinatorialFreeModule):
             hom_K = K.coerce_map_from(S_K)
             hom_G = G.coerce_map_from(S_G)
             if hom_K is not None and hom_G is not None:
-                return SetMorphism(S.Hom(self, category=self.category() | S.category()),
-                                   lambda x: self.sum_of_terms((hom_G(g), hom_K(c)) for g, c in x))
+                return SetMorphism(
+                    S.Hom(self, category=self.category() | S.category()),
+                    lambda x: self.sum_of_terms((hom_G(g), hom_K(c)) for g, c in x),
+                )
 
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.algebras.group_algebras', 'GroupAlgebra',
-                           GroupAlgebra_class)
+
+register_unpickle_override(
+    'sage.algebras.group_algebras', 'GroupAlgebra', GroupAlgebra_class
+)

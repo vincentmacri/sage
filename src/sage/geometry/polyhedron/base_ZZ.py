@@ -37,6 +37,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         A 0-dimensional polyhedron in ZZ^2 defined as the convex hull of 1 vertex
         sage: TestSuite(p).run()
     """
+
     _base_ring = ZZ
 
     def __getattribute__(self, name):
@@ -69,7 +70,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
             sage: 'ehrhart_quasipolynomial' in P.__dir__()
             False
         """
-        orig_dir = (set(dir(self.__class__)) | set(self.__dict__.keys()))
+        orig_dir = set(dir(self.__class__)) | set(self.__dict__.keys())
         return sorted(orig_dir - set(['ehrhart_quasipolynomial']))
 
     def is_lattice_polytope(self) -> bool:
@@ -98,11 +99,21 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         """
         return self.is_compact()
 
-    def _ehrhart_polynomial_latte(self, verbose=False, dual=None,
-                                  irrational_primal=None, irrational_all_primal=None, maxdet=None,
-                                  no_decomposition=None, compute_vertex_cones=None, smith_form=None,
-                                  dualization=None, triangulation=None, triangulation_max_height=None,
-                                  **kwds):
+    def _ehrhart_polynomial_latte(
+        self,
+        verbose=False,
+        dual=None,
+        irrational_primal=None,
+        irrational_all_primal=None,
+        maxdet=None,
+        no_decomposition=None,
+        compute_vertex_cones=None,
+        smith_form=None,
+        dualization=None,
+        triangulation=None,
+        triangulation_max_height=None,
+        **kwds,
+    ):
         r"""
         Return the Ehrhart polynomial of this polyhedron using LattE integrale.
 
@@ -241,19 +252,23 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         """
         # note: the options below are explicitly written in the function
         # declaration in order to keep tab completion (see #18211).
-        kwds.update({
-            'dual': dual,
-            'irrational_primal': irrational_primal,
-            'irrational_all_primal': irrational_all_primal,
-            'maxdet': maxdet,
-            'no_decomposition': no_decomposition,
-            'compute_vertex_cones': compute_vertex_cones,
-            'smith_form': smith_form,
-            'dualization': dualization,
-            'triangulation': triangulation,
-            'triangulation_max_height': triangulation_max_height})
+        kwds.update(
+            {
+                'dual': dual,
+                'irrational_primal': irrational_primal,
+                'irrational_all_primal': irrational_all_primal,
+                'maxdet': maxdet,
+                'no_decomposition': no_decomposition,
+                'compute_vertex_cones': compute_vertex_cones,
+                'smith_form': smith_form,
+                'dualization': dualization,
+                'triangulation': triangulation,
+                'triangulation_max_height': triangulation_max_height,
+            }
+        )
 
         from sage.interfaces.latte import count
+
         ine = self.cdd_Hrepresentation()
         return count(ine, cdd=True, ehrhart_polynomial=True, verbose=verbose, **kwds)
 
@@ -294,13 +309,23 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         raise TypeError("The polyhedron's backend should be 'normaliz'")
 
     @cached_method(do_pickle=True)
-    def ehrhart_polynomial(self, engine=None, variable='t', verbose=False,
-                           dual=None, irrational_primal=None,
-                           irrational_all_primal=None, maxdet=None,
-                           no_decomposition=None, compute_vertex_cones=None,
-                           smith_form=None, dualization=None,
-                           triangulation=None, triangulation_max_height=None,
-                           **kwds):
+    def ehrhart_polynomial(
+        self,
+        engine=None,
+        variable='t',
+        verbose=False,
+        dual=None,
+        irrational_primal=None,
+        irrational_all_primal=None,
+        maxdet=None,
+        no_decomposition=None,
+        compute_vertex_cones=None,
+        smith_form=None,
+        dualization=None,
+        triangulation=None,
+        triangulation_max_height=None,
+        **kwds,
+    ):
         r"""
         Return the Ehrhart polynomial of this polyhedron.
 
@@ -461,6 +486,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         from sage.rings.rational_field import QQ
+
         R = PolynomialRing(QQ, variable)
 
         if self.is_empty():
@@ -476,11 +502,20 @@ class Polyhedron_ZZ(Polyhedron_QQ):
             # setting the default to 'latte'
             engine = 'latte'
         if engine == 'latte':
-            poly = self._ehrhart_polynomial_latte(verbose, dual,
-                                                  irrational_primal, irrational_all_primal, maxdet,
-                                                  no_decomposition, compute_vertex_cones, smith_form,
-                                                  dualization, triangulation, triangulation_max_height,
-                                                  **kwds)
+            poly = self._ehrhart_polynomial_latte(
+                verbose,
+                dual,
+                irrational_primal,
+                irrational_all_primal,
+                maxdet,
+                no_decomposition,
+                compute_vertex_cones,
+                smith_form,
+                dualization,
+                triangulation,
+                triangulation_max_height,
+                **kwds,
+            )
             return poly.change_variable_name(variable)
             # TO DO: replace this change of variable by creating the appropriate
             #        polynomial ring in the latte interface.
@@ -524,8 +559,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         if not self.has_IP_property():
             raise ValueError('the polytope must have the IP property')
 
-        vertices = tuple(ieq.A() / ieq.b() for
-                         ieq in self.inequality_generator())
+        vertices = tuple(ieq.A() / ieq.b() for ieq in self.inequality_generator())
 
         ieqs = ((1,) + tuple(v[:]) for v in self.vertices())
 
@@ -537,8 +571,14 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         else:
             parent = self.parent().change_ring(QQ)
 
-        return parent.element_class(parent, [vertices, [], []], [ieqs, []],
-                                    Vrep_minimal=True, Hrep_minimal=True, pref_rep=pref_rep)
+        return parent.element_class(
+            parent,
+            [vertices, [], []],
+            [ieqs, []],
+            Vrep_minimal=True,
+            Hrep_minimal=True,
+            pref_rep=pref_rep,
+        )
 
     @cached_method
     def is_reflexive(self) -> bool:
@@ -669,6 +709,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
             [A 2-dimensional polyhedron in ZZ^4 defined as the convex hull of 3 vertices]
         """
         from sage.combinat.combination import Combinations
+
         if not self.is_compact():
             raise ValueError('Only polytopes (compact polyhedra) are allowed.')
 
@@ -717,15 +758,23 @@ class Polyhedron_ZZ(Polyhedron_QQ):
             ValueError: polyhedron is not a translation of self
         """
         no_translation_exception = ValueError('polyhedron is not a translation of self')
-        if (set(self.rays()) != set(translated_polyhedron.rays()) or
-                set(self.lines()) != set(translated_polyhedron.lines()) or
-                self.n_vertices() != translated_polyhedron.n_vertices()):
+        if (
+            set(self.rays()) != set(translated_polyhedron.rays())
+            or set(self.lines()) != set(translated_polyhedron.lines())
+            or self.n_vertices() != translated_polyhedron.n_vertices()
+        ):
             raise no_translation_exception
         sorted_vertices = sorted(map(vector, self.vertices()))
-        sorted_translated_vertices = sorted(map(vector, translated_polyhedron.vertices()))
+        sorted_translated_vertices = sorted(
+            map(vector, translated_polyhedron.vertices())
+        )
         v = sorted_translated_vertices[0] - sorted_vertices[0]
-        if any(vertex + v != translated_vertex
-               for vertex, translated_vertex in zip(sorted_vertices, sorted_translated_vertices)):
+        if any(
+            vertex + v != translated_vertex
+            for vertex, translated_vertex in zip(
+                sorted_vertices, sorted_translated_vertices
+            )
+        ):
             raise no_translation_exception
         return v
 
@@ -773,6 +822,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         if self.dim() > 2 or not self.is_compact():
             raise NotImplementedError('only implemented for bounded polygons')
         from sage.geometry.polyhedron.plot import cyclic_sort_vertices_2d
+
         vertices = cyclic_sort_vertices_2d(self.vertices())
         n = len(vertices)
         if n == 1:  # single point
@@ -787,13 +837,14 @@ class Polyhedron_ZZ(Polyhedron_QQ):
         origin = self.ambient_space().zero()
         parent = self.parent()
         from itertools import product
+
         for edges in product(*edge_vectors):
             v = []
             point = origin
             for e in edges:
                 point += e
                 v.append(point)
-            if point != origin:   # does not close up, not a subpolygon
+            if point != origin:  # does not close up, not a subpolygon
                 continue
             yield parent([v, [], []], None)
 
@@ -857,6 +908,7 @@ class Polyhedron_ZZ(Polyhedron_QQ):
                     return True
                 except ValueError:
                     pass
+
         decompositions = []
         for X in self._subpoly_parallel_facets():
             if is_known_summand(X):
@@ -941,10 +993,15 @@ class Polyhedron_ZZ(Polyhedron_QQ):
             raise ValueError("algorithm must be 'palp_native'")
 
         if self.dim() < self.ambient_dim():
-            raise ValueError("normal form is not defined for lower-dimensional polyhedra, got %s" % self)
+            raise ValueError(
+                "normal form is not defined for lower-dimensional polyhedra, got %s"
+                % self
+            )
 
         if not self.is_compact():
-            raise ValueError("normal form is not defined for unbounded polyhedra, got %s" % self)
+            raise ValueError(
+                "normal form is not defined for unbounded polyhedra, got %s" % self
+            )
 
         PM = self.slack_matrix().transpose()
         PM_max, permutations = _palp_PM_max(PM, check=True)

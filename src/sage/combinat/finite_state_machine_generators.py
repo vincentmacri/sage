@@ -142,9 +142,9 @@ class AutomatonGenerators:
         """
         z = ZZ.zero()
         o = ZZ.one()
-        return Automaton([(z, o, _) for _ in input_alphabet],
-                         initial_states=[z],
-                         final_states=[o])
+        return Automaton(
+            [(z, o, _) for _ in input_alphabet], initial_states=[z], final_states=[o]
+        )
 
     def AnyWord(self, input_alphabet) -> Automaton:
         r"""
@@ -183,9 +183,9 @@ class AutomatonGenerators:
             :meth:`Word`.
         """
         z = ZZ.zero()
-        return Automaton([(z, z, _) for _ in input_alphabet],
-                         initial_states=[z],
-                         final_states=[z])
+        return Automaton(
+            [(z, z, _) for _ in input_alphabet], initial_states=[z], final_states=[z]
+        )
 
     def EmptyWord(self, input_alphabet=None) -> Automaton:
         r"""
@@ -211,9 +211,9 @@ class AutomatonGenerators:
             :meth:`AnyWord`.
         """
         z = ZZ.zero()
-        return Automaton(initial_states=[z],
-                         final_states=[z],
-                         input_alphabet=input_alphabet)
+        return Automaton(
+            initial_states=[z], final_states=[z], input_alphabet=input_alphabet
+        )
 
     def Word(self, word, input_alphabet=None) -> Automaton:
         r"""
@@ -266,11 +266,13 @@ class AutomatonGenerators:
         letters = list(word)
         length = len(letters)
         from sage.rings.integer_ring import ZZ
-        return Automaton([(ZZ(i), ZZ(i + 1), letter)
-                          for i, letter in enumerate(letters)],
-                         initial_states=[ZZ.zero()],
-                         final_states=[ZZ(length)],
-                         input_alphabet=input_alphabet)
+
+        return Automaton(
+            [(ZZ(i), ZZ(i + 1), letter) for i, letter in enumerate(letters)],
+            initial_states=[ZZ.zero()],
+            final_states=[ZZ(length)],
+            input_alphabet=input_alphabet,
+        )
 
     def ContainsWord(self, word, input_alphabet) -> Automaton:
         r"""
@@ -315,8 +317,7 @@ class AutomatonGenerators:
         word = tuple(word)
 
         def starts_with(what, pattern):
-            return len(what) >= len(pattern) \
-                and what[:len(pattern)] == pattern
+            return len(what) >= len(pattern) and what[: len(pattern)] == pattern
 
         def transition_function(read, input):
             if read == word:
@@ -331,7 +332,8 @@ class AutomatonGenerators:
             transition_function,
             input_alphabet=input_alphabet,
             initial_states=[()],
-            final_states=[word])
+            final_states=[word],
+        )
 
 
 class TransducerGenerators:
@@ -390,7 +392,8 @@ class TransducerGenerators:
             input_alphabet=input_alphabet,
             output_alphabet=input_alphabet,
             initial_states=[0],
-            final_states=[0])
+            final_states=[0],
+        )
 
     def CountSubblockOccurrences(self, block, input_alphabet) -> Transducer:
         r"""
@@ -489,13 +492,13 @@ class TransducerGenerators:
         block_as_tuple = tuple(block)
 
         def starts_with(what, pattern):
-            return len(what) >= len(pattern) \
-                and what[:len(pattern)] == pattern
+            return len(what) >= len(pattern) and what[: len(pattern)] == pattern
 
         def transition_function(read, input):
-            current = read + (input, )
-            if starts_with(block_as_tuple, current) \
-                    and len(block_as_tuple) > len(current):
+            current = read + (input,)
+            if starts_with(block_as_tuple, current) and len(block_as_tuple) > len(
+                current
+            ):
                 return (current, 0)
             k = 1
             while not starts_with(block_as_tuple, current[k:]):
@@ -506,7 +509,8 @@ class TransducerGenerators:
             transition_function,
             input_alphabet=input_alphabet,
             output_alphabet=[0, 1],
-            initial_states=[()])
+            initial_states=[()],
+        )
         for s in T.iter_states():
             s.is_final = True
         return T
@@ -539,6 +543,7 @@ class TransducerGenerators:
             sage: T2([0, 0, 1, 0, 1, 0])
             [False, False, False, False, True, True]
         """
+
         def transition(state, input):
             if state == threshold:
                 return (threshold, True)
@@ -546,9 +551,7 @@ class TransducerGenerators:
                 return (state, False)
             return (state + 1, state + 1 == threshold)
 
-        T = Transducer(transition,
-                       input_alphabet=input_alphabet,
-                       initial_states=[0])
+        T = Transducer(transition, input_alphabet=input_alphabet, initial_states=[0])
         for s in T.iter_states():
             s.is_final = True
 
@@ -594,13 +597,14 @@ class TransducerGenerators:
             :meth:`Automaton.with_output()
             <sage.combinat.finite_state_machine.Automaton.with_output>`.
         """
-        return Transducer(lambda state, input: (0, f(input)),
-                          input_alphabet=input_alphabet,
-                          initial_states=[0],
-                          final_states=[0])
+        return Transducer(
+            lambda state, input: (0, f(input)),
+            input_alphabet=input_alphabet,
+            initial_states=[0],
+            final_states=[0],
+        )
 
-    def operator(self, operator, input_alphabet,
-                 number_of_operands=2) -> Transducer:
+    def operator(self, operator, input_alphabet, number_of_operands=2) -> Transducer:
         r"""
         Return a transducer which realizes an operation
         on tuples over the given input alphabet.
@@ -676,11 +680,14 @@ class TransducerGenerators:
 
         def transition_function(state, operands):
             return (0, operator(*operands))
+
         pairs = list(product(input_alphabet, repeat=number_of_operands))
-        return Transducer(transition_function,
-                          input_alphabet=pairs,
-                          initial_states=[0],
-                          final_states=[0])
+        return Transducer(
+            transition_function,
+            input_alphabet=pairs,
+            initial_states=[0],
+            final_states=[0],
+        )
 
     def all(self, input_alphabet, number_of_operands=2) -> Transducer:
         r"""
@@ -730,8 +737,9 @@ class TransducerGenerators:
             sage: T3([(0, 0, 0), (1, 0, 0), (1, 1, 1)])
             [False, False, True]
         """
-        return self.operator(lambda *args: all(args),
-                             input_alphabet, number_of_operands)
+        return self.operator(
+            lambda *args: all(args), input_alphabet, number_of_operands
+        )
 
     def any(self, input_alphabet, number_of_operands=2) -> Transducer:
         r"""
@@ -781,8 +789,9 @@ class TransducerGenerators:
             sage: T3([(0, 0, 0), (1, 0, 0), (1, 1, 1)])
             [False, True, True]
         """
-        return self.operator(lambda *args: any(args),
-                             input_alphabet, number_of_operands)
+        return self.operator(
+            lambda *args: any(args), input_alphabet, number_of_operands
+        )
 
     def add(self, input_alphabet, number_of_operands=2) -> Transducer:
         r"""
@@ -834,9 +843,11 @@ class TransducerGenerators:
             sage: T3([(0, 0, 0), (0, 1, 0), (0, 1, 1), (1, 1, 1)])
             [0, 1, 2, 3]
         """
-        return self.operator(lambda *args: sum(args),
-                             input_alphabet,
-                             number_of_operands=number_of_operands)
+        return self.operator(
+            lambda *args: sum(args),
+            input_alphabet,
+            number_of_operands=number_of_operands,
+        )
 
     def sub(self, input_alphabet) -> Transducer:
         r"""
@@ -936,12 +947,14 @@ class TransducerGenerators:
             sage: add(W(['a', 'b', 'b']))
             2
         """
+
         def weight(state, input):
             weight = int(input != zero)
             return (0, weight)
-        return Transducer(weight, input_alphabet=input_alphabet,
-                          initial_states=[0],
-                          final_states=[0])
+
+        return Transducer(
+            weight, input_alphabet=input_alphabet, initial_states=[0], final_states=[0]
+        )
 
     def abs(self, input_alphabet) -> Transducer:
         r"""
@@ -1012,20 +1025,25 @@ class TransducerGenerators:
         """
         z = ZZ.zero()
         o = ZZ.one()
-        return Transducer([[0, 1, z, None],
-                           [0, 2, o, None],
-                           [1, 1, z, z],
-                           [1, 2, o, o],
-                           [2, 1, z, o],
-                           [2, 2, o, z]],
-                          initial_states=[0],
-                          final_states=[1],
-                          with_final_word_out=[0])
+        return Transducer(
+            [
+                [0, 1, z, None],
+                [0, 2, o, None],
+                [1, 1, z, z],
+                [1, 2, o, o],
+                [2, 1, z, o],
+                [2, 2, o, z],
+            ],
+            initial_states=[0],
+            final_states=[1],
+            with_final_word_out=[0],
+        )
 
     RecursionRule = namedtuple('RecursionRule', ['K', 'r', 'k', 's', 't'])
 
-    def _parse_recursion_equation_(self, equation, base, function, var,
-                                   word_function=None, output_rings=[ZZ, QQ]):
+    def _parse_recursion_equation_(
+        self, equation, base, function, var, word_function=None, output_rings=[ZZ, QQ]
+    ):
         """
         Parse one equation as admissible in :meth:`~.Recursion`.
 
@@ -1236,30 +1254,28 @@ class TransducerGenerators:
         base_ring = base.parent()
 
         if equation.operator() != operator.eq:
-            raise ValueError("%s is not an equation with ==."
-                             % equation)
-        assert len(equation.operands()) == 2, \
+            raise ValueError("%s is not an equation with ==." % equation)
+        assert len(equation.operands()) == 2, (
             "%s is not an equation with two operands." % equation
+        )
         left_side, right_side = equation.operands()
 
         if left_side.operator() != function:
-            raise ValueError("%s is not an evaluation of %s."
-                             % (left_side, function))
+            raise ValueError("%s is not an evaluation of %s." % (left_side, function))
         if len(left_side.operands()) != 1:
-            raise ValueError("%s does not have one argument." %
-                             (left_side,))
+            raise ValueError("%s does not have one argument." % (left_side,))
 
         try:
             polynomial_left = base_ring[var](left_side.operands()[0])
         except Exception:
-            raise ValueError("%s is not a polynomial "
-                             "in %s." % (left_side.operands()[0], var))
+            raise ValueError(
+                "%s is not a polynomial in %s." % (left_side.operands()[0], var)
+            )
         if polynomial_left in base_ring and is_scalar(right_side):
             return {polynomial_left: to_list(right_side)}
 
         if polynomial_left.degree() != 1:
-            raise ValueError("%s is not a polynomial of degree 1."
-                             % (polynomial_left,))
+            raise ValueError("%s is not a polynomial of degree 1." % (polynomial_left,))
 
         [r, base_power_K] = list(polynomial_left)
         try:
@@ -1271,47 +1287,49 @@ class TransducerGenerators:
         except AttributeError:
             pass
         if K not in ZZ:
-            raise ValueError("%s is not a power of %s."
-                             % (base_power_K, base))
+            raise ValueError("%s is not a power of %s." % (base_power_K, base))
         if K < 1:
-            raise ValueError("%d is less than %d."
-                             % (base_power_K, base))
+            raise ValueError("%d is less than %d." % (base_power_K, base))
 
         from sage.symbolic.operators import add_vararg
+
         if right_side.operator() == add_vararg:
-            function_calls = [o for o in right_side.operands()
-                              if o.operator() == function]
-            other_terms = [o for o in right_side.operands()
-                           if o.operator() != function]
+            function_calls = [
+                o for o in right_side.operands() if o.operator() == function
+            ]
+            other_terms = [o for o in right_side.operands() if o.operator() != function]
             if len(function_calls) != 1:
                 raise ValueError(
                     "%s does not contain exactly one summand which "
-                    "is an evaluation of %s."
-                    % (right_side, function))
+                    "is an evaluation of %s." % (right_side, function)
+                )
             next_function = function_calls[0]
             t = sum(other_terms)
             if not is_scalar(t):
-                raise ValueError("%s contains %s."
-                                 % (t, var))
+                raise ValueError("%s contains %s." % (t, var))
         else:
             next_function = right_side
             t = 0
 
         if next_function.operator() != function:
-            raise ValueError("%s is not an evaluation of %s."
-                             % (next_function, function))
+            raise ValueError(
+                "%s is not an evaluation of %s." % (next_function, function)
+            )
         if len(next_function.operands()) != 1:
-            raise ValueError("%s does not have exactly one argument."
-                             % (next_function,))
+            raise ValueError(
+                "%s does not have exactly one argument." % (next_function,)
+            )
 
         try:
             polynomial_right = base_ring[var](next_function.operands()[0])
         except Exception:
-            raise ValueError("%s is not a polynomial in %s."
-                             % (next_function.operands()[0], var))
+            raise ValueError(
+                "%s is not a polynomial in %s." % (next_function.operands()[0], var)
+            )
         if polynomial_right.degree() != 1:
-            raise ValueError("%s is not a polynomial of degree 1."
-                             % (polynomial_right,))
+            raise ValueError(
+                "%s is not a polynomial of degree 1." % (polynomial_right,)
+            )
         [s, base_power_k] = list(polynomial_right)
         k = log(base_power_k, base=base)
         try:
@@ -1319,26 +1337,33 @@ class TransducerGenerators:
         except AttributeError:
             pass
         if k not in ZZ:
-            raise ValueError("%s is not a power of %s."
-                             % (base_power_k, base))
+            raise ValueError("%s is not a power of %s." % (base_power_k, base))
         if k < 0:
-            raise ValueError("%s is less than 1."
-                             % (base_power_k,))
+            raise ValueError("%s is less than 1." % (base_power_k,))
         if k >= K:
-            raise ValueError("%d is greater or equal than %d."
-                             % (base_power_k, base_power_K))
+            raise ValueError(
+                "%d is greater or equal than %d." % (base_power_k, base_power_K)
+            )
 
-        parsed_equation = function(base**K * var + r) == \
-            function(base**k * var + s) + t
-        assert equation == parsed_equation, \
+        parsed_equation = function(base**K * var + r) == function(base**k * var + s) + t
+        assert equation == parsed_equation, (
             "Parsing of %s failed for unknown reasons." % (equation,)
+        )
 
         rule = self.RecursionRule(K=K, r=r, k=k, s=s, t=to_list(t))
         return rule
 
-    def Recursion(self, recursions, base, function=None, var=None,
-                  input_alphabet=None, word_function=None,
-                  is_zero=None, output_rings=[ZZ, QQ]) -> Transducer:
+    def Recursion(
+        self,
+        recursions,
+        base,
+        function=None,
+        var=None,
+        input_alphabet=None,
+        word_function=None,
+        is_zero=None,
+        output_rings=[ZZ, QQ],
+    ) -> Transducer:
         r"""
         Return a transducer realizing the given recursion when reading
         the digit expansion with base ``base``.
@@ -1781,7 +1806,8 @@ class TransducerGenerators:
                 initial_values[equation[0]] = equation[1]
             else:
                 parsed = self._parse_recursion_equation_(
-                    equation, base, function, var, word_function, output_rings)
+                    equation, base, function, var, word_function, output_rings
+                )
                 if isinstance(parsed, dict):
                     initial_values.update(parsed)
                 elif isinstance(parsed, self.RecursionRule):
@@ -1791,8 +1817,7 @@ class TransducerGenerators:
 
         max_K = max(rule.K for rule in rules)
 
-        residues = [[None for r in range(base**k)]
-                    for k in range(max_K + 1)]
+        residues = [[None for r in range(base**k)] for k in range(max_K + 1)]
 
         # Aim: residues[K][R] = RuleRight(k, s, t)
         # if and only if
@@ -1800,29 +1825,31 @@ class TransducerGenerators:
 
         for given_rule in rules:
             q, remainder = given_rule.r.quo_rem(base**given_rule.K)
-            rule = self.RecursionRule(K=given_rule.K,
-                                      r=remainder,
-                                      k=given_rule.k,
-                                      s=given_rule.s - base**given_rule.k * q,
-                                      t=given_rule.t)
+            rule = self.RecursionRule(
+                K=given_rule.K,
+                r=remainder,
+                k=given_rule.k,
+                s=given_rule.s - base**given_rule.k * q,
+                t=given_rule.t,
+            )
             for m in range(max_K - rule.K + 1):
                 for ell in range(base**m):
                     R = rule.r + base**rule.K * ell
                     if residues[rule.K + m][R] is not None:
                         raise ValueError(
                             "Conflicting rules congruent to %d modulo %d."
-                            % (R, base**(rule.K + m)))
-                    residues[rule.K + m][R] = RuleRight(k=rule.k + m,
-                                                        s=rule.s + ell * base**rule.k,
-                                                        t=rule.t)
+                            % (R, base ** (rule.K + m))
+                        )
+                    residues[rule.K + m][R] = RuleRight(
+                        k=rule.k + m, s=rule.s + ell * base**rule.k, t=rule.t
+                    )
 
-        missing_residues = [R
-                            for R, rule in enumerate(residues[max_K])
-                            if rule is None]
+        missing_residues = [R for R, rule in enumerate(residues[max_K]) if rule is None]
         if missing_residues:
-            raise ValueError("Missing recursions for input congruent "
-                             "to %s modulo %s." % (missing_residues,
-                                                   base**max_K))
+            raise ValueError(
+                "Missing recursions for input congruent "
+                "to %s modulo %s." % (missing_residues, base**max_K)
+            )
 
         required_initial_values = set()
 
@@ -1886,8 +1913,7 @@ class TransducerGenerators:
             c, j = (carry, level)
             output = []
             while True:
-                transition = recursion_transition(
-                    c, j, force_nonnegative_target)
+                transition = recursion_transition(c, j, force_nonnegative_target)
                 if transition is None:
                     break
                 c, j = transition[0]
@@ -1898,20 +1924,20 @@ class TransducerGenerators:
         def transition_function(states2, input):
             state_carry, state_level = states2
             (carry, level), output = recursion_transitions(
-                state_carry, state_level, False)
+                state_carry, state_level, False
+            )
             # no more recursion transition is possible,
             # so this is now a storing transition
             carry += input * base**level
             level += 1
             # We now may proceed along recursion transitions
             # as long as the carries stay nonnegative.
-            carrylevel, new_output = recursion_transitions(
-                carry, level, True)
+            carrylevel, new_output = recursion_transitions(carry, level, True)
             return (carrylevel, output + new_output)
 
-        T = Transducer(transition_function,
-                       initial_states=[(0, 0)],
-                       input_alphabet=input_alphabet)
+        T = Transducer(
+            transition_function, initial_states=[(0, 0)], input_alphabet=input_alphabet
+        )
 
         def edge_recursion_digraph(n):
             r"""
@@ -1944,49 +1970,49 @@ class TransducerGenerators:
         carries = set(state.label()[0] for state in T.iter_states())
 
         recursion_digraph = DiGraph(
-            {carry: dict(edge_recursion_digraph(carry))
-             for carry in carries
-             if carry >= 0},
-            multiedges=False)
+            {
+                carry: dict(edge_recursion_digraph(carry))
+                for carry in carries
+                if carry >= 0
+            },
+            multiedges=False,
+        )
 
         initial_values_set = set(initial_values)
 
-        missing_initial_values = required_initial_values.difference(
-            initial_values_set)
+        missing_initial_values = required_initial_values.difference(initial_values_set)
 
         if missing_initial_values:
             raise ValueError(
-                "Missing initial values for %s." %
-                sorted(missing_initial_values))
+                "Missing initial values for %s." % sorted(missing_initial_values)
+            )
 
         for cycle in recursion_digraph.all_simple_cycles(algorithm="A"):
             assert cycle[0] is cycle[-1]
             cycle_set = set(cycle)
             intersection = cycle_set.intersection(initial_values_set)
             if not intersection:
-                raise ValueError(
-                    "Missing initial condition for one of %s." %
-                    cycle[1:])
+                raise ValueError("Missing initial condition for one of %s." % cycle[1:])
             if len(intersection) > 1:
                 raise ValueError(
-                    "Too many initial conditions, only give one of %s." %
-                    cycle[1:])
+                    "Too many initial conditions, only give one of %s." % cycle[1:]
+                )
             required_initial_values.update(intersection)
-            output_sum = sum([e[2]
-                for e in recursion_digraph.outgoing_edge_iterator(cycle[1:])],
-                             [])
+            output_sum = sum(
+                [e[2] for e in recursion_digraph.outgoing_edge_iterator(cycle[1:])], []
+            )
             if not is_zero(output_sum):
-                raise ValueError(
-                    "Conflicting recursion for %s." %
-                    cycle[1:])
+                raise ValueError("Conflicting recursion for %s." % cycle[1:])
 
         superfluous_initial_values = initial_values_set.difference(
-            required_initial_values)
+            required_initial_values
+        )
 
         if superfluous_initial_values:
             raise ValueError(
-                "Superfluous initial values for %s." %
-                sorted(superfluous_initial_values))
+                "Superfluous initial values for %s."
+                % sorted(superfluous_initial_values)
+            )
 
         for state in T.iter_states():
             state.is_final = True

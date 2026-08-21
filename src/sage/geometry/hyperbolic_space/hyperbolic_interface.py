@@ -56,8 +56,11 @@ from sage.structure.parent import Parent
 from sage.categories.sets_cat import Sets
 from sage.categories.realizations import Realizations, Category_realization_of_parent
 from sage.geometry.hyperbolic_space.hyperbolic_model import (
-        HyperbolicModelUHP, HyperbolicModelPD,
-        HyperbolicModelHM, HyperbolicModelKM)
+    HyperbolicModelUHP,
+    HyperbolicModelPD,
+    HyperbolicModelHM,
+    HyperbolicModelKM,
+)
 
 
 def HyperbolicSpace(n):
@@ -86,6 +89,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
     - ``KM`` -- Klein disk
     - ``HM`` -- hyperboloid model
     """
+
     def __init__(self):
         """
         Initialize ``self``.
@@ -96,7 +100,7 @@ class HyperbolicPlane(Parent, UniqueRepresentation):
             sage: TestSuite(H).run()
         """
         Parent.__init__(self, category=Sets().Metric().WithRealizations())
-        self.a_realization() # We create a realization so at least one is known
+        self.a_realization()  # We create a realization so at least one is known
 
     def _repr_(self):
         """
@@ -138,6 +142,7 @@ class HyperbolicModels(Category_realization_of_parent):
     r"""
     The category of hyperbolic models of hyperbolic space.
     """
+
     def __init__(self, base):
         r"""
         Initialize the hyperbolic models of hyperbolic space.
@@ -202,4 +207,5 @@ class HyperbolicModels(Category_realization_of_parent):
                 Point in HM (0, 0, 1)
             """
             from sage.rings.integer_ring import ZZ
+
             return self(self.realization_of().PD().get_point(ZZ.zero()))

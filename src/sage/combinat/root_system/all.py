@@ -115,32 +115,43 @@ Root system data and code for specific Cartan types
 - :ref:`sage.combinat.root_system.type_super_A`
 - :ref:`sage.combinat.root_system.type_A_infinity`
 """
+
 # install the docstring of this module to the containing package
 from sage.misc.namespace_package import install_doc
+
 install_doc(__package__, __doc__)
 
 from sage.misc.lazy_import import lazy_import
 
 from sage.combinat.root_system.cartan_type import CartanType
+
 lazy_import('sage.combinat.root_system.dynkin_diagram', 'DynkinDiagram')
 lazy_import('sage.combinat.root_system.cartan_matrix', 'CartanMatrix')
 lazy_import('sage.combinat.root_system.coxeter_matrix', 'CoxeterMatrix')
 from sage.combinat.root_system.coxeter_type import CoxeterType
 from sage.combinat.root_system.root_system import RootSystem, WeylDim
-lazy_import('sage.combinat.root_system.weyl_group', ['WeylGroup',
-                                                     'WeylGroupElement'])
-lazy_import('sage.combinat.root_system.reflection_group_real',
-            'ReflectionGroup')
-lazy_import('sage.combinat.root_system.extended_affine_weyl_group',
-            'ExtendedAffineWeylGroup')
-lazy_import('sage.combinat.root_system.coxeter_group', 'CoxeterGroup')
-lazy_import('sage.combinat.root_system.weyl_characters', ['WeylCharacterRing',
-                                                          'WeightRing'])
-from sage.combinat.root_system.branching_rules import BranchingRule, branching_rule_from_plethysm, branching_rule
 
-lazy_import('sage.combinat.root_system.non_symmetric_macdonald_polynomials',
-            'NonSymmetricMacdonaldPolynomials')
-lazy_import('sage.combinat.root_system.integrable_representations',
-            'IntegrableRepresentation')
+lazy_import('sage.combinat.root_system.weyl_group', ['WeylGroup', 'WeylGroupElement'])
+lazy_import('sage.combinat.root_system.reflection_group_real', 'ReflectionGroup')
+lazy_import(
+    'sage.combinat.root_system.extended_affine_weyl_group', 'ExtendedAffineWeylGroup'
+)
+lazy_import('sage.combinat.root_system.coxeter_group', 'CoxeterGroup')
+lazy_import(
+    'sage.combinat.root_system.weyl_characters', ['WeylCharacterRing', 'WeightRing']
+)
+from sage.combinat.root_system.branching_rules import (
+    BranchingRule,
+    branching_rule_from_plethysm,
+    branching_rule,
+)
+
+lazy_import(
+    'sage.combinat.root_system.non_symmetric_macdonald_polynomials',
+    'NonSymmetricMacdonaldPolynomials',
+)
+lazy_import(
+    'sage.combinat.root_system.integrable_representations', 'IntegrableRepresentation'
+)
 del lazy_import
 del install_doc

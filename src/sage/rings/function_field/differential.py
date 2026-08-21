@@ -93,6 +93,7 @@ class FunctionFieldDifferential(ModuleElement):
         sage: y.differential()                                                          # needs sage.rings.function_field
         ((21/4*x/(x^7 + 27/4))*y^2 + ((3/2*x^7 + 9/4)/(x^8 + 27/4*x))*y + 7/2*x^4/(x^7 + 27/4)) d(x)
     """
+
     def __init__(self, parent, f, t=None) -> None:
         """
         Initialize the differential `fdt`.
@@ -403,8 +404,11 @@ class FunctionFieldDifferential(ModuleElement):
         """
         F = self.parent().function_field()
         x = F.base_field().gen()
-        return (self._f.valuation(place) + 2 * min(F(x).valuation(place), 0)
-                + F.different().valuation(place))
+        return (
+            self._f.valuation(place)
+            + 2 * min(F(x).valuation(place), 0)
+            + F.different().valuation(place)
+        )
 
     def residue(self, place):
         """
@@ -467,7 +471,7 @@ class FunctionFieldDifferential(ModuleElement):
         r = g.valuation(place)
         if r >= 0:
             return R.zero()
-        g_shifted = g * s**(-r)
+        g_shifted = g * s ** (-r)
         c = g_shifted.higher_derivative(-r - 1, s)
         return to_R(c)
 
@@ -507,6 +511,7 @@ class FunctionFieldDifferential_global(FunctionFieldDifferential):
         sage: y.differential()                                                          # needs sage.rings.finite_rings sage.rings.function_field
         (x*y^2 + 1/x*y) d(x)
     """
+
     def cartier(self):
         r"""
         Return the image of the differential by the Cartier operator.
@@ -578,6 +583,7 @@ class DifferentialsSpace(UniqueRepresentation, Parent):
         sage: (y^2).differential()
         (2*y) d(y)
     """
+
     Element = FunctionFieldDifferential
 
     def __init__(self, field, category=None) -> None:
@@ -591,7 +597,14 @@ class DifferentialsSpace(UniqueRepresentation, Parent):
             sage: W = L.space_of_differentials()
             sage: TestSuite(W).run()
         """
-        Parent.__init__(self, base=field, category=Modules(field).FiniteDimensional().WithBasis().or_subcategory(category))
+        Parent.__init__(
+            self,
+            base=field,
+            category=Modules(field)
+            .FiniteDimensional()
+            .WithBasis()
+            .or_subcategory(category),
+        )
 
         # Starting from the base rational function field, find the first
         # generator x of an intermediate function field that doesn't map to zero
@@ -725,6 +738,7 @@ class DifferentialsSpace_global(DifferentialsSpace):
         sage: L.space_of_differentials()                                                # needs sage.rings.finite_rings sage.rings.function_field
         Space of differentials of Function field in y defined by y^3 + x^3*y + x
     """
+
     Element = FunctionFieldDifferential_global
 
 

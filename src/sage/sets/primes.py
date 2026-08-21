@@ -121,6 +121,7 @@ class Primes(Set_generic, UniqueRepresentation):
         sage: PQ.complement_in_primes().cardinality()
         1
     """
+
     @staticmethod
     def __classcall__(cls, modulus=1, classes=None, exceptions=None):
         """
@@ -194,14 +195,18 @@ class Primes(Set_generic, UniqueRepresentation):
                 add_false = []
                 add_excluded = []
                 for c in range(m):
-                    cs = [indic[c + m*i] for i in range(p) if indic[c + m*i] is not None]
+                    cs = [
+                        indic[c + m * i]
+                        for i in range(p)
+                        if indic[c + m * i] is not None
+                    ]
                     if not cs:
                         pass
                     elif all(cs):
                         if m.gcd(c) == 1:
                             add_true.append(c)
                         for i in range(p):
-                            j = c + m*i
+                            j = c + m * i
                             if indic[j] is None:
                                 if j == 0:
                                     add_excluded.append(modulus)
@@ -226,8 +231,11 @@ class Primes(Set_generic, UniqueRepresentation):
 
         # We format the final result and make it hashable
         classes = tuple([c for c in range(modulus) if indic[c] is True])
-        exceptions = [(ZZ(x), b) for x, b in exceptions.items()
-                      if ZZ(x).is_prime() and (b != (indic[x % modulus] is True))]
+        exceptions = [
+            (ZZ(x), b)
+            for x, b in exceptions.items()
+            if ZZ(x).is_prime() and (b != (indic[x % modulus] is True))
+        ]
         exceptions.sort()
         exceptions = tuple(exceptions)
 
@@ -396,7 +404,10 @@ class Primes(Set_generic, UniqueRepresentation):
         if self._modulus == 1:
             s = "Set of all prime numbers"
         else:
-            s = "Set of prime numbers congruent to %s modulo %s" % (_repr_items(classes), self._modulus)
+            s = "Set of prime numbers congruent to %s modulo %s" % (
+                _repr_items(classes),
+                self._modulus,
+            )
         if included:
             s += " with %s included" % _repr_items(included)
         if excluded:
@@ -803,8 +814,7 @@ class Primes(Set_generic, UniqueRepresentation):
             :meth:`intersection`, :meth:`union`
         """
         modulus = self._modulus
-        classes = [c for c in range(modulus)
-                   if c % self._modulus not in self._classes]
+        classes = [c for c in range(modulus) if c % self._modulus not in self._classes]
         exceptions = {x: not b for x, b in self._exceptions.items()}
         return Primes(modulus, classes, exceptions)
 
@@ -863,13 +873,20 @@ class Primes(Set_generic, UniqueRepresentation):
             return self
         if isinstance(other, Primes):
             modulus = self._modulus.lcm(other._modulus)
-            classes = [c for c in range(modulus)
-                       if (c % self._modulus in self._classes
-                       and c % other._modulus in other._classes)]
-            exceptions = {x: b for x, b in self._exceptions.items()
-                          if not b or x in other}
-            exceptions.update((x, b) for x, b in other._exceptions.items()
-                              if not b or x in self)
+            classes = [
+                c
+                for c in range(modulus)
+                if (
+                    c % self._modulus in self._classes
+                    and c % other._modulus in other._classes
+                )
+            ]
+            exceptions = {
+                x: b for x, b in self._exceptions.items() if not b or x in other
+            }
+            exceptions.update(
+                (x, b) for x, b in other._exceptions.items() if not b or x in self
+            )
         else:
             modulus = 1
             classes = []
@@ -891,7 +908,9 @@ class Primes(Set_generic, UniqueRepresentation):
                 exceptions = {x: True for x in self if x in other}
             else:
                 if hasattr(other, "is_finite") and not other.is_finite():
-                    raise NotImplementedError("intersection with general infinite sets is not implemented")
+                    raise NotImplementedError(
+                        "intersection with general infinite sets is not implemented"
+                    )
                 # if other is infinite but does not know it, this will loop forever
                 exceptions = {x: True for x in other if x in self}
         return Primes(modulus, classes, exceptions)
@@ -943,17 +962,26 @@ class Primes(Set_generic, UniqueRepresentation):
             return ZZ
         if isinstance(other, Primes):
             modulus = self._modulus.lcm(other._modulus)
-            classes = [c for c in range(modulus)
-                       if (c % self._modulus in self._classes
-                        or c % other._modulus in other._classes)]
-            exceptions = {x: b for x, b in self._exceptions.items()
-                          if b or x not in other}
-            exceptions.update((x, b) for x, b in other._exceptions.items()
-                              if b or x not in self)
+            classes = [
+                c
+                for c in range(modulus)
+                if (
+                    c % self._modulus in self._classes
+                    or c % other._modulus in other._classes
+                )
+            ]
+            exceptions = {
+                x: b for x, b in self._exceptions.items() if b or x not in other
+            }
+            exceptions.update(
+                (x, b) for x, b in other._exceptions.items() if b or x not in self
+            )
         else:
             # we try to enumerate the elements of "other"
             if hasattr(other, "is_finite") and not other.is_finite():
-                raise NotImplementedError("union with general infinite sets is not implemented")
+                raise NotImplementedError(
+                    "union with general infinite sets is not implemented"
+                )
             modulus = self._modulus
             classes = self._classes
             exceptions = self._exceptions.copy()
@@ -962,7 +990,9 @@ class Primes(Set_generic, UniqueRepresentation):
                 if x.is_prime():
                     exceptions[x] = True
                 else:
-                    raise NotImplementedError("the result of the union is a subset of the set of prime numbers")
+                    raise NotImplementedError(
+                        "the result of the union is a subset of the set of prime numbers"
+                    )
         return Primes(modulus, classes, exceptions)
 
     def is_almost_equal(self, other):

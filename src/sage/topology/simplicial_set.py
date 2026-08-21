@@ -278,6 +278,7 @@ lazy_import('sage.matrix.constructor', 'matrix')
 ########################################################################
 # The classes for simplices.
 
+
 class AbstractSimplex_class(SageObject):
     """
     A simplex of dimension ``dim``.
@@ -295,8 +296,9 @@ class AbstractSimplex_class(SageObject):
     :func:`AbstractSimplex`. See that function for more documentation.
     """
 
-    def __init__(self, dim, degeneracies=(), underlying=None, name=None,
-                 latex_name=None) -> None:
+    def __init__(
+        self, dim, degeneracies=(), underlying=None, name=None, latex_name=None
+    ) -> None:
         """
         A simplex of dimension ``dim``.
 
@@ -382,10 +384,11 @@ class AbstractSimplex_class(SageObject):
         self._dim = dim
         if degeneracies:
             self._degens = standardize_degeneracies(*degeneracies)
-            for (d, s) in enumerate(reversed(self._degens)):
+            for d, s in enumerate(reversed(self._degens)):
                 if d + dim < s:
-                    raise ValueError('invalid list of degeneracy maps '
-                                     'on {}-simplex'.format(dim))
+                    raise ValueError(
+                        'invalid list of degeneracy maps on {}-simplex'.format(dim)
+                    )
             if underlying is None:
                 self._underlying = NonDegenerateSimplex(dim)
             else:
@@ -450,8 +453,10 @@ class AbstractSimplex_class(SageObject):
         """
         if not isinstance(other, AbstractSimplex_class):
             return False
-        return (self._degens == other._degens
-                and self.nondegenerate() is other.nondegenerate())
+        return (
+            self._degens == other._degens
+            and self.nondegenerate() is other.nondegenerate()
+        )
 
     def __ne__(self, other) -> bool:
         """
@@ -569,11 +574,18 @@ class AbstractSimplex_class(SageObject):
             return False
         if other.degeneracies() and not self.degeneracies():
             return True
-        if self.degeneracies() and other.degeneracies() and self.degeneracies() != other.degeneracies():
+        if (
+            self.degeneracies()
+            and other.degeneracies()
+            and self.degeneracies() != other.degeneracies()
+        ):
             return self.degeneracies() < other.degeneracies()
         if self.nondegenerate().get_custom_name() is not None:
             if other.nondegenerate().get_custom_name() is not None:
-                return self.nondegenerate().get_custom_name() < other.nondegenerate().get_custom_name()
+                return (
+                    self.nondegenerate().get_custom_name()
+                    < other.nondegenerate().get_custom_name()
+                )
             return True
 
         if other.nondegenerate().get_custom_name() is not None:
@@ -753,9 +765,11 @@ class AbstractSimplex_class(SageObject):
         if not args:
             return self
         underlying = self.nondegenerate()
-        return AbstractSimplex(underlying.dimension(),
-                               degeneracies=list(args) + self.degeneracies(),
-                               underlying=underlying)
+        return AbstractSimplex(
+            underlying.dimension(),
+            degeneracies=list(args) + self.degeneracies(),
+            underlying=underlying,
+        )
 
     def __copy__(self):
         """
@@ -960,8 +974,8 @@ class NonDegenerateSimplex(AbstractSimplex_class, WithEqualityById):
 # The following function returns an instance of either
 # AbstractSimplex_class or NonDegenerateSimplex.
 
-def AbstractSimplex(dim, degeneracies=(), underlying=None,
-                    name=None, latex_name=None):
+
+def AbstractSimplex(dim, degeneracies=(), underlying=None, name=None, latex_name=None):
     r"""
     An abstract simplex, a building block of a simplicial set.
 
@@ -1082,16 +1096,19 @@ def AbstractSimplex(dim, degeneracies=(), underlying=None,
     if degeneracies:
         if underlying is None:
             underlying = NonDegenerateSimplex(dim)
-        return AbstractSimplex_class(dim, degeneracies=degeneracies,
-                                     underlying=underlying,
-                                     name=name,
-                                     latex_name=latex_name)
-    return NonDegenerateSimplex(dim, name=name,
-                                latex_name=latex_name)
+        return AbstractSimplex_class(
+            dim,
+            degeneracies=degeneracies,
+            underlying=underlying,
+            name=name,
+            latex_name=latex_name,
+        )
+    return NonDegenerateSimplex(dim, name=name, latex_name=latex_name)
 
 
 ########################################################################
 # The main classes for simplicial sets.
+
 
 class SimplicialSet_arbitrary(Parent):
     r"""
@@ -1189,8 +1206,9 @@ class SimplicialSet_arbitrary(Parent):
             return self.n_skeleton(dim).face_data()[simplex]
         underlying = simplex.nondegenerate()
         faces = []
-        for J, t in [face_degeneracies(m, simplex.degeneracies())
-                     for m in range(dim+1)]:
+        for J, t in [
+            face_degeneracies(m, simplex.degeneracies()) for m in range(dim + 1)
+        ]:
             if t is None:
                 faces.append(underlying.apply_degeneracies(*J))
             else:
@@ -1219,8 +1237,11 @@ class SimplicialSet_arbitrary(Parent):
             True
         """
         if i < 0 or i > simplex.dimension():
-            raise ValueError('cannot compute face {} of {}-dimensional '
-                             'simplex'.format(i, simplex.dimension()))
+            raise ValueError(
+                'cannot compute face {} of {}-dimensional simplex'.format(
+                    i, simplex.dimension()
+                )
+            )
         faces = self.faces(simplex)
         if faces is not None:
             return self.faces(simplex)[i]
@@ -1299,8 +1320,10 @@ class SimplicialSet_arbitrary(Parent):
         """
         dim = simplex.dimension()
         if dim_left < 0 or dim_left > dim:
-            raise ValueError('alexander_whitney is only valid if dim_left '
-                             'is between 0 and the dimension of the simplex')
+            raise ValueError(
+                'alexander_whitney is only valid if dim_left '
+                'is between 0 and the dimension of the simplex'
+            )
         left = simplex
         for i in range(dim, dim_left, -1):
             left = self.face(left, i)
@@ -1379,8 +1402,9 @@ class SimplicialSet_arbitrary(Parent):
                 return list(self._simplices)
             return [sigma for sigma in self._simplices if sigma.dimension() <= max_dim]
         if max_dim is None:
-            raise NotImplementedError('this simplicial set may be '
-                                      'infinite, so specify max_dim')
+            raise NotImplementedError(
+                'this simplicial set may be infinite, so specify max_dim'
+            )
         return list(self.n_skeleton(max_dim)._simplices)
 
     def cells(self, subcomplex=None, max_dim=None):
@@ -1448,13 +1472,13 @@ class SimplicialSet_arbitrary(Parent):
                     else:
                         simplices[sigma.dimension()] = [sigma]
                 if max_dim is not None:
-                    return {d: sorted(simplices[d]) for d in simplices
-                            if d <= max_dim}
+                    return {d: sorted(simplices[d]) for d in simplices if d <= max_dim}
                 return {d: sorted(simplices[d]) for d in simplices}
             # Infinite case:
             if max_dim is None:
-                raise NotImplementedError('this simplicial set may be '
-                                          'infinite, so specify max_dim')
+                raise NotImplementedError(
+                    'this simplicial set may be infinite, so specify max_dim'
+                )
             return self.n_skeleton(max_dim).cells()
         # subcomplex is not None:
         return self.quotient(subcomplex).cells(max_dim=max_dim)
@@ -1552,8 +1576,9 @@ class SimplicialSet_arbitrary(Parent):
         ans = {_ for _ in non_degen if _.dimension() == n}
         for sigma in non_degen:
             d = sigma.dimension()
-            ans.update([sigma.apply_degeneracies(*_)
-                        for _ in all_degeneracies(d, n-d)])
+            ans.update(
+                [sigma.apply_degeneracies(*_) for _ in all_degeneracies(d, n - d)]
+            )
         return sorted(ans)
 
     def _map_from_empty_set(self):
@@ -1573,6 +1598,7 @@ class SimplicialSet_arbitrary(Parent):
               Defn: [] --> []
         """
         from sage.topology.simplicial_set_examples import Empty
+
         return Empty().Hom(self)({})
 
     def identity(self):
@@ -1645,6 +1671,7 @@ class SimplicialSet_arbitrary(Parent):
             ValueError: codomain is not pointed, so specify a target for the constant map
         """
         from sage.topology.simplicial_set_examples import Point
+
         if codomain is None:
             codomain = Point()
         return self.Hom(codomain).constant_map(point)
@@ -1840,6 +1867,7 @@ class SimplicialSet_arbitrary(Parent):
         # If simplices is a simplicial complex, turn it into a list of
         # nondegenerate simplices.
         from .simplicial_set_constructions import SubSimplicialSet
+
         if isinstance(simplices, SimplicialComplex):
             new = []
             for f in simplices.facets():
@@ -1851,7 +1879,9 @@ class SimplicialSet_arbitrary(Parent):
                         found = True
                         break
                 if not found:
-                    raise ValueError('not all simplices are in the original simplicial set')
+                    raise ValueError(
+                        'not all simplices are in the original simplicial set'
+                    )
             simplices = new
 
         if not self.is_finite():
@@ -1869,7 +1899,9 @@ class SimplicialSet_arbitrary(Parent):
             for x in old_keep:
                 underlying = x.nondegenerate()
                 if underlying not in data.keys():
-                    raise ValueError('not all simplices are in the original simplicial set')
+                    raise ValueError(
+                        'not all simplices are in the original simplicial set'
+                    )
                 keep.add(underlying)
                 if underlying in data and data[underlying]:
                     keep.update([f.nondegenerate() for f in data[underlying]])
@@ -1885,9 +1917,16 @@ class SimplicialSet_arbitrary(Parent):
             data[x] = None
         return SubSimplicialSet(data, self)
 
-    def chain_complex(self, dimensions=None, base_ring=ZZ, augmented=False,
-                      cochain=False, verbose=False, subcomplex=None,
-                      check=False):
+    def chain_complex(
+        self,
+        dimensions=None,
+        base_ring=ZZ,
+        augmented=False,
+        cochain=False,
+        verbose=False,
+        subcomplex=None,
+        check=False,
+    ):
         r"""
         Return the normalized chain complex.
 
@@ -1940,20 +1979,27 @@ class SimplicialSet_arbitrary(Parent):
             ...
             NotImplementedError: this simplicial set may be infinite, so specify dimensions when computing its chain complex
         """
-        kwds = {'base_ring': base_ring, 'augmented': augmented, 'cochain': cochain,
-                'verbose': verbose, 'subcomplex': subcomplex, 'check': check}
+        kwds = {
+            'base_ring': base_ring,
+            'augmented': augmented,
+            'cochain': cochain,
+            'verbose': verbose,
+            'subcomplex': subcomplex,
+            'check': check,
+        }
         if not self.is_finite():
             if dimensions is None:
-                raise NotImplementedError('this simplicial set may be infinite, '
-                                          'so specify dimensions when computing '
-                                          'its chain complex')
+                raise NotImplementedError(
+                    'this simplicial set may be infinite, '
+                    'so specify dimensions when computing '
+                    'its chain complex'
+                )
             else:
                 max_dim = max(dimensions)
-                return SimplicialSet_finite.chain_complex(self.n_skeleton(max_dim+1),
-                                                          dimensions=dimensions,
-                                                          **kwds)
-        return SimplicialSet_finite.chain_complex(self, dimensions=dimensions,
-                                                  **kwds)
+                return SimplicialSet_finite.chain_complex(
+                    self.n_skeleton(max_dim + 1), dimensions=dimensions, **kwds
+                )
+        return SimplicialSet_finite.chain_complex(self, dimensions=dimensions, **kwds)
 
     def homology(self, dim=None, **kwds):
         r"""
@@ -2016,18 +2062,20 @@ class SimplicialSet_arbitrary(Parent):
         """
         if not self.is_finite():
             if dim is None:
-                raise NotImplementedError('this simplicial set may be infinite, so '
-                                          'specify dimensions when computing homology')
+                raise NotImplementedError(
+                    'this simplicial set may be infinite, so '
+                    'specify dimensions when computing homology'
+                )
             else:
                 if isinstance(dim, (list, tuple, range)):
                     dim = list(dim)
                     max_dim = max(dim)
-                    space = self.n_skeleton(max_dim+1)
+                    space = self.n_skeleton(max_dim + 1)
                     min_dim = min(dim)
                     H = GenericCellComplex.homology(space, **kwds)
                     return {n: H[n] for n in H if min_dim <= n <= max_dim}
                 max_dim = dim
-            space = self.n_skeleton(max_dim+1)
+            space = self.n_skeleton(max_dim + 1)
         else:
             space = self
         return GenericCellComplex.homology(space, dim=dim, **kwds)
@@ -2168,9 +2216,9 @@ class SimplicialSet_arbitrary(Parent):
             [\chi_(1,2), \chi_(1,2,3), \chi_(1,3), \chi_(1,3,2), \chi_(2,3)]
         """
         if self.is_finite():
-            return GenericCellComplex.n_chains(self, n=n,
-                                               base_ring=base_ring,
-                                               cochains=cochains)
+            return GenericCellComplex.n_chains(
+                self, n=n, base_ring=base_ring, cochains=cochains
+            )
 
         from sage.homology.chains import Chains, Cochains
 
@@ -2280,8 +2328,11 @@ class SimplicialSet_arbitrary(Parent):
             1
         """
         from .simplicial_set_constructions import SubSimplicialSet
-        from .simplicial_set_constructions import QuotientOfSimplicialSet, \
-            QuotientOfSimplicialSet_finite
+        from .simplicial_set_constructions import (
+            QuotientOfSimplicialSet,
+            QuotientOfSimplicialSet_finite,
+        )
+
         if not isinstance(subcomplex, SimplicialSet_finite):
             # If it's not a simplicial set, subcomplex should be a
             # list, tuple, or set of simplices, so form the actual
@@ -2290,14 +2341,18 @@ class SimplicialSet_arbitrary(Parent):
         else:
             # Test whether subcomplex is actually a subcomplex of
             # self.
-            if (not isinstance(subcomplex, SubSimplicialSet)
-                    and subcomplex.ambient_space() == self):
+            if (
+                not isinstance(subcomplex, SubSimplicialSet)
+                and subcomplex.ambient_space() == self
+            ):
                 raise ValueError('the "subcomplex" is not actually a subcomplex')
         if self.is_finite():
-            return QuotientOfSimplicialSet_finite(subcomplex.inclusion_map(),
-                                                  vertex_name=vertex_name)
-        return QuotientOfSimplicialSet(subcomplex.inclusion_map(),
-                                       vertex_name=vertex_name)
+            return QuotientOfSimplicialSet_finite(
+                subcomplex.inclusion_map(), vertex_name=vertex_name
+            )
+        return QuotientOfSimplicialSet(
+            subcomplex.inclusion_map(), vertex_name=vertex_name
+        )
 
     def disjoint_union(self, *others):
         """
@@ -2354,8 +2409,11 @@ class SimplicialSet_arbitrary(Parent):
             sage: K.factors()
             (S^2, S^2, S^2)
         """
-        from .simplicial_set_constructions import DisjointUnionOfSimplicialSets, \
-            DisjointUnionOfSimplicialSets_finite
+        from .simplicial_set_constructions import (
+            DisjointUnionOfSimplicialSets,
+            DisjointUnionOfSimplicialSets_finite,
+        )
+
         if all(space.is_finite() for space in [self] + list(others)):
             return DisjointUnionOfSimplicialSets_finite((self,) + others)
         return DisjointUnionOfSimplicialSets((self,) + others)
@@ -2419,9 +2477,11 @@ class SimplicialSet_arbitrary(Parent):
         if self.is_pointed() and all(X.is_pointed() for X in others):
             return self.wedge(*others)
         if self.is_pointed() or any(X.is_pointed() for X in others):
-            raise ValueError('some, but not all, of the simplicial sets are pointed, '
-                             'so the categorical coproduct is not defined: the '
-                             'category is ambiguous')
+            raise ValueError(
+                'some, but not all, of the simplicial sets are pointed, '
+                'so the categorical coproduct is not defined: the '
+                'category is ambiguous'
+            )
         return self.disjoint_union(*others)
 
     def product(self, *others):
@@ -2523,8 +2583,11 @@ class SimplicialSet_arbitrary(Parent):
               To:   S^2 x S^3
               Defn: [v_0, sigma_2] --> [(v_0, v_0), (sigma_2, s_1 s_0 v_0)]
         """
-        from .simplicial_set_constructions import ProductOfSimplicialSets, \
-            ProductOfSimplicialSets_finite
+        from .simplicial_set_constructions import (
+            ProductOfSimplicialSets,
+            ProductOfSimplicialSets_finite,
+        )
+
         if self.is_finite() and all(X.is_finite() for X in others):
             return ProductOfSimplicialSets_finite((self,) + others)
         return ProductOfSimplicialSets((self,) + others)
@@ -2634,8 +2697,11 @@ class SimplicialSet_arbitrary(Parent):
             ...
             ValueError: the domains of the maps must be equal
         """
-        from .simplicial_set_constructions import PushoutOfSimplicialSets, \
-            PushoutOfSimplicialSets_finite
+        from .simplicial_set_constructions import (
+            PushoutOfSimplicialSets,
+            PushoutOfSimplicialSets_finite,
+        )
+
         if any(self != f.domain() for f in maps):
             raise ValueError('the domains of the maps must be equal')
         if not maps:
@@ -2733,8 +2799,11 @@ class SimplicialSet_arbitrary(Parent):
             ...
             ValueError: the codomains of the maps must be equal
         """
-        from .simplicial_set_constructions import PullbackOfSimplicialSets, \
-            PullbackOfSimplicialSets_finite
+        from .simplicial_set_constructions import (
+            PullbackOfSimplicialSets,
+            PullbackOfSimplicialSets_finite,
+        )
+
         if any(self != f.codomain() for f in maps):
             raise ValueError('the codomains of the maps must be equal')
         if not maps:
@@ -2816,8 +2885,11 @@ class SimplicialSet_arbitrary(Parent):
             ...
             ValueError: the simplicial sets must be pointed
         """
-        from .simplicial_set_constructions import WedgeOfSimplicialSets, \
-            WedgeOfSimplicialSets_finite
+        from .simplicial_set_constructions import (
+            WedgeOfSimplicialSets,
+            WedgeOfSimplicialSets_finite,
+        )
+
         if all(space.is_finite() for space in [self] + list(others)):
             return WedgeOfSimplicialSets_finite((self,) + others)
         return WedgeOfSimplicialSets((self,) + others)
@@ -2874,9 +2946,13 @@ class SimplicialSet_arbitrary(Parent):
               To:   Reduced cone of Simplicial set with 2 non-degenerate simplices
               Defn: [v, e] --> [*, e]
         """
-        from .simplicial_set_constructions import \
-            ConeOfSimplicialSet, ConeOfSimplicialSet_finite, \
-            ReducedConeOfSimplicialSet, ReducedConeOfSimplicialSet_finite
+        from .simplicial_set_constructions import (
+            ConeOfSimplicialSet,
+            ConeOfSimplicialSet_finite,
+            ReducedConeOfSimplicialSet,
+            ReducedConeOfSimplicialSet_finite,
+        )
+
         if self.is_pointed():
             if self.is_finite():
                 return ReducedConeOfSimplicialSet_finite(self)
@@ -2924,8 +3000,11 @@ class SimplicialSet_arbitrary(Parent):
             ...
             ValueError: n must be nonnegative
         """
-        from .simplicial_set_constructions import \
-            SuspensionOfSimplicialSet, SuspensionOfSimplicialSet_finite
+        from .simplicial_set_constructions import (
+            SuspensionOfSimplicialSet,
+            SuspensionOfSimplicialSet_finite,
+        )
+
         if n < 0:
             raise ValueError('n must be nonnegative')
         if n == 0:
@@ -2936,7 +3015,7 @@ class SimplicialSet_arbitrary(Parent):
             Sigma = SuspensionOfSimplicialSet(self)
         if n == 1:
             return Sigma
-        return Sigma.suspension(n-1)
+        return Sigma.suspension(n - 1)
 
     def join(self, *others):
         """
@@ -3030,6 +3109,7 @@ class SimplicialSet_arbitrary(Parent):
         """
         # Import this here to prevent circular imports.
         from sage.topology.simplicial_set_morphism import SimplicialSetHomset
+
         # Error-checking on the ``category`` argument is done when
         # calling Hom(X,Y), so no need to do it again here.
         if category is None:
@@ -3195,8 +3275,15 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
         Y
     """
 
-    def __init__(self, data, base_point=None, name=None, check=True,
-                 category=None, latex_name=None) -> None:
+    def __init__(
+        self,
+        data,
+        base_point=None,
+        name=None,
+        check=True,
+        category=None,
+        latex_name=None,
+    ) -> None:
         r"""
         TESTS::
 
@@ -3252,6 +3339,7 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             sage: TestSuite(simplicial_sets.Sphere(5)).run(skip=skip)
             sage: TestSuite(simplicial_sets.RealProjectiveSpace(6)).run(skip=skip)      # needs sage.groups
         """
+
         def face(sigma, i):
             """
             Return the i-th face of sigma, a simplex in this simplicial set.
@@ -3272,7 +3360,7 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             if isinstance(data, SimplicialComplex):
                 simplices = {}
                 faces = {}
-                for d in range(data.dimension()+1):
+                for d in range(data.dimension() + 1):
                     old_faces = faces
                     faces = {}
                     for idx, sigma in enumerate(data.n_cells(d)):
@@ -3288,7 +3376,7 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             elif isinstance(data, DeltaComplex):
                 simplices = {}
                 current = []
-                for d in range(data.dimension()+1):
+                for d in range(data.dimension() + 1):
                     faces = tuple(current)
                     current = []
                     for idx, sigma in enumerate(data.n_cells(d)):
@@ -3305,18 +3393,25 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             elif isinstance(data, SimplicialSet_finite):
                 data = dict(copy.deepcopy(data._data))
             else:
-                raise NotImplementedError('I do not know how to convert this '
-                                          'to a simplicial set')
+                raise NotImplementedError(
+                    'I do not know how to convert this to a simplicial set'
+                )
         # Convert each value in data to a tuple, and then convert all
         # of data to a tuple, so that it is hashable.
         for x in data:
             if data[x]:
                 if x.dimension() != len(data[x]) - 1:
-                    raise ValueError('wrong number of faces for simplex '
-                                     'in dimension {}'.format(x.dimension()))
+                    raise ValueError(
+                        'wrong number of faces for simplex in dimension {}'.format(
+                            x.dimension()
+                        )
+                    )
                 if not all(y.dimension() == x.dimension() - 1 for y in data[x]):
-                    raise ValueError('faces of a {}-simplex have the wrong '
-                                     'dimension'.format(x.dimension()))
+                    raise ValueError(
+                        'faces of a {}-simplex have the wrong dimension'.format(
+                            x.dimension()
+                        )
+                    )
                 data[x] = tuple(data[x])
 
         # To obtain the non-degenerate simplices, look at both the
@@ -3338,12 +3433,14 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             for sigma in simplices:
                 d = sigma.dimension()
                 if d >= 2:
-                    for j in range(d+1):
+                    for j in range(d + 1):
                         for i in range(j):
-                            if face(face(sigma, j), i) != face(face(sigma, i), j-1):
-                                raise ValueError('simplicial identity d_i d_j '
-                                                 '= d_{{j-1}} d_i fails '
-                                                 'in dimension {}'.format(d))
+                            if face(face(sigma, j), i) != face(face(sigma, i), j - 1):
+                                raise ValueError(
+                                    'simplicial identity d_i d_j '
+                                    '= d_{{j-1}} d_i fails '
+                                    'in dimension {}'.format(d)
+                                )
 
         # Now define the attributes for an instance of this class.
         # self._data: a tuple representing the defining data of the
@@ -3354,8 +3451,9 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
         # self._basepoint: the base point, or None.
         if base_point is not None:
             if base_point not in simplices:
-                raise ValueError('the base point is not a simplex in '
-                                 'this simplicial set')
+                raise ValueError(
+                    'the base point is not a simplex in this simplicial set'
+                )
             if base_point.dimension() != 0:
                 raise ValueError('the base "point" is not a zero-simplex')
             self._basepoint = base_point
@@ -3394,13 +3492,17 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             False
         """
         if self.is_pointed():
-            return (isinstance(other, SimplicialSet_finite)
-                    and other.is_pointed()
-                    and sorted(self._data) == sorted(other._data)
-                    and self.base_point() == other.base_point())
-        return (isinstance(other, SimplicialSet_finite)
-                and not other.is_pointed()
-                and sorted(self._data) == sorted(other._data))
+            return (
+                isinstance(other, SimplicialSet_finite)
+                and other.is_pointed()
+                and sorted(self._data) == sorted(other._data)
+                and self.base_point() == other.base_point()
+            )
+        return (
+            isinstance(other, SimplicialSet_finite)
+            and not other.is_pointed()
+            and sorted(self._data) == sorted(other._data)
+        )
 
     def __ne__(self, other) -> bool:
         """
@@ -3520,8 +3622,7 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             sage: Y.n_skeleton(2).nondegenerate_simplices()
             [v, w, tau]
         """
-        data = [x for x in self.nondegenerate_simplices()
-                if x.dimension() <= n]
+        data = [x for x in self.nondegenerate_simplices() if x.dimension() <= n]
         return self.subsimplicial_set(data)
 
     def _facets_(self):
@@ -3573,7 +3674,7 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             sage: simplicial_sets.Sphere(3).f_vector()
             [1, 0, 0, 1]
         """
-        return [len(self.n_cells(_)) for _ in range(self.dimension()+1)]
+        return [len(self.n_cells(_)) for _ in range(self.dimension() + 1)]
 
     def euler_characteristic(self):
         r"""
@@ -3590,11 +3691,18 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             sage: simplicial_sets.KleinBottle().euler_characteristic()
             0
         """
-        return sum([(-1)**n * num for (n, num) in enumerate(self.f_vector())])
+        return sum([(-1) ** n * num for (n, num) in enumerate(self.f_vector())])
 
-    def chain_complex(self, dimensions=None, base_ring=ZZ, augmented=False,
-                      cochain=False, verbose=False, subcomplex=None,
-                      check=False):
+    def chain_complex(
+        self,
+        dimensions=None,
+        base_ring=ZZ,
+        augmented=False,
+        cochain=False,
+        verbose=False,
+        subcomplex=None,
+        check=False,
+    ):
         r"""
         Return the normalized chain complex.
 
@@ -3670,10 +3778,12 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
         if dimensions is None:
             if not self.cells():  # Empty
                 if cochain:
-                    return ChainComplex({-1: matrix(base_ring, 0, 0)},
-                                        degree_of_differential=1)
-                return ChainComplex({0: matrix(base_ring, 0, 0)},
-                                    degree_of_differential=-1)
+                    return ChainComplex(
+                        {-1: matrix(base_ring, 0, 0)}, degree_of_differential=1
+                    )
+                return ChainComplex(
+                    {0: matrix(base_ring, 0, 0)}, degree_of_differential=-1
+                )
             dimensions = list(range(self.dimension() + 1))
         else:
             if not isinstance(dimensions, (list, tuple, range)):
@@ -3712,9 +3822,8 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
             rank = 0
             current = []
         if augmented and first == 0:
-            differentials[first-1] = matrix(base_ring, 0, 1)
-            differentials[first] = matrix(base_ring, 1, rank,
-                                          [1] * rank)
+            differentials[first - 1] = matrix(base_ring, 0, 1)
+            differentials[first] = matrix(base_ring, 1, rank, [1] * rank)
         else:
             differentials[first] = matrix(base_ring, 0, rank)
 
@@ -3743,8 +3852,7 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
                                     matrix_data[(row, col)] = sign
                             sign *= -1
 
-                    differentials[d] = matrix(base_ring, old_rank,
-                                              rank, matrix_data)
+                    differentials[d] = matrix(base_ring, old_rank, rank, matrix_data)
 
             else:
                 rank = 0
@@ -3754,11 +3862,9 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
         if cochain:
             new_diffs = {}
             for d in differentials:
-                new_diffs[d-1] = differentials[d].transpose()
-            return ChainComplex(new_diffs, degree_of_differential=1,
-                                check=check)
-        return ChainComplex(differentials, degree_of_differential=-1,
-                            check=check)
+                new_diffs[d - 1] = differentials[d].transpose()
+            return ChainComplex(new_diffs, degree_of_differential=1, check=check)
+        return ChainComplex(differentials, degree_of_differential=-1, check=check)
 
     @cached_method
     def algebraic_topological_model(self, base_ring=None):
@@ -3814,7 +3920,9 @@ class SimplicialSet_finite(SimplicialSet_arbitrary, GenericCellComplex):
              1: Vector space of dimension 2 over Rational Field,
              2: Vector space of dimension 1 over Rational Field}
         """
-        from sage.homology.algebraic_topological_model import algebraic_topological_model_delta_complex
+        from sage.homology.algebraic_topological_model import (
+            algebraic_topological_model_delta_complex,
+        )
 
         if base_ring is None:
             base_ring = QQ
@@ -3828,6 +3936,7 @@ SimplicialSet = SimplicialSet_finite
 
 ########################################################################
 # Functions for manipulating face and degeneracy maps.
+
 
 def standardize_degeneracies(*L):
     r"""
@@ -3881,11 +3990,13 @@ def standardize_degeneracies(*L):
         except TypeError:
             # Likely if called via standard_degeneracies([1,2,3])
             # rather than          standard_degeneracies(1,2,3).
-            raise TypeError('degeneracies are indexed by nonnegative integers; do not use an explicit list or tuple')
+            raise TypeError(
+                'degeneracies are indexed by nonnegative integers; do not use an explicit list or tuple'
+            )
     inadmissible = True
     while inadmissible:
         inadmissible = False
-        for idx in range(len(J)-1):
+        for idx in range(len(J) - 1):
             if J[idx] <= J[idx + 1]:
                 inadmissible = True
                 tmp = J[idx]
@@ -3929,11 +4040,15 @@ def all_degeneracies(n, l=1):
     if l == 0:
         return set()
     if l == 1:
-        return {(_,) for _ in range(n+1)}
+        return {(_,) for _ in range(n + 1)}
     ans = set()
-    for i in range(n+l):
-        ans.update({tuple(standardize_degeneracies(*([i] + list(_))))
-                        for _ in all_degeneracies(n, l-1)})
+    for i in range(n + l):
+        ans.update(
+            {
+                tuple(standardize_degeneracies(*([i] + list(_))))
+                for _ in all_degeneracies(n, l - 1)
+            }
+        )
     return ans
 
 
@@ -3975,7 +4090,7 @@ def standardize_face_maps(*L):
     inadmissible = True
     while inadmissible:
         inadmissible = False
-        for idx in range(len(J)-1):
+        for idx in range(len(J) - 1):
             if J[idx] < J[idx + 1]:
                 inadmissible = True
                 tmp = J[idx]
@@ -4034,8 +4149,8 @@ def face_degeneracies(m, I):
         if t is None:
             J.append(i)
         elif t < i:
-            J.append(i-1)
-        elif t == i or t == i+1:
+            J.append(i - 1)
+        elif t == i or t == i + 1:
             t = None
         else:
             J.append(i)
@@ -4044,6 +4159,7 @@ def face_degeneracies(m, I):
 
 
 ########################################################################
+
 
 def shrink_simplicial_complex(K):
     """

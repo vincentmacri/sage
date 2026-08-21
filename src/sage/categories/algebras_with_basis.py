@@ -119,15 +119,25 @@ class AlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
              the free algebra on the generators (1, 2, 3) over Rational Field
         """
         from sage.categories.examples.algebras_with_basis import Example
+
         return Example(self.base_ring(), alphabet)
 
-    Filtered = LazyImport('sage.categories.filtered_algebras_with_basis', 'FilteredAlgebrasWithBasis')
-    FiniteDimensional = LazyImport('sage.categories.finite_dimensional_algebras_with_basis', 'FiniteDimensionalAlgebrasWithBasis', at_startup=True)
-    Graded = LazyImport('sage.categories.graded_algebras_with_basis', 'GradedAlgebrasWithBasis')
-    Super = LazyImport('sage.categories.super_algebras_with_basis', 'SuperAlgebrasWithBasis')
+    Filtered = LazyImport(
+        'sage.categories.filtered_algebras_with_basis', 'FilteredAlgebrasWithBasis'
+    )
+    FiniteDimensional = LazyImport(
+        'sage.categories.finite_dimensional_algebras_with_basis',
+        'FiniteDimensionalAlgebrasWithBasis',
+        at_startup=True,
+    )
+    Graded = LazyImport(
+        'sage.categories.graded_algebras_with_basis', 'GradedAlgebrasWithBasis'
+    )
+    Super = LazyImport(
+        'sage.categories.super_algebras_with_basis', 'SuperAlgebrasWithBasis'
+    )
 
     class ParentMethods:
-
         # For backward compatibility
         one = UnitalAlgebras.WithBasis.ParentMethods.one
 
@@ -152,10 +162,10 @@ class AlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sage: H = SGA.hochschild_complex(T)
             """
             from sage.homology.hochschild_complex import HochschildComplex
+
             return HochschildComplex(self, M)
 
     class ElementMethods:
-
         def __invert__(self):
             """
             Return the inverse of ``self`` if ``self`` is a multiple of one,
@@ -257,7 +267,9 @@ class AlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     ....:                    SymmetricGroupAlgebra(QQ, 4)]).one()
                     B[(0, [1, 2, 3])] + B[(1, [1, 2, 3, 4])]
                 """
-                return self.sum_of_monomials(zip(self._sets_keys(), (set.one_basis() for set in self._sets)))
+                return self.sum_of_monomials(
+                    zip(self._sets_keys(), (set.one_basis() for set in self._sets))
+                )
 
             @lazy_attribute
             def one(self):
@@ -271,7 +283,11 @@ class AlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     sage: B.one()                                                       # needs sage.combinat sage.modules
                     B[(0, word: )] + B[(1, word: )] + B[(2, word: )]
                 """
-                if all(hasattr(module, "one_basis") and module.one_basis is not NotImplemented for module in self._sets):
+                if all(
+                    hasattr(module, "one_basis")
+                    and module.one_basis is not NotImplemented
+                    for module in self._sets
+                ):
                     return self.one_from_cartesian_product_of_one_basis
                 return self._one_generic
 
@@ -366,11 +382,14 @@ class AlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
                 TODO: optimize this implementation!
                 """
-                return tensor(module.monomial(x1) * module.monomial(x2)
-                              for module, x1, x2 in zip(self._sets, t1, t2))
+                return tensor(
+                    module.monomial(x1) * module.monomial(x2)
+                    for module, x1, x2 in zip(self._sets, t1, t2)
+                )
 
         class ElementMethods:
             """
             Implement operations on elements of tensor products of algebras with basis
             """
+
             pass

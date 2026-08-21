@@ -152,7 +152,9 @@ def construct_phi(matrices):
 
     phi = set(get_immutable(M.apply_map(lambda m: min(m, 2))) for M in matrices)
     for counter in range(1000000):
-        phi.update([get_immutable(multiply_reduce(A, B)) for A in matrices for B in phi])
+        phi.update(
+            [get_immutable(multiply_reduce(A, B)) for A in matrices for B in phi]
+        )
         if len(phi) == length:
             return list(phi)
         length = len(phi)
@@ -198,6 +200,7 @@ def is_integer_valued(matrices) -> bool:
     """
     from sage.matrix.matrix_space import MatrixSpace
     from sage.rings.integer_ring import ZZ
+
     M = MatrixSpace(ZZ, matrices[0].nrows(), matrices[0].ncols())
     return all(mat in M for mat in matrices)
 
@@ -292,8 +295,7 @@ def is_bounded_via_mandel_simon_algorithm(matrices) -> bool:
         raise ValueError('not all matrices are integer-valued')
 
     phi = construct_phi(matrices)
-    return not any(multiply_reduce(M, M) == M and not M**2 == M**3
-                   for M in phi)
+    return not any(multiply_reduce(M, M) == M and not M**2 == M**3 for M in phi)
 
 
 def has_bounded_matrix_powers(matrices) -> bool:
@@ -340,10 +342,11 @@ def has_bounded_matrix_powers(matrices) -> bool:
         sage: has_bounded_matrix_powers(matrices)
         True
     """
-    return all(abs(eVn[0]) < 1 or
-               (abs(eVn[0]) == 1 and len(eVn[1]) == eVn[2])
-               for mat in matrices
-               for eVn in mat.eigenvectors_right())
+    return all(
+        abs(eVn[0]) < 1 or (abs(eVn[0]) == 1 and len(eVn[1]) == eVn[2])
+        for mat in matrices
+        for eVn in mat.eigenvectors_right()
+    )
 
 
 def make_positive(matrices) -> list:
@@ -393,7 +396,9 @@ def make_positive(matrices) -> list:
             return mat
         if is_non_negative(-mat):
             return -mat
-        raise ValueError('There is a matrix which is neither non-negative nor non-positive.')
+        raise ValueError(
+            'There is a matrix which is neither non-negative nor non-positive.'
+        )
 
     return [do(mat) for mat in matrices]
 
@@ -519,8 +524,7 @@ def regular_sequence_is_bounded(S):
     if not has_bounded_matrix_powers(matrices):
         return False
 
-    matricesProd = [ell * em for ell in matrices for em in matrices
-                    if ell != em]
+    matricesProd = [ell * em for ell in matrices for em in matrices if ell != em]
     if not has_bounded_matrix_powers(matricesProd):
         return False
 
@@ -530,5 +534,7 @@ def regular_sequence_is_bounded(S):
     except ValueError:
         pass
 
-    raise RuntimeError('It is not decidable with this implementation ' +
-                       'whether the sequence is bounded or not.')
+    raise RuntimeError(
+        'It is not decidable with this implementation '
+        + 'whether the sequence is bounded or not.'
+    )

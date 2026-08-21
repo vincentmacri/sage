@@ -27,8 +27,11 @@ def all_features():
     import pkgutil
     import importlib
     import sage.features
+
     # Following https://packaging.python.org/guides/creating-and-discovering-plugins/#using-namespace-packages
-    for finder, name, ispkg in pkgutil.iter_modules(sage.features.__path__, sage.features.__name__ + "."):
+    for finder, name, ispkg in pkgutil.iter_modules(
+        sage.features.__path__, sage.features.__name__ + "."
+    ):
         module = importlib.import_module(name)
         try:
             af = module.all_features

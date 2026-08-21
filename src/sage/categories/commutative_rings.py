@@ -59,6 +59,7 @@ class CommutativeRings(CategoryWithAxiom):
         sage: A.is_commutative()                                                    # needs sage.combinat sage.modules
         False
     """
+
     class ParentMethods:
         def krull_dimension(self):
             """
@@ -165,6 +166,7 @@ class CommutativeRings(CategoryWithAxiom):
             """
             # One might need more than just n
             from sage.rings.ideal import Ideal_generic, Ideal_principal
+
             return Ideal_principal if n == 1 else Ideal_generic
 
         def _test_divides(self, **options):
@@ -326,13 +328,18 @@ class CommutativeRings(CategoryWithAxiom):
                  Rational Field]
             """
             from sage.rings.ring_extension import RingExtension
+
             if name is not None:
                 if names is not None:
-                    raise ValueError("keyword argument 'name' cannot be combined with 'names'")
+                    raise ValueError(
+                        "keyword argument 'name' cannot be combined with 'names'"
+                    )
                 names = (name,)
             if gen is not None:
                 if gens is not None:
-                    raise ValueError("keyword argument 'gen' cannot be combined with 'gens'")
+                    raise ValueError(
+                        "keyword argument 'gen' cannot be combined with 'gens'"
+                    )
                 gens = (gen,)
             return RingExtension(self, base, gens, names)
 
@@ -367,6 +374,7 @@ class CommutativeRings(CategoryWithAxiom):
                 1 + u^25
             """
             from sage.rings.morphism import FrobeniusEndomorphism_generic
+
             return FrobeniusEndomorphism_generic(self, n)
 
         def derivation_module(self, codomain=None, twist=None):
@@ -460,6 +468,7 @@ class CommutativeRings(CategoryWithAxiom):
                 :meth:`derivation`
             """
             from sage.rings.derivation import RingDerivationModule
+
             if codomain is None:
                 codomain = self
             return RingDerivationModule(self, codomain, twist)
@@ -584,6 +593,7 @@ class CommutativeRings(CategoryWithAxiom):
             """
             # from sage.categories.fields import Fields
             from sage.categories.integral_domains import IntegralDomains
+
             try:
                 if self.is_field():
                     # self in Fields(): would turn SR into a field !
@@ -594,6 +604,7 @@ class CommutativeRings(CategoryWithAxiom):
                 raise TypeError("self must be an integral domain")
 
             import sage.rings.fraction_field
+
             return sage.rings.fraction_field.FractionField_generic(self)
 
         def extension(self, poly, name=None, names=None, **kwds):
@@ -660,12 +671,23 @@ class CommutativeRings(CategoryWithAxiom):
                 name = str(poly.parent().gen(0))
 
             for key, val in kwds.items():
-                if key not in ['structure', 'implementation', 'prec',
-                               'embedding', 'latex_name', 'latex_names']:
-                    raise TypeError(f"extension() got an invalid keyword argument: {key}")
-                if not (val is None or isinstance(val, list)
-                        and all(c is None for c in val)):
-                    raise NotImplementedError(f"ring extension with prescribed {key} is not implemented")
+                if key not in [
+                    'structure',
+                    'implementation',
+                    'prec',
+                    'embedding',
+                    'latex_name',
+                    'latex_names',
+                ]:
+                    raise TypeError(
+                        f"extension() got an invalid keyword argument: {key}"
+                    )
+                if not (
+                    val is None or isinstance(val, list) and all(c is None for c in val)
+                ):
+                    raise NotImplementedError(
+                        f"ring extension with prescribed {key} is not implemented"
+                    )
 
             if self.is_zero():
                 return self
@@ -712,7 +734,9 @@ class CommutativeRings(CategoryWithAxiom):
                 :exc:`NotImplementedError`. The function definition is here to show
                 what functionality is expected and provide a general framework.
             """
-            raise NotImplementedError("is_square() not implemented for elements of %s" % self.parent())
+            raise NotImplementedError(
+                "is_square() not implemented for elements of %s" % self.parent()
+            )
 
         def sqrt(self, extend=True, all=False, name=None):
             """
@@ -817,12 +841,16 @@ class CommutativeRings(CategoryWithAxiom):
             # is_square(root = True) option
 
             from sage.categories.integral_domains import IntegralDomains
+
             P = self.parent()
             is_sqr, sq_rt = self.is_square(root=True)
             if is_sqr:
                 if all:
                     if P not in IntegralDomains():
-                        raise NotImplementedError('sqrt() with all=True is only implemented for integral domains, not for %s' % P)
+                        raise NotImplementedError(
+                            'sqrt() with all=True is only implemented for integral domains, not for %s'
+                            % P
+                        )
                     if P.characteristic() == 2 or sq_rt == 0:
                         # 0 has only one square root, and in characteristic 2 everything also has only 1 root
                         return [sq_rt]
@@ -830,16 +858,25 @@ class CommutativeRings(CategoryWithAxiom):
                 return sq_rt
             # from now on we know that self is not a square
             if P not in IntegralDomains():
-                raise NotImplementedError('sqrt() of non squares is only implemented for integral domains, not for %s' % P)
+                raise NotImplementedError(
+                    'sqrt() of non squares is only implemented for integral domains, not for %s'
+                    % P
+                )
             if not extend:
                 # all square roots of a non-square should be an empty list
                 if all:
                     return []
-                raise ValueError('trying to take square root of non-square %s with extend = False' % self)
+                raise ValueError(
+                    'trying to take square root of non-square %s with extend = False'
+                    % self
+                )
 
             if name is None:
-                raise TypeError("Polynomial is not a square. You must specify the name of the square root when using the default extend = True")
+                raise TypeError(
+                    "Polynomial is not a square. You must specify the name of the square root when using the default extend = True"
+                )
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             PY = PolynomialRing(P, 'y')
             y = PY.gen()
             sq_rt = PY.quotient(y**2 - self, names=name)(y)
@@ -860,6 +897,7 @@ class CommutativeRings(CategoryWithAxiom):
             ....:                    GF(5)]) in Rings().Commutative().Finite()
             True
         """
+
         def extra_super_categories(self):
             r"""
             Let Sage know that finite commutative rings are Noetherian.
@@ -870,6 +908,7 @@ class CommutativeRings(CategoryWithAxiom):
                 [Category of noetherian rings]
             """
             from sage.categories.noetherian_rings import NoetherianRings
+
             return [NoetherianRings()]
 
         class ParentMethods:

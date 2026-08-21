@@ -39,6 +39,7 @@ class Coalgebras(Category_over_base_ring):
 
         sage: TestSuite(Coalgebras(ZZ)).run()
     """
+
     def super_categories(self):
         """
         EXAMPLES::
@@ -48,11 +49,13 @@ class Coalgebras(Category_over_base_ring):
         """
         return [Modules(self.base_ring())]
 
-    WithBasis = LazyImport('sage.categories.coalgebras_with_basis', 'CoalgebrasWithBasis')
+    WithBasis = LazyImport(
+        'sage.categories.coalgebras_with_basis', 'CoalgebrasWithBasis'
+    )
     Graded = LazyImport('sage.categories.graded_coalgebras', 'GradedCoalgebras')
 
     class ParentMethods:
-        #def __init_add__(self): # The analogue of initDomainAdd
+        # def __init_add__(self): # The analogue of initDomainAdd
         #    # Will declare the coproduct of self to the coercion mechanism when it exists
         #    pass
 
@@ -104,7 +107,7 @@ class Coalgebras(Category_over_base_ring):
                 sage: b, A.coproduct(b)
                 (B[(1,3)], B[(1,3)] # B[(1,3)])
             """
-            #return self.tensor_square()(overloaded_coproduct(x))
+            # return self.tensor_square()(overloaded_coproduct(x))
 
     class ElementMethods:
         def coproduct(self):
@@ -200,7 +203,7 @@ class Coalgebras(Category_over_base_ring):
 
         class ParentMethods:
             # TODO: provide this default implementation of one if one_basis is not implemented
-            #def one(self):
+            # def one(self):
             #    return tensor(module.one() for module in self.modules)
             pass
 
@@ -208,7 +211,6 @@ class Coalgebras(Category_over_base_ring):
             pass
 
     class DualObjects(DualObjectsCategory):
-
         def extra_super_categories(self):
             r"""
             Return the dual category.
@@ -231,6 +233,7 @@ class Coalgebras(Category_over_base_ring):
                 See :issue:`15647`.
             """
             from sage.categories.algebras import Algebras
+
             return [Algebras(self.base_category().base_ring())]
 
     class Super(SuperModulesCategory):
@@ -291,9 +294,7 @@ class Coalgebras(Category_over_base_ring):
         """
 
     class WithRealizations(WithRealizationsCategory):
-
         class ParentMethods:
-
             def coproduct(self, x):
                 r"""
                 Return the coproduct of ``x``.
@@ -341,9 +342,7 @@ class Coalgebras(Category_over_base_ring):
                 return self.a_realization()(x).counit()
 
     class Realizations(RealizationsCategory):
-
         class ParentMethods:
-
             def coproduct_by_coercion(self, x):
                 r"""
                 Return the coproduct by coercion if ``coproduct_by_basis``

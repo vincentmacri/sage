@@ -19,6 +19,7 @@ class SingularFunctionFactory:
     """
     A convenient interface to libsingular functions.
     """
+
     def __getattr__(self, name):
         """
         EXAMPLES::
@@ -34,7 +35,9 @@ class SingularFunctionFactory:
             primdecSY (singular function)
         """
         if name.startswith("_"):
-            raise AttributeError("Singular Function Factory has no attribute '%s'" % name)
+            raise AttributeError(
+                "Singular Function Factory has no attribute '%s'" % name
+            )
 
         try:
             return singular_function(name)

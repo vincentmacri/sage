@@ -176,9 +176,17 @@ except ImportError:
 lazy_import('sage.rings.lazy_series_ring', 'LazyPowerSeriesRing')
 
 
-def PowerSeriesRing(base_ring, name=None, arg2=None, names=None,
-                    sparse=False, default_prec=None, order='negdeglex',
-                    num_gens=None, implementation=None):
+def PowerSeriesRing(
+    base_ring,
+    name=None,
+    arg2=None,
+    names=None,
+    sparse=False,
+    default_prec=None,
+    order='negdeglex',
+    num_gens=None,
+    implementation=None,
+):
     r"""
     Create a univariate or multivariate power series ring over a given
     (commutative) base ring.
@@ -360,18 +368,33 @@ def PowerSeriesRing(base_ring, name=None, arg2=None, names=None,
     # PowerSeriesRing(QQ,['x','y','z'], 3)
     if names is None and name is not None:
         names = name
-    if isinstance(names, (tuple, list)) and len(names) > 1 or (isinstance(names, str) and ',' in names):
-        return _multi_variate(base_ring, num_gens=arg2, names=names,
-                              order=order, default_prec=default_prec, sparse=sparse)
+    if (
+        isinstance(names, (tuple, list))
+        and len(names) > 1
+        or (isinstance(names, str) and ',' in names)
+    ):
+        return _multi_variate(
+            base_ring,
+            num_gens=arg2,
+            names=names,
+            order=order,
+            default_prec=default_prec,
+            sparse=sparse,
+        )
     # examples for second case:
     # PowerSeriesRing(QQ,3,'t')
     if arg2 is None and num_gens is not None:
         arg2 = names
         names = num_gens
-    if (isinstance(arg2, str) and
-            isinstance(names, (int, integer.Integer))):
-        return _multi_variate(base_ring, num_gens=names, names=arg2,
-                              order=order, default_prec=default_prec, sparse=sparse)
+    if isinstance(arg2, str) and isinstance(names, (int, integer.Integer)):
+        return _multi_variate(
+            base_ring,
+            num_gens=names,
+            names=arg2,
+            order=order,
+            default_prec=default_prec,
+            sparse=sparse,
+        )
 
     # univariate case: the arguments to PowerSeriesRing used to be
     # (base_ring, name=None, default_prec=20, names=None, sparse=False),
@@ -379,6 +402,7 @@ def PowerSeriesRing(base_ring, name=None, arg2=None, names=None,
     # deprecated, and will eventually be removed.
     if default_prec is None and arg2 is None:
         from sage.misc.defaults import series_precision
+
         default_prec = series_precision()
     elif arg2 is not None:
         default_prec = arg2
@@ -398,7 +422,9 @@ def PowerSeriesRing(base_ring, name=None, arg2=None, names=None,
     name = normalize_names(1, name)
 
     if name is None:
-        raise TypeError("You must specify the name of the indeterminate of the Power series ring.")
+        raise TypeError(
+            "You must specify the name of the indeterminate of the Power series ring."
+        )
 
     key = (base_ring, name, default_prec, sparse, implementation)
     if PowerSeriesRing_generic.__classcall__.is_in_cache(key):
@@ -412,21 +438,30 @@ def PowerSeriesRing(base_ring, name=None, arg2=None, names=None,
         raise TypeError("variable name must be a string or None")
 
     if base_ring in _Fields:
-        R = PowerSeriesRing_over_field(base_ring, name, default_prec,
-                                       sparse=sparse, implementation=implementation)
+        R = PowerSeriesRing_over_field(
+            base_ring, name, default_prec, sparse=sparse, implementation=implementation
+        )
     elif base_ring in _IntegralDomains:
-        R = PowerSeriesRing_domain(base_ring, name, default_prec,
-                                   sparse=sparse, implementation=implementation)
+        R = PowerSeriesRing_domain(
+            base_ring, name, default_prec, sparse=sparse, implementation=implementation
+        )
     elif base_ring in _CommutativeRings:
-        R = PowerSeriesRing_generic(base_ring, name, default_prec,
-                                    sparse=sparse, implementation=implementation)
+        R = PowerSeriesRing_generic(
+            base_ring, name, default_prec, sparse=sparse, implementation=implementation
+        )
     else:
         raise TypeError("base_ring must be a commutative ring")
     return R
 
 
-def _multi_variate(base_ring, num_gens=None, names=None,
-                   order='negdeglex', default_prec=None, sparse=False):
+def _multi_variate(
+    base_ring,
+    num_gens=None,
+    names=None,
+    order='negdeglex',
+    default_prec=None,
+    sparse=False,
+):
     """
     Construct multivariate power series ring.
     """
@@ -448,8 +483,15 @@ def _multi_variate(base_ring, num_gens=None, names=None,
     if base_ring not in commutative_rings.CommutativeRings():
         raise TypeError("base_ring must be a commutative ring")
     from sage.rings.multi_power_series_ring import MPowerSeriesRing_generic
-    R = MPowerSeriesRing_generic(base_ring, num_gens, names,
-                                 order=order, default_prec=default_prec, sparse=sparse)
+
+    R = MPowerSeriesRing_generic(
+        base_ring,
+        num_gens,
+        names,
+        order=order,
+        default_prec=default_prec,
+        sparse=sparse,
+    )
     return R
 
 
@@ -462,8 +504,15 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
     A power series ring.
     """
 
-    def __init__(self, base_ring, name=None, default_prec=None, sparse=False,
-                 implementation=None, category=None) -> None:
+    def __init__(
+        self,
+        base_ring,
+        name=None,
+        default_prec=None,
+        sparse=False,
+        implementation=None,
+        category=None,
+    ) -> None:
         """
         Initialize a power series ring.
 
@@ -522,7 +571,9 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
         """
         if implementation is None:
             try:
-                from sage.rings.finite_rings.finite_field_pari_ffelt import FiniteField_pari_ffelt
+                from sage.rings.finite_rings.finite_field_pari_ffelt import (
+                    FiniteField_pari_ffelt,
+                )
             except ImportError:
                 FiniteField_pari_ffelt = ()
             if isinstance(base_ring, FiniteField_pari_ffelt):
@@ -530,8 +581,10 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             else:
                 implementation = 'poly'
             R = PolynomialRing(base_ring, name, sparse=sparse)
-        elif implementation not in ['pari', 'mpoly']:     # see :issue:`28996`
-            R = PolynomialRing(base_ring, name, sparse=sparse, implementation=implementation)
+        elif implementation not in ['pari', 'mpoly']:  # see :issue:`28996`
+            R = PolynomialRing(
+                base_ring, name, sparse=sparse, implementation=implementation
+            )
             implementation = 'poly'
         else:
             R = PolynomialRing(base_ring, name, sparse=sparse)
@@ -540,10 +593,10 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
         self.__is_sparse = sparse
         if default_prec is None:
             from sage.misc.defaults import series_precision
+
             default_prec = series_precision()
         elif default_prec < 0:
-            raise ValueError("default_prec (= %s) must be nonnegative"
-                             % default_prec)
+            raise ValueError("default_prec (= %s) must be nonnegative" % default_prec)
 
         if implementation == 'poly':
             self.Element = power_series_poly.PowerSeries_poly
@@ -555,13 +608,17 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             self.Element = power_series_mpoly.PowerSeries_mpoly
         elif implementation == 'pari':
             from .power_series_pari import PowerSeries_pari
+
             self.Element = PowerSeries_pari
         else:
             raise ValueError('unknown power series implementation: %r' % implementation)
 
-        Parent.__init__(self, base=base_ring, names=name,
-                        category=getattr(self, '_default_category',
-                                         _CommutativeRings))
+        Parent.__init__(
+            self,
+            base=base_ring,
+            names=name,
+            category=getattr(self, '_default_category', _CommutativeRings),
+        )
         Nonexact.__init__(self, default_prec)
         if implementation == 'pari':
             self.__generator = self.element_class(self, R.gen().__pari__())
@@ -582,6 +639,7 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
         """
         if depth is None:
             from sage.rings.infinity import infinity
+
             depth = infinity
 
         if depth <= 0:
@@ -591,7 +649,10 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
         else:
             my_vars = self.variable_names()
             try:
-                all = self.base_ring().variable_names_recursive(depth - len(my_vars)) + my_vars
+                all = (
+                    self.base_ring().variable_names_recursive(depth - len(my_vars))
+                    + my_vars
+                )
             except AttributeError:
                 all = my_vars
         if len(all) > depth:
@@ -657,7 +718,10 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             sage: latex(R)
             \Bold{F}_{17}[[y_{12}]]
         """
-        return "%s[[%s]]" % (latex.latex(self.base_ring()), self.latex_variable_names()[0])
+        return "%s[[%s]]" % (
+            latex.latex(self.base_ring()),
+            self.latex_variable_names()[0],
+        )
 
     def _coerce_map_from_(self, S):
         """
@@ -682,9 +746,14 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
         """
         if self.base_ring().has_coerce_map_from(S):
             return True
-        if (isinstance(S, (PolynomialRing_generic, PowerSeriesRing_generic, LazyPowerSeriesRing))
-                and self.base_ring().has_coerce_map_from(S.base_ring())
-                and self.variable_names() == S.variable_names()):
+        if (
+            isinstance(
+                S,
+                (PolynomialRing_generic, PowerSeriesRing_generic, LazyPowerSeriesRing),
+            )
+            and self.base_ring().has_coerce_map_from(S.base_ring())
+            and self.variable_names() == S.variable_names()
+        ):
             return True
 
     def _magma_init_(self, magma):
@@ -882,23 +951,27 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             return self(f.power_series(), prec, check=check)
         elif isinstance(f, MagmaElement) and str(f.Type()) == 'RngSerPowElt':
             v = sage_eval(f.Eltseq())  # could use .sage() ?
-            return self(v) * (self.gen(0)**f.Valuation())
+            return self(v) * (self.gen(0) ** f.Valuation())
         elif isinstance(f, FractionFieldElement):
             if self.base_ring().has_coerce_map_from(f.parent()):
                 return self.element_class(self, [f], prec, check=check)
             num = self.element_class(self, f.numerator(), prec, check=check)
             den = self.element_class(self, f.denominator(), prec, check=check)
-            return self.coerce(num/den)
+            return self.coerce(num / den)
         elif isinstance(f, Expression):
             from sage.symbolic.expression import SymbolicSeries
+
             if isinstance(f, SymbolicSeries):
                 if str(f.default_variable()) == self.variable_name():
-                    return self.element_class(self, f.list(),
-                                              f.degree(f.default_variable()),
-                                              check=check)
-                raise TypeError("Can only convert series into ring with same variable name.")
+                    return self.element_class(
+                        self, f.list(), f.degree(f.default_variable()), check=check
+                    )
+                raise TypeError(
+                    "Can only convert series into ring with same variable name."
+                )
         else:
             from sage.rings.lazy_series import LazyPowerSeries
+
             if isinstance(f, LazyPowerSeries):
                 if prec is infinity:
                     try:
@@ -928,11 +1001,14 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             True
         """
         from sage.categories.pushout import CompletionFunctor
+
         if self.is_sparse():
             extras = {'sparse': True}
         else:
             extras = None
-        return CompletionFunctor(self._names[0], self.default_prec(), extras), self._poly_ring()
+        return CompletionFunctor(
+            self._names[0], self.default_prec(), extras
+        ), self._poly_ring()
 
     def _is_valid_homomorphism_(self, codomain, im_gens, base_map=None):
         r"""
@@ -958,11 +1034,13 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
            homomorphism.
         """
         if im_gens[0] == 0:
-            return True   # this is allowed.
+            return True  # this is allowed.
         if base_map is None and not codomain.has_coerce_map_from(self.base_ring()):
             return False
         v = im_gens[0]
-        if isinstance(codomain, (PowerSeriesRing_generic, LazyPowerSeriesRing, LaurentSeriesRing)):
+        if isinstance(
+            codomain, (PowerSeriesRing_generic, LazyPowerSeriesRing, LaurentSeriesRing)
+        ):
             try:
                 return v.valuation() > 0 or v.is_nilpotent()
             except NotImplementedError:
@@ -1025,7 +1103,9 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             Power Series Ring in T over Number Field in a
              with defining polynomial x^2 - 3 with a = 1.732050807568878?
         """
-        return PowerSeriesRing(R, name=self.variable_name(), default_prec=self.default_prec())
+        return PowerSeriesRing(
+            R, name=self.variable_name(), default_prec=self.default_prec()
+        )
 
     def change_variable_name(self, var):
         """
@@ -1184,7 +1264,7 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
         """
         if prec is None:
             prec = self.default_prec()
-        return self(self.__poly_ring.random_element(prec-1, *args, **kwds), prec)
+        return self(self.__poly_ring.random_element(prec - 1, *args, **kwds), prec)
 
     def __contains__(self, x) -> bool:
         """
@@ -1290,7 +1370,11 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             from .laurent_series_ring import LaurentSeriesRing
 
             self.__laurent_series_ring = LaurentSeriesRing(
-                self.base_ring(), self.variable_name(), default_prec=self.default_prec(), sparse=self.is_sparse())
+                self.base_ring(),
+                self.variable_name(),
+                default_prec=self.default_prec(),
+                sparse=self.is_sparse(),
+            )
             return self.__laurent_series_ring
 
 
@@ -1339,8 +1423,14 @@ class PowerSeriesRing_domain(PowerSeriesRing_generic):
             Right action by Integer Ring on Power Series Ring in t over Rational Field
         """
         import operator
-        if op is operator.floordiv and self_is_left and self.base_ring().has_coerce_map_from(other):
+
+        if (
+            op is operator.floordiv
+            and self_is_left
+            and self.base_ring().has_coerce_map_from(other)
+        ):
             from sage.rings.power_series_poly import BaseRingFloorDivAction
+
             # Floor division by coefficient.
             return BaseRingFloorDivAction(other, self, is_left=False)
         return super()._get_action_(other, op, self_is_left)
@@ -1379,4 +1469,6 @@ def unpickle_power_series_ring_v0(base_ring, name, default_prec, sparse):
         sage: loads(dumps(P)) == P  # indirect doctest
         True
     """
-    return PowerSeriesRing(base_ring, name=name, default_prec=default_prec, sparse=sparse)
+    return PowerSeriesRing(
+        base_ring, name=name, default_prec=default_prec, sparse=sparse
+    )

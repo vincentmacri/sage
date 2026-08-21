@@ -22,6 +22,7 @@ A few tests for the method ``is_integrally_closed``::
 
 Note that this raises a :exc:`NotImplementedError` if the answer is not known.
 """
+
 # ****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2012 Nicolas M. Thiery <nthiery at users.sf.net>
@@ -35,6 +36,7 @@ from sage.misc.lazy_attribute import lazy_class_attribute
 from sage.categories.category_with_axiom import CategoryWithAxiom
 from sage.categories.category_singleton import Category_contains_method_by_parent_class
 from sage.categories.domains import Domains
+
 lazy_import('sage.categories.fields', 'Fields')
 
 
@@ -60,6 +62,7 @@ class IntegralDomains(CategoryWithAxiom):
 
         sage: TestSuite(C).run()
     """
+
     _base_category_class_and_axiom = (Domains, "Commutative")
 
     def __contains__(self, x) -> bool:
@@ -154,10 +157,14 @@ class IntegralDomains(CategoryWithAxiom):
             if self.is_finite():
                 return True
             if proof:
-                raise NotImplementedError(f"unable to determine whether or not {self} is a field.")
+                raise NotImplementedError(
+                    f"unable to determine whether or not {self} is a field."
+                )
             return False
 
-        def localization(self, additional_units, names=None, normalize=True, category=None):
+        def localization(
+            self, additional_units, names=None, normalize=True, category=None
+        ):
             """
             Return the localization of ``self`` at the given additional units.
 
@@ -171,7 +178,14 @@ class IntegralDomains(CategoryWithAxiom):
                 True
             """
             from sage.rings.localization import Localization
-            return Localization(self, additional_units, names=names, normalize=normalize, category=category)
+
+            return Localization(
+                self,
+                additional_units,
+                names=names,
+                normalize=normalize,
+                category=category,
+            )
 
         @cached_method
         def fraction_field(self):
@@ -187,6 +201,7 @@ class IntegralDomains(CategoryWithAxiom):
                 Fraction Field of Multivariate Polynomial Ring in x, y over Finite Field of size 61
             """
             import sage.rings.fraction_field
+
             return sage.rings.fraction_field.FractionField_generic(self)
 
         def _test_fraction_field(self, **options):

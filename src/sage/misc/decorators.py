@@ -175,6 +175,7 @@ def sage_wraps(wrapped, assigned=WRAPPER_ASSIGNMENTS, updated=WRAPPER_UPDATES):
         # as the argspec of the function instead of using reflection.
         wrapper._sage_argspec_ = lambda: sage_getargspec(wrapped)
         return wrapper
+
     return f
 
 
@@ -246,7 +247,7 @@ class infix_operator:
             'function': staticmethod(func),
             left_meth: _infix_wrapper._left,
             right_meth: _infix_wrapper._right,
-            '_sage_src_': lambda: sage_getsource(func)
+            '_sage_src_': lambda: sage_getsource(func),
         }
         for attr in WRAPPER_ASSIGNMENTS:
             try:
@@ -283,8 +284,7 @@ class _infix_wrapper:
                 new = copy(self)
                 new.right = right
                 return new
-            raise SyntaxError("Infix operator already has its "
-                              "right argument")
+            raise SyntaxError("Infix operator already has its right argument")
         else:
             return self.function(self.left, right)
 
@@ -295,8 +295,7 @@ class _infix_wrapper:
                 new = copy(self)
                 new.left = left
                 return new
-            raise SyntaxError("Infix operator already has its "
-                              "left argument")
+            raise SyntaxError("Infix operator already has its left argument")
         else:
             return self.function(left, self.right)
 
@@ -338,12 +337,14 @@ def decorator_defaults(func):
         (3, 4)
         my_fun
     """
+
     @sage_wraps(func)
     def my_wrap(*args, **kwds):
         if len(kwds) == 0 and len(args) == 1:
             # call without parentheses
             return func(*args)
         return lambda f: func(f, *args, **kwds)
+
     return my_wrap
 
 
@@ -396,16 +397,17 @@ class suboptions:
             FullArgSpec(args=['arrow_size'], varargs='args', varkw='kwds', defaults=(2,),
                         kwonlyargs=[], kwonlydefaults=None, annotations={})
         """
+
         @sage_wraps(func)
         def wrapper(*args, **kwds):
             suboptions = copy(self.options)
-            suboptions.update(kwds.pop(self.name+"options", {}))
+            suboptions.update(kwds.pop(self.name + "options", {}))
 
             # Collect all the relevant keywords in kwds
             # and put them in suboptions
             for key, value in list(kwds.items()):
                 if key.startswith(self.name):
-                    suboptions[key[len(self.name):]] = value
+                    suboptions[key[len(self.name) :]] = value
                     del kwds[key]
 
             kwds[self.name + "options"] = suboptions
@@ -420,13 +422,23 @@ class suboptions:
 
             def listForNone(l):
                 return l if l is not None else []
+
             newArgs = [self.name + opt for opt in self.options.keys()]
             args = (argspec.args if argspec.args is not None else []) + newArgs
-            defaults = (argspec.defaults if argspec.defaults is not None else ()) \
-                + tuple(self.options.values())
+            defaults = (
+                argspec.defaults if argspec.defaults is not None else ()
+            ) + tuple(self.options.values())
             # Note: argspec.defaults is not always a tuple for some reason
-            return FullArgSpec(args, argspec.varargs, argspec.varkw, defaults,
-                               kwonlyargs=[], kwonlydefaults=None, annotations={})
+            return FullArgSpec(
+                args,
+                argspec.varargs,
+                argspec.varkw,
+                defaults,
+                kwonlyargs=[],
+                kwonlydefaults=None,
+                annotations={},
+            )
+
         wrapper._sage_argspec_ = argspec
 
         return wrapper
@@ -486,6 +498,7 @@ class options:
             sage: f2(alpha=1)
             () [('__original_opts', {'alpha': 1}), ('alpha', 1), ('rgbcolor', (0, 0, 1))]
         """
+
         @sage_wraps(func)
         def wrapper(*args, **kwds):
             options = copy(wrapper.options)
@@ -499,12 +512,20 @@ class options:
         # special attribute _sage_argspec_ (see e.g. sage.misc.sageinspect)
         def argspec():
             argspec = sage_getargspec(func)
-            args = ((argspec.args if argspec.args is not None else []) +
-                    list(self.options))
+            args = (argspec.args if argspec.args is not None else []) + list(
+                self.options
+            )
             defaults = (argspec.defaults or ()) + tuple(self.options.values())
             # Note: argspec.defaults is not always a tuple for some reason
-            return FullArgSpec(args, argspec.varargs, argspec.varkw, defaults,
-                               kwonlyargs=[], kwonlydefaults=None, annotations={})
+            return FullArgSpec(
+                args,
+                argspec.varargs,
+                argspec.varkw,
+                defaults,
+                kwonlyargs=[],
+                kwonlydefaults=None,
+                annotations={},
+            )
 
         wrapper._sage_argspec_ = argspec
 
@@ -553,20 +574,26 @@ class options:
 
         wrapper.options = copy(self.options)
         wrapper.reset = reset
-        wrapper.reset.__doc__ = """
+        wrapper.reset.__doc__ = (
+            """
         Reset the options to the defaults.
 
         Defaults:
         %s
-        """ % self.options
+        """
+            % self.options
+        )
 
         wrapper.defaults = defaults
-        wrapper.defaults.__doc__ = """
+        wrapper.defaults.__doc__ = (
+            """
         Return the default options.
 
         Defaults:
         %s
-        """ % self.options
+        """
+            % self.options
+        )
 
         return wrapper
 
@@ -602,7 +629,9 @@ class rename_keyword:
 
             sage: r = rename_keyword(deprecation=13109, color='rgbcolor')
         """
-        assert deprecated is None, 'Use @rename_keyword(deprecation=<issue_number>, ...)'
+        assert deprecated is None, (
+            'Use @rename_keyword(deprecation=<issue_number>, ...)'
+        )
         self.renames = renames
         self.deprecation = deprecation
 
@@ -643,14 +672,18 @@ class rename_keyword:
             See https://github.com/sagemath/sage/issues/13109 for details.
             () {'new_option': 1}
         """
+
         @sage_wraps(func)
         def wrapper(*args, **kwds):
             for old_name, new_name in self.renames.items():
                 if old_name in kwds and new_name not in kwds:
                     if self.deprecation is not None:
                         from sage.misc.superseded import deprecation
-                        deprecation(self.deprecation, "use the option "
-                                    "%r instead of %r" % (new_name, old_name))
+
+                        deprecation(
+                            self.deprecation,
+                            "use the option %r instead of %r" % (new_name, old_name),
+                        )
                     kwds[new_name] = kwds[old_name]
                     del kwds[old_name]
             return func(*args, **kwds)
@@ -687,6 +720,7 @@ class specialize:
         sage: greet(name = 'Javert')
         Bon Voyage, Javert!
     """
+
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
@@ -726,9 +760,11 @@ def decorator_keywords(func):
         sage: foo(1)
         1
     """
+
     @sage_wraps(func)
     def wrapped(f=None, **kwargs):
         if f is None:
             return sage_wraps(func)(lambda f: func(f, **kwargs))
         return func(f, **kwargs)
+
     return wrapped

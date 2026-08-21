@@ -27,6 +27,10 @@ from sage.misc.lazy_import import lazy_import
 
 lazy_import('sage.schemes.curves.plane_curve_arrangement', 'PlaneCurveArrangements')
 
-lazy_import('sage.schemes.curves.plane_curve_arrangement', 'AffinePlaneCurveArrangements')
+lazy_import(
+    'sage.schemes.curves.plane_curve_arrangement', 'AffinePlaneCurveArrangements'
+)
 
-lazy_import('sage.schemes.curves.plane_curve_arrangement', 'ProjectivePlaneCurveArrangements')
+lazy_import(
+    'sage.schemes.curves.plane_curve_arrangement', 'ProjectivePlaneCurveArrangements'
+)

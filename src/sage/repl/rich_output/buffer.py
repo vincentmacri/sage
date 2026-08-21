@@ -29,13 +29,11 @@ EXAMPLES::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 import os
 from sage.structure.sage_object import SageObject
 
 
 class OutputBuffer(SageObject):
-
     def __init__(self, data):
         """
         Data stored either in memory or as a file.
@@ -132,12 +130,14 @@ class OutputBuffer(SageObject):
             0
         """
         from sage.env import SAGE_SRC
+
         filename = os.path.abspath(filename)
         if filename.startswith(os.path.abspath(SAGE_SRC)):
             # Do not change permissions on the sample rich output
             # files, as it will cause trouble when upgrading Sage
             return
         import stat
+
         mode = os.stat(filename).st_mode
         mode = stat.S_IMODE(mode) & ~(stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH)
         # The file may already be read only for that user
@@ -254,6 +254,7 @@ class OutputBuffer(SageObject):
 
         if self._filename is None or not self._filename.endswith(ext):
             from sage.misc.temporary_file import tmp_filename
+
             output = tmp_filename(ext=ext)
         else:
             output = self._filename
@@ -268,6 +269,7 @@ class OutputBuffer(SageObject):
                 os.link(self._filename, output)
             except (OSError, AttributeError):
                 import shutil
+
                 shutil.copy2(self._filename, output)
 
         self._chmod_readonly(output)

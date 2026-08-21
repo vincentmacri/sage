@@ -38,6 +38,7 @@ class YokonumaHeckeAlgebra(CombinatorialFreeModule):
 
         Factor out the near-common features.
     """
+
     @staticmethod
     def __classcall_private__(cls, d, n, q=None, R=None):
         r"""
@@ -62,6 +63,7 @@ class YokonumaHeckeAlgebra(CombinatorialFreeModule):
             raise TypeError("base ring must be a commutative ring")
         if n not in ZZ:
             from sage.combinat.root_system.cartan_type import CartanType
+
             n = CartanType(n)
             return YokonumaHeckeAlgebraWeyl(d, n, q, R)
         return YokonumaHeckeAlgebraGL(d, n, q, R)
@@ -81,8 +83,7 @@ class YokonumaHeckeAlgebra(CombinatorialFreeModule):
         self._cartan_type = W.cartan_type()
         self._q = q
         cat = Algebras(R).WithBasis().or_subcategory(category)
-        CombinatorialFreeModule.__init__(self, R, indices, prefix='Y',
-                                         category=cat)
+        CombinatorialFreeModule.__init__(self, R, indices, prefix='Y', category=cat)
         self._assign_names(self.algebra_generators().keys())
 
     def cartan_type(self):
@@ -262,6 +263,7 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
     - [ERH2015]_
     - [JPdA15]_
     """
+
     def __init__(self, d, n, q, R):
         """
         Initialize ``self``.
@@ -275,6 +277,7 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
         self._n = n
         W = Permutations(n)
         import itertools
+
         C = itertools.product(*([range(d)] * n))
         indices = list(itertools.product(C, W))
         YokonumaHeckeAlgebra.__init__(self, d, W, q, R, indices)
@@ -289,8 +292,11 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
             Yokonuma-Hecke algebra of rank 5 and order 2 with q=q
              over Univariate Laurent Polynomial Ring in q over Rational Field
         """
-        return "Yokonuma-Hecke algebra of rank {} and order {} with q={} over {}".format(
-            self._d, self._n, self._q, self.base_ring())
+        return (
+            "Yokonuma-Hecke algebra of rank {} and order {} with q={} over {}".format(
+                self._d, self._n, self._q, self.base_ring()
+            )
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -314,10 +320,13 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
             sage: Y._repr_term( ((1, 0, 2), Permutation([3,2,1])) )
             't1*t3^2*g[2,1,2]'
         """
+
         def gen_str(e):
             return '' if e == 1 else '^%s' % e
-        lhs = '*'.join('t%s' % (j + 1) + gen_str(i)
-                       for j, i in enumerate(m[0]) if i > 0)
+
+        lhs = '*'.join(
+            't%s' % (j + 1) + gen_str(i) for j, i in enumerate(m[0]) if i > 0
+        )
         redword = m[1].reduced_word()
         if not redword:
             if not lhs:
@@ -338,10 +347,13 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
             sage: Y._latex_term( ((1, 0, 2), Permutation([3,2,1])) )
             't_{1} t_{3}^{2} g_{2} g_{1} g_{2}'
         """
+
         def gen_str(e):
             return '' if e == 1 else '^{%s}' % e
-        lhs = ' '.join('t_{%s}' % (j + 1) + gen_str(i)
-                       for j, i in enumerate(m[0]) if i > 0)
+
+        lhs = ' '.join(
+            't_{%s}' % (j + 1) + gen_str(i) for j, i in enumerate(m[0]) if i > 0
+        )
         redword = m[1].reduced_word()
         if not redword:
             if not lhs:
@@ -364,9 +376,9 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
         zero = [0] * self._n
         d = {}
         for i in range(self._n):
-            r = list(zero) # Make a copy
+            r = list(zero)  # Make a copy
             r[i] = 1
-            d['t%s' % (i+1)] = self.monomial((tuple(r), one))
+            d['t%s' % (i + 1)] = self.monomial((tuple(r), one))
         G = self._W.group_generators()
         for i in range(1, self._n):
             d['g%s' % i] = self.monomial((tuple(zero), G[i]))
@@ -403,12 +415,12 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
         if i < 1 or i >= self._n:
             raise ValueError("invalid index")
         c = ~self.base_ring()(self._d)
-        zero = [0]*self._n
+        zero = [0] * self._n
         one = self._W.one()
         d = {}
         for s in range(self._d):
-            r = list(zero) # Make a copy
-            r[i-1] = s
+            r = list(zero)  # Make a copy
+            r[i - 1] = s
             if s != 0:
                 r[i] = self._d - s
             d[(tuple(r), one)] = c
@@ -433,7 +445,7 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
         """
         G = self.algebra_generators()
         if i is None:
-            I = tuple(range(1, self._n+1))
+            I = tuple(range(1, self._n + 1))
             d = {i: G['t%s' % i] for i in I}
             return Family(I, d.__getitem__)
         return G['t%s' % i]
@@ -458,11 +470,11 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
             sage: g21 * t1
             t3*g[2,1]
         """
-        t1,g1 = m1
-        t2,g2 = m2
+        t1, g1 = m1
+        t2, g2 = m2
         # Commute g1 and t2, then multiply t1 and t2
         # ig1 = g1
-        t = [(t1[i] + t2[g1.index(i+1)]) % self._d for i in range(self._n)]
+        t = [(t1[i] + t2[g1.index(i + 1)]) % self._d for i in range(self._n)]
         one = self._W.one()
         if g1 == one:
             return self.monomial((tuple(t), g2))
@@ -470,8 +482,9 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
         # We have to reverse the reduced word due to Sage's convention
         #   for permutation multiplication
         for i in g2.reduced_word():
-            ret = self.linear_combination((self._product_by_basis_gen(m, i), c)
-                                          for m,c in ret)
+            ret = self.linear_combination(
+                (self._product_by_basis_gen(m, i), c) for m, c in ret
+            )
         return ret
 
     def _product_by_basis_gen(self, m, i):
@@ -514,9 +527,9 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
         # We commute g_w and e_i and then multiply by t
         for s in range(self._d):
             r = list(t)
-            r[w[i-1]-1] = (r[w[i-1]-1] + s) % self._d
+            r[w[i - 1] - 1] = (r[w[i - 1] - 1] + s) % self._d
             if s != 0:
-                r[w[i]-1] = (r[w[i]-1] + self._d - s) % self._d
+                r[w[i] - 1] = (r[w[i] - 1] + self._d - s) % self._d
             d[(tuple(r), w)] = c
         return self._from_dict(d, remove_zeros=False)
 
@@ -600,7 +613,10 @@ class YokonumaHeckeAlgebraGL(YokonumaHeckeAlgebra):
             if not self:
                 raise ZeroDivisionError
             if len(self) != 1:
-                raise NotImplementedError("inverse only implemented for basis elements (monomials in the generators)" % self)
+                raise NotImplementedError(
+                    "inverse only implemented for basis elements (monomials in the generators)"
+                    % self
+                )
             H = self.parent()
             t, w = self.support_of_term()
             c = ~self.coefficients()[0]
@@ -669,6 +685,7 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
 
     - [Marin2018]_
     """
+
     def __init__(self, d, ct, q, R):
         r"""
         Initialize ``self``.
@@ -701,7 +718,8 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
              over Univariate Laurent Polynomial Ring in q over Rational Field
         """
         return "Yokonuma-Hecke algebra of rank {} for {} with q={} over {}".format(
-            self._d, self._cartan_type, self._q, self.base_ring())
+            self._d, self._cartan_type, self._q, self.base_ring()
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -726,6 +744,7 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
             sage: Y._repr_term((al, prod(Y._W.gens())))
             'h1*h5^3*g[1,3,2,4,5,6]'
         """
+
         def gen_str(e):
             return '' if e == 1 else '^%s' % e
 
@@ -752,6 +771,7 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
             sage: Y._latex_term((al, prod(Y._W.gens())))
             'h_{1} h_{5}^{3} g_{1} g_{3} g_{2} g_{4} g_{5} g_{6}'
         """
+
         def gen_str(e):
             return '' if e == 1 else '^{%s}' % e
 
@@ -836,7 +856,7 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
         c = ~self.base_ring()(self._d)
         al = self._Q.simple_root(i)
         one = self._W.one()
-        d = {(k*al, one): c for k in self._Q.base_ring()}
+        d = {(k * al, one): c for k in self._Q.base_ring()}
         return self._from_dict(d, remove_zeros=False)
 
     def h(self, i=None):
@@ -947,8 +967,9 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
             return self.monomial((h, g2))
         ret = self.monomial((h, g1))
         for i in g2.reduced_word():
-            ret = self.linear_combination((self._product_by_basis_gen(m, i), c)
-                                          for m, c in ret)
+            ret = self.linear_combination(
+                (self._product_by_basis_gen(m, i), c) for m, c in ret
+            )
         return ret
 
     def _product_by_basis_gen(self, m, i):
@@ -990,8 +1011,8 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
         # TODO: Optimize this by computing an explicit expression
         #   for the commutation of w with ei.
         one = self.base_ring().one()
-        binomial = self.element_class(self, {(h,wi): one, (h,w): one})
-        return mon + (q-1) * binomial * self.e(i)
+        binomial = self.element_class(self, {(h, wi): one, (h, w): one})
+        return mon + (q - 1) * binomial * self.e(i)
 
     class Element(CombinatorialFreeModule.Element):
         def __invert__(self):
@@ -1010,7 +1031,10 @@ class YokonumaHeckeAlgebraWeyl(YokonumaHeckeAlgebra):
             if not self:
                 raise ZeroDivisionError
             if len(self) != 1:
-                raise NotImplementedError("inverse only implemented for basis elements (monomials in the generators)" % self)
+                raise NotImplementedError(
+                    "inverse only implemented for basis elements (monomials in the generators)"
+                    % self
+                )
             H = self.parent()
             t, w = self.support_of_term()
             c = ~self.coefficients()[0]

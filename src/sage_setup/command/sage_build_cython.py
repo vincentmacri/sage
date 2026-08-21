@@ -29,7 +29,9 @@ lib_headers = dict()
 # Set by build/bin/sage-build-env-config. Empty if the system package is used.
 gmp_prefix = os.environ.get("SAGE_GMP_PREFIX", "")
 if gmp_prefix:
-    lib_headers["gmp"] = [os.path.join(gmp_prefix, 'include', 'gmp.h')]  # cf. #8664, #9896
+    lib_headers["gmp"] = [
+        os.path.join(gmp_prefix, 'include', 'gmp.h')
+    ]  # cf. #8664, #9896
     lib_headers["gmpxx"] = [os.path.join(gmp_prefix, 'include', 'gmpxx.h')]
 ntl_prefix = os.environ.get("SAGE_NTL_PREFIX", "")
 if ntl_prefix:
@@ -43,7 +45,7 @@ if ntl_prefix:
 # setting in Cython which causes some overhead every time an exception
 # is raised).
 extra_compile_args = ["-fno-strict-aliasing", "-DCYTHON_CLINE_IN_TRACEBACK=1"]
-extra_link_args = [ ]
+extra_link_args = []
 
 DEVEL = False
 if DEVEL:
@@ -57,14 +59,11 @@ class sage_build_cython(Command):
     user_options = [
         # TODO: Temporarily disabled since the value for this option is
         # hard-coded; change as part of work on #21525
-        #('build-dir=', 'd',
+        # ('build-dir=', 'd',
         # "directory for compiled C/C++ sources and header files"),
-        ('profile', 'p',
-         "enable Cython profiling support"),
-        ('parallel=', 'j',
-         "run cythonize in parallel with N processes"),
-        ('force=', 'f',
-         "force files to be cythonized even if the are not changed")
+        ('profile', 'p', "enable Cython profiling support"),
+        ('parallel=', 'j', "run cythonize in parallel with N processes"),
+        ('force=', 'f', "force files to be cythonized even if the are not changed"),
     ]
 
     boolean_options = ['debug', 'profile', 'force']
@@ -99,9 +98,11 @@ class sage_build_cython(Command):
 
         # Inherit some options from the 'build_ext' command if possible
         # (this in turn implies inheritance from the 'build' command)
-        inherit_opts = [('build_lib', 'build_lib'),
-                        ('debug', 'debug'),
-                        ('force', 'force')]
+        inherit_opts = [
+            ('build_lib', 'build_lib'),
+            ('debug', 'debug'),
+            ('force', 'force'),
+        ]
 
         # Python 3.5 now has a parallel option as well
         inherit_opts.append(('parallel', 'parallel'))
@@ -134,7 +135,8 @@ class sage_build_cython(Command):
         except ImportError:
             raise ImportError(
                 "Cython must be installed and importable in order to run "
-                "the cythonize command")
+                "the cythonize command"
+            )
 
         self.cython_directives = compiler_directives(self.profile)
         self.compile_time_env = compile_time_env_variables()
@@ -144,12 +146,15 @@ class sage_build_cython(Command):
         # recythonization. If the version or options have changed, we
         # must recythonize all files.
         self._version_file = os.path.join(self.build_dir, '.cython_version')
-        self._version_stamp = json.dumps({
-            'version': Cython.__version__,
-            'debug': self.debug,
-            'directives': self.cython_directives,
-            'compile_time_env': self.compile_time_env,
-        }, sort_keys=True)
+        self._version_stamp = json.dumps(
+            {
+                'version': Cython.__version__,
+                'debug': self.debug,
+                'directives': self.cython_directives,
+                'compile_time_env': self.compile_time_env,
+            },
+            sort_keys=True,
+        )
 
         # Read an already written version file if it exists and compare to the
         # current version stamp
@@ -187,9 +192,15 @@ class sage_build_cython(Command):
         if self.cythonized_files is not None:
             return self.cythonized_files
 
-        self.cythonized_files = list(find_extra_files(
-            ".", ["sage"], self.build_dir, [],
-            distributions=self.built_distributions).items())
+        self.cythonized_files = list(
+            find_extra_files(
+                ".",
+                ["sage"],
+                self.build_dir,
+                [],
+                distributions=self.built_distributions,
+            ).items()
+        )
         log.debug(f"cythonized_files = {self.cythonized_files}")
 
         return self.cythonized_files
@@ -199,9 +210,11 @@ class sage_build_cython(Command):
         Call ``cythonize()`` to replace the ``ext_modules`` with the
         extensions containing Cython-generated C code.
         """
-        from sage.env import (cython_aliases, sage_include_directories)
+        from sage.env import cython_aliases, sage_include_directories
+
         # Set variables used in self.create_extension
         from ..library_order import library_order
+
         self.library_order = library_order
         # Search for dependencies in the source tree and add to the list of include directories
         self.sage_include_dirs = sage_include_directories(use_sources=True)
@@ -232,7 +245,7 @@ class sage_build_cython(Command):
                 # Disable Cython caching, which is currently too broken to
                 # use reliably: https://github.com/sagemath/sage/issues/17851
                 cache=False,
-                )
+            )
 
         # We use [:] to change the list in-place because the same list
         # object is pointed to from different places.
@@ -245,7 +258,7 @@ class sage_build_cython(Command):
 
         # Finally, copy relevant cythonized files from build/cythonized
         # tree into the build-lib tree
-        for (dst_dir, src_files) in self.get_cythonized_package_files():
+        for dst_dir, src_files in self.get_cythonized_package_files():
             dst = os.path.join(self.build_lib, dst_dir)
             self.mkpath(dst)
             for src in src_files:
@@ -272,12 +285,13 @@ class sage_build_cython(Command):
         - Ensure that each flag, library, ... is listed at most once
         """
         lang = kwds.get('language', 'c')
-        cplusplus = (lang == "c++")
+        cplusplus = lang == "c++"
 
         # Libraries: sort them
         libs = kwds.get('libraries', [])
-        kwds['libraries'] = sorted(set(libs),
-                key=lambda lib: self.library_order.get(lib, 0))
+        kwds['libraries'] = sorted(
+            set(libs), key=lambda lib: self.library_order.get(lib, 0)
+        )
 
         # Dependencies: add setup.py and lib_headers
         depends = kwds.get('depends', []) + [self.distribution.script_name]
@@ -305,7 +319,9 @@ class sage_build_cython(Command):
         kwds['library_dirs'] = stable_uniq(lib_dirs)
 
         # Process include_dirs
-        inc_dirs = kwds.get('include_dirs', []) + self.sage_include_dirs + [self.build_dir]
+        inc_dirs = (
+            kwds.get('include_dirs', []) + self.sage_include_dirs + [self.build_dir]
+        )
         kwds['include_dirs'] = stable_uniq(inc_dirs)
 
         from Cython.Build.Dependencies import default_create_extension

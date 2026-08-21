@@ -20,6 +20,7 @@ class MIPBackend(Feature):
     r"""
     A :class:`~sage.features.Feature` describing whether a :class:`MixedIntegerLinearProgram` backend is available.
     """
+
     def _is_present(self):
         r"""
         Test for the presence of a :class:`MixedIntegerLinearProgram` backend.
@@ -32,6 +33,7 @@ class MIPBackend(Feature):
         """
         try:
             from sage.numerical.mip import MixedIntegerLinearProgram
+
             MixedIntegerLinearProgram(solver=self.name)
             return FeatureTestResult(self, True)
         except Exception:
@@ -42,6 +44,7 @@ class CPLEX(MIPBackend):
     r"""
     A :class:`~sage.features.Feature` describing whether the :class:`MixedIntegerLinearProgram` backend ``CPLEX`` is available.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -50,14 +53,14 @@ class CPLEX(MIPBackend):
             sage: CPLEX()._is_present()  # optional - cplex
             FeatureTestResult('cplex', True)
         """
-        MIPBackend.__init__(self, 'cplex',
-                            spkg='sage_numerical_backends_cplex')
+        MIPBackend.__init__(self, 'cplex', spkg='sage_numerical_backends_cplex')
 
 
 class Gurobi(MIPBackend):
     r"""
     A :class:`~sage.features.Feature` describing whether the :class:`MixedIntegerLinearProgram` backend ``Gurobi`` is available.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -66,14 +69,14 @@ class Gurobi(MIPBackend):
             sage: Gurobi()._is_present()  # optional - gurobi
             FeatureTestResult('gurobi', True)
         """
-        MIPBackend.__init__(self, 'gurobi',
-                            spkg='sage_numerical_backends_gurobi')
+        MIPBackend.__init__(self, 'gurobi', spkg='sage_numerical_backends_gurobi')
 
 
 class COIN(JoinFeature):
     r"""
     A :class:`~sage.features.Feature` describing whether the :class:`MixedIntegerLinearProgram` backend ``COIN`` is available.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -82,15 +85,19 @@ class COIN(JoinFeature):
             sage: COIN()._is_present()  # optional - sage_numerical_backends_coin
             FeatureTestResult('sage_numerical_backends_coin', True)
         """
-        JoinFeature.__init__(self, 'sage_numerical_backends_coin',
-                             [MIPBackend('coin')],
-                             spkg='sage_numerical_backends_coin')
+        JoinFeature.__init__(
+            self,
+            'sage_numerical_backends_coin',
+            [MIPBackend('coin')],
+            spkg='sage_numerical_backends_coin',
+        )
 
 
 class CVXOPT(JoinFeature):
     r"""
     A :class:`~sage.features.Feature` describing whether the :class:`MixedIntegerLinearProgram` backend ``CVXOPT`` is available.
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -99,15 +106,14 @@ class CVXOPT(JoinFeature):
             sage: CVXOPT()._is_present()  # optional - cvxopt
             FeatureTestResult('cvxopt', True)
         """
-        JoinFeature.__init__(self, 'cvxopt',
-                             [MIPBackend('CVXOPT'),
-                              PythonModule('cvxopt')],
-                             spkg='cvxopt',
-                             type='standard')
+        JoinFeature.__init__(
+            self,
+            'cvxopt',
+            [MIPBackend('CVXOPT'), PythonModule('cvxopt')],
+            spkg='cvxopt',
+            type='standard',
+        )
 
 
 def all_features():
-    return [CPLEX(),
-            Gurobi(),
-            COIN(),
-            CVXOPT()]
+    return [CPLEX(), Gurobi(), COIN(), CVXOPT()]

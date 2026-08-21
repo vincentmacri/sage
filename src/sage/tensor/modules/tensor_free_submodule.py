@@ -96,8 +96,19 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
         sage: latex(T)
         T^{\{2,3\}}(M) \otimes T^{\{6,7\}}(M^*) \otimes \mathrm{Sym}^{\{0,1\}}(M) \otimes \mathrm{ASym}^{\{4,5\}}(M^*)
     """
-    def __init__(self, fmodule, tensor_type, name=None, latex_name=None,
-                 sym=None, antisym=None, *, category=None, ambient=None):
+
+    def __init__(
+        self,
+        fmodule,
+        tensor_type,
+        name=None,
+        latex_name=None,
+        sym=None,
+        antisym=None,
+        *,
+        category=None,
+        ambient=None,
+    ):
         r"""
         TESTS::
 
@@ -129,10 +140,16 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
                 antisym = basis_sym._antisym
             else:
                 sym = antisym = []
-            nosym_0 = [i for i in range(tensor_type[0])
-                       if not any(i in s for s in sym) and not any(i in s for s in antisym)]
-            nosym_1 = [i for i in range(tensor_type[0], tensor_type[0] + tensor_type[1])
-                       if not any(i in s for s in sym) and not any(i in s for s in antisym)]
+            nosym_0 = [
+                i
+                for i in range(tensor_type[0])
+                if not any(i in s for s in sym) and not any(i in s for s in antisym)
+            ]
+            nosym_1 = [
+                i
+                for i in range(tensor_type[0], tensor_type[0] + tensor_type[1])
+                if not any(i in s for s in sym) and not any(i in s for s in antisym)
+            ]
             nosym = [s for s in [nosym_0, nosym_1] if s]
 
             def power_name(op, s, latex=False):
@@ -156,24 +173,49 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
                     if len(superscript) != 1:
                         superscript = '{' + superscript + '}'
                     if len(base._latex_name) > 3:
-                        return op + '^' + superscript + r'\left(' + base._latex_name + r'\right)'
+                        return (
+                            op
+                            + '^'
+                            + superscript
+                            + r'\left('
+                            + base._latex_name
+                            + r'\right)'
+                        )
                     return op + '^' + superscript + '(' + base._latex_name + ')'
                 return op + '^' + superscript + '(' + base._name + ')'
 
-            name = unicode_otimes.join(itertools.chain(
-                (power_name('T', s, latex=False) for s in nosym),
-                (power_name('Sym', s, latex=False) for s in sym),
-                (power_name('ASym', s, latex=False) for s in antisym)))
-            latex_name = r' \otimes '.join(itertools.chain(
-                (power_name('T', s, latex=True) for s in nosym),
-                (power_name(r'\mathrm{Sym}', s, latex=True) for s in sym),
-                (power_name(r'\mathrm{ASym}', s, latex=True) for s in antisym)))
+            name = unicode_otimes.join(
+                itertools.chain(
+                    (power_name('T', s, latex=False) for s in nosym),
+                    (power_name('Sym', s, latex=False) for s in sym),
+                    (power_name('ASym', s, latex=False) for s in antisym),
+                )
+            )
+            latex_name = r' \otimes '.join(
+                itertools.chain(
+                    (power_name('T', s, latex=True) for s in nosym),
+                    (power_name(r'\mathrm{Sym}', s, latex=True) for s in sym),
+                    (power_name(r'\mathrm{ASym}', s, latex=True) for s in antisym),
+                )
+            )
 
-        category = fmodule.category().TensorProducts().FiniteDimensional().Subobjects().or_subcategory(category)
+        category = (
+            fmodule.category()
+            .TensorProducts()
+            .FiniteDimensional()
+            .Subobjects()
+            .or_subcategory(category)
+        )
         # Skip TensorFreeModule.__init__
-        FiniteRankFreeModule_abstract.__init__(self, fmodule._ring, rank, name=name,
-                                               latex_name=latex_name,
-                                               category=category, ambient=ambient)
+        FiniteRankFreeModule_abstract.__init__(
+            self,
+            fmodule._ring,
+            rank,
+            name=name,
+            latex_name=latex_name,
+            category=category,
+            ambient=ambient,
+        )
 
     def construction(self):
         # TODO: Define the symmetry group and its action (https://github.com/sagemath/sage/issues/34495),
@@ -211,7 +253,9 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
         """
         frame = tuple(self.base_module().irange())
         # Need to call _element_constructor_ explicitly, or the passed arguments are dropped
-        tensor = self.ambient()._element_constructor_(sym=self._sym, antisym=self._antisym)
+        tensor = self.ambient()._element_constructor_(
+            sym=self._sym, antisym=self._antisym
+        )
         return tensor._new_comp(frame)
 
     def _repr_(self):
@@ -227,7 +271,12 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
         """
         prefix, suffix = self._basis_sym()._repr_symmetry()
         return "Free module of {}type-({},{}) tensors on the {}{}".format(
-            prefix.lower(), self._tensor_type[0], self._tensor_type[1], self._fmodule, suffix)
+            prefix.lower(),
+            self._tensor_type[0],
+            self._tensor_type[1],
+            self._fmodule,
+            suffix,
+        )
 
     def _is_symmetry_coarsening_of(self, coarser_comp, finer_comp):
         r"""
@@ -307,8 +356,9 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
             return False
         return is_coarsening_of(coarser_antisym, finer_antisym)
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None, sym=None, antisym=None):
+    def _element_constructor_(
+        self, comp=[], basis=None, name=None, latex_name=None, sym=None, antisym=None
+    ):
         r"""
         TESTS::
 
@@ -332,18 +382,24 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
             # Refuse to create a tensor with finer symmetries
             # than those defining the subspace
             if not self._is_symmetry_coarsening_of((sym, antisym), self._basis_sym()):
-                raise ValueError(f"cannot create a tensor with symmetries {sym=}, {antisym=} "
-                                 f"as an element of {self}")
+                raise ValueError(
+                    f"cannot create a tensor with symmetries {sym=}, {antisym=} "
+                    f"as an element of {self}"
+                )
 
         if sym is None:
             sym = self._basis_sym()._sym
         if antisym is None:
             antisym = self._basis_sym()._antisym
 
-        resu = super()._element_constructor_(comp=comp,
-                                             basis=basis, name=name,
-                                             latex_name=latex_name,
-                                             sym=sym, antisym=antisym)
+        resu = super()._element_constructor_(
+            comp=comp,
+            basis=basis,
+            name=name,
+            latex_name=latex_name,
+            sym=sym,
+            antisym=antisym,
+        )
         if not resu._components:
             # fast path for zero tensor
             return resu
@@ -482,7 +538,9 @@ class TensorFreeSubmodule_sym(TensorFreeModule):
                 symmetrized = symmetrized.antisymmetrize(*s)
             return x - symmetrized
 
-        return self.ambient().module_morphism(function=_reduce_element, codomain=self.ambient())
+        return self.ambient().module_morphism(
+            function=_reduce_element, codomain=self.ambient()
+        )
 
     @lazy_attribute
     def retract(self):

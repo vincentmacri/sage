@@ -26,7 +26,7 @@ REFERENCES:
 - [ONe1983]_
 """
 
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015, 2018 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
 #
@@ -34,7 +34,7 @@ REFERENCES:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from __future__ import annotations
 
@@ -620,8 +620,10 @@ class DiffScalarField(ScalarField):
         sage: TestSuite(f).run()
         sage: TestSuite(zer).run()
     """
-    def __init__(self, parent, coord_expression=None, chart=None, name=None,
-                 latex_name=None):
+
+    def __init__(
+        self, parent, coord_expression=None, chart=None, name=None, latex_name=None
+    ):
         r"""
         Construct a scalar field.
 
@@ -639,9 +641,15 @@ class DiffScalarField(ScalarField):
              differentiable manifold M
             sage: TestSuite(f).run()
         """
-        ScalarField.__init__(self, parent, coord_expression=coord_expression,
-                             chart=chart, name=name, latex_name=latex_name)
-        self._tensor_type = (0,0)
+        ScalarField.__init__(
+            self,
+            parent,
+            coord_expression=coord_expression,
+            chart=chart,
+            name=name,
+            latex_name=latex_name,
+        )
+        self._tensor_type = (0, 0)
         self._tensor_rank = 0
 
     ####### Required methods for an algebra element (beside arithmetic) #######
@@ -657,9 +665,9 @@ class DiffScalarField(ScalarField):
             sage: f = M.scalar_field({X: x+y})
             sage: f._init_derived()
         """
-        ScalarField._init_derived(self) # derived quantities of the parent class
+        ScalarField._init_derived(self)  # derived quantities of the parent class
         self._differential = None  # differential 1-form of the scalar field
-        self._lie_derivatives = {} # dict. of Lie derivatives of self, (keys: id(vector))
+        self._lie_derivatives = {}  # dict. of Lie derivatives of self, (keys: id(vector))
 
     def _del_derived(self):
         r"""
@@ -682,7 +690,7 @@ class DiffScalarField(ScalarField):
             sage: f._restrictions  # restrictions are derived quantities
             {}
         """
-        ScalarField._del_derived(self) # derived quantities of the mother class
+        ScalarField._del_derived(self)  # derived quantities of the mother class
         self._differential = None  # reset of the differential
         # First deletes any reference to self in the vectors' dictionaries:
         for val in self._lie_derivatives.values():
@@ -793,16 +801,16 @@ class DiffScalarField(ScalarField):
             format_unop_latex,
             format_unop_txt,
         )
+
         if self._differential is None:
             # A new computation is necessary:
             rname = format_unop_txt('d', self._name)
             rlname = format_unop_latex(r'\mathrm{d}', self._latex_name)
-            self._differential = self._domain.one_form(name=rname,
-                                                       latex_name=rlname)
+            self._differential = self._domain.one_form(name=rname, latex_name=rlname)
             if self._is_zero:
                 for chart in self._domain._atlas:
-                    self._differential.add_comp(chart._frame) # since a newly
-                                            # created set of components is zero
+                    self._differential.add_comp(chart._frame)  # since a newly
+                    # created set of components is zero
             else:
                 for chart, func in self._express.items():
                     diff_func = self._differential.add_comp(chart._frame)
@@ -812,7 +820,7 @@ class DiffScalarField(ScalarField):
 
     exterior_derivative = differential  # a scalar field being a 0-form
     derivative = differential  # allows one to use functional notation,
-                               # e.g. diff(f) for f.differential()
+    # e.g. diff(f) for f.differential()
 
     def lie_derivative(self, vector):
         r"""
@@ -1004,7 +1012,7 @@ class DiffScalarField(ScalarField):
         """
         if isinstance(other, DiffScalarField):
             return self._domain.intersection(other._domain).zero_scalar_field()
-        return - self.differential().interior_product(other)
+        return -self.differential().interior_product(other)
 
     def wedge(self, other):
         r"""
@@ -1157,12 +1165,18 @@ class DiffScalarField(ScalarField):
         if self._name is not None:
             if default_metric:
                 resu._name = "grad({})".format(self._name)
-                resu._latex_name = r"\mathrm{grad}\left(" + \
-                                   self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\mathrm{grad}\left(" + self._latex_name + r"\right)"
+                )
             else:
                 resu._name = "grad_{}({})".format(metric._name, self._name)
-                resu._latex_name = r"\mathrm{grad}_{" + metric._latex_name + \
-                                   r"}\left(" + self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\mathrm{grad}_{"
+                    + metric._latex_name
+                    + r"}\left("
+                    + self._latex_name
+                    + r"\right)"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -1250,12 +1264,16 @@ class DiffScalarField(ScalarField):
         if self._name is not None:
             if default_metric:
                 resu._name = "Delta({})".format(self._name)
-                resu._latex_name = r"\Delta\left(" + self._latex_name + \
-                                   r"\right)"
+                resu._latex_name = r"\Delta\left(" + self._latex_name + r"\right)"
             else:
                 resu._name = "Delta_{}({})".format(metric._name, self._name)
-                resu._latex_name = r"\Delta_{" + metric._latex_name + \
-                                   r"}\left(" + self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\Delta_{"
+                    + metric._latex_name
+                    + r"}\left("
+                    + self._latex_name
+                    + r"\right)"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)
@@ -1323,19 +1341,25 @@ class DiffScalarField(ScalarField):
             metric = self._domain.metric()
         nm2 = self._manifold.dim() - 2
         if metric.signature() not in [nm2, -nm2]:
-            raise TypeError("the {} is not a Lorentzian ".format(metric) +
-                            "metric; use laplacian() instead")
+            raise TypeError(
+                "the {} is not a Lorentzian ".format(metric)
+                + "metric; use laplacian() instead"
+            )
         nabla = metric.connection()
         resu = nabla(self.differential().up(metric)).trace()
         if self._name is not None:
             if default_metric:
                 resu._name = "Box({})".format(self._name)
-                resu._latex_name = r"\Box\left(" + self._latex_name + \
-                                   r"\right)"
+                resu._latex_name = r"\Box\left(" + self._latex_name + r"\right)"
             else:
                 resu._name = "Box_{}({})".format(metric._name, self._name)
-                resu._latex_name = r"\Box_{" + metric._latex_name + \
-                                   r"}\left(" + self._latex_name + r"\right)"
+                resu._latex_name = (
+                    r"\Box_{"
+                    + metric._latex_name
+                    + r"}\left("
+                    + self._latex_name
+                    + r"\right)"
+                )
             # The name is propagated to possible restrictions of self:
             for restrict in resu._restrictions.values():
                 restrict.set_name(resu._name, latex_name=resu._latex_name)

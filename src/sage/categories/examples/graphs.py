@@ -1,6 +1,7 @@
 """
 Examples of graphs
 """
+
 # ****************************************************************************
 #  Copyright (C) 2015 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
@@ -32,6 +33,7 @@ class Cycle(UniqueRepresentation, Parent):
 
         sage: TestSuite(C).run()
     """
+
     def __init__(self, n=5):
         r"""
         EXAMPLES::
@@ -95,7 +97,7 @@ class Cycle(UniqueRepresentation, Parent):
             sage: C.edges()
             [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
         """
-        return [self( (i, (i+1) % self._n) ) for i in range(self._n)]
+        return [self((i, (i + 1) % self._n)) for i in range(self._n)]
 
     class Element(ElementWrapper):
         def dimension(self):

@@ -155,7 +155,9 @@ class DrinfeldModule_finite(DrinfeldModule):
         # added one to ensure that DrinfeldModule_finite would always
         # have _frobenius_norm and _frobenius_trace attributes.
         super().__init__(gen, category)
-        self._base_degree_over_constants = log(self._base.cardinality(), self._Fq.cardinality())
+        self._base_degree_over_constants = log(
+            self._base.cardinality(), self._Fq.cardinality()
+        )
         self._frobenius_norm = None
         self._frobenius_trace = None
         self._frobenius_charpoly = None
@@ -198,33 +200,42 @@ class DrinfeldModule_finite(DrinfeldModule):
         drin_coeffs = self.coefficients(sparse=False)
         poly_K = PolynomialRing(K, name=str(A.gen()))
         matrix_poly_K = MatrixSpace(poly_K, r, r)
-        mu_coeffs = ((poly_K.gen() - drin_coeffs[0])**(n + 1)) \
-                    .coefficients(sparse=False)
+        mu_coeffs = ((poly_K.gen() - drin_coeffs[0]) ** (n + 1)).coefficients(
+            sparse=False
+        )
 
         def companion(order):
             # + [1] is required to satisfy formatting for companion matrix
-            M = matrix_poly_K(companion_matrix([(drin_coeffs[i] / drin_coeffs[r])
-                               .frobenius(qdeg * order)
-                               for i in range(r)] + [1], format='top'))
+            M = matrix_poly_K(
+                companion_matrix(
+                    [
+                        (drin_coeffs[i] / drin_coeffs[r]).frobenius(qdeg * order)
+                        for i in range(r)
+                    ]
+                    + [1],
+                    format='top',
+                )
+            )
             M[0, r - 1] += poly_K.gen() / drin_coeffs[r].frobenius(qdeg * order)
             return M
 
         companion_initial = prod([companion(i) for i in range(nrem, 0, -1)])
-        companion_step = prod([companion(i)
-                              for i in range(nstar + nrem, nrem, -1)])
+        companion_step = prod([companion(i) for i in range(nstar + nrem, nrem, -1)])
         reduced_companions = []
         for k in range(nquo - 1, 0, -1):
             M = Matrix(poly_K, r, r)
-            modulus = poly_K([c.frobenius(qdeg * (-k * nstar % n))
-                                                for c in mu_coeffs])
+            modulus = poly_K([c.frobenius(qdeg * (-k * nstar % n)) for c in mu_coeffs])
             for i, row in enumerate(companion_step):
                 for j, entry in enumerate(row):
                     reduction = entry % modulus
-                    M[i, j] = poly_K([c.frobenius(qdeg * (k * nstar))
-                                     for c in reduction
-                                              .coefficients(sparse=False)])
+                    M[i, j] = poly_K(
+                        [
+                            c.frobenius(qdeg * (k * nstar))
+                            for c in reduction.coefficients(sparse=False)
+                        ]
+                    )
             reduced_companions.append(M)
-        return (prod(reduced_companions) * companion_step * companion_initial)
+        return prod(reduced_companions) * companion_step * companion_initial
 
     def frobenius_endomorphism(self):
         r"""
@@ -483,9 +494,10 @@ class DrinfeldModule_finite(DrinfeldModule):
         n = self._base_degree_over_constants
         r = self.rank()
         lc = chi[0][r]
-        coeffs = [A([K(chi[i][j] / lc).in_base()
-                     for i in range((r - j) * n // r + 1)])
-                  for j in range(r + 1)]
+        coeffs = [
+            A([K(chi[i][j] / lc).in_base() for i in range((r - j) * n // r + 1)])
+            for j in range(r + 1)
+        ]
         return PolynomialRing(A, name='X')(coeffs)
 
     def _frobenius_charpoly_crystalline(self):
@@ -611,8 +623,9 @@ class DrinfeldModule_finite(DrinfeldModule):
         for i in range(r - 1):
             block_shifts.append(block_shifts[-1] + shifts[i])
         # Compute the images \phi_T^i for i = 0 .. n.
-        gen_powers = [self(A.gen()**i).coefficients(sparse=False)
-                      for i in range(n + 1)]
+        gen_powers = [
+            self(A.gen() ** i).coefficients(sparse=False) for i in range(n + 1)
+        ]
         sys, vec = Matrix(K, rows, cols), vector(K, rows)
         vec[rows - 1] = -1
         for j in range(r):
@@ -625,9 +638,9 @@ class DrinfeldModule_finite(DrinfeldModule):
         # The system is solved over K, but the coefficients should all
         # be in Fq We project back into Fq here.
         sol_Fq = [K(x).vector()[0] for x in sol]
-        char_poly = [[sol_Fq[block_shifts[i] + j]
-                      for j in range(shifts[i])]
-                     for i in range(r)]
+        char_poly = [
+            [sol_Fq[block_shifts[i] + j] for j in range(shifts[i])] for i in range(r)
+        ]
         return PolynomialRing(A, name='X')(char_poly + [1])
 
     def _frobenius_charpoly_motive(self):
@@ -745,9 +758,9 @@ class DrinfeldModule_finite(DrinfeldModule):
         r = self.rank()
         p = self.characteristic()
         norm = K(self.coefficients()[-1]).norm()
-        self._frobenius_norm = (-1) ** (n * r - n - r) \
-                               * norm**(-1) \
-                               * p ** (n // p.degree())
+        self._frobenius_norm = (
+            (-1) ** (n * r - n - r) * norm ** (-1) * p ** (n // p.degree())
+        )
         return self._frobenius_norm
 
     def frobenius_trace(self, algorithm=None):
@@ -874,8 +887,9 @@ class DrinfeldModule_finite(DrinfeldModule):
             if self._frobenius_trace is not None:
                 return self._frobenius_trace
             if self._frobenius_charpoly is not None:
-                self._frobenius_trace = -self._frobenius_charpoly \
-                                        .coefficients(sparse=False)[-2]
+                self._frobenius_trace = -self._frobenius_charpoly.coefficients(
+                    sparse=False
+                )[-2]
                 return self._frobenius_trace
             if self.rank() < self._base_degree_over_constants:
                 algorithm = 'crystalline'
@@ -1063,8 +1077,10 @@ class DrinfeldModule_finite(DrinfeldModule):
             raise TypeError("input must be a Drinfeld module")
         if self.category() != psi.category():
             raise TypeError("Drinfeld modules are not in the same category")
-        return self.rank() == psi.rank() \
-               and self.frobenius_charpoly() == psi.frobenius_charpoly()
+        return (
+            self.rank() == psi.rank()
+            and self.frobenius_charpoly() == psi.frobenius_charpoly()
+        )
 
     def is_supersingular(self):
         r"""

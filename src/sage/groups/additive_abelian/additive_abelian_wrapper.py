@@ -81,6 +81,7 @@ class UnwrappingMorphism(Morphism):
     r"""
     The embedding into the ambient group. Used by the coercion framework.
     """
+
     def __init__(self, domain):
         r"""
         EXAMPLES::
@@ -279,7 +280,11 @@ class AdditiveAbelianGroupWrapper(addgp.AdditiveAbelianGroup_fixed_gens):
             sage: repr(G)  # indirect doctest                                           # needs sage.rings.number_field
             'Additive abelian group isomorphic to Z + Z embedded in Algebraic Field'
         """
-        return addgp.AdditiveAbelianGroup_fixed_gens._repr_(self) + " embedded in " + self.universe()._repr_()
+        return (
+            addgp.AdditiveAbelianGroup_fixed_gens._repr_(self)
+            + " embedded in "
+            + self.universe()._repr_()
+        )
 
     def _element_constructor_(self, x, check=False):
         r"""
@@ -302,7 +307,9 @@ class AdditiveAbelianGroupWrapper(addgp.AdditiveAbelianGroup_fixed_gens):
         """
         if parent(x) is self.universe():
             return self.element_class(self, self.discrete_log(x), element=x)
-        return addgp.AdditiveAbelianGroup_fixed_gens._element_constructor_(self, x, check)
+        return addgp.AdditiveAbelianGroup_fixed_gens._element_constructor_(
+            self, x, check
+        )
 
     def __richcmp__(self, other, op):
         r"""
@@ -372,6 +379,7 @@ class AdditiveAbelianGroupWrapper(addgp.AdditiveAbelianGroup_fixed_gens):
             return all(g.element() in H for g in G.gens())
 
         from sage.structure.richcmp import op_LT, op_LE, op_EQ, op_NE, op_GE, op_GT
+
         if op == op_LE:
             return leq(self, other)
         if op == op_GE:
@@ -412,10 +420,14 @@ class AdditiveAbelianGroupWrapper(addgp.AdditiveAbelianGroup_fixed_gens):
             True
         """
         from sage.misc.verbose import verbose
+
         v = self.V()(v)
         verbose("Calling discrete exp on %s" % v)
         # DUMB IMPLEMENTATION!
-        return sum([self._gen_elements[i] * ZZ(v[i]) for i in range(len(v))], self.universe()(0))
+        return sum(
+            [self._gen_elements[i] * ZZ(v[i]) for i in range(len(v))],
+            self.universe()(0),
+        )
 
     def discrete_log(self, x, gens=None):
         r"""
@@ -470,7 +482,9 @@ class AdditiveAbelianGroupWrapper(addgp.AdditiveAbelianGroup_fixed_gens):
         from sage.arith.misc import CRT_list
 
         if not self.is_finite():
-            raise NotImplementedError("No black-box discrete log for infinite abelian groups")
+            raise NotImplementedError(
+                "No black-box discrete log for infinite abelian groups"
+            )
 
         if gens is None:
             gens = self.gens()
@@ -691,6 +705,7 @@ class AdditiveAbelianGroupWrapper(addgp.AdditiveAbelianGroup_fixed_gens):
         """
         if factors == 'invariant':
             from sage.matrix.special import diagonal_matrix
+
             D = diagonal_matrix(ZZ, self._gen_orders)
             S, U, V = D.smith_form()
             newgens, newords = [], []
@@ -877,13 +892,16 @@ def _discrete_log_pgroup(p, vals, aa, b):
 
         x = vector([0] * len(aa))
         for i in reversed(range(w)):
-
             gamma = p ** (js[i] - j) * c - dotprod(x, subbasis(js[i], k))
 
             v = _rec(js[i], js[i + 1], gamma)
 
-            assert not any(q1 % q2 for q1, q2 in zip(qq(js[i], js[i + 1]), qq(js[i], k)))
-            x += vector(q1 // q2 * r for q1, q2, r in zip(qq(js[i], js[i + 1]), qq(js[i], k), v))
+            assert not any(
+                q1 % q2 for q1, q2 in zip(qq(js[i], js[i + 1]), qq(js[i], k))
+            )
+            x += vector(
+                q1 // q2 * r for q1, q2, r in zip(qq(js[i], js[i + 1]), qq(js[i], k), v)
+            )
 
         return x
 
@@ -1112,8 +1130,11 @@ def expand_basis(gens, new_gen, ords=None, new_ord=None):
         ms.append(coprime_ord)
 
     for p in ps:
-        pgens = [(o.prime_to_m_part(p) * g, o.valuation(p))
-                 for g, o in zip(gens, ords) if not o % p]
+        pgens = [
+            (o.prime_to_m_part(p) * g, o.valuation(p))
+            for g, o in zip(gens, ords)
+            if not o % p
+        ]
         assert pgens
         pgens.sort(key=lambda tup: tup[1])
         alphas, vals = map(list, zip(*pgens))
@@ -1131,10 +1152,10 @@ def expand_basis(gens, new_gen, ords=None, new_ord=None):
         for i, (v, a) in enumerate(sorted(zip(vals, alphas), reverse=True)):
             if i < len(gammas):
                 gammas[i] += a
-                ms[i] *= p ** v
+                ms[i] *= p**v
             else:
                 gammas.append(a)
-                ms.append(p ** v)
+                ms.append(p**v)
 
     return gammas, ms
 
@@ -1191,6 +1212,7 @@ def basis_from_generators(gens, ords=None):
         ords = [g.order() for g in gens]
 
     from sage.rings.infinity import Infinity
+
     if not all(o < Infinity for o in ords):
         raise ValueError('all provided generators must have finite order')
 
@@ -1199,8 +1221,11 @@ def basis_from_generators(gens, ords=None):
     gammas = []
     ms = []
     for p in ps:
-        pgens = [(o.prime_to_m_part(p) * g, o.valuation(p))
-                 for g, o in zip(gens, ords) if not o % p]
+        pgens = [
+            (o.prime_to_m_part(p) * g, o.valuation(p))
+            for g, o in zip(gens, ords)
+            if not o % p
+        ]
         assert pgens
         pgens.sort(key=lambda tup: tup[1])
 
@@ -1221,9 +1246,9 @@ def basis_from_generators(gens, ords=None):
         for i, (v, a) in enumerate(sorted(zip(vals, alphas), reverse=True)):
             if i < len(gammas):
                 gammas[i] += a
-                ms[i] *= p ** v
+                ms[i] *= p**v
             else:
                 gammas.append(a)
-                ms.append(p ** v)
+                ms.append(p**v)
 
     return gammas, ms

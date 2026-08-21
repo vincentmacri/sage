@@ -94,8 +94,8 @@ class HyperbolicIsometry(Morphism):
         """
         if check:
             model.isometry_test(A)
-        self._matrix = copy(A) # Make a copy of the potentially mutable matrix
-        self._matrix.set_immutable() # Make it immutable
+        self._matrix = copy(A)  # Make a copy of the potentially mutable matrix
+        self._matrix.set_immutable()  # Make it immutable
         Morphism.__init__(self, Hom(model, model))
 
     @lazy_attribute
@@ -130,7 +130,9 @@ class HyperbolicIsometry(Morphism):
             [1 0]
             [0 1]
         """
-        return self._repr_type() + " in {0}\n{1}".format(self.domain().short_name(), self._matrix)
+        return self._repr_type() + " in {0}\n{1}".format(
+            self.domain().short_name(), self._matrix
+        )
 
     def _repr_type(self):
         r"""
@@ -192,8 +194,7 @@ class HyperbolicIsometry(Morphism):
             m = self.matrix().ncols()
             A = A / sqrt(A.det(), m)  # Normalized to have determinant 1
             B = B / sqrt(B.det(), m)
-            test_matrix = ((A - B).norm() < EPSILON
-                           or (A + B).norm() < EPSILON)
+            test_matrix = (A - B).norm() < EPSILON or (A + B).norm() < EPSILON
         return self.domain() is other.domain() and test_matrix
 
     def __hash__(self):
@@ -215,8 +216,7 @@ class HyperbolicIsometry(Morphism):
         """
         if self.domain().is_isometry_group_projective():
             # Special care must be taken for projective groups
-            m = matrix(self._matrix.nrows(),
-                       [abs(x) for x in self._matrix.list()])
+            m = matrix(self._matrix.nrows(), [abs(x) for x in self._matrix.list()])
             m.set_immutable()
         else:
             m = self._matrix
@@ -264,15 +264,18 @@ class HyperbolicIsometry(Morphism):
         """
         if isinstance(other, HyperbolicIsometry):
             other = other.to_model(self.codomain())
-            return self.__class__(self.codomain(), self._matrix*other._matrix)
+            return self.__class__(self.codomain(), self._matrix * other._matrix)
         from sage.geometry.hyperbolic_space.hyperbolic_point import HyperbolicPoint
+
         if isinstance(other, HyperbolicPoint):
             return self(other)
         if isinstance(other, HyperbolicGeodesic):
             return self.codomain().get_geodesic(self(other.start()), self(other.end()))
 
-        raise NotImplementedError("multiplication is not defined between a "
-                                  "hyperbolic isometry and {0}".format(other))
+        raise NotImplementedError(
+            "multiplication is not defined between a "
+            "hyperbolic isometry and {0}".format(other)
+        )
 
     def _call_(self, p):
         r"""
@@ -528,8 +531,10 @@ class HyperbolicIsometry(Morphism):
             ...
             ValueError: the isometry is not hyperbolic: axis is undefined
         """
-        if self.classification() not in ['hyperbolic',
-                                         'orientation-reversing hyperbolic']:
+        if self.classification() not in [
+            'hyperbolic',
+            'orientation-reversing hyperbolic',
+        ]:
             raise ValueError("the isometry is not hyperbolic: axis is undefined")
         return self.fixed_point_set()
 
@@ -582,8 +587,10 @@ class HyperbolicIsometry(Morphism):
         """
         fps = self._cached_isometry.fixed_point_set()
         if not isinstance(fps, HyperbolicGeodesic):
-            raise ValueError("isometries of type {0}".format(self.classification())
-                             + " do not fix geodesics")
+            raise ValueError(
+                "isometries of type {0}".format(self.classification())
+                + " do not fix geodesics"
+            )
         return fps.to_model(self.domain())
 
     def repelling_fixed_point(self):
@@ -636,6 +643,7 @@ class HyperbolicIsometryUHP(HyperbolicIsometry):
         [1 0]
         [0 1]
     """
+
     def _call_(self, p):  # UHP
         r"""
         Return image of ``p`` under the action of ``self``.
@@ -709,7 +717,9 @@ class HyperbolicIsometryUHP(HyperbolicIsometry):
         tau = abs(A.trace())
         a = A.list()
         if A.det() > 0:
-            tf = bool((a[0] - 1)**2 + a[1]**2 + a[2]**2 + (a[3] - 1)**2 < EPSILON)
+            tf = bool(
+                (a[0] - 1) ** 2 + a[1] ** 2 + a[2] ** 2 + (a[3] - 1) ** 2 < EPSILON
+            )
             if tf:
                 return 'identity'
             if tau - 2 < -EPSILON:
@@ -718,8 +728,10 @@ class HyperbolicIsometryUHP(HyperbolicIsometry):
                 return 'parabolic'
             if tau - 2 > EPSILON:
                 return 'hyperbolic'
-            raise ValueError("something went wrong with classification:" +
-                             " trace is {}".format(A.trace()))
+            raise ValueError(
+                "something went wrong with classification:"
+                + " trace is {}".format(A.trace())
+            )
         # Otherwise The isometry reverses orientation
         if tau < EPSILON:
             return 'reflection'
@@ -744,11 +756,13 @@ class HyperbolicIsometryUHP(HyperbolicIsometry):
             sage: bool((UHP.dist(p, Hp) - H.translation_length()) < 10**-9)
             True
         """
-        d = sqrt(self._matrix.det()**2)
-        tau = sqrt((self._matrix / sqrt(d)).trace()**2)
+        d = sqrt(self._matrix.det() ** 2)
+        tau = sqrt((self._matrix / sqrt(d)).trace() ** 2)
         if self.classification() in ['hyperbolic', 'orientation-reversing hyperbolic']:
             return 2 * arccosh(tau / 2)
-        raise TypeError("translation length is only defined for hyperbolic transformations")
+        raise TypeError(
+            "translation length is only defined for hyperbolic transformations"
+        )
 
     def fixed_point_set(self):  # UHP
         r"""
@@ -786,26 +800,27 @@ class HyperbolicIsometryUHP(HyperbolicIsometry):
         tau = M.trace() ** 2
         M_cls = self.classification()
         if M_cls == 'identity':
-            raise ValueError("the identity transformation fixes the entire "
-                             "hyperbolic plane")
+            raise ValueError(
+                "the identity transformation fixes the entire hyperbolic plane"
+            )
 
         pt = self.domain().get_point
         if M_cls == 'parabolic':
             if abs(M[1, 0]) < EPSILON:
                 return [pt(infinity)]
             # boundary point
-            return [pt((M[0,0] - M[1,1]) / (2*M[1,0]))]
+            return [pt((M[0, 0] - M[1, 1]) / (2 * M[1, 0]))]
         if M_cls == 'elliptic':
             d = sqrt(tau - 4)
-            return [pt((M[0,0] - M[1,1] + sign(M[1,0])*d) / (2*M[1,0]))]
+            return [pt((M[0, 0] - M[1, 1] + sign(M[1, 0]) * d) / (2 * M[1, 0]))]
         if M_cls == 'hyperbolic':
-            if M[1,0] != 0:  # if the isometry does not fix infinity
+            if M[1, 0] != 0:  # if the isometry does not fix infinity
                 d = sqrt(tau - 4)
-                p_1 = (M[0,0] - M[1,1]+d) / (2*M[1,0])
-                p_2 = (M[0,0] - M[1,1]-d) / (2*M[1,0])
+                p_1 = (M[0, 0] - M[1, 1] + d) / (2 * M[1, 0])
+                p_2 = (M[0, 0] - M[1, 1] - d) / (2 * M[1, 0])
                 return self.domain().get_geodesic(pt(p_1), pt(p_2))
-            #else, it fixes infinity.
-            p_1 = M[0,1] / (M[1,1] - M[0,0])
+            # else, it fixes infinity.
+            p_1 = M[0, 1] / (M[1, 1] - M[0, 0])
             p_2 = infinity
             return self.domain().get_geodesic(pt(p_1), pt(p_2))
 
@@ -848,10 +863,13 @@ class HyperbolicIsometryUHP(HyperbolicIsometry):
             sage: UHP.get_isometry(A).repelling_fixed_point()
             Boundary point in UHP 0
         """
-        if self.classification() not in ['hyperbolic',
-                                         'orientation-reversing hyperbolic']:
-            raise ValueError("repelling fixed point is defined only" +
-                             "for hyperbolic isometries")
+        if self.classification() not in [
+            'hyperbolic',
+            'orientation-reversing hyperbolic',
+        ]:
+            raise ValueError(
+                "repelling fixed point is defined only" + "for hyperbolic isometries"
+            )
         v = self._matrix.eigenmatrix_right()[1].column(1)
         if v[1] == 0:
             return self.domain().get_point(infinity)
@@ -872,10 +890,13 @@ class HyperbolicIsometryUHP(HyperbolicIsometry):
             sage: UHP.get_isometry(A).attracting_fixed_point()
             Boundary point in UHP +Infinity
         """
-        if self.classification() not in \
-                ['hyperbolic', 'orientation-reversing hyperbolic']:
-            raise ValueError("Attracting fixed point is defined only" +
-                             "for hyperbolic isometries.")
+        if self.classification() not in [
+            'hyperbolic',
+            'orientation-reversing hyperbolic',
+        ]:
+            raise ValueError(
+                "Attracting fixed point is defined only" + "for hyperbolic isometries."
+            )
         v = self._matrix.eigenmatrix_right()[1].column(0)
         if v[1] == 0:
             return self.domain().get_point(infinity)
@@ -897,6 +918,7 @@ class HyperbolicIsometryPD(HyperbolicIsometry):
         [1 0]
         [0 1]
     """
+
     def _call_(self, p):  # PD
         r"""
         Return image of ``p`` under the action of ``self``.
@@ -960,7 +982,9 @@ class HyperbolicIsometryPD(HyperbolicIsometry):
             sage: PD.get_isometry(matrix([[0, I], [I, 0]])).preserves_orientation()
             False
         """
-        return bool(self._matrix.det() > 0) and HyperbolicIsometryPD._orientation_preserving(self._matrix)
+        return bool(
+            self._matrix.det() > 0
+        ) and HyperbolicIsometryPD._orientation_preserving(self._matrix)
 
     @staticmethod
     def _orientation_preserving(A):  # PD
@@ -980,8 +1004,11 @@ class HyperbolicIsometryPD(HyperbolicIsometry):
             sage: orient(matrix([[0, I], [I, 0]]))
             False
         """
-        return bool(A[1][0] == A[0][1].conjugate() and A[1][1] == A[0][0].conjugate()
-                    and abs(A[0][0]) - abs(A[0][1]) != 0)
+        return bool(
+            A[1][0] == A[0][1].conjugate()
+            and A[1][1] == A[0][0].conjugate()
+            and abs(A[0][0]) - abs(A[0][1]) != 0
+        )
 
 
 class HyperbolicIsometryKM(HyperbolicIsometry):
@@ -1000,6 +1027,7 @@ class HyperbolicIsometryKM(HyperbolicIsometry):
         [0 1 0]
         [0 0 1]
     """
+
     def _call_(self, p):  # KM
         r"""
         Return image of ``p`` under the action of ``self``.
@@ -1016,6 +1044,7 @@ class HyperbolicIsometryKM(HyperbolicIsometry):
         if v[2] == 0:
             return self.codomain().get_point(infinity)
         return self.codomain().get_point(v[0:2] / v[2])
+
 
 #####################################################################
 #  Helper functions
@@ -1076,5 +1105,6 @@ def moebius_transform(A, z):
         if c * z + d == 0:
             return infinity
         return (a * z + b) / (c * z + d)
-    raise TypeError("A must be an invertible 2x2 matrix over the"
-                    " complex numbers or a symbolic ring")
+    raise TypeError(
+        "A must be an invertible 2x2 matrix over the complex numbers or a symbolic ring"
+    )

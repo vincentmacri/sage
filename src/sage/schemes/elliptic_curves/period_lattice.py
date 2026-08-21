@@ -129,6 +129,7 @@ class PeriodLattice(FreeModule_generic_pid):
     """
     The class for the period lattice of an algebraic variety.
     """
+
     pass
 
 
@@ -239,7 +240,9 @@ class PeriodLattice_ell(PeriodLattice):
                 real = K == AA
             elif not self._is_exact:
                 embedding = IdentityMorphism(K)
-                real = isinstance(K, (sage.rings.abc.RealField, sage.rings.abc.RealDoubleField))
+                real = isinstance(
+                    K, (sage.rings.abc.RealField, sage.rings.abc.RealDoubleField)
+                )
             else:
                 embs = K.embeddings(AA)
                 real = len(embs) > 0
@@ -282,20 +285,26 @@ class PeriodLattice_ell(PeriodLattice):
             self._ei.sort()  # e1 < e2 < e3
             e1, e2, e3 = self._ei
         elif self.real_flag == -1:  # negative discriminant
-            self._ei = self.f2.roots(QQbar if self._is_exact else ComplexField(K.precision()), multiplicities=False)
+            self._ei = self.f2.roots(
+                QQbar if self._is_exact else ComplexField(K.precision()),
+                multiplicities=False,
+            )
             self._ei = sorted(self._ei, key=lambda z: z.imag())
             e1, e3, e2 = self._ei  # so e3 is real
             if self._is_exact:
                 e3 = AA(e3)
             self._ei = [e1, e2, e3]
         else:
-            self._ei = self.f2.roots(QQbar if self._is_exact else ComplexField(K.precision()), multiplicities=False)
+            self._ei = self.f2.roots(
+                QQbar if self._is_exact else ComplexField(K.precision()),
+                multiplicities=False,
+            )
             e1, e2, e3 = self._ei
 
         # The quantities sqrt(e_i-e_j) are cached (as elements of
         # QQbar) to be used in period computations:
 
-        self._abc = (e3-e1).sqrt(), (e3-e2).sqrt(), (e2-e1).sqrt()
+        self._abc = (e3 - e1).sqrt(), (e3 - e2).sqrt(), (e2 - e1).sqrt()
 
         PeriodLattice.__init__(self, base_ring=ZZ, rank=2, degree=1, sparse=False)
 
@@ -353,7 +362,10 @@ class PeriodLattice_ell(PeriodLattice):
         K = self.E.base_field()
         if K in (QQ, AA, QQbar) or isinstance(self.embedding, IdentityMorphism):
             return "Period lattice associated to %s" % (self.E)
-        return "Period lattice associated to %s with respect to the embedding %s" % (self.E, self.embedding)
+        return "Period lattice associated to %s with respect to the embedding %s" % (
+            self.E,
+            self.embedding,
+        )
 
     def __call__(self, P, prec=None):
         r"""
@@ -649,14 +661,18 @@ class PeriodLattice_ell(PeriodLattice):
             True
         """
         w1, w2 = self.normalised_basis(prec=prec, algorithm=algorithm)
-        return w1/w2
+        return w1 / w2
 
     @cached_method
     def _compute_default_prec(self):
         r"""
         Internal function to compute the default precision to be used if nothing is passed in.
         """
-        return RealField().precision() if self._is_exact else self.E.base_field().precision()
+        return (
+            RealField().precision()
+            if self._is_exact
+            else self.E.base_field().precision()
+        )
 
     @cached_method
     def _compute_periods_real(self, prec=None, algorithm='sage'):
@@ -722,14 +738,14 @@ class PeriodLattice_ell(PeriodLattice):
         # Only now is the desired precision used!
         if self.real_flag == 1:  # positive discriminant
             a, b, c = (R(x) for x in self._abc)
-            w1 = R(pi/a.agm(b))   # least real period
-            w2 = C(0, pi/a.agm(c))  # least pure imaginary period
+            w1 = R(pi / a.agm(b))  # least real period
+            w2 = C(0, pi / a.agm(c))  # least pure imaginary period
         else:
             a = C(self._abc[0])
             x, y, r = a.real().abs(), a.imag().abs(), a.abs()
-            w1 = R(pi/r.agm(x))  # least real period
-            w2 = R(pi/r.agm(y))  # least pure imaginary period /i
-            w2 = C(w1, w2)/2
+            w1 = R(pi / r.agm(x))  # least real period
+            w2 = R(pi / r.agm(y))  # least pure imaginary period /i
+            w2 = C(w1, w2) / 2
 
         return (w1, w2)
 
@@ -794,13 +810,13 @@ class PeriodLattice_ell(PeriodLattice):
         # but now we must go transcendental.  Only now is the desired precision used!
         pi = C.pi()
         a, b, c = (C(x) for x in self._abc)
-        if (a+b).abs() < (a-b).abs():
+        if (a + b).abs() < (a - b).abs():
             b = -b
-        if (a+c).abs() < (a-c).abs():
+        if (a + c).abs() < (a - c).abs():
             c = -c
-        w1 = pi/a.agm(b)
-        w2 = pi*C.gen()/a.agm(c)
-        if (w1/w2).imag() < 0:
+        w1 = pi / a.agm(b)
+        w2 = pi * C.gen() / a.agm(c)
+        if (w1 / w2).imag() < 0:
             w2 = -w2
         if normalise:
             w1w2, mat = normalise_periods(w1, w2)
@@ -1137,7 +1153,9 @@ class PeriodLattice_ell(PeriodLattice):
         try:
             return self.E.pari_curve().ellsigma(z, flag, precision=prec)
         except AttributeError:
-            raise NotImplementedError("sigma function not yet implemented for period lattices of curves not defined over Q")
+            raise NotImplementedError(
+                "sigma function not yet implemented for period lattices of curves not defined over Q"
+            )
 
     def curve(self):
         r"""
@@ -1194,8 +1212,12 @@ class PeriodLattice_ell(PeriodLattice):
             True
         """
         from sage.misc.superseded import deprecation
-        deprecation(39212, "The attribute is_approximate for period lattice is "
-                           "deprecated, use self.curve().is_exact() instead.")
+
+        deprecation(
+            39212,
+            "The attribute is_approximate for period lattice is "
+            "deprecated, use self.curve().is_exact() instead.",
+        )
         return not self._is_exact
 
     def ei(self):
@@ -1299,12 +1321,13 @@ class PeriodLattice_ell(PeriodLattice):
         prec = C.precision()
         from sage.matrix.constructor import Matrix
         from sage.modules.free_module_element import vector
+
         if self.real_flag:
             w1, w2 = self.basis(prec)
-            M = Matrix([[w1, 0], list(w2)])**(-1)
+            M = Matrix([[w1, 0], list(w2)]) ** (-1)
         else:
             w1, w2 = self.normalised_basis(prec)
-            M = Matrix([list(w1), list(w2)])**(-1)
+            M = Matrix([list(w1), list(w2)]) ** (-1)
         u, v = vector(z) * M
         # Now z = u*w1+v*w2
         if rounding == 'round':
@@ -1365,7 +1388,7 @@ class PeriodLattice_ell(PeriodLattice):
         else:
             w1, w2 = self.normalised_basis(prec)
         u, v = self.coordinates(z, rounding='floor')
-        z = z-u*w1-v*w2
+        z = z - u * w1 - v * w2
 
         # Final adjustments for the real case.
 
@@ -1376,10 +1399,10 @@ class PeriodLattice_ell(PeriodLattice):
             return z
         if self.real_flag == -1:
             k = (z.imag() / w2.imag()).round()
-            z = z-k*w2
+            z = z - k * w2
             return C(z.real(), 0)
 
-        if ((2*z.imag()/w2.imag()).round()) % 2:
+        if ((2 * z.imag() / w2.imag()).round()) % 2:
             return C(z.real(), w2.imag() / 2)
         return C(z.real(), 0)
 
@@ -1489,7 +1512,7 @@ class PeriodLattice_ell(PeriodLattice):
         e1, e2, e3 = self._ei
         a1, a2, a3 = (self.embedding(a) for a in self.E.ainvs()[:3])
 
-        wP = 2*yP+a1*xP+a3
+        wP = 2 * yP + a1 * xP + a3
 
         # We treat the case of 2-torsion points separately.  (Note
         # that Cohen's algorithm does not handle these properly.)
@@ -1497,12 +1520,12 @@ class PeriodLattice_ell(PeriodLattice):
         if wP.is_zero():  # 2-torsion treated separately
             w1, w2 = self._compute_periods_complex(prec, normalise=False)
             if xP == e1:
-                z = w2/2
+                z = w2 / 2
             else:
                 if xP == e3:
-                    z = w1/2
+                    z = w1 / 2
                 else:
-                    z = (w1+w2)/2
+                    z = (w1 + w2) / 2
             if reduce:
                 z = self.reduce(z)
             return z
@@ -1518,30 +1541,29 @@ class PeriodLattice_ell(PeriodLattice):
         # commented out below.
 
         if self.real_flag == 0:  # complex case
-
-            a = C((e1-e3).sqrt())
-            b = C((e1-e2).sqrt())
-            if (a+b).abs() < (a-b).abs():
+            a = C((e1 - e3).sqrt())
+            b = C((e1 - e2).sqrt())
+            if (a + b).abs() < (a - b).abs():
                 b = -b
-            r = C(((xP-e3)/(xP-e2)).sqrt())
+            r = C(((xP - e3) / (xP - e2)).sqrt())
             if r.real() < 0:
                 r = -r
-            t = -C(wP)/(2*r*(xP-e2))
+            t = -C(wP) / (2 * r * (xP - e2))
             # eps controls the end of the loop. Since we aim at a target
             # precision of prec bits, eps = 2^(-prec) is enough.
             eps = R(1) >> prec
             while True:
-                s = b*r+a
-                a, b = (a+b)/2, (a*b).sqrt()
-                if (a+b).abs() < (a-b).abs():
+                s = b * r + a
+                a, b = (a + b) / 2, (a * b).sqrt()
+                if (a + b).abs() < (a - b).abs():
                     b = -b
-                r = (a*(r+1)/s).sqrt()
-                if (r.abs()-1).abs() < eps:
+                r = (a * (r + 1) / s).sqrt()
+                if (r.abs() - 1).abs() < eps:
                     break
                 if r.real() < 0:
                     r = -r
                 t *= r
-            z = ((a/t).arctan())/a
+            z = ((a / t).arctan()) / a
             z = ComplexField(prec)(z)
             if reduce:
                 z = self.reduce(z)
@@ -1550,32 +1572,32 @@ class PeriodLattice_ell(PeriodLattice):
         if self.real_flag == -1:  # real, connected case
             z = C(self._abc[0])  # sqrt(e3-e1)
             a, y, b = z.real(), z.imag(), z.abs()
-            uv = (xP-e1).sqrt()
+            uv = (xP - e1).sqrt()
             u, v = uv.real().abs(), uv.imag().abs()
-            r = (u*a/(u*a+v*y)).sqrt()
-            t = -r*R(wP)/(2*(u**2+v**2))
+            r = (u * a / (u * a + v * y)).sqrt()
+            t = -r * R(wP) / (2 * (u**2 + v**2))
             on_egg = False
-        else:                  # real, disconnected case
-            a = R(e3-e1).sqrt()
-            b = R(e3-e2).sqrt()
-            if (a+b).abs() < (a-b).abs():
+        else:  # real, disconnected case
+            a = R(e3 - e1).sqrt()
+            b = R(e3 - e2).sqrt()
+            if (a + b).abs() < (a - b).abs():
                 b = -b
-            on_egg = (xP < e3)
+            on_egg = xP < e3
             if on_egg:
-                r = a/R(e3-xP).sqrt()
-                t = r*R(wP)/(2*R(xP-e1))
+                r = a / R(e3 - xP).sqrt()
+                t = r * R(wP) / (2 * R(xP - e1))
             else:
-                r = R((xP-e1)/(xP-e2)).sqrt()
-                t = -R(wP)/(2*r*R(xP-e2))
+                r = R((xP - e1) / (xP - e2)).sqrt()
+                t = -R(wP) / (2 * r * R(xP - e2))
 
         # eps controls the end of the loop. Since we aim at a target
         # precision of prec bits, eps = 2^(-prec) is enough.
         eps = R(1) >> prec
         while True:
-            s = b*r+a
-            a, b = (a+b)/2, (a*b).sqrt()
-            r = (a*(r+1)/s).sqrt()
-            if (r-1).abs() < eps:
+            s = b * r + a
+            a, b = (a + b) / 2, (a * b).sqrt()
+            r = (a * (r + 1) / s).sqrt()
+            if (r - 1).abs() < eps:
                 break
             t *= r
         z = ((a / t).arctan()) / a
@@ -2020,8 +2042,10 @@ class PeriodLattice_ell(PeriodLattice):
 
         # test for the point at infinity:
 
-        eps = (C(2)**(-0.8*prec)).real()  # to test integrality w.r.t. lattice within 20%
-        if all((t.round()-t).abs() < eps for t in self.coordinates(z)):
+        eps = (
+            C(2) ** (-0.8 * prec)
+        ).real()  # to test integrality w.r.t. lattice within 20%
+        if all((t.round() - t).abs() < eps for t in self.coordinates(z)):
             K = z.parent()
             if to_curve:
                 return self.curve().change_ring(K)(0)
@@ -2096,16 +2120,16 @@ def reduce_tau(tau):
     c, d = b, a
     k = tau.real().round()
     tau -= k
-    a -= k*c
-    b -= k*d
+    a -= k * c
+    b -= k * d
     while tau.abs() < 0.999:
-        tau = -1/tau
+        tau = -1 / tau
         a, b, c, d = c, d, -a, -b
         k = tau.real().round()
         tau -= k
-        a -= k*c
-        b -= k*d
-    assert a*d-b*c == 1
+        a -= k * c
+        b -= k * d
+    assert a * d - b * c == 1
     assert tau.abs() >= 0.999 and tau.real().abs() <= 0.5
     return tau, [a, b, c, d]
 
@@ -2145,7 +2169,7 @@ def normalise_periods(w1, w2):
         sage: a*d-b*c # note change of orientation
         -1
     """
-    tau = w1/w2
+    tau = w1 / w2
     s = +1
     if tau.imag() < 0:
         w2 = -w2
@@ -2155,7 +2179,7 @@ def normalise_periods(w1, w2):
     a, b, c, d = abcd
     if s < 0:
         abcd = (a, -b, c, -d)
-    return (a*w1+b*w2, c*w1+d*w2), abcd
+    return (a * w1 + b * w2, c * w1 + d * w2), abcd
 
 
 def extended_agm_iteration(a, b, c):

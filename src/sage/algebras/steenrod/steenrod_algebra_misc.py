@@ -44,8 +44,13 @@ The main functions here are
 # basis names
 
 _steenrod_milnor_basis_names = ['milnor']
-_steenrod_serre_cartan_basis_names = ['serre_cartan', 'serre-cartan', 'sc',
-                                      'adem', 'admissible']
+_steenrod_serre_cartan_basis_names = [
+    'serre_cartan',
+    'serre-cartan',
+    'sc',
+    'adem',
+    'admissible',
+]
 
 
 def get_basis_name(basis, p, generic=None):
@@ -169,7 +174,9 @@ def get_basis_name(basis, p, generic=None):
         elif basis.find('z') >= 0:
             result = 'woodz'
         else:
-            raise ValueError("%s is not a recognized basis at the prime %s" % (basis, p))
+            raise ValueError(
+                "%s is not a recognized basis at the prime %s" % (basis, p)
+            )
     elif not generic and basis.find('arnon') >= 0:
         if basis.find('c') >= 0:
             result = 'arnonc'
@@ -183,8 +190,11 @@ def get_basis_name(basis, p, generic=None):
             result = result + '_long'
     else:
         gencase = " for the generic Steenrod algebra" if p == 2 and generic else ""
-        raise ValueError("%s is not a recognized basis%s at the prime %s" % (basis, gencase, p))
+        raise ValueError(
+            "%s is not a recognized basis%s at the prime %s" % (basis, gencase, p)
+        )
     return result
+
 
 ######################################################
 # profile functions
@@ -261,27 +271,28 @@ def is_valid_profile(profile, truncation_type, p=2, generic=None) -> bool:
         True
     """
     from sage.rings.infinity import Infinity
+
     if generic is None:
         generic = p != 2
     if not generic:
-        pro = list(profile) + [truncation_type]*len(profile)
+        pro = list(profile) + [truncation_type] * len(profile)
         r = 0
         for pro_r in pro:
             r += 1  # index of pro_r
             if pro_r < Infinity:
                 for i in range(1, r):
-                    if pro_r < min(pro[r-i-1] - i, pro[i-1]):
+                    if pro_r < min(pro[r - i - 1] - i, pro[i - 1]):
                         return False
     else:
         # p odd:
-        e = list(profile[0]) + [truncation_type]*len(profile[0])
+        e = list(profile[0]) + [truncation_type] * len(profile[0])
         k = list(profile[1])
         if not set(k).issubset({1, 2}):
             return False
         if truncation_type > 0:
             k = k + [2]
         else:
-            k = k + [1]*len(profile[0])
+            k = k + [1] * len(profile[0])
         if len(k) > len(e):
             e = e + [truncation_type] * (len(k) - len(e))
         r = 0
@@ -289,20 +300,22 @@ def is_valid_profile(profile, truncation_type, p=2, generic=None) -> bool:
             r += 1  # index of e_r
             if e_r < Infinity:
                 for i in range(1, r):
-                    if e_r < min(e[r-i-1] - i, e[i-1]):
+                    if e_r < min(e[r - i - 1] - i, e[i - 1]):
                         return False
         r = -1
         for k_r in k:
             r += 1  # index of k_r
             if k_r == 1:
                 for j in range(r):
-                    i = r-j
-                    if e[i-1] > j and k[j] == 2:
+                    i = r - j
+                    if e[i - 1] > j and k[j] == 2:
                         return False
     return True
 
 
-def normalize_profile(profile, precision=None, truncation_type='auto', p=2, generic=None):
+def normalize_profile(
+    profile, precision=None, truncation_type='auto', p=2, generic=None
+):
     r"""
     Given a profile function and related data, return it in a standard form,
     suitable for hashing and caching as data defining a sub-Hopf
@@ -467,6 +480,7 @@ def normalize_profile(profile, precision=None, truncation_type='auto', p=2, gene
         ValueError: invalid profile
     """
     from sage.rings.infinity import Infinity
+
     if truncation_type == 'zero':
         truncation_type = 0
     if truncation_type == 'infinity':
@@ -514,8 +528,9 @@ def normalize_profile(profile, precision=None, truncation_type='auto', p=2, gene
             new_profile = ((), ())
             truncation_type = Infinity
         else:  # profile should be a list or tuple of length 2
-            assert isinstance(profile, (list, tuple)) and len(profile) == 2, \
+            assert isinstance(profile, (list, tuple)) and len(profile) == 2, (
                 "Invalid form for profile"
+            )
             e = profile[0]
             k = profile[1]
             if isinstance(e, (list, tuple)):
@@ -553,7 +568,7 @@ def normalize_profile(profile, precision=None, truncation_type='auto', p=2, gene
                     k_precision = 100
                 else:
                     k_precision = precision
-                k = tuple([k(i) for i in range(k_precision-1)])
+                k = tuple([k(i) for i in range(k_precision - 1)])
             # Remove trailing ones from k if truncation_type is 'zero',
             # remove trailing twos if truncation_type is 'Infinity'.
             if truncation_type == 0:
@@ -566,6 +581,7 @@ def normalize_profile(profile, precision=None, truncation_type='auto', p=2, gene
         if is_valid_profile(new_profile, truncation_type, p, generic=True):
             return new_profile, truncation_type
         raise ValueError("invalid profile")
+
 
 ######################################################
 # string representations for elements
@@ -711,6 +727,7 @@ def serre_cartan_mono_to_string(mono, latex=False, generic=False):
         index = 0
         for n in mono:
             from sage.misc.functional import is_even
+
             if is_even(index):
                 if n == 1:
                     if latex:
@@ -762,7 +779,7 @@ def wood_mono_to_string(mono, latex=False):
         return "1"
     string = ""
     for s, t in mono:
-        string = string + sq + "^{" + str(2**s * (2**(t+1)-1)) + "} "
+        string = string + sq + "^{" + str(2**s * (2 ** (t + 1) - 1)) + "} "
     return string.strip(" ")
 
 
@@ -975,22 +992,19 @@ def pst_mono_to_string(mono, latex=False, generic=False):
     string = ""
     if not generic:
         for s, t in mono:
-            string = string + "P^{" + str(s) + "}_{" \
-                + str(t) + "} "
+            string = string + "P^{" + str(s) + "}_{" + str(t) + "} "
     else:
         for e in mono[0]:
             string = string + "Q_{" + str(e) + "} "
         for (s, t), n in mono[1]:
             if n == 1:
-                string = string + "P^{" + str(s) + "}_{" \
-                    + str(t) + "} "
+                string = string + "P^{" + str(s) + "}_{" + str(t) + "} "
             else:
                 if latex:
                     pow = "{%s}" % n
                 else:
                     pow = str(n)
-                string = string + "(P^{" + str(s) + "}_{" \
-                    + str(t) + "})^" + pow + " "
+                string = string + "(P^{" + str(s) + "}_{" + str(t) + "})^" + pow + " "
     return string.strip(" ")
 
 
@@ -1038,14 +1052,12 @@ def comm_mono_to_string(mono, latex=False, generic=False):
     string = ""
     if not generic:
         for s, t in mono:
-            string = string + "c_{" + str(s) + "," \
-                + str(t) + "} "
+            string = string + "c_{" + str(s) + "," + str(t) + "} "
     else:
         for e in mono[0]:
             string = string + "Q_{" + str(e) + "} "
         for (s, t), n in mono[1]:
-            string = string + "c_{" + str(s) + "," \
-                + str(t) + "}"
+            string = string + "c_{" + str(s) + "," + str(t) + "}"
             if n > 1:
                 if latex:
                     pow = "^{%s}" % n
@@ -1107,7 +1119,7 @@ def comm_long_mono_to_string(mono, p, latex=False, generic=False):
                 comma = ""
             string = string + "s_{"
             for i in range(t):
-                string = string + str(2**(s+i)) + comma
+                string = string + str(2 ** (s + i)) + comma
             string = string.strip(",") + "} "
     else:
         for e in mono[0]:
@@ -1115,7 +1127,7 @@ def comm_long_mono_to_string(mono, p, latex=False, generic=False):
         for (s, t), n in mono[1]:
             string = string + "s_{"
             for i in range(t):
-                string = string + str(p**(s+i)) + ","
+                string = string + str(p ** (s + i)) + ","
             string = string.strip(",") + "}"
             if n > 1:
                 if latex:
@@ -1125,6 +1137,7 @@ def comm_long_mono_to_string(mono, p, latex=False, generic=False):
                 string = string + pow
             string = string + " "
     return string.strip(" ")
+
 
 # miscellany:
 

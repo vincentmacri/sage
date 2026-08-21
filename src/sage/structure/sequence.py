@@ -73,7 +73,15 @@ from sage.misc.persist import register_unpickle_override
 from sage.structure.sage_object import SageObject
 
 
-def Sequence(x, universe=None, check=True, immutable=False, cr=False, cr_str=None, use_sage_types=False):
+def Sequence(
+    x,
+    universe=None,
+    check=True,
+    immutable=False,
+    cr=False,
+    cr_str=None,
+    use_sage_types=False,
+):
     r"""
     A mutable list of elements with a common guaranteed universe,
     which can be set immutable.
@@ -273,29 +281,35 @@ def Sequence(x, universe=None, check=True, immutable=False, cr=False, cr_str=Non
 
         if len(x) == 0:
             from sage.categories.objects import Objects
+
             universe = Objects()
         else:
             import sage.structure.element
+
             if use_sage_types:
                 # convert any Python built-in numerical types to Sage objects
                 x = [sage.structure.coerce.py_scalar_to_element(e) for e in x]
             # start the pairwise coercion
             for i in range(len(x) - 1):
                 try:
-                    x[i], x[i+1] = sage.structure.element.canonical_coercion(x[i], x[i+1])
+                    x[i], x[i + 1] = sage.structure.element.canonical_coercion(
+                        x[i], x[i + 1]
+                    )
                 except TypeError:
                     from sage.categories.objects import Objects
+
                     universe = Objects()
                     x = list(orig_x)
                     check = False  # no point
                     break
-            if universe is None:   # no type errors raised.
-                universe = sage.structure.element.parent(x[len(x)-1])
+            if universe is None:  # no type errors raised.
+                universe = sage.structure.element.parent(x[len(x) - 1])
 
     from sage.rings.polynomial.multi_polynomial_ring import MPolynomialRing_base
     from sage.rings.polynomial.multi_polynomial_sequence import PolynomialSequence
     from sage.rings.quotient_ring import QuotientRing_nc
     from sage.features.brial import Brial
+
     if Brial().is_present():
         # pbori (brial) is optional, so to keep the isinstance() below
         # working as intended in its absence, we set it equal to the
@@ -304,8 +318,13 @@ def Sequence(x, universe=None, check=True, immutable=False, cr=False, cr_str=Non
     else:
         BooleanMonomialMonoid = MPolynomialRing_base
 
-    if isinstance(universe, (MPolynomialRing_base, BooleanMonomialMonoid)) or (isinstance(universe, QuotientRing_nc) and isinstance(universe.cover_ring(), MPolynomialRing_base)):
-        return PolynomialSequence(x, universe, immutable=immutable, cr=cr, cr_str=cr_str)
+    if isinstance(universe, (MPolynomialRing_base, BooleanMonomialMonoid)) or (
+        isinstance(universe, QuotientRing_nc)
+        and isinstance(universe.cover_ring(), MPolynomialRing_base)
+    ):
+        return PolynomialSequence(
+            x, universe, immutable=immutable, cr=cr, cr_str=cr_str
+        )
 
     return Sequence_generic(x, universe, check, immutable, cr, cr_str, use_sage_types)
 
@@ -441,8 +460,17 @@ class Sequence_generic(SageObject, list):
         sage: v.universe()
         Finite Field of size 5
     """
-    def __init__(self, x, universe=None, check=True, immutable=False,
-                 cr=False, cr_str=None, use_sage_types=False):
+
+    def __init__(
+        self,
+        x,
+        universe=None,
+        check=True,
+        immutable=False,
+        cr=False,
+        cr_str=None,
+        use_sage_types=False,
+    ):
         r"""
         Create a sequence.
 
@@ -483,8 +511,11 @@ class Sequence_generic(SageObject, list):
                 try:
                     x[i] = universe(x[i])
                 except TypeError:
-                    raise TypeError("unable to convert {} to an element of {}"
-                                    .format(x[i], universe))
+                    raise TypeError(
+                        "unable to convert {} to an element of {}".format(
+                            x[i], universe
+                        )
+                    )
         list.__init__(self, x)
         self._is_immutable = immutable
 
@@ -552,11 +583,13 @@ class Sequence_generic(SageObject, list):
             [1, 2, 3, 4]
         """
         if isinstance(n, slice):
-            return Sequence(list.__getitem__(self, n),
-                            universe=self.__universe,
-                            check=False,
-                            immutable=False,
-                            cr=self.__cr)
+            return Sequence(
+                list.__getitem__(self, n),
+                universe=self.__universe,
+                check=False,
+                immutable=False,
+                cr=self.__cr,
+            )
 
         return list.__getitem__(self, n)
 
@@ -725,6 +758,7 @@ class Sequence_generic(SageObject, list):
             \left[\sqrt{x}, e^{x}, x^{x - 1}\right]
         """
         from sage.misc.latex import list_function as list_latex_function
+
         return list_latex_function(self)
 
     def __str__(self):
@@ -856,8 +890,7 @@ class Sequence_generic(SageObject, list):
             sage: w.is_mutable()
             False
         """
-        args = (list(self), self.__universe, False,
-                self._is_immutable, self.__cr_str)
+        args = (list(self), self.__universe, False, self._is_immutable, self.__cr_str)
         return type(self), args
 
     def __copy__(self):
@@ -875,10 +908,13 @@ class Sequence_generic(SageObject, list):
             sage: t.is_mutable() == s.is_mutable()
             True
         """
-        return Sequence(self, universe=self.__universe,
-                        check=False,
-                        immutable=self._is_immutable,
-                        cr=self.__cr_str)
+        return Sequence(
+            self,
+            universe=self.__universe,
+            check=False,
+            immutable=self._is_immutable,
+            cr=self.__cr_str,
+        )
 
     def __getattr__(self, name):
         """
@@ -919,10 +955,14 @@ class Sequence_generic(SageObject, list):
         if name == "_Sequence_generic__cr_str" and hasattr(self, "_Sequence__cr_str"):
             self.__cr_str = self._Sequence__cr_str
             return self.__cr_str
-        if name == "_Sequence_generic__immutable" and hasattr(self, "_Sequence__immutable"):
+        if name == "_Sequence_generic__immutable" and hasattr(
+            self, "_Sequence__immutable"
+        ):
             self.__immutable = self._Sequence__immutable
             return self.__immutable
-        if name == "_Sequence_generic__universe" and hasattr(self, "_Sequence__universe"):
+        if name == "_Sequence_generic__universe" and hasattr(
+            self, "_Sequence__universe"
+        ):
             self.__universe = self._Sequence__universe
             return self.__universe
         if name == "_Sequence_generic__hash" and hasattr(self, "_Sequence__hash"):

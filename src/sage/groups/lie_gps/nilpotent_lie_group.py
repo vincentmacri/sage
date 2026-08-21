@@ -16,13 +16,14 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
+from sage.algebras.lie_algebras.structure_coefficients import (
+    LieAlgebraWithStructureCoefficients,
+)
 from sage.categories.lie_groups import LieGroups
 from sage.categories.lie_algebras import LieAlgebras
 from sage.groups.group import Group
 from sage.manifolds.differentiable.manifold import DifferentiableManifold
-from sage.manifolds.structure import (DifferentialStructure,
-                                      RealDifferentialStructure)
+from sage.manifolds.structure import DifferentialStructure, RealDifferentialStructure
 from sage.misc.cachefunc import cached_method
 from sage.misc.repr import repr_lincomb
 from sage.modules.free_module_element import vector
@@ -70,8 +71,9 @@ def _symbolic_lie_algebra_copy(L):
         s_coeff = L.structure_coefficients()
         index_set = L.basis().keys()
         names = L.variable_names()
-        return LieAlgebraWithStructureCoefficients(SR, s_coeff, names=names,
-                                                   index_set=index_set)
+        return LieAlgebraWithStructureCoefficients(
+            SR, s_coeff, names=names, index_set=index_set
+        )
 
 
 class NilpotentLieGroup(Group, DifferentiableManifold):
@@ -222,8 +224,9 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
         required_cat = LieAlgebras(L.base_ring()).FiniteDimensional()
         required_cat = required_cat.WithBasis().Nilpotent()
         if L not in required_cat:
-            raise TypeError("L needs to be a finite dimensional nilpotent "
-                            "Lie algebra with basis")
+            raise TypeError(
+                "L needs to be a finite dimensional nilpotent Lie algebra with basis"
+            )
         self._lie_algebra = L
 
         R = L.base_ring()
@@ -234,8 +237,9 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
         else:
             structure = DifferentialStructure()
 
-        DifferentiableManifold.__init__(self, L.dimension(), name, R,
-                                        structure, category=category)
+        DifferentiableManifold.__init__(
+            self, L.dimension(), name, R, structure, category=category
+        )
 
         # initialize exponential coordinates of the first kind
         basis_strs = [str(X) for X in L.basis()]
@@ -250,8 +254,7 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
         # compute a symbolic formula for the group law
         L_SR = _symbolic_lie_algebra_copy(L)
         n = L.dimension()
-        a, b = (tuple(SR.var('%s_%d' % (s, j)) for j in range(n))
-                for s in ['a', 'b'])
+        a, b = (tuple(SR.var('%s_%d' % (s, j)) for j in range(n)) for s in ['a', 'b'])
         self._group_law_vars = (a, b)
         bch = L_SR.bch(L_SR.from_vector(a), L_SR.from_vector(b), L.step())
         self._group_law = vector(SR, (zk.expand() for zk in bch.to_vector()))
@@ -559,8 +562,7 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
         coord_frame = self._Exp1.frame()
         symbol = kwds.pop('symbol', 'X')
         indices = kwds.pop('indices', self._var_indexing)
-        return coord_frame.new_frame(dLx_field, symbol=symbol,
-                                     indices=indices, **kwds)
+        return coord_frame.new_frame(dLx_field, symbol=symbol, indices=indices, **kwds)
 
     livf = left_invariant_frame
 
@@ -681,8 +683,7 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
         coord_frame = self._Exp1.frame()
         symbol = kwds.pop('symbol', 'XR')
         indices = kwds.pop('indices', self._var_indexing)
-        return coord_frame.new_frame(dRx_field, symbol=symbol,
-                                     indices=indices, **kwds)
+        return coord_frame.new_frame(dRx_field, symbol=symbol, indices=indices, **kwds)
 
     rivf = right_invariant_frame
 
@@ -815,8 +816,7 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
         """
         Adg_mat = self.conjugation(g).differential(self.one()).matrix()
         L = self.lie_algebra()
-        basis_images = {X: L.from_vector(Adg_mat * X.to_vector())
-                        for X in L.basis()}
+        basis_images = {X: L.from_vector(Adg_mat * X.to_vector()) for X in L.basis()}
         return L.morphism(basis_images, codomain=L)
 
     class Element(DifferentiableManifold.Element, MultiplicativeGroupElement):
@@ -904,8 +904,7 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
             self_c = list(zip(a, self.coordinates(chart=G._Exp1)))
             other_c = list(zip(b, other.coordinates(chart=G._Exp1)))
             sd = dict(self_c + other_c)
-            return G.point([gk.expand() for gk in G._group_law.subs(sd)],
-                           chart=G._Exp1)
+            return G.point([gk.expand() for gk in G._group_law.subs(sd)], chart=G._Exp1)
 
         def _repr_(self):
             r"""
@@ -937,8 +936,9 @@ class NilpotentLieGroup(Group, DifferentiableManifold):
             if chart == G._Exp1:
                 s = repr_lincomb(nonzero_pairs)
             else:
-                s = ")exp(".join(repr_lincomb([(Xk, xk)])
-                                 for Xk, xk in reversed(nonzero_pairs))
+                s = ")exp(".join(
+                    repr_lincomb([(Xk, xk)]) for Xk, xk in reversed(nonzero_pairs)
+                )
                 if not s:
                     s = "0"
             return "exp(%s)" % s

@@ -8,12 +8,13 @@ from sage.repl.rich_output.output_basic import OutputBase
 from sage.repl.rich_output.buffer import OutputBuffer
 
 # regex to match "<html>\[...\]</html>" or "<html>\(...\)</html>"
-latex_re = re.compile(r'<html>(?P<mathstart>\\\[|\\\()(?P<latex>.*)(?P<mathend>\\\]|\\\))</html>',
-                      flags=re.DOTALL)
+latex_re = re.compile(
+    r'<html>(?P<mathstart>\\\[|\\\()(?P<latex>.*)(?P<mathend>\\\]|\\\))</html>',
+    flags=re.DOTALL,
+)
 
 
 class OutputHtml(OutputBase):
-
     def __init__(self, html):
         """
         HTML Output.

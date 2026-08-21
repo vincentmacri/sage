@@ -84,9 +84,13 @@ def _triangulate(g, comb_emb):
     """
     # first make sure that the graph has at least 3 vertices, and that it is connected
     if not g.is_connected():
-        raise NotImplementedError("_triangulate() only knows how to handle connected graphs")
+        raise NotImplementedError(
+            "_triangulate() only knows how to handle connected graphs"
+        )
     if g.order() < 3:
-        raise ValueError("a Graph with less than 3 vertices doesn't have any triangulation")
+        raise ValueError(
+            "a Graph with less than 3 vertices doesn't have any triangulation"
+        )
 
     # At this point we know that the graph is connected, has at least 3
     # vertices. This is where the real work starts.
@@ -94,13 +98,15 @@ def _triangulate(g, comb_emb):
     faces = g.faces(comb_emb)
     # We start by finding all of the faces of this embedding.
 
-    edges_added = []   # The list of edges that we add to the graph.
+    edges_added = []  # The list of edges that we add to the graph.
     # This will be returned at the end.
 
     for face in faces:
         new_face = []
         if len(face) < 3:
-            raise RuntimeError('Triangulate method created face %s with < 3 edges.' % face)
+            raise RuntimeError(
+                'Triangulate method created face %s with < 3 edges.' % face
+            )
         if len(face) == 3:
             continue  # This face is already triangulated
         elif len(face) == 4:  # In this special case just add diagonal edge to square
@@ -116,18 +122,32 @@ def _triangulate(g, comb_emb):
             N = len(face)
             i = 0
             while i < N - 1:
-                new_edge = (face[i + 1][1], face[i][0])  # new_edge is from third vertex in face to first
-                if g.has_edge(new_edge) or new_edge[0] == new_edge[1]:  # check for repeats
-                    new_face.append(face[i])  # if repeated, keep first edge in face instead
-                    if i == N - 2:   # if we are two from the end, found a triangle already
+                new_edge = (
+                    face[i + 1][1],
+                    face[i][0],
+                )  # new_edge is from third vertex in face to first
+                if (
+                    g.has_edge(new_edge) or new_edge[0] == new_edge[1]
+                ):  # check for repeats
+                    new_face.append(
+                        face[i]
+                    )  # if repeated, keep first edge in face instead
+                    if (
+                        i == N - 2
+                    ):  # if we are two from the end, found a triangle already
                         break
                     i += 1
                     continue
 
                 g.add_edge(new_edge)
                 edges_added.append(new_edge)
-                comb_emb[new_edge[0]].insert(comb_emb[new_edge[0]].index((face + new_face)[i + 2][1]), new_edge[1])
-                comb_emb[new_edge[1]].insert(comb_emb[new_edge[1]].index(face[i][1]), new_edge[0])
+                comb_emb[new_edge[0]].insert(
+                    comb_emb[new_edge[0]].index((face + new_face)[i + 2][1]),
+                    new_edge[1],
+                )
+                comb_emb[new_edge[1]].insert(
+                    comb_emb[new_edge[1]].index(face[i][1]), new_edge[0]
+                )
                 new_face.append((new_edge[1], new_edge[0]))
                 i += 2
             if i != N:
@@ -185,9 +205,9 @@ def _normal_label(g, comb_emb, external_face):
 
     # For now we will not take the order of the outer face into account.
     # We will correct this in the end of this function.
-    external_vertices = sorted([external_face[0][0],
-                                external_face[1][0],
-                                external_face[2][0]])
+    external_vertices = sorted(
+        [external_face[0][0], external_face[1][0], external_face[2][0]]
+    )
     v1, v2, v3 = external_vertices
     v1_neighbors = Set(g.neighbors(v1))
 
@@ -207,12 +227,14 @@ def _normal_label(g, comb_emb, external_face):
         try:
             v = contractible.pop()
         except Exception:
-            raise RuntimeError('Contractible list is empty but graph still has %d vertices.  (Expected 3.)' % g.order())
+            raise RuntimeError(
+                'Contractible list is empty but graph still has %d vertices.  (Expected 3.)'
+                % g.order()
+            )
 
         # going to contract v
         v_neighbors = Set(g.neighbors(v))
-        contracted.append((v, v_neighbors,
-                           v_neighbors - v1_neighbors - Set([v1])))
+        contracted.append((v, v_neighbors, v_neighbors - v1_neighbors - Set([v1])))
         g.delete_vertex(v)
         v1_neighbors -= Set([v])
         for w in v_neighbors - v1_neighbors - Set([v1]):
@@ -223,8 +245,11 @@ def _normal_label(g, comb_emb, external_face):
         v1_neighbors += v_neighbors - Set([v1])
         contractible = []
         for w in g.neighbors(v1):
-            if (len(v1_neighbors.intersection(Set(g.neighbors(w)))) == 2
-                    and w not in [v1, v2, v3]):
+            if len(v1_neighbors.intersection(Set(g.neighbors(w)))) == 2 and w not in [
+                v1,
+                v2,
+                v3,
+            ]:
                 contractible.append(w)
 
     # expansion phase:
@@ -247,9 +272,11 @@ def _normal_label(g, comb_emb, external_face):
             # we are adding v into the face new_neighbors
             w1, w2, w3 = sorted(new_neighbors)
 
-            labels[v] = {(w1, w2): labels[w3].pop((w1, w2)),
-                         (w2, w3): labels[w1].pop((w2, w3)),
-                         (w1, w3): labels[w2].pop((w1, w3))}
+            labels[v] = {
+                (w1, w2): labels[w3].pop((w1, w2)),
+                (w2, w3): labels[w1].pop((w2, w3)),
+                (w1, w3): labels[w2].pop((w1, w3)),
+            }
             labels[w1][tuple(sorted((w2, v)))] = labels[v][(w2, w3)]
             labels[w1][tuple(sorted((w3, v)))] = labels[v][(w2, w3)]
 
@@ -402,9 +429,11 @@ def _realizer(g, x, example=False):
 
     tree_nodes = {}
     for v in g:
-        tree_nodes[v] = [TreeNode(label=v, children=[]),
-                         TreeNode(label=v, children=[]),
-                         TreeNode(label=v, children=[])]
+        tree_nodes[v] = [
+            TreeNode(label=v, children=[]),
+            TreeNode(label=v, children=[]),
+            TreeNode(label=v, children=[]),
+        ]
 
     for v in g:
         ones = []
@@ -541,7 +570,10 @@ def _compute_coordinates(g, x):
                 r[i] -= q
 
             if sum(r) != g.order() - 1:
-                raise RuntimeError("Computing coordinates failed: vertex %s's coordinates sum to %s.  Expected %s" % (v, sum(r), g.order() - 1))
+                raise RuntimeError(
+                    "Computing coordinates failed: vertex %s's coordinates sum to %s.  Expected %s"
+                    % (v, sum(r), g.order() - 1)
+                )
 
             coordinates[v] = r[:-1]
 
@@ -579,6 +611,7 @@ class TreeNode:
         sage: tn3.depth
         2
     """
+
     def __init__(self, parent=None, children=None, label=None):
         """
         INPUT:
@@ -815,17 +848,19 @@ def minimal_schnyder_wood(graph, root_edge=None, minimal=True, check=True):
     path = list(emb[c])
     idxa = path.index(a)
     path = path[idxa:] + path[:idxa]
-    neighbors_in_path = {i: len([u for u in graph.neighbors(i) if u in path])
-                         for i in graph}
-    removable_nodes = [u for u in path if neighbors_in_path[u] == 2 and
-                       u != a and u != b]
+    neighbors_in_path = {
+        i: len([u for u in graph.neighbors(i) if u in path]) for i in graph
+    }
+    removable_nodes = [
+        u for u in path if neighbors_in_path[u] == 2 and u != a and u != b
+    ]
 
     # iterated path shortening
     while len(path) > 2:
         if minimal:
-            v = removable_nodes[-1]   # node to be removed from path
+            v = removable_nodes[-1]  # node to be removed from path
         else:
-            v = removable_nodes[0]   # node to be removed from path
+            v = removable_nodes[0]  # node to be removed from path
         idx_v = path.index(v)
         left = path[idx_v - 1]
         new_g.add_edge((v, left, 'green'))
@@ -837,7 +872,7 @@ def minimal_schnyder_wood(graph, root_edge=None, minimal=True, check=True):
         idx_right = neighbors_v.index(right)
         inside = neighbors_v[1:idx_right]
         new_g.add_edges([(w, v, 'red') for w in inside])
-        path = path[:idx_v] + inside + path[idx_v + 1:]
+        path = path[:idx_v] + inside + path[idx_v + 1 :]
         # updating the table of neighbors_in_path
         for w in inside:
             for x in graph.neighbors(w):
@@ -845,8 +880,9 @@ def minimal_schnyder_wood(graph, root_edge=None, minimal=True, check=True):
         for x in graph.neighbors(v):
             neighbors_in_path[x] -= 1
         # updating removable nodes
-        removable_nodes = [u for u in path if neighbors_in_path[u] == 2 and
-                           u != a and u != b]
+        removable_nodes = [
+            u for u in path if neighbors_in_path[u] == 2 and u != a and u != b
+        ]
 
     def relabel(w):
         return -3 if w == c else w
@@ -857,7 +893,7 @@ def minimal_schnyder_wood(graph, root_edge=None, minimal=True, check=True):
         if idx == 0:
             emb[u] = emb[u][1:-1]
         else:
-            emb[u] = emb[u][idx+1:] + emb[u][:idx-1]
+            emb[u] = emb[u][idx + 1 :] + emb[u][: idx - 1]
 
     new_g.set_embedding(emb)
     return new_g

@@ -11,6 +11,7 @@ We construct products projective spaces of various dimensions over the same ring
     sage: P1xP1([2, 1, 3, 1])
     (2 : 1 , 3 : 1)
 """
+
 # ****************************************************************************
 # Copyright (C) 2014 Volker Braun <vbraun.name@gmail.com>
 #                    Ben Hutz <bn4941@gmail.com>
@@ -46,6 +47,7 @@ class ProductProjectiveSpaces_point_ring(SchemeMorphism_point):
         sage: T.point([1, 2, 3, 4, 5])
         (1/3 : 2/3 : 1 , 4/5 : 1)
     """
+
     def __init__(self, parent, polys, check=True):
         r"""
         The Python constructor.
@@ -102,7 +104,10 @@ class ProductProjectiveSpaces_point_ring(SchemeMorphism_point):
             if check:
                 parent.codomain()._check_satisfies_equations(polys)
             splitpolys = self.codomain().ambient_space()._factors(polys)
-            self._points = [parent.codomain().ambient_space()[i].point(splitpolys[i], check) for i in range(len(N))]
+            self._points = [
+                parent.codomain().ambient_space()[i].point(splitpolys[i], check)
+                for i in range(len(N))
+            ]
 
     def __getitem__(self, i):
         r"""
@@ -140,8 +145,9 @@ class ProductProjectiveSpaces_point_ring(SchemeMorphism_point):
             sage: P._repr_()
             '(1 : 2 : 3 , 4 : 5 : 6)'
         """
-        return '(%s)' % (" , ".join((" : ".join(repr(f) for f in Q))
-                                    for Q in self._points))
+        return '(%s)' % (
+            " , ".join((" : ".join(repr(f) for f in Q)) for Q in self._points)
+        )
 
     def _richcmp_(self, other, op):
         r"""
@@ -193,7 +199,7 @@ class ProductProjectiveSpaces_point_ring(SchemeMorphism_point):
             sage: P < Q
             True
         """
-        #needed for Digraph
+        # needed for Digraph
         if not isinstance(other, (ProductProjectiveSpaces_point_ring)):
             return NotImplemented
         return richcmp(self._points, other._points, op)
@@ -214,8 +220,10 @@ class ProductProjectiveSpaces_point_ring(SchemeMorphism_point):
             sage: P == Q
             True
         """
-        P = [copy(self[i]) for i in range(self.codomain().ambient_space().n_components())]
-        return (self.codomain().point(P, False))
+        P = [
+            copy(self[i]) for i in range(self.codomain().ambient_space().n_components())
+        ]
+        return self.codomain().point(P, False)
 
     def __iter__(self):
         r"""
@@ -463,8 +471,14 @@ class ProductProjectiveSpaces_point_ring(SchemeMorphism_point):
             0.536479304144700
         """
         K = self.codomain().base_ring()
-        if K not in NumberFields() and K != ZZ and not isinstance(K, (sage.rings.abc.Order, sage.rings.abc.AlgebraicField)):
-            raise TypeError("must be over a number field or a number field order or QQbar")
+        if (
+            K not in NumberFields()
+            and K != ZZ
+            and not isinstance(K, (sage.rings.abc.Order, sage.rings.abc.AlgebraicField))
+        ):
+            raise TypeError(
+                "must be over a number field or a number field order or QQbar"
+            )
 
         n = self.codomain().ambient_space().n_components()
         return max(self[i].global_height(prec=prec) for i in range(n))
@@ -509,7 +523,6 @@ class ProductProjectiveSpaces_point_ring(SchemeMorphism_point):
 
 
 class ProductProjectiveSpaces_point_field(ProductProjectiveSpaces_point_ring):
-
     def intersection_multiplicity(self, X):
         r"""
         Return the intersection multiplicity of the codomain of this point and subscheme ``X`` at this point.
@@ -533,8 +546,11 @@ class ProductProjectiveSpaces_point_field(ProductProjectiveSpaces_point_ring):
             2
         """
         from sage.schemes.product_projective.space import ProductProjectiveSpaces_ring
+
         if isinstance(self.codomain(), ProductProjectiveSpaces_ring):
-            raise TypeError("this point must be a point on a subscheme of a product of projective spaces")
+            raise TypeError(
+                "this point must be a point on a subscheme of a product of projective spaces"
+            )
         return self.codomain().intersection_multiplicity(X, self)
 
     def multiplicity(self):
@@ -561,8 +577,11 @@ class ProductProjectiveSpaces_point_field(ProductProjectiveSpaces_point_ring):
             6
         """
         from sage.schemes.product_projective.space import ProductProjectiveSpaces_ring
+
         if isinstance(self.codomain(), ProductProjectiveSpaces_ring):
-            raise TypeError("this point must be a point on a subscheme of a product of projective spaces")
+            raise TypeError(
+                "this point must be a point on a subscheme of a product of projective spaces"
+            )
         return self.codomain().multiplicity(self)
 
 

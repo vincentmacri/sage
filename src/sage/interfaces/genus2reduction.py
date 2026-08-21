@@ -144,8 +144,10 @@ class ReductionData(SageObject):
        sur un corps de valuation discrète", Trans. AMS 348 (1996),
        4577-4610, Section 7.2, Proposition 4).
     """
-    def __init__(self, pari_result, P, Q, Pmin, Qmin, minimal_disc,
-                 local_data, conductor):
+
+    def __init__(
+        self, pari_result, P, Q, Pmin, Qmin, minimal_disc, local_data, conductor
+    ):
         self.pari_result = pari_result
         self.P = P
         self.Q = Q
@@ -212,7 +214,7 @@ def divisors_to_string(divs):
     n = 0  # How many times have we seen the current divisor?
     for i in range(len(divs)):
         n += 1
-        if i+1 == len(divs) or divs[i+1] != divs[i]:
+        if i + 1 == len(divs) or divs[i + 1] != divs[i]:
             # Next divisor is different or we are done? Print current one
             if s:
                 s += "x"
@@ -336,6 +338,7 @@ class Genus2reduction(SageObject):
     Conrad-Edixhoven-Stein that the component group of
     `J(X_1(p))` is trivial for all primes `p`.)
     """
+
     def __init__(self):
         pass
 
@@ -444,8 +447,12 @@ class Genus2reduction(SageObject):
 
             t = red[2]
             if t:
-                data += "\nreduction at p: %s, " % str(t[0]).replace('"', '').replace("(tame) ", "")
-                data += divisors_to_string(t[1]) + ", f=" + str(res[0].valuation(red[0]))
+                data += "\nreduction at p: %s, " % str(t[0]).replace('"', '').replace(
+                    "(tame) ", ""
+                )
+                data += (
+                    divisors_to_string(t[1]) + ", f=" + str(res[0].valuation(red[0]))
+                )
 
             local_data[p] = data
 

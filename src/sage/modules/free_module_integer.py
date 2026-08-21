@@ -35,7 +35,10 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_method
-from sage.modules.free_module import FreeModule_submodule_with_basis_pid, FreeModule_ambient_pid
+from sage.modules.free_module import (
+    FreeModule_submodule_with_basis_pid,
+    FreeModule_ambient_pid,
+)
 from sage.modules.free_module_element import vector
 from math import prod
 from sage.functions.all import gamma
@@ -200,9 +203,9 @@ def IntegerLattice(basis, lll_reduce=True):
     except TypeError:
         raise NotImplementedError("only integer lattices supported")
 
-    return FreeModule_submodule_with_basis_integer(ZZ**basis.ncols(),
-                                                   basis=basis,
-                                                   lll_reduce=lll_reduce)
+    return FreeModule_submodule_with_basis_integer(
+        ZZ ** basis.ncols(), basis=basis, lll_reduce=lll_reduce
+    )
 
 
 class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pid):
@@ -235,9 +238,17 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
         sage: L.shortest_vector()
         (-1, 1, 2, -2, 0, 1, 0, -1, 2, 1)
     """
-    def __init__(self, ambient, basis, check=True, echelonize=False,
-                 echelonized_basis=None, already_echelonized=False,
-                 lll_reduce=True):
+
+    def __init__(
+        self,
+        ambient,
+        basis,
+        check=True,
+        echelonize=False,
+        echelonized_basis=None,
+        already_echelonized=False,
+        lll_reduce=True,
+    ):
         r"""
         Construct a new submodule of `\ZZ^n` with a distinguished basis.
 
@@ -305,13 +316,15 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
             self._basis_is_LLL_reduced = True
 
         basis.set_immutable()
-        FreeModule_submodule_with_basis_pid.__init__(self,
-                                                     ambient=ambient,
-                                                     basis=basis,
-                                                     check=check,
-                                                     echelonize=echelonize,
-                                                     echelonized_basis=echelonized_basis,
-                                                     already_echelonized=already_echelonized)
+        FreeModule_submodule_with_basis_pid.__init__(
+            self,
+            ambient=ambient,
+            basis=basis,
+            check=check,
+            echelonize=echelonize,
+            echelonized_basis=echelonized_basis,
+            already_echelonized=already_echelonized,
+        )
 
         self._reduced_basis = basis.change_ring(ZZ)
 
@@ -542,7 +555,9 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
         return self.volume() == 1
 
     @cached_method
-    def shortest_vector(self, update_reduced_basis=True, algorithm='fplll', *args, **kwds):
+    def shortest_vector(
+        self, update_reduced_basis=True, algorithm='fplll', *args, **kwds
+    ):
         r"""
         Return a shortest vector by solving the Shortest Vector Problem (SVP) exactly.
 
@@ -588,13 +603,14 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
                 qf = self.gram_matrix()
             else:
                 B = self.reduced_basis.LLL()
-                qf = B*B.transpose()
+                qf = B * B.transpose()
 
             count, length, vectors = qf.__pari__().qfminim(m=1)
             v = vectors.sage().columns()[0]
-            w = v*B
+            w = v * B
         elif algorithm == "fplll":
             from fpylll import IntegerMatrix, SVP
+
             L = IntegerMatrix.from_matrix(self.reduced_basis)
             w = vector(ZZ, SVP.shortest_vector(L, *args, **kwds))
 
@@ -694,6 +710,7 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
         B = self.reduced_basis
 
         from .diamond_cutting import calculate_voronoi_cell
+
         return calculate_voronoi_cell(B, radius=radius)
 
     def voronoi_relevant_vectors(self):
@@ -727,7 +744,7 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
             """
             c = ieq[0]
             a = ieq[1:]
-            n = sum(y ** 2 for y in a)
+            n = sum(y**2 for y in a)
             return vector([2 * y * c / n for y in a])
 
         return [defining_point(ieq) for ieq in V.inequality_generator()]
@@ -790,7 +807,7 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
         V = self.voronoi_relevant_vectors()
         t = vector(t)
         p = 0
-        while not (ZZ(2 ** p) * voronoi_cell).contains(t):
+        while not (ZZ(2**p) * voronoi_cell).contains(t):
             p += 1
         t_new = t
         i = p
@@ -800,7 +817,9 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
             i -= 1
         return t - t_new
 
-    def approximate_closest_vector(self, t, delta=None, algorithm='embedding', *args, **kwargs):
+    def approximate_closest_vector(
+        self, t, delta=None, algorithm='embedding', *args, **kwargs
+    ):
         r"""
         Compute a vector `w` in this lattice which is close to the target vector `t`.
         The ratio `\frac{|t-w|}{|t-u|}`, where `u` is the closest lattice vector to `t`,
@@ -861,7 +880,7 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
             (1331, 1324, 1349, 1334)
         """
         if delta is None:
-            delta = ZZ(99)/ZZ(100)
+            delta = ZZ(99) / ZZ(100)
 
         # Bound checks on delta are performed in is_LLL_reduced
         if not self._reduced_basis.is_LLL_reduced(delta=delta):
@@ -871,18 +890,19 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
         t = vector(t)
 
         if algorithm == 'embedding':
-            L = matrix(QQ, B.nrows()+1, B.ncols()+1)
+            L = matrix(QQ, B.nrows() + 1, B.ncols() + 1)
             L.set_block(0, 0, B)
             L.set_block(B.nrows(), 0, matrix(t))
-            weight = (B[-1]*B[-1]).isqrt()+1  # Norm of the largest vector
+            weight = (B[-1] * B[-1]).isqrt() + 1  # Norm of the largest vector
             L[-1, -1] = weight
 
             # The vector should be the last row but we iterate just in case
             for v in reversed(L.LLL(delta=delta, *args, **kwargs).rows()):
                 if abs(v[-1]) == weight:
-                    return t - v[:-1]*v[-1].sign()
-            raise ValueError('No suitable vector found in basis.'
-                             'This is a bug, please report it.')
+                    return t - v[:-1] * v[-1].sign()
+            raise ValueError(
+                'No suitable vector found in basis.This is a bug, please report it.'
+            )
 
         elif algorithm == 'nearest_plane':
             G = B.gram_schmidt()[0]
@@ -896,11 +916,13 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
             # t = x*B might not have a solution over QQ so we instead solve
             # the system x*B*B^T = t*B^T which will be the "closest" solution
             # if it does not exist, same effect as using the psuedo-inverse
-            sol = (B*B.T).solve_left(t*B.T)
-            return vector(ZZ, [QQ(x).round('even') for x in sol])*B
+            sol = (B * B.T).solve_left(t * B.T)
+            return vector(ZZ, [QQ(x).round('even') for x in sol]) * B
 
         else:
-            raise ValueError("algorithm must be one of 'embedding', 'nearest_plane' or 'rounding_off'")
+            raise ValueError(
+                "algorithm must be one of 'embedding', 'nearest_plane' or 'rounding_off'"
+            )
 
     def babai(self, *args, **kwargs):
         """
@@ -951,7 +973,9 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
         r = self.rank()
         assert r == n
 
-        ratio = (self.discriminant().sqrt() / prod([v.norm() for v in basis]))**(1/r)
+        ratio = (self.discriminant().sqrt() / prod([v.norm() for v in basis])) ** (
+            1 / r
+        )
         assert 0 < ratio <= 1
         return ratio
 
@@ -991,5 +1015,5 @@ class FreeModule_submodule_with_basis_integer(FreeModule_submodule_with_basis_pi
         D = self.discriminant().sqrt()
 
         if exact_form:
-            return (D * gamma(1 + (r/2)))**(1/r) / pi.sqrt()
-        return D**(1/r) * (r/(2*pi*e)).sqrt()
+            return (D * gamma(1 + (r / 2))) ** (1 / r) / pi.sqrt()
+        return D ** (1 / r) * (r / (2 * pi * e)).sqrt()

@@ -108,8 +108,7 @@ from sage.structure.element import Matrix
 from sage.matrix.matrix_space import MatrixSpace
 from sage.geometry.fan_morphism import FanMorphism
 
-from sage.schemes.generic.homset import (SchemeHomset_generic,
-                                         SchemeHomset_points)
+from sage.schemes.generic.homset import SchemeHomset_generic, SchemeHomset_points
 
 
 class SchemeHomset_toric_variety(SchemeHomset_generic):
@@ -165,8 +164,11 @@ class SchemeHomset_toric_variety(SchemeHomset_generic):
               Defn: Defined by sending Rational polyhedral fan in 2-d lattice N
                     to Rational polyhedral fan in 1-d lattice N.
         """
-        SchemeHomset_generic.__init__(self, X, Y, category=category, check=check, base=base)
+        SchemeHomset_generic.__init__(
+            self, X, Y, category=category, check=check, base=base
+        )
         from sage.schemes.toric.variety import ToricVariety_field
+
         if isinstance(X, ToricVariety_field) and isinstance(Y, ToricVariety_field):
             self.register_conversion(MatrixSpace(ZZ, X.fan().dim(), Y.fan().dim()))
 
@@ -242,24 +244,32 @@ class SchemeHomset_toric_variety(SchemeHomset_generic):
                     [x0 : x1 : x2]
         """
         from sage.schemes.toric.morphism import SchemeMorphism_polynomial_toric_variety
+
         if isinstance(x, (list, tuple)):
             return SchemeMorphism_polynomial_toric_variety(self, x, check=check)
 
         from sage.categories.map import Map
         from sage.categories.rings import Rings
+
         if isinstance(x, Map) and x.category_for().is_subcategory(Rings()):
             # x is a morphism of Rings
             assert x.domain() is self.codomain().coordinate_ring()
             assert x.codomain() is self.domain().coordinate_ring()
-            return SchemeMorphism_polynomial_toric_variety(self, x.im_gens(), check=check)
+            return SchemeMorphism_polynomial_toric_variety(
+                self, x.im_gens(), check=check
+            )
 
         if isinstance(x, Matrix):
             x = FanMorphism(x, self.domain().fan(), self.codomain().fan())
         if isinstance(x, FanMorphism):
             if x.is_dominant():
-                from sage.schemes.toric.morphism import SchemeMorphism_fan_toric_variety_dominant
+                from sage.schemes.toric.morphism import (
+                    SchemeMorphism_fan_toric_variety_dominant,
+                )
+
                 return SchemeMorphism_fan_toric_variety_dominant(self, x, check=check)
             from sage.schemes.toric.morphism import SchemeMorphism_fan_toric_variety
+
             return SchemeMorphism_fan_toric_variety(self, x, check=check)
 
         raise TypeError("x must be a fan morphism or a list/tuple of polynomials")
@@ -280,8 +290,10 @@ class SchemeHomset_toric_variety(SchemeHomset_generic):
                     Rational polyhedral fan in 2-d lattice N.
         """
         from sage.matrix.constructor import zero_matrix
-        zero = zero_matrix(self.domain().dimension_relative(),
-                           self.codomain().dimension_relative())
+
+        zero = zero_matrix(
+            self.domain().dimension_relative(), self.codomain().dimension_relative()
+        )
         return self(zero)
 
 
@@ -351,6 +363,7 @@ class SchemeHomset_points_toric_base(SchemeHomset_points):
             [0 : 0 : 1]
         """
         from sage.schemes.toric.points import NaiveFinitePointEnumerator
+
         variety = self.codomain()
         if ring is None:
             ring = variety.base_ring()
@@ -382,6 +395,7 @@ class SchemeHomset_points_toric_base(SchemeHomset_points):
             [0 : 0 : 1]
         """
         from sage.schemes.toric.points import FiniteFieldPointEnumerator
+
         variety = self.codomain()
         if finite_field is None:
             finite_field = variety.base_ring()
@@ -411,6 +425,7 @@ class SchemeHomset_points_toric_base(SchemeHomset_points):
         if ring.is_finite():
             return self._naive_enumerator()
         from sage.schemes.toric.points import InfinitePointEnumerator
+
         return InfinitePointEnumerator(self.codomain().fan(), ring)
 
 
@@ -544,6 +559,7 @@ class SchemeHomset_points_toric_field(SchemeHomset_points_toric_base):
             if variety.dimension_relative() == 0:
                 return ZZ.one()
             from sage.rings.infinity import Infinity
+
             return Infinity
         if not variety.is_smooth():
             try:
@@ -553,7 +569,7 @@ class SchemeHomset_points_toric_field(SchemeHomset_points_toric_base):
         q = variety.base_ring().order()
         n = variety.dimension()
         d = map(len, variety.fan().cones())
-        return sum(dk * (q - 1)**(n - k) for k, dk in enumerate(d))
+        return sum(dk * (q - 1) ** (n - k) for k, dk in enumerate(d))
 
     def __iter__(self):
         """
@@ -575,7 +591,6 @@ class SchemeHomset_points_toric_field(SchemeHomset_points_toric_base):
 
 
 class SchemeHomset_points_subscheme_toric_field(SchemeHomset_points_toric_base):
-
     def _enumerator(self):
         """
         Return the most suitable enumerator for points.
@@ -596,9 +611,11 @@ class SchemeHomset_points_subscheme_toric_field(SchemeHomset_points_toric_base):
         ring = self.domain().base_ring()
         if ring in FiniteFields():
             from sage.schemes.toric.points import FiniteFieldSubschemePointEnumerator
+
             Enumerator = FiniteFieldSubschemePointEnumerator
         else:
             from sage.schemes.toric.points import NaiveSubschemePointEnumerator
+
             Enumerator = NaiveSubschemePointEnumerator
         return Enumerator(self.codomain().defining_polynomials(), ambient)
 

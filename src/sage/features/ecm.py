@@ -25,6 +25,7 @@ class Ecm(Executable):
         sage: Ecm().is_present()
         FeatureTestResult('ecm', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -33,8 +34,9 @@ class Ecm(Executable):
             sage: isinstance(Ecm(), Ecm)
             True
         """
-        Executable.__init__(self, name='ecm', executable=SAGE_ECMBIN,
-                            spkg='ecm', type='standard')
+        Executable.__init__(
+            self, name='ecm', executable=SAGE_ECMBIN, spkg='ecm', type='standard'
+        )
 
 
 def all_features():

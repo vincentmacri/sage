@@ -24,8 +24,7 @@ REFERENCE:
 #                  http://www.gnu.org/licenses/
 # *****************************************************************************
 
-from sage.coding.linear_code import AbstractLinearCode,\
-    LinearCodeGeneratorMatrixEncoder
+from sage.coding.linear_code import AbstractLinearCode, LinearCodeGeneratorMatrixEncoder
 from sage.coding.encoder import Encoder
 from sage.rings.integer import Integer
 from sage.rings.finite_rings.finite_field_constructor import GF
@@ -78,9 +77,12 @@ class ParityCheckCode(AbstractLinearCode):
             raise ValueError("dimension must be an integer")
 
         self._dimension = dimension
-        super().__init__(base_field, dimension + 1,
-                         "ParityCheckCodeGeneratorMatrixEncoder",
-                         "Syndrome")
+        super().__init__(
+            base_field,
+            dimension + 1,
+            "ParityCheckCodeGeneratorMatrixEncoder",
+            "Syndrome",
+        )
 
     def __eq__(self, other):
         r"""
@@ -93,9 +95,11 @@ class ParityCheckCode(AbstractLinearCode):
             sage: C1 == C2
             True
         """
-        return (isinstance(other, ParityCheckCode)
-                and self.base_field() == other.base_field()
-                and self.dimension() == other.dimension())
+        return (
+            isinstance(other, ParityCheckCode)
+            and self.base_field() == other.base_field()
+            and self.dimension() == other.dimension()
+        )
 
     def _repr_(self):
         r"""
@@ -107,9 +111,11 @@ class ParityCheckCode(AbstractLinearCode):
             sage: C
             [8, 7] parity-check code over GF(5)
         """
-        return ("[%s, %s] parity-check code over GF(%s)"
-                % (self.length(), self.dimension(),
-                   self.base_field().cardinality()))
+        return "[%s, %s] parity-check code over GF(%s)" % (
+            self.length(),
+            self.dimension(),
+            self.base_field().cardinality(),
+        )
 
     def _latex_(self):
         r"""
@@ -121,8 +127,11 @@ class ParityCheckCode(AbstractLinearCode):
             sage: latex(C)
             [8, 7] \textnormal{parity-check code over } \Bold{F}_{5}
         """
-        return "[%s, %s] \\textnormal{parity-check code over } %s"\
-               % (self.length(), self.dimension(), self.base_field()._latex_())
+        return "[%s, %s] \\textnormal{parity-check code over } %s" % (
+            self.length(),
+            self.dimension(),
+            self.base_field()._latex_(),
+        )
 
     def minimum_distance(self):
         r"""
@@ -140,6 +149,7 @@ class ParityCheckCode(AbstractLinearCode):
 
 
 ####################### encoders ###############################
+
 
 class ParityCheckCodeGeneratorMatrixEncoder(LinearCodeGeneratorMatrixEncoder):
     r"""
@@ -267,8 +277,7 @@ class ParityCheckCodeStraightforwardEncoder(Encoder):
             sage: latex(E)
             \textnormal{Parity-check encoder for the } [8, 7] \textnormal{parity-check code over } \Bold{F}_{5}
         """
-        return ("\\textnormal{Parity-check encoder for the } %s" %
-                self.code()._latex_())
+        return "\\textnormal{Parity-check encoder for the } %s" % self.code()._latex_()
 
     def __eq__(self, other):
         r"""
@@ -281,8 +290,10 @@ class ParityCheckCodeStraightforwardEncoder(Encoder):
             sage: C1 == C2
             True
         """
-        return (isinstance(other, ParityCheckCodeStraightforwardEncoder)
-                and self.code() == other.code())
+        return (
+            isinstance(other, ParityCheckCodeStraightforwardEncoder)
+            and self.code() == other.code()
+        )
 
     def encode(self, message):
         r"""
@@ -349,5 +360,9 @@ class ParityCheckCodeStraightforwardEncoder(Encoder):
 
 ####################### registration ###############################
 
-ParityCheckCode._registered_encoders["ParityCheckCodeGeneratorMatrixEncoder"] = ParityCheckCodeGeneratorMatrixEncoder
-ParityCheckCode._registered_encoders["ParityCheckCodeStraightforwardEncoder"] = ParityCheckCodeStraightforwardEncoder
+ParityCheckCode._registered_encoders["ParityCheckCodeGeneratorMatrixEncoder"] = (
+    ParityCheckCodeGeneratorMatrixEncoder
+)
+ParityCheckCode._registered_encoders["ParityCheckCodeStraightforwardEncoder"] = (
+    ParityCheckCodeStraightforwardEncoder
+)

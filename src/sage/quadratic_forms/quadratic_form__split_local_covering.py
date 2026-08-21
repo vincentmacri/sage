@@ -78,8 +78,12 @@ def cholesky_decomposition(self, bit_prec=53):
         [0.000000000000000 0.000000000000000  3.41666666666667]
     """
     # Check that the precision passed is allowed.
-    if isinstance(self.base_ring(), sage.rings.abc.RealField) and (self.base_ring().prec() < bit_prec):
-        raise RuntimeError("the precision requested is greater than that of the given quadratic form")
+    if isinstance(self.base_ring(), sage.rings.abc.RealField) and (
+        self.base_ring().prec() < bit_prec
+    ):
+        raise RuntimeError(
+            "the precision requested is greater than that of the given quadratic form"
+        )
 
     from sage.rings.real_mpfr import RealField
 
@@ -87,14 +91,16 @@ def cholesky_decomposition(self, bit_prec=53):
     n = self.dim()
     R = RealField(bit_prec)
     MS = MatrixSpace(R, n, n)
-    Q = MS(R(0.5)) * MS(self.matrix())               # Initialize the real symmetric matrix A with the matrix for Q(x) = x^t * A * x
+    Q = MS(R(0.5)) * MS(
+        self.matrix()
+    )  # Initialize the real symmetric matrix A with the matrix for Q(x) = x^t * A * x
 
     # DIAGNOSTIC
 
     # 2. Loop on i
     for i in range(n):
         for j in range(i + 1, n):
-            Q[j, i] = Q[i, j]             # Is this line redundant?
+            Q[j, i] = Q[i, j]  # Is this line redundant?
             Q[i, j] = Q[i, j] / Q[i, i]
 
         # 3. Main Loop
@@ -189,7 +195,7 @@ def vectors_by_length(self, bound):
     Q = self.cholesky_decomposition()
 
     # 1. Initialize
-    T = n * [RDF(0)]    # Note: We index the entries as 0 --> n-1
+    T = n * [RDF(0)]  # Note: We index the entries as 0 --> n-1
     U = n * [RDF(0)]
     i = n - 1
     T[i] = RDF(Theta_Precision)
@@ -208,9 +214,8 @@ def vectors_by_length(self, bound):
 
     # Big loop which runs through all vectors
     while not done_flag:
-
         # 3b. Main loop -- try to generate a complete vector x (when i=0)
-        while (i > 0):
+        while i > 0:
             T[i - 1] = T[i] - Q[i][i] * (x[i] + U[i]) * (x[i] + U[i])
             i = i - 1
             U[i] = 0
@@ -226,7 +231,7 @@ def vectors_by_length(self, bound):
             # carry if we go out of bounds -- when Z is so small that
             # there aren't any integral vectors between the bounds
             # Note: this ensures T[i-1] >= 0 in the next iteration
-            while (x[i] > L[i]):
+            while x[i] > L[i]:
                 i += 1
                 x[i] += 1
 
@@ -238,7 +243,9 @@ def vectors_by_length(self, bound):
         if abs(Q_val_double - Q_val) > 0.001:
             print(" x = ", x)
             print(" Float = ", Q_val_double, "   Long = ", Q_val)
-            raise RuntimeError("The roundoff error is bigger than 0.001, so we should use more precision somewhere...")
+            raise RuntimeError(
+                "The roundoff error is bigger than 0.001, so we should use more precision somewhere..."
+            )
 
         if Q_val <= bound:
             theta_vec[Q_val].append(deepcopy(x))
@@ -333,7 +340,6 @@ def complementary_subform_to_vector(self, v):
 
     # For each row/column, perform elementary operations to cancel them out.
     for i in range(1, n):
-
         # Check if the (i,0)-entry is divisible by d,
         # and stretch its row/column if not.
         if Q1[i, 0] % d:
@@ -385,9 +391,11 @@ def split_local_cover(self):
 
     # 0. If a split local cover already exists, then return it.
     if hasattr(self, "__split_local_cover"):
-        if isinstance(self.__split_local_cover, QuadraticForm):  # Here the computation has been done.
+        if isinstance(
+            self.__split_local_cover, QuadraticForm
+        ):  # Here the computation has been done.
             return self.__split_local_cover
-        if self.__split_local_cover in ZZ:    # Here it indexes the values already tried!
+        if self.__split_local_cover in ZZ:  # Here it indexes the values already tried!
             current_length = self.__split_local_cover + 1
             Length_Max = current_length + 5
     else:
@@ -400,11 +408,15 @@ def split_local_cover(self):
 
     # Loop until we find a split local cover...
     while True:
-
         # 2. Check if any of the primitive ones produce a split local cover
         for v in current_vectors:
-            Q = QuadraticForm(ZZ, 1, [current_length]) + self.complementary_subform_to_vector(v)
-            if Q.local_representation_conditions() == self.local_representation_conditions():
+            Q = QuadraticForm(
+                ZZ, 1, [current_length]
+            ) + self.complementary_subform_to_vector(v)
+            if (
+                Q.local_representation_conditions()
+                == self.local_representation_conditions()
+            ):
                 self.__split_local_cover = Q
                 return Q
 

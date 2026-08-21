@@ -46,12 +46,14 @@ class Rngs(CategoryWithAxiom):
         sage: TestSuite(C).run()
     """
 
-    _base_category_class_and_axiom = (MagmasAndAdditiveMagmas.Distributive.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative, "AdditiveInverse")
+    _base_category_class_and_axiom = (
+        MagmasAndAdditiveMagmas.Distributive.AdditiveAssociative.AdditiveCommutative.AdditiveUnital.Associative,
+        "AdditiveInverse",
+    )
 
     Unital = LazyImport('sage.categories.rings', 'Rings', at_startup=True)
 
     class ParentMethods:
-
         @cached_method
         def ideal_monoid(self):
             """
@@ -83,9 +85,11 @@ class Rngs(CategoryWithAxiom):
             """
             try:
                 from sage.rings.ideal_monoid import IdealMonoid
+
                 return IdealMonoid(self)
             except TypeError:
                 from sage.rings.noncommutative_ideals import IdealMonoid_nc
+
                 return IdealMonoid_nc(self)
 
         def _ideal_class_(self, n=0):
@@ -109,6 +113,7 @@ class Rngs(CategoryWithAxiom):
                 <class 'sage.rings.noncommutative_ideals.Ideal_nc'>
             """
             from sage.rings.noncommutative_ideals import Ideal_nc
+
             return Ideal_nc
 
         def principal_ideal(self, gen, coerce=True):

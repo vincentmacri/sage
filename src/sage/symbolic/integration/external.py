@@ -7,6 +7,7 @@ TESTS::
     sage: sympy_integrator(sin(x), x)                                                   # needs sympy
     -cos(x)
 """
+
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
@@ -39,6 +40,7 @@ def maxima_integrator(expression, v, a=None, b=None):
         + sin(x)^2 - 2*cos(x) + 1) - 2*log(log(x)))/x
     """
     from sage.calculus.calculus import maxima
+
     if not isinstance(expression, Expression):
         expression = SR(expression)
     if a is None:
@@ -61,6 +63,7 @@ def sympy_integrator(expression, v, a=None, b=None):
         sin(x)
     """
     import sympy
+
     ex = expression._sympy_()
     v = v._sympy_()
     if a is None:
@@ -109,18 +112,24 @@ def mma_free_integrator(expression, v, a=None, b=None):
         sage: mma_free_integrator(exp(-x^2)*log(x), x) # optional - internet
         1/2*sqrt(pi)*erf(x)*log(x) - x*hypergeometric((1/2, 1/2), (3/2, 3/2), -x^2)
     """
-    from sage.interfaces.mathematica import request_wolfram_alpha, parse_moutput_from_json, symbolic_expression_from_mathematica_string
+    from sage.interfaces.mathematica import (
+        request_wolfram_alpha,
+        parse_moutput_from_json,
+        symbolic_expression_from_mathematica_string,
+    )
+
     math_expr = expression._mathematica_init_()
     variable = v._mathematica_init_()
     if a is None and b is None:
         input = "Integrate[{},{}]".format(math_expr, variable)
     elif a is not None and b is not None:
-        input = "Integrate[{},{{{},{},{}}}]".format(math_expr, variable,
-                                                    a._mathematica_init_(),
-                                                    b._mathematica_init_())
+        input = "Integrate[{},{{{},{},{}}}]".format(
+            math_expr, variable, a._mathematica_init_(), b._mathematica_init_()
+        )
     else:
-        raise ValueError('a(={}) and b(={}) should be both None'
-                         ' or both defined'.format(a, b))
+        raise ValueError(
+            'a(={}) and b(={}) should be both None or both defined'.format(a, b)
+        )
     json_page_data = request_wolfram_alpha(input)
     all_outputs = parse_moutput_from_json(json_page_data)
     if not all_outputs:
@@ -190,6 +199,7 @@ def fricas_integrator(expression, v, a=None, b=None, noPole=True):
         expression = SR(expression)
 
     from sage.interfaces.fricas import fricas
+
     e_fricas = fricas(expression)
     v_fricas = fricas(v)
 
@@ -209,8 +219,9 @@ def fricas_integrator(expression, v, a=None, b=None, noPole=True):
         result = expression.integrate(v, a, b, hold=True)
 
     elif result == "potentialPole":
-        raise ValueError("The integrand has a potential pole"
-                         " in the integration interval")
+        raise ValueError(
+            "The integrand has a potential pole in the integration interval"
+        )
 
     return result
 
@@ -257,6 +268,7 @@ def libgiac_integrator(expression, v, a=None, b=None):
         return expression.integrate(v, a, b, hold=True)
 
     from sage.libs.giac.giac import Pygen
+
     # We call Pygen on first argument because otherwise some
     # expressions involving derivatives result in doctest failures in
     # sage/interfaces/sympy.py

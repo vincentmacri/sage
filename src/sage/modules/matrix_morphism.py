@@ -51,21 +51,26 @@ AUTHOR:
 
 import sage.categories.morphism
 import sage.categories.homset
-from sage.categories.finite_dimensional_modules_with_basis import FiniteDimensionalModulesWithBasis
+from sage.categories.finite_dimensional_modules_with_basis import (
+    FiniteDimensionalModulesWithBasis,
+)
 from sage.structure.sequence import Sequence
 from sage.structure.element import parent
 from sage.structure.richcmp import richcmp, op_NE, op_EQ
 
 
 class MatrixMorphism_abstract(sage.categories.morphism.Morphism):
-
     # Copy in methods that delegate to self.matrix.
     # This is needed because MatrixMorphism_abstract is subclassed
     # for use with parents that are merely set up as additive abelian groups,
     # but not as ZZ-modules; see sage.modular.abvar.
 
-    characteristic_polynomial = charpoly = FiniteDimensionalModulesWithBasis.Homsets.Endset.ElementMethods.characteristic_polynomial
-    det = determinant = FiniteDimensionalModulesWithBasis.Homsets.Endset.ElementMethods.determinant
+    characteristic_polynomial = charpoly = (
+        FiniteDimensionalModulesWithBasis.Homsets.Endset.ElementMethods.characteristic_polynomial
+    )
+    det = determinant = (
+        FiniteDimensionalModulesWithBasis.Homsets.Endset.ElementMethods.determinant
+    )
     fcp = FiniteDimensionalModulesWithBasis.Homsets.Endset.ElementMethods.fcp
     trace = FiniteDimensionalModulesWithBasis.Homsets.Endset.ElementMethods.trace
 
@@ -608,13 +613,17 @@ class MatrixMorphism_abstract(sage.categories.morphism.Morphism):
             morphism is the default one.
         """
         if not isinstance(right, MatrixMorphism):
-            if isinstance(right, (sage.categories.morphism.Morphism, sage.categories.map.Map)):
+            if isinstance(
+                right, (sage.categories.morphism.Morphism, sage.categories.map.Map)
+            ):
                 return sage.categories.map.Map.__mul__(self, right)
             R = self.base_ring()
             return self.parent()(self.matrix() * R(right))
         H = right.domain().Hom(self.codomain())
         if self.domain() != right.codomain():
-            raise TypeError("Incompatible composition of morphisms: domain of left morphism must be codomain of right.")
+            raise TypeError(
+                "Incompatible composition of morphisms: domain of left morphism must be codomain of right."
+            )
         if self.side() == "left":
             if right.side() == "left":
                 return H(right.matrix() * self.matrix(), side=self.side())
@@ -698,12 +707,16 @@ class MatrixMorphism_abstract(sage.categories.morphism.Morphism):
             if right.side() == "left":
                 return self.parent()(self.matrix() + right.matrix(), side=self.side())
             if right.side() == "right":
-                return self.parent()(self.matrix() + right.matrix().transpose(), side='left')
+                return self.parent()(
+                    self.matrix() + right.matrix().transpose(), side='left'
+                )
         if self.side() == "right":
             if right.side() == "right":
                 return self.parent()(self.matrix() + right.matrix(), side=self.side())
             if right.side() == "left":
-                return self.parent()(self.matrix().transpose() + right.matrix(), side='left')
+                return self.parent()(
+                    self.matrix().transpose() + right.matrix(), side='left'
+                )
 
     def __neg__(self):
         """
@@ -769,12 +782,16 @@ class MatrixMorphism_abstract(sage.categories.morphism.Morphism):
             if other.side() == "left":
                 return self.parent()(self.matrix() - other.matrix(), side=self.side())
             if other.side() == "right":
-                return self.parent()(self.matrix() - other.matrix().transpose(), side='left')
+                return self.parent()(
+                    self.matrix() - other.matrix().transpose(), side='left'
+                )
         if self.side() == "right":
             if other.side() == "right":
                 return self.parent()(self.matrix() - other.matrix(), side=self.side())
             if other.side() == "left":
-                return self.parent()(self.matrix().transpose() - other.matrix(), side='left')
+                return self.parent()(
+                    self.matrix().transpose() - other.matrix(), side='left'
+                )
 
     def base_ring(self):
         """
@@ -824,13 +841,19 @@ class MatrixMorphism_abstract(sage.categories.morphism.Morphism):
         else:
             E = self.matrix().transpose().decomposition(*args, **kwds)
         if D.is_ambient():
-            return Sequence([D.submodule(V, check=False) for V, _ in E],
-                            cr=True, check=False)
+            return Sequence(
+                [D.submodule(V, check=False) for V, _ in E], cr=True, check=False
+            )
         B = D.basis_matrix()
         R = D.base_ring()
-        return Sequence([D.submodule((V.basis_matrix() * B).row_module(R),
-                                     check=False) for V, _ in E],
-                        cr=True, check=False)
+        return Sequence(
+            [
+                D.submodule((V.basis_matrix() * B).row_module(R), check=False)
+                for V, _ in E
+            ],
+            cr=True,
+            check=False,
+        )
 
     def kernel(self):
         """
@@ -1007,7 +1030,9 @@ class MatrixMorphism_abstract(sage.categories.morphism.Morphism):
             ...
             NotImplementedError: this method must be overridden in the extension class
         """
-        raise NotImplementedError("this method must be overridden in the extension class")
+        raise NotImplementedError(
+            "this method must be overridden in the extension class"
+        )
 
     def _matrix_(self):
         """
@@ -1464,7 +1489,10 @@ class MatrixMorphism_abstract(sage.categories.morphism.Morphism):
             V = sub.free_module()
         try:
             if self.side() == "right":
-                return H(self.matrix().transpose().restrict_codomain(V).transpose(), side='right')
+                return H(
+                    self.matrix().transpose().restrict_codomain(V).transpose(),
+                    side='right',
+                )
             return H(self.matrix().restrict_codomain(V))
         except Exception:
             return H(self.matrix().restrict_codomain(V))
@@ -1575,6 +1603,7 @@ class MatrixMorphism(MatrixMorphism_abstract):
       the matrix ``A`` if it is mutable. If ``False``, then this makes
       ``A`` immutable.
     """
+
     def __init__(self, parent, A, copy_matrix=True, side='left'):
         """
         Initialize ``self``.
@@ -1595,17 +1624,34 @@ class MatrixMorphism(MatrixMorphism_abstract):
             A = A.matrix()
         if side == "left":
             if A.nrows() != parent.domain().rank():
-                raise ArithmeticError("number of rows of matrix (={}) must equal rank of domain (={})".format(A.nrows(), parent.domain().rank()))
+                raise ArithmeticError(
+                    "number of rows of matrix (={}) must equal rank of domain (={})".format(
+                        A.nrows(), parent.domain().rank()
+                    )
+                )
             if A.ncols() != parent.codomain().rank():
-                raise ArithmeticError("number of columns of matrix (={}) must equal rank of codomain (={})".format(A.ncols(), parent.codomain().rank()))
+                raise ArithmeticError(
+                    "number of columns of matrix (={}) must equal rank of codomain (={})".format(
+                        A.ncols(), parent.codomain().rank()
+                    )
+                )
         if side == "right":
             if A.nrows() != parent.codomain().rank():
-                raise ArithmeticError("number of rows of matrix (={}) must equal rank of codomain (={})".format(A.nrows(), parent.domain().rank()))
+                raise ArithmeticError(
+                    "number of rows of matrix (={}) must equal rank of codomain (={})".format(
+                        A.nrows(), parent.domain().rank()
+                    )
+                )
             if A.ncols() != parent.domain().rank():
-                raise ArithmeticError("number of columns of matrix (={}) must equal rank of domain (={})".format(A.ncols(), parent.codomain().rank()))
+                raise ArithmeticError(
+                    "number of columns of matrix (={}) must equal rank of domain (={})".format(
+                        A.ncols(), parent.codomain().rank()
+                    )
+                )
         if A.is_mutable():
             if copy_matrix:
                 from copy import copy
+
                 A = copy(A)
             A.set_immutable()
         self._matrix = A

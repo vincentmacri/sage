@@ -1,12 +1,14 @@
 """
 Reduction Theory
 """
+
 from copy import deepcopy
 from sage.matrix.constructor import matrix
 from sage.misc.lazy_import import lazy_import
 from sage.misc.mrange import mrange
 from sage.modules.free_module_element import vector
 from sage.rings.integer_ring import ZZ
+
 lazy_import("sage.functions.all", "floor")
 
 
@@ -229,6 +231,7 @@ def minkowski_reduction(self):
     """
     from sage.quadratic_forms.quadratic_form import QuadraticForm
     from sage.quadratic_forms.quadratic_form import matrix
+
     if not self.is_positive_definite():
         raise TypeError("Minkowski reduction only works for positive definite forms")
     if self.dim() > 4:
@@ -242,7 +245,6 @@ def minkowski_reduction(self):
     # Begin the reduction
     done_flag = False
     while not done_flag:
-
         # Loop through possible shorted vectors until
         done_flag = True
         for j in range(n - 1, -1, -1):
@@ -253,7 +255,6 @@ def minkowski_reduction(self):
 
                 # Reduce if a shorter vector is found
                 if Q(y) < Q(e_j):
-
                     # Create the transformation matrix
                     M_new = matrix(R, n, n, 1)
                     for k in range(n):
@@ -337,7 +338,6 @@ def minkowski_reduction_for_4vars__SP(self):
     # Step 1: Begin the reduction
     done_flag = False
     while not done_flag:
-
         # Loop through possible shorter vectors
         done_flag = True
         for j in range(n - 1, -1, -1):
@@ -348,7 +348,6 @@ def minkowski_reduction_for_4vars__SP(self):
 
                 # Reduce if a shorter vector is found
                 if Q(y) < Q(e_j):
-
                     # Further n=4 computations
                     B_y_vec = Q.matrix() * vector(ZZ, y)
                     # SP's B = our self.matrix()/2
@@ -360,7 +359,6 @@ def minkowski_reduction_for_4vars__SP(self):
                     A_max = max(abs(Q[i, j]) for i in range(4) if i != j)
 
                     if B_sum < A_sum or (B_sum == A_sum and B_max < A_max):
-
                         # Create the transformation matrix
                         M_new = matrix(R, n, n, 1)
                         for k in range(n):
@@ -380,7 +378,6 @@ def minkowski_reduction_for_4vars__SP(self):
     # Step 2: Order A by certain criteria
     for i in range(4):
         for j in range(i + 1, 4):
-
             # Condition (a)
             if Q[i, i] > Q[j, j]:
                 Q.swap_variables(i, j, in_place=True)
@@ -415,8 +412,9 @@ def minkowski_reduction_for_4vars__SP(self):
                     for k in [2, 1, 0]:  # TO DO: These steps are a little redundant...
                         Q1 = Q.matrix()
 
-                        c_flag = all(abs(Q1[i, l]) == abs(Q1[j, l])
-                                     for l in range(k + 1, 4))
+                        c_flag = all(
+                            abs(Q1[i, l]) == abs(Q1[j, l]) for l in range(k + 1, 4)
+                        )
 
                         # Condition (c)
                         if c_flag and abs(Q1[i, k]) > abs(Q1[j, k]):
@@ -459,9 +457,9 @@ def minkowski_reduction_for_4vars__SP(self):
 
     if Q[1, 2] < 0:
         # Test a row 1 sign change
-        if (Q[1, 3] <= 0 and (Q[1, 3] < 0
-                              or Q[1, 2] < 0
-                              or (Q[1, 2] == 0 and Q[1, 1] < 0))):
+        if Q[1, 3] <= 0 and (
+            Q[1, 3] < 0 or Q[1, 2] < 0 or (Q[1, 2] == 0 and Q[1, 1] < 0)
+        ):
             Q.multiply_variable(-1, i, in_place=True)
             M_new = matrix(R, n, n)
             for r in range(4):
@@ -471,9 +469,9 @@ def minkowski_reduction_for_4vars__SP(self):
                     M_new[r, r] = 1
             M = M * M_new
 
-        elif (Q[2, 3] <= 0 and ((Q[2, 3] < 0)
-                                or Q[2, 2] < 0
-                                or (Q[2, 2] == 0 and Q[2, 1] < 0))):
+        elif Q[2, 3] <= 0 and (
+            (Q[2, 3] < 0) or Q[2, 2] < 0 or (Q[2, 2] == 0 and Q[2, 1] < 0)
+        ):
             Q.multiply_variable(-1, i, in_place=True)
             M_new = matrix(R, n, n)
             for r in range(4):

@@ -199,6 +199,7 @@ class DrinfeldModules(Category_over_base_ring):
         ...
         TypeError: function ring base must be a finite field
     """
+
     def __init__(self, base_morphism, name='τ'):
         r"""
         Initialize ``self``.
@@ -237,11 +238,9 @@ class DrinfeldModules(Category_over_base_ring):
             raise TypeError('input must be a field')
         # Check domain of base morphism is Fq[T]
         if not isinstance(function_ring, PolynomialRing_generic):
-            raise NotImplementedError('function ring must be a polynomial '
-                                      'ring')
+            raise NotImplementedError('function ring must be a polynomial ring')
         function_ring_base = function_ring.base_ring()
-        if not function_ring_base.is_field() \
-                or not function_ring_base.is_finite():
+        if not function_ring_base.is_field() or not function_ring_base.is_finite():
             raise TypeError('function ring base must be a finite field')
         # Shortcuts
         Fq = function_ring_base
@@ -251,8 +250,7 @@ class DrinfeldModules(Category_over_base_ring):
         # Build K{t}
         d = log(Fq.cardinality(), Fq.characteristic())
         tau = K.frobenius_endomorphism(d)
-        self._ore_polring = OrePolynomialRing(K, tau, names=name,
-                                              polcast=False)
+        self._ore_polring = OrePolynomialRing(K, tau, names=name, polcast=False)
         self._ore_variable_name = name
         # Create constant coefficient
         self._constant_coefficient = base_morphism(T)
@@ -289,8 +287,10 @@ class DrinfeldModules(Category_over_base_ring):
             sage: latex(C)
             \text{Category{ }of{ }Drinfeld{ }modules{ }over{ }\Bold{F}_{11^{4}}
         """
-        return f'\\text{{Category{{ }}of{{ }}Drinfeld{{ }}modules{{ }}' \
-               f'over{{ }}{latex(self._base_field)}'
+        return (
+            f'\\text{{Category{{ }}of{{ }}Drinfeld{{ }}modules{{ }}'
+            f'over{{ }}{latex(self._base_field)}'
+        )
 
     def _repr_(self):
         r"""
@@ -438,8 +438,9 @@ class DrinfeldModules(Category_over_base_ring):
             0
         """
         if self._characteristic is None:
-            raise NotImplementedError('function ring characteristic not '
-                                      'implemented in this case')
+            raise NotImplementedError(
+                'function ring characteristic not implemented in this case'
+            )
         return self._characteristic
 
     def constant_coefficient(self):
@@ -506,13 +507,15 @@ class DrinfeldModules(Category_over_base_ring):
             sage: C.object(t^2 + z^3 + 7*z^2 + 6*z + 10) is phi
             True
         """
-        from sage.rings.function_field.drinfeld_modules.drinfeld_module import DrinfeldModule
+        from sage.rings.function_field.drinfeld_modules.drinfeld_module import (
+            DrinfeldModule,
+        )
+
         # If gen is not in the Ore polring, an exception is raised
         gen = self._ore_polring(gen)
         T = self._function_ring.gen()
         if gen[0] != self._base_morphism(T):
-            raise ValueError('constant coefficient must equal that of the '
-                             'category')
+            raise ValueError('constant coefficient must equal that of the category')
         return DrinfeldModule(self._function_ring, gen)
 
     def ore_polring(self):
@@ -585,7 +588,6 @@ class DrinfeldModules(Category_over_base_ring):
         return [Objects()]
 
     class ParentMethods:
-
         def A_field(self):
             r"""
             Return the underlying `A`-field of this Drinfeld module,

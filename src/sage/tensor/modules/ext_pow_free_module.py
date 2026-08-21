@@ -236,17 +236,21 @@ class ExtPowerFreeModule(FiniteRankFreeModule_abstract):
         """
         from sage.arith.misc import binomial
         from sage.typeset.unicode_characters import unicode_bigwedge
+
         self._fmodule = fmodule
         self._degree = ZZ(degree)
         rank = binomial(fmodule._rank, degree)
         if name is None and fmodule._name is not None:
-            name = unicode_bigwedge + r'^{}('.format(degree) \
-                   + fmodule._name + ')'
+            name = unicode_bigwedge + r'^{}('.format(degree) + fmodule._name + ')'
         if latex_name is None and fmodule._latex_name is not None:
-            latex_name = r'\Lambda^{' + str(degree) + r'}\left(' \
-                         + fmodule._latex_name + r'\right)'
-        super().__init__(fmodule._ring, rank,
-                         name=name, latex_name=latex_name)
+            latex_name = (
+                r'\Lambda^{'
+                + str(degree)
+                + r'}\left('
+                + fmodule._latex_name
+                + r'\right)'
+            )
+        super().__init__(fmodule._ring, rank, name=name, latex_name=latex_name)
         fmodule._all_modules.add(self)
 
     def construction(self):
@@ -270,8 +274,7 @@ class ExtPowerFreeModule(FiniteRankFreeModule_abstract):
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], basis=None, name=None, latex_name=None):
         r"""
         Construct an alternating contravariant tensor.
 
@@ -292,8 +295,9 @@ class ExtPowerFreeModule(FiniteRankFreeModule_abstract):
         """
         if isinstance(comp, (int, Integer)) and comp == 0:
             return self.zero()
-        resu = self.element_class(self._fmodule, self._degree, name=name,
-                                  latex_name=latex_name)
+        resu = self.element_class(
+            self._fmodule, self._degree, name=name, latex_name=latex_name
+        )
         if comp:
             resu.set_comp(basis)[:] = comp
         return resu
@@ -367,7 +371,7 @@ class ExtPowerFreeModule(FiniteRankFreeModule_abstract):
         for basis in self._fmodule._known_bases:
             resu._add_comp_unsafe(basis)
             # (since new components are initialized to zero)
-        resu._is_zero = True # This element is certainly zero
+        resu._is_zero = True  # This element is certainly zero
         resu.set_immutable()
         return resu
 
@@ -433,7 +437,8 @@ class ExtPowerFreeModule(FiniteRankFreeModule_abstract):
         """
         return self._degree
 
-#***********************************************************************
+
+# ***********************************************************************
 
 
 class ExtPowerDualFreeModule(FiniteRankFreeModule_abstract):
@@ -613,17 +618,21 @@ class ExtPowerDualFreeModule(FiniteRankFreeModule_abstract):
         """
         from sage.arith.misc import binomial
         from sage.typeset.unicode_characters import unicode_bigwedge
+
         self._fmodule = fmodule
         self._degree = ZZ(degree)
         rank = binomial(fmodule._rank, degree)
         if name is None and fmodule._name is not None:
-            name = unicode_bigwedge + r'^{}('.format(degree) \
-                   + fmodule._name + '*)'
+            name = unicode_bigwedge + r'^{}('.format(degree) + fmodule._name + '*)'
         if latex_name is None and fmodule._latex_name is not None:
-            latex_name = r'\Lambda^{' + str(degree) + r'}\left(' \
-                         + fmodule._latex_name + r'^*\right)'
-        super().__init__(fmodule._ring, rank, name=name,
-                         latex_name=latex_name)
+            latex_name = (
+                r'\Lambda^{'
+                + str(degree)
+                + r'}\left('
+                + fmodule._latex_name
+                + r'^*\right)'
+            )
+        super().__init__(fmodule._ring, rank, name=name, latex_name=latex_name)
         fmodule._all_modules.add(self)
 
     def construction(self):
@@ -647,8 +656,7 @@ class ExtPowerDualFreeModule(FiniteRankFreeModule_abstract):
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], basis=None, name=None, latex_name=None):
         r"""
         Construct an alternating form.
 
@@ -671,19 +679,26 @@ class ExtPowerDualFreeModule(FiniteRankFreeModule_abstract):
             return self.zero()
         if isinstance(comp, FreeModuleTensor):
             # coercion of a tensor of type (0,1) to a linear form
-            tensor = comp # for readability
-            if tensor.tensor_type() == (0,1) and self._degree == 1 and \
-                                         tensor.base_module() is self._fmodule:
-                resu = self.element_class(self._fmodule, 1, name=tensor._name,
-                                          latex_name=tensor._latex_name)
+            tensor = comp  # for readability
+            if (
+                tensor.tensor_type() == (0, 1)
+                and self._degree == 1
+                and tensor.base_module() is self._fmodule
+            ):
+                resu = self.element_class(
+                    self._fmodule, 1, name=tensor._name, latex_name=tensor._latex_name
+                )
                 for basis, comp in tensor._components.items():
                     resu._components[basis] = comp.copy()
                 return resu
-            raise TypeError("cannot coerce the {} ".format(tensor) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot coerce the {} ".format(tensor)
+                + "to an element of {}".format(self)
+            )
         # standard construction
-        resu = self.element_class(self._fmodule, self._degree, name=name,
-                                  latex_name=latex_name)
+        resu = self.element_class(
+            self._fmodule, self._degree, name=name, latex_name=latex_name
+        )
         if comp:
             resu.set_comp(basis)[:] = comp
         return resu
@@ -755,7 +770,7 @@ class ExtPowerDualFreeModule(FiniteRankFreeModule_abstract):
         for basis in self._fmodule._known_bases:
             resu._components[basis] = resu._new_comp(basis)
             # (since new components are initialized to zero)
-        resu._is_zero = True # This element is certainly zero
+        resu._is_zero = True  # This element is certainly zero
         resu.set_immutable()
         return resu
 
@@ -778,8 +793,7 @@ class ExtPowerDualFreeModule(FiniteRankFreeModule_abstract):
             '21st exterior power of the dual of the Rank-5 free module M over the Integer Ring'
         """
         description = "{}".format(self._degree.ordinal_str())
-        description += " exterior power of the dual of the {}".format(
-                                                                 self._fmodule)
+        description += " exterior power of the dual of the {}".format(self._fmodule)
         return description
 
     def base_module(self):

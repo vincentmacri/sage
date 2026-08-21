@@ -255,6 +255,7 @@ class DiffFormModule(UniqueRepresentation, Parent):
         sage: a_U.display(eU)
         a = 3*x dx∧dy
     """
+
     Element = DiffForm
 
     def __init__(self, vector_field_module, degree):
@@ -313,8 +314,7 @@ class DiffFormModule(UniqueRepresentation, Parent):
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], frame=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], frame=None, name=None, latex_name=None):
         r"""
         Construct a differential form.
 
@@ -340,30 +340,43 @@ class DiffFormModule(UniqueRepresentation, Parent):
                 return self.zero()
         if isinstance(comp, (DiffForm, DiffFormParal)):
             # coercion by domain restriction
-            if (self._degree == comp._tensor_type[1]
-                   and self._domain.is_subset(comp._domain)
-                   and self._ambient_domain.is_subset(comp._ambient_domain)):
+            if (
+                self._degree == comp._tensor_type[1]
+                and self._domain.is_subset(comp._domain)
+                and self._ambient_domain.is_subset(comp._ambient_domain)
+            ):
                 return comp.restrict(self._domain)
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         if isinstance(comp, TensorField):
             # coercion of a tensor of type (0,1) to a linear form
-            tensor = comp # for readability
-            if (tensor.tensor_type() == (0,1) and self._degree == 1
-                     and tensor._vmodule is self._vmodule):
-                resu = self.element_class(self._vmodule, 1, name=tensor._name,
-                                          latex_name=tensor._latex_name)
+            tensor = comp  # for readability
+            if (
+                tensor.tensor_type() == (0, 1)
+                and self._degree == 1
+                and tensor._vmodule is self._vmodule
+            ):
+                resu = self.element_class(
+                    self._vmodule, 1, name=tensor._name, latex_name=tensor._latex_name
+                )
                 for dom, rst in tensor._restrictions.items():
                     resu._restrictions[dom] = dom.diff_form_module(1)(rst)
                 return resu
-            raise TypeError("cannot convert the {} ".format(tensor) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(tensor)
+                + "to an element of {}".format(self)
+            )
         if not isinstance(comp, (list, tuple)):
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         # standard construction
-        resu = self.element_class(self._vmodule, self._degree, name=name,
-                                  latex_name=latex_name)
+        resu = self.element_class(
+            self._vmodule, self._degree, name=name, latex_name=latex_name
+        )
         if comp:
             resu.set_comp(frame)[:] = comp
         return resu
@@ -387,7 +400,8 @@ class DiffFormModule(UniqueRepresentation, Parent):
             # the first non-trivial open cover is selected
             for dom in oc:
                 vmodule_dom = dom.vector_field_module(
-                                         dest_map=self._dest_map.restrict(dom))
+                    dest_map=self._dest_map.restrict(dom)
+                )
                 dmodule_dom = vmodule_dom.dual_exterior_power(self._degree)
                 resu.set_restriction(dmodule_dom._an_element_())
             return resu
@@ -415,15 +429,21 @@ class DiffFormModule(UniqueRepresentation, Parent):
         """
         if isinstance(other, (DiffFormModule, DiffFormFreeModule)):
             # coercion by domain restriction
-            return (self._degree == other._degree
-                    and self._domain.is_subset(other._domain)
-                    and self._ambient_domain.is_subset(other._ambient_domain))
+            return (
+                self._degree == other._degree
+                and self._domain.is_subset(other._domain)
+                and self._ambient_domain.is_subset(other._ambient_domain)
+            )
 
         from sage.manifolds.differentiable.tensorfield_module import TensorFieldModule
+
         if isinstance(other, TensorFieldModule):
             # coercion of a type-(0,1) tensor to a linear form
-            return (self._vmodule is other._vmodule and self._degree == 1
-                    and other.tensor_type() == (0,1))
+            return (
+                self._vmodule is other._vmodule
+                and self._degree == 1
+                and other.tensor_type() == (0, 1)
+            )
 
         return False
 
@@ -470,7 +490,8 @@ class DiffFormModule(UniqueRepresentation, Parent):
             description += "on the {}".format(self._domain)
         else:
             description += "along the {} mapped into the {}".format(
-                                            self._domain, self._ambient_domain)
+                self._domain, self._ambient_domain
+            )
         return description
 
     def _latex_(self):
@@ -564,6 +585,7 @@ class DiffFormModule(UniqueRepresentation, Parent):
             3
         """
         return self._degree
+
 
 # *****************************************************************************
 
@@ -760,16 +782,16 @@ class DiffFormFreeModule(ExtPowerDualFreeModule):
             latex_name += "," + dm_latex_name
         name += ")"
         latex_name += r"\right)"
-        ExtPowerDualFreeModule.__init__(self, vector_field_module, degree,
-                                        name=name, latex_name=latex_name)
+        ExtPowerDualFreeModule.__init__(
+            self, vector_field_module, degree, name=name, latex_name=latex_name
+        )
         self._domain = domain
         self._dest_map = dest_map
         self._ambient_domain = vector_field_module._ambient_domain
 
     #### Parent methods
 
-    def _element_constructor_(self, comp=[], frame=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], frame=None, name=None, latex_name=None):
         r"""
         Construct a differential form.
 
@@ -799,30 +821,43 @@ class DiffFormFreeModule(ExtPowerDualFreeModule):
                 return self.zero()
         if isinstance(comp, (DiffForm, DiffFormParal)):
             # coercion by domain restriction
-            if (self._degree == comp._tensor_type[1]
-                    and self._domain.is_subset(comp._domain)
-                    and self._ambient_domain.is_subset(comp._ambient_domain)):
+            if (
+                self._degree == comp._tensor_type[1]
+                and self._domain.is_subset(comp._domain)
+                and self._ambient_domain.is_subset(comp._ambient_domain)
+            ):
                 return comp.restrict(self._domain)
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to a differential form in {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to a differential form in {}".format(self)
+            )
         if isinstance(comp, TensorFieldParal):
             # coercion of a tensor of type (0,1) to a linear form
-            tensor = comp # for readability
-            if (tensor.tensor_type() == (0,1) and self._degree == 1
-                     and tensor._fmodule is self._fmodule):
-                resu = self.element_class(self._fmodule, 1, name=tensor._name,
-                                          latex_name=tensor._latex_name)
+            tensor = comp  # for readability
+            if (
+                tensor.tensor_type() == (0, 1)
+                and self._degree == 1
+                and tensor._fmodule is self._fmodule
+            ):
+                resu = self.element_class(
+                    self._fmodule, 1, name=tensor._name, latex_name=tensor._latex_name
+                )
                 for frame, comp in tensor._components.items():
                     resu._components[frame] = comp.copy()
                 return resu
-            raise TypeError("cannot convert the {} ".format(tensor) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(tensor)
+                + "to an element of {}".format(self)
+            )
         if not isinstance(comp, (list, tuple)):
-            raise TypeError("cannot convert the {} ".format(comp) +
-                            "to an element of {}".format(self))
+            raise TypeError(
+                "cannot convert the {} ".format(comp)
+                + "to an element of {}".format(self)
+            )
         # standard construction
-        resu = self.element_class(self._fmodule, self._degree, name=name,
-                                  latex_name=latex_name)
+        resu = self.element_class(
+            self._fmodule, self._degree, name=name, latex_name=latex_name
+        )
         if comp:
             resu.set_comp(frame)[:] = comp
         return resu
@@ -854,17 +889,23 @@ class DiffFormFreeModule(ExtPowerDualFreeModule):
         """
         if isinstance(other, (DiffFormModule, DiffFormFreeModule)):
             # coercion by domain restriction
-            return (self._degree == other._degree
-                    and self._domain.is_subset(other._domain)
-                    and self._ambient_domain.is_subset(other._ambient_domain))
+            return (
+                self._degree == other._degree
+                and self._domain.is_subset(other._domain)
+                and self._ambient_domain.is_subset(other._ambient_domain)
+            )
 
         from sage.manifolds.differentiable.tensorfield_module import (
             TensorFieldFreeModule,
         )
+
         if isinstance(other, TensorFieldFreeModule):
             # coercion of a type-(0,1) tensor to a linear form
-            return (self._fmodule is other._fmodule and self._degree == 1
-                    and other.tensor_type() == (0,1))
+            return (
+                self._fmodule is other._fmodule
+                and self._degree == 1
+                and other.tensor_type() == (0, 1)
+            )
         return False
 
     #### End of Parent methods
@@ -890,7 +931,8 @@ class DiffFormFreeModule(ExtPowerDualFreeModule):
             description += "on the {}".format(self._domain)
         else:
             description += "along the {} mapped into the {}".format(
-                                            self._domain, self._ambient_domain)
+                self._domain, self._ambient_domain
+            )
         return description
 
 

@@ -16,13 +16,17 @@ Unitary Groups `GU(n,q)` and `SU(n,q)` with GAP
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.matrix_gps.unitary import UnitaryMatrixGroup_generic
 from sage.misc.cachefunc import cached_method
 
 
-class UnitaryMatrixGroup_gap(UnitaryMatrixGroup_generic, NamedMatrixGroup_gap, FinitelyGeneratedMatrixGroup_gap):
+class UnitaryMatrixGroup_gap(
+    UnitaryMatrixGroup_generic, NamedMatrixGroup_gap, FinitelyGeneratedMatrixGroup_gap
+):
     r"""
     The general or special unitary group in GAP.
 
@@ -56,6 +60,7 @@ class UnitaryMatrixGroup_gap(UnitaryMatrixGroup_generic, NamedMatrixGroup_gap, F
         # note that self.gap().InvariantSesquilinearForm()['matrix'].matrix().base_ring() != R for example for self = GU(3.2)
         # therefore we have to coerce into the right matrix space
         from sage.matrix.constructor import matrix
+
         m = matrix(R, d, d, self.gap().InvariantSesquilinearForm()['matrix'].matrix())
         m.set_immutable()
         return m

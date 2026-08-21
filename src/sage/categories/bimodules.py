@@ -1,7 +1,7 @@
 r"""
 Bimodules
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
@@ -9,16 +9,17 @@ Bimodules
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.category import Category, CategoryWithParameters
 from sage.categories.left_modules import LeftModules
 from sage.categories.right_modules import RightModules
 
 from sage.categories.rings import Rings
+
 _Rings = Rings()
 
-#?class Bimodules(Category_over_base_rng, Category_over_base_rng):
+# ?class Bimodules(Category_over_base_rng, Category_over_base_rng):
 
 
 class Bimodules(CategoryWithParameters):
@@ -46,14 +47,18 @@ class Bimodules(CategoryWithParameters):
             sage: C = Bimodules(QQ, ZZ)
             sage: TestSuite(C).run()
         """
-        if not (left_base in Rings() or
-                (isinstance(left_base, Category)
-                 and left_base.is_subcategory(Rings()))):
+        if not (
+            left_base in Rings()
+            or (isinstance(left_base, Category) and left_base.is_subcategory(Rings()))
+        ):
             raise ValueError("the left base must be a ring or a subcategory of Rings()")
-        if not (right_base in Rings() or
-                (isinstance(right_base, Category)
-                 and right_base.is_subcategory(Rings()))):
-            raise ValueError("the right base must be a ring or a subcategory of Rings()")
+        if not (
+            right_base in Rings()
+            or (isinstance(right_base, Category) and right_base.is_subcategory(Rings()))
+        ):
+            raise ValueError(
+                "the right base must be a ring or a subcategory of Rings()"
+            )
         self._left_base_ring = left_base
         self._right_base_ring = right_base
         Category.__init__(self)
@@ -101,8 +106,14 @@ class Bimodules(CategoryWithParameters):
             sage: Bimodules(Fields(), Rings())._make_named_class_key('element_class')
             (Category of fields, Category of rings)
         """
-        return (self._left_base_ring if isinstance(self._left_base_ring, Category) else self._left_base_ring.category(),
-                self._right_base_ring if isinstance(self._right_base_ring, Category) else self._right_base_ring.category())
+        return (
+            self._left_base_ring
+            if isinstance(self._left_base_ring, Category)
+            else self._left_base_ring.category(),
+            self._right_base_ring
+            if isinstance(self._right_base_ring, Category)
+            else self._right_base_ring.category(),
+        )
 
     @classmethod
     def an_instance(cls):
@@ -116,6 +127,7 @@ class Bimodules(CategoryWithParameters):
         """
         from sage.rings.rational_field import QQ
         from sage.rings.real_mpfr import RR
+
         return cls(QQ, RR)
 
     def _repr_object_names(self):
@@ -125,8 +137,10 @@ class Bimodules(CategoryWithParameters):
             sage: Bimodules(QQ, ZZ) # indirect doctest
             Category of bimodules over Rational Field on the left and Integer Ring on the right
         """
-        return "bimodules over %s on the left and %s on the right" \
-            % (self._left_base_ring, self._right_base_ring)
+        return "bimodules over %s on the left and %s on the right" % (
+            self._left_base_ring,
+            self._right_base_ring,
+        )
 
     def left_base_ring(self):
         """
@@ -162,9 +176,12 @@ class Bimodules(CategoryWithParameters):
             {\mathbf{Bimodules}}_{\Bold{Q}, \Bold{Z}}
         """
         from sage.misc.latex import latex
-        return "{{{}}}_{{{}, {}}}".format(Category._latex_(self),
-                                          latex(self._left_base_ring),
-                                          latex(self._right_base_ring))
+
+        return "{{{}}}_{{{}, {}}}".format(
+            Category._latex_(self),
+            latex(self._left_base_ring),
+            latex(self._right_base_ring),
+        )
 
     def super_categories(self):
         """

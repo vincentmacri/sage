@@ -22,7 +22,6 @@ from sage.repl.rich_output.buffer import OutputBuffer
 
 
 class OutputImagePng(OutputBase):
-
     def __init__(self, png):
         """
         PNG Image.
@@ -73,7 +72,6 @@ class OutputImagePng(OutputBase):
 
 
 class OutputImageGif(OutputBase):
-
     def __init__(self, gif):
         """
         GIF Image (possibly animated).
@@ -136,7 +134,6 @@ class OutputImageGif(OutputBase):
 
 
 class OutputImageJpg(OutputBase):
-
     def __init__(self, jpg):
         """
         JPEG Image.
@@ -182,7 +179,6 @@ class OutputImageJpg(OutputBase):
 
 
 class OutputImageSvg(OutputBase):
-
     def __init__(self, svg):
         """
         SVG Image.
@@ -228,7 +224,6 @@ class OutputImageSvg(OutputBase):
 
 
 class OutputImagePdf(OutputBase):
-
     def __init__(self, pdf):
         """
         PDF Image.
@@ -274,7 +269,6 @@ class OutputImagePdf(OutputBase):
 
 
 class OutputImageDvi(OutputBase):
-
     def __init__(self, dvi):
         """
         DVI Image.

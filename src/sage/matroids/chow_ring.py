@@ -15,7 +15,13 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.matroids.chow_ring_ideal import ChowRingIdeal_nonaug_fy, ChowRingIdeal_nonaug_af, ChowRingIdeal_nonaug_sp, AugmentedChowRingIdeal_fy, AugmentedChowRingIdeal_atom_free
+from sage.matroids.chow_ring_ideal import (
+    ChowRingIdeal_nonaug_fy,
+    ChowRingIdeal_nonaug_af,
+    ChowRingIdeal_nonaug_sp,
+    AugmentedChowRingIdeal_fy,
+    AugmentedChowRingIdeal_atom_free,
+)
 from sage.rings.quotient_ring import QuotientRing_generic
 from sage.categories.kahler_algebras import KahlerAlgebras
 from sage.categories.commutative_rings import CommutativeRings
@@ -113,6 +119,7 @@ class ChowRing(QuotientRing_generic, Representation_abstract):
         Chow ring of P8'': Matroid of rank 4 on 8 elements with 8 nonspanning
          circuits in Feitchner-Yuzvinsky presentation over Rational Field
     """
+
     def __init__(self, R, M, augmented, presentation=None):
         r"""
         Initialize ``self``.
@@ -144,11 +151,16 @@ class ChowRing(QuotientRing_generic, Representation_abstract):
             else:
                 raise ValueError(f"invalid presentation '{presentation}'")
         C = CommutativeRings().Quotients() & KahlerAlgebras(R)
-        QuotientRing_generic.__init__(self, R=self._ideal.ring(),
-                                      I=self._ideal,
-                                      names=self._ideal.ring().variable_names(),
-                                      category=C)
-        Representation_abstract.__init__(self, semigroup=M.automorphism_group(), side="left")
+        QuotientRing_generic.__init__(
+            self,
+            R=self._ideal.ring(),
+            I=self._ideal,
+            names=self._ideal.ring().variable_names(),
+            category=C,
+        )
+        Representation_abstract.__init__(
+            self, semigroup=M.automorphism_group(), side="left"
+        )
 
     def _repr_(self):
         r"""
@@ -183,6 +195,7 @@ class ChowRing(QuotientRing_generic, Representation_abstract):
             'A(\\begin{array}{l}\n\\text{\\texttt{U(2,{ }5):{ }Matroid{ }of{ }rank{ }2{ }on{ }5{ }elements{ }with{ }circuit{-}closures}}\\\\\n\\text{\\texttt{{\\char`\\{}2:{ }{\\char`\\{}{\\char`\\{}0,{ }1,{ }2,{ }3,{ }4{\\char`\\}}{\\char`\\}}{\\char`\\}}}}\n\\end{array})_{\\Bold{Q}}'
         """
         from sage.misc.latex import latex
+
         base = "A({})_{{{}}}"
         if self._augmented:
             base += "^*"
@@ -243,8 +256,11 @@ class ChowRing(QuotientRing_generic, Representation_abstract):
             True
         """
         from sage.sets.family import Family
+
         monomial_basis = self._ideal.normal_basis()
-        return Family([self.element_class(self, mon, reduce=False) for mon in monomial_basis])
+        return Family(
+            [self.element_class(self, mon, reduce=False) for mon in monomial_basis]
+        )
 
     @cached_method
     def lefschetz_element(self):
@@ -331,8 +347,10 @@ class ChowRing(QuotientRing_generic, Representation_abstract):
                  -20*A01234^3],
              3: [0]}
         """
-        w = sum(len(F) * (len(self.matroid().groundset()) - len(F)) * gen
-                for F, gen in self.defining_ideal().flats_to_generator_dict().items())
+        w = sum(
+            len(F) * (len(self.matroid().groundset()) - len(F)) * gen
+            for F, gen in self.defining_ideal().flats_to_generator_dict().items()
+        )
         return self.element_class(self, w)
 
     @cached_method
@@ -378,12 +396,22 @@ class ChowRing(QuotientRing_generic, Representation_abstract):
         if G is None:
             G = self._matroid.automorphism_group()
         from sage.rings.rational_field import QQ
+
         q = QQ['q'].gen()
         B = self.basis()
         from sage.modules.free_module_element import vector
-        return vector(q.parent(), [sum(q**b.degree() * (g * b).lift().monomial_coefficient(b.lift()) for b in B)
-                       for g in G.conjugacy_classes_representatives()],
-                      immutable=True)
+
+        return vector(
+            q.parent(),
+            [
+                sum(
+                    q ** b.degree() * (g * b).lift().monomial_coefficient(b.lift())
+                    for b in B
+                )
+                for g in G.conjugacy_classes_representatives()
+            ],
+            immutable=True,
+        )
 
     class Element(QuotientRing_generic.Element):
         def to_vector(self, order=None):
@@ -546,10 +574,21 @@ class ChowRing(QuotientRing_generic, Representation_abstract):
                 return super()._acted_upon_(scalar, self_on_left)
             if scalar in P._matroid.automorphism_group():
                 gens = P.ambient().gens()
-                return P.retract(self.lift().subs({g: gens[scalar(i+1)-1] for i, g in enumerate(gens)}))
+                return P.retract(
+                    self.lift().subs(
+                        {g: gens[scalar(i + 1) - 1] for i, g in enumerate(gens)}
+                    )
+                )
             if not self_on_left and scalar in P._matroid.automorphism_group():
                 scalar = P._semigroup_algebra(scalar)
                 gens = P.ambient().gens()
-                return P.sum(c * P.retract(self.lift().subs({g: gens[sigma(i+1)-1] for i, g in enumerate(gens)}))
-                             for sigma, c in scalar.monomial_coefficients(copy=False).items())
+                return P.sum(
+                    c
+                    * P.retract(
+                        self.lift().subs(
+                            {g: gens[sigma(i + 1) - 1] for i, g in enumerate(gens)}
+                        )
+                    )
+                    for sigma, c in scalar.monomial_coefficients(copy=False).items()
+                )
             return super()._acted_upon_(scalar, self_on_left)

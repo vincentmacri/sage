@@ -1,6 +1,7 @@
 """
 Baxter permutations
 """
+
 from collections.abc import Iterator
 
 from sage.combinat.permutation import Permutations
@@ -43,6 +44,7 @@ class BaxterPermutations(UniqueRepresentation, Parent):
         sage: BaxterPermutations()
         Baxter permutations
     """
+
     @staticmethod
     def __classcall_private__(classe, n=None):
         """
@@ -71,6 +73,7 @@ class BaxterPermutations_size(BaxterPermutations):
         sage: BaxterPermutations_size(5)
         Baxter permutations of size 5
     """
+
     def __init__(self, n) -> None:
         """
         EXAMPLES::
@@ -82,6 +85,7 @@ class BaxterPermutations_size(BaxterPermutations):
         self.element_class = Permutations(n).element_class
         self._n = Integer(n)
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+
         super().__init__(category=FiniteEnumeratedSets())
 
     def _repr_(self) -> str:
@@ -129,7 +133,7 @@ class BaxterPermutations_size(BaxterPermutations):
                     if x_j > a and x_j < b and x_j > max_l:
                         max_l = x_j
                 min_r = len(x) + 1
-                for x_j in x[i + 2:]:
+                for x_j in x[i + 2 :]:
                     if x_j > a and x_j < b and x_j < min_r:
                         min_r = x_j
                 if max_l > min_r:
@@ -140,7 +144,7 @@ class BaxterPermutations_size(BaxterPermutations):
                     if x_j < a and x_j > b and x_j < min_l:
                         min_l = x_j
                 max_r = 0
-                for x_j in x[i + 2:]:
+                for x_j in x[i + 2 :]:
                     if x_j < a and x_j > b and x_j > max_r:
                         max_r = x_j
                 if min_l < max_r:
@@ -190,7 +194,7 @@ class BaxterPermutations_size(BaxterPermutations):
                     yield Permutations(self._n)(b[:i] + [self._n] + b[i:])
                 # Right to left maxima.
                 for i in b.saliances():
-                    yield Permutations(self._n)(b[:i + 1] + [self._n] + b[i + 1:])
+                    yield Permutations(self._n)(b[: i + 1] + [self._n] + b[i + 1 :])
 
     def _an_element_(self):
         """
@@ -231,10 +235,11 @@ class BaxterPermutations_size(BaxterPermutations):
         if self._n == 0:
             return ZZ.one()
         n = self._n + 1
-        return sum((n.binomial(k) *
-                    n.binomial(k + 1) *
-                    n.binomial(k + 2)) // (n * n.binomial(2))
-                   for k in range(self._n))
+        return sum(
+            (n.binomial(k) * n.binomial(k + 1) * n.binomial(k + 2))
+            // (n * n.binomial(2))
+            for k in range(self._n)
+        )
 
     def lattice(self):
         """
@@ -251,8 +256,7 @@ class BaxterPermutations_size(BaxterPermutations):
 
         - [Law2011]_
         """
-        return LatticePoset([list(self), lambda a, b: a.weak_le(b)],
-                            check=False)
+        return LatticePoset([list(self), lambda a, b: a.weak_le(b)], check=False)
 
 
 class BaxterPermutations_all(DisjointUnionEnumeratedSets, BaxterPermutations):
@@ -268,6 +272,7 @@ class BaxterPermutations_all(DisjointUnionEnumeratedSets, BaxterPermutations):
         sage: BaxterPermutations_all()
         Baxter permutations
     """
+
     def __init__(self, n=None) -> None:
         r"""
         EXAMPLES::
@@ -279,10 +284,13 @@ class BaxterPermutations_all(DisjointUnionEnumeratedSets, BaxterPermutations):
         self.element_class = Permutations().element_class
         from sage.sets.family import Family
         from sage.sets.non_negative_integers import NonNegativeIntegers
-        DisjointUnionEnumeratedSets.__init__(self,
-                                             Family(NonNegativeIntegers(),
-                                                    BaxterPermutations_size),
-                                             facade=False, keepkey=False)
+
+        DisjointUnionEnumeratedSets.__init__(
+            self,
+            Family(NonNegativeIntegers(), BaxterPermutations_size),
+            facade=False,
+            keepkey=False,
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -356,6 +364,7 @@ class BaxterPermutations_all(DisjointUnionEnumeratedSets, BaxterPermutations):
             (3[1[., 2[., .]], 4[., .]], 2[1[., .], 4[3[., .], .]])
         """
         from sage.combinat.binary_tree import LabelledBinaryTree
+
         left = LabelledBinaryTree(None)
         right = LabelledBinaryTree(None)
         for a in p:

@@ -67,6 +67,7 @@ class QmodnZ(Parent, UniqueRepresentation):
         sage: QmodnZ(2/3)
         Q/(2/3)Z
     """
+
     Element = QmodnZ_Element
 
     def __init__(self, n=1) -> None:

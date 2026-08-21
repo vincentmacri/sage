@@ -159,10 +159,21 @@ class DifferentiableSubmanifold(DifferentiableManifold, TopologicalSubmanifold):
         :mod:`~sage.manifolds.manifold` and
         :mod:`~sage.manifolds.topological_submanifold`
     """
-    def __init__(self, n, name, field, structure, ambient=None,
-                 base_manifold=None, diff_degree=infinity,
-                 latex_name=None, start_index=0, category=None,
-                 unique_tag=None):
+
+    def __init__(
+        self,
+        n,
+        name,
+        field,
+        structure,
+        ambient=None,
+        base_manifold=None,
+        diff_degree=infinity,
+        latex_name=None,
+        start_index=0,
+        category=None,
+        unique_tag=None,
+    ):
         r"""
         Construct a submanifold of a differentiable manifold.
 
@@ -180,14 +191,19 @@ class DifferentiableSubmanifold(DifferentiableManifold, TopologicalSubmanifold):
             sage: S.start_index()
             1
         """
-        DifferentiableManifold.__init__(self, n, name, field, structure,
-                                        base_manifold=base_manifold,
-                                        diff_degree=diff_degree,
-                                        latex_name=latex_name,
-                                        start_index=start_index,
-                                        category=category)
-        if not (ambient is None
-                or isinstance(ambient, DifferentiableManifold)):
+        DifferentiableManifold.__init__(
+            self,
+            n,
+            name,
+            field,
+            structure,
+            base_manifold=base_manifold,
+            diff_degree=diff_degree,
+            latex_name=latex_name,
+            start_index=start_index,
+            category=category,
+        )
+        if not (ambient is None or isinstance(ambient, DifferentiableManifold)):
             raise TypeError("ambient must be a differentiable manifold")
         self._init_immersion(ambient=ambient)
 
@@ -217,9 +233,11 @@ class DifferentiableSubmanifold(DifferentiableManifold, TopologicalSubmanifold):
             return super(DifferentiableManifold, self).__repr__()
         if self._embedded:
             return "{}-dimensional {} submanifold {} embedded in the {}".format(
-                self._dim, self._structure.name, self._name, self._ambient)
+                self._dim, self._structure.name, self._name, self._ambient
+            )
         return "{}-dimensional {} submanifold {} immersed in the {}".format(
-                self._dim, self._structure.name, self._name, self._ambient)
+            self._dim, self._structure.name, self._name, self._ambient
+        )
 
     def open_subset(self, name, latex_name=None, coord_def={}, supersets=None):
         r"""
@@ -277,12 +295,17 @@ class DifferentiableSubmanifold(DifferentiableManifold, TopologicalSubmanifold):
              2-dimensional differentiable submanifold N embedded in the
               3-dimensional differentiable manifold M
         """
-        resu = DifferentiableSubmanifold(self._dim, name, self._field,
-                                         self._structure, ambient=self._ambient,
-                                         base_manifold=self._manifold,
-                                         diff_degree=self._diff_degree,
-                                         latex_name=latex_name,
-                                         start_index=self._sindex)
+        resu = DifferentiableSubmanifold(
+            self._dim,
+            name,
+            self._field,
+            self._structure,
+            ambient=self._ambient,
+            base_manifold=self._manifold,
+            diff_degree=self._diff_degree,
+            latex_name=latex_name,
+            start_index=self._sindex,
+        )
         if supersets is None:
             supersets = [self]
         for superset in supersets:

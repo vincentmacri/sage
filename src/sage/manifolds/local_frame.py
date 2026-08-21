@@ -252,8 +252,10 @@ class LocalCoFrame(FreeModuleCoBasis):
         sage: f[3](e[1]).expr(), f[3](e[2]).expr(), f[3](e[3]).expr()
         (0, 0, 1)
     """
-    def __init__(self, frame, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None):
+
+    def __init__(
+        self, frame, symbol, latex_symbol=None, indices=None, latex_indices=None
+    ):
         r"""
         Construct a local coframe, dual to a given local frame.
 
@@ -270,9 +272,14 @@ class LocalCoFrame(FreeModuleCoBasis):
         self._domain = frame.domain()
         self._base_space = frame.base_space()
         self._vbundle = frame.vector_bundle()
-        FreeModuleCoBasis.__init__(self, frame, symbol,
-                                   latex_symbol=latex_symbol, indices=indices,
-                                   latex_indices=latex_indices)
+        FreeModuleCoBasis.__init__(
+            self,
+            frame,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+        )
         # The coframe is added to the vector bundle's set of coframes
         self._vbundle._coframes.append(self)
 
@@ -339,9 +346,15 @@ class LocalCoFrame(FreeModuleCoBasis):
         """
         return self._basis.at(point).dual_basis()
 
-    def set_name(self, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None, index_position='up',
-                 include_domain=True):
+    def set_name(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        index_position='up',
+        include_domain=True,
+    ):
         r"""
         Set (or change) the text name and LaTeX name of ``self``.
 
@@ -392,20 +405,24 @@ class LocalCoFrame(FreeModuleCoBasis):
             sage: latex(e)
             \left(E|_{M}, \left(e^{\xi},e^{\zeta}\right)\right)
         """
-        super().set_name(symbol, latex_symbol=latex_symbol,
-                         indices=indices,
-                         latex_indices=latex_indices,
-                         index_position=index_position)
+        super().set_name(
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            index_position=index_position,
+        )
         if include_domain:
             # Redefinition of the name and the LaTeX name to include the domain
-            self._name = "({}|_{}, {})".format(self._vbundle._name,
-                                                self._domain._name, self._name)
+            self._name = "({}|_{}, {})".format(
+                self._vbundle._name, self._domain._name, self._name
+            )
             self._latex_name = r"\left({}|_{{{}}}, {}\right)".format(
-                                                    self._vbundle._latex_name,
-                                                    self._domain._latex_name,
-                                                    self._latex_name)
+                self._vbundle._latex_name, self._domain._latex_name, self._latex_name
+            )
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class LocalFrame(FreeModuleBasis):
@@ -557,10 +574,16 @@ class LocalFrame(FreeModuleBasis):
     _cobasis_class = LocalCoFrame
 
     @staticmethod
-    def __classcall_private__(cls, section_module, symbol,
-                              latex_symbol=None, indices=None,
-                              latex_indices=None, symbol_dual=None,
-                              latex_symbol_dual=None):
+    def __classcall_private__(
+        cls,
+        section_module,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         """
         Transform input lists into tuples for the unique representation of
         LocalFrame.
@@ -590,15 +613,27 @@ class LocalFrame(FreeModuleBasis):
             symbol_dual = tuple(symbol_dual)
         if isinstance(latex_symbol_dual, list):
             latex_symbol_dual = tuple(latex_symbol_dual)
-        return super().__classcall__(cls, section_module,
-                                     symbol, latex_symbol=latex_symbol,
-                                     indices=indices,
-                                     latex_indices=latex_indices,
-                                     symbol_dual=symbol_dual,
-                                     latex_symbol_dual=latex_symbol_dual)
+        return super().__classcall__(
+            cls,
+            section_module,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
-    def __init__(self, section_module, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None, symbol_dual=None, latex_symbol_dual=None):
+    def __init__(
+        self,
+        section_module,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Construct a local frame on a vector bundle.
 
@@ -615,17 +650,24 @@ class LocalFrame(FreeModuleBasis):
         ###
         # Some sanity check:
         if not isinstance(section_module, FiniteRankFreeModule):
-            raise ValueError("the {} has already been constructed as a "
-                             "non-free module and therefore cannot have "
-                             "a basis".format(section_module))
+            raise ValueError(
+                "the {} has already been constructed as a "
+                "non-free module and therefore cannot have "
+                "a basis".format(section_module)
+            )
         self._domain = section_module.domain()
         self._base_space = section_module.base_space()
         self._vbundle = section_module.vector_bundle()
-        FreeModuleBasis.__init__(self, section_module,
-                                 symbol, latex_symbol=latex_symbol,
-                                 indices=indices, latex_indices=latex_indices,
-                                 symbol_dual=symbol_dual,
-                                 latex_symbol_dual=latex_symbol_dual)
+        FreeModuleBasis.__init__(
+            self,
+            section_module,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
         if self._vbundle._def_frame is None:
             self._vbundle._def_frame = self
         # The frame is added to the domain's modules of frames, as well as to
@@ -647,12 +689,12 @@ class LocalFrame(FreeModuleBasis):
         self._coframe = self.dual_basis()  # Shortcut for self._dual_basis
         ###
         # Frame restrictions:
-        self._subframes = set([self]) # Set of frames which are just a
-                        # restriction of self
-        self._superframes = set([self]) # Set of frames for which self is a
-                        # restriction of
-        self._restrictions = {} # Key: subdomain of self._domain; value:
-                        # restriction of self on this subdomain
+        self._subframes = set([self])  # Set of frames which are just a
+        # restriction of self
+        self._superframes = set([self])  # Set of frames for which self is a
+        # restriction of
+        self._restrictions = {}  # Key: subdomain of self._domain; value:
+        # restriction of self on this subdomain
 
     ###### Methods that must be redefined by derived classes of ######
     ###### FreeModuleBasis                                      ######
@@ -675,9 +717,15 @@ class LocalFrame(FreeModuleBasis):
         desc = "Local frame " + self._name
         return desc
 
-    def _new_instance(self, symbol, latex_symbol=None, indices=None,
-                      latex_indices=None, symbol_dual=None,
-                      latex_symbol_dual=None):
+    def _new_instance(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Construct a new local frame on the same section module as ``self``.
 
@@ -717,10 +765,15 @@ class LocalFrame(FreeModuleBasis):
             sage: e._new_instance('f')
             Local frame (E|_M, (f_0,f_1))
         """
-        return LocalFrame(self._fmodule, symbol, latex_symbol=latex_symbol,
-                           indices=indices, latex_indices=latex_indices,
-                           symbol_dual=symbol_dual,
-                           latex_symbol_dual=latex_symbol_dual)
+        return LocalFrame(
+            self._fmodule,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
     ###### End of methods to be redefined by derived classes ######
 
@@ -788,9 +841,16 @@ class LocalFrame(FreeModuleBasis):
         """
         return self._coframe
 
-    def new_frame(self, change_of_frame, symbol, latex_symbol=None,
-                  indices=None, latex_indices=None, symbol_dual=None,
-                  latex_symbol_dual=None):
+    def new_frame(
+        self,
+        change_of_frame,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        symbol_dual=None,
+        latex_symbol_dual=None,
+    ):
         r"""
         Define a new local frame from ``self``.
 
@@ -877,16 +937,21 @@ class LocalFrame(FreeModuleBasis):
             sage: e[2].comp(f)[:]
             [1/2, 1/2*sqrt(3)]
         """
-        the_new_frame = self.new_basis(change_of_frame, symbol,
-                                       latex_symbol=latex_symbol,
-                                       indices=indices,
-                                       latex_indices=latex_indices,
-                                       symbol_dual=symbol_dual,
-                                       latex_symbol_dual=latex_symbol_dual)
-        self._vbundle._frame_changes[(self, the_new_frame)] = \
-                            self._fmodule._basis_changes[(self, the_new_frame)]
-        self._vbundle._frame_changes[(the_new_frame, self)] = \
-                            self._fmodule._basis_changes[(the_new_frame, self)]
+        the_new_frame = self.new_basis(
+            change_of_frame,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
+        self._vbundle._frame_changes[(self, the_new_frame)] = (
+            self._fmodule._basis_changes[(self, the_new_frame)]
+        )
+        self._vbundle._frame_changes[(the_new_frame, self)] = (
+            self._fmodule._basis_changes[(the_new_frame, self)]
+        )
         return the_new_frame
 
     def restrict(self, subdomain):
@@ -940,8 +1005,10 @@ class LocalFrame(FreeModuleBasis):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subdomain of " +
-                                 "the current frame's domain")
+                raise ValueError(
+                    "the provided domain is not a subdomain of "
+                    + "the current frame's domain"
+                )
             # First one tries to get the restriction from a tighter domain:
             for dom, rst in self._restrictions.items():
                 if subdomain.is_subset(dom) and subdomain in rst._restrictions:
@@ -963,14 +1030,16 @@ class LocalFrame(FreeModuleBasis):
                     return self._restrictions[subdomain]
             # If this point is reached, the restriction has to be created
             # from scratch
-            resmodule = self._vbundle.section_module(domain=subdomain,
-                                                      force_free=True)
-            res = LocalFrame(resmodule,
-                              self._symbol, latex_symbol=self._latex_symbol,
-                              indices=self._indices,
-                              latex_indices=self._latex_indices,
-                              symbol_dual=self._symbol_dual,
-                              latex_symbol_dual=self._latex_symbol_dual)
+            resmodule = self._vbundle.section_module(domain=subdomain, force_free=True)
+            res = LocalFrame(
+                resmodule,
+                self._symbol,
+                latex_symbol=self._latex_symbol,
+                indices=self._indices,
+                latex_indices=self._latex_indices,
+                symbol_dual=self._symbol_dual,
+                latex_symbol_dual=self._latex_symbol_dual,
+            )
 
             new_vectors = list()
             for i in self._fmodule.irange():
@@ -986,7 +1055,7 @@ class LocalFrame(FreeModuleBasis):
                     res._superframes.update(sframe._superframes)
             for sframe in res._superframes:
                 sframe._subframes.add(res)
-                sframe._restrictions[subdomain] = res # includes sframe = self
+                sframe._restrictions[subdomain] = res  # includes sframe = self
             for dom, rst in self._restrictions.items():
                 if dom.is_subset(subdomain):
                     res._restrictions.update(rst._restrictions)
@@ -1094,8 +1163,10 @@ class LocalFrame(FreeModuleBasis):
         """
         # Determination of the vector bundle fiber:
         if point not in self._domain:
-            raise ValueError("the {} is not a point in the ".format(point) +
-                             "domain of {}".format(self))
+            raise ValueError(
+                "the {} is not a point in the ".format(point)
+                + "domain of {}".format(self)
+            )
         vbf = self._vbundle.fiber(point)
         # If the basis has already been constructed, it is simply returned:
         vbf_frame_bases = vbf._frame_bases
@@ -1107,11 +1178,14 @@ class LocalFrame(FreeModuleBasis):
         # If this point is reached, the basis has to be constructed from
         # scratch.
         # The names of the basis vectors set to those of the frame sections:
-        basis = vbf.basis(self._symbol, latex_symbol=self._latex_symbol,
-                         indices=self._indices,
-                         latex_indices=self._latex_indices,
-                         symbol_dual=self._symbol_dual,
-                         latex_symbol_dual=self._latex_symbol_dual)
+        basis = vbf.basis(
+            self._symbol,
+            latex_symbol=self._latex_symbol,
+            indices=self._indices,
+            latex_indices=self._latex_indices,
+            symbol_dual=self._symbol_dual,
+            latex_symbol_dual=self._latex_symbol_dual,
+        )
         vbf_frame_bases[self] = basis
         # Update of the change of bases in the fiber:
         for frame_pair, automorph in self._vbundle._frame_changes.items():
@@ -1161,9 +1235,15 @@ class LocalFrame(FreeModuleBasis):
                     vbf._basis_changes[(basis1, basis2)] = auto
         return basis
 
-    def set_name(self, symbol, latex_symbol=None, indices=None,
-                 latex_indices=None, index_position='down',
-                 include_domain=True):
+    def set_name(
+        self,
+        symbol,
+        latex_symbol=None,
+        indices=None,
+        latex_indices=None,
+        index_position='down',
+        include_domain=True,
+    ):
         r"""
         Set (or change) the text name and LaTeX name of ``self``.
 
@@ -1217,20 +1297,24 @@ class LocalFrame(FreeModuleBasis):
             sage: latex(e)
             \left(E|_{M}, \left(E_{\alpha},E_{\beta}\right)\right)
         """
-        super().set_name(symbol, latex_symbol=latex_symbol,
-                         indices=indices,
-                         latex_indices=latex_indices,
-                         index_position=index_position)
+        super().set_name(
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+            index_position=index_position,
+        )
         if include_domain:
             # Redefinition of the name and the LaTeX name to include the domain
-            self._name = "({}|_{}, {})".format(self._vbundle._name,
-                                                self._domain._name, self._name)
+            self._name = "({}|_{}, {})".format(
+                self._vbundle._name, self._domain._name, self._name
+            )
             self._latex_name = r"\left({}|_{{{}}}, {}\right)".format(
-                                                    self._vbundle._latex_name,
-                                                    self._domain._latex_name,
-                                                    self._latex_name)
+                self._vbundle._latex_name, self._domain._latex_name, self._latex_name
+            )
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class TrivializationCoFrame(LocalCoFrame):
@@ -1321,8 +1405,10 @@ class TrivializationCoFrame(LocalCoFrame):
         sage: f[3](e[1]).expr(), f[3](e[2]).expr(), f[3](e[3]).expr()
         (0, 0, 1)
     """
-    def __init__(self, triv_frame, symbol, latex_symbol=None,
-                 indices=None, latex_indices=None):
+
+    def __init__(
+        self, triv_frame, symbol, latex_symbol=None, indices=None, latex_indices=None
+    ):
         r"""
         Construct a local coframe from a local trivialization.
 
@@ -1337,11 +1423,15 @@ class TrivializationCoFrame(LocalCoFrame):
             sage: TestSuite(f).run()
         """
         if not isinstance(triv_frame, TrivializationFrame):
-            raise TypeError("the first argument must be a local trivialization "
-                            "frame")
-        LocalCoFrame.__init__(self, triv_frame, symbol,
-                              latex_symbol=latex_symbol, indices=indices,
-                              latex_indices=latex_indices)
+            raise TypeError("the first argument must be a local trivialization frame")
+        LocalCoFrame.__init__(
+            self,
+            triv_frame,
+            symbol,
+            latex_symbol=latex_symbol,
+            indices=indices,
+            latex_indices=latex_indices,
+        )
         self._trivialization = triv_frame._trivialization
 
     def _repr_(self):
@@ -1363,7 +1453,8 @@ class TrivializationCoFrame(LocalCoFrame):
         """
         return "Trivialization coframe " + self._name
 
-#******************************************************************************
+
+# ******************************************************************************
 
 
 class TrivializationFrame(LocalFrame):
@@ -1415,6 +1506,7 @@ class TrivializationFrame(LocalFrame):
         """
         from sage.manifolds.trivialization import Trivialization
         from sage.misc.latex import latex
+
         if not isinstance(trivialization, Trivialization):
             raise TypeError("the first argument must be a trivialization")
         ###
@@ -1426,30 +1518,39 @@ class TrivializationFrame(LocalFrame):
         # Some sanity check:
         smodule = vbundle._section_modules.get(domain)
         if smodule and not isinstance(smodule, FiniteRankFreeModule):
-            raise ValueError("the {} has already been constructed as a "
-                             "non-free module and therefore cannot have "
-                             "a basis".format(smodule))
+            raise ValueError(
+                "the {} has already been constructed as a "
+                "non-free module and therefore cannot have "
+                "a basis".format(smodule)
+            )
         ###
         # Set trivialization:
         self._trivialization = triv
         ###
         # Define trivialization names
         rank = vbundle.rank()
-        symbol = tuple("(" + triv._name + "^*" + "e_" + str(i) + ")"
-            for i in range(1, rank + 1))
-        symbol_dual = tuple("(" + triv._name + "^*" + "e^" + str(i) + ")"
-            for i in range(1, rank + 1))
-        latex_symbol = tuple(r'\left(' + triv._latex_name + r'^* e_{' +
-                             latex(i) + r'}\right)'
-                             for i in range(1, rank + 1))
-        latex_symbol_dual = tuple(r'\left(' + triv._latex_name + r'^* e^{' +
-                             latex(i) + r'}\right)'
-                             for i in range(1, rank + 1))
-        LocalFrame.__init__(self,
-                        vbundle.section_module(domain=domain, force_free=True),
-                        symbol=symbol, latex_symbol=latex_symbol,
-                        symbol_dual=symbol_dual,
-                        latex_symbol_dual=latex_symbol_dual)
+        symbol = tuple(
+            "(" + triv._name + "^*" + "e_" + str(i) + ")" for i in range(1, rank + 1)
+        )
+        symbol_dual = tuple(
+            "(" + triv._name + "^*" + "e^" + str(i) + ")" for i in range(1, rank + 1)
+        )
+        latex_symbol = tuple(
+            r'\left(' + triv._latex_name + r'^* e_{' + latex(i) + r'}\right)'
+            for i in range(1, rank + 1)
+        )
+        latex_symbol_dual = tuple(
+            r'\left(' + triv._latex_name + r'^* e^{' + latex(i) + r'}\right)'
+            for i in range(1, rank + 1)
+        )
+        LocalFrame.__init__(
+            self,
+            vbundle.section_module(domain=domain, force_free=True),
+            symbol=symbol,
+            latex_symbol=latex_symbol,
+            symbol_dual=symbol_dual,
+            latex_symbol_dual=latex_symbol_dual,
+        )
 
     def _repr_(self):
         r"""

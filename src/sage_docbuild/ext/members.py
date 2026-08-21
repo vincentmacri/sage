@@ -38,17 +38,21 @@ def check_nested_class_picklability(app, what, name, obj, skip, options):
         # Check picklability of nested classes.  Adapted from
         # sage.misc.nested_class.modify_for_nested_pickle.
         module = sys.modules[obj.__module__]
-        for (nm, v) in obj.__dict__.items():
-            if (isinstance(v, type) and
-                v.__name__ == nm and
-                v.__module__ == module.__name__ and
-                getattr(module, nm, None) is not v and
-                v.__module__ not in skip_picklability_check_modules):
+        for nm, v in obj.__dict__.items():
+            if (
+                isinstance(v, type)
+                and v.__name__ == nm
+                and v.__module__ == module.__name__
+                and getattr(module, nm, None) is not v
+                and v.__module__ not in skip_picklability_check_modules
+            ):
                 # OK, probably this is an *unpicklable* nested class.
-                logger.warning('Pickling of nested class %r is probably broken. '
-                               'Please set the metaclass of the parent class to '
-                               'sage.misc.nested_class.NestedClassMetaclass.',
-                               v.__module__ + '.' + name + '.' + nm)
+                logger.warning(
+                    'Pickling of nested class %r is probably broken. '
+                    'Please set the metaclass of the parent class to '
+                    'sage.misc.nested_class.NestedClassMetaclass.',
+                    v.__module__ + '.' + name + '.' + nm,
+                )
 
 
 def skip_member(app, what, name, obj, skip, options):

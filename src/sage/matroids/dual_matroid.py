@@ -343,8 +343,9 @@ class DualMatroid(Matroid):
         """
         # Assumption: if self._matroid cannot make a dual, neither can
         # its minor.
-        return DualMatroid(self._matroid._minor(contractions=deletions,
-                                                deletions=contractions))
+        return DualMatroid(
+            self._matroid._minor(contractions=deletions, deletions=contractions)
+        )
 
     def dual(self):
         r"""
@@ -502,6 +503,7 @@ class DualMatroid(Matroid):
              4: {{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'}}}'
         """
         import sage.matroids.unpickling
+
         data = (self._matroid, self.get_custom_name())
         version = 0
         return sage.matroids.unpickling.unpickle_dual_matroid, (version, data)

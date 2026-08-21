@@ -65,7 +65,7 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
             sage: MFSeriesConstructor(group=5, prec=12).prec()
             12
         """
-        if (group == infinity):
+        if group == infinity:
             group = HeckeTriangleGroup(infinity)
         else:
             try:
@@ -131,8 +131,9 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
             Power series constructor for Hecke modular forms for n=5 with (basic series) precision 12
         """
 
-        return "Power series constructor for Hecke modular forms for n={} with (basic series) precision {}".\
-                format(self._group.n(), self._prec)
+        return "Power series constructor for Hecke modular forms for n={} with (basic series) precision {}".format(
+            self._group.n(), self._prec
+        )
 
     def group(self):
         r"""
@@ -204,22 +205,33 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
             sage: MFSeriesConstructor(group=infinity, prec=3).J_inv_ZZ()
             q^-1 + 3/8 + 69/1024*q + O(q^2)
         """
+
         def F1(a, b):
             return self._series_ring(
                 [ZZ.zero()]
-                + [rising_factorial(a, k) * rising_factorial(b, k) / (ZZ(k).factorial())**2
-                   * sum(ZZ.one()/(a+j) + ZZ.one()/(b+j) - ZZ(2)/ZZ(1+j)
-                         for j in range(k))
-                   for k in range(1, self._prec + 1)
-                   ],
-                ZZ(self._prec + 1)
+                + [
+                    rising_factorial(a, k)
+                    * rising_factorial(b, k)
+                    / (ZZ(k).factorial()) ** 2
+                    * sum(
+                        ZZ.one() / (a + j) + ZZ.one() / (b + j) - ZZ(2) / ZZ(1 + j)
+                        for j in range(k)
+                    )
+                    for k in range(1, self._prec + 1)
+                ],
+                ZZ(self._prec + 1),
             )
 
         def F(a, b, c):
             return self._series_ring(
-                [rising_factorial(a, k) * rising_factorial(b, k) / rising_factorial(c, k) / ZZ(k).factorial()
-                 for k in range(self._prec + 1)],
-                ZZ(self._prec + 1)
+                [
+                    rising_factorial(a, k)
+                    * rising_factorial(b, k)
+                    / rising_factorial(c, k)
+                    / ZZ(k).factorial()
+                    for k in range(self._prec + 1)
+                ],
+                ZZ(self._prec + 1),
             )
 
         a = self._group.alpha()
@@ -232,7 +244,7 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
 
         temp_f = (q * Phi.exp()).polynomial()
         new_f = temp_f.revert_series(temp_f.degree() + 1)
-        return ZZ.one() / (new_f + O(q**(temp_f.degree() + 1)))
+        return ZZ.one() / (new_f + O(q ** (temp_f.degree() + 1)))
 
     @cached_method
     def f_rho_ZZ(self):
@@ -261,11 +273,14 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
 
         q = self._series_ring.gen()
         n = self.hecke_n()
-        if (n == infinity):
+        if n == infinity:
             f_rho_ZZ = self._series_ring(1)
         else:
-            temp_expr = ((-q*self.J_inv_ZZ().derivative())**2/(self.J_inv_ZZ()*(self.J_inv_ZZ()-1))).power_series()
-            f_rho_ZZ = (temp_expr.log()/(n-2)).exp()
+            temp_expr = (
+                (-q * self.J_inv_ZZ().derivative()) ** 2
+                / (self.J_inv_ZZ() * (self.J_inv_ZZ() - 1))
+            ).power_series()
+            f_rho_ZZ = (temp_expr.log() / (n - 2)).exp()
         return f_rho_ZZ
 
     @cached_method
@@ -295,11 +310,16 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
 
         q = self._series_ring.gen()
         n = self.hecke_n()
-        if (n == infinity):
-            f_i_ZZ = (-q*self.J_inv_ZZ().derivative()/self.J_inv_ZZ()).power_series()
+        if n == infinity:
+            f_i_ZZ = (
+                -q * self.J_inv_ZZ().derivative() / self.J_inv_ZZ()
+            ).power_series()
         else:
-            temp_expr = ((-q*self.J_inv_ZZ().derivative())**n/(self.J_inv_ZZ()**(n-1)*(self.J_inv_ZZ()-1))).power_series()
-            f_i_ZZ = (temp_expr.log()/(n-2)).exp()
+            temp_expr = (
+                (-q * self.J_inv_ZZ().derivative()) ** n
+                / (self.J_inv_ZZ() ** (n - 1) * (self.J_inv_ZZ() - 1))
+            ).power_series()
+            f_i_ZZ = (temp_expr.log() / (n - 2)).exp()
         return f_i_ZZ
 
     @cached_method
@@ -329,11 +349,18 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
 
         q = self._series_ring.gen()
         n = self.hecke_n()
-        if (n == infinity):
-            f_inf_ZZ = ((-q*self.J_inv_ZZ().derivative())**2/(self.J_inv_ZZ()**2*(self.J_inv_ZZ()-1))).power_series()
+        if n == infinity:
+            f_inf_ZZ = (
+                (-q * self.J_inv_ZZ().derivative()) ** 2
+                / (self.J_inv_ZZ() ** 2 * (self.J_inv_ZZ() - 1))
+            ).power_series()
         else:
-            temp_expr = ((-q*self.J_inv_ZZ().derivative())**(2*n)/(self.J_inv_ZZ()**(2*n-2)*(self.J_inv_ZZ()-1)**n)/q**(n-2)).power_series()
-            f_inf_ZZ = (temp_expr.log()/(n-2)).exp()*q
+            temp_expr = (
+                (-q * self.J_inv_ZZ().derivative()) ** (2 * n)
+                / (self.J_inv_ZZ() ** (2 * n - 2) * (self.J_inv_ZZ() - 1) ** n)
+                / q ** (n - 2)
+            ).power_series()
+            f_inf_ZZ = (temp_expr.log() / (n - 2)).exp() * q
         return f_inf_ZZ
 
     @cached_method
@@ -365,10 +392,12 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
         # the behavior at -1)
         if n == infinity:
             q = self._series_ring.gen()
-            temp_expr = (self.J_inv_ZZ()/self.f_inf_ZZ()*q**2).power_series()
-            return 1/q*self.f_i_ZZ()*(temp_expr.log()/2).exp()
-        if (ZZ(2).divides(n)):
-            return self.f_i_ZZ()*(self.f_rho_ZZ()**(ZZ(n/ZZ(2))))/self.f_inf_ZZ()
+            temp_expr = (self.J_inv_ZZ() / self.f_inf_ZZ() * q**2).power_series()
+            return 1 / q * self.f_i_ZZ() * (temp_expr.log() / 2).exp()
+        if ZZ(2).divides(n):
+            return (
+                self.f_i_ZZ() * (self.f_rho_ZZ() ** (ZZ(n / ZZ(2)))) / self.f_inf_ZZ()
+            )
         raise ValueError("G_inv doesn't exist for n={}.".format(self.hecke_n()))
 
     @cached_method
@@ -396,7 +425,10 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
             1 + 1/4*q + 7/256*q^2 + O(q^3)
         """
         q = self._series_ring.gen()
-        return ((-q*self.J_inv_ZZ().derivative())**2 / (self.J_inv_ZZ()*(self.J_inv_ZZ()-1))).power_series()
+        return (
+            (-q * self.J_inv_ZZ().derivative()) ** 2
+            / (self.J_inv_ZZ() * (self.J_inv_ZZ() - 1))
+        ).power_series()
 
     @cached_method
     def E6_ZZ(self):
@@ -423,7 +455,10 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
             1 - 1/8*q - 31/512*q^2 + O(q^3)
         """
         q = self._series_ring.gen()
-        return ((-q*self.J_inv_ZZ().derivative())**3 / (self.J_inv_ZZ()**2*(self.J_inv_ZZ()-1))).power_series()
+        return (
+            (-q * self.J_inv_ZZ().derivative()) ** 3
+            / (self.J_inv_ZZ() ** 2 * (self.J_inv_ZZ() - 1))
+        ).power_series()
 
     @cached_method
     def Delta_ZZ(self):
@@ -450,7 +485,9 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
             q + 3/8*q^2 + 63/1024*q^3 + O(q^4)
         """
 
-        return (self.f_inf_ZZ()**3*self.J_inv_ZZ()**2/(self.f_rho_ZZ()**6)).power_series()
+        return (
+            self.f_inf_ZZ() ** 3 * self.J_inv_ZZ() ** 2 / (self.f_rho_ZZ() ** 6)
+        ).power_series()
 
     @cached_method
     def E2_ZZ(self):
@@ -534,20 +571,22 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
         try:
             if k < 0:
                 raise TypeError(None)
-            k = 2*ZZ(k/2)
+            k = 2 * ZZ(k / 2)
         except TypeError:
             raise TypeError("k={} has to be a nonnegative even integer!".format(k))
 
-        if (not self.group().is_arithmetic() or self.group().n() == infinity):
+        if not self.group().is_arithmetic() or self.group().n() == infinity:
             # Exceptional cases should be called manually (see in FormsRing_abstract)
-            raise NotImplementedError("Eisenstein series are only supported in the finite arithmetic cases!")
+            raise NotImplementedError(
+                "Eisenstein series are only supported in the finite arithmetic cases!"
+            )
 
         # Trivial case
         if k == 0:
             return self._series_ring(1)
 
-        M = ZZ(self.group().lam()**2)
-        lamk = M**(ZZ(k/2))
+        M = ZZ(self.group().lam() ** 2)
+        lamk = M ** (ZZ(k / 2))
         dval = self.group().dvalue()
 
         def coeff(m):
@@ -557,23 +596,23 @@ class MFSeriesConstructor(SageObject, UniqueRepresentation):
             if m == 0:
                 return ZZ(1)
 
-            factor = -2*k / QQ(bernoulli(k)) / lamk
-            sum1 = sigma(m, k-1)
+            factor = -2 * k / QQ(bernoulli(k)) / lamk
+            sum1 = sigma(m, k - 1)
             if M.divides(m):
-                sum2 = (lamk-1) * sigma(ZZ(m/M), k-1)
+                sum2 = (lamk - 1) * sigma(ZZ(m / M), k - 1)
             else:
                 sum2 = ZZ(0)
-            if (M == 1):
+            if M == 1:
                 sum3 = ZZ(0)
             else:
-                if (m == 1):
+                if m == 1:
                     N = ZZ(1)
                 else:
-                    N = ZZ(m / M**ZZ(m.valuation(M)))
-                sum3 = -sigma(ZZ(N), k-1) * ZZ(m/N)**(k-1) / (lamk + 1)
+                    N = ZZ(m / M ** ZZ(m.valuation(M)))
+                sum3 = -sigma(ZZ(N), k - 1) * ZZ(m / N) ** (k - 1) / (lamk + 1)
 
             return factor * (sum1 + sum2 + sum3) * dval**m
 
         q = self._series_ring.gen()
 
-        return sum([coeff(m)*q**m for m in range(self.prec())]).add_bigoh(self.prec())
+        return sum([coeff(m) * q**m for m in range(self.prec())]).add_bigoh(self.prec())

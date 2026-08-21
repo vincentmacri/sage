@@ -2,6 +2,7 @@
 r"""
 Access functions to online databases for coding theory
 """
+
 from sage.misc.lazy_import import lazy_import
 
 # Import the following function so that it is available as
@@ -50,8 +51,10 @@ def best_linear_code_in_guava(n, k, F):
     """
     from sage.features.gap import GapPackage
     from .linear_code import LinearCode
+
     GapPackage('guava', spkg='gap_packages').require()
     from sage.libs.gap.libgap import libgap
+
     libgap.load_package('guava')
     C = libgap.BestKnownLinearCode(n, k, F)
     return LinearCode(C.GeneratorMat()._matrix_(F))
@@ -109,8 +112,10 @@ def bounds_on_minimum_distance_in_guava(n, k, F):
           upperBoundExplanation := ... )
     """
     from sage.features.gap import GapPackage
+
     GapPackage('guava', spkg='gap_packages').require()
     from sage.libs.gap.libgap import libgap
+
     libgap.load_package('guava')
     return libgap.BoundsMinimumDistance(n, k, F)
 
@@ -157,6 +162,7 @@ def best_linear_code_in_codetables_dot_de(n, k, F, verbose=False):
     """
     from urllib.request import urlopen
     from sage.cpython.string import bytes_to_str
+
     q = F.order()
     if q not in [2, 3, 4, 5, 7, 8, 9]:
         raise ValueError("q (=%s) must be in [2,3,4,5,7,8,9]" % q)
@@ -176,11 +182,12 @@ def best_linear_code_in_codetables_dot_de(n, k, F, verbose=False):
     j = s.find("</PRE>")
     if i == -1 or j == -1:
         raise OSError("Error parsing data (missing pre tags).")
-    return s[i+5:j].strip()
+    return s[i + 5 : j].strip()
 
 
-def self_orthogonal_binary_codes(n, k, b=2, parent=None, BC=None, equal=False,
-    in_test=None):
+def self_orthogonal_binary_codes(
+    n, k, b=2, parent=None, BC=None, equal=False, in_test=None
+):
     """
     Return a Python iterator which generates a complete set of
     representatives of all permutation equivalence classes of
@@ -284,10 +291,11 @@ def self_orthogonal_binary_codes(n, k, b=2, parent=None, BC=None, equal=False,
         raise ValueError("b (%s) must be a positive even integer." % b)
     from .linear_code import LinearCode
     from .binary_code import BinaryCode, BinaryCodeClassifier
+
     if k < 1 or n < 2:
         return
     if equal:
-        in_test = lambda M: (M.ncols() - M.nrows()) <= (n-k)
+        in_test = lambda M: (M.ncols() - M.nrows()) <= (n - k)
         out_test = lambda C: (C.dimension() == k) and (C.length() == n)
     else:
         in_test = lambda M: True
@@ -295,8 +303,8 @@ def self_orthogonal_binary_codes(n, k, b=2, parent=None, BC=None, equal=False,
     if BC is None:
         BC = BinaryCodeClassifier()
     if parent is None:
-        for j in range(d, n+1, d):
-            M = Matrix(FiniteField(2), [[1]*j])
+        for j in range(d, n + 1, d):
+            M = Matrix(FiniteField(2), [[1] * j])
             if in_test(M):
                 for N in self_orthogonal_binary_codes(n, k, d, M, BC, in_test=in_test):
                     if out_test(N):
@@ -307,9 +315,11 @@ def self_orthogonal_binary_codes(n, k, b=2, parent=None, BC=None, equal=False,
             yield C
         if k == parent.nrows():
             return
-        for nn in range(parent.ncols()+1, n+1):
+        for nn in range(parent.ncols() + 1, n + 1):
             if in_test(parent):
                 for child in BC.generate_children(BinaryCode(parent), nn, d):
-                    for N in self_orthogonal_binary_codes(n, k, d, child, BC, in_test=in_test):
+                    for N in self_orthogonal_binary_codes(
+                        n, k, d, child, BC, in_test=in_test
+                    ):
                         if out_test(N):
                             yield N

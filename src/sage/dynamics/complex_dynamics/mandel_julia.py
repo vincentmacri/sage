@@ -20,7 +20,7 @@ AUTHORS:
 - Ben Barros
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2017 BEN BARROS <bbarros@slu.edu>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -28,18 +28,21 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
-from sage.dynamics.complex_dynamics.mandel_julia_helper import (fast_mandelbrot_plot,
-                                                                fast_external_ray,
-                                                                convert_to_pixels,
-                                                                get_line,
-                                                                fast_julia_plot,
-                                                                general_julia,
-                                                                polynomial_mandelbrot,
-                                                                julia_helper)
+from sage.dynamics.complex_dynamics.mandel_julia_helper import (
+    fast_mandelbrot_plot,
+    fast_external_ray,
+    convert_to_pixels,
+    get_line,
+    fast_julia_plot,
+    general_julia,
+    polynomial_mandelbrot,
+    julia_helper,
+)
 
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.colors", "Color")
 from sage.repl.image import Image
 from sage.functions.log import logb
@@ -204,24 +207,31 @@ def mandelbrot_plot(f=None, **kwds):
         given_iterations = False
 
     from ipywidgets.widgets import FloatSlider, IntSlider, ColorPicker, interact
+
     widgets = dict(
-                   x_center=FloatSlider(min=-1.0, max=1.0, step=EPS,
-                                          value=x_center, description="Real center"),
-                   y_center=FloatSlider(min=-1.0, max=1.0, step=EPS,
-                                          value=y_center, description="Imag center"),
-                   image_width=FloatSlider(min=EPS, max=4.0, step=EPS,
-                                             value=image_width, description='Width'),
-                   max_iteration=IntSlider(min=0, max=1000,
-                                             value=max_iteration, description='Iterations'),
-                   pixel_count=IntSlider(min=10, max=1000,
-                                           value=pixel_count, description='Pixels'),
-                   level_sep=IntSlider(min=1, max=20,
-                                         value=level_sep, description="Color sep"),
-                   color_num=IntSlider(min=1, max=100,
-                                         value=number_of_colors, description="# Colors"),
-                   base_color=ColorPicker(value=Color(base_color).html_color(),
-                                            description="Base color"),
-                   )
+        x_center=FloatSlider(
+            min=-1.0, max=1.0, step=EPS, value=x_center, description="Real center"
+        ),
+        y_center=FloatSlider(
+            min=-1.0, max=1.0, step=EPS, value=y_center, description="Imag center"
+        ),
+        image_width=FloatSlider(
+            min=EPS, max=4.0, step=EPS, value=image_width, description='Width'
+        ),
+        max_iteration=IntSlider(
+            min=0, max=1000, value=max_iteration, description='Iterations'
+        ),
+        pixel_count=IntSlider(
+            min=10, max=1000, value=pixel_count, description='Pixels'
+        ),
+        level_sep=IntSlider(min=1, max=20, value=level_sep, description="Color sep"),
+        color_num=IntSlider(
+            min=1, max=100, value=number_of_colors, description="# Colors"
+        ),
+        base_color=ColorPicker(
+            value=Color(base_color).html_color(), description="Base color"
+        ),
+    )
 
     if f is None:
         # Quadratic map f = z^2 + c
@@ -229,9 +239,16 @@ def mandelbrot_plot(f=None, **kwds):
         if interacts:
             return interact(**widgets).widget(fast_mandelbrot_plot)
 
-        return fast_mandelbrot_plot(x_center, y_center, image_width,
-         max_iteration, pixel_count, level_sep, number_of_colors,
-         base_color)
+        return fast_mandelbrot_plot(
+            x_center,
+            y_center,
+            image_width,
+            max_iteration,
+            pixel_count,
+            level_sep,
+            number_of_colors,
+            base_color,
+        )
 
     if parameter is None:
         c = var('c')
@@ -241,14 +258,18 @@ def mandelbrot_plot(f=None, **kwds):
 
     if P.base_ring() is CC or P.base_ring() is CDF:
         if isinstance(P, FractionField_generic):
-            raise NotImplementedError("coefficients must be polynomials in the parameter")
+            raise NotImplementedError(
+                "coefficients must be polynomials in the parameter"
+            )
         gen_list = list(P.gens())
         parameter = gen_list.pop(gen_list.index(parameter))
         variable = gen_list.pop()
 
     elif P.base_ring().base_ring() is CC or P.base_ring().base_ring() is CDF:
         if isinstance(P.base_ring(), FractionField_generic):
-            raise NotImplementedError("coefficients must be polynomials in the parameter")
+            raise NotImplementedError(
+                "coefficients must be polynomials in the parameter"
+            )
         phi = P.flattening_morphism()
         f = phi(f)
         gen_list = list(f.parent().gens())
@@ -266,9 +287,16 @@ def mandelbrot_plot(f=None, **kwds):
         if interacts:
             return interact(**widgets).widget(fast_mandelbrot_plot)
 
-        return fast_mandelbrot_plot(x_center, y_center, image_width,
-         max_iteration, pixel_count, level_sep, number_of_colors,
-         base_color)
+        return fast_mandelbrot_plot(
+            x_center,
+            y_center,
+            image_width,
+            max_iteration,
+            pixel_count,
+            level_sep,
+            number_of_colors,
+            base_color,
+        )
     if interacts:
         raise NotImplementedError("interact only implemented for z^2 + c")
     else:
@@ -278,9 +306,18 @@ def mandelbrot_plot(f=None, **kwds):
             max_iteration = 50
 
         # Mandelbrot of General Polynomial Map
-        return polynomial_mandelbrot(f, parameter, x_center, y_center,
-         image_width, max_iteration, pixel_count, level_sep,
-         number_of_colors, base_color)
+        return polynomial_mandelbrot(
+            f,
+            parameter,
+            x_center,
+            y_center,
+            image_width,
+            max_iteration,
+            pixel_count,
+            level_sep,
+            number_of_colors,
+            base_color,
+        )
 
 
 def external_ray(theta, **kwds):
@@ -395,14 +432,19 @@ def external_ray(theta, **kwds):
     # Check if theta is in the interval [0,1]
     for angle in theta:
         if angle < 0 or angle > 1:
-            raise ValueError("values for theta must be in "
-                             "the closed interval [0,1].")
+            raise ValueError("values for theta must be in the closed interval [0,1].")
 
     # Loop through each value for theta in list and plot the external ray.
     for angle in theta:
-        E = fast_external_ray(angle, D=depth, S=sharpness, R=radial_parameter,
-                              prec=precision, image_width=plot_width,
-                              pixel_count=pixel_width)
+        E = fast_external_ray(
+            angle,
+            D=depth,
+            S=sharpness,
+            R=radial_parameter,
+            prec=precision,
+            image_width=plot_width,
+            pixel_count=pixel_width,
+        )
 
         # Convert points to pixel coordinates.
         pixel_list = convert_to_pixels(E, x_0, y_0, plot_width, pixel_width)
@@ -481,17 +523,17 @@ def kneading_sequence(theta):
         theta = theta - floor(theta)
         KS = []
         not_done = True
-        left = theta/2
-        right = (theta + 1)/2
+        left = theta / 2
+        right = (theta + 1) / 2
         y = theta
         while not_done:
-            if ((y < left) or (y > right)):
+            if (y < left) or (y > right):
                 KS.append('0')
-            elif ((y > left) and (y < right)):
+            elif (y > left) and (y < right):
                 KS.append('1')
             else:
                 not_done = False
-            y = 2*y - floor(2*y)
+            y = 2 * y - floor(2 * y)
         KS_str = ''.join(KS) + '*'
     return KS_str
 
@@ -662,7 +704,7 @@ def julia_plot(f=None, **kwds):
 
     f_is_default_after_all = None
 
-    if period: # pick a random c with the specified period
+    if period:  # pick a random c with the specified period
         R = PolynomialRing(CC, 'c')
         c = R.gen()
         x, y = ProjectiveSpace(R, 1, 'x,y').gens()
@@ -675,8 +717,7 @@ def julia_plot(f=None, **kwds):
 
     EPS = 0.00001
 
-    if f is not None and period is None: # f user-specified and no period given
-
+    if f is not None and period is None:  # f user-specified and no period given
         # try to coerce f to live in a polynomial ring
         S = PolynomialRing(CC, names='z')
         z = S.gen()
@@ -684,30 +725,36 @@ def julia_plot(f=None, **kwds):
             f_poly = S(f)
         except TypeError:
             R = f.parent()
-            if not (R.is_integral_domain() and
-                   (CC.is_subring(R) or CDF.is_subring(R))):
+            if not (R.is_integral_domain() and (CC.is_subring(R) or CDF.is_subring(R))):
                 raise ValueError('given `f` must be a complex polynomial')
             raise NotImplementedError(
-                'Julia sets not implemented for rational functions')
+                'Julia sets not implemented for rational functions'
+            )
 
-        if (f_poly - z*z) in CC: # f is specified and of the form z^2 + c.
+        if (f_poly - z * z) in CC:  # f is specified and of the form z^2 + c.
             f_is_default_after_all = True
-            c = f_poly - z*z
-        else: # f is specified and not of the form z^2 + c
+            c = f_poly - z * z
+        else:  # f is specified and not of the form z^2 + c
             if interacts:
                 raise NotImplementedError(
-                        "The interactive plot is only implemented for "
-                        "polynomials of the form f = z^2 + c."
-                            )
+                    "The interactive plot is only implemented for "
+                    "polynomials of the form f = z^2 + c."
+                )
             else:
-                return general_julia(f_poly, x_center, y_center,
-                                    image_width, max_iteration,
-                                    pixel_count, level_sep,
-                                    number_of_colors, base_color)
+                return general_julia(
+                    f_poly,
+                    x_center,
+                    y_center,
+                    image_width,
+                    max_iteration,
+                    pixel_count,
+                    level_sep,
+                    number_of_colors,
+                    base_color,
+                )
 
     # otherwise we can use fast_julia_plot for z^2 + c
     if f_is_default_after_all or f is None or period is not None:
-
         # specify default c = -1 value if f and period were not specified
         if not f_is_default_after_all and period is None:
             c = -1
@@ -716,42 +763,79 @@ def julia_plot(f=None, **kwds):
         c_real = c.real()
         c_imag = c.imag()
 
-        if interacts: # set widgets
-            from ipywidgets.widgets import FloatSlider, IntSlider, \
-                                           ColorPicker, interact
+        if interacts:  # set widgets
+            from ipywidgets.widgets import FloatSlider, IntSlider, ColorPicker, interact
+
             widgets = dict(
-                c_real=FloatSlider(min=-2.0, max=2.0, step=EPS,
-                                  value=c_real, description="Real c"),
-                c_imag=FloatSlider(min=-2.0, max=2.0, step=EPS,
-                                  value=c_imag, description="Imag c"),
-                x_center=FloatSlider(min=-1.0, max=1.0, step=EPS,
-                                  value=x_center, description="Real center"),
-                y_center=FloatSlider(min=-1.0, max=1.0, step=EPS,
-                                  value=y_center, description="Imag center"),
-                image_width=FloatSlider(min=EPS, max=4.0, step=EPS,
-                                  value=image_width, description='Width'),
-                max_iteration=IntSlider(min=0, max=1000,
-                                  value=max_iteration, description='Iterations'),
-                pixel_count=IntSlider(min=10, max=1000,
-                                  value=pixel_count, description='Pixels'),
-                level_sep=IntSlider(min=1, max=20,
-                                  value=level_sep, description="Color sep"),
-                color_num=IntSlider(min=1, max=100,
-                                  value=number_of_colors, description="# Colors"),
-                base_color=ColorPicker(value=base_color.html_color(),
-                                         description="Base color"),
+                c_real=FloatSlider(
+                    min=-2.0, max=2.0, step=EPS, value=c_real, description="Real c"
+                ),
+                c_imag=FloatSlider(
+                    min=-2.0, max=2.0, step=EPS, value=c_imag, description="Imag c"
+                ),
+                x_center=FloatSlider(
+                    min=-1.0,
+                    max=1.0,
+                    step=EPS,
+                    value=x_center,
+                    description="Real center",
+                ),
+                y_center=FloatSlider(
+                    min=-1.0,
+                    max=1.0,
+                    step=EPS,
+                    value=y_center,
+                    description="Imag center",
+                ),
+                image_width=FloatSlider(
+                    min=EPS, max=4.0, step=EPS, value=image_width, description='Width'
+                ),
+                max_iteration=IntSlider(
+                    min=0, max=1000, value=max_iteration, description='Iterations'
+                ),
+                pixel_count=IntSlider(
+                    min=10, max=1000, value=pixel_count, description='Pixels'
+                ),
+                level_sep=IntSlider(
+                    min=1, max=20, value=level_sep, description="Color sep"
+                ),
+                color_num=IntSlider(
+                    min=1, max=100, value=number_of_colors, description="# Colors"
+                ),
+                base_color=ColorPicker(
+                    value=base_color.html_color(), description="Base color"
+                ),
             )
             if mandelbrot:
-                widgets["point_color"] = ColorPicker(value=point_color.html_color(),
-                                                     description="Point color")
+                widgets["point_color"] = ColorPicker(
+                    value=point_color.html_color(), description="Point color"
+                )
                 return interact(**widgets).widget(julia_helper)
             return interact(**widgets).widget(fast_julia_plot)
         if mandelbrot:  # non-interactive with mandelbrot
-            return julia_helper(c_real, c_imag, x_center, y_center,
-                                image_width, max_iteration, pixel_count,
-                                level_sep, number_of_colors, base_color,
-                                point_color)
+            return julia_helper(
+                c_real,
+                c_imag,
+                x_center,
+                y_center,
+                image_width,
+                max_iteration,
+                pixel_count,
+                level_sep,
+                number_of_colors,
+                base_color,
+                point_color,
+            )
         # non-interactive without mandelbrot
-        return fast_julia_plot(c_real, c_imag, x_center, y_center,
-                               image_width, max_iteration, pixel_count,
-                               level_sep, number_of_colors, base_color)
+        return fast_julia_plot(
+            c_real,
+            c_imag,
+            x_center,
+            y_center,
+            image_width,
+            max_iteration,
+            pixel_count,
+            level_sep,
+            number_of_colors,
+            base_color,
+        )

@@ -3,7 +3,7 @@ r"""
 Crystal of Bernstein-Zelevinsky multisegments
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -11,7 +11,7 @@ Crystal of Bernstein-Zelevinsky multisegments
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
@@ -145,8 +145,10 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
             sage: TestSuite(B).run()
         """
         self._cartan_type = CartanType(['A', n, 1])
-        self._Zn = IntegerModRing(n+1)
-        Parent.__init__(self, category=(HighestWeightCrystals(), InfiniteEnumeratedSets()))
+        self._Zn = IntegerModRing(n + 1)
+        Parent.__init__(
+            self, category=(HighestWeightCrystals(), InfiniteEnumeratedSets())
+        )
         self.module_generators = (self.highest_weight_vector(),)
 
     def _repr_(self):
@@ -200,10 +202,12 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
                 sage: mg = B.highest_weight_vector()
                 sage: TestSuite(mg).run()
             """
+
             def sort_key(x):
                 return (-x[0], ZZ(x[1]))
+
             ZM = parent._Zn
-            value = [(k, ZM(i)) for k,i in value]
+            value = [(k, ZM(i)) for k, i in value]
             ElementWrapper.__init__(self, parent, tuple(sorted(value, key=sort_key)))
 
         def _repr_(self):
@@ -230,6 +234,7 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
                 if c != 1:
                     return "{} * ({}; {}]".format(c, m[0], m[1])
                 return "({}; {}]".format(m[0], m[1])
+
             d = {}
             for x in self.value:
                 d[x] = d.get(x, 0) + 1
@@ -259,6 +264,7 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
                 if c != 1:
                     return "{} ({}; {}]".format(c, m[0], m[1])
                 return "({}; {}]".format(m[0], m[1])
+
             d = {}
             for x in self.value:
                 d[x] = d.get(x, 0) + 1
@@ -304,15 +310,15 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
             pos = []
             block = self.value[0][0]
             cur = 0
-            for k,j in self.value:
+            for k, j in self.value:
                 if k != block:
                     if cur != 0:
                         pos.append((block, cur))
                     cur = 0
                     block = k
-                if j + 1 == i: # + or (
+                if j + 1 == i:  # + or (
                     cur += 1
-                elif j == i: # - or )
+                elif j == i:  # - or )
                     cur -= 1
             if cur != 0:
                 pos.append((block, cur))
@@ -321,7 +327,7 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
             m = None
             p = None
             ep = 0
-            for k,c in pos:
+            for k, c in pos:
                 old = cur
                 cur += c
                 if cur < 0:
@@ -362,8 +368,8 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
             a = M.index((m, i))
             k = M[a][0]
             if k == 1:
-                return self.__class__(self.parent(), M[:a] + M[a+1:])
-            return self.__class__(self.parent(), M[:a] + ((k-1,i-1),) + M[a+1:])
+                return self.__class__(self.parent(), M[:a] + M[a + 1 :])
+            return self.__class__(self.parent(), M[:a] + ((k - 1, i - 1),) + M[a + 1 :])
 
         def f(self, i):
             r"""
@@ -390,8 +396,10 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
             if p is None:
                 return self.__class__(self.parent(), ((1, i),) + M)
 
-            a = M.index((p, i-1))
-            return self.__class__(self.parent(), M[:a] + ((M[a][0]+1,i),) + M[a+1:])
+            a = M.index((p, i - 1))
+            return self.__class__(
+                self.parent(), M[:a] + ((M[a][0] + 1, i),) + M[a + 1 :]
+            )
 
         def epsilon(self, i):
             r"""
@@ -457,5 +465,8 @@ class InfinityCrystalOfMultisegments(Parent, UniqueRepresentation):
             WLR = self.parent().weight_lattice_realization()
             alpha = WLR.simple_roots()
             n = self.parent()._cartan_type.rank()
-            return WLR.sum(-1*alpha[j % n] for k,i in self.value
-                           for j in range(ZZ(i),ZZ(i)+k))
+            return WLR.sum(
+                -1 * alpha[j % n]
+                for k, i in self.value
+                for j in range(ZZ(i), ZZ(i) + k)
+            )

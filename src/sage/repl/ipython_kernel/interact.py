@@ -62,6 +62,7 @@ class sage_interactive(interactive):
           y: Text(value='hello', description='y')
           z: Dropdown(description='z', options=('one', 'two', 'three'), value=None)
     """
+
     def __init__(self, *args, **kwds):
         """
         See :class:`ipywidgets.widgets.interaction.interactive`.
@@ -98,7 +99,7 @@ class sage_interactive(interactive):
         except KeyError:
             pass
         else:
-            options["manual"] = (p_auto_update.default is False)
+            options["manual"] = p_auto_update.default is False
 
         self.__signature = sig.replace(parameters=params.values())
         super().__init__(f, options, **kwds)
@@ -126,8 +127,7 @@ class sage_interactive(interactive):
         s = "Manual interactive" if self.manual else "Interactive"
         widgets = [w for w in self.children if isinstance(w, ValueWidget)]
         n = len(widgets)
-        s += " function %r with %s widget%s" % (self.f, n,
-                                                "s" if n != 1 else "")
+        s += " function %r with %s widget%s" % (self.f, n, "s" if n != 1 else "")
         for w in widgets:
             s += "\n  %s: %s" % (w._kwarg, w)
         return s
@@ -172,8 +172,12 @@ class sage_interactive(interactive):
         if isinstance(abbrev, Matrix):
             from .widgets_sagenb import input_grid
 
-            return input_grid(abbrev.nrows(), abbrev.ncols(),
-                              default=abbrev.list(), to_value=abbrev.parent())
+            return input_grid(
+                abbrev.nrows(),
+                abbrev.ncols(),
+                default=abbrev.list(),
+                to_value=abbrev.parent(),
+            )
 
         if isinstance(abbrev, Color):
             return SageColorPicker(value=abbrev.html_color())
@@ -234,6 +238,7 @@ class sage_interactive(interactive):
             if isinstance(parent(x), SymbolicRing):
                 return x.numerical_approx()
             return x
+
         abbrev = tuple(n(x) for x in abbrev)
         return super().widget_from_tuple(abbrev, *args, **kwds)
 

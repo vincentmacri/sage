@@ -49,6 +49,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 lazy_import('sage.rings.ring_extension', 'RingExtension_generic')
 
+
 class DrinfeldModule(Parent, UniqueRepresentation):
     r"""
     This class implements Drinfeld `\GF{q}[T]`-modules.
@@ -586,11 +587,9 @@ class DrinfeldModule(Parent, UniqueRepresentation):
         # here and in the category constructor, which is not ideal.
         # Check domain is Fq[T]
         if not isinstance(function_ring, PolynomialRing_generic):
-            raise NotImplementedError('function ring must be a polynomial '
-                                      'ring')
+            raise NotImplementedError('function ring must be a polynomial ring')
         function_ring_base = function_ring.base_ring()
-        if not function_ring_base.is_field() \
-                or not function_ring_base.is_finite():
+        if not function_ring_base.is_field() or not function_ring_base.is_finite():
             raise TypeError('function ring base must be a finite field')
 
         # Check all possible input types for gen
@@ -610,11 +609,12 @@ class DrinfeldModule(Parent, UniqueRepresentation):
                 except AttributeError:
                     pass
         else:
-            raise TypeError('generator must be list of coefficients or Ore '
-                            'polynomial')
+            raise TypeError('generator must be list of coefficients or Ore polynomial')
         # The coefficients are in a base field that has coercion from Fq:
-        if not (hasattr(A_field, 'has_coerce_map_from') and
-                A_field.has_coerce_map_from(function_ring.base_ring())):
+        if not (
+            hasattr(A_field, 'has_coerce_map_from')
+            and A_field.has_coerce_map_from(function_ring.base_ring())
+        ):
             raise ValueError('function ring base must coerce into base field')
 
         # Build the category
@@ -639,17 +639,24 @@ class DrinfeldModule(Parent, UniqueRepresentation):
 
         # Instantiate the appropriate class:
         if A_field.is_finite():
-            from sage.rings.function_field.drinfeld_modules.drinfeld_module_finite import DrinfeldModule_finite
+            from sage.rings.function_field.drinfeld_modules.drinfeld_module_finite import (
+                DrinfeldModule_finite,
+            )
+
             return DrinfeldModule_finite(gen, category)
         if isinstance(A_field, FractionField_generic):
             ring = A_field.ring()
-            if (isinstance(ring, PolynomialRing_generic)
-            and ring.base_ring() is function_ring_base
-            and base_morphism(T) == ring.gen()):
+            if (
+                isinstance(ring, PolynomialRing_generic)
+                and ring.base_ring() is function_ring_base
+                and base_morphism(T) == ring.gen()
+            ):
                 from .drinfeld_module_charzero import DrinfeldModule_rational
+
                 return DrinfeldModule_rational(gen, category)
         if not category._characteristic:
             from .drinfeld_module_charzero import DrinfeldModule_charzero
+
             return DrinfeldModule_charzero(gen, category)
         return cls.__classcall__(cls, gen, category)
 
@@ -779,7 +786,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             sage: isinstance(hom, DrinfeldModuleHomset)
             True
         """
-        from sage.rings.function_field.drinfeld_modules.homset import DrinfeldModuleHomset
+        from sage.rings.function_field.drinfeld_modules.homset import (
+            DrinfeldModuleHomset,
+        )
+
         return DrinfeldModuleHomset(self, other, category)
 
     def _latex_(self) -> str:
@@ -808,8 +818,7 @@ class DrinfeldModule(Parent, UniqueRepresentation):
         """
         if self.get_custom_name() is not None:
             return latex_variable_name(self.get_custom_name())
-        return f'\\phi: {latex(self._function_ring.gen())} \\mapsto ' \
-                   f'{latex(self._gen)}'
+        return f'\\phi: {latex(self._function_ring.gen())} \\mapsto {latex(self._gen)}'
 
     def _repr_(self) -> str:
         r"""
@@ -825,8 +834,9 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             sage: phi
             Drinfeld module defined by T |--> z12^5*τ^2 + z12^3*τ + 2*z12^11 + 2*z12^10 + z12^9 + 3*z12^8 + z12^7 + 2*z12^5 + 2*z12^4 + 3*z12^3 + z12^2 + 2*z12
         """
-        return f'Drinfeld module defined by {self._function_ring.gen()} ' \
-               f'|--> {self._gen}'
+        return (
+            f'Drinfeld module defined by {self._function_ring.gen()} |--> {self._gen}'
+        )
 
     def _test_category(self, **options) -> None:
         """
@@ -852,8 +862,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
         SageObject._test_category(self, tester=tester)
         category = self.category()
         # Tests that self inherits methods from the categories
-        tester.assertTrue(isinstance(self, category.parent_class),
-                _LazyString("category of %s improperly initialized", (self,), {}))
+        tester.assertTrue(
+            isinstance(self, category.parent_class),
+            _LazyString("category of %s improperly initialized", (self,), {}),
+        )
 
     def __hash__(self) -> int:
         r"""
@@ -904,7 +916,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             sage: action(P, 0)
             0
         """
-        from sage.rings.function_field.drinfeld_modules.action import DrinfeldModuleAction
+        from sage.rings.function_field.drinfeld_modules.action import (
+            DrinfeldModuleAction,
+        )
+
         return DrinfeldModuleAction(self)
 
     def automorphism_group_order(self, level=False, absolute=False, extension=None):
@@ -1045,9 +1060,13 @@ class DrinfeldModule(Parent, UniqueRepresentation):
 
         """
         if not (absolute or self.is_finite()):
-            raise NotImplementedError('Drinfeld module must be over a finite field for non absolute automorphism group computations')
+            raise NotImplementedError(
+                'Drinfeld module must be over a finite field for non absolute automorphism group computations'
+            )
         if absolute and extension is not None:
-            raise ValueError('when absolute=True, the argument extension must not be set, since extensions do nothing on absolute automorphism groups')
+            raise ValueError(
+                'when absolute=True, the argument extension must not be set, since extensions do nothing on absolute automorphism groups'
+            )
         r = self.rank()
         level_ = gcd([r] + [i for i in range(1, r) if self._gen[i] != 0])
         q = self.function_ring().base_ring().order()
@@ -1062,8 +1081,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
                 if size.is_power_of(K.order()):
                     extension_degree = log(size, K.order())
                 else:
-                    raise ValueError('extension must be a field extension of the base field')
-            n = log(K.order(), q)*extension_degree
+                    raise ValueError(
+                        'extension must be a field extension of the base field'
+                    )
+            n = log(K.order(), q) * extension_degree
             level_ = gcd(level_, n)
         if level:
             return level_
@@ -1182,8 +1203,13 @@ class DrinfeldModule(Parent, UniqueRepresentation):
         r = self._gen.degree()
         if coeff_indices is None:
             if nonzero:
-                coeff_indices = [k for k, g in enumerate(
-                    self.coefficients(sparse=False)[1:-1], start=1) if g]
+                coeff_indices = [
+                    k
+                    for k, g in enumerate(
+                        self.coefficients(sparse=False)[1:-1], start=1
+                    )
+                    if g
+                ]
             else:
                 coeff_indices = list(range(1, r))
         # Check if coeff_indices is valid:
@@ -1193,8 +1219,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
                 raise TypeError('coefficients indices must be integers')
             if max(coeff_indices) >= r or min(coeff_indices) <= 0:
                 raise ValueError(f'indices must be > 0 and < {r}')
-            if not all(coeff_indices[i] < coeff_indices[i + 1] for i in
-                       range(len(coeff_indices) - 1)):
+            if not all(
+                coeff_indices[i] < coeff_indices[i + 1]
+                for i in range(len(coeff_indices) - 1)
+            ):
                 raise ValueError('indices must be distinct and sorted')
             if nonzero:
                 coeff_indices = [k for k in coeff_indices if self._gen[k]]
@@ -1214,8 +1242,9 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             lower_bounds[idx + 1] = 1
             # Create inequalities of the form
             #   delta_i <= (q^r - 1)/(q^{gcd(i,r)} - 1)
-            upper_bounds = [Integer((q**r - 1) / (q**(gcd(i, r)) - 1))]\
-                            + [0] * (len(coeff_indices) + 1)
+            upper_bounds = [Integer((q**r - 1) / (q ** (gcd(i, r)) - 1))] + [0] * (
+                len(coeff_indices) + 1
+            )
             upper_bounds[idx + 1] = -1
             inequalities.extend((lower_bounds, upper_bounds))
         equation.append(1 - q**r)
@@ -1295,8 +1324,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             sage: J_phi[((1, 2), (7, 4, 1))]
             T^11 + 3*T^10 + T^9 + 4*T^8 + T^7 + 2*T^6 + 2*T^4 + 3*T^3 + 2*T^2 + 3
         """
-        return {parameter: self.j_invariant(parameter, check=False)
-                for parameter in self.basic_j_invariant_parameters(nonzero=nonzero)}
+        return {
+            parameter: self.j_invariant(parameter, check=False)
+            for parameter in self.basic_j_invariant_parameters(nonzero=nonzero)
+        }
 
     def coefficient(self, n):
         r"""
@@ -1480,8 +1511,9 @@ class DrinfeldModule(Parent, UniqueRepresentation):
         """
         try:
             if self.characteristic().is_zero():
-                raise ValueError('height is only defined for prime '
-                                 'function field characteristic')
+                raise ValueError(
+                    'height is only defined for prime function field characteristic'
+                )
             else:
                 p = self.characteristic()
                 return Integer(self(p).valuation() // p.degree())
@@ -1625,7 +1657,7 @@ class DrinfeldModule(Parent, UniqueRepresentation):
                 # u^e = ue
                 # u^(q^i - 1) = ai/bi
                 e, s, t = e.xgcd(q**i - 1)
-                ue = ue**s * (ai / bi)**t
+                ue = ue**s * (ai / bi) ** t
         for i in range(1, r + 1):
             if A[i]:
                 f = (q**i - 1) // e
@@ -1664,7 +1696,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             sage: psi.is_finite()
             False
         """
-        from sage.rings.function_field.drinfeld_modules.drinfeld_module_finite import DrinfeldModule_finite
+        from sage.rings.function_field.drinfeld_modules.drinfeld_module_finite import (
+            DrinfeldModule_finite,
+        )
+
         return isinstance(self, DrinfeldModule_finite)
 
     def j_invariant(self, parameter=None, check=True):
@@ -1880,50 +1915,59 @@ class DrinfeldModule(Parent, UniqueRepresentation):
         q = self._Fq.order()
         if parameter is None:
             if r != 2:
-                raise TypeError("parameter must not be None "
-                                "if the rank is greater than 2")
-            return self._gen[1]**(q + 1) / self._gen[2]
+                raise TypeError(
+                    "parameter must not be None if the rank is greater than 2"
+                )
+            return self._gen[1] ** (q + 1) / self._gen[2]
         if parameter in ZZ:
             parameter = ZZ(parameter)
             if parameter <= 0 or parameter >= r:
-                raise ValueError("integer parameter must be >= 1 and < the "
-                                 f"rank (={r})")
-            dk = Integer((q**r - 1) / (q**gcd(parameter, r) - 1))
-            dr = Integer((q**parameter - 1) / (q**gcd(parameter, r) - 1))
-            return self._gen[parameter]**dk / self._gen[-1]**dr
+                raise ValueError(
+                    f"integer parameter must be >= 1 and < the rank (={r})"
+                )
+            dk = Integer((q**r - 1) / (q ** gcd(parameter, r) - 1))
+            dr = Integer((q**parameter - 1) / (q ** gcd(parameter, r) - 1))
+            return self._gen[parameter] ** dk / self._gen[-1] ** dr
         if isinstance(parameter, (tuple, list)):
             if len(parameter) != 2:
                 raise ValueError("list or tuple parameter must be of length 2")
-            if not isinstance(parameter[0], (tuple, list)) \
-                    or not isinstance(parameter[1], (tuple, list)):
-                raise TypeError("list or tuple parameter must contain tuples "
-                                "or lists")
-            if not len(parameter[0]) < r or\
-                       not len(parameter[1]) == len(parameter[0]) + 1:
-                raise ValueError("components of tuple or list parameter have "
-                                 "incorrect length")
+            if not isinstance(parameter[0], (tuple, list)) or not isinstance(
+                parameter[1], (tuple, list)
+            ):
+                raise TypeError("list or tuple parameter must contain tuples or lists")
+            if (
+                not len(parameter[0]) < r
+                or not len(parameter[1]) == len(parameter[0]) + 1
+            ):
+                raise ValueError(
+                    "components of tuple or list parameter have incorrect length"
+                )
             try:  # Check parameter's type
                 parameter_0 = [ZZ(p) for p in parameter[0]]
                 parameter_1 = [ZZ(p) for p in parameter[1]]
             except TypeError:
-                raise TypeError("components of tuple or list parameter must "
-                                "contain only integers")
+                raise TypeError(
+                    "components of tuple or list parameter must contain only integers"
+                )
             # Check that the weight-0 condition is satisfied:
             #   d_1 (q - 1) + ... + d_{r-1} (q^{r-1} - 1)
             #   = d_r (q^r - 1)
             if check:
                 right = parameter_1[-1] * (q**r - 1)
-                left = sum(parameter_1[i] * (q**(parameter_0[i]) - 1) for i in
-                           range(len(parameter_0)))
+                left = sum(
+                    parameter_1[i] * (q ** (parameter_0[i]) - 1)
+                    for i in range(len(parameter_0))
+                )
                 if left != right:
-                    raise ValueError("parameter does not satisfy the "
-                                     "weight-0 condition")
+                    raise ValueError(
+                        "parameter does not satisfy the weight-0 condition"
+                    )
         else:
-            raise TypeError("parameter must be a tuple or a list of "
-                            "length 2 or an integer")
-        num = prod(self._gen[k]**d
-                   for k, d in zip(parameter_0, parameter_1[:-1]))
-        return num / (self._gen[-1]**parameter_1[-1])
+            raise TypeError(
+                "parameter must be a tuple or a list of length 2 or an integer"
+            )
+        num = prod(self._gen[k] ** d for k, d in zip(parameter_0, parameter_1[:-1]))
+        return num / (self._gen[-1] ** parameter_1[-1])
 
     def jk_invariants(self):
         r"""
@@ -2329,7 +2373,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             for more documentation on the implementation of Anderson motives
             in SageMath.
         """
-        from sage.rings.function_field.drinfeld_modules.anderson_motive import AndersonMotive_drinfeld
+        from sage.rings.function_field.drinfeld_modules.anderson_motive import (
+            AndersonMotive_drinfeld,
+        )
+
         return AndersonMotive_drinfeld(self, dual, names=names)
 
     def frobenius_relative(self, n=1):
@@ -2393,5 +2440,7 @@ class DrinfeldModule(Parent, UniqueRepresentation):
         tau = self.ore_variable()
         d = self.characteristic().degree()
         if d < 0:
-            raise ValueError("the characteristic of the Drinfeld module must be nonzero")
-        return self.hom(tau**(n * d))
+            raise ValueError(
+                "the characteristic of the Drinfeld module must be nonzero"
+            )
+        return self.hom(tau ** (n * d))

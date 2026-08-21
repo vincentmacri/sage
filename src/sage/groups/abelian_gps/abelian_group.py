@@ -223,6 +223,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 # .. TODO::
 
+
 #     this uses perm groups - the AbelianGroupElement instance method
 #     uses a different implementation.
 def word_problem(words, g, verbose=False):
@@ -303,13 +304,13 @@ def word_problem(words, g, verbose=False):
           'PreImagesRepresentative') and may be faster.
     """
     from sage.libs.gap.libgap import libgap
+
     A = libgap.AbelianGroup(g.parent().gens_orders())
     gens = libgap.GeneratorsOfGroup(A)
 
     gap_g = libgap.Product([gi**Li for gi, Li in zip(gens, g.list())])
 
-    gensH = [libgap.Product([gi**Li for gi, Li in zip(gens, w.list())])
-             for w in words]
+    gensH = [libgap.Product([gi**Li for gi, Li in zip(gens, w.list())]) for w in words]
     H = libgap.Group(gensH)
 
     x = libgap.Factorization(H, gap_g)
@@ -318,8 +319,9 @@ def word_problem(words, g, verbose=False):
     indices = resu[0::2]
     powers = resu[1::2]
     if verbose:
-        v = '*'.join('(%s)^%s' % (words[indi - 1], powi)
-                     for indi, powi in zip(indices, powers))
+        v = '*'.join(
+            '(%s)^%s' % (words[indi - 1], powi) for indi, powi in zip(indices, powers)
+        )
         print('%s = %s' % (g, v))
     return [[words[indi - 1], powi] for indi, powi in zip(indices, powers)]
 
@@ -384,9 +386,17 @@ def _normalize(n, gens_orders=None, names='f'):
         gens_orders = [0] * (n - len(gens_orders)) + list(gens_orders)
     gens_orders = tuple(ZZ(i) for i in gens_orders)
     if any(i < 0 for i in gens_orders):
-        raise ValueError(f'orders of generators cannot be negative but they are {gens_orders}')
+        raise ValueError(
+            f'orders of generators cannot be negative but they are {gens_orders}'
+        )
     if len(gens_orders) > n:
-        raise ValueError('gens_orders (='+str(gens_orders)+') must have length n (='+str(n)+')')
+        raise ValueError(
+            'gens_orders (='
+            + str(gens_orders)
+            + ') must have length n (='
+            + str(n)
+            + ')'
+        )
     if isinstance(names, list):
         names = tuple(names)
     return (gens_orders, names)
@@ -508,6 +518,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
         sage: AbelianGroup(0).gens_orders()
         ()
     """
+
     Element = AbelianGroupElement
 
     def __init__(self, generator_orders, names, category=None):
@@ -696,10 +707,12 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             ValueError: group must be finite
         """
         from sage.groups.abelian_gps.dual_abelian_group import DualAbelianGroup_class
+
         if not self.is_finite():
             raise ValueError('group must be finite')
         if base_ring is None:
             from sage.rings.number_field.number_field import CyclotomicField
+
             base_ring = CyclotomicField(lcm(self.gens_orders()))
         return DualAbelianGroup_class(self, names=names, base_ring=base_ring)
 
@@ -750,6 +763,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             (60,)
         """
         from sage.matrix.constructor import diagonal_matrix
+
         ed = diagonal_matrix(ZZ, self.gens_orders()).elementary_divisors()
         return tuple(d for d in ed if d != 1)
 
@@ -823,8 +837,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             sage: F._latex_()
             '$\\mathrm{AbelianGroup}( 10, (2, 2, 2, 2, 2, 2, 2, 2, 2, 2) )$'
         """
-        return r"$\mathrm{AbelianGroup}( %s, %s )$" % (self.ngens(),
-                                                       self.gens_orders())
+        return r"$\mathrm{AbelianGroup}( %s, %s )$" % (self.ngens(), self.gens_orders())
 
     @cached_method
     def _libgap_(self):
@@ -855,6 +868,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
 
         # Make sure to LoadPackage("Polycyclic") in gap
         from sage.features.gap import GapPackage
+
         GapPackage("polycyclic", spkg='gap_packages').require()
         return libgap.AbelianPcpGroup(self.gens_orders())
 
@@ -881,6 +895,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             return 'AbelianGroup(%s)' % list(self.gens_orders())
 
         from sage.features.gap import GapPackage
+
         # Make sure to LoadPackage("Polycyclic") in gap
         GapPackage("polycyclic", spkg='gap_packages').require()
         return 'AbelianPcpGroup(%s)' % list(self.gens_orders())
@@ -917,8 +932,8 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
         """
         n = self.ngens()
         if i < 0 or i >= n:
-            raise IndexError("Argument i (= %s) must be between 0 and %s." % (i, n-1))
-        x = [0]*n
+            raise IndexError("Argument i (= %s) must be between 0 and %s." % (i, n - 1))
+        x = [0] * n
         if self._gens_orders[i] != 1:
             x[i] = 1
         return self.element_class(self, x)
@@ -1135,6 +1150,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
         if not self.is_finite():
             raise TypeError('Abelian group must be finite')
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         s = 'Image(IsomorphismPermGroup(%s))' % self._gap_init_()
         return PermutationGroup(gap_group=s)
 
@@ -1163,12 +1179,13 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             True
         """
         from sage.misc.prandom import randint
+
         result = self.one()
         for g in self.gens():
             order = g.order()
             if order is infinity:
                 order = 42  # infinite order; randomly chosen maximum
-            result *= g ** randint(0, order-1)
+            result *= g ** randint(0, order - 1)
         return result
 
     def _repr_(self) -> str:
@@ -1314,8 +1331,8 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             # A similar approach works for infinite groups.
             # (This would also work for finite groups, but is more complicated.)
             from sage.misc.mrange import cantor_product
-            yield from map(self, cantor_product(*[range(n) if n
-                                                  else ZZ for n in invs]))
+
+            yield from map(self, cantor_product(*[range(n) if n else ZZ for n in invs]))
 
     def number_of_subgroups(self, order=None):
         r"""
@@ -1391,8 +1408,9 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
         from sage.combinat.integer_lists import IntegerListsLex
 
         # The group order is prod(p^e for (p,e) in primary_factors)
-        primary_factors = list(chain.from_iterable(
-            factor(ed) for ed in self.elementary_divisors()))
+        primary_factors = list(
+            chain.from_iterable(factor(ed) for ed in self.elementary_divisors())
+        )
         sylow_types = defaultdict(list)
         for p, e in primary_factors:
             sylow_types[p].append(e)
@@ -1409,7 +1427,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
                 return Integer(0)
             order_exps = dict(factor(order))
 
-            for p in (set(sylow_types) - set(order_exps)):
+            for p in set(sylow_types) - set(order_exps):
                 del sylow_types[p]
             for p in sylow_types:
                 subgroups_orders_kwds[p] = {'n': order_exps[p]}
@@ -1419,13 +1437,17 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             p_exps.sort(reverse=True)
             # The sum is over all partitions mu contained in p_exps whose size
             # is determined by subgroups_orders_kwds.
-            result *= sum(q_subgroups_of_abelian_group(p_exps, mu, q=p)
-                          for mu in IntegerListsLex(max_slope=0,
-                                                    min_part=1,
-                                                    max_length=len(p_exps),
-                                                    ceiling=p_exps,
-                                                    element_constructor=list,
-                                                    **subgroups_orders_kwds[p]))
+            result *= sum(
+                q_subgroups_of_abelian_group(p_exps, mu, q=p)
+                for mu in IntegerListsLex(
+                    max_slope=0,
+                    min_part=1,
+                    max_length=len(p_exps),
+                    ceiling=p_exps,
+                    element_constructor=list,
+                    **subgroups_orders_kwds[p],
+                )
+            )
         return result
 
     def subgroups(self, check=False):
@@ -1491,7 +1513,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             return [self]
         if self.ngens() == 1:
             n = self.gen(0).order()
-            return [self.subgroup([self.gen(0)**i]) for i in divisors(n)]
+            return [self.subgroup([self.gen(0) ** i]) for i in divisors(n)]
 
         v = self.gens_orders()
         A = AbelianGroup(v[:-1])
@@ -1506,8 +1528,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             verbose("invariants are: %s" % [t.order() for t in G.gens()])
             for H in divisors(x):
                 # H = the subgroup of *index* H.
-                its = [range(0, H, H // gcd(H, G.gen(i).order()))
-                       for i in range(ngens)]
+                its = [range(0, H, H // gcd(H, G.gen(i).order())) for i in range(ngens)]
                 for f in product(*its):
                     verbose("using hom from G to C_%s sending gens to %s" % (H, f))
                     new_sub = []
@@ -1522,9 +1543,12 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
         if check:
             verbose("Running Gap cross-check")
             from sage.libs.gap.libgap import libgap
+
             t = libgap(v).AbelianGroup().SubgroupsSolvableGroup().Size().sage()
             if t != len(subgps):
-                raise ArithmeticError("For %s Gap finds %s subgroups, I found %s" % (v, t, len(subgps)))
+                raise ArithmeticError(
+                    "For %s Gap finds %s subgroups, I found %s" % (v, t, len(subgps))
+                )
             verbose("Gap check OK for %s: %s" % (v, t))
         return subgps
 
@@ -1551,6 +1575,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             generated by {f0^2*f1^2, f0^3}
         """
         from sage.matrix.constructor import matrix
+
         d = self.ngens()
         X = ZZ**d
         try:
@@ -1561,11 +1586,21 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
             raise e
         rel_lattice = X.span([X.gen(i) * self.gens_orders()[i] for i in range(d)])
         isect = elt_lattice.intersection(rel_lattice)
-        mat = matrix([elt_lattice.coordinate_vector(x) for x in isect.gens()]).change_ring(ZZ)
+        mat = matrix(
+            [elt_lattice.coordinate_vector(x) for x in isect.gens()]
+        ).change_ring(ZZ)
         D, U, V = mat.smith_form()
-        new_basis = [(elt_lattice.linear_combination_of_basis((~V).row(i)).list(), D[i, i]) for i in range(U.ncols())]
-        return self.subgroup([self([x[0][i] % self.gens_orders()[i]
-                                    for i in range(d)]) for x in new_basis if x[1] != 1])
+        new_basis = [
+            (elt_lattice.linear_combination_of_basis((~V).row(i)).list(), D[i, i])
+            for i in range(U.ncols())
+        ]
+        return self.subgroup(
+            [
+                self([x[0][i] % self.gens_orders()[i] for i in range(d)])
+                for x in new_basis
+                if x[1] != 1
+            ]
+        )
 
     def torsion_subgroup(self, n=None):
         """
@@ -1612,7 +1647,7 @@ class AbelianGroup_class(UniqueRepresentation, AbelianGroupBase):
                 if o == infinity:
                     continue
                 d = n.gcd(o)
-                torsion_generators.append(g**(o//d))
+                torsion_generators.append(g ** (o // d))
         return self.subgroup(torsion_generators)
 
 
@@ -1626,6 +1661,7 @@ class AbelianGroup_subgroup(AbelianGroup_class):
         There should be a way to coerce an element of a subgroup
         into the ambient group.
     """
+
     def __init__(self, ambient, gens, names='f', category=None):
         """
         EXAMPLES::
@@ -1706,6 +1742,7 @@ class AbelianGroup_subgroup(AbelianGroup_class):
              generated by {f0*f1^-2*f2^3*f3^-4*f4}
         """
         from sage.libs.gap.libgap import libgap
+
         if not isinstance(ambient, AbelianGroup_class):
             raise TypeError("ambient (=%s) must be an abelian group" % ambient)
         if not isinstance(gens, tuple):
@@ -1718,8 +1755,7 @@ class AbelianGroup_subgroup(AbelianGroup_class):
         H = libgap(ambient).Subgroup(H_gens)
 
         invs = H.TorsionSubgroup().AbelianInvariants().sage()
-        rank = len([1 for g in H.GeneratorsOfGroup()
-                    if g.Order().sage() is infinity])
+        rank = len([1 for g in H.GeneratorsOfGroup() if g.Order().sage() is infinity])
         invs += [0] * rank
 
         self._abinvs = invs
@@ -1777,11 +1813,9 @@ class AbelianGroup_subgroup(AbelianGroup_class):
             amb_inv = self.ambient_group().gens_orders()
             inv_basis = diagonal_matrix(ZZ, amb_inv)
             gens_basis = matrix(
-                ZZ, len(self._gens), len(amb_inv),
-                [g.list() for g in self._gens]
+                ZZ, len(self._gens), len(amb_inv), [g.list() for g in self._gens]
             )
-            return (vector(ZZ, x.list())
-                    in inv_basis.stack(gens_basis).row_module())
+            return vector(ZZ, x.list()) in inv_basis.stack(gens_basis).row_module()
         return False
 
     def ambient_group(self):

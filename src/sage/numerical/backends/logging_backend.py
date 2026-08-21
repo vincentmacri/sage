@@ -17,7 +17,6 @@ See :class:`LoggingBackendFactory` for more information.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.numerical.backends.generic_backend import GenericBackend
 
 
@@ -53,6 +52,7 @@ def _make_wrapper(backend, attr):
         # result: 0
         0
     """
+
     def m(self, *args, **kwdargs):
         funcall = _format_function_call("p." + attr, *args, **kwdargs)
         a = getattr(self._backend, attr)
@@ -66,12 +66,18 @@ def _make_wrapper(backend, attr):
             if self._printing:
                 print("# exception: {}".format(e))
             if self._doctest:
-                self._doctest.write("        Traceback (most recent call last):\n"
-                                    "        ...\n"
-                                    "        MIPSolverException: {}\n".format(e))
+                self._doctest.write(
+                    "        Traceback (most recent call last):\n"
+                    "        ...\n"
+                    "        MIPSolverException: {}\n".format(e)
+                )
             if self._test_method:
-                self._test_method.write(("        with tester.assertRaises({}) as cm:\n" +
-                                         "            {}\n").format(type(e).__name__, funcall))
+                self._test_method.write(
+                    (
+                        "        with tester.assertRaises({}) as cm:\n"
+                        + "            {}\n"
+                    ).format(type(e).__name__, funcall)
+                )
             raise
         else:
             if self._printing:
@@ -80,15 +86,25 @@ def _make_wrapper(backend, attr):
                 self._doctest.write("        {}\n".format(result))
             if self._test_method:
                 if result is None:
-                    self._test_method.write("        tester.assertIsNone({})\n".format(funcall))
+                    self._test_method.write(
+                        "        tester.assertIsNone({})\n".format(funcall)
+                    )
                 elif type(result) is float:
                     # TODO: by default assertAlmostEqual does 7 decimal places (not significant digits)
                     # better perhaps to compute an appropriate 'places' or 'delta' parameter from result.
-                    self._test_method.write("        tester.assertAlmostEqual({}, {})\n".format(funcall, result))
+                    self._test_method.write(
+                        "        tester.assertAlmostEqual({}, {})\n".format(
+                            funcall, result
+                        )
+                    )
                 else:
-                    self._test_method.write("        tester.assertEqual({}, {})\n".format(funcall, result))
+                    self._test_method.write(
+                        "        tester.assertEqual({}, {})\n".format(funcall, result)
+                    )
         return result
+
     from functools import update_wrapper
+
     update_wrapper(m, getattr(backend, attr))
     return m
 
@@ -116,8 +132,9 @@ class LoggingBackend(GenericBackend):
     .. :no-undoc-members:
     """
 
-    def __init__(self, backend, printing=True, doctest=None, test_method=None,
-                 base_ring=None):
+    def __init__(
+        self, backend, printing=True, doctest=None, test_method=None, base_ring=None
+    ):
         """
         See :class:`LoggingBackendFactory` for documentation.
 
@@ -157,6 +174,7 @@ class LoggingBackend(GenericBackend):
         if callable(_a):
             # make a bound method
             import types
+
             _mm = types.MethodType(_make_wrapper(self._backend, attr), self)
             # cache it
             setattr(self, attr, _mm)
@@ -210,8 +228,7 @@ for attr in dir(LoggingBackend):
     if not attr.startswith("_") and attr not in ("zero", "base_ring"):
         _override_attr(attr)
 
-test_method_template = \
-r'''
+test_method_template = r'''
     @classmethod
     def _test_{name}(cls, tester=None, **options):
         """
@@ -229,13 +246,21 @@ r'''
         p = cls()                         # fresh instance of the backend
         if tester is None:
             tester = p._tester(**options)
-'''.replace("SAGE:", "sage:") # so that the above test does not get picked up by the doctester
+'''.replace(
+    "SAGE:", "sage:"
+)  # so that the above test does not get picked up by the doctester
 
 from sage.rings.rational_field import QQ
 
 
-def LoggingBackendFactory(solver=None, printing=True, doctest_file=None, test_method_file=None,
-                          test_method=None, base_ring=QQ):
+def LoggingBackendFactory(
+    solver=None,
+    printing=True,
+    doctest_file=None,
+    test_method_file=None,
+    test_method=None,
+    base_ring=QQ,
+):
     """
     Factory that constructs a :class:`LoggingBackend` for debugging and testing.
 
@@ -373,7 +398,9 @@ def LoggingBackendFactory(solver=None, printing=True, doctest_file=None, test_me
         """
         Create an instance of :class:`LoggingBackend`.
         """
-        construct = "p = {}".format(_format_function_call('get_solver', solver=solver, **kwds))
+        construct = "p = {}".format(
+            _format_function_call('get_solver', solver=solver, **kwds)
+        )
         if printing:
             print("# {}".format(construct))
         if doctest is not None:
@@ -381,8 +408,13 @@ def LoggingBackendFactory(solver=None, printing=True, doctest_file=None, test_me
         if test_method_output is not None:
             test_method_output.write(test_method_template.format(name=test_method))
         from sage.numerical.backends.generic_backend import get_solver
-        return LoggingBackend(backend=get_solver(solver=solver, **kwds),
-                              printing=printing, doctest=doctest, test_method=test_method_output,
-                              base_ring=base_ring)
+
+        return LoggingBackend(
+            backend=get_solver(solver=solver, **kwds),
+            printing=printing,
+            doctest=doctest,
+            test_method=test_method_output,
+            base_ring=base_ring,
+        )
 
     return logging_solver

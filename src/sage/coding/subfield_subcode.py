@@ -9,7 +9,7 @@ coordinate of `c`.
 `Cs` is called the subfield subcode of `C` over `\GF{q}`
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2016 David Lucas, Inria  <david.lucas@inria.fr>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@ coordinate of `c`.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .linear_code import AbstractLinearCode
 from sage.misc.cachefunc import cached_method
@@ -48,6 +48,7 @@ class SubfieldSubcode(AbstractLinearCode):
         sage: codes.SubfieldSubcode(C, GF(4, 'a'))
         Subfield subcode of [7, 3] linear code over GF(16) down to GF(4)
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
@@ -83,11 +84,15 @@ class SubfieldSubcode(AbstractLinearCode):
         sm = F.degree()
         s = subfield.degree()
         if not s.divides(sm):
-            raise ValueError("subfield has to be a subfield of the base field of the original code")
+            raise ValueError(
+                "subfield has to be a subfield of the base field of the original code"
+            )
 
         H = Hom(subfield, F)
         if embedding is not None and embedding not in H:
-            raise ValueError("embedding has to be an embedding from subfield to original_code's base field")
+            raise ValueError(
+                "embedding has to be an embedding from subfield to original_code's base field"
+            )
         if embedding is None:
             embedding = H[0]
 
@@ -107,9 +112,11 @@ class SubfieldSubcode(AbstractLinearCode):
             sage: Cs1 == Cs2
             True
         """
-        return isinstance(other, SubfieldSubcode) \
-                and self.original_code() == other.original_code()\
-                and self.embedding() == other.embedding()
+        return (
+            isinstance(other, SubfieldSubcode)
+            and self.original_code() == other.original_code()
+            and self.embedding() == other.embedding()
+        )
 
     def _repr_(self):
         r"""
@@ -122,8 +129,10 @@ class SubfieldSubcode(AbstractLinearCode):
             sage: Cs
             Subfield subcode of [7, 3] linear code over GF(16) down to GF(4)
         """
-        return "Subfield subcode of %s down to GF(%s)"\
-                % (self.original_code(), self.base_field().cardinality())
+        return "Subfield subcode of %s down to GF(%s)" % (
+            self.original_code(),
+            self.base_field().cardinality(),
+        )
 
     def _latex_(self):
         r"""
@@ -136,8 +145,10 @@ class SubfieldSubcode(AbstractLinearCode):
             sage: latex(Cs)
             \textnormal{Subfield subcode of }[7, 3]\textnormal{ Linear code over }\Bold{F}_{2^{4}}\textnormal{ down to }\Bold{F}_{2^{2}}
         """
-        return "\\textnormal{Subfield subcode of }%s\\textnormal{ down to }%s"\
-                % (self.original_code()._latex_(), self.base_field()._latex_())
+        return "\\textnormal{Subfield subcode of }%s\\textnormal{ down to }%s" % (
+            self.original_code()._latex_(),
+            self.base_field()._latex_(),
+        )
 
     def dimension(self):
         r"""
@@ -180,7 +191,7 @@ class SubfieldSubcode(AbstractLinearCode):
         n = C.length()
         k = C.dimension()
         m = self._extension_degree
-        return n - m*(n-k)
+        return n - m * (n - k)
 
     def original_code(self):
         r"""
@@ -250,7 +261,7 @@ class SubfieldSubcode(AbstractLinearCode):
             for j in range(n):
                 h_vec = to_V(H_original[i][j])
                 for k in range(m):
-                    H[i*m+k, j] = h_vec[k]
+                    H[i * m + k, j] = h_vec[k]
 
         H = H.echelon_form()
         delete = [i for i in range(H.nrows()) if H.row(i) == 0]
@@ -300,15 +311,21 @@ class SubfieldSubcodeOriginalCodeDecoder(Decoder):
             ValueError: original_decoder must have the original code as associated code
         """
         original_code = code.original_code()
-        if original_decoder is not None and not original_decoder.code() == code.original_code():
-            raise ValueError("original_decoder must have the original code as associated code")
+        if (
+            original_decoder is not None
+            and not original_decoder.code() == code.original_code()
+        ):
+            raise ValueError(
+                "original_decoder must have the original code as associated code"
+            )
         elif original_decoder is not None:
             self._original_decoder = original_decoder
         else:
             self._original_decoder = original_code.decoder(**kwargs)
 
-        super().__init__(code, code.ambient_space(),
-                         self._original_decoder.connected_encoder())
+        super().__init__(
+            code, code.ambient_space(), self._original_decoder.connected_encoder()
+        )
 
         self._decoder_type = copy(self._decoder_type)
         self._decoder_type.remove("dynamic")
@@ -340,7 +357,10 @@ class SubfieldSubcodeOriginalCodeDecoder(Decoder):
             sage: latex(D)
             \textnormal{Decoder of Subfield subcode of [13, 5, 9] Reed-Solomon Code over GF(16) down to GF(4) through } Gao decoder for [13, 5, 9] Reed-Solomon Code over GF(16)
         """
-        return "\\textnormal{Decoder of %s through } %s" % (self.code(), self.original_decoder())
+        return "\\textnormal{Decoder of %s through } %s" % (
+            self.code(),
+            self.original_decoder(),
+        )
 
     def original_decoder(self):
         r"""
@@ -391,8 +411,10 @@ class SubfieldSubcodeOriginalCodeDecoder(Decoder):
         try:
             cw = vector([sec(c) for c in result])
         except ValueError:  # not a codeword of this code
-            raise DecodingError("Original decoder does not output a subfield codeword. "
-                                "You may have exceeded the decoding radius.")
+            raise DecodingError(
+                "Original decoder does not output a subfield codeword. "
+                "You may have exceeded the decoding radius."
+            )
         return cw
 
     def decoding_radius(self, **kwargs):
@@ -417,5 +439,7 @@ class SubfieldSubcodeOriginalCodeDecoder(Decoder):
 
 ####################### registration ###############################
 
-SubfieldSubcode._registered_decoders["OriginalCode"] = SubfieldSubcodeOriginalCodeDecoder
+SubfieldSubcode._registered_decoders["OriginalCode"] = (
+    SubfieldSubcodeOriginalCodeDecoder
+)
 SubfieldSubcodeOriginalCodeDecoder._decoder_type = {"dynamic"}

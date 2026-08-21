@@ -14,6 +14,7 @@ def excepthook(*exc):
 
     print(stars, file=sys.stderr)
     import traceback
+
     traceback.print_exception(*exc, file=sys.stderr)
     print(stars, file=sys.stderr)
     print("Error building the Sage library", file=sys.stderr)
@@ -24,8 +25,14 @@ def excepthook(*exc):
     except Exception:
         pass
     else:
-        print("Please email sage-devel (http://groups.google.com/group/sage-devel)", file=sys.stderr)
-        print("explaining the problem and including the relevant part of the log file", file=sys.stderr)
+        print(
+            "Please email sage-devel (http://groups.google.com/group/sage-devel)",
+            file=sys.stderr,
+        )
+        print(
+            "explaining the problem and including the relevant part of the log file",
+            file=sys.stderr,
+        )
         print("  " + logfile, file=sys.stderr)
         print("Describe your computer, operating system, etc.", file=sys.stderr)
         print(stars, file=sys.stderr)

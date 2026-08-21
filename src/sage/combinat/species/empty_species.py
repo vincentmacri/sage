@@ -1,6 +1,7 @@
 """
 Empty species
 """
+
 # ****************************************************************************
 #       Copyright (C) 2008 Florent Hivert <Florent.Hivert@univ-rouen,fr>,
 #

@@ -1,4 +1,4 @@
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 Carl Witty <Carl.Witty@gmail.com>
 #       Copyright (C) 2015 Jeroen Demeyer <jdemeyer@cage.ugent.be>
 #
@@ -7,10 +7,9 @@
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 """General purpose MemoryChunk types and related utilities"""
-
 
 from .utils import je
 from .utils import reindent_lines as ri
@@ -305,10 +304,16 @@ class MemoryChunkLonglivedArray(MemoryChunk):
                     self._args = <double*>check_allocarray(self._n_args, sizeof(double))
             <BLANKLINE>
         """
-        return je(ri(0, """
+        return je(
+            ri(
+                0,
+                """
                     count = args['{{ myself.name }}']
             {% print(myself.storage_type.alloc_chunk_data(myself.name, 'count')) %}
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
     def dealloc_class_members(self):
         r"""
@@ -373,12 +378,18 @@ class MemoryChunkConstants(MemoryChunkLonglivedArray):
                         mpfr_set(self._constants[i], rn.value, MPFR_RNDN)
             <BLANKLINE>
         """
-        return je(ri(0, """
+        return je(
+            ri(
+                0,
+                """
                     val = args['{{ myself.name }}']
             {% print(myself.storage_type.alloc_chunk_data(myself.name, 'len(val)')) %}
                     for i in range(len(val)):
                         {{ myself.storage_type.assign_c_from_py('self._%s[i]' % myself.name, 'val[i]') | i(12) }}
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
 
 class MemoryChunkArguments(MemoryChunkLonglivedArray):
@@ -408,12 +419,18 @@ class MemoryChunkArguments(MemoryChunkLonglivedArray):
                 mpfr_set(self._args[i], rn.value, MPFR_RNDN)
             <BLANKLINE>
         """
-        return je(ri(0, """
+        return je(
+            ri(
+                0,
+                """
             cdef {{ myself.storage_type.c_ptr_type() }} c_args = self._args
             cdef int i
             for i from 0 <= i < len(args):
                 {{ myself.storage_type.assign_c_from_py('self._args[i]', 'args[i]') | i(4) }}
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )
 
     def pass_argument(self):
         r"""
@@ -517,7 +534,13 @@ class MemoryChunkScratch(MemoryChunkLonglivedArray):
         """
         # XXX This is a lot slower than it needs to be, because
         # we don't have a "cdef int i" in scope here.
-        return je(ri(0, """
+        return je(
+            ri(
+                0,
+                """
             for i in range(self._n_{{ myself.name }}):
                 Py_CLEAR(self._{{ myself.name }}[i])
-            """), myself=self)
+            """,
+            ),
+            myself=self,
+        )

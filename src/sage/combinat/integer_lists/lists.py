@@ -19,7 +19,6 @@ Enumerated set of lists of integers with constraints: front-end
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-
 from inspect import ismethod
 from sage.categories.enumerated_sets import EnumeratedSets
 from sage.structure.list_clone import ClonableArray
@@ -31,6 +30,7 @@ class IntegerList(ClonableArray):
     """
     Element class for :class:`IntegerLists`.
     """
+
     def check(self):
         """
         Check to make sure this is a valid element in its
@@ -80,6 +80,7 @@ class IntegerLists(Parent):
         sage: IntegerListsLex(2, length=3, name="A given name")
         A given name
     """
+
     backend = None
     backend_class = IntegerListsBackend
 

@@ -295,7 +295,9 @@ def consistent(*formulas) -> bool:
     # make sure only instances of :class:`~sage.logic.boolformula.BooleanFormula` were passed as arguments
     for formula in formulas[1:]:
         if not isinstance(formula, boolformula.BooleanFormula):
-            raise TypeError("consistent() takes BooleanFormula() class instances as arguments")
+            raise TypeError(
+                "consistent() takes BooleanFormula() class instances as arguments"
+            )
 
     # conjoin all of the formulas with &
     conjunction = formulas[0]

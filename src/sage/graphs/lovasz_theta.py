@@ -65,6 +65,7 @@ def lovasz_theta(graph):
     import subprocess
 
     from sage.features.csdp import CSDP
+
     CSDP().require()
 
     g = graph.relabel(inplace=False, perm=range(1, n + 1)).networkx_graph()

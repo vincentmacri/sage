@@ -138,6 +138,7 @@ class AutomorphismField(TensorField):
         sage: ia is ~a
         True
     """
+
     def __init__(self, vector_field_module, name=None, latex_name=None):
         r"""
         Construct a field of tangent-space automorphisms on a
@@ -183,11 +184,16 @@ class AutomorphismField(TensorField):
 
             Fix ``_test_pickling`` (in the superclass :class:`TensorField`).
         """
-        TensorField.__init__(self, vector_field_module, (1,1), name=name,
-                             latex_name=latex_name,
-                             parent=vector_field_module.general_linear_group())
-        self._is_identity = False # a priori
-        self._init_derived() # initialization of derived quantities
+        TensorField.__init__(
+            self,
+            vector_field_module,
+            (1, 1),
+            name=name,
+            latex_name=latex_name,
+            parent=vector_field_module.general_linear_group(),
+        )
+        self._is_identity = False  # a priori
+        self._init_derived()  # initialization of derived quantities
 
     def _repr_(self):
         r"""
@@ -481,7 +487,7 @@ class AutomorphismField(TensorField):
             if len(arg) == 1:
                 # The identity map acting as such, on a vector field:
                 vector = arg[0]
-                if vector._tensor_type != (1,0):
+                if vector._tensor_type != (1, 0):
                     raise TypeError("the argument must be a vector field")
                 dom = self._domain.intersection(vector._domain)
                 return vector.restrict(dom)
@@ -490,15 +496,16 @@ class AutomorphismField(TensorField):
                 # (1-form, vector field), returning a scalar field:
                 oneform = arg[0]
                 vector = arg[1]
-                dom = self._domain.intersection(
-                                  oneform._domain).intersection(vector._domain)
+                dom = self._domain.intersection(oneform._domain).intersection(
+                    vector._domain
+                )
                 return oneform.restrict(dom)(vector.restrict(dom))
             raise TypeError("wrong number of arguments")
         # Generic case
         if len(arg) == 1:
             # The field of automorphisms acting on a vector field:
             vector = arg[0]
-            if vector._tensor_type != (1,0):
+            if vector._tensor_type != (1, 0):
                 raise TypeError("the argument must be a vector field")
             dom = self._domain.intersection(vector._domain)
             vector_dom = vector.restrict(dom)
@@ -508,8 +515,9 @@ class AutomorphismField(TensorField):
             if self._name is not None and vector._name is not None:
                 resu._name = self._name + "(" + vector._name + ")"
             if self._latex_name is not None and vector._latex_name is not None:
-                resu._latex_name = self._latex_name + r"\left(" + \
-                                   vector._latex_name + r"\right)"
+                resu._latex_name = (
+                    self._latex_name + r"\left(" + vector._latex_name + r"\right)"
+                )
             for sdom, automorph in self._restrictions.items():
                 resu._restrictions[sdom] = automorph(vector_dom.restrict(sdom))
             return resu
@@ -624,6 +632,7 @@ class AutomorphismField(TensorField):
             return self
         if self._inverse is None:
             from sage.tensor.modules.format_utilities import is_atomic
+
             if self._name is None:
                 inv_name = None
             else:
@@ -637,10 +646,10 @@ class AutomorphismField(TensorField):
                 if is_atomic(self._latex_name, ['\\circ', '\\otimes']):
                     inv_latex_name = self._latex_name + r'^{-1}'
                 else:
-                    inv_latex_name = r'\left(' + self._latex_name + \
-                                     r'\right)^{-1}'
-            self._inverse = self._vmodule.automorphism(name=inv_name,
-                                                       latex_name=inv_latex_name)
+                    inv_latex_name = r'\left(' + self._latex_name + r'\right)^{-1}'
+            self._inverse = self._vmodule.automorphism(
+                name=inv_name, latex_name=inv_latex_name
+            )
             for dom, rst in self._restrictions.items():
                 self._inverse._restrictions[dom] = rst.inverse()
         return self._inverse
@@ -713,8 +722,7 @@ class AutomorphismField(TensorField):
         # General case:
         resu = type(self)(self._vmodule)
         for dom in self._common_subdomains(other):
-            resu._restrictions[dom] = (self._restrictions[dom]
-                                       * other._restrictions[dom])
+            resu._restrictions[dom] = self._restrictions[dom] * other._restrictions[dom]
         return resu
 
     #### End of MultiplicativeGroupElement methods ####
@@ -888,20 +896,24 @@ class AutomorphismField(TensorField):
                 return TensorField.restrict(self, subdomain, dest_map=dest_map)
             # Special case of the immutable identity map:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subset of " +
-                                 "the field's domain")
+                raise ValueError(
+                    "the provided domain is not a subset of " + "the field's domain"
+                )
             if dest_map is None:
                 dest_map = self._vmodule._dest_map.restrict(subdomain)
             elif not dest_map._codomain.is_subset(self._ambient_domain):
-                raise ValueError("the argument 'dest_map' is not compatible " +
-                                 "with the ambient domain of " +
-                                 "the {}".format(self))
+                raise ValueError(
+                    "the argument 'dest_map' is not compatible "
+                    + "with the ambient domain of "
+                    + "the {}".format(self)
+                )
             smodule = subdomain.vector_field_module(dest_map=dest_map)
             self._restrictions[subdomain] = smodule.identity_map()
         return self._restrictions[subdomain]
 
 
-#******************************************************************************
+# ******************************************************************************
+
 
 class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
     r"""
@@ -986,6 +998,7 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
         sage: inv is ~rot
         True
     """
+
     def __init__(self, vector_field_module, name=None, latex_name=None):
         r"""
         Construct a field of tangent-space automorphisms.
@@ -1020,13 +1033,14 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
             [0 1]
             sage: TestSuite(b).run()
         """
-        FreeModuleAutomorphism.__init__(self, vector_field_module,
-                                        name=name, latex_name=latex_name)
+        FreeModuleAutomorphism.__init__(
+            self, vector_field_module, name=name, latex_name=latex_name
+        )
         # TensorFieldParal attributes:
         self._vmodule = vector_field_module
         self._domain = vector_field_module._domain
         self._ambient_domain = vector_field_module._ambient_domain
-        self._is_identity = False # a priori
+        self._is_identity = False  # a priori
         # Initialization of derived quantities:
         TensorFieldParal._init_derived(self)
 
@@ -1076,7 +1090,7 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
         FreeModuleAutomorphism._del_derived(self)
         TensorFieldParal._del_derived(self, del_restrictions=del_restrictions)
 
-     # Method _new_instance() is defined in mother class FreeModuleAutomorphism
+    # Method _new_instance() is defined in mother class FreeModuleAutomorphism
 
     def __call__(self, *arg):
         r"""
@@ -1116,18 +1130,20 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
             # vector field)
             vector = arg[0]
             dom = self._domain.intersection(vector._domain)
-            return FreeModuleAutomorphism.__call__(self.restrict(dom),
-                                                   vector.restrict(dom))
+            return FreeModuleAutomorphism.__call__(
+                self.restrict(dom), vector.restrict(dom)
+            )
         if len(arg) == 2:
             # the automorphism acting as a type (1,1) tensor on a pair
             # (1-form, vector field), returning a scalar field:
             oneform = arg[0]
             vector = arg[1]
             dom = self._domain.intersection(oneform._domain).intersection(
-                                                                vector._domain)
-            return FreeModuleAutomorphism.__call__(self.restrict(dom),
-                                                   oneform.restrict(dom),
-                                                   vector.restrict(dom))
+                vector._domain
+            )
+            return FreeModuleAutomorphism.__call__(
+                self.restrict(dom), oneform.restrict(dom), vector.restrict(dom)
+            )
         raise TypeError("wrong number of arguments")
 
     def __invert__(self):
@@ -1168,10 +1184,12 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
         from sage.manifolds.differentiable.vectorframe import CoordFrame
         from sage.matrix.constructor import matrix
         from sage.tensor.modules.comp import Components
+
         if self._is_identity:
             return self
         if self._inverse is None:
             from sage.tensor.modules.format_utilities import is_atomic
+
             if self._name is None:
                 inv_name = None
             else:
@@ -1185,13 +1203,13 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
                 if is_atomic(self._latex_name, ['\\circ', '\\otimes']):
                     inv_latex_name = self._latex_name + r'^{-1}'
                 else:
-                    inv_latex_name = r'\left(' + self._latex_name + \
-                                     r'\right)^{-1}'
+                    inv_latex_name = r'\left(' + self._latex_name + r'\right)^{-1}'
             fmodule = self._fmodule
             si = fmodule._sindex
             nsi = fmodule._rank + si
-            self._inverse = fmodule.automorphism(name=inv_name,
-                                                 latex_name=inv_latex_name)
+            self._inverse = fmodule.automorphism(
+                name=inv_name, latex_name=inv_latex_name
+            )
             for frame in self._components:
                 if isinstance(frame, CoordFrame):
                     chart = frame._chart
@@ -1200,16 +1218,27 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
                 try:
                     # TODO: do the computation without the 'SR' enforcement
                     mat_self = matrix(
-                              [[self.comp(frame)[i, j, chart].expr(method='SR')
-                              for j in range(si, nsi)] for i in range(si, nsi)])
+                        [
+                            [
+                                self.comp(frame)[i, j, chart].expr(method='SR')
+                                for j in range(si, nsi)
+                            ]
+                            for i in range(si, nsi)
+                        ]
+                    )
                 except (KeyError, ValueError):
                     continue
                 mat_inv = mat_self.inverse()
-                cinv = Components(fmodule._ring, frame, 2, start_index=si,
-                                  output_formatter=fmodule._output_formatter)
+                cinv = Components(
+                    fmodule._ring,
+                    frame,
+                    2,
+                    start_index=si,
+                    output_formatter=fmodule._output_formatter,
+                )
                 for i in range(si, nsi):
                     for j in range(si, nsi):
-                        val = chart.simplify(mat_inv[i-si,j-si], method='SR')
+                        val = chart.simplify(mat_inv[i - si, j - si], method='SR')
                         cinv[i, j] = {chart: val}
                 self._inverse._components[frame] = cinv
         return self._inverse
@@ -1275,18 +1304,20 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
             return self
         if subdomain not in self._restrictions:
             if not self._is_identity:
-                return TensorFieldParal.restrict(self, subdomain,
-                                                 dest_map=dest_map)
+                return TensorFieldParal.restrict(self, subdomain, dest_map=dest_map)
             # Special case of the identity map:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subset of " +
-                                 "the field's domain.")
+                raise ValueError(
+                    "the provided domain is not a subset of " + "the field's domain."
+                )
             if dest_map is None:
                 dest_map = self._fmodule._dest_map.restrict(subdomain)
             elif not dest_map._codomain.is_subset(self._ambient_domain):
-                raise ValueError("the argument 'dest_map' is not compatible " +
-                                 "with the ambient domain of " +
-                                 "the {}".format(self))
+                raise ValueError(
+                    "the argument 'dest_map' is not compatible "
+                    + "with the ambient domain of "
+                    + "the {}".format(self)
+                )
             smodule = subdomain.vector_field_module(dest_map=dest_map)
             self._restrictions[subdomain] = smodule.identity_map()
         return self._restrictions[subdomain]
@@ -1361,8 +1392,7 @@ class AutomorphismFieldParal(FreeModuleAutomorphism, TensorFieldParal):
             True
         """
         if point not in self._domain:
-            raise TypeError("the {} is not in the domain of the {}".format(
-                                                                  point, self))
+            raise TypeError("the {} is not in the domain of the {}".format(point, self))
         dest_map = self._fmodule._dest_map
         if dest_map.is_identity():
             amb_point = point

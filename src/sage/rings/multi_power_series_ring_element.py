@@ -345,9 +345,10 @@ class MPowerSeries(PowerSeries):
 
         # test whether x coerces to background univariate
         # power series ring of parent
-        if isinstance(xparent, (PowerSeriesRing_generic,
-                                MPowerSeriesRing_generic,
-                                LazyPowerSeriesRing)):
+        if isinstance(
+            xparent,
+            (PowerSeriesRing_generic, MPowerSeriesRing_generic, LazyPowerSeriesRing),
+        ):
             # x is either a multivariate or univariate power series
             #
             # test whether x coerces directly to designated parent
@@ -381,11 +382,10 @@ class MPowerSeries(PowerSeries):
         else:
             try:
                 x = parent._poly_ring(x)
-                #self._value = x
+                # self._value = x
                 self._bg_value = parent._send_to_bg(x).add_bigoh(prec)
             except (TypeError, AttributeError):
-                raise TypeError("Input does not coerce to any of the "
-                                "expected rings.")
+                raise TypeError("Input does not coerce to any of the expected rings.")
 
         self._go_to_fg = parent._send_to_fg
         self._prec = self._bg_value.prec()
@@ -404,7 +404,7 @@ class MPowerSeries(PowerSeries):
             sage: loads(dumps(f)) == f
             True
         """
-        return self.__class__, (self._parent,self._bg_value,self._prec)
+        return self.__class__, (self._parent, self._bg_value, self._prec)
 
     def __call__(self, *x, **kwds):
         """
@@ -449,7 +449,9 @@ class MPowerSeries(PowerSeries):
             (-i)*s*t + t^2 + (-4*i + 3)*t^3 + O(s, t)^4
         """
         if len(x) != self.parent().ngens():
-            raise ValueError("Number of arguments does not match number of variables in parent.")
+            raise ValueError(
+                "Number of arguments does not match number of variables in parent."
+            )
         if kwds:
             return self._subs_formal(*x, **kwds)
 
@@ -463,16 +465,20 @@ class MPowerSeries(PowerSeries):
                 # attempt formal substitution
                 return self._subs_formal(*x, **kwds)
             if xi.valuation() == 0 and self.prec() is not infinity:
-                raise TypeError("Substitution defined only for elements of positive valuation, unless self has infinite precision.")
+                raise TypeError(
+                    "Substitution defined only for elements of positive valuation, unless self has infinite precision."
+                )
             elif xi.valuation() > 0:
-                sub_dict[self.parent()._poly_ring().gens()[i]] = xi.add_bigoh(xi.valuation() * self.prec())
+                sub_dict[self.parent()._poly_ring().gens()[i]] = xi.add_bigoh(
+                    xi.valuation() * self.prec()
+                )
                 valn_list.append(xi.valuation())
             else:
                 sub_dict[self.parent()._poly_ring().gens()[i]] = xi
         if self.prec() is infinity:
             newprec = infinity
         else:
-            newprec = self.prec()*min(valn_list)
+            newprec = self.prec() * min(valn_list)
         return self.parent()(self._value().subs(sub_dict)).add_bigoh(newprec)
 
     def _subs_formal(self, *x, **kwds):
@@ -536,7 +542,7 @@ class MPowerSeries(PowerSeries):
         if base_map is None:
             base_map = lambda t: t
         for m, c in self.monomial_coefficients().items():
-            y += base_map(c)*prod([x[i]**m[i] for i in range(n) if m[i] != 0])
+            y += base_map(c) * prod([x[i] ** m[i] for i in range(n) if m[i] != 0])
         if self.prec() == infinity:
             return y
         return y.add_bigoh(self.prec())
@@ -572,10 +578,11 @@ class MPowerSeries(PowerSeries):
         """
         if self._prec == infinity:
             return "%s" % self._value()
-        return "%(val)s + O(%(gens)s)^%(prec)s" \
-               % {'val':self._value(),
-                 'gens':', '.join(str(g) for g in self.parent().gens()),
-                 'prec':self._prec}
+        return "%(val)s + O(%(gens)s)^%(prec)s" % {
+            'val': self._value(),
+            'gens': ', '.join(str(g) for g in self.parent().gens()),
+            'prec': self._prec,
+        }
 
     def _latex_(self):
         """
@@ -607,10 +614,11 @@ class MPowerSeries(PowerSeries):
         """
         if self._prec == infinity:
             return "%s" % self._value()._latex_()
-        return "%(val)s + O(%(gens)s)^{%(prec)s}" \
-               % {'val':self._value()._latex_(),
-                 'gens':', '.join(g._latex_() for g in self.parent().gens()),
-                 'prec':self._prec}
+        return "%(val)s + O(%(gens)s)^{%(prec)s}" % {
+            'val': self._value()._latex_(),
+            'gens': ', '.join(g._latex_() for g in self.parent().gens()),
+            'prec': self._prec,
+        }
 
     def _im_gens_(self, codomain, im_gens, base_map=None):
         """
@@ -677,13 +685,17 @@ class MPowerSeries(PowerSeries):
         """
         if type(n) is tuple:
             if sum(n) >= self.prec():
-                raise IndexError("Cannot return the coefficients of terms of " +
-                                 "total degree greater than or equal to " +
-                                 "precision of self.")
+                raise IndexError(
+                    "Cannot return the coefficients of terms of "
+                    + "total degree greater than or equal to "
+                    + "precision of self."
+                )
             return self._bg_value[sum(n)][n]
         if n >= self.prec():
-            raise IndexError("Cannot return terms of total degree greater " +
-                             "than or equal to precision of self.")
+            raise IndexError(
+                "Cannot return terms of total degree greater "
+                + "than or equal to precision of self."
+            )
         return self.parent(self._bg_value[n])
 
     def __invert__(self):
@@ -703,7 +715,9 @@ class MPowerSeries(PowerSeries):
         """
         if self.valuation() == 0:
             return self.parent(~self._bg_value)
-        raise NotImplementedError("Multiplicative inverse of multivariate power series currently implemented only if constant coefficient is a unit.")
+        raise NotImplementedError(
+            "Multiplicative inverse of multivariate power series currently implemented only if constant coefficient is a unit."
+        )
 
     ## comparisons
     def _richcmp_(self, other, op):
@@ -985,7 +999,7 @@ class MPowerSeries(PowerSeries):
             self = self.add_bigoh(precision)
             self_prec = self.prec()
         rem = parent.zero().add_bigoh(self_prec)
-        quo = parent.zero().add_bigoh(self_prec-other.valuation())
+        quo = parent.zero().add_bigoh(self_prec - other.valuation())
         while self:
             # Loop invariants:
             # ``(the original value of self) - self == quo * other + rem``
@@ -1005,15 +1019,15 @@ class MPowerSeries(PowerSeries):
             # up to the minimum of the precision of either side of this
             # equality and the precision of self.
             self_tt = self.trailing_monomial()
-            #assert self_tt
+            # assert self_tt
             if not other_tt.divides(self_tt):
                 self -= self_tt
                 rem += self_tt
             else:
-                d = self_tt//other_tt
+                d = self_tt // other_tt
                 self -= d * other
                 quo += d
-                quo = quo.add_bigoh(self.prec()-other_tt.degree())
+                quo = quo.add_bigoh(self.prec() - other_tt.degree())
         return quo, rem
 
     def _div_(self, denom_r):
@@ -1059,7 +1073,7 @@ class MPowerSeries(PowerSeries):
             sage: ((a+b)*f) / (a+b) == f                                                # needs sage.libs.singular
             True
         """
-        if denom_r.is_unit(): # faster if denom_r is a unit
+        if denom_r.is_unit():  # faster if denom_r is a unit
             return self.parent(self._bg_value * ~denom_r._bg_value)
         quo, rem = self.quo_rem(denom_r)
         if rem:
@@ -1084,7 +1098,9 @@ class MPowerSeries(PowerSeries):
         """
         if isinstance(other, (int, Integer)):
             return self.change_ring(Zmod(other))
-        raise NotImplementedError("Mod on multivariate power series ring elements not defined except modulo an integer.")
+        raise NotImplementedError(
+            "Mod on multivariate power series ring elements not defined except modulo an integer."
+        )
 
     def monomial_coefficients(self, copy=None):
         """
@@ -1225,7 +1241,9 @@ class MPowerSeries(PowerSeries):
         tmp = {}
         for j in self._bg_value.coefficients():
             for m in j.monomials():
-                tmp[self.parent(m)] = j.monomial_coefficient(self.parent()._poly_ring(m))
+                tmp[self.parent(m)] = j.monomial_coefficient(
+                    self.parent()._poly_ring(m)
+                )
         return tmp
 
     def constant_coefficient(self):
@@ -1292,7 +1310,7 @@ class MPowerSeries(PowerSeries):
         """
         cd = self.coefficients()
         Vs = sum(v * k**n for k, v in cd.items())
-        return Vs.add_bigoh(self.prec()*n)
+        return Vs.add_bigoh(self.prec() * n)
 
     def prec(self):
         """
@@ -1473,8 +1491,10 @@ class MPowerSeries(PowerSeries):
         """
         if self.prec() < infinity and self.valuation() > 0:
             return True
-        return (self == self.constant_coefficient() and
-                self.base_ring()(self.constant_coefficient()).is_nilpotent())
+        return (
+            self == self.constant_coefficient()
+            and self.base_ring()(self.constant_coefficient()).is_nilpotent()
+        )
 
     def degree(self):
         """
@@ -1590,10 +1610,11 @@ class MPowerSeries(PowerSeries):
             0 + O(a, b)^0
         """
         from sage.misc.derivative import derivative_parse
+
         R = self.parent()
-        variables = [ x.polynomial() for x in derivative_parse(args) ]
+        variables = [x.polynomial() for x in derivative_parse(args)]
         deriv = self.polynomial().derivative(variables)
-        new_prec = max(self.prec()-len(variables), 0)
+        new_prec = max(self.prec() - len(variables), 0)
         return R(deriv) + R.O(new_prec)
 
     def integral(self, *args):
@@ -1662,6 +1683,7 @@ class MPowerSeries(PowerSeries):
                 ZeroDivisionError: inverse of Mod(0, 3) does not exist
         """
         from sage.misc.derivative import derivative_parse
+
         res = self
         for v in derivative_parse(args):
             res = res._integral(v)
@@ -1718,10 +1740,14 @@ class MPowerSeries(PowerSeries):
             else:
                 raise ValueError("%s is not a variable" % xx)
         xxe = xx.exponents()[0]
-        pos = [i for i, c in enumerate(xxe) if c != 0][0]  # get the position of the variable
-        res = {mon.eadd(xxe): R(co / (mon[pos]+1))
-               for mon, co in self.monomial_coefficients().items()}
-        return P( res ).add_bigoh(self.prec()+1)
+        pos = [i for i, c in enumerate(xxe) if c != 0][
+            0
+        ]  # get the position of the variable
+        res = {
+            mon.eadd(xxe): R(co / (mon[pos] + 1))
+            for mon, co in self.monomial_coefficients().items()
+        }
+        return P(res).add_bigoh(self.prec() + 1)
 
     def ogf(self):
         """
@@ -1786,8 +1812,10 @@ class MPowerSeries(PowerSeries):
             NotImplementedError: Multivariate power series do not have list
             of coefficients; use 'coefficients' to get a dict of coefficients.
         """
-        #return [self.parent(c) for c in self._bg_value.list()]
-        raise NotImplementedError("Multivariate power series do not have list of coefficients; use 'coefficients' to get a dict of coefficients.")
+        # return [self.parent(c) for c in self._bg_value.list()]
+        raise NotImplementedError(
+            "Multivariate power series do not have list of coefficients; use 'coefficients' to get a dict of coefficients."
+        )
 
     def variable(self):
         """
@@ -1803,7 +1831,9 @@ class MPowerSeries(PowerSeries):
             NotImplementedError: variable not defined for multivariate power
             series; use 'variables' instead.
         """
-        raise NotImplementedError("variable not defined for multivariate power series; use 'variables' instead.")
+        raise NotImplementedError(
+            "variable not defined for multivariate power series; use 'variables' instead."
+        )
 
     def shift(self, n):
         """
@@ -1833,7 +1863,9 @@ class MPowerSeries(PowerSeries):
             ...
             NotImplementedError: __lshift__ not defined for multivariate power series.
         """
-        raise NotImplementedError("__lshift__ not defined for multivariate power series.")
+        raise NotImplementedError(
+            "__lshift__ not defined for multivariate power series."
+        )
 
     def __rshift__(self, n):
         """
@@ -1848,7 +1880,9 @@ class MPowerSeries(PowerSeries):
             ...
             NotImplementedError: __rshift__ not defined for multivariate power series.
         """
-        raise NotImplementedError("__rshift__ not defined for multivariate power series.")
+        raise NotImplementedError(
+            "__rshift__ not defined for multivariate power series."
+        )
 
     def valuation_zero_part(self):
         """
@@ -1865,7 +1899,9 @@ class MPowerSeries(PowerSeries):
             NotImplementedError: valuation_zero_part not defined for multivariate
             power series; perhaps 'constant_coefficient' is what you want.
         """
-        raise NotImplementedError("valuation_zero_part not defined for multivariate power series; perhaps 'constant_coefficient' is what you want.")
+        raise NotImplementedError(
+            "valuation_zero_part not defined for multivariate power series; perhaps 'constant_coefficient' is what you want."
+        )
 
     def solve_linear_de(self, prec=infinity, b=None, f0=None):
         """
@@ -1880,7 +1916,9 @@ class MPowerSeries(PowerSeries):
             ...
             NotImplementedError: solve_linear_de not defined for multivariate power series.
         """
-        raise NotImplementedError("solve_linear_de not defined for multivariate power series.")
+        raise NotImplementedError(
+            "solve_linear_de not defined for multivariate power series."
+        )
 
     def exp(self, prec=infinity):
         r"""
@@ -1954,12 +1992,13 @@ class MPowerSeries(PowerSeries):
             exp_c = self.base_ring().one()
         else:
             from sage.functions.log import exp
+
             exp_c = exp(c)
         x = self._bg_value - c
         if x.is_zero():
             return exp_c
         val = x.valuation()
-        assert (val >= 1)
+        assert val >= 1
 
         prec = min(prec, self.prec())
         if isinstance(prec, InfinityElement):
@@ -1967,11 +2006,11 @@ class MPowerSeries(PowerSeries):
         n_inv_factorial = R.base_ring().one()
         x_pow_n = Rbg.one()
         exp_x = Rbg.one().add_bigoh(prec)
-        for n in range(1,prec//val+1):
+        for n in range(1, prec // val + 1):
             x_pow_n = (x_pow_n * x).add_bigoh(prec)
             n_inv_factorial /= n
             exp_x += x_pow_n * n_inv_factorial
-        result_bg = exp_c*exp_x
+        result_bg = exp_c * exp_x
 
         if result_bg.base_ring() is not self.base_ring():
             R = R.change_ring(self.base_ring().fraction_field())
@@ -2046,24 +2085,27 @@ class MPowerSeries(PowerSeries):
 
         c = self.constant_coefficient()
         if c.is_zero():
-            raise ValueError('Can only take formal power series for nonzero constant term.')
+            raise ValueError(
+                'Can only take formal power series for nonzero constant term.'
+            )
         if c.is_one():
             log_c = self.base_ring().zero()
         else:
             from sage.functions.log import log
+
             log_c = log(c)
-        x = 1 - self._bg_value/c
+        x = 1 - self._bg_value / c
         if x.is_zero():
             return log_c
         val = x.valuation()
-        assert (val >= 1)
+        assert val >= 1
 
         prec = min(prec, self.prec())
         if isinstance(prec, InfinityElement):
             prec = R.default_prec()
         x_pow_n = Rbg.one()
         log_x = Rbg.zero().add_bigoh(prec)
-        for n in range(1,prec//val+1):
+        for n in range(1, prec // val + 1):
             x_pow_n = (x_pow_n * x).add_bigoh(prec)
             log_x += x_pow_n / n
         result_bg = log_c - log_x
@@ -2085,7 +2127,9 @@ class MPowerSeries(PowerSeries):
             ...
             NotImplementedError: laurent_series not defined for multivariate power series.
         """
-        raise NotImplementedError("laurent_series not defined for multivariate power series.")
+        raise NotImplementedError(
+            "laurent_series not defined for multivariate power series."
+        )
 
 
 class MO:
@@ -2113,6 +2157,7 @@ class MO:
         sage: w^2
         1 + 2*a + O(a, b, c)^2
     """
+
     def __init__(self, x):
         """
         Initialize ``self``.
@@ -2138,4 +2183,4 @@ class MO:
         parent = self._vars[0].parent()
         if self._vars != parent.gens():
             raise NotImplementedError
-        return self._vars[0].parent()(0,prec)
+        return self._vars[0].parent()(0, prec)

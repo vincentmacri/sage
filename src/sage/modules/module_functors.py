@@ -76,6 +76,7 @@ class QuotientModuleFunctor(ConstructionFunctor):
         sage: Q2 = A2 / B2
         sage: q3 = Q1.an_element() + Q2.an_element()
     """
+
     rank = 5  # ranking of functor, not rank of module
 
     def __init__(self, relations):

@@ -1,7 +1,7 @@
 r"""
 Rankers
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #                          Nicolas M. Thiery <nthiery at users.sf.net>
 #  Ported from MuPAD-Combinat (combinat::rankers)
@@ -102,7 +102,7 @@ def rank_from_list(l):
 
         sage: TestSuite(r).run()
     """
-    return CallableDict((x,i) for i,x in enumerate(l))
+    return CallableDict((x, i) for i, x in enumerate(l))
 
 
 def unrank_from_list(l):
@@ -153,6 +153,7 @@ def on_fly():
 
     .. TODO:: add tests as in combinat::rankers
     """
+
     def count():
         i = 0
         while True:

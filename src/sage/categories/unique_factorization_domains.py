@@ -174,6 +174,7 @@ class UniqueFactorizationDomains(Category_singleton):
                 sage: ((p^4 - 1).gcd(p^3 + 1) / (p + 1)).is_unit()
                 True
             """
+
             def content(X):
                 """
                 Return the content of ``X`` up to a unit.

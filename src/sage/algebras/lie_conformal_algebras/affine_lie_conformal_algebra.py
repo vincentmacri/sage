@@ -82,6 +82,7 @@ class AffineLieConformalAlgebra(GradedLieConformalAlgebra):
     The Affine Lie conformal algebra associated with the finite
     dimensional simple Lie algebra of Cartan type ``ct``.
     """
+
     def __init__(self, R, ct, names=None, prefix=None, bracket=None) -> None:
         """
         Initialize ``self``.
@@ -93,13 +94,16 @@ class AffineLieConformalAlgebra(GradedLieConformalAlgebra):
         """
         if isinstance(ct, str):
             from sage.combinat.root_system.cartan_type import CartanType
+
             try:
                 ct = CartanType(ct)
             except IndexError:
                 raise ValueError("ct must be a valid Cartan Type")
         if not (ct.is_finite() and ct.is_irreducible):
-            raise ValueError("only affine algebras of simple finite dimensional"
-                             "Lie algebras are implemented")
+            raise ValueError(
+                "only affine algebras of simple finite dimensional"
+                "Lie algebras are implemented"
+            )
         hv = Integer(ct.dual_coxeter_number())
         g = LieAlgebra(R, cartan_type=ct)
         B = g.basis()
@@ -109,13 +113,15 @@ class AffineLieConformalAlgebra(GradedLieConformalAlgebra):
             for k2 in S:
                 if S.rank(k2) <= S.rank(k1):
                     myb = B[k1].bracket(B[k2]).monomial_coefficients()
-                    myf = R(2).inverse_of_unit() * R(hv).inverse_of_unit()\
+                    myf = (
+                        R(2).inverse_of_unit()
+                        * R(hv).inverse_of_unit()
                         * g.killing_form(B[k1], B[k2])
+                    )
                     if myb or myf:
                         gdict[(k1, k2)] = {}
                         if myb:
-                            gdict[(k1, k2)][0] = {(nk, 0): v
-                                                  for nk, v in myb.items()}
+                            gdict[(k1, k2)][0] = {(nk, 0): v for nk, v in myb.items()}
                         if myf:
                             gdict[(k1, k2)][1] = {('K', 0): myf}
 
@@ -124,12 +130,17 @@ class AffineLieConformalAlgebra(GradedLieConformalAlgebra):
         if prefix is None and names is None:
             prefix = 'B'
 
-        GradedLieConformalAlgebra.__init__(self,
-                                           R, gdict, index_set=S,
-                                           central_elements=('K',),
-                                           weights=weights,
-                                           names=names, prefix=prefix,
-                                           bracket=bracket)
+        GradedLieConformalAlgebra.__init__(
+            self,
+            R,
+            gdict,
+            index_set=S,
+            central_elements=('K',),
+            weights=weights,
+            names=names,
+            prefix=prefix,
+            bracket=bracket,
+        )
 
     def cartan_type(self):
         """
@@ -155,4 +166,5 @@ class AffineLieConformalAlgebra(GradedLieConformalAlgebra):
             The affine Lie conformal algebra of type ['A', 1] over Rational Field
         """
         return "The affine Lie conformal algebra of type {} over {}".format(
-            self._ct, self.base_ring())
+            self._ct, self.base_ring()
+        )

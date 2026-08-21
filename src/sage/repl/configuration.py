@@ -24,7 +24,6 @@ the IPython simple prompt is being used::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 import copy
 import sys
 
@@ -37,7 +36,6 @@ SAGE_EXTENSION = 'sage'
 
 
 class SageIpythonConfiguration:
-
     def _doctest_mode(self):
         """
         Whether we are in doctest mode.
@@ -51,6 +49,7 @@ class SageIpythonConfiguration:
             True
         """
         from sage.doctest import DOCTEST_MODE
+
         return DOCTEST_MODE
 
     def _allow_ansi(self):
@@ -84,6 +83,7 @@ class SageIpythonConfiguration:
         if not self._allow_ansi():
             return 'nocolor'
         from sage.repl.interpreter import SageTerminalInteractiveShell
+
         return SageTerminalInteractiveShell.colors.default()
 
     def simple_prompt(self):
@@ -140,7 +140,7 @@ class SageIpythonConfiguration:
             simple_prompt=self.simple_prompt(),
             term_title=self.term_title(),
             confirm_exit=False,
-            separate_in=''
+            separate_in='',
         )
 
         cfg = Config(

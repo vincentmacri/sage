@@ -27,6 +27,7 @@ class OreModules(Category_over_base_ring):
     r"""
     Category of Ore modules.
     """
+
     @staticmethod
     def __classcall_private__(cls, ring, twist):
         r"""

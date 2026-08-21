@@ -157,10 +157,11 @@ class RootLatticeRealizations(Category_over_base_ring):
         """
         return [ModulesWithBasis(self.base_ring())]
 
-    Algebras = LazyImport('sage.combinat.root_system.root_lattice_realization_algebras', 'Algebras')
+    Algebras = LazyImport(
+        'sage.combinat.root_system.root_lattice_realization_algebras', 'Algebras'
+    )
 
     class ParentMethods:
-
         def __init_extra__(self):
             r"""
             Register the embedding of the root lattice into ``self``.
@@ -186,6 +187,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 :meth:`_test_root_lattice_realization`.
             """
             from .root_space import RootSpace
+
             K = self.base_ring()
             # If self is the root lattice or the root space, we don't want
             # to register its trivial embedding into itself. This builds
@@ -197,9 +199,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 domains.append(self.root_system.root_space(K))
             # Build and register the embeddings
             for domain in domains:
-                domain.module_morphism(self.simple_root,
-                                       codomain=self
-                                       ).register_as_coercion()
+                domain.module_morphism(
+                    self.simple_root, codomain=self
+                ).register_as_coercion()
             if self.cartan_type().is_affine():
                 self._to_classical.register_as_conversion()
 
@@ -235,7 +237,9 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             return self.root_system.dynkin_diagram()
 
-        def _name_string_helper(self, name, capitalize=True, base_ring=True, type=True, prefix=""):
+        def _name_string_helper(
+            self, name, capitalize=True, base_ring=True, type=True, prefix=""
+        ):
             """
             EXAMPLES::
 
@@ -329,7 +333,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             except ImportError:
                 return
             R = self.base_ring()
-            tester.assertEqual(alpha     .keys(), self.index_set())
+            tester.assertEqual(alpha.keys(), self.index_set())
             tester.assertEqual(alphacheck.keys(), self.index_set())
 
             # Check the consistency between simple_root and simple_roots
@@ -344,7 +348,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             for i in self.index_set():
                 # This embedding maps simple roots to simple roots
                 tester.assertEqual(self(root_lattice.simple_root(i)), alpha[i])
-                tester.assertEqual(self(root_space   .simple_root(i)), alpha[i])
+                tester.assertEqual(self(root_space.simple_root(i)), alpha[i])
 
             # Check that the scalar products match with the Dynkin diagram
             try:
@@ -353,7 +357,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 return
             for i in self.index_set():
                 for j in self.index_set():
-                    tester.assertEqual(alpha[j].scalar(alphacheck[i]), R(dynkin_diagram[i,j]))
+                    tester.assertEqual(
+                        alpha[j].scalar(alphacheck[i]), R(dynkin_diagram[i, j])
+                    )
 
             # Check associated_coroot, if it is implemented
             if not isinstance(self.element_class.associated_coroot, AbstractMethod):
@@ -396,7 +402,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 Lambda[2]
             """
             if not self.root_system.is_finite():
-                raise ValueError("The root system of %s is not of finite Cartan type" % self)
+                raise ValueError(
+                    "The root system of %s is not of finite Cartan type" % self
+                )
             if not self.root_system.is_irreducible():
                 raise ValueError("The root system of %s is reducible" % self)
             return self.a_long_simple_root().to_dominant_chamber()
@@ -473,7 +481,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 sage: [alpha[i] for i in [1,2,3]]
                 [alpha[1], alpha[2], alpha[3]]
             """
-            if not hasattr(self,"_simple_roots"):
+            if not hasattr(self, "_simple_roots"):
                 self._simple_roots = Family(self.index_set(), self.simple_root)
                 # Should we use rename to set a nice name for this family?
                 # self._simple_roots.rename('alpha')
@@ -496,9 +504,12 @@ class RootLatticeRealizations(Category_over_base_ring):
                 -alpha[1] - alpha[2]
             """
             if self.root_system.is_finite() and self.root_system.is_irreducible():
-                return Family(self.index_set(), self.simple_root,
-                              hidden_keys=[0],
-                              hidden_function=lambda i: - self.highest_root())
+                return Family(
+                    self.index_set(),
+                    self.simple_root,
+                    hidden_keys=[0],
+                    hidden_function=lambda i: -self.highest_root(),
+                )
             return self.simple_roots()
 
         @cached_method
@@ -574,8 +585,10 @@ class RootLatticeRealizations(Category_over_base_ring):
             other_affinization = self.cartan_type().other_affinization()
             b = other_affinization.col_annihilator()
             alpha = self.simple_roots()
-            result = { i: alpha[i] for i in I0 }
-            result[i0] = (self.null_root() - self.linear_combination( (alpha[i], b[i]) for i in I0)) / b[i0]
+            result = {i: alpha[i] for i in I0}
+            result[i0] = (
+                self.null_root() - self.linear_combination((alpha[i], b[i]) for i in I0)
+            ) / b[i0]
             return Family(result)
 
         ##########################################################################
@@ -617,10 +630,13 @@ class RootLatticeRealizations(Category_over_base_ring):
                 infinite root systems.
             """
             if not self.cartan_type().is_finite():
-                from sage.sets.disjoint_union_enumerated_sets \
-                                import DisjointUnionEnumeratedSets
-                D = DisjointUnionEnumeratedSets([self.positive_roots(),
-                                                  self.negative_roots()])
+                from sage.sets.disjoint_union_enumerated_sets import (
+                    DisjointUnionEnumeratedSets,
+                )
+
+                D = DisjointUnionEnumeratedSets(
+                    [self.positive_roots(), self.negative_roots()]
+                )
                 D.rename("All roots of type {}".format(self.cartan_type()))
                 return D
 
@@ -704,19 +720,26 @@ class RootLatticeRealizations(Category_over_base_ring):
                  alpha[1] + alpha[2] + alpha[3]]
             """
             if self.cartan_type().is_affine():
-                from sage.sets.disjoint_union_enumerated_sets \
-                                import DisjointUnionEnumeratedSets
-                return DisjointUnionEnumeratedSets([self.positive_real_roots(),
-                                                    self.positive_imaginary_roots()])
+                from sage.sets.disjoint_union_enumerated_sets import (
+                    DisjointUnionEnumeratedSets,
+                )
+
+                return DisjointUnionEnumeratedSets(
+                    [self.positive_real_roots(), self.positive_imaginary_roots()]
+                )
             if not self.cartan_type().is_finite():
-                raise NotImplementedError("Only implemented for finite and"
-                                          " affine Cartan types")
+                raise NotImplementedError(
+                    "Only implemented for finite and affine Cartan types"
+                )
             if index_set is None:
                 index_set = tuple(self.cartan_type().index_set())
-            return RecursivelyEnumeratedSet([self.simple_root(i) for i in index_set],
-                       attrcall('pred', index_set=index_set),
-                       structure='graded', enumeration='breadth',
-                       category=EnumeratedSets().Finite())
+            return RecursivelyEnumeratedSet(
+                [self.simple_root(i) for i in index_set],
+                attrcall('pred', index_set=index_set),
+                structure='graded',
+                enumeration='breadth',
+                category=EnumeratedSets().Finite(),
+            )
 
         @cached_method
         def nonparabolic_positive_roots(self, index_set=None):
@@ -741,12 +764,14 @@ class RootLatticeRealizations(Category_over_base_ring):
                  alpha[2], alpha[2] + alpha[3], alpha[3]]
             """
             if not self.cartan_type().is_finite():
-                raise NotImplementedError("Only implemented for "
-                                          "finite Cartan type")
+                raise NotImplementedError("Only implemented for finite Cartan type")
             if index_set is None:
                 return []
-            return [x for x in self.positive_roots()
-                    if x not in self.positive_roots(index_set)]
+            return [
+                x
+                for x in self.positive_roots()
+                if x not in self.positive_roots(index_set)
+            ]
 
         @cached_method
         def nonparabolic_positive_root_sum(self, index_set=None):
@@ -812,16 +837,25 @@ class RootLatticeRealizations(Category_over_base_ring):
                  2*alpha[0] + 2*alpha[1] + 2*alpha[2]]
             """
             if self.cartan_type().is_finite():
-                return tuple(RecursivelyEnumeratedSet(self.simple_roots(),
-                    attrcall('pred'), structure='graded',
-                    enumeration='breadth'))
+                return tuple(
+                    RecursivelyEnumeratedSet(
+                        self.simple_roots(),
+                        attrcall('pred'),
+                        structure='graded',
+                        enumeration='breadth',
+                    )
+                )
             if not self.cartan_type().is_affine():
-                raise NotImplementedError("only implemented for finite and affine Cartan types")
+                raise NotImplementedError(
+                    "only implemented for finite and affine Cartan types"
+                )
 
             from sage.categories.cartesian_product import cartesian_product
             from sage.combinat.root_system.root_system import RootSystem
             from sage.sets.positive_integers import PositiveIntegers
-            from sage.sets.disjoint_union_enumerated_sets import DisjointUnionEnumeratedSets
+            from sage.sets.disjoint_union_enumerated_sets import (
+                DisjointUnionEnumeratedSets,
+            )
 
             Q = RootSystem(self.cartan_type().classical()).root_space(self.base_ring())
 
@@ -832,31 +866,35 @@ class RootLatticeRealizations(Category_over_base_ring):
                 """
                 Lift up the classical element into ``self``.
                 """
-                return self.sum(c*alpha[i] for i,c in x)
+                return self.sum(c * alpha[i] for i, c in x)
+
             P = Family(Q.positive_real_roots(), lift)
 
             # Add all of the delta shifts
             delta = self.null_root()
             if self.cartan_type().is_untwisted_affine():
                 C = cartesian_product([PositiveIntegers(), Q.roots()])
-                F = Family(C, lambda x: lift(x[1]) + x[0]*delta)
+                F = Family(C, lambda x: lift(x[1]) + x[0] * delta)
                 D = DisjointUnionEnumeratedSets([P, F])
-            elif self.cartan_type().type() == 'BC' or self.cartan_type().dual().type() == 'BC':
+            elif (
+                self.cartan_type().type() == 'BC'
+                or self.cartan_type().dual().type() == 'BC'
+            ):
                 Cs = cartesian_product([PositiveIntegers(), Q.short_roots()])
                 Cl = cartesian_product([PositiveIntegers(), Q.long_roots()])
-                Fs = Family(Cl, lambda x: (lift(x[1]) + (2*x[0]-1)*delta) / 2)
-                Fm = Family(Cs, lambda x: lift(x[1]) + x[0]*delta)
-                Fl = Family(Cl, lambda x: lift(x[1]) + 2*x[0]*delta)
+                Fs = Family(Cl, lambda x: (lift(x[1]) + (2 * x[0] - 1) * delta) / 2)
+                Fm = Family(Cs, lambda x: lift(x[1]) + x[0] * delta)
+                Fl = Family(Cl, lambda x: lift(x[1]) + 2 * x[0] * delta)
                 D = DisjointUnionEnumeratedSets([P, Fs, Fm, Fl])
-            else: # Other twisted types
+            else:  # Other twisted types
                 Cs = cartesian_product([PositiveIntegers(), Q.short_roots()])
                 Cl = cartesian_product([PositiveIntegers(), Q.long_roots()])
-                Fs = Family(Cs, lambda x: lift(x[1]) + x[0]*delta)
-                if self.cartan_type().dual() == 'G': # D_4^3
+                Fs = Family(Cs, lambda x: lift(x[1]) + x[0] * delta)
+                if self.cartan_type().dual() == 'G':  # D_4^3
                     k = 3
                 else:
                     k = 2
-                Fl = Family(Cl, lambda x: lift(x[1]) + x[0]*k*delta)
+                Fl = Family(Cl, lambda x: lift(x[1]) + x[0] * k * delta)
                 D = DisjointUnionEnumeratedSets([P, Fs, Fl])
 
             # Return the final union
@@ -886,10 +924,13 @@ class RootLatticeRealizations(Category_over_base_ring):
             if self.cartan_type().is_finite():
                 return ()
             if not self.cartan_type().is_affine():
-                raise NotImplementedError("only implemented for finite and affine Cartan types")
+                raise NotImplementedError(
+                    "only implemented for finite and affine Cartan types"
+                )
             from sage.sets.positive_integers import PositiveIntegers
+
             delta = self.null_root()
-            F = Family(PositiveIntegers(), lambda x: x*delta)
+            F = Family(PositiveIntegers(), lambda x: x * delta)
             F.rename("Positive imaginary roots of type {}".format(self.cartan_type()))
             return F
 
@@ -963,9 +1004,12 @@ class RootLatticeRealizations(Category_over_base_ring):
             def parabolic_covers(alpha):
                 return [x for x in alpha.pred() if x.is_parabolic_root(index_set)]
 
-            generators = [x for x in self.simple_roots() if x.is_parabolic_root(index_set)]
-            return RecursivelyEnumeratedSet(generators, parabolic_covers,
-                    structure='graded', enumeration='breadth')
+            generators = [
+                x for x in self.simple_roots() if x.is_parabolic_root(index_set)
+            ]
+            return RecursivelyEnumeratedSet(
+                generators, parabolic_covers, structure='graded', enumeration='breadth'
+            )
 
         @cached_method
         def positive_roots_nonparabolic(self, index_set=None):
@@ -1000,7 +1044,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 raise NotImplementedError("Only implemented for finite Cartan type")
             if index_set is None:
                 index_set = tuple(self.cartan_type().index_set())
-            return [x for x in self.positive_roots() if not x.is_parabolic_root(index_set)]
+            return [
+                x for x in self.positive_roots() if not x.is_parabolic_root(index_set)
+            ]
 
         @cached_method
         def positive_roots_nonparabolic_sum(self, index_set=None):
@@ -1085,6 +1131,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 Finite poset containing 3 elements
             """
             from sage.combinat.posets.posets import Poset
+
             rels = []
             pos_roots = set(self.positive_roots())
             simple_roots = self.simple_roots()
@@ -1163,7 +1210,9 @@ class RootLatticeRealizations(Category_over_base_ring):
             chains = [chain for chain in L.chains().list() if len(chain) <= m]
             multichains = []
             for chain in chains:
-                for multilist in combinations_with_replacement(list(range(len(chain))), m):
+                for multilist in combinations_with_replacement(
+                    list(range(len(chain))), m
+                ):
                     if len(set(multilist)) == len(chain):
                         multichains.append(tuple([chain[i] for i in multilist]))
 
@@ -1173,27 +1222,36 @@ class RootLatticeRealizations(Category_over_base_ring):
                         for alpha in chain[i - 1]:
                             for beta in chain[j - 1]:
                                 gamma = alpha + beta
-                                if gamma in Phi_plus and gamma not in chain[i+j-1]:
+                                if gamma in Phi_plus and gamma not in chain[i + j - 1]:
                                     return False
-                cochain = [[beta for beta in Phi_plus if beta not in ideal]
-                           for ideal in chain]
+                cochain = [
+                    [beta for beta in Phi_plus if beta not in ideal] for ideal in chain
+                ]
                 for i in range(1, m + 1):
                     for j in range(1, m + 1):
                         for alpha in cochain[i - 1]:
                             for beta in cochain[j - 1]:
                                 gamma = alpha + beta
-                                if gamma in Phi_plus and gamma not in cochain[min(m - 1, i + j - 1)]:
+                                if (
+                                    gamma in Phi_plus
+                                    and gamma not in cochain[min(m - 1, i + j - 1)]
+                                ):
                                     return False
                 return True
 
             def is_componentwise_subset(chain1, chain2):
-                return all(chain1[i].issubset(chain2[i])
-                           for i in range(len(chain1)))
+                return all(chain1[i].issubset(chain2[i]) for i in range(len(chain1)))
+
             from sage.combinat.posets.lattices import LatticePoset
-            saturated_chains = [multichain for multichain in multichains
-                                if is_saturated_chain(multichain)]
-            return LatticePoset((saturated_chains, is_componentwise_subset),
-                                facade=facade)
+
+            saturated_chains = [
+                multichain
+                for multichain in multichains
+                if is_saturated_chain(multichain)
+            ]
+            return LatticePoset(
+                (saturated_chains, is_componentwise_subset), facade=facade
+            )
 
         def almost_positive_roots(self):
             r"""
@@ -1211,8 +1269,12 @@ class RootLatticeRealizations(Category_over_base_ring):
                 [-alpha[1], alpha[1], alpha[1] + alpha[2], -alpha[2], alpha[2]]
             """
             if not self.cartan_type().is_finite():
-                raise ValueError("%s is not a finite Cartan type" % (self.cartan_type()))
-            return sorted([ -beta for beta in self.simple_roots() ] + list(self.positive_roots()))
+                raise ValueError(
+                    "%s is not a finite Cartan type" % (self.cartan_type())
+                )
+            return sorted(
+                [-beta for beta in self.simple_roots()] + list(self.positive_roots())
+            )
 
         def negative_roots(self):
             r"""
@@ -1286,7 +1348,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 sage: [alphacheck[i] for i in [1, 2, 3]]
                 [alphacheck[1], alphacheck[2], alphacheck[3]]
             """
-            if not hasattr(self,"cache_simple_coroots"):
+            if not hasattr(self, "cache_simple_coroots"):
                 self.cache_simple_coroots = Family(self.index_set(), self.simple_coroot)
                 # Should we use rename to set a nice name for this family?
                 # self.cache_simple_coroots.rename('alphacheck')
@@ -1323,8 +1385,12 @@ class RootLatticeRealizations(Category_over_base_ring):
                 Finite family {1: (1, -1, 0, 0), 2: (0, 1, -1, 0), 3: (0, 0, 1, -1)}
             """
             if self.root_system.is_finite() and self.root_system.is_irreducible():
-                return Family(self.index_set(), self.simple_coroot,
-                              hidden_keys=[0], hidden_function=lambda i: - self.cohighest_root())
+                return Family(
+                    self.index_set(),
+                    self.simple_coroot,
+                    hidden_keys=[0],
+                    hidden_function=lambda i: -self.cohighest_root(),
+                )
             return self.simple_coroots()
 
         @cached_method
@@ -1365,7 +1431,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             if self.cartan_type().is_affine():
                 coef = self.cartan_type().a()
-                return sum(coef[k]*self.simple_roots()[k] for k in coef.keys())
+                return sum(coef[k] * self.simple_roots()[k] for k in coef.keys())
 
         ##########################################################################
         # null_coroot (Also called CanonicalCentralElement)
@@ -1392,9 +1458,11 @@ class RootLatticeRealizations(Category_over_base_ring):
                  + 2*alphacheck[3] + alphacheck[4]
             """
             if not self.cartan_type().is_affine():
-                raise ValueError("%s is not an affine Cartan type" % (self.cartan_type()))
+                raise ValueError(
+                    "%s is not an affine Cartan type" % (self.cartan_type())
+                )
             coef = self.cartan_type().acheck()
-            return sum(coef[k]*self.simple_coroots()[k] for k in coef.keys())
+            return sum(coef[k] * self.simple_coroots()[k] for k in coef.keys())
 
         ##########################################################################
         # fundamental weights
@@ -1471,14 +1539,18 @@ class RootLatticeRealizations(Category_over_base_ring):
             d = M.det()
             if not d:
                 raise TypeError("The Cartan matrix is not invertible")
-            M = d*~M
-            fundamental_weights = [self.linear_combination(zip(self.simple_roots(), column))
-                                   for column in M.columns()]
+            M = d * ~M
+            fundamental_weights = [
+                self.linear_combination(zip(self.simple_roots(), column))
+                for column in M.columns()
+            ]
             try:
-                fundamental_weights = [x/d for x in fundamental_weights]
+                fundamental_weights = [x / d for x in fundamental_weights]
             except ValueError:
-                raise ValueError("The fundamental weights do not live in this realization of the root lattice")
-            return Family(dict(zip(self.index_set(),fundamental_weights)))
+                raise ValueError(
+                    "The fundamental weights do not live in this realization of the root lattice"
+                )
+            return Family(dict(zip(self.index_set(), fundamental_weights)))
 
         ##########################################################################
         # reflections
@@ -1589,7 +1661,11 @@ class RootLatticeRealizations(Category_over_base_ring):
             if coroot is None:
                 coroot = root.associated_coroot()
 
-            return lambda v: v - v.scalar(coroot) * root if ((v.scalar(coroot) > 0) == to_negative) else v
+            return lambda v: (
+                v - v.scalar(coroot) * root
+                if ((v.scalar(coroot) > 0) == to_negative)
+                else v
+            )
 
         @cached_method
         def simple_projection(self, i, to_negative=True):
@@ -1618,7 +1694,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 sage: pi(-x)
                 2*Lambda[1] - Lambda[2]
             """
-            return self.projection(self.simple_root(i), self.simple_coroot(i), to_negative)
+            return self.projection(
+                self.simple_root(i), self.simple_coroot(i), to_negative
+            )
 
         @cached_method
         def simple_projections(self, to_negative=True):
@@ -1662,6 +1740,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 Weyl Group of type ['F', 4] (as a matrix group acting on the root space)
             """
             from sage.combinat.root_system.weyl_group import WeylGroup
+
             return WeylGroup(self, prefix=prefix)
 
         ##########################################################################
@@ -1746,12 +1825,15 @@ class RootLatticeRealizations(Category_over_base_ring):
             W = self.weyl_group()
             t = W.from_reduced_word(J)
             simple_roots = self.simple_roots()
-            other_negative_simple_roots = set(-simple_roots[i] for i in self.index_set() if i not in J)
+            other_negative_simple_roots = set(
+                -simple_roots[i] for i in self.index_set() if i not in J
+            )
 
             def tau_epsilon(alpha):
                 if alpha in other_negative_simple_roots:
                     return alpha
                 return t.action(alpha)
+
             return tau_epsilon
 
         def tau_plus_minus(self):
@@ -1790,8 +1872,10 @@ class RootLatticeRealizations(Category_over_base_ring):
                 alpha[2] , alpha[1] + alpha[2] , -alpha[2]
             """
             ct = self.cartan_type()
-            L,R = ct.index_set_bipartition()
-            return self.tau_epsilon_operator_on_almost_positive_roots(L), self.tau_epsilon_operator_on_almost_positive_roots(R)
+            L, R = ct.index_set_bipartition()
+            return self.tau_epsilon_operator_on_almost_positive_roots(
+                L
+            ), self.tau_epsilon_operator_on_almost_positive_roots(R)
 
         def almost_positive_roots_decomposition(self):
             r"""
@@ -1884,6 +1968,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             from .root_space import RootSpace
             from .weight_space import WeightSpace
+
             R = self.cartan_type().classical().root_system()
             if isinstance(self, RootSpace):
                 return R.root_space(self.base_ring())
@@ -1911,7 +1996,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 sage: L._to_classical(e[2])
                 (0, 0, 1)
             """
-            return self.module_morphism(self._to_classical_on_basis, codomain=self.classical())
+            return self.module_morphism(
+                self._to_classical_on_basis, codomain=self.classical()
+            )
 
         def _classical_alpha_0(self):
             """
@@ -1944,23 +2031,30 @@ class RootLatticeRealizations(Category_over_base_ring):
             special_node = cartan_type.special_node()
             a = self.cartan_type().col_annihilator()
             classical = self.classical()
-            return -classical.sum(a[i] * self.simple_root(i)
-                                  for i in self.index_set() if i != special_node) \
-                                  / a[special_node]
+            return (
+                -classical.sum(
+                    a[i] * self.simple_root(i)
+                    for i in self.index_set()
+                    if i != special_node
+                )
+                / a[special_node]
+            )
 
         ######################################################################
         # Root system plots
 
-        def plot(self,
-                 roots='simple',
-                 coroots=False,
-                 reflection_hyperplanes='simple',
-                 fundamental_weights=None,
-                 fundamental_chamber=None,
-                 alcoves=None,
-                 alcove_labels=False,
-                 alcove_walk=None,
-                 **options):
+        def plot(
+            self,
+            roots='simple',
+            coroots=False,
+            reflection_hyperplanes='simple',
+            fundamental_weights=None,
+            fundamental_chamber=None,
+            alcoves=None,
+            alcove_labels=False,
+            alcove_walk=None,
+            **options,
+        ):
             r"""
             Return a picture of this root lattice realization.
 
@@ -2106,12 +2200,18 @@ class RootLatticeRealizations(Category_over_base_ring):
                 G += self.plot_fundamental_weights(plot_options=plot_options)
 
             if reflection_hyperplanes:
-                G += self.plot_reflection_hyperplanes(reflection_hyperplanes, plot_options=plot_options)
+                G += self.plot_reflection_hyperplanes(
+                    reflection_hyperplanes, plot_options=plot_options
+                )
 
             if alcoves is None:
-                alcoves = self.cartan_type().is_affine() and hasattr(self, "fundamental_weights")
+                alcoves = self.cartan_type().is_affine() and hasattr(
+                    self, "fundamental_weights"
+                )
             if alcoves:
-                G += self.plot_alcoves(alcoves, alcove_labels=alcove_labels, plot_options=plot_options)
+                G += self.plot_alcoves(
+                    alcoves, alcove_labels=alcove_labels, plot_options=plot_options
+                )
 
             if fundamental_chamber is None:
                 if not hasattr(self, "fundamental_weights"):
@@ -2121,7 +2221,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 else:
                     fundamental_chamber = True
             if fundamental_chamber:
-                G += self.plot_fundamental_chamber(fundamental_chamber, plot_options=plot_options)
+                G += self.plot_fundamental_chamber(
+                    fundamental_chamber, plot_options=plot_options
+                )
 
             if alcove_walk is not None:
                 G += self.plot_alcove_walk(alcove_walk, plot_options=plot_options)
@@ -2213,14 +2315,20 @@ class RootLatticeRealizations(Category_over_base_ring):
                 (0, 0, 0)
             """
             from sage.symbolic.constants import pi
-            m = matrix(QQ, barycentric_projection_matrix(self.dimension()-1, angle=2*pi/3).n(20))
+
+            m = matrix(
+                QQ,
+                barycentric_projection_matrix(self.dimension() - 1, angle=2 * pi / 3).n(
+                    20
+                ),
+            )
             # We want to guarantee that the sum of the columns of the
             # result is zero. This is close to be the case for the
             # original matrix and for the current rational
             # approximation. We tidy up the work by replacing the
             # first column by the opposite of the sum of the others.
-            if self.dimension() > 1: # not needed in the trivial cases
-                m.set_column(0, -sum(m[:,1:].columns()))
+            if self.dimension() > 1:  # not needed in the trivial cases
+                m.set_column(0, -sum(m[:, 1:].columns()))
             m.set_immutable()
             return m
 
@@ -2250,7 +2358,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 - :ref:`sage.combinat.root_system.plot` for a tutorial
                   on root system plotting
             """
-            return self._plot_projection_barycentric_matrix()*vector(x)
+            return self._plot_projection_barycentric_matrix() * vector(x)
 
         def plot_roots(self, collection='simple', **options):
             r"""
@@ -2324,7 +2432,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 roots = root_lattice.simple_roots()
             elif collection == "classical":
                 if not self.cartan_type().is_affine():
-                    raise ValueError("plotting classical roots only available in affine type")
+                    raise ValueError(
+                        "plotting classical roots only available in affine type"
+                    )
                 raise NotImplementedError("classical roots")
             elif collection == "all":
                 if not self.cartan_type().is_finite():
@@ -2376,16 +2486,22 @@ class RootLatticeRealizations(Category_over_base_ring):
             plot_options = self.plot_parse_options(**options)
             coroot_lattice = self.root_system.coroot_lattice()
             if not self.has_coerce_map_from(coroot_lattice):
-                raise ValueError("Can't plot the coroots: there is no embedding of the coroot lattice to this space")
+                raise ValueError(
+                    "Can't plot the coroots: there is no embedding of the coroot lattice to this space"
+                )
             if collection == "simple":
                 coroots = coroot_lattice.simple_roots()
             elif collection == "classical":
                 if not self.cartan_type().is_affine():
-                    raise ValueError("plotting classical coroots only available in affine type")
+                    raise ValueError(
+                        "plotting classical coroots only available in affine type"
+                    )
                 raise NotImplementedError("classical coroots")
             elif collection == "all":
                 if not self.cartan_type().is_finite():
-                    raise ValueError("plotting all coroots only available in finite type")
+                    raise ValueError(
+                        "plotting all coroots only available in finite type"
+                    )
                 coroots = coroot_lattice.roots()
             elif isinstance(collection, (list, tuple)):
                 coroots = collection
@@ -2436,8 +2552,13 @@ class RootLatticeRealizations(Category_over_base_ring):
             # the ambient space can define the fundamental weights
             # slightly differently (the usual GL_n vs SL_n catch).
             weight_lattice = self.root_system.weight_lattice()
-            fundamental_weights = Family(dict(zip(weight_lattice.fundamental_weights(),
-                                                  self.fundamental_weights())))
+            fundamental_weights = Family(
+                dict(
+                    zip(
+                        weight_lattice.fundamental_weights(), self.fundamental_weights()
+                    )
+                )
+            )
             return plot_options.family_of_vectors(fundamental_weights)
 
         def plot_reflection_hyperplanes(self, collection='simple', **options):
@@ -2517,11 +2638,15 @@ class RootLatticeRealizations(Category_over_base_ring):
                 coroots = coroot_lattice.simple_roots()
             elif collection == "classical":
                 if not self.cartan_type().is_affine():
-                    raise ValueError("plotting classical reflection hyperplanes only available in affine type")
+                    raise ValueError(
+                        "plotting classical reflection hyperplanes only available in affine type"
+                    )
                 raise NotImplementedError("classical roots")
             elif collection == "all":
                 if not self.cartan_type().is_finite():
-                    raise ValueError("plotting all reflection hyperplanes only available in finite type")
+                    raise ValueError(
+                        "plotting all reflection hyperplanes only available in finite type"
+                    )
                 coroots = coroot_lattice.positive_roots()
             elif isinstance(collection, (list, tuple)):
                 coroots = collection
@@ -2582,11 +2707,13 @@ class RootLatticeRealizations(Category_over_base_ring):
                 Point set defined by 8 point(s): [(-1.5, -0.5), (-1.5, 0.5), (-0.5, -1.5), (-0.5, 1.5), (0.5, -1.5), (0.5, 1.5), (1.5, -0.5), (1.5, 0.5)]
             """
             from sage.geometry.polyhedron.constructor import Polyhedron
+
             plot_options = self.plot_parse_options(**options)
             if not self.cartan_type().is_finite():
                 raise ValueError("the Cartan type must be finite")
-            vertices = [plot_options.projection(vertex)
-                        for vertex in self.rho().orbit()]
+            vertices = [
+                plot_options.projection(vertex) for vertex in self.rho().orbit()
+            ]
             return Polyhedron(vertices=vertices).plot()
 
         def plot_fundamental_chamber(self, style='normal', **options):
@@ -2641,23 +2768,28 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             plot_options = self.plot_parse_options(**options)
             if not hasattr(self, "fundamental_weights"):
-                raise TypeError("classical fundamental chamber not yet available in the root lattice")
+                raise TypeError(
+                    "classical fundamental chamber not yet available in the root lattice"
+                )
             Lambda = self.fundamental_weights()
             cartan_type = self.cartan_type()
             if style == "classical":
                 if not cartan_type.is_affine():
-                    raise TypeError("classical fundamental chamber only available in affine type")
+                    raise TypeError(
+                        "classical fundamental chamber only available in affine type"
+                    )
                 I = cartan_type.classical().index_set()
                 lines = [Lambda[cartan_type.special_node()]]
             else:
                 I = cartan_type.index_set()
                 lines = []
-            return plot_options.cone(rays=[Lambda[i] for i in I],
-                                     lines=lines,
-                                     color='lightgrey',
-                                     alpha=.3)
+            return plot_options.cone(
+                rays=[Lambda[i] for i in I], lines=lines, color='lightgrey', alpha=0.3
+            )
 
-        def plot_alcoves(self, alcoves=True, alcove_labels=False, wireframe=False, **options):
+        def plot_alcoves(
+            self, alcoves=True, alcove_labels=False, wireframe=False, **options
+        ):
             r"""
             Plot the alcoves and optionally their labels.
 
@@ -2739,22 +2871,30 @@ class RootLatticeRealizations(Category_over_base_ring):
             fundamental_alcove_rays = Lambda.map(plot_options.intersection_at_level_1)
 
             def alcove_in_bounding_box(w):
-                return any(plot_options.in_bounding_box(w.action(fundamental_alcove_rays[i]))
-                           for i in I)
+                return any(
+                    plot_options.in_bounding_box(w.action(fundamental_alcove_rays[i]))
+                    for i in I
+                )
 
             def alcove_facet(w, i):
                 # Alcove facets with degenerate intersection with the
                 # bounding box bring no information; we might as well
                 # not draw them. Besides this avoids ugly fat points
                 # in dimension 2.
-                return plot_options.cone(rays=[w.action(fundamental_alcove_rays[j]) for j in I if j != i],
-                                         color=plot_options.color(i),
-                                         thickness=plot_options.thickness(i),
-                                         wireframe=wireframe,
-                                         draw_degenerate=False)
+                return plot_options.cone(
+                    rays=[w.action(fundamental_alcove_rays[j]) for j in I if j != i],
+                    color=plot_options.color(i),
+                    thickness=plot_options.thickness(i),
+                    wireframe=wireframe,
+                    draw_degenerate=False,
+                )
 
             def alcove_label(w):
-                label = "$1$" if w.is_one() else "$s_{"+"".join(str(j) for j in w.reduced_word())+"}$"
+                label = (
+                    "$1$"
+                    if w.is_one()
+                    else "$s_{" + "".join(str(j) for j in w.reduced_word()) + "}$"
+                )
                 position = plot_options.projection(w.action(rho))
                 if position in plot_options.bounding_box:
                     return plot_options.text(label, position)
@@ -2780,14 +2920,21 @@ class RootLatticeRealizations(Category_over_base_ring):
                     raise TypeError("alcoves=list only available in affine type")
                 translation_factors = cartan_type.translation_factors()
                 simple_roots = self.simple_roots()
-                translation_vectors = Family({i: translation_factors[i]*simple_roots[i]
-                                          for i in cartan_type.classical().index_set()})
+                translation_vectors = Family(
+                    {
+                        i: translation_factors[i] * simple_roots[i]
+                        for i in cartan_type.classical().index_set()
+                    }
+                )
                 # The elements of the classical Weyl group, as elements of W
-                W0 = [W.from_reduced_word(w.reduced_word()) for w in self.weyl_group().classical()]
+                W0 = [
+                    W.from_reduced_word(w.reduced_word())
+                    for w in self.weyl_group().classical()
+                ]
                 for alcove in alcoves:
                     # The translation mapping the center of the
                     # fundamental polygon to polygon indexed by alcove
-                    shift = sum(x*v for x,v in zip(alcove, translation_vectors))
+                    shift = sum(x * v for x, v in zip(alcove, translation_vectors))
                     shift = W.from_morphism(shift.translation)
                     for w in W0:
                         for i in w.descents(side='right', positive=True):
@@ -2883,9 +3030,13 @@ class RootLatticeRealizations(Category_over_base_ring):
                 [Polygon defined by 4 points]
             """
             plot_options = self.plot_parse_options(**options)
-            return plot_options.bounding_box.plot(color='gray', alpha=0.5, wireframe=False)
+            return plot_options.bounding_box.plot(
+                color='gray', alpha=0.5, wireframe=False
+            )
 
-        def plot_alcove_walk(self, word, start=None, foldings=None, color='orange', **options):
+        def plot_alcove_walk(
+            self, word, start=None, foldings=None, color='orange', **options
+        ):
             r"""
             Plot an alcove walk.
 
@@ -2952,6 +3103,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             from sage.plot.line import line
             from sage.plot.arrow import arrow
+
             plot_options = self.plot_parse_options(**options)
             W = self.weyl_group()
             s = W.simple_reflections()
@@ -2962,17 +3114,27 @@ class RootLatticeRealizations(Category_over_base_ring):
             w = W.one()
             source = plot_options.projection(start)
             G = plot_options.empty()
-            for (i, folding) in zip(word, foldings):
+            for i, folding in zip(word, foldings):
                 w = w * s[i]
                 target = plot_options.projection(w.action(start))
                 if folding:
                     middle = (source + target) / 2
                     G += line([source, middle], rgbcolor=color)
-                    G += arrow(middle, source, rgbcolor=color, arrowsize=plot_options._arrowsize)
+                    G += arrow(
+                        middle,
+                        source,
+                        rgbcolor=color,
+                        arrowsize=plot_options._arrowsize,
+                    )
                     # reset w
                     w = w * s[i]
                 else:
-                    G += arrow(source, target, rgbcolor=color, arrowsize=plot_options._arrowsize)
+                    G += arrow(
+                        source,
+                        target,
+                        rgbcolor=color,
+                        arrowsize=plot_options._arrowsize,
+                    )
                     source = target
             return G
 
@@ -2995,13 +3157,21 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             ct = self.cartan_type()
             if not ct.is_irreducible():
-                raise NotImplementedError("Implemented only for irreducible finite root systems")
+                raise NotImplementedError(
+                    "Implemented only for irreducible finite root systems"
+                )
             if not ct.is_finite():
-                raise NotImplementedError("Implemented only for irreducible finite root systems")
-            L = self.root_system.ambient_space() # uses peculiarities of ambient embedding
+                raise NotImplementedError(
+                    "Implemented only for irreducible finite root systems"
+                )
+            L = (
+                self.root_system.ambient_space()
+            )  # uses peculiarities of ambient embedding
             return max([root.scalar(root) for root in L.simple_roots()])
 
-        def plot_ls_paths(self, paths, plot_labels=None, colored_labels=True, **options):
+        def plot_ls_paths(
+            self, paths, plot_labels=None, colored_labels=True, **options
+        ):
             r"""
             Plot LS paths.
 
@@ -3038,6 +3208,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             if not isinstance(paths, (list, tuple, set)):
                 from sage.combinat.crystals.littelmann_path import CrystalOfLSPaths
                 from sage.categories.finite_crystals import FiniteCrystals
+
                 if not isinstance(paths, CrystalOfLSPaths):
                     raise ValueError("the input must be LS paths")
                 if paths not in FiniteCrystals():
@@ -3045,10 +3216,11 @@ class RootLatticeRealizations(Category_over_base_ring):
 
             from sage.plot.line import line
             from sage.plot.colors import rainbow
+
             plot_options = self.plot_parse_options(**options)
             color = rainbow(len(paths), 'rgbtuple')
             G = plot_options.empty()
-            for i,b in enumerate(paths):
+            for i, b in enumerate(paths):
                 prev = plot_options.projection(self.zero())
                 for x in b.value:
                     next = prev + plot_options.projection(self(x))
@@ -3056,15 +3228,26 @@ class RootLatticeRealizations(Category_over_base_ring):
                     prev = next
                 if plot_labels is not None:
                     if colored_labels:
-                        G += plot_options.text(b, prev + prev.normalized()*plot_labels, rgbcolor=color[i])
+                        G += plot_options.text(
+                            b, prev + prev.normalized() * plot_labels, rgbcolor=color[i]
+                        )
                     else:
-                        G += plot_options.text(b, prev + prev.normalized()*plot_labels)
+                        G += plot_options.text(
+                            b, prev + prev.normalized() * plot_labels
+                        )
             return G
 
-        def plot_mv_polytope(self, mv_polytope, mark_endpoints=True,
-                             circle_size=0.06, circle_thickness=1.6,
-                             wireframe='blue', fill='green', alpha=1,
-                             **options):
+        def plot_mv_polytope(
+            self,
+            mv_polytope,
+            mark_endpoints=True,
+            circle_size=0.06,
+            circle_thickness=1.6,
+            wireframe='blue',
+            fill='green',
+            alpha=1,
+            **options,
+        ):
             r"""
             Plot an MV polytope.
 
@@ -3105,39 +3288,58 @@ class RootLatticeRealizations(Category_over_base_ring):
                 Graphics3d Object
             """
             from sage.geometry.polyhedron.constructor import Polyhedron
+
             plot_options = self.plot_parse_options(**options)
 
             # Setup the shift for plotting
             pbw_data = mv_polytope._pbw_datum.parent
             al = self.simple_roots()
             red = tuple(mv_polytope._pbw_datum.long_word)
-            roots = [self.sum(c*al[a] for a,c in root)
-                     for root in pbw_data._root_list_from(red)]
+            roots = [
+                self.sum(c * al[a] for a, c in root)
+                for root in pbw_data._root_list_from(red)
+            ]
             datum = mv_polytope._pbw_datum.lusztig_datum
-            end_pt = self.sum(roots[i] * c for i,c in enumerate(datum))
+            end_pt = self.sum(roots[i] * c for i, c in enumerate(datum))
             shift = plot_options.projection(end_pt)
 
-            vertices = [plot_options.projection(vertex) - shift
-                        for vertex in mv_polytope._polytope_vertices(self)]
-            p = Polyhedron(vertices=vertices).plot(wireframe=wireframe,
-                                                   fill=fill, alpha=alpha)
+            vertices = [
+                plot_options.projection(vertex) - shift
+                for vertex in mv_polytope._polytope_vertices(self)
+            ]
+            p = Polyhedron(vertices=vertices).plot(
+                wireframe=wireframe, fill=fill, alpha=alpha
+            )
             if mark_endpoints:
                 from sage.plot.circle import circle
 
-                p += circle(plot_options.projection(self.zero()),
-                            circle_size, fill=True,
-                            thickness=circle_thickness, color=wireframe)
+                p += circle(
+                    plot_options.projection(self.zero()),
+                    circle_size,
+                    fill=True,
+                    thickness=circle_thickness,
+                    color=wireframe,
+                )
 
-                p += circle(-shift,
-                            circle_size, fill=True,
-                            thickness=circle_thickness, color=wireframe)
+                p += circle(
+                    -shift,
+                    circle_size,
+                    fill=True,
+                    thickness=circle_thickness,
+                    color=wireframe,
+                )
             return p
 
-        def plot_crystal(self, crystal,
-                         plot_labels=True, label_color='black',
-                         edge_labels=False,
-                         circle_size=0.06, circle_thickness=1.6,
-                         **options):
+        def plot_crystal(
+            self,
+            crystal,
+            plot_labels=True,
+            label_color='black',
+            edge_labels=False,
+            circle_size=0.06,
+            circle_thickness=1.6,
+            **options,
+        ):
             r"""
             Plot a finite crystal.
 
@@ -3214,41 +3416,57 @@ class RootLatticeRealizations(Category_over_base_ring):
 
             G = plot_options.empty()
             if plot_labels == 'circles':
-                for wt,m in mults.items():
+                for wt, m in mults.items():
                     m = len(m)
                     if m > 4:
                         G += plot_options.text(m, positions[wt], rgbcolor=label_color)
                         continue
 
                     if m >= 1:
-                        G += circle(positions[wt], circle_size, fill=True,
-                                    thickness=circle_thickness,
-                                    rgbcolor=label_color)
-                    for i in range(2,m+1):
-                        G += circle(positions[wt], i*circle_size,
-                                    thickness=circle_thickness,
-                                    rgbcolor=label_color)
+                        G += circle(
+                            positions[wt],
+                            circle_size,
+                            fill=True,
+                            thickness=circle_thickness,
+                            rgbcolor=label_color,
+                        )
+                    for i in range(2, m + 1):
+                        G += circle(
+                            positions[wt],
+                            i * circle_size,
+                            thickness=circle_thickness,
+                            rgbcolor=label_color,
+                        )
 
             elif plot_labels == 'multiplicities':
-                for wt,m in mults.items():
+                for wt, m in mults.items():
                     G += plot_options.text(len(m), positions[wt], rgbcolor=label_color)
 
             elif plot_labels:
-                for wt,m in mults.items():
+                for wt, m in mults.items():
                     for elt in m:
                         # TODO: Destack the multiple weights
                         G += plot_options.text(elt, positions[wt], rgbcolor=label_color)
 
-            for h,t,i in g.edges(sort=True):
-                G += arrow(positions[self(h.weight())], positions[self(t.weight())],
-                           zorder=1, rgbcolor=plot_options.color(i),
-                           arrowsize=plot_options._arrowsize)
+            for h, t, i in g.edges(sort=True):
+                G += arrow(
+                    positions[self(h.weight())],
+                    positions[self(t.weight())],
+                    zorder=1,
+                    rgbcolor=plot_options.color(i),
+                    arrowsize=plot_options._arrowsize,
+                )
                 if edge_labels:
-                    mid = (positions[self(h.weight())] + positions[self(t.weight())]) / QQ(2)
+                    mid = (
+                        positions[self(h.weight())] + positions[self(t.weight())]
+                    ) / QQ(2)
                     if plot_options.dimension >= 2:
-                        diff = (positions[self(h.weight())] - positions[self(t.weight())]).normalized()
+                        diff = (
+                            positions[self(h.weight())] - positions[self(t.weight())]
+                        ).normalized()
                         if plot_options.dimension >= 3:
                             from copy import copy
+
                             diff2 = copy(diff)
                             diff[0], diff[1] = -diff[1], diff[0]
                             if abs(diff.dot_product(diff2)) > 0.9:
@@ -3286,11 +3504,23 @@ class RootLatticeRealizations(Category_over_base_ring):
             if isinstance(self, RootSpace):
                 if self.root_system.dual_side:
                     return self.cartan_type().root_system().root_space(self.base_ring())
-                return self.cartan_type().dual().root_system().coroot_space(self.base_ring())
+                return (
+                    self.cartan_type()
+                    .dual()
+                    .root_system()
+                    .coroot_space(self.base_ring())
+                )
             if isinstance(self, WeightSpace):
                 if self.root_system.dual_side:
-                    return self.cartan_type().root_system().weight_space(self.base_ring())
-                return self.cartan_type().dual().root_system().coweight_space(self.base_ring())
+                    return (
+                        self.cartan_type().root_system().weight_space(self.base_ring())
+                    )
+                return (
+                    self.cartan_type()
+                    .dual()
+                    .root_system()
+                    .coweight_space(self.base_ring())
+                )
             raise TypeError("Not implemented for %s" % self)
 
         @abstract_method(optional=True)
@@ -3318,7 +3548,6 @@ class RootLatticeRealizations(Category_over_base_ring):
     ##########################################################################
 
     class ElementMethods:
-
         @abstract_method
         def scalar(self, lambdacheck):
             """
@@ -3399,8 +3628,11 @@ class RootLatticeRealizations(Category_over_base_ring):
             cm = self.parent().dynkin_diagram().cartan_matrix()
             sym = cm.symmetrized_matrix()
             iset = self.parent().index_set()
-            return sum(cl*sym[iset.index(ml),iset.index(mr)]*cr
-                       for ml,cl in self for mr,cr in alpha)
+            return sum(
+                cl * sym[iset.index(ml), iset.index(mr)] * cr
+                for ml, cl in self
+                for mr, cr in alpha
+            )
 
         def norm_squared(self):
             """
@@ -3484,8 +3716,12 @@ class RootLatticeRealizations(Category_over_base_ring):
                 [(1, 2, 0), (1, 0, 2), (2, 1, 0),
                  (2, 0, 1), (0, 1, 2), (0, 2, 1)]
             """
-            R = RecursivelyEnumeratedSet([self], attrcall('simple_reflections'),
-                    structure=None, enumeration='breadth')
+            R = RecursivelyEnumeratedSet(
+                [self],
+                attrcall('simple_reflections'),
+                structure=None,
+                enumeration='breadth',
+            )
             return iter(R)
 
         def orbit(self):
@@ -3545,8 +3781,10 @@ class RootLatticeRealizations(Category_over_base_ring):
 
             def apply_action(la):
                 return [la.dot_action([i]) for i in I]
-            R = RecursivelyEnumeratedSet([self], apply_action, structure=None,
-                                         enumeration='breadth')
+
+            R = RecursivelyEnumeratedSet(
+                [self], apply_action, structure=None, enumeration='breadth'
+            )
             return iter(R)
 
         def dot_orbit(self):
@@ -3711,9 +3949,11 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             if index_set is None:
                 index_set = self.parent().index_set()
-            return [ i for i in index_set if self.has_descent(i, positive) ]
+            return [i for i in index_set if self.has_descent(i, positive)]
 
-        def to_dominant_chamber(self, index_set=None, positive=True, reduced_word=False):
+        def to_dominant_chamber(
+            self, index_set=None, positive=True, reduced_word=False
+        ):
             r"""
             Return the unique dominant element in the Weyl group orbit of the vector ``self``.
 
@@ -3784,16 +4024,28 @@ class RootLatticeRealizations(Category_over_base_ring):
                     level = self.level()
                     if level > 0:
                         if not positive:
-                            raise ValueError("%s is not in the orbit of the fundamental chamber" % (self))
+                            raise ValueError(
+                                "%s is not in the orbit of the fundamental chamber"
+                                % (self)
+                            )
                     elif level < 0:
                         if positive:
-                            raise ValueError("%s is not in the orbit of the negative of the fundamental chamber" % (self))
+                            raise ValueError(
+                                "%s is not in the orbit of the negative of the fundamental chamber"
+                                % (self)
+                            )
                     elif not (self == self.parent().zero()):
                         # nonzero level zero weight
                         if positive:
-                            raise ValueError("%s is not in the orbit of the fundamental chamber" % (self))
+                            raise ValueError(
+                                "%s is not in the orbit of the fundamental chamber"
+                                % (self)
+                            )
                         else:
-                            raise ValueError("%s is not in the orbit of the negative of the fundamental chamber" % (self))
+                            raise ValueError(
+                                "%s is not in the orbit of the negative of the fundamental chamber"
+                                % (self)
+                            )
             if reduced_word:
                 direction = []
             while True:
@@ -3825,7 +4077,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 sage: alpha[1].reduced_word([1,2])                                      # needs sage.graphs
                 [2]
             """
-            return self.to_dominant_chamber(index_set=index_set,positive=positive,reduced_word=True)[1]
+            return self.to_dominant_chamber(
+                index_set=index_set, positive=positive, reduced_word=True
+            )[1]
 
         def is_dominant(self, index_set=None, positive=True):
             r"""
@@ -3858,7 +4112,7 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             return self.first_descent(index_set, not positive) is None
 
-        def is_dominant_weight(self): # Or is_dominant_integral_weight?
+        def is_dominant_weight(self):  # Or is_dominant_integral_weight?
             """
             Test whether ``self`` is a dominant element of the weight lattice.
 
@@ -3887,8 +4141,11 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             alphacheck = self.parent().simple_coroots()
             from sage.rings.semirings.non_negative_integer_semiring import NN
-            return all(self.inner_product(alphacheck[i]) in NN
-                       for i in self.parent().index_set())
+
+            return all(
+                self.inner_product(alphacheck[i]) in NN
+                for i in self.parent().index_set()
+            )
 
         def is_verma_dominant(self, positive=True):
             r"""
@@ -3938,7 +4195,9 @@ class RootLatticeRealizations(Category_over_base_ring):
             alphacheck = P.coroot_lattice().positive_roots()
             wt = self + P.rho()
             if positive:
-                return not any((c := wt.scalar(ac)) in ZZ and c < 0 for ac in alphacheck)
+                return not any(
+                    (c := wt.scalar(ac)) in ZZ and c < 0 for ac in alphacheck
+                )
             return not any((c := wt.scalar(ac)) in ZZ and c > 0 for ac in alphacheck)
 
         ##########################################################################
@@ -3975,7 +4234,10 @@ class RootLatticeRealizations(Category_over_base_ring):
                 sage: L.rho().succ(index_set=[2])
                 [2*Lambda[1] - Lambda[2] + 2*Lambda[3]]
             """
-            return [ self.simple_reflection(i) for i in self.descents(index_set=index_set, positive=True) ]
+            return [
+                self.simple_reflection(i)
+                for i in self.descents(index_set=index_set, positive=True)
+            ]
 
         def pred(self, index_set=None):
             r"""
@@ -4004,7 +4266,7 @@ class RootLatticeRealizations(Category_over_base_ring):
                 sage: (-L.rho()).pred(index_set=[1])                                    # needs sage.graphs
                 [Lambda[1] - 2*Lambda[2] - Lambda[3]]
             """
-            return [ self.simple_reflection(i) for i in self.descents(index_set) ]
+            return [self.simple_reflection(i) for i in self.descents(index_set)]
 
         def greater(self):
             r"""
@@ -4071,9 +4333,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 r = -self
             p_roots = self.parent().positive_roots_by_height()
             # We won't need any roots higher than us
-            p_roots = p_roots[:p_roots.index(r)]
+            p_roots = p_roots[: p_roots.index(r)]
             for i, a in enumerate(p_roots):
-                for b in p_roots[i + 1:]:
+                for b in p_roots[i + 1 :]:
                     if a + b == r:
                         return (a, b)
             raise ValueError("Unable to find an extraspecial pair")
@@ -4106,7 +4368,9 @@ class RootLatticeRealizations(Category_over_base_ring):
                 3
             """
             if not self.parent().cartan_type().is_affine():
-                raise ValueError("%s does not belong to a lattice of affine Cartan type" % self)
+                raise ValueError(
+                    "%s does not belong to a lattice of affine Cartan type" % self
+                )
             return self.scalar(self.parent().null_coroot())
 
         @cached_in_parent_method
@@ -4310,10 +4574,15 @@ class RootLatticeRealizations(Category_over_base_ring):
                 the_word = list(element)
                 I = self.parent().index_set()
                 if not all(i in I for i in the_word):
-                    raise ValueError("Not all members of %s are in the index set of the %s" % (element, self.parent()))
+                    raise ValueError(
+                        "Not all members of %s are in the index set of the %s"
+                        % (element, self.parent())
+                    )
             else:
                 if not isinstance(element, Element):
-                    raise TypeError("%s should be an element of a Coxeter group" % (element))
+                    raise TypeError(
+                        "%s should be an element of a Coxeter group" % (element)
+                    )
                 W = element.parent()
                 if W is self.parent().weyl_group():
                     # Action by an element of the Coxeter or Weyl group of ``self``
@@ -4321,8 +4590,14 @@ class RootLatticeRealizations(Category_over_base_ring):
                         element = element.inverse()
                     return element.action(self)
                 # Action by an element of an isomorphic Coxeter or Weyl group
-                if not (W in CoxeterGroups() and W.cartan_type() == self.parent().cartan_type()):
-                    raise TypeError("%s should be an element of a Coxeter group of type %s" % (element, self.parent().cartan_type()))
+                if not (
+                    W in CoxeterGroups()
+                    and W.cartan_type() == self.parent().cartan_type()
+                ):
+                    raise TypeError(
+                        "%s should be an element of a Coxeter group of type %s"
+                        % (element, self.parent().cartan_type())
+                    )
                 the_word = element.reduced_word()
             if inverse is False:
                 the_word.reverse()
@@ -4466,25 +4741,28 @@ class RootLatticeRealizations(Category_over_base_ring):
             if not ct.is_irreducible():
                 raise ValueError("Cartan type needs to be irreducible!")
             if not ct.is_finite():
-                return self.norm_squared() == min(alpha.norm_squared()
-                                                  for alpha in self.parent().simple_roots())
-            L = self.parent().root_system.ambient_space() # uses peculiarities of ambient embedding
+                return self.norm_squared() == min(
+                    alpha.norm_squared() for alpha in self.parent().simple_roots()
+                )
+            L = (
+                self.parent().root_system.ambient_space()
+            )  # uses peculiarities of ambient embedding
             ls = L(self)
             return ls.scalar(ls) < L._maximum_root_length()
-            #Alternative implementation
-            #if ct.is_simply_laced():
+            # Alternative implementation
+            # if ct.is_simply_laced():
             #    return False
-            #L = self.parent().root_system.ambient_space() # uses peculiarities of ambient embedding
-            #ls = L(self)
-            #lensq = ls.scalar(ls)
-            #if lensq > 2:
+            # L = self.parent().root_system.ambient_space() # uses peculiarities of ambient embedding
+            # ls = L(self)
+            # lensq = ls.scalar(ls)
+            # if lensq > 2:
             #    return False
-            #if lensq == 1:
+            # if lensq == 1:
             #    return True
             ## now only types BCFG remain and the square length is 2
-            #if ct.type() == 'C' or ct.type() == 'G':
+            # if ct.type() == 'C' or ct.type() == 'G':
             #    return True
-            #return False
+            # return False
 
         def to_dual_type_cospace(self):
             r"""
@@ -4569,8 +4847,9 @@ class RootLatticeRealizations(Category_over_base_ring):
             """
             alpha = self.parent().simple_roots()
             norm_sq = self.norm_squared()
-            return max(sroot.norm_squared() for sroot in alpha) == norm_sq \
-                   and all(c * alpha[i].norm_squared() / norm_sq in ZZ for i,c in self)
+            return max(sroot.norm_squared() for sroot in alpha) == norm_sq and all(
+                c * alpha[i].norm_squared() / norm_sq in ZZ for i, c in self
+            )
 
         def is_imaginary_root(self):
             r"""

@@ -13,7 +13,7 @@ REFERENCES:
 
 - [CR1962]_
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2011-2015 Nicolas M. Thiéry <nthiery at users.sf.net>
 #                2011-2015 Franco Saliola <saliola@gmail.com>
@@ -21,7 +21,7 @@ REFERENCES:
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 import operator
 from sage.misc.cachefunc import cached_method
@@ -63,7 +63,6 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
     """
 
     class ParentMethods:
-
         @cached_method
         def radical_basis(self):
             r"""
@@ -179,17 +178,29 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 B = self.basis()
                 product_on_basis = self.product_on_basis
                 if product_on_basis is NotImplemented:
+
                     def product_on_basis(i, j):
                         return B[i] * B[j]
 
                 zero = F.zero()
                 keys = B.keys()
-                cache = [{(i, j): c for i in keys
-                         for j, c in product_on_basis(y, i).monomial_coefficients().items()}
-                         for y in keys]
-                mat = [[F.sum(x.get((j, i), zero) * c for (i,j), c in y.items())
-                        for x in cache]
-                       for y in cache]
+                cache = [
+                    {
+                        (i, j): c
+                        for i in keys
+                        for j, c in product_on_basis(y, i)
+                        .monomial_coefficients()
+                        .items()
+                    }
+                    for y in keys
+                ]
+                mat = [
+                    [
+                        F.sum(x.get((j, i), zero) * c for (i, j), c in y.items())
+                        for x in cache
+                    ]
+                    for y in cache
+                ]
 
                 mat = matrix(F, mat)
                 rad_basis = mat.kernel().basis()
@@ -201,9 +212,11 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 # I imagine that ``pth_root`` would be fastest, but it is not
                 # always available....
                 if hasattr(F.one(), 'nth_root'):
+
                     def root_fcn(s, x):
                         return x.nth_root(s)
                 else:
+
                     def root_fcn(s, x):
                         return x ** (1 / s)
 
@@ -212,12 +225,12 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 B = [b.on_left_matrix() for b in self.basis()]
                 while s <= n:
                     # we use that p_{AB}(x) = p_{BA}(x) here
-                    data = [[None]*(len(B)+1) for _ in B]
+                    data = [[None] * (len(B) + 1) for _ in B]
                     for i, b in enumerate(B):
                         for j, bb in enumerate(B[i:], start=i):
-                            val = (-1)**s * (b*bb).charpoly()[n-s]
+                            val = (-1) ** s * (b * bb).charpoly()[n - s]
                             data[i][j] = data[j][i] = val
-                        data[i][-1] = (-1)**s * b.charpoly()[n-s]
+                        data[i][-1] = (-1) ** s * b.charpoly()[n - s]
                     C = matrix(data).left_kernel().basis()
                     if 1 < s < F.order():
                         C = [vector(F, [root_fcn(s, ci) for ci in c]) for c in C]
@@ -283,10 +296,15 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sage: # needs sage.graphs sage.modules
                 sage: TestSuite(radical).run()
             """
-            category = AssociativeAlgebras(self.category().base_ring()).WithBasis().FiniteDimensional().Subobjects()
-            radical = self.submodule(self.radical_basis(),
-                                     category=category,
-                                     already_echelonized=True)
+            category = (
+                AssociativeAlgebras(self.category().base_ring())
+                .WithBasis()
+                .FiniteDimensional()
+                .Subobjects()
+            )
+            radical = self.submodule(
+                self.radical_basis(), category=category, already_echelonized=True
+            )
             radical.rename("Radical of {}".format(self))
             return radical
 
@@ -339,7 +357,9 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sage: TestSuite(S).run()                                                # needs sage.graphs sage.modules
             """
             ring = self.base_ring()
-            category = Algebras(ring).WithBasis().FiniteDimensional().Quotients().Semisimple()
+            category = (
+                Algebras(ring).WithBasis().FiniteDimensional().Quotients().Semisimple()
+            )
             result = self.quotient_module(self.radical(), category=category)
             result.rename("Semisimple quotient of {}".format(self))
             return result
@@ -409,12 +429,18 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
                 sage: TestSuite(center).run()                                           # needs sage.graphs sage.modules
             """
-            category = Algebras(self.base_ring()).FiniteDimensional().Subobjects().Commutative().WithBasis()
+            category = (
+                Algebras(self.base_ring())
+                .FiniteDimensional()
+                .Subobjects()
+                .Commutative()
+                .WithBasis()
+            )
             if self in Algebras.Semisimple:
                 category = category.Semisimple()
-            center = self.submodule(self.center_basis(),
-                                    category=category,
-                                    already_echelonized=True)
+            center = self.submodule(
+                self.center_basis(), category=category, already_echelonized=True
+            )
             center.rename("Center of {}".format(self))
             return center
 
@@ -465,8 +491,11 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             def reduce_pivots(elt, trailsupp, sortsupp):
                 if not elt:
                     return elt
-                return elt - self.linear_combination((trailsupp[s], c // trailsupp[s][s])
-                                                     for s in sortsupp if (c := elt[s]))
+                return elt - self.linear_combination(
+                    (trailsupp[s], c // trailsupp[s][s])
+                    for s in sortsupp
+                    if (c := elt[s])
+                )
 
             dim = self.dimension()
             basis = []
@@ -545,14 +574,25 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
             gens = self.echelon_form([self(g) for g in gens], order=order)
             # add the unit to make sure it is unital
-            basis = self._build_basis_by_generators(gens + [self.one()], gens, order=order, side=2)
+            basis = self._build_basis_by_generators(
+                gens + [self.one()], gens, order=order, side=2
+            )
 
             C = FiniteDimensionalAlgebrasWithBasis(self.category().base_ring())
             category = C.Subobjects().or_subcategory(category)
-            return self.submodule(basis, check=False, already_echelonized=True,
-                                  category=category, support_order=order, *args, **opts)
+            return self.submodule(
+                basis,
+                check=False,
+                already_echelonized=True,
+                category=category,
+                support_order=order,
+                *args,
+                **opts,
+            )
 
-        def ideal_submodule(self, gens, side='left', category=None, algorithm=None, *args, **opts):
+        def ideal_submodule(
+            self, gens, side='left', category=None, algorithm=None, *args, **opts
+        ):
             r"""
             Return the ``side`` ideal of ``self`` generated by ``gens``
             as a submodule.
@@ -652,17 +692,33 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
 
             if algorithm == "basis":
                 if side == 'left':
-                    return self.submodule([b * g for b in self.basis() for g in gens],
-                                          category=category, *args, **opts)
+                    return self.submodule(
+                        [b * g for b in self.basis() for g in gens],
+                        category=category,
+                        *args,
+                        **opts,
+                    )
                 if side == 'right':
-                    return self.submodule([g * b for b in self.basis() for g in gens],
-                                          category=category, *args, **opts)
+                    return self.submodule(
+                        [g * b for b in self.basis() for g in gens],
+                        category=category,
+                        *args,
+                        **opts,
+                    )
                 if side == 'twosided':
                     spanset = [b * g for b in self.basis() for g in gens]
                     spanset.extend(g * b for b in self.basis() for g in gens)
-                    return self.submodule([b * g * bp for b in self.basis()
-                                           for bp in self.basis() for g in gens],
-                                          category=category, *args, **opts)
+                    return self.submodule(
+                        [
+                            b * g * bp
+                            for b in self.basis()
+                            for bp in self.basis()
+                            for g in gens
+                        ],
+                        category=category,
+                        *args,
+                        **opts,
+                    )
                 raise ValueError("side must be either 'left', 'right', or 'twosided'")
 
             if algorithm == "generators":
@@ -672,18 +728,36 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     order = list(self.basis().keys())
 
                 if side == 'left':
-                    basis = self._build_basis_by_generators(gens, alggens, order=order, side=0)
+                    basis = self._build_basis_by_generators(
+                        gens, alggens, order=order, side=0
+                    )
                 elif side == 'right':
-                    basis = self._build_basis_by_generators(gens, alggens, order=order, side=1)
+                    basis = self._build_basis_by_generators(
+                        gens, alggens, order=order, side=1
+                    )
                 elif side == 'twosided':
-                    basis = self._build_basis_by_generators(gens, alggens, order=order, side=2)
+                    basis = self._build_basis_by_generators(
+                        gens, alggens, order=order, side=2
+                    )
                 else:
-                    raise ValueError("side must be either 'left', 'right', or 'twosided'")
+                    raise ValueError(
+                        "side must be either 'left', 'right', or 'twosided'"
+                    )
 
-                C = AssociativeAlgebras(self.category().base_ring()).WithBasis().FiniteDimensional()
+                C = (
+                    AssociativeAlgebras(self.category().base_ring())
+                    .WithBasis()
+                    .FiniteDimensional()
+                )
                 category = C.Subobjects().or_subcategory(category)
-                return self.submodule(basis, category=category, already_echelonized=True,
-                                      support_order=order, *args, **opts)
+                return self.submodule(
+                    basis,
+                    category=category,
+                    already_echelonized=True,
+                    support_order=order,
+                    *args,
+                    **opts,
+                )
 
             raise ValueError("invalid algorithm")
 
@@ -768,14 +842,15 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             """
             opts.pop("coerce", None)
             if side == 'right':
-                return self.submodule([a * b
-                                       for b in self.basis()], *args, **opts)
+                return self.submodule([a * b for b in self.basis()], *args, **opts)
             if side == 'left':
-                return self.submodule([b * a
-                                       for b in self.basis()], *args, **opts)
+                return self.submodule([b * a for b in self.basis()], *args, **opts)
             if side == 'twosided':
-                return self.submodule([b1 * a * b2 for b1 in self.basis()
-                                       for b2 in self.basis()], *args, **opts)
+                return self.submodule(
+                    [b1 * a * b2 for b1 in self.basis() for b2 in self.basis()],
+                    *args,
+                    **opts,
+                )
             raise ValueError("side must be either 'left', 'right', or 'twosided'")
 
         @cached_method
@@ -933,8 +1008,8 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             x_prev = None
             while x != x_prev:
                 tmp = x
-                y = x ** 2
-                x = 2*y - y**2  # == one - (one - x**2)**2
+                y = x**2
+                x = 2 * y - y**2  # == one - (one - x**2)**2
                 x_prev = tmp
             return x
 
@@ -1059,17 +1134,20 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             """
             from sage.matrix.constructor import Matrix
             from sage.rings.integer_ring import ZZ
+
             A_quo = self.semisimple_quotient()
             idempotents_quo = A_quo.central_orthogonal_idempotents()
             # Dimension of simple modules
-            dim_simples = [A_quo.principal_ideal(e).dimension().sqrt()
-                           for e in idempotents_quo]
+            dim_simples = [
+                A_quo.principal_ideal(e).dimension().sqrt() for e in idempotents_quo
+            ]
             # Orthogonal idempotents
             idempotents = self.orthogonal_idempotents_central_mod_radical()
 
             def C(i, j):
                 summand = self.peirce_summand(idempotents[i], idempotents[j])
                 return summand.dimension() / (dim_simples[i] * dim_simples[j])
+
             m = Matrix(ZZ, len(idempotents), C)
             m.set_immutable()
             return m
@@ -1132,8 +1210,10 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 - :meth:`orthogonal_idempotents_central_mod_radical`
                 - :meth:`peirce_decomposition`
             """
-            return [self.principal_ideal(e, side) for e in
-                    self.orthogonal_idempotents_central_mod_radical()]
+            return [
+                self.principal_ideal(e, side)
+                for e in self.orthogonal_idempotents_central_mod_radical()
+            ]
 
         @cached_method
         def peirce_summand(self, ei, ej):
@@ -1187,12 +1267,14 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 True
             """
             B = self.basis()
-            phi = self.module_morphism(on_basis=lambda k: ei * B[k] * ej,
-                                       codomain=self, triangular='lower')
+            phi = self.module_morphism(
+                on_basis=lambda k: ei * B[k] * ej, codomain=self, triangular='lower'
+            )
             ideal = phi.matrix(side='right').image()
 
-            return self.submodule([self.from_vector(v) for v in ideal.basis()],
-                                  already_echelonized=True)
+            return self.submodule(
+                [self.from_vector(v) for v in ideal.basis()], already_echelonized=True
+            )
 
         def peirce_decomposition(self, idempotents=None, check=True):
             r"""
@@ -1278,10 +1360,16 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             if idempotents is None:
                 idempotents = self.orthogonal_idempotents_central_mod_radical()
             if check:
-                if not self.is_identity_decomposition_into_orthogonal_idempotents(idempotents):
-                    raise ValueError("Not a decomposition of the identity into orthogonal idempotents")
-            return [[self.peirce_summand(ei, ej) for ej in idempotents]
-                    for ei in idempotents]
+                if not self.is_identity_decomposition_into_orthogonal_idempotents(
+                    idempotents
+                ):
+                    raise ValueError(
+                        "Not a decomposition of the identity into orthogonal idempotents"
+                    )
+            return [
+                [self.peirce_summand(ei, ej) for ej in idempotents]
+                for ei in idempotents
+            ]
 
         def is_identity_decomposition_into_orthogonal_idempotents(self, l):
             r"""
@@ -1389,10 +1477,13 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 sage: A.is_identity_decomposition_into_orthogonal_idempotents(())
                 False
             """
-            return (self.sum(l) == self.one()
-                    and all(e*e == e for e in l)
-                    and all(e*f == 0 and f*e == 0 for i, e in enumerate(l)
-                                                  for f in l[:i]))
+            return (
+                self.sum(l) == self.one()
+                and all(e * e == e for e in l)
+                and all(
+                    e * f == 0 and f * e == 0 for i, e in enumerate(l) for f in l[:i]
+                )
+            )
 
         @cached_method
         def is_commutative(self) -> bool:
@@ -1414,10 +1505,9 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 B.remove(self.one())
             except ValueError:
                 pass
-            return all(b*bp == bp*b for i,b in enumerate(B) for bp in B[i+1:])
+            return all(b * bp == bp * b for i, b in enumerate(B) for bp in B[i + 1 :])
 
     class ElementMethods:
-
         def to_matrix(self, base_ring=None, action=operator.mul, side='left'):
             """
             Return the matrix of the action of ``self`` on the algebra.
@@ -1463,7 +1553,9 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 action = lambda x: action_left(basis[x], self)
             else:
                 action = lambda x: action_left(self, basis[x])
-            endo = self.parent().module_morphism(on_basis=action, codomain=self.parent())
+            endo = self.parent().module_morphism(
+                on_basis=action, codomain=self.parent()
+            )
             return endo.matrix(base_ring=base_ring)
 
         _matrix_ = to_matrix  # For temporary backward compatibility
@@ -1621,6 +1713,7 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
         - :wikipedia:`Cellular_algebra`
         - http://webusers.imj-prg.fr/~bernhard.keller/ictp2006/lecturenotes/xi.pdf
         """
+
         class ParentMethods:
             def _test_cellular(self, **options):
                 """
@@ -1644,17 +1737,23 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                         basis_elt = B[(mu, s, t)]
                         for a in B:
                             elt = a * basis_elt
-                            tester.assertTrue( all(P.lt(i[0], mu) or i[2] == t
-                                                   for i in elt.support()) )
+                            tester.assertTrue(
+                                all(P.lt(i[0], mu) or i[2] == t for i in elt.support())
+                            )
                             vals.append([elt[(mu, u, t)] for u in C])
                         for t in C[1:]:
                             basis_elt = B[(mu, s, t)]
-                            for i,a in enumerate(B):
+                            for i, a in enumerate(B):
                                 elt = a * basis_elt
-                                tester.assertTrue( all(P.lt(i[0], mu) or i[2] == t
-                                                       for i in elt.support()) )
-                                tester.assertEqual(vals[i], [elt[(mu, u, t)]
-                                                             for u in C])
+                                tester.assertTrue(
+                                    all(
+                                        P.lt(i[0], mu) or i[2] == t
+                                        for i in elt.support()
+                                    )
+                                )
+                                tester.assertEqual(
+                                    vals[i], [elt[(mu, u, t)] for u in C]
+                                )
 
             @abstract_method
             def cell_poset(self):
@@ -1735,8 +1834,9 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                 C = self.cellular_basis()
                 if C is self:
                     M = x.monomial_coefficients(copy=False)
-                    return self._from_dict({(i[0], i[2], i[1]): M[i] for i in M},
-                                           remove_zeros=False)
+                    return self._from_dict(
+                        {(i[0], i[2], i[1]): M[i] for i in M}, remove_zeros=False
+                    )
                 return self(C(x).cellular_involution())
 
             @cached_method
@@ -1753,6 +1853,7 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                      [3]: Standard tableaux of shape [3]}
                 """
                 from sage.sets.family import Family
+
                 return Family(self.cell_poset(), self.cell_module_indices)
 
             def cellular_basis(self):
@@ -1767,6 +1868,7 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                      over Rational Field
                 """
                 from sage.algebras.cellular_basis import CellularBasis
+
                 return CellularBasis(self)
 
             def cell_module(self, mu, **kwds):
@@ -1781,6 +1883,7 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                      Symmetric group algebra of order 3 over Rational Field
                 """
                 from sage.modules.with_basis.cell_module import CellModule
+
                 return CellModule(self.cellular_basis(), mu, **kwds)
 
             @cached_method
@@ -1822,8 +1925,13 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     sage: TL.simple_module_parameterization()
                     (2, 4, 6)
                 """
-                return tuple([mu for mu in self.cell_poset()
-                              if self.cell_module(mu).nonzero_bilinear_form()])
+                return tuple(
+                    [
+                        mu
+                        for mu in self.cell_poset()
+                        if self.cell_module(mu).nonzero_bilinear_form()
+                    ]
+                )
 
         class ElementMethods:
             def cellular_involution(self):
@@ -1848,6 +1956,7 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
             The category of cellular algebras constructed by tensor
             product of cellular algebras.
             """
+
             @cached_method
             def extra_super_categories(self):
                 """
@@ -1900,8 +2009,10 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                                                   Standard tableaux of shape [2, 1])
                     """
                     from sage.categories.cartesian_product import cartesian_product
-                    return cartesian_product([self._sets[i].cell_module_indices(x)
-                                              for i,x in enumerate(mu)])
+
+                    return cartesian_product(
+                        [self._sets[i].cell_module_indices(x) for i, x in enumerate(mu)]
+                    )
 
                 @lazy_attribute
                 def cellular_involution(self):
@@ -1946,15 +2057,24 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                           + 7/48*[2, 1] # [3, 1, 2] + 49/48*[2, 1] # [3, 2, 1])
                     """
                     if self.cellular_basis() is self:
+
                         def func(x):
                             M = x.monomial_coefficients(copy=False)
-                            return self._from_dict({(i[0], i[2], i[1]): M[i] for i in M},
-                                                   remove_zeros=False)
+                            return self._from_dict(
+                                {(i[0], i[2], i[1]): M[i] for i in M},
+                                remove_zeros=False,
+                            )
+
                         return self.module_morphism(function=func, codomain=self)
 
                     def on_basis(i):
-                        return self._tensor_of_elements([A.basis()[i[j]].cellular_involution()
-                                                         for j, A in enumerate(self._sets)])
+                        return self._tensor_of_elements(
+                            [
+                                A.basis()[i[j]].cellular_involution()
+                                for j, A in enumerate(self._sets)
+                            ]
+                        )
+
                     return self.module_morphism(on_basis, codomain=self)
 
                 @cached_method
@@ -1976,6 +2096,7 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                     C = [A.cellular_basis() for A in self._sets]
                     elts = [C[j](self._sets[j].basis()[ij]) for j, ij in enumerate(i)]
                     from sage.categories.tensor import tensor
+
                     T = tensor(C)
                     temp = T._tensor_of_elements(elts)
                     B = self.cellular_basis()
@@ -1991,8 +2112,10 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                             t.append(c)
                         C = self.cell_module_indices(mu)
                         return (tuple(mu), C(s), C(t))
-                    return B._from_dict({convert_index(i): M[i] for i in M},
-                                        remove_zeros=False)
+
+                    return B._from_dict(
+                        {convert_index(i): M[i] for i in M}, remove_zeros=False
+                    )
 
                 @cached_method
                 def _from_cellular_index(self, x):
@@ -2011,8 +2134,10 @@ class FiniteDimensionalAlgebrasWithBasis(CategoryWithAxiom_over_base_ring):
                         ....:     for k in C.basis().keys())
                         True
                     """
-                    elts = [A(A.cellular_basis().basis()[ (x[0][i], x[1][i], x[2][i]) ])
-                            for i,A in enumerate(self._sets)]
+                    elts = [
+                        A(A.cellular_basis().basis()[(x[0][i], x[1][i], x[2][i])])
+                        for i, A in enumerate(self._sets)
+                    ]
                     return self._tensor_of_elements(elts)
 
     class SubcategoryMethods:

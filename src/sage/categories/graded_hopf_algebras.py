@@ -37,4 +37,5 @@ def GradedHopfAlgebras(base_ring):
         <sage.categories.hopf_algebras.HopfAlgebras.Super>`.
     """
     from sage.categories.hopf_algebras import HopfAlgebras
+
     return HopfAlgebras(base_ring).Graded()

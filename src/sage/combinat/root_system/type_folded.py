@@ -5,13 +5,13 @@ AUTHORS:
 
 - Travis Scrimshaw (2013-01-12) - Initial version
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013 Travis Scrimshaw <tscrim@ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
@@ -156,6 +156,7 @@ class CartanTypeFolded(UniqueRepresentation, SageObject):
        `A_{2n}^{(2)}`, and `C_n^{(1)}`". Representation Theory. **7** (2003).
        101-163. :doi:`10.1.1.192.2095`, :arxiv:`0810.5067`.
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type, virtual, orbit):
         """
@@ -222,7 +223,9 @@ class CartanTypeFolded(UniqueRepresentation, SageObject):
             sage: latex(fct)
             C_{4}^{(1)} \hookrightarrow A_{7}^{(1)}
         """
-        return self._cartan_type._latex_() + " \\hookrightarrow " + self._folding._latex_()
+        return (
+            self._cartan_type._latex_() + " \\hookrightarrow " + self._folding._latex_()
+        )
 
     def cartan_type(self):
         """
@@ -260,8 +263,12 @@ class CartanTypeFolded(UniqueRepresentation, SageObject):
             sage: fct.folding_orbit()
             Finite family {0: (0,), 1: (1, 7), 2: (2, 6), 3: (3, 5), 4: (4,)}
         """
-        return Family({i:tuple(self._orbit[pos])
-                       for pos,i in enumerate(self._cartan_type.index_set())})
+        return Family(
+            {
+                i: tuple(self._orbit[pos])
+                for pos, i in enumerate(self._cartan_type.index_set())
+            }
+        )
 
     @cached_method
     def scaling_factors(self):
@@ -290,11 +297,11 @@ class CartanTypeFolded(UniqueRepresentation, SageObject):
                 root = L.simple_root(i)
                 coroot = L.simple_coroot(i)
                 return root.leading_coefficient() / coroot.leading_coefficient()
+
             index_set = self._cartan_type.index_set()
             min_f = min(f(j) for j in index_set)
             return Family({i: int(f(i) / min_f) for i in index_set})
         if self._cartan_type.is_affine():
             c = self._cartan_type.translation_factors()
             cmax = max(c)
-            return Family({i: int(cmax / c[i])
-                           for i in self._cartan_type.index_set()})
+            return Family({i: int(cmax / c[i]) for i in self._cartan_type.index_set()})

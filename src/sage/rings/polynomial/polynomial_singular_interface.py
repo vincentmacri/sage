@@ -53,6 +53,7 @@ https://www.singular.uni-kl.de/Manual/latest/sing_418.htm
 '''
 singular_max_char = 2**29 - 1
 
+
 def _do_singular_init_(singular, base_ring, char, _vars, order):
     r"""
     Implementation of :meth:`PolynomialRing_singular_repr._singular_init_`.
@@ -85,14 +86,14 @@ def _do_singular_init_(singular, base_ring, char, _vars, order):
         # singular converts to bits from base_10 in mpr_complex.cc by:
         #  size_t bits = 1 + (size_t) ((float)digits * 3.5);
         precision = base_ring.precision()
-        digits = (2*precision + 4) // 7
+        digits = (2 * precision + 4) // 7
         return make_ring(f"(real,{digits},0)"), None
 
     if isinstance(base_ring, sage.rings.abc.ComplexField):
         # singular converts to bits from base_10 in mpr_complex.cc by:
         #  size_t bits = 1 + (size_t) ((float)digits * 3.5);
         precision = base_ring.precision()
-        digits = (2*precision + 4) // 7
+        digits = (2 * precision + 4) // 7
         return make_ring(f"(complex,{digits},0,I)"), None
 
     if isinstance(base_ring, sage.rings.abc.RealDoubleField):
@@ -110,7 +111,7 @@ def _do_singular_init_(singular, base_ring, char, _vars, order):
         if isinstance(base_ring, FiniteField) and char <= singular_max_char:
             return make_ring(str(char)), None
         if char.is_power_of(2):
-            return make_ring(f"(integer,2,{char.nbits()-1})"), None
+            return make_ring(f"(integer,2,{char.nbits() - 1})"), None
         return make_ring(f"(integer,{char})"), None
 
     if isinstance(base_ring, FiniteField):
@@ -118,7 +119,7 @@ def _do_singular_init_(singular, base_ring, char, _vars, order):
         gen = str(base_ring.gen())
         R = make_ring(f"({char},{gen})")
 
-        minpoly = str(base_ring.modulus()).replace("x",gen).replace(" ","")
+        minpoly = str(base_ring.modulus()).replace("x", gen).replace(" ", "")
         if singular.eval('minpoly') != f"({minpoly})":
             singular.eval(f"minpoly={minpoly}")
             minpoly = singular.eval('minpoly')[1:-1]
@@ -130,10 +131,10 @@ def _do_singular_init_(singular, base_ring, char, _vars, order):
         gen = str(base_ring.gen())
         poly = base_ring.polynomial()
         poly_gen = str(poly.parent().gen())
-        poly_str = str(poly).replace(poly_gen,gen)
+        poly_str = str(poly).replace(poly_gen, gen)
         R = make_ring(f"({char},{gen})")
 
-        minpoly = poly_str.replace(" ","")
+        minpoly = poly_str.replace(" ", "")
         if singular.eval('minpoly') != f"({minpoly})":
             singular.eval(f"minpoly={minpoly}")
             minpoly = singular.eval('minpoly')[1:-1]
@@ -158,16 +159,24 @@ def _do_singular_init_(singular, base_ring, char, _vars, order):
 
             R = make_ring(f"({base_char},{gens})")
 
-            base_ring.__minpoly = (str(B.modulus()).replace("x",ext_gen)).replace(" ","")
+            base_ring.__minpoly = (str(B.modulus()).replace("x", ext_gen)).replace(
+                " ", ""
+            )
             singular.eval('setring ' + R._name)
 
             from sage.misc.stopgap import stopgap
-            stopgap("Denominators of fraction field elements are sometimes dropped without warning.", 17696)
+
+            stopgap(
+                "Denominators of fraction field elements are sometimes dropped without warning.",
+                17696,
+            )
 
             return singular(f"std(ideal({base_ring.__minpoly}))", type='qring'), None
 
-    elif isinstance(base_ring, RationalFunctionField) \
-            and base_ring.constant_field().is_prime_field():
+    elif (
+        isinstance(base_ring, RationalFunctionField)
+        and base_ring.constant_field().is_prime_field()
+    ):
         gen = str(base_ring.gen())
         return make_ring(f"({base_ring.characteristic()},{gen})"), None
 
@@ -182,6 +191,7 @@ class PolynomialRing_singular_repr:
     polynomial rings which support conversion from and to Singular
     rings.
     """
+
     def _singular_(self, singular=None):
         r"""
         Return a Singular ring for this polynomial ring.
@@ -338,8 +348,10 @@ class PolynomialRing_singular_repr:
             R._check_valid()
             if self.base_ring() is ZZ or self.base_ring().is_prime_field():
                 return R
-            if isinstance(self.base_ring(), FiniteField) or \
-                    (isinstance(self.base_ring(), NumberField) and self.base_ring().is_absolute()):
+            if isinstance(self.base_ring(), FiniteField) or (
+                isinstance(self.base_ring(), NumberField)
+                and self.base_ring().is_absolute()
+            ):
                 R.set_ring()  # sorry for that, but needed for minpoly
                 if singular.eval('minpoly') != f"({self.__minpoly})":
                     singular.eval(f"minpoly={self.__minpoly}")
@@ -377,7 +389,9 @@ class PolynomialRing_singular_repr:
         if singular is None:
             from sage.interfaces.singular import singular
 
-        self.__singular, self.__minpoly = _do_singular_init_(singular, self.base_ring(), self.characteristic(), _vars, order)
+        self.__singular, self.__minpoly = _do_singular_init_(
+            singular, self.base_ring(), self.characteristic(), _vars, order
+        )
 
         return self.__singular
 
@@ -444,21 +458,31 @@ def can_convert_to_singular(R):
         return False
 
     base_ring = R.base_ring()
-    if (base_ring is ZZ
-        or isinstance(base_ring, (RationalField,
-                                  sage.rings.abc.IntegerModRing,
-                                  sage.rings.abc.RealField, sage.rings.abc.ComplexField,
-                                  sage.rings.abc.RealDoubleField, sage.rings.abc.ComplexDoubleField))):
+    if base_ring is ZZ or isinstance(
+        base_ring,
+        (
+            RationalField,
+            sage.rings.abc.IntegerModRing,
+            sage.rings.abc.RealField,
+            sage.rings.abc.ComplexField,
+            sage.rings.abc.RealDoubleField,
+            sage.rings.abc.ComplexDoubleField,
+        ),
+    ):
         return True
     if isinstance(base_ring, FiniteField):
         return base_ring.characteristic() <= singular_max_char
     if isinstance(base_ring, NumberField):
         return base_ring.is_absolute()
-    if (isinstance(base_ring, sage.rings.fraction_field.FractionField_generic)
-        and isinstance(base_ring.base(), (PolynomialRing_general, MPolynomialRing_base))):
+    if isinstance(
+        base_ring, sage.rings.fraction_field.FractionField_generic
+    ) and isinstance(base_ring.base(), (PolynomialRing_general, MPolynomialRing_base)):
         B = base_ring.base_ring()
-        return (B.is_prime_field() or B is ZZ
-                or (isinstance(B, FiniteField) and B.characteristic() <= singular_max_char))
+        return (
+            B.is_prime_field()
+            or B is ZZ
+            or (isinstance(B, FiniteField) and B.characteristic() <= singular_max_char)
+        )
     if isinstance(base_ring, RationalFunctionField):
         return base_ring.constant_field().is_prime_field()
     return False
@@ -475,6 +499,7 @@ class Polynomial_singular_repr:
     Due to the incompatibility of Python extension classes and multiple inheritance,
     this just defers to module-level functions.
     """
+
     def _singular_(self, singular=None):
         if singular is None:
             from sage.interfaces.singular import singular

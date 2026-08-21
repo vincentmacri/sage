@@ -54,6 +54,7 @@ def zeta_zeros():
         2001052
     """
     from sage.misc.verbose import verbose
+
     for path in sage_data_paths('odlyzko'):
         sobj = os.path.join(path, 'zeros.sobj')
         if os.path.exists(sobj):

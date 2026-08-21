@@ -83,7 +83,9 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
     from sage.structure.sage_object import SageObject
 
-_cache: TripleDict[SageObject, SageObject, Category | None, Homset] = TripleDict(weak_values=True)
+_cache: TripleDict[SageObject, SageObject, Category | None, Homset] = TripleDict(
+    weak_values=True
+)
 
 
 def Hom[DomainElementT: Parent, CodomainElementT: Parent](
@@ -427,7 +429,9 @@ def Hom[DomainElementT: Parent, CodomainElementT: Parent](
     else:
         if check:
             if not isinstance(category, Category):
-                raise TypeError("Argument category (= {}) must be a category.".format(category))
+                raise TypeError(
+                    "Argument category (= {}) must be a category.".format(category)
+                )
             for O in [X, Y]:
                 try:
                     category_mismatch = O not in category
@@ -481,7 +485,11 @@ def Hom[DomainElementT: Parent, CodomainElementT: Parent](
     if isinstance(X, UniqueRepresentation) and isinstance(Y, UniqueRepresentation):
         if not isinstance(H, WithEqualityById):
             try:
-                H.__class__ = dynamic_class(H.__class__.__name__ + "_with_equality_by_id", (WithEqualityById, H.__class__), doccls=H.__class__)
+                H.__class__ = dynamic_class(
+                    H.__class__.__name__ + "_with_equality_by_id",
+                    (WithEqualityById, H.__class__),
+                    doccls=H.__class__,
+                )
             except Exception:
                 pass
     return H
@@ -615,6 +623,7 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
         sage: loads(dumps(H)) == H
         True
     """
+
     def __init__(
         self,
         X: DomainElementT,
@@ -691,8 +700,11 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
             # See also #15801.
             base = X.base_ring()
 
-        Parent.__init__(self, base=base,
-                        category=category.Endsets() if X is Y else category.Homsets())
+        Parent.__init__(
+            self,
+            base=base,
+            category=category.Endsets() if X is Y else category.Homsets(),
+        )
 
     def __reduce__(
         self,
@@ -761,7 +773,8 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
             'Set of Morphisms from Ambient free module of rank 2 over the principal ideal domain Integer Ring to Rational Field in Category of sets'
         """
         return "Set of Morphisms from {} to {} in {}".format(
-            self._domain, self._codomain, self.__category)
+            self._domain, self._codomain, self.__category
+        )
 
     def __hash__(self) -> int:
         """
@@ -967,8 +980,14 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
                 call_with_keywords = self.__call_on_basis__
             except AttributeError:
                 if 'base_map' in options:
-                    raise NotImplementedError("base_map not supported for this Homset; you may need to specify a category")
-                raise NotImplementedError("no keywords are implemented for constructing elements of {}".format(self))
+                    raise NotImplementedError(
+                        "base_map not supported for this Homset; you may need to specify a category"
+                    )
+                raise NotImplementedError(
+                    "no keywords are implemented for constructing elements of {}".format(
+                        self
+                    )
+                )
             options.setdefault("category", self.homset_category())
             return call_with_keywords(**options)
 
@@ -976,12 +995,18 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
             if x.domain() != self.domain():
                 mor = x.domain()._internal_coerce_map_from(self.domain())
                 if mor is None:
-                    raise TypeError("Incompatible domains: x (=%s) cannot be an element of %s" % (x, self))
+                    raise TypeError(
+                        "Incompatible domains: x (=%s) cannot be an element of %s"
+                        % (x, self)
+                    )
                 x = x * mor
             if x.codomain() != self.codomain():
                 mor = self.codomain()._internal_coerce_map_from(x.codomain())
                 if mor is None:
-                    raise TypeError("Incompatible codomains: x (=%s) cannot be an element of %s" % (x, self))
+                    raise TypeError(
+                        "Incompatible codomains: x (=%s) cannot be an element of %s"
+                        % (x, self)
+                    )
                 x = mor * x
             return x
 
@@ -1070,7 +1095,10 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
             False
         """
         class_name = "%s._abstract_element_class" % self.__class__.__name__
-        return dynamic_class(class_name, (self.category().element_class, self.homset_category().morphism_class))
+        return dynamic_class(
+            class_name,
+            (self.category().element_class, self.homset_category().morphism_class),
+        )
 
     @lazy_attribute
     def element_class_set_morphism(self):
@@ -1110,9 +1138,11 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
         """
         if not isinstance(other, Homset):
             return False
-        return (self._domain == other._domain
-                and self._codomain == other._codomain
-                and self.__category == other.__category)
+        return (
+            self._domain == other._domain
+            and self._codomain == other._codomain
+            and self.__category == other.__category
+        )
 
     def __ne__(self, other) -> bool:
         """
@@ -1175,7 +1205,7 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
             from Univariate Polynomial Ring in t over Rational Field
             to Univariate Polynomial Ring in t over Finite Field of size 3 not defined
         """
-        return morphism.FormalCoercionMorphism(self)   # good default in many cases
+        return morphism.FormalCoercionMorphism(self)  # good default in many cases
 
     def identity(self):
         """
@@ -1202,7 +1232,9 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
         """
         if self.is_endomorphism_set():
             return morphism.IdentityMorphism(self)
-        raise TypeError("identity map only defined for endomorphisms; try natural_map() instead")
+        raise TypeError(
+            "identity map only defined for endomorphisms; try natural_map() instead"
+        )
 
     def one(self):
         """
@@ -1278,8 +1310,7 @@ class Homset[DomainElementT: Parent, CodomainElementT: Parent](Set_generic):
             sage: type(H.reversed())
             <class 'sage.modules.free_module_homspace.FreeModuleHomspace_with_category'>
         """
-        return Hom(self.codomain(), self.domain(),
-                   category=self.homset_category())
+        return Hom(self.codomain(), self.domain(), category=self.homset_category())
 
 
 # Really needed???

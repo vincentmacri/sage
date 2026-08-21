@@ -77,6 +77,7 @@ class Necklaces_evaluation(UniqueRepresentation, Parent):
 
     - ``content`` -- list or tuple of nonnegative integers
     """
+
     @staticmethod
     def __classcall_private__(cls, content):
         """
@@ -222,9 +223,15 @@ class Necklaces_evaluation(UniqueRepresentation, Parent):
 
         n = sum(le)
 
-        return ZZ.sum(euler_phi(j) * factorial(n // j) //
-                      prod(factorial(ni // j) for ni in evaluation)
-                      for j in divisors(gcd(le))) // n
+        return (
+            ZZ.sum(
+                euler_phi(j)
+                * factorial(n // j)
+                // prod(factorial(ni // j) for ni in evaluation)
+                for j in divisors(gcd(le))
+            )
+            // n
+        )
 
     def __iter__(self):
         r"""
@@ -346,13 +353,13 @@ def _fast_fixed_content(a, content, t, p, k, r, s, dll, equality=False):
                 sp = t + 1
 
             if j == a[t - p - 1]:
-                yield from _fast_fixed_content(a[:], content, t + 1, p,
-                                               k, r, sp, dll,
-                                               equality=equality)
+                yield from _fast_fixed_content(
+                    a[:], content, t + 1, p, k, r, sp, dll, equality=equality
+                )
             else:
-                yield from _fast_fixed_content(a[:], content, t + 1, t,
-                                               k, r, sp, dll,
-                                               equality=equality)
+                yield from _fast_fixed_content(
+                    a[:], content, t + 1, t, k, r, sp, dll, equality=equality
+                )
 
             if not content[j]:  # == 0
                 dll.unhide(j)
@@ -431,11 +438,13 @@ def _list_fixed_content(a, content, t, p, k, dll, equality=False):
                 dll.hide(j)
 
             if j == a[t - p - 1]:
-                yield from _list_fixed_content(a[:], content[:], t + 1, p,
-                                               k, dll, equality=equality)
+                yield from _list_fixed_content(
+                    a[:], content[:], t + 1, p, k, dll, equality=equality
+                )
             else:
-                yield from _list_fixed_content(a[:], content[:], t + 1, t,
-                                               k, dll, equality=equality)
+                yield from _list_fixed_content(
+                    a[:], content[:], t + 1, t, k, dll, equality=equality
+                )
 
             if not content[j]:  # == 0
                 dll.unhide(j)
@@ -514,11 +523,13 @@ def _simple_fixed_content(a, content, t, p, k, equality=False):
                 a[t - 1] = j
                 content[j] -= 1
                 if j == a[t - p - 1]:
-                    yield from _simple_fixed_content(a[:], content, t + 1, p,
-                                                     k, equality=equality)
+                    yield from _simple_fixed_content(
+                        a[:], content, t + 1, p, k, equality=equality
+                    )
                 else:
-                    yield from _simple_fixed_content(a[:], content, t + 1, t,
-                                                     k, equality=equality)
+                    yield from _simple_fixed_content(
+                        a[:], content, t + 1, t, k, equality=equality
+                    )
                 content[j] += 1
 
 

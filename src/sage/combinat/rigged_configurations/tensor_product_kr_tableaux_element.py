@@ -28,7 +28,9 @@ AUTHORS:
 from sage.combinat.crystals.tensor_product import TensorProductOfRegularCrystalsElement
 
 
-class TensorProductOfKirillovReshetikhinTableauxElement(TensorProductOfRegularCrystalsElement):
+class TensorProductOfKirillovReshetikhinTableauxElement(
+    TensorProductOfRegularCrystalsElement
+):
     """
     An element in a tensor product of Kirillov-Reshetikhin tableaux.
 
@@ -140,8 +142,11 @@ class TensorProductOfKirillovReshetikhinTableauxElement(TensorProductOfRegularCr
         """
         if "pathlist" in options:
             pathlist = options["pathlist"]
-            TensorProductOfRegularCrystalsElement.__init__(self, parent,
-              [parent.crystals[i](*tab) for i, tab in enumerate(pathlist)])
+            TensorProductOfRegularCrystalsElement.__init__(
+                self,
+                parent,
+                [parent.crystals[i](*tab) for i, tab in enumerate(pathlist)],
+            )
         else:
             TensorProductOfRegularCrystalsElement.__init__(self, parent, list)
 
@@ -182,7 +187,7 @@ class TensorProductOfKirillovReshetikhinTableauxElement(TensorProductOfRegularCr
         comp = [crys._repr_diagram().splitlines() for crys in self]
         num_comp = len(comp)  # number of components
         col_len = [len(t) > 0 and len(t[0]) or 1 for t in comp]  # columns per component
-        num_rows = max(len(t) for t in comp)                     # number of rows
+        num_rows = max(len(t) for t in comp)  # number of rows
 
         # We take advantage of the fact the components are rectangular
         diag = ''
@@ -244,8 +249,10 @@ class TensorProductOfKirillovReshetikhinTableauxElement(TensorProductOfRegularCr
             sage: li.parent()
             Tensor product of Kirillov-Reshetikhin tableaux of type ['A', 3, 1] and factor(s) ((1, 3), (2, 2))
         """
-        from sage.combinat.rigged_configurations.tensor_product_kr_tableaux \
-            import TensorProductOfKirillovReshetikhinTableaux
+        from sage.combinat.rigged_configurations.tensor_product_kr_tableaux import (
+            TensorProductOfKirillovReshetikhinTableaux,
+        )
+
         P = self.parent()
         P = TensorProductOfKirillovReshetikhinTableaux(P._cartan_type, reversed(P.dims))
         return P(*[x.lusztig_involution() for x in reversed(self)])
@@ -270,8 +277,10 @@ class TensorProductOfKirillovReshetikhinTableauxElement(TensorProductOfRegularCr
         r, s = P.dims[0]
         B = [[r, 1], [r, s - 1]]
         B.extend(P.dims[1:])
-        from sage.combinat.rigged_configurations.tensor_product_kr_tableaux \
-            import TensorProductOfKirillovReshetikhinTableaux
+        from sage.combinat.rigged_configurations.tensor_product_kr_tableaux import (
+            TensorProductOfKirillovReshetikhinTableaux,
+        )
+
         TP = TensorProductOfKirillovReshetikhinTableaux(P._cartan_type, B)
         x = self[0].left_split()
         return TP(*(list(x) + self[1:]))
@@ -304,8 +313,10 @@ class TensorProductOfKirillovReshetikhinTableauxElement(TensorProductOfRegularCr
         B = list(P.dims[:-1])
         B.append([r, s - 1])
         B.append([r, 1])
-        from sage.combinat.rigged_configurations.tensor_product_kr_tableaux \
-            import TensorProductOfKirillovReshetikhinTableaux
+        from sage.combinat.rigged_configurations.tensor_product_kr_tableaux import (
+            TensorProductOfKirillovReshetikhinTableaux,
+        )
+
         TP = TensorProductOfKirillovReshetikhinTableaux(P._cartan_type, B)
         x = self[-1].right_split()
         return TP(*(self[:-1] + list(x)))
@@ -398,6 +409,7 @@ class TensorProductOfKirillovReshetikhinTableauxElement(TensorProductOfRegularCr
             True
         """
         from sage.combinat.rigged_configurations.bijection import KRTToRCBijection
+
         return KRTToRCBijection(self).run(display_steps)
 
     def to_tensor_product_of_kirillov_reshetikhin_crystals(self):

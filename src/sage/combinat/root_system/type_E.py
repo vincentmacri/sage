@@ -41,35 +41,43 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: [e.weyl_dimension(v) for v in e.fundamental_weights()]
             [3875, 147250, 6696000, 6899079264, 146325270, 2450240, 30380, 248]
         """
-        v = ZZ(1)/ZZ(2)
+        v = ZZ(1) / ZZ(2)
         self.rank = root_system.cartan_type().rank()
         ambient_space.AmbientSpace.__init__(self, root_system, baseRing)
         if self.rank == 6:
-            self.Base = [v*(self.root(0,7)-self.root(1,2,3,4,5,6)),
-                         self.root(0,1),
-                         self.root(0,1,p1=1),
-                         self.root(1,2,p1=1),
-                         self.root(2,3,p1=1),
-                         self.root(3,4,p1=1)]
+            self.Base = [
+                v * (self.root(0, 7) - self.root(1, 2, 3, 4, 5, 6)),
+                self.root(0, 1),
+                self.root(0, 1, p1=1),
+                self.root(1, 2, p1=1),
+                self.root(2, 3, p1=1),
+                self.root(3, 4, p1=1),
+            ]
         elif self.rank == 7:
-            self.Base = [v*(self.root(0,7)-self.root(1,2,3,4,5,6)),
-                         self.root(0,1),
-                         self.root(0,1,p1=1),
-                         self.root(1,2,p1=1),
-                         self.root(2,3,p1=1),
-                         self.root(3,4,p1=1),
-                         self.root(4,5,p1=1)]
+            self.Base = [
+                v * (self.root(0, 7) - self.root(1, 2, 3, 4, 5, 6)),
+                self.root(0, 1),
+                self.root(0, 1, p1=1),
+                self.root(1, 2, p1=1),
+                self.root(2, 3, p1=1),
+                self.root(3, 4, p1=1),
+                self.root(4, 5, p1=1),
+            ]
         elif self.rank == 8:
-            self.Base = [v*(self.root(0,7)-self.root(1,2,3,4,5,6)),
-                         self.root(0,1),
-                         self.root(0,1,p1=1),
-                         self.root(1,2,p1=1),
-                         self.root(2,3,p1=1),
-                         self.root(3,4,p1=1),
-                         self.root(4,5,p1=1),
-                         self.root(5,6,p1=1)]
+            self.Base = [
+                v * (self.root(0, 7) - self.root(1, 2, 3, 4, 5, 6)),
+                self.root(0, 1),
+                self.root(0, 1, p1=1),
+                self.root(1, 2, p1=1),
+                self.root(2, 3, p1=1),
+                self.root(3, 4, p1=1),
+                self.root(4, 5, p1=1),
+                self.root(5, 6, p1=1),
+            ]
         else:
-            raise NotImplementedError("Type \'E\' root systems only come in flavors 6, 7, 8.  Please make another choice")
+            raise NotImplementedError(
+                "Type 'E' root systems only come in flavors 6, 7, 8.  Please make another choice"
+            )
 
     def dimension(self):
         """
@@ -81,7 +89,25 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         return 8
 
-    def root(self, i1, i2=None, i3=None, i4=None, i5=None, i6=None, i7=None, i8=None, p1=0, p2=0, p3=0, p4=0, p5=0, p6=0, p7=0, p8=0):
+    def root(
+        self,
+        i1,
+        i2=None,
+        i3=None,
+        i4=None,
+        i5=None,
+        i6=None,
+        i7=None,
+        i8=None,
+        p1=0,
+        p2=0,
+        p3=0,
+        p4=0,
+        p5=0,
+        p6=0,
+        p7=0,
+        p8=0,
+    ):
         """
         Compute an element of the underlying lattice, using the specified elements of
         the standard basis, with signs dictated by the corresponding 'pi' arguments.
@@ -125,20 +151,59 @@ class AmbientSpace(ambient_space.AmbientSpace):
              (0, 0, 0, 0, 0, 0, 1, 1)]
         """
         if i1 == i2 or i2 is None:
-            return (-1)**p1*self.monomial(i1)
+            return (-1) ** p1 * self.monomial(i1)
         if i3 is None:
-            return (-1)**p1*self.monomial(i1) + (-1)**p2*self.monomial(i2)
+            return (-1) ** p1 * self.monomial(i1) + (-1) ** p2 * self.monomial(i2)
         if i4 is None:
-            return (-1)**p1*self.monomial(i1) + (-1)**p2*self.monomial(i2)+(-1)**p3*self.monomial(i3)
+            return (
+                (-1) ** p1 * self.monomial(i1)
+                + (-1) ** p2 * self.monomial(i2)
+                + (-1) ** p3 * self.monomial(i3)
+            )
         if i5 is None:
-            return (-1)**p1*self.monomial(i1) + (-1)**p2*self.monomial(i2)+(-1)**p3*self.monomial(i3)+(-1)**p4*self.monomial(i4)
+            return (
+                (-1) ** p1 * self.monomial(i1)
+                + (-1) ** p2 * self.monomial(i2)
+                + (-1) ** p3 * self.monomial(i3)
+                + (-1) ** p4 * self.monomial(i4)
+            )
         if i6 is None:
-            return (-1)**p1*self.monomial(i1) + (-1)**p2*self.monomial(i2)+(-1)**p3*self.monomial(i3)+(-1)**p4*self.monomial(i4)+(-1)**p5*self.monomial(i5)
+            return (
+                (-1) ** p1 * self.monomial(i1)
+                + (-1) ** p2 * self.monomial(i2)
+                + (-1) ** p3 * self.monomial(i3)
+                + (-1) ** p4 * self.monomial(i4)
+                + (-1) ** p5 * self.monomial(i5)
+            )
         if i7 is None:
-            return (-1)**p1*self.monomial(i1) + (-1)**p2*self.monomial(i2)+(-1)**p3*self.monomial(i3)+(-1)**p4*self.monomial(i4)+(-1)**p5*self.monomial(i5)+(-1)**p6*self.monomial(i6)
+            return (
+                (-1) ** p1 * self.monomial(i1)
+                + (-1) ** p2 * self.monomial(i2)
+                + (-1) ** p3 * self.monomial(i3)
+                + (-1) ** p4 * self.monomial(i4)
+                + (-1) ** p5 * self.monomial(i5)
+                + (-1) ** p6 * self.monomial(i6)
+            )
         if i8 is None:
-            return (-1)**p1*self.monomial(i1) + (-1)**p2*self.monomial(i2)+(-1)**p3*self.monomial(i3)+(-1)**p4*self.monomial(i4)+(-1)**p5*self.monomial(i5)+(-1)**p6*self.monomial(i6)+(-1)**p7*self.monomial(i7)
-        return (-1)**p1*self.monomial(i1) + (-1)**p2*self.monomial(i2)+(-1)**p3*self.monomial(i3)+(-1)**p4*self.monomial(i4)+(-1)**p5*self.monomial(i5)+(-1)**p6*self.monomial(i6)+(-1)**p7*self.monomial(i7)+(-1)**p8*self.monomial(i8)
+            return (
+                (-1) ** p1 * self.monomial(i1)
+                + (-1) ** p2 * self.monomial(i2)
+                + (-1) ** p3 * self.monomial(i3)
+                + (-1) ** p4 * self.monomial(i4)
+                + (-1) ** p5 * self.monomial(i5)
+                + (-1) ** p6 * self.monomial(i6)
+                + (-1) ** p7 * self.monomial(i7)
+            )
+        return (
+            (-1) ** p1 * self.monomial(i1)
+            + (-1) ** p2 * self.monomial(i2)
+            + (-1) ** p3 * self.monomial(i3)
+            + (-1) ** p4 * self.monomial(i4)
+            + (-1) ** p5 * self.monomial(i5)
+            + (-1) ** p6 * self.monomial(i6)
+            + (-1) ** p7 * self.monomial(i7)
+            + (-1) ** p8 * self.monomial(i8)
+        )
 
     def simple_root(self, i):
         """
@@ -153,7 +218,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
         """
         if i not in self.index_set():
             raise ValueError("{} is not in the index set".format(i))
-        return self.Base[i-1]
+        return self.Base[i - 1]
 
     def negative_roots(self):
         """
@@ -200,7 +265,7 @@ class AmbientSpace(ambient_space.AmbientSpace):
              (1/2, 1/2, 1/2, -1/2, 1/2, 1/2, 1/2, -1/2),
              (1/2, 1/2, 1/2, 1/2, -1/2, 1/2, 1/2, -1/2)]
         """
-        return [ -a for a in self.positive_roots()]
+        return [-a for a in self.positive_roots()]
 
     def positive_roots(self):
         """
@@ -375,25 +440,124 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.rho()
             (0, 1, 2, 3, 4, 5, 6, 23)
         """
-        v = ZZ(1)/ZZ(2)
+        v = ZZ(1) / ZZ(2)
         # Note that
         if not hasattr(self, 'PosRoots'):
             if self.rank == 6:
-                self.PosRoots = ( [ self.root(i,j) for i in range(self.rank-1) for j in range(i+1,self.rank-1) ] +
-                                  [ self.root(i,j,p1=1) for i in range(self.rank-1) for j in range(i+1,self.rank-1) ] +
-                                  [ v*(self.root(7)-self.root(6)-self.root(5)+self.root(0,1,2,3,4,p1=p1,p2=p2,p3=p3,p4=p4,p5=p5))
-                                    for p1 in [0,1] for p2 in [0,1] for p3 in [0,1] for p4 in [0,1] for p5 in [0,1] if (p1+p2+p3+p4+p5) % 2 == 0 ])
+                self.PosRoots = (
+                    [
+                        self.root(i, j)
+                        for i in range(self.rank - 1)
+                        for j in range(i + 1, self.rank - 1)
+                    ]
+                    + [
+                        self.root(i, j, p1=1)
+                        for i in range(self.rank - 1)
+                        for j in range(i + 1, self.rank - 1)
+                    ]
+                    + [
+                        v
+                        * (
+                            self.root(7)
+                            - self.root(6)
+                            - self.root(5)
+                            + self.root(
+                                0, 1, 2, 3, 4, p1=p1, p2=p2, p3=p3, p4=p4, p5=p5
+                            )
+                        )
+                        for p1 in [0, 1]
+                        for p2 in [0, 1]
+                        for p3 in [0, 1]
+                        for p4 in [0, 1]
+                        for p5 in [0, 1]
+                        if (p1 + p2 + p3 + p4 + p5) % 2 == 0
+                    ]
+                )
             elif self.rank == 7:
-                self.PosRoots = ( [ self.root(i,j) for i in range(self.rank-1) for j in range(i+1,self.rank-1) ] +
-                                  [ self.root(i,j,p1=1) for i in range(self.rank-1) for j in range(i+1,self.rank-1) ] +
-                                  [ self.root(6,7,p1=1) ] +
-                                  [ v*(self.root(7)-self.root(6)+self.root(0,1,2,3,4,5,p1=p1,p2=p2,p3=p3,p4=p4,p5=p5,p6=p6))
-                                    for p1 in [0,1] for p2 in [0,1] for p3 in [0,1] for p4 in [0,1] for p5 in [0,1] for p6 in [0,1] if (p1+p2+p3+p4+p5+p6) % 2 == 1 ])
+                self.PosRoots = (
+                    [
+                        self.root(i, j)
+                        for i in range(self.rank - 1)
+                        for j in range(i + 1, self.rank - 1)
+                    ]
+                    + [
+                        self.root(i, j, p1=1)
+                        for i in range(self.rank - 1)
+                        for j in range(i + 1, self.rank - 1)
+                    ]
+                    + [self.root(6, 7, p1=1)]
+                    + [
+                        v
+                        * (
+                            self.root(7)
+                            - self.root(6)
+                            + self.root(
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5,
+                                p1=p1,
+                                p2=p2,
+                                p3=p3,
+                                p4=p4,
+                                p5=p5,
+                                p6=p6,
+                            )
+                        )
+                        for p1 in [0, 1]
+                        for p2 in [0, 1]
+                        for p3 in [0, 1]
+                        for p4 in [0, 1]
+                        for p5 in [0, 1]
+                        for p6 in [0, 1]
+                        if (p1 + p2 + p3 + p4 + p5 + p6) % 2 == 1
+                    ]
+                )
             elif self.rank == 8:
-                self.PosRoots = ( [ self.root(i,j) for i in range(self.rank) for j in range(i+1,self.rank) ] +
-                                  [ self.root(i,j,p1=1) for i in range(self.rank) for j in range(i+1,self.rank) ] +
-                                  [ v*(self.root(7)+self.root(0,1,2,3,4,5,6,p1=p1,p2=p2,p3=p3,p4=p4,p5=p5,p6=p6,p7=p7))
-                                    for p1 in [0,1] for p2 in [0,1] for p3 in [0,1] for p4 in [0,1] for p5 in [0,1] for p6 in [0,1] for p7 in [0,1] if (p1+p2+p3+p4+p5+p6+p7) % 2 == 0 ])
+                self.PosRoots = (
+                    [
+                        self.root(i, j)
+                        for i in range(self.rank)
+                        for j in range(i + 1, self.rank)
+                    ]
+                    + [
+                        self.root(i, j, p1=1)
+                        for i in range(self.rank)
+                        for j in range(i + 1, self.rank)
+                    ]
+                    + [
+                        v
+                        * (
+                            self.root(7)
+                            + self.root(
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5,
+                                6,
+                                p1=p1,
+                                p2=p2,
+                                p3=p3,
+                                p4=p4,
+                                p5=p5,
+                                p6=p6,
+                                p7=p7,
+                            )
+                        )
+                        for p1 in [0, 1]
+                        for p2 in [0, 1]
+                        for p3 in [0, 1]
+                        for p4 in [0, 1]
+                        for p5 in [0, 1]
+                        for p6 in [0, 1]
+                        for p7 in [0, 1]
+                        if (p1 + p2 + p3 + p4 + p5 + p6 + p7) % 2 == 0
+                    ]
+                )
 
         return self.PosRoots
 
@@ -405,38 +569,58 @@ class AmbientSpace(ambient_space.AmbientSpace):
             sage: e.fundamental_weights()
             Finite family {1: (0, 0, 0, 0, 0, -2/3, -2/3, 2/3), 2: (1/2, 1/2, 1/2, 1/2, 1/2, -1/2, -1/2, 1/2), 3: (-1/2, 1/2, 1/2, 1/2, 1/2, -5/6, -5/6, 5/6), 4: (0, 0, 1, 1, 1, -1, -1, 1), 5: (0, 0, 0, 1, 1, -2/3, -2/3, 2/3), 6: (0, 0, 0, 0, 1, -1/3, -1/3, 1/3)}
         """
-        v2 = ZZ(1)/ZZ(2)
-        v3 = ZZ(1)/ZZ(3)
+        v2 = ZZ(1) / ZZ(2)
+        v3 = ZZ(1) / ZZ(3)
         if self.rank == 6:
-            return Family({ 1: 2*v3*self.root(7,6,5,p2=1,p3=1),
-                            2: v2*self.root(0,1,2,3,4,5,6,7,p6=1,p7=1),
-                            3: 5*v2*v3*self.root(7,6,5,p2=1,p3=1)+v2*self.root(0,1,2,3,4,p1=1),
-                            4: self.root(2,3,4,5,6,7,p4=1,p5=1),
-                            5: 2*v3*self.root(7,6,5,p2=1,p3=1)+self.root(3,4),
-                            6: v3*self.root(7,6,5,p2=1,p3=1)+self.root(4)})
+            return Family(
+                {
+                    1: 2 * v3 * self.root(7, 6, 5, p2=1, p3=1),
+                    2: v2 * self.root(0, 1, 2, 3, 4, 5, 6, 7, p6=1, p7=1),
+                    3: 5 * v2 * v3 * self.root(7, 6, 5, p2=1, p3=1)
+                    + v2 * self.root(0, 1, 2, 3, 4, p1=1),
+                    4: self.root(2, 3, 4, 5, 6, 7, p4=1, p5=1),
+                    5: 2 * v3 * self.root(7, 6, 5, p2=1, p3=1) + self.root(3, 4),
+                    6: v3 * self.root(7, 6, 5, p2=1, p3=1) + self.root(4),
+                }
+            )
         if self.rank == 7:
-            return Family({ 1: self.root(7,6,p2=1),
-                            2: v2*self.root(0,1,2,3,4,5)+self.root(6,7,p1=1),
-                            3: v2*(self.root(0,1,2,3,4,5,p1=1)+3*self.root(6,7,p1=1)),
-                            4: self.root(2,3,4,5)+2*self.root(6,7,p1=1),
-                            5: 3*v2*self.root(6,7,p1=1)+self.root(3,4,5),
-                            6: self.root(4,5,6,7,p3=1),
-                            7: self.root(5)+v2*self.root(6,7,p1=1)})
+            return Family(
+                {
+                    1: self.root(7, 6, p2=1),
+                    2: v2 * self.root(0, 1, 2, 3, 4, 5) + self.root(6, 7, p1=1),
+                    3: v2
+                    * (self.root(0, 1, 2, 3, 4, 5, p1=1) + 3 * self.root(6, 7, p1=1)),
+                    4: self.root(2, 3, 4, 5) + 2 * self.root(6, 7, p1=1),
+                    5: 3 * v2 * self.root(6, 7, p1=1) + self.root(3, 4, 5),
+                    6: self.root(4, 5, 6, 7, p3=1),
+                    7: self.root(5) + v2 * self.root(6, 7, p1=1),
+                }
+            )
         if self.rank == 8:
-            return Family({ 1: 2*self.root(7),
-                            2: v2*(self.root(0,1,2,3,4,5,6)+5*self.root(7)),
-                            3: v2*(self.root(0,1,2,3,4,5,6,p1=1)+7*self.root(7)),
-                            4: self.root(2,3,4,5,6)+5*self.root(7),
-                            5: self.root(3,4,5,6)+4*self.root(7),
-                            6: self.root(4,5,6)+3*self.root(7),
-                            7: self.root(5,6)+2*self.root(7),
-                            8: self.root(6,7)})
+            return Family(
+                {
+                    1: 2 * self.root(7),
+                    2: v2 * (self.root(0, 1, 2, 3, 4, 5, 6) + 5 * self.root(7)),
+                    3: v2 * (self.root(0, 1, 2, 3, 4, 5, 6, p1=1) + 7 * self.root(7)),
+                    4: self.root(2, 3, 4, 5, 6) + 5 * self.root(7),
+                    5: self.root(3, 4, 5, 6) + 4 * self.root(7),
+                    6: self.root(4, 5, 6) + 3 * self.root(7),
+                    7: self.root(5, 6) + 2 * self.root(7),
+                    8: self.root(6, 7),
+                }
+            )
 
 
-from .cartan_type import CartanType_standard_finite, CartanType_simple, CartanType_simply_laced
+from .cartan_type import (
+    CartanType_standard_finite,
+    CartanType_simple,
+    CartanType_simply_laced,
+)
 
 
-class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_simply_laced):
+class CartanType(
+    CartanType_standard_finite, CartanType_simple, CartanType_simply_laced
+):
     def __init__(self, n):
         """
         EXAMPLES::
@@ -563,11 +747,12 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_simpl
              (6, 7, 1), (7, 6, 1), (7, 8, 1), (8, 7, 1)]
         """
         from .dynkin_diagram import DynkinDiagram_class
+
         g = DynkinDiagram_class(self)
-        g.add_edge(1,3)
-        g.add_edge(2,4)
+        g.add_edge(1, 3)
+        g.add_edge(2, 4)
         for i in range(3, self.n):
-            g.add_edge(i, i+1)
+            g.add_edge(i, i + 1)
         return g
 
     def _latex_dynkin_diagram(self, label=None, node=None, node_dist=2):
@@ -592,12 +777,12 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_simpl
             label = lambda i: i
         if node is None:
             node = self._latex_draw_node
-        ret = "\\draw (0 cm,0) -- (%s cm,0);\n" % ((self.n-2)*node_dist)
-        ret += "\\draw (%s cm, 0 cm) -- +(0,%s cm);\n" % (2*node_dist, node_dist)
+        ret = "\\draw (0 cm,0) -- (%s cm,0);\n" % ((self.n - 2) * node_dist)
+        ret += "\\draw (%s cm, 0 cm) -- +(0,%s cm);\n" % (2 * node_dist, node_dist)
         ret += node(0, 0, label(1))
-        for i in range(1, self.n-1):
-            ret += node(i*node_dist, 0, label(i+2))
-        ret += node(2*node_dist, node_dist, label(2), 'right=3pt')
+        for i in range(1, self.n - 1):
+            ret += node(i * node_dist, 0, label(i + 2))
+        ret += node(2 * node_dist, node_dist, label(2), 'right=3pt')
         return ret
 
     def ascii_art(self, label=None, node=None):
@@ -629,12 +814,21 @@ class CartanType(CartanType_standard_finite, CartanType_simple, CartanType_simpl
             label = lambda i: i
         if node is None:
             node = self._ascii_art_node
-        labels = [label(i) for i in [1,3,4,5,6] + list(range(7, self.n+1))] # We exclude 2 because of the special case
+        labels = [
+            label(i) for i in [1, 3, 4, 5, 6] + list(range(7, self.n + 1))
+        ]  # We exclude 2 because of the special case
         ret = "        {} {}\n        |\n        |\n".format(node(label(2)), label(2))
-        return ret + '---'.join(node(i) for i in labels) + '\n' + "".join("{!s:4}".format(i) for i in labels)
+        return (
+            ret
+            + '---'.join(node(i) for i in labels)
+            + '\n'
+            + "".join("{!s:4}".format(i) for i in labels)
+        )
 
 
 # For unpickling backward compatibility (Sage <= 4.1)
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.combinat.root_system.type_E',
-                           'ambient_space', AmbientSpace)
+
+register_unpickle_override(
+    'sage.combinat.root_system.type_E', 'ambient_space', AmbientSpace
+)

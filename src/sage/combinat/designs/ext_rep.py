@@ -48,8 +48,7 @@ DTRS_PROTOCOL = '2.0'
 # http://designtheory.org/database/v-b-k/v2-b2-k2.icgsa.txt.bz2
 # We use this for doctests to make sure that the parsing works.
 
-v2_b2_k2_icgsa = \
-"""<?xml version="1.0"?>
+v2_b2_k2_icgsa = """<?xml version="1.0"?>
 <list_of_designs
  design_type="block_design"
  dtrs_protocol="2.0"
@@ -476,7 +475,7 @@ def dump_to_tmpfile(s):
     """
 
     file_loc = tmp_filename()
-    f = open(file_loc,"w")
+    f = open(file_loc, "w")
     f.write(v2_b2_k2_icgsa)
     f.close()
     return file_loc
@@ -502,7 +501,11 @@ def check_dtrs_protocols(input_name, input_pv):
     ppv_major, ppv_minor = program_pv.split('.')
     ipv_major, ipv_minor = input_pv.split('.')
     if ppv_major != ipv_major or int(ppv_minor) < int(ipv_minor):
-        msg = ('''Incompatible dtrs_protocols: program: %s %s: %s''' % (program_pv, input_name, input_pv))
+        msg = '''Incompatible dtrs_protocols: program: %s %s: %s''' % (
+            program_pv,
+            input_name,
+            input_pv,
+        )
         raise RuntimeError(msg)
 
 
@@ -705,13 +708,11 @@ class XTree:
                     return XTree(child)
                 grandchild = children[0]
                 if isinstance(grandchild, tuple):
-                    if len(grandchild[1]) == 0 and \
-                        len(grandchild[2]) == 0:
+                    if len(grandchild[1]) == 0 and len(grandchild[2]) == 0:
                         return grandchild[0]
                     return XTree(child)
                 return grandchild
-        msg = '"%s" is not found in attributes of %s or its children.' % \
-              (attr, self)
+        msg = '"%s" is not found in attributes of %s or its children.' % (attr, self)
         raise AttributeError(msg)
 
     def __getitem__(self, i):
@@ -785,6 +786,7 @@ class XTreeProcessor:
 
     - finishing with closing ``</designs>`` and ``</list_of_designs>``.
     '''
+
     def _init(self):
         """
         Internal initialisation for the processor of XTrees.
@@ -886,8 +888,11 @@ class XTreeProcessor:
         if self.in_item:
             children = self.current_node[2]
             if len(children) > 0 and isinstance(children[0], tuple):
-                if children[0][0] == 'z' or children[0][0] == 'd' \
-                   or children[0][0] == 'q':
+                if (
+                    children[0][0] == 'z'
+                    or children[0][0] == 'd'
+                    or children[0][0] == 'q'
+                ):
                     if children[0][0] == 'z':
                         convert = int
                     elif children[0][0] == 'd':
@@ -898,9 +903,14 @@ class XTreeProcessor:
                     for x in children:
                         ps.append(convert(''.join(x[2])))
                     del children[:]
-                    if name == 'block' or name == 'permutation' \
-                       or name == 'preimage' or name == 'ksubset' \
-                       or name == 'cycle_type' or name == 'row':
+                    if (
+                        name == 'block'
+                        or name == 'permutation'
+                        or name == 'preimage'
+                        or name == 'ksubset'
+                        or name == 'cycle_type'
+                        or name == 'row'
+                    ):
                         # these enclose lists of numbers
                         children.append(ps)
                     else:

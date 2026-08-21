@@ -107,7 +107,7 @@ class JonesDatabase:
         j = len(filename) - 1
         while filename[j].isalpha() or filename[j] in [".", "_"]:
             j -= 1
-        S = sorted([eval(z) for z in filename[i:j + 1].split("-")])
+        S = sorted([eval(z) for z in filename[i : j + 1].split("-")])
         with open(path + "/" + filename) as f:
             data = f.read()
         data = data.replace("^", "**")

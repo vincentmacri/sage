@@ -41,6 +41,7 @@ class FSymBasis_abstract(CombinatorialFreeModule, BindableClass):
 
     - ``_prefix`` -- the basis prefix
     """
+
     def __init__(self, alg, graded=True):
         r"""
         Initialize ``self``.
@@ -69,10 +70,14 @@ class FSymBasis_abstract(CombinatorialFreeModule, BindableClass):
             F[12|3] : -F[12|3]
             F[1|2|3] : -F[123]
         """
-        CombinatorialFreeModule.__init__(self, alg.base_ring(),
-                                         StandardTableaux(),
-                                         category=FSymBases(alg),
-                                         bracket='', prefix=self._prefix)
+        CombinatorialFreeModule.__init__(
+            self,
+            alg.base_ring(),
+            StandardTableaux(),
+            category=FSymBases(alg),
+            bracket='',
+            prefix=self._prefix,
+        )
 
     def _coerce_map_from_(self, R):
         r"""
@@ -144,8 +149,9 @@ class FSymBasis_abstract(CombinatorialFreeModule, BindableClass):
             FSym = self.realization_of()
             if R.realization_of() == FSym:
                 return True
-            if (isinstance(R.realization_of(), FreeSymmetricFunctions) !=
-                    isinstance(FSym, FreeSymmetricFunctions)):
+            if isinstance(R.realization_of(), FreeSymmetricFunctions) != isinstance(
+                FSym, FreeSymmetricFunctions
+            ):
                 # If they are dual bases, then no coercion
                 return False
             if not self.base_ring().has_coerce_map_from(R.base_ring()):
@@ -155,6 +161,7 @@ class FSymBasis_abstract(CombinatorialFreeModule, BindableClass):
 
                 def coerce_base_ring(self, x):
                     return self._from_dict(x.monomial_coefficients())
+
                 return coerce_base_ring
             # Otherwise lift that basis up and then coerce over
             target = getattr(FSym, R._realization_name())()
@@ -193,9 +200,9 @@ class FSymBasis_abstract(CombinatorialFreeModule, BindableClass):
             sage: G[[1,3,5],[2,4]]
             G[135|24]
         """
-        return "{}[{}]".format(self._prefix,
-                               "|".join("".join(map(str, block))
-                                        for block in phi))
+        return "{}[{}]".format(
+            self._prefix, "|".join("".join(map(str, block)) for block in phi)
+        )
 
 
 class FSymBases(Category_realization_of_parent):
@@ -203,6 +210,7 @@ class FSymBases(Category_realization_of_parent):
     The category of graded bases of `FSym` and `FSym^*` indexed
     by standard tableaux.
     """
+
     def super_categories(self):
         """
         The super categories of ``self``.
@@ -220,9 +228,11 @@ class FSymBases(Category_realization_of_parent):
              Category of graded connected Hopf algebras with basis over Integer Ring]
         """
         R = self.base().base_ring()
-        return [self.base().Realizations(),
-                HopfAlgebras(R).Graded().Realizations(),
-                HopfAlgebras(R).Graded().WithBasis().Graded().Connected()]
+        return [
+            self.base().Realizations(),
+            HopfAlgebras(R).Graded().Realizations(),
+            HopfAlgebras(R).Graded().WithBasis().Graded().Connected(),
+        ]
 
     class ParentMethods:
         def _repr_(self):
@@ -236,7 +246,9 @@ class FSymBases(Category_realization_of_parent):
                 Hopf algebra of standard tableaux over the Integer Ring
                  in the Fundamental basis
             """
-            return "{} in the {} basis".format(self.realization_of(), self._realization_name())
+            return "{} in the {} basis".format(
+                self.realization_of(), self._realization_name()
+            )
 
         def __getitem__(self, key):
             r"""
@@ -286,6 +298,7 @@ class FSymBases(Category_realization_of_parent):
                 [G[123], G[13|2], G[12|3], G[1|2|3]]
             """
             from sage.sets.family import Family
+
             if degree is None:
                 return Family(self._indices, self.monomial)
             return Family(StandardTableaux(degree), self.monomial)
@@ -368,10 +381,12 @@ class FSymBases(Category_realization_of_parent):
                 [0 0 0 1]
             """
             from sage.matrix.constructor import matrix
+
             keys = self.basis(degree=degree).keys()
-            return matrix(self.base_ring(),
-                          [[self.duality_pairing(self[s], basis[t])
-                            for t in keys] for s in keys])
+            return matrix(
+                self.base_ring(),
+                [[self.duality_pairing(self[s], basis[t]) for t in keys] for s in keys],
+            )
 
         def degree_on_basis(self, t):
             """
@@ -484,6 +499,7 @@ class FreeSymmetricFunctions(UniqueRepresentation, Parent):
         sage: TG[t].to_symmetric_function()
         s[2, 2, 1]
     """
+
     def __init__(self, base_ring):
         r"""
         TESTS::
@@ -554,6 +570,7 @@ class FreeSymmetricFunctions(UniqueRepresentation, Parent):
             sage: TG = FSym.G()
             sage: TestSuite(TG).run()
         """
+
         _prefix = "G"
 
         def _coerce_map_from_(self, R):
@@ -622,15 +639,22 @@ class FreeSymmetricFunctions(UniqueRepresentation, Parent):
                     return False
                 A = R.realization_of()
                 # NSym to FSym
-                from sage.combinat.ncsf_qsym.ncsf import NonCommutativeSymmetricFunctions
+                from sage.combinat.ncsf_qsym.ncsf import (
+                    NonCommutativeSymmetricFunctions,
+                )
+
                 if isinstance(A, NonCommutativeSymmetricFunctions):
                     ribbon = A.ribbon()
                     if R is ribbon:
                         ST = self._indices
 
                         def R_to_G_on_basis(alpha):
-                            return self.sum_of_monomials(ST(t) for t in StandardTableaux(alpha.size())
-                                                         if descent_composition(t) == alpha)
+                            return self.sum_of_monomials(
+                                ST(t)
+                                for t in StandardTableaux(alpha.size())
+                                if descent_composition(t) == alpha
+                            )
+
                         return ribbon.module_morphism(R_to_G_on_basis, codomain=self)
                     return self._coerce_map_via([ribbon], R)
             return super()._coerce_map_from_(R)
@@ -674,9 +698,12 @@ class FreeSymmetricFunctions(UniqueRepresentation, Parent):
             """
             n = t1.size()
             m = n + t2.size()
-            tableaux = [t for t in StandardTableaux(m)
-                        if t.restrict(n) == t1
-                        and standardize(t.anti_restrict(n).rectify()) == t2]
+            tableaux = [
+                t
+                for t in StandardTableaux(m)
+                if t.restrict(n) == t1
+                and standardize(t.anti_restrict(n).rectify()) == t2
+            ]
             return self.sum_of_monomials(tableaux)
 
         @cached_method
@@ -724,6 +751,7 @@ class FreeSymmetricFunctions(UniqueRepresentation, Parent):
                      + G[4, 1, 5, 3, 2] + G[4, 2, 5, 3, 1]
                 """
                 from sage.combinat.fqsym import FreeQuasisymmetricFunctions
+
                 R = self.parent().base_ring()
                 G = FreeQuasisymmetricFunctions(R).G()
                 return G(self)
@@ -789,6 +817,7 @@ class FreeSymmetricFunctions_Dual(UniqueRepresentation, Parent):
         sage: TF(F[[5, 1, 4, 2, 3]])
         F[135|2|4]
     """
+
     def __init__(self, base_ring) -> None:
         r"""
         Initialize ``self``.
@@ -862,6 +891,7 @@ class FreeSymmetricFunctions_Dual(UniqueRepresentation, Parent):
             sage: TF = FSym.dual().F()
             sage: TestSuite(TF).run()
         """
+
         _prefix = "F"
 
         def _coerce_map_from_(self, R):
@@ -946,11 +976,14 @@ class FreeSymmetricFunctions_Dual(UniqueRepresentation, Parent):
                 A = R.realization_of()
                 # FQSym to FSym^*
                 from sage.combinat.fqsym import FreeQuasisymmetricFunctions
+
                 if isinstance(A, FreeQuasisymmetricFunctions):
                     F = A.F()
                     if R is F:
+
                         def F_to_SF_on_basis(sigma):
                             return self.monomial(sigma.right_tableau())
+
                         return F.module_morphism(F_to_SF_on_basis, codomain=self)
                     return self._coerce_map_via([F], R)
 
@@ -958,8 +991,10 @@ class FreeSymmetricFunctions_Dual(UniqueRepresentation, Parent):
                 if isinstance(A, SymmetricFunctions):
                     s = A.s()
                     if R is s:
+
                         def s_to_F_on_basis(mu):
                             return self.sum_of_monomials(StandardTableaux(mu))
+
                         return s.module_morphism(s_to_F_on_basis, codomain=self)
                     return self._coerce_map_via([s], R)
             return super()._coerce_map_from_(R)
@@ -997,6 +1032,7 @@ class FreeSymmetricFunctions_Dual(UniqueRepresentation, Parent):
             npmp1 = n + m + 1
             ST = self._indices
             from itertools import combinations
+
             for I in combinations(range(1, npmp1), n):
                 J = [j for j in range(1, npmp1) if (j not in I)]
                 tt1 = [[I[x - 1] for x in row] for row in t1]
@@ -1016,8 +1052,10 @@ class FreeSymmetricFunctions_Dual(UniqueRepresentation, Parent):
                 F[] # F[125|34] + F[1] # F[134|2] + F[12] # F[123]
                  + F[12|3] # F[12] + F[12|34] # F[1] + F[125|34] # F[]
             """
-            terms = [(t.restrict(i), standardize(t.anti_restrict(i).rectify()))
-                     for i in range(t.size() + 1)]
+            terms = [
+                (t.restrict(i), standardize(t.anti_restrict(i).rectify()))
+                for i in range(t.size() + 1)
+            ]
             return self.tensor_square().sum_of_monomials(terms)
 
         class Element(FSymBasis_abstract.Element):
@@ -1040,14 +1078,17 @@ class FreeSymmetricFunctions_Dual(UniqueRepresentation, Parent):
                     F[1, 2, 2]
                 """
                 from sage.combinat.ncsf_qsym.qsym import QuasiSymmetricFunctions
+
                 QF = QuasiSymmetricFunctions(self.base_ring()).Fundamental()
-                return QF.sum_of_terms((descent_composition(t), coeff)
-                                       for t, coeff in self)
+                return QF.sum_of_terms(
+                    (descent_composition(t), coeff) for t, coeff in self
+                )
 
     F = FundamentalDual
 
 
 # some utility functions for tableaux
+
 
 def standardize(t):
     r"""

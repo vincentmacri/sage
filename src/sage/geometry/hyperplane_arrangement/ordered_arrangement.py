@@ -83,7 +83,9 @@ properties which depend on the order.
 #                  http://www.gnu.org/licenses/
 # *****************************************************************************
 
-from sage.geometry.hyperplane_arrangement.arrangement import HyperplaneArrangementElement
+from sage.geometry.hyperplane_arrangement.arrangement import (
+    HyperplaneArrangementElement,
+)
 from sage.geometry.hyperplane_arrangement.arrangement import HyperplaneArrangements
 from sage.geometry.hyperplane_arrangement.hyperplane import Hyperplane
 from sage.matrix.constructor import matrix, vector
@@ -105,6 +107,7 @@ class OrderedHyperplaneArrangementElement(HyperplaneArrangementElement):
         :class:`OrderedHyperplaneArrangementElement` instances directly,
         always use the parent.
     """
+
     def __init__(self, parent, hyperplanes, check=True, backend=None):
         """
         Construct an ordered hyperplane arrangement.
@@ -451,8 +454,9 @@ class OrderedHyperplaneArrangementElement(HyperplaneArrangementElement):
         if n == 3:
             S = self.parent().ambient_space().symmetric_space()
             coord = vector(S.gens())
-            Proj = ProjectivePlaneCurveArrangements(K,
-                                                    names=self.parent().variable_names())
+            Proj = ProjectivePlaneCurveArrangements(
+                K, names=self.parent().variable_names()
+            )
             L = Proj([vector(line.coefficients()[1:]) * coord for line in self])
             G = L.fundamental_group()
             self._projective_fundamental_group = G
@@ -529,6 +533,7 @@ class OrderedHyperplaneArrangements(HyperplaneArrangements):
         sage: H(x, y, x-1, y-1)
         Arrangement <y - 1 | y | x - 1 | x>
     """
+
     Element = OrderedHyperplaneArrangementElement
 
     def _element_constructor_(self, *args, **kwds):
@@ -591,7 +596,7 @@ class OrderedHyperplaneArrangements(HyperplaneArrangements):
                 # zero = neutral element under addition = the empty hyperplane arrangement
                 args = []
         # process keyword arguments
-        not_char2 = (self.base_ring().characteristic() != 2)
+        not_char2 = self.base_ring().characteristic() != 2
         signed = kwds.pop('signed', not_char2)
         check = kwds.pop('check', True)
         backend = kwds.pop('backend', None)
@@ -615,9 +620,13 @@ class OrderedHyperplaneArrangements(HyperplaneArrangements):
                 raise ValueError('cannot be signed in characteristic 2')
             for h in hyperplanes:
                 if h.A() == 0:
-                    raise ValueError('linear expression must be non-constant to define a hyperplane')
+                    raise ValueError(
+                        'linear expression must be non-constant to define a hyperplane'
+                    )
                 if not_char2 and -h in hyperplanes:
-                    raise ValueError('arrangement cannot simultaneously have h and -h as hyperplane')
+                    raise ValueError(
+                        'arrangement cannot simultaneously have h and -h as hyperplane'
+                    )
         return self.element_class(self, tuple(hyperplanes), backend=backend)
 
     def _repr_(self):

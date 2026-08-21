@@ -89,8 +89,7 @@ def CarlitzModule(A, base=None):
         ...
         ValueError: function ring base must coerce into base field
     """
-    if (not isinstance(A, PolynomialRing_generic)
-     or A.base_ring() not in FiniteFields()):
+    if not isinstance(A, PolynomialRing_generic) or A.base_ring() not in FiniteFields():
         raise TypeError('the function ring must be defined over a finite field')
     if base is None:
         K = A.fraction_field()
@@ -233,8 +232,7 @@ def carlitz_factorial(A, n):
         ...
         TypeError: the function ring must be defined over a finite field
     """
-    if (not isinstance(A, PolynomialRing_generic)
-     or A.base_ring() not in FiniteFields()):
+    if not isinstance(A, PolynomialRing_generic) or A.base_ring() not in FiniteFields():
         raise TypeError('the function ring must be defined over a finite field')
     T = A.gen()
     q = A.base_ring().cardinality()
@@ -243,7 +241,7 @@ def carlitz_factorial(A, n):
     j = 1
     while n > 0:
         n, c = n.quo_rem(q)
-        D = D**q * (T**(q**j) - T)
+        D = D**q * (T ** (q**j) - T)
         ans *= D**c
         j += 1
     return ans
@@ -291,8 +289,7 @@ def carlitz_bernoulli(A, n):
         sage: carlitz_bernoulli(B, 2)
         2*X^3 + X
     """
-    if (not isinstance(A, PolynomialRing_generic)
-     or A.base_ring() not in FiniteFields()):
+    if not isinstance(A, PolynomialRing_generic) or A.base_ring() not in FiniteFields():
         raise TypeError('the function ring must be defined over a finite field')
     q = A.base_ring().cardinality()
     if q not in carlitz_series:

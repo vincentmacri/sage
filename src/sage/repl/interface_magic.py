@@ -34,7 +34,6 @@ language to separate multiple commands.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.repl.rich_output.display_manager import get_display_manager
 
 
@@ -80,7 +79,6 @@ EXAMPLES::
 
 
 class InterfaceMagic:
-
     @classmethod
     def all_iter(cls):
         """
@@ -97,7 +95,10 @@ class InterfaceMagic:
         except ImportError:
             return
         for name, obj in sage.interfaces.all.__dict__.items():
-            if isinstance(obj, (sage.interfaces.interface.Interface, sage.misc.lazy_import.LazyImport)):
+            if isinstance(
+                obj,
+                (sage.interfaces.interface.Interface, sage.misc.lazy_import.LazyImport),
+            ):
                 yield cls(name, obj)
 
     @classmethod
@@ -132,12 +133,12 @@ class InterfaceMagic:
             shell.register_magic_function(
                 interface.line_magic_factory(),
                 magic_name=interface._name,
-                magic_kind='line'
+                magic_kind='line',
             )
             shell.register_magic_function(
                 interface.cell_magic_factory(),
                 magic_name=interface._name,
-                magic_kind='cell'
+                magic_kind='cell',
             )
 
     @classmethod
@@ -224,6 +225,7 @@ class InterfaceMagic:
                 self._interface.interact()
             else:
                 raise SyntaxError('{0} command required'.format(self._name))
+
         line_magic.__doc__ = LINE_DOCSTRING.format(name=self._name)
         return line_magic
 
@@ -265,6 +267,7 @@ class InterfaceMagic:
             The cell magic %%gap sends multiple lines to the gap interface.
             ...
         """
+
         def cell_magic(line, cell):
             """
             Evaluate cell magic.
@@ -285,8 +288,11 @@ class InterfaceMagic:
             options.
             """
             if line:
-                raise SyntaxError('Interface magics have no options, got "{0}"'.format(line))
+                raise SyntaxError(
+                    'Interface magics have no options, got "{0}"'.format(line)
+                )
             output = self._interface.eval(cell)
             print(output)
+
         cell_magic.__doc__ = CELL_DOCSTRING.format(name=self._name)
         return cell_magic

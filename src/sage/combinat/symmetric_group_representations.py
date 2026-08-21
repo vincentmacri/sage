@@ -45,15 +45,20 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.sets.finite_enumerated_set import FiniteEnumeratedSets
 
 lazy_import("sage.combinat.yang_baxter_graph", "YangBaxterGraph_partition")
-lazy_import("sage.groups.perm_gps.constructor", "PermutationGroupElement", as_='PermutationConstructor')
+lazy_import(
+    "sage.groups.perm_gps.constructor",
+    "PermutationGroupElement",
+    as_='PermutationConstructor',
+)
 lazy_import("sage.symbolic.ring", "SR")
 
 
 # #### Constructor function ################################################
 
 
-def SymmetricGroupRepresentation(partition, implementation='specht',
-        ring=None, cache_matrices=True):
+def SymmetricGroupRepresentation(
+    partition, implementation='specht', ring=None, cache_matrices=True
+):
     r"""
     The irreducible representation of the symmetric group corresponding to
     ``partition``.
@@ -192,13 +197,18 @@ def SymmetricGroupRepresentation(partition, implementation='specht',
     - Franco Saliola (2009-04-23)
     """
     partition = Partition(partition)
-    Rep = SymmetricGroupRepresentations(sum(partition), implementation=implementation,
-                                        ring=ring, cache_matrices=cache_matrices)
+    Rep = SymmetricGroupRepresentations(
+        sum(partition),
+        implementation=implementation,
+        ring=ring,
+        cache_matrices=cache_matrices,
+    )
     return Rep(partition)
 
 
-def SymmetricGroupRepresentations(n, implementation='specht', ring=None,
-        cache_matrices=True):
+def SymmetricGroupRepresentations(
+    n, implementation='specht', ring=None, cache_matrices=True
+):
     r"""
     Irreducible representations of the symmetric group.
 
@@ -284,14 +294,19 @@ def SymmetricGroupRepresentations(n, implementation='specht', ring=None,
     - Franco Saliola (2009-04-23)
     """
     if implementation == "seminormal":
-        return YoungRepresentations_Seminormal(n, ring=ring, cache_matrices=cache_matrices)
+        return YoungRepresentations_Seminormal(
+            n, ring=ring, cache_matrices=cache_matrices
+        )
     if implementation == "orthogonal":
-        return YoungRepresentations_Orthogonal(n, ring=ring, cache_matrices=cache_matrices)
+        return YoungRepresentations_Orthogonal(
+            n, ring=ring, cache_matrices=cache_matrices
+        )
     if implementation == "specht":
         return SpechtRepresentations(n, ring=ring, cache_matrices=cache_matrices)
     if implementation == "unitary":
         return UnitaryRepresentations(n, ring=ring, cache_matrices=cache_matrices)
     raise NotImplementedError("only seminormal, orthogonal and specht are implemented")
+
 
 # #### Generic classes for symmetric group representations #################
 
@@ -300,6 +315,7 @@ class SymmetricGroupRepresentation_generic_class(Element):
     r"""
     Generic methods for a representation of the symmetric group.
     """
+
     _default_ring = None
 
     def __init__(self, parent, partition):
@@ -452,7 +468,10 @@ class SymmetricGroupRepresentation_generic_class(Element):
                         return False, "si sj != sj si for (i,j) =(%s,%s)" % (i, j)
                 else:
                     if si * sj * si != sj * si * sj:
-                        return False, "si sj si != sj si sj for (i,j) = (%s,%s)" % (i, j)
+                        return False, "si sj si != sj si sj for (i,j) = (%s,%s)" % (
+                            i,
+                            j,
+                        )
         return True
 
     def to_character(self):
@@ -492,12 +511,13 @@ class SymmetricGroupRepresentation_generic_class(Element):
             [4, 2, 2, 1, 1, 2, 2, 0, 1, 0, 0, 1, 1, 0, 2, 1, 0, 0, 0, 1, 1, 2, 0, 0]
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
         Sym = SymmetricGroup(sum(self._partition))
         values = [self(g).trace() for g in Sym.conjugacy_classes_representatives()]
         return Sym.character(values)
 
 
-class SymmetricGroupRepresentations_class(UniqueRepresentation,Parent):
+class SymmetricGroupRepresentations_class(UniqueRepresentation, Parent):
     r"""
     Generic methods for the CombinatorialClass of irreducible
     representations of the symmetric group.
@@ -567,6 +587,7 @@ class SymmetricGroupRepresentations_class(UniqueRepresentation,Parent):
         for partition in Partitions(self._n):
             yield self.element_class(self, partition)
 
+
 # #### Young's Seminormal Representation ###################################
 
 
@@ -574,6 +595,7 @@ class YoungRepresentation_generic(SymmetricGroupRepresentation_generic_class):
     r"""
     Generic methods for Young's representations of the symmetric group.
     """
+
     @lazy_attribute
     def _yang_baxter_graph(self):
         r"""
@@ -589,8 +611,9 @@ class YoungRepresentation_generic(SymmetricGroupRepresentation_generic_class):
         Y = YangBaxterGraph_partition(self._partition)
         n = self._n
         # relabel vertices with "vector of contents"
-        Y.relabel_vertices(partition_to_vector_of_contents(self._partition,
-                                                           reverse=True))
+        Y.relabel_vertices(
+            partition_to_vector_of_contents(self._partition, reverse=True)
+        )
         # relabel edges with "differences"
         edge_relabel_dict = {}
         for u, v, op in Y.edges():
@@ -621,8 +644,7 @@ class YoungRepresentation_generic(SymmetricGroupRepresentation_generic_class):
         for u, w, (i, _) in self._yang_baxter_graph._edges_in_bfs():
             # TODO: improve the following
             si = PermutationConstructor((i, i + 1))
-            tableau_dict[w] = Tableau([[si(b) for b in row]
-                                       for row in tableau_dict[u]])
+            tableau_dict[w] = Tableau([[si(b) for b in row] for row in tableau_dict[u]])
         return tableau_dict
 
     @lazy_attribute
@@ -641,8 +663,7 @@ class YoungRepresentation_generic(SymmetricGroupRepresentation_generic_class):
              (2, 0, -1, 1, 0): (3, 4, 1, 2, 5),
              (2, 0, 1, -1, 0): (2, 4, 1, 3, 5)}
         """
-        return {v: sum(reversed(t), ())
-                for v, t in self._tableau_dict.items()}
+        return {v: sum(reversed(t), ()) for v, t in self._tableau_dict.items()}
 
     @cached_method
     def representation_matrix_for_simple_transposition(self, i):
@@ -669,17 +690,19 @@ class YoungRepresentation_generic(SymmetricGroupRepresentation_generic_class):
             [ 1/2  1/2]
         """
         from copy import copy
+
         if not (1 <= i < sum(self._partition)):
             raise TypeError
         Y = self._yang_baxter_graph
         index_lookup = {b: a for a, b in enumerate(list(Y))}
         digraph = copy(Y._digraph)
-        digraph.delete_edges((u, v) for (u, v, (j, beta)) in digraph.edges(sort=True)
-                             if j != i)
+        digraph.delete_edges(
+            (u, v) for (u, v, (j, beta)) in digraph.edges(sort=True) if j != i
+        )
         M = matrix(self._ring, digraph.n_vertices())
         for g in digraph.connected_components_subgraphs():
             if g.n_vertices() == 1:
-                v, = g.vertices(sort=True)
+                (v,) = g.vertices(sort=True)
                 w = self._word_dict[v]
                 trivial = None
                 for j, a in enumerate(w):
@@ -692,11 +715,12 @@ class YoungRepresentation_generic(SymmetricGroupRepresentation_generic_class):
                 j = index_lookup[v]
                 M[j, j] = 1 if trivial is True else -1
             else:
-                (u, v, (j, beta)), = g.edges(sort=True)
+                ((u, v, (j, beta)),) = g.edges(sort=True)
                 iu = index_lookup[u]
                 iv = index_lookup[v]
-                M[iu, iu], M[iu, iv], M[iv, iu], M[iv, iv] = \
-                    self._2x2_matrix_entries(self._ring(beta))
+                M[iu, iu], M[iu, iv], M[iv, iu], M[iv, iv] = self._2x2_matrix_entries(
+                    self._ring(beta)
+                )
         return M
 
     def _representation_matrix_uncached(self, permutation):
@@ -773,7 +797,9 @@ class YoungRepresentation_Seminormal(YoungRepresentation_generic):
             sage: SymmetricGroupRepresentation([2,1], "seminormal")
             Seminormal representation of the symmetric group corresponding to [2, 1]
         """
-        return "Seminormal representation of the symmetric group corresponding to {}".format(self._partition)
+        return "Seminormal representation of the symmetric group corresponding to {}".format(
+            self._partition
+        )
 
     def _2x2_matrix_entries(self, beta):
         r"""
@@ -809,7 +835,11 @@ class YoungRepresentations_Seminormal(SymmetricGroupRepresentations_class):
             sage: YoungRepresentations_Seminormal(3)
             Seminormal representations of the symmetric group of order 3! over Rational Field
         """
-        return "Seminormal representations of the symmetric group of order %s! over %s" % (self._n, self._ring)
+        return (
+            "Seminormal representations of the symmetric group of order %s! over %s"
+            % (self._n, self._ring)
+        )
+
 
 # #### Young's Orthogonal Representation ###################################
 
@@ -824,7 +854,9 @@ class YoungRepresentation_Orthogonal(YoungRepresentation_generic):
             sage: SymmetricGroupRepresentation([2,1], "orthogonal")                     # needs sage.symbolic
             Orthogonal representation of the symmetric group corresponding to [2, 1]
         """
-        return "Orthogonal representation of the symmetric group corresponding to {}".format(self._partition)
+        return "Orthogonal representation of the symmetric group corresponding to {}".format(
+            self._partition
+        )
 
     def _2x2_matrix_entries(self, beta):
         r"""
@@ -860,7 +892,11 @@ class YoungRepresentations_Orthogonal(SymmetricGroupRepresentations_class):
             sage: YoungRepresentations_Orthogonal(3)                                    # needs sage.symbolic
             Orthogonal representations of the symmetric group of order 3! over Symbolic Ring
         """
-        return "Orthogonal representations of the symmetric group of order %s! over %s" % (self._n, self._ring)
+        return (
+            "Orthogonal representations of the symmetric group of order %s! over %s"
+            % (self._n, self._ring)
+        )
+
 
 # #### Specht Representation ###############################################
 
@@ -875,7 +911,11 @@ class SpechtRepresentation(SymmetricGroupRepresentation_generic_class):
             sage: SymmetricGroupRepresentation([2,1], "specht")
             Specht representation of the symmetric group corresponding to [2, 1]
         """
-        return "Specht representation of the symmetric group corresponding to {}".format(self._partition)
+        return (
+            "Specht representation of the symmetric group corresponding to {}".format(
+                self._partition
+            )
+        )
 
     _default_ring = ZZ
 
@@ -1033,7 +1073,11 @@ class SpechtRepresentations(SymmetricGroupRepresentations_class):
             sage: spc
             Specht representations of the symmetric group of order 4! over Integer Ring
         """
-        return "Specht representations of the symmetric group of order %s! over %s" % (self._n, self._ring)
+        return "Specht representations of the symmetric group of order %s! over %s" % (
+            self._n,
+            self._ring,
+        )
+
 
 # #### Unitary Representation ###############################################
 
@@ -1050,6 +1094,7 @@ class UnitaryRepresentation(SymmetricGroupRepresentation_generic_class):
     Cholesky decomposition of the unique solution `U` to the equation
     `\rho(g)^T U \rho(g) = U` for all `g` in `G`.
     """
+
     def __init__(self, parent, partition):
         r"""
         Initialize ``self``.
@@ -1070,15 +1115,24 @@ class UnitaryRepresentation(SymmetricGroupRepresentation_generic_class):
             self.representation_matrix = orth.representation_matrix
             self._representation_matrix_uncached = orth._representation_matrix_uncached
         else:
-            if not (parent._ring.is_field()
-                    and parent._ring.is_finite()
-                    and parent._ring.order().is_square()):
+            if not (
+                parent._ring.is_field()
+                and parent._ring.is_finite()
+                and parent._ring.order().is_square()
+            ):
                 raise ValueError("the base ring must be a finite field of square order")
             from sage.arith.misc import factorial
+
             if parent._ring.characteristic().divides(factorial(parent._n)):
-                raise NotImplementedError("not implemented when p|n!; dimension of invariant forms may be greater than one")
+                raise NotImplementedError(
+                    "not implemented when p|n!; dimension of invariant forms may be greater than one"
+                )
             self._q = parent._ring.order().sqrt()
-            self._specht = Permutations(sum(partition)).algebra(parent._ring).specht_module(partition)
+            self._specht = (
+                Permutations(sum(partition))
+                .algebra(parent._ring)
+                .specht_module(partition)
+            )
         super().__init__(parent, partition)
 
     def _repr_(self):
@@ -1146,6 +1200,7 @@ class UnitaryRepresentation(SymmetricGroupRepresentation_generic_class):
             [       0 2*z2 + 2]
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         G = Permutations(self._n)
         F = self._ring
         rho = self._specht.representation_matrix
@@ -1225,7 +1280,11 @@ class UnitaryRepresentations(SymmetricGroupRepresentations_class):
             sage: spc
             Specht representations of the symmetric group of order 4! over Integer Ring
         """
-        return "Unitary representations of the symmetric group of order %s! over %s" % (self._n, self._ring)
+        return "Unitary representations of the symmetric group of order %s! over %s" % (
+            self._n,
+            self._ring,
+        )
+
 
 # ##### Miscellaneous functions ############################################
 
@@ -1251,10 +1310,14 @@ def partition_to_vector_of_contents(partition, reverse=False):
 # #### Garsia-Procesi modules ################################################
 
 from sage.rings.quotient_ring import QuotientRing_generic
-from sage.combinat.specht_module import SymmetricGroupRepresentation as SymmetricGroupRepresentation_mixin
+from sage.combinat.specht_module import (
+    SymmetricGroupRepresentation as SymmetricGroupRepresentation_mixin,
+)
 
 
-class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricGroupRepresentation_mixin):
+class GarsiaProcesiModule(
+    UniqueRepresentation, QuotientRing_generic, SymmetricGroupRepresentation_mixin
+):
     r"""
     A Garsia-Procesi module.
 
@@ -1324,6 +1387,7 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
         sage: set(top_deg) == set(yamanouchi)
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, SGA, shape):
         """
@@ -1368,27 +1432,37 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
         from sage.combinat.sf.sf import SymmetricFunctions
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
         from itertools import combinations
+
         n = SGA.n
 
         conj = list(shape.conjugate())
-        conj += [0]*(n - len(conj))
+        conj += [0] * (n - len(conj))
 
         def p(k):
-            return sum(conj[i] for i in range(n-k, n))
+            return sum(conj[i] for i in range(n - k, n))
 
         BR = SGA.base_ring()
         R = PolynomialRing(BR, 'x', n)
         gens = R.gens()
         e = SymmetricFunctions(BR).e()
-        I = R.ideal([e[d].expand(k)(*S)
-                     for k in range(n+1) for d in range(k-p(k)+1, k+1)
-                     for S in combinations(gens, k)])
+        I = R.ideal(
+            [
+                e[d].expand(k)(*S)
+                for k in range(n + 1)
+                for d in range(k - p(k) + 1, k + 1)
+                for S in combinations(gens, k)
+            ]
+        )
 
         # Finalize the initialization
         names = tuple([f"gp{i}" for i in range(n)])
         from sage.categories.commutative_rings import CommutativeRings
         from sage.categories.algebras import Algebras
-        cat = CommutativeRings().Quotients() & Algebras(SGA.base_ring()).Graded().WithBasis().FiniteDimensional()
+
+        cat = (
+            CommutativeRings().Quotients()
+            & Algebras(SGA.base_ring()).Graded().WithBasis().FiniteDimensional()
+        )
         QuotientRing_generic.__init__(self, R, I, names=names, category=cat)
 
     def _repr_(self):
@@ -1401,7 +1475,9 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
             sage: SGA.garsia_procesi_module([2, 2])
             Garsia-Procesi module of shape [2, 2] over Rational Field
         """
-        return "Garsia-Procesi module of shape {} over {}".format(self._shape, self.base_ring())
+        return "Garsia-Procesi module of shape {} over {}".format(
+            self._shape, self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -1420,6 +1496,7 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
             }}^{\Bold{Q}}
         """
         from sage.misc.latex import latex
+
         return "R_{{{}}}^{{{}}}".format(latex(self._shape), latex(self.base_ring()))
 
     def _coerce_map_from_base_ring(self):
@@ -1462,6 +1539,7 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
             Family (gp2*gp3, gp1*gp3, gp3, gp2, gp1, 1)
         """
         from sage.sets.family import Family
+
         B = self.defining_ideal().normal_basis()
         return Family([self.retract(b) for b in B])
 
@@ -1537,6 +1615,7 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
             ....:     assert f.map_coefficients(lambda c: R(c(~q)*q^d)) == s(Qp[la])
         """
         from sage.combinat.sf.sf import SymmetricFunctions
+
         R = QQ['q']
         q = R.gen()
         Sym = SymmetricFunctions(R)
@@ -1545,10 +1624,22 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
         G = self._semigroup
         CCR = [(elt, elt.cycle_type()) for elt in G.conjugacy_classes_representatives()]
         B = self.basis()
-        return s(p._from_dict({la: coeff / la.centralizer_size() for elt, la in CCR
-                               if (coeff := sum(q**b.degree() * (elt * b).lift().monomial_coefficient(b.lift())
-                                                for b in B))},
-                              remove_zeros=False))
+        return s(
+            p._from_dict(
+                {
+                    la: coeff / la.centralizer_size()
+                    for elt, la in CCR
+                    if (
+                        coeff := sum(
+                            q ** b.degree()
+                            * (elt * b).lift().monomial_coefficient(b.lift())
+                            for b in B
+                        )
+                    )
+                },
+                remove_zeros=False,
+            )
+        )
 
     @cached_method
     def graded_character(self):
@@ -1572,9 +1663,17 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
         G = self._semigroup
         B = self.basis()
         from sage.modules.free_module_element import vector
-        return vector([sum(q**b.degree() * (g * b).lift().monomial_coefficient(b.lift()) for b in B)
-                       for g in G.conjugacy_classes_representatives()],
-                      immutable=True)
+
+        return vector(
+            [
+                sum(
+                    q ** b.degree() * (g * b).lift().monomial_coefficient(b.lift())
+                    for b in B
+                )
+                for g in G.conjugacy_classes_representatives()
+            ],
+            immutable=True,
+        )
 
     @lazy_attribute
     def _graded_decomposition(self):
@@ -1598,8 +1697,10 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
                 d[deg] = [b]
             else:
                 d[deg].append(b)
-        return {deg: self.subrepresentation(gens, is_closed=True)
-                for deg, gens in sorted(d.items())}
+        return {
+            deg: self.subrepresentation(gens, is_closed=True)
+            for deg, gens in sorted(d.items())
+        }
 
     def graded_decomposition(self, k=None):
         r"""
@@ -1665,8 +1766,13 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
         if q is None:
             q = self.base_ring()['q'].gen()
         R = q.parent()
-        return matrix(R, [q**b.degree() * (elt * b).to_vector().change_ring(R)
-                          for b in self.basis()])
+        return matrix(
+            R,
+            [
+                q ** b.degree() * (elt * b).to_vector().change_ring(R)
+                for b in self.basis()
+            ],
+        )
 
     def graded_brauer_character(self):
         r"""
@@ -1680,7 +1786,9 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
             (6*q^3 + 9*q^2 + 4*q + 1, q + 1, q^3 - q^2 - q + 1)
         """
         q = QQ['q'].gen()
-        return sum(q**d * SM.brauer_character() for d, SM in self._graded_decomposition.items())
+        return sum(
+            q**d * SM.brauer_character() for d, SM in self._graded_decomposition.items()
+        )
 
     class Element(QuotientRing_generic.Element):
         def _acted_upon_(self, scalar, self_on_left=True):
@@ -1709,12 +1817,23 @@ class GarsiaProcesiModule(UniqueRepresentation, QuotientRing_generic, SymmetricG
                 return super()._acted_upon_(scalar, self_on_left)
             if scalar in P._semigroup:
                 gens = P.ambient().gens()
-                return P.retract(self.lift().subs({g: gens[scalar(i+1)-1] for i, g in enumerate(gens)}))
+                return P.retract(
+                    self.lift().subs(
+                        {g: gens[scalar(i + 1) - 1] for i, g in enumerate(gens)}
+                    )
+                )
             if not self_on_left and scalar in P._semigroup_algebra:
                 scalar = P._semigroup_algebra(scalar)
                 gens = P.ambient().gens()
-                return P.sum(c * P.retract(self.lift().subs({g: gens[sigma(i+1)-1] for i, g in enumerate(gens)}))
-                             for sigma, c in scalar.monomial_coefficients(copy=False).items())
+                return P.sum(
+                    c
+                    * P.retract(
+                        self.lift().subs(
+                            {g: gens[sigma(i + 1) - 1] for i, g in enumerate(gens)}
+                        )
+                    )
+                    for sigma, c in scalar.monomial_coefficients(copy=False).items()
+                )
             return super()._acted_upon_(scalar, self_on_left)
 
         def to_vector(self, order=None):

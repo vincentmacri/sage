@@ -133,9 +133,17 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
         Category of finite dimensional associative algebras with basis
          over Finite Field of size 3
     """
+
     @staticmethod
-    def __classcall_private__(cls, k, table, names='e', assume_associative=False,
-                              assume_unital=False, category=None):
+    def __classcall_private__(
+        cls,
+        k,
+        table,
+        names='e',
+        assume_associative=False,
+        assume_unital=False,
+        category=None,
+    ):
         """
         Normalize input.
 
@@ -226,8 +234,7 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
 
         names = normalize_names(n, names)
 
-        return super().__classcall__(cls, k, table,
-                                     names, category=cat)
+        return super().__classcall__(cls, k, table, names, category=cat)
 
     def __init__(self, k, table, names='e', category=None):
         """
@@ -277,7 +284,9 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
             sage: FiniteDimensionalAlgebra(RR, [Matrix([1])])._repr_()
             'Finite-dimensional algebra of degree 1 over Real Field with 53 bits of precision'
         """
-        return "Finite-dimensional algebra of degree {} over {}".format(self.degree(), self.base_ring())
+        return "Finite-dimensional algebra of degree {} over {}".format(
+            self.degree(), self.base_ring()
+        )
 
     def _coerce_map_from_(self, S):
         """
@@ -294,7 +303,9 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
             sage: A.has_coerce_map_from(QQ)
             False
         """
-        return S == self or (self.base_ring().has_coerce_map_from(S) and self.is_unitary())
+        return S == self or (
+            self.base_ring().has_coerce_map_from(S) and self.is_unitary()
+        )
 
     Element = FiniteDimensionalAlgebraElement
 
@@ -341,6 +352,7 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
             from sage.algebras.finite_dimensional_algebras.finite_dimensional_algebra_morphism import (
                 FiniteDimensionalAlgebraHomset,
             )
+
             return FiniteDimensionalAlgebraHomset(self, B, category=category)
         return super()._Hom_(B, category)
 
@@ -387,6 +399,7 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
             Finite family {0: e0, 1: e1}
         """
         from sage.sets.family import Family
+
         return Family({i: self.gen(i) for i in range(self.ngens())})
 
     def __iter__(self):
@@ -543,8 +556,7 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
             Ideal (e0 + e1) of
              Finite-dimensional algebra of degree 2 over Finite Field of size 3
         """
-        return self._ideal_class_()(self, gens=gens,
-                                    given_by_matrix=given_by_matrix)
+        return self._ideal_class_()(self, gens=gens, given_by_matrix=given_by_matrix)
 
     @cached_method
     def is_associative(self) -> bool:
@@ -573,7 +585,7 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
         for i in range(n):
             for j in range(n):
                 eiej = B[j][i]
-                if B[i]*B[j] != sum(eiej[k] * B[k] for k in range(n)):
+                if B[i] * B[j] != sum(eiej[k] * B[k] for k in range(n)):
                     return False
         return True
 
@@ -680,10 +692,8 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
         if n == 0:
             self._one = matrix(k, 1, n)
             return True
-        B1 = reduce(lambda x, y: x.augment(y),
-                    self._table, matrix(k, n, 0))
-        B2 = reduce(lambda x, y: x.augment(y),
-                    self.left_table(), matrix(k, n, 0))
+        B1 = reduce(lambda x, y: x.augment(y), self._table, matrix(k, n, 0))
+        B2 = reduce(lambda x, y: x.augment(y), self.left_table(), matrix(k, n, 0))
         # This is the vector obtained by concatenating the rows of the
         # n times n identity matrix:
         kone = k.one()
@@ -820,11 +830,12 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
         if base_map is None:
             base_map = lambda x: x
         B = self.table()
-        for i,gi in enumerate(im_gens):
-            for j,gj in enumerate(im_gens):
+        for i, gi in enumerate(im_gens):
+            for j, gj in enumerate(im_gens):
                 eiej = B[j][i]
-                if (sum([other(im_gens[k]) * base_map(v) for k,v in enumerate(eiej)])
-                        != other(gi) * other(gj)):
+                if sum(
+                    [other(im_gens[k]) * base_map(v) for k, v in enumerate(eiej)]
+                ) != other(gi) * other(gj):
                     return False
         return True
 
@@ -865,12 +876,19 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
              [0]
         """
         k = self.base_ring()
-        f = ideal.basis_matrix().transpose().kernel().basis_matrix().echelon_form().transpose()
+        f = (
+            ideal.basis_matrix()
+            .transpose()
+            .kernel()
+            .basis_matrix()
+            .echelon_form()
+            .transpose()
+        )
         pivots = f.pivot_rows()
         table = []
         for p in pivots:
             v = matrix(k, 1, self.degree())
-            v[0,p] = 1
+            v[0, p] = 1
             v = self.element_class(self, v)
             table.append(f.solve_right(v.matrix() * f))
         cat = self.category()
@@ -915,8 +933,11 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
         """
         if self.degree() == 0:
             raise ValueError("the zero algebra is not local")
-        if not (self.is_unitary() and self.is_commutative()
-                and (self._assume_associative or self.is_associative())):
+        if not (
+            self.is_unitary()
+            and self.is_commutative()
+            and (self._assume_associative or self.is_associative())
+        ):
             raise TypeError("algebra must be unitary, commutative and associative")
         gens = []
         for x in self.gens():
@@ -975,8 +996,11 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
         n = self.degree()
         if n == 0:
             return []
-        if not (self.is_unitary() and self.is_commutative()
-                and (self._assume_associative or self.is_associative())):
+        if not (
+            self.is_unitary()
+            and self.is_commutative()
+            and (self._assume_associative or self.is_associative())
+        ):
             raise TypeError("algebra must be unitary, commutative and associative")
         # Start with the trivial decomposition of self.
         components = [matrix.identity(k, n)]
@@ -1001,7 +1025,7 @@ class FiniteDimensionalAlgebra(UniqueRepresentation, Parent):
         quotients = []
         for i in range(len(components)):
             I = matrix(k, 0, n)
-            for j,c in enumerate(components):
+            for j, c in enumerate(components):
                 if j != i:
                     I = I.stack(c)
             quotients.append(self.quotient_map(self.ideal(I, given_by_matrix=True)))

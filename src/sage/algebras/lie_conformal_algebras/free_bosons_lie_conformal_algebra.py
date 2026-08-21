@@ -100,8 +100,8 @@ class FreeBosonsLieConformalAlgebra(GradedLieConformalAlgebra):
         ValueError: the gram_matrix should be a symmetric 2 x 2 matrix, got [ 0  1]
         [-1  0]
     """
-    def __init__(self, R, ngens=None, gram_matrix=None, names=None,
-                 index_set=None):
+
+    def __init__(self, R, ngens=None, gram_matrix=None, names=None, index_set=None):
         """
         Initialize ``self``.
 
@@ -111,19 +111,22 @@ class FreeBosonsLieConformalAlgebra(GradedLieConformalAlgebra):
             sage: TestSuite(V).run()
         """
         from sage.matrix.matrix_space import MatrixSpace
+
         if gram_matrix is not None:
             if ngens is None:
                 ngens = gram_matrix.dimensions()[0]
             try:
-                assert (gram_matrix in MatrixSpace(R, ngens, ngens))
+                assert gram_matrix in MatrixSpace(R, ngens, ngens)
             except AssertionError:
-                raise ValueError("the gram_matrix should be a symmetric " +
-                                 "{0} x {0} matrix, got {1}".format(ngens,
-                                                                    gram_matrix))
+                raise ValueError(
+                    "the gram_matrix should be a symmetric "
+                    + "{0} x {0} matrix, got {1}".format(ngens, gram_matrix)
+                )
             if not gram_matrix.is_symmetric():
-                raise ValueError("the gram_matrix should be a symmetric " +
-                                 "{0} x {0} matrix, got {1}".format(ngens,
-                                                                    gram_matrix))
+                raise ValueError(
+                    "the gram_matrix should be a symmetric "
+                    + "{0} x {0} matrix, got {1}".format(ngens, gram_matrix)
+                )
         else:
             if ngens is None:
                 ngens = 1
@@ -132,20 +135,25 @@ class FreeBosonsLieConformalAlgebra(GradedLieConformalAlgebra):
         latex_names = None
         if names is None and index_set is None:
             names = 'alpha'
-            latex_names = tuple(r'\alpha_{%d}' % i
-                                for i in range(ngens)) + ('K',)
-        names, index_set = standardize_names_index_set(names=names,
-                                                       index_set=index_set,
-                                                       ngens=ngens)
-        bosondict = {(i, j): {1: {('K', 0): gram_matrix[index_set.rank(i),
-                                                        index_set.rank(j)]}}
-                     for i in index_set for j in index_set}
+            latex_names = tuple(r'\alpha_{%d}' % i for i in range(ngens)) + ('K',)
+        names, index_set = standardize_names_index_set(
+            names=names, index_set=index_set, ngens=ngens
+        )
+        bosondict = {
+            (i, j): {1: {('K', 0): gram_matrix[index_set.rank(i), index_set.rank(j)]}}
+            for i in index_set
+            for j in index_set
+        }
 
-        GradedLieConformalAlgebra.__init__(self, R, bosondict,
-                                           names=names,
-                                           latex_names=latex_names,
-                                           index_set=index_set,
-                                           central_elements=('K',))
+        GradedLieConformalAlgebra.__init__(
+            self,
+            R,
+            bosondict,
+            names=names,
+            latex_names=latex_names,
+            index_set=index_set,
+            central_elements=('K',),
+        )
 
         self._gram_matrix = gram_matrix
 
@@ -158,8 +166,11 @@ class FreeBosonsLieConformalAlgebra(GradedLieConformalAlgebra):
             sage: lie_conformal_algebras.FreeBosons(AA)
             The free Bosons Lie conformal algebra with generators (alpha, K) over Algebraic Real Field
         """
-        return "The free Bosons Lie conformal algebra with generators {}"\
-            " over {}".format(self.gens(), self.base_ring())
+        return (
+            "The free Bosons Lie conformal algebra with generators {} over {}".format(
+                self.gens(), self.base_ring()
+            )
+        )
 
     def gram_matrix(self):
         r"""

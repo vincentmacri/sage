@@ -93,7 +93,7 @@ class KRTToRCBijectionTypeC(KRTToRCBijectionTypeA):
             case_S[a] = max_width
 
         # Special case for n
-        max_width = self.ret_rig_con[n-1].insert_cell(max_width // 2) * 2
+        max_width = self.ret_rig_con[n - 1].insert_cell(max_width // 2) * 2
 
         # Now go back following the special C_n rules
         for a in reversed(range(tableau_height, n - 1)):
@@ -110,7 +110,7 @@ class KRTToRCBijectionTypeC(KRTToRCBijectionTypeA):
             self._update_partition_values(tableau_height)
 
         if pos_val <= tableau_height:
-            for a in range(pos_val-1, tableau_height):
+            for a in range(pos_val - 1, tableau_height):
                 self._update_vacancy_nums(a)
                 self._update_partition_values(a)
             if pos_val > 1:
@@ -152,10 +152,10 @@ class KRTToRCBijectionTypeC(KRTToRCBijectionTypeA):
             if partition.rigging[i] is None:
                 j = i - 1
                 while j >= 0 and partition._list[j] == partition._list[i]:
-                    partition.rigging[j+1] = partition.rigging[j]  # Shuffle it along
+                    partition.rigging[j + 1] = partition.rigging[j]  # Shuffle it along
                     j -= 1
-                partition._list[j+1] += 1
-                partition.rigging[j+1] = None
+                partition._list[j + 1] += 1
+                partition.rigging[j + 1] = None
                 return
 
 
@@ -179,14 +179,14 @@ class RCToKRTBijectionTypeC(RCToKRTBijectionTypeA):
         """
         height -= 1  # indexing
         n = self.n
-        ell = [None] * (2*n)
+        ell = [None] * (2 * n)
         case_S = [False] * n
         b = None
 
         # Calculate the rank and ell values
 
         last_size = 0
-        for a in range(height, n-1):
+        for a in range(height, n - 1):
             ell[a] = self._find_singular_string(self.cur_partitions[a], last_size)
 
             if ell[a] is None:
@@ -199,24 +199,27 @@ class RCToKRTBijectionTypeC(RCToKRTBijectionTypeA):
         if b is None:
             # Since we are dividing by 2, we can use the identity of
             #   ceiling = floor + remainder
-            ell[n-1] = self._find_singular_string(self.cur_partitions[n-1],
-                                                 (last_size // 2) + (last_size % 2))
+            ell[n - 1] = self._find_singular_string(
+                self.cur_partitions[n - 1], (last_size // 2) + (last_size % 2)
+            )
 
-            if ell[n-1] is None:
+            if ell[n - 1] is None:
                 b = n
             else:
-                last_size = self.cur_partitions[n-1][ell[n-1]] * 2
+                last_size = self.cur_partitions[n - 1][ell[n - 1]] * 2
 
         if b is None:
             # Now go back
-            ell[2*n-1] = ell[n-1]
-            case_S[n-1] = True
-            for a in reversed(range(n-1)):
+            ell[2 * n - 1] = ell[n - 1]
+            case_S[n - 1] = True
+            for a in reversed(range(n - 1)):
                 if a >= height and self.cur_partitions[a][ell[a]] == last_size:
-                    ell[n+a] = ell[a]
+                    ell[n + a] = ell[a]
                     case_S[a] = True
                 else:  # note last_size > 1
-                    ell[n+a] = self._find_singular_string(self.cur_partitions[a], last_size)
+                    ell[n + a] = self._find_singular_string(
+                        self.cur_partitions[a], last_size
+                    )
 
                     if ell[n + a] is None:
                         b = -(a + 2)
@@ -235,32 +238,42 @@ class RCToKRTBijectionTypeC(RCToKRTBijectionTypeA):
         else:
             row_num = self.cur_partitions[0].remove_cell(ell[0])
             row_num_bar = self.cur_partitions[0].remove_cell(ell[n])
-        for a in range(1, n-1):
+        for a in range(1, n - 1):
             if case_S[a]:
                 row_num_next = self.cur_partitions[a].remove_cell(ell[a], 2)
                 row_num_bar_next = None
             else:
                 row_num_next = self.cur_partitions[a].remove_cell(ell[a])
-                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n+a])
+                row_num_bar_next = self.cur_partitions[a].remove_cell(ell[n + a])
 
             self._update_vacancy_numbers(a - 1)
             if row_num is not None:
-                self.cur_partitions[a-1].rigging[row_num] = self.cur_partitions[a-1].vacancy_numbers[row_num]
+                self.cur_partitions[a - 1].rigging[row_num] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num]
             if row_num_bar is not None:
-                self.cur_partitions[a-1].rigging[row_num_bar] = self.cur_partitions[a-1].vacancy_numbers[row_num_bar]
+                self.cur_partitions[a - 1].rigging[row_num_bar] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num_bar]
             row_num = row_num_next
             row_num_bar = row_num_bar_next
 
-        row_num_next = self.cur_partitions[n-1].remove_cell(ell[n-1])
+        row_num_next = self.cur_partitions[n - 1].remove_cell(ell[n - 1])
 
         self._update_vacancy_numbers(n - 2)
         if row_num is not None:
-            self.cur_partitions[n-2].rigging[row_num] = self.cur_partitions[n-2].vacancy_numbers[row_num]
+            self.cur_partitions[n - 2].rigging[row_num] = self.cur_partitions[
+                n - 2
+            ].vacancy_numbers[row_num]
         if row_num_bar is not None:
-            self.cur_partitions[n-2].rigging[row_num_bar] = self.cur_partitions[n-2].vacancy_numbers[row_num_bar]
+            self.cur_partitions[n - 2].rigging[row_num_bar] = self.cur_partitions[
+                n - 2
+            ].vacancy_numbers[row_num_bar]
 
         self._update_vacancy_numbers(n - 1)
         if row_num_next is not None:
-            self.cur_partitions[n-1].rigging[row_num_next] = self.cur_partitions[n-1].vacancy_numbers[row_num_next]
+            self.cur_partitions[n - 1].rigging[row_num_next] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[row_num_next]
 
         return b

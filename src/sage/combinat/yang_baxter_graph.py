@@ -1,6 +1,7 @@
 r"""
 Yang-Baxter Graphs
 """
+
 # ****************************************************************************
 #       Copyright (C) 2009 Franco Saliola <saliola@gmail.com>
 #
@@ -110,6 +111,7 @@ def YangBaxterGraph(partition=None, root=None, operators=None):
     if partition is None:
         return YangBaxterGraph_generic(root=root, operators=operators)
     return YangBaxterGraph_partition(partition=Partition(partition))
+
 
 # *********** General class for Yang-Baxter Graphs ***********
 
@@ -236,7 +238,10 @@ class YangBaxterGraph_generic(SageObject):
             sage: Y3.__eq__(Y2)
             False
         """
-        return isinstance(other, YangBaxterGraph_generic) and self._digraph == other._digraph
+        return (
+            isinstance(other, YangBaxterGraph_generic)
+            and self._digraph == other._digraph
+        )
 
     def __ne__(self, other) -> bool:
         r"""
@@ -546,6 +551,7 @@ class YangBaxterGraph_generic(SageObject):
 
 # *********** Yang-Baxter Graphs defined by a partition ***********
 
+
 class YangBaxterGraph_partition(YangBaxterGraph_generic):
     def __init__(self, partition):
         r"""
@@ -576,8 +582,7 @@ class YangBaxterGraph_partition(YangBaxterGraph_generic):
         self._partition = partition
         beta = sorted(self._partition, reverse=True)
         root = sum((tuple(range(b)) for b in beta), ())[::-1]
-        operators = [SwapIncreasingOperator(i)
-                     for i in range(sum(partition) - 1)]
+        operators = [SwapIncreasingOperator(i) for i in range(sum(partition) - 1)]
         super().__init__(root, operators)
 
     def __repr__(self) -> str:
@@ -750,6 +755,7 @@ class YangBaxterGraph_partition(YangBaxterGraph_generic):
         Y._root = relabelling[Y._root]
         return Y._digraph.relabel(relabelling, inplace=inplace)
 
+
 # ------------- Some Yang-Baxter operators ------------------
 
 
@@ -856,8 +862,8 @@ class SwapOperator(SageObject):
         """
         i = self._position
         if isinstance(u, Permutation):
-            return Permutation(u[:i] + u[i:i + 2][::-1] + u[i + 2:])
-        return type(u)(u[:i] + u[i:i + 2][::-1] + u[i + 2:])
+            return Permutation(u[:i] + u[i : i + 2][::-1] + u[i + 2 :])
+        return type(u)(u[:i] + u[i : i + 2][::-1] + u[i + 2 :])
 
     def position(self):
         r"""

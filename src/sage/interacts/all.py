@@ -21,5 +21,6 @@ from sage.interacts import geometry
 from sage.interacts import statistics
 from sage.interacts import fractals
 from sage.interacts import algebra
+
 lazy_import('sage.interacts.library', 'demo')
 del lazy_import

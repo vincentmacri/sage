@@ -5,6 +5,7 @@ Construct sheaves on toric varieties
 A toric vector bundle (on a toric variety) is a vector bundle that is
 equivariant with respect to the algebraic torus action.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Volker Braun <vbraun.name@gmail.com>
 #
@@ -40,10 +41,12 @@ def TangentBundle(X):
     fan = X.fan()
     filtrations = {}
     from sage.modules.filtered_vector_space import FilteredVectorSpace
+
     for i, ray in enumerate(fan.rays()):
         F = FilteredVectorSpace(fan.rays(), {0: range(fan.nrays()), 1: [i]})
         filtrations[ray] = F
     from . import klyachko
+
     return klyachko.Bundle(X, filtrations, check=True)
 
 
@@ -92,9 +95,11 @@ def TrivialBundle(X, rank=1):
         raise ValueError('not a toric variety')
 
     base_ring = X.base_ring()
-    filtrations = {ray: FilteredVectorSpace(rank, 0, base_ring=base_ring)
-                   for ray in X.fan().rays()}
+    filtrations = {
+        ray: FilteredVectorSpace(rank, 0, base_ring=base_ring) for ray in X.fan().rays()
+    }
     from . import klyachko
+
     return klyachko.Bundle(X, filtrations, check=True)
 
 
@@ -125,15 +130,16 @@ def LineBundle(X, D):
         raise ValueError('not a toric variety')
 
     base_ring = X.base_ring()
-    filtrations = {X.fan().ray(i): FilteredVectorSpace(1, D.function_value(i),
-                                                       base_ring=base_ring)
-                   for i in range(X.fan().nrays())}
+    filtrations = {
+        X.fan().ray(i): FilteredVectorSpace(1, D.function_value(i), base_ring=base_ring)
+        for i in range(X.fan().nrays())
+    }
     from . import klyachko
+
     return klyachko.Bundle(X, filtrations, check=True)
 
 
 class SheafLibrary:
-
     def __init__(self, toric_variety):
         """
         Utility object to construct sheaves on toric varieties.
@@ -271,6 +277,7 @@ class SheafLibrary:
             Rank 3 bundle on 1-d CPR-Fano toric variety covered by 2 affine patches.
         """
         from .klyachko import Bundle
+
         return Bundle(self._variety, multi_filtration, check=True)
 
     def divisor(self, *args, **kwds):

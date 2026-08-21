@@ -72,13 +72,18 @@ def JohnsonGraph(n, k, immutable=False):
     from sage.combinat.subset import Set, Subsets
 
     S = Set(range(n))
-    edges = ((sub + Set([i]), sub + Set([j]))
-             for sub in Subsets(S, k - 1)
-             for i, j in combinations(S - sub, 2))
+    edges = (
+        (sub + Set([i]), sub + Set([j]))
+        for sub in Subsets(S, k - 1)
+        for i, j in combinations(S - sub, 2)
+    )
 
-    return Graph([Subsets(S, k), edges], format="vertices_and_edges",
-                 name=f"Johnson graph with parameters {n},{k}",
-                 immutable=immutable)
+    return Graph(
+        [Subsets(S, k), edges],
+        format="vertices_and_edges",
+        name=f"Johnson graph with parameters {n},{k}",
+        immutable=immutable,
+    )
 
 
 def KneserGraph(n, k, immutable=False, name=None):
@@ -129,18 +134,21 @@ def KneserGraph(n, k, immutable=False, name=None):
     if n <= 0:
         raise ValueError("Parameter n should be a strictly positive integer")
     if k <= 0 or k > n:
-        raise ValueError("Parameter k should be a strictly positive integer inferior to n")
+        raise ValueError(
+            "Parameter k should be a strictly positive integer inferior to n"
+        )
     if name is None:
         name = f"Kneser graph with parameters {n},{k}"
 
     from sage.combinat.subset import Subsets
 
     S = Subsets(n, k)
-    s0 = S.underlying_set()    # {1,2,...,n}
+    s0 = S.underlying_set()  # {1,2,...,n}
     edges = ((s, t) for s in S for t in Subsets(s0.difference(s), k))
 
-    return Graph([S, edges], format="vertices_and_edges",
-                 name=name, immutable=immutable)
+    return Graph(
+        [S, edges], format="vertices_and_edges", name=name, immutable=immutable
+    )
 
 
 def FurerGadget(k, prefix=None, immutable=False):
@@ -218,6 +226,7 @@ def FurerGadget(k, prefix=None, immutable=False):
          (('Prefix', (1, 2)), ('Prefix', (2, 'a')), None)]
     """
     from itertools import repeat as rep, chain
+
     if k <= 0:
         raise ValueError("The order of the Furer gadget must be greater than zero")
 
@@ -227,16 +236,28 @@ def FurerGadget(k, prefix=None, immutable=False):
         V_a = list(zip(rep(prefix, k), V_a))
         V_b = list(zip(rep(prefix, k), V_b))
 
-    powerset = list(chain.from_iterable(combinations(range(k), r) for r in range(0, k + 1, 2)))
+    powerset = list(
+        chain.from_iterable(combinations(range(k), r) for r in range(0, k + 1, 2))
+    )
     if prefix is not None:
-        E_a = chain.from_iterable([((prefix, s), (prefix, (i, 'a'))) for i in s] for s in powerset)
-        E_b = chain.from_iterable([((prefix, s), (prefix, (i, 'b'))) for i in range(k) if i not in s] for s in powerset)
+        E_a = chain.from_iterable(
+            [((prefix, s), (prefix, (i, 'a'))) for i in s] for s in powerset
+        )
+        E_b = chain.from_iterable(
+            [((prefix, s), (prefix, (i, 'b'))) for i in range(k) if i not in s]
+            for s in powerset
+        )
     else:
         E_a = chain.from_iterable([(s, (i, 'a')) for i in s] for s in powerset)
-        E_b = chain.from_iterable([(s, (i, 'b')) for i in range(k) if i not in s] for s in powerset)
+        E_b = chain.from_iterable(
+            [(s, (i, 'b')) for i in range(k) if i not in s] for s in powerset
+        )
 
-    G = Graph([chain(V_a, V_b), chain(E_a, E_b)], format="vertices_and_edges",
-              immutable=immutable)
+    G = Graph(
+        [chain(V_a, V_b), chain(E_a, E_b)],
+        format="vertices_and_edges",
+        immutable=immutable,
+    )
 
     partition = [[V_a[i], V_b[i]] for i in range(k)]
     if prefix is not None:
@@ -431,6 +452,7 @@ def EgawaGraph(p, s, immutable=False):
     """
     from sage.graphs.generators.basic import CompleteGraph
     from itertools import product, chain, repeat
+
     X = CompleteGraph(4)
     Y = Graph('O?Wse@UgqqT_LUebWkbT_')
     vertices = list(product(*chain(repeat(Y, p), repeat(X, s))))
@@ -439,22 +461,26 @@ def EgawaGraph(p, s, immutable=False):
         for v in vertices:
             for i in range(p):
                 prefix = v[:i]
-                suffix = v[i+1:]
+                suffix = v[i + 1 :]
                 for el in Y.neighbor_iterator(v[i]):
                     u = prefix + (el,) + suffix
                     yield (v, u)
             for i in range(p, s + p):
                 prefix = v[:i]
-                suffix = v[i+1:]
+                suffix = v[i + 1 :]
                 for el in X:
                     if el == v[i]:
                         continue
                     u = prefix + (el,) + suffix
                     yield (v, u)
 
-    return Graph([vertices, edges()], format="vertices_and_edges",
-                 name=f"Egawa Graph with parameters {p},{s}",
-                 multiedges=False, immutable=immutable)
+    return Graph(
+        [vertices, edges()],
+        format="vertices_and_edges",
+        name=f"Egawa Graph with parameters {p},{s}",
+        multiedges=False,
+        immutable=immutable,
+    )
 
 
 def HammingGraph(n, q, X=None, immutable=False):
@@ -522,6 +548,7 @@ def HammingGraph(n, q, X=None, immutable=False):
     :wikipedia:`Hamming_graph`
     """
     from itertools import product, repeat
+
     if not X:
         X = list(range(q))
     if q != len(X):
@@ -533,16 +560,20 @@ def HammingGraph(n, q, X=None, immutable=False):
         for v in vertices:
             for i in range(n):
                 prefix = v[:i]
-                suffix = v[i+1:]
+                suffix = v[i + 1 :]
                 for el in X:
                     if el == v[i]:
                         continue
                     u = prefix + (el,) + suffix
                     yield (v, u)
 
-    return Graph([vertices, edges()], format="vertices_and_edges",
-                 name=f"Hamming Graph with parameters {n},{q}",
-                 multiedges=False, immutable=immutable)
+    return Graph(
+        [vertices, edges()],
+        format="vertices_and_edges",
+        name=f"Hamming Graph with parameters {n},{q}",
+        multiedges=False,
+        immutable=immutable,
+    )
 
 
 def BarbellGraph(n1, n2, immutable=False):
@@ -655,15 +686,22 @@ def BarbellGraph(n1, n2, immutable=False):
         raise ValueError("invalid graph description, n2 should be >= 0")
 
     from itertools import chain
+
     K1 = ((i, j) for i, j in combinations(range(n1), 2))
     P = zip(range(n1 - 1, n1 + n2), range(n1, n1 + n2 + 1))
-    K2 = ((i, j) for i, j in combinations(range(n1 + n2, 2*n1 + n2), 2))
-    G = Graph([range(2*n1 + n2), chain(K1, P, K2)], format="vertices_and_edges",
-              name="Barbell graph", immutable=immutable)
+    K2 = ((i, j) for i, j in combinations(range(n1 + n2, 2 * n1 + n2), 2))
+    G = Graph(
+        [range(2 * n1 + n2), chain(K1, P, K2)],
+        format="vertices_and_edges",
+        name="Barbell graph",
+        immutable=immutable,
+    )
 
-    G._circle_embedding(list(range(n1)), shift=1, angle=pi/4)
+    G._circle_embedding(list(range(n1)), shift=1, angle=pi / 4)
     G._line_embedding(list(range(n1, n1 + n2)), first=(2, 2), last=(n2 + 1, n2 + 1))
-    G._circle_embedding(list(range(n1 + n2, n1 + n2 + n1)), center=(n2 + 3, n2 + 3), angle=5*pi/4)
+    G._circle_embedding(
+        list(range(n1 + n2, n1 + n2 + n1)), center=(n2 + 3, n2 + 3), angle=5 * pi / 4
+    )
     return G
 
 
@@ -737,15 +775,20 @@ def LollipopGraph(n1, n2, immutable=False):
         raise ValueError("invalid graph description, n2 should be >= 0")
 
     from itertools import chain
+
     K = ((i, j) for i, j in combinations(range(n1), 2))
     s = 1 if n1 * n2 > 0 else 0  # need edge connecting the clique and the path
     P = zip(range(n1 - s, n1 + n2 - 1), range(n1 + 1 - s, n1 + n2))
-    G = Graph([range(n1 + n2), chain(K, P)], format="vertices_and_edges",
-              name="Lollipop graph", immutable=immutable)
+    G = Graph(
+        [range(n1 + n2), chain(K, P)],
+        format="vertices_and_edges",
+        name="Lollipop graph",
+        immutable=immutable,
+    )
     if n1 == 1:
         G.set_pos({0: (0, 0)})
     else:
-        G._circle_embedding(list(range(n1)), shift=1, angle=pi/4)
+        G._circle_embedding(list(range(n1)), shift=1, angle=pi / 4)
     G._line_embedding(list(range(n1, n1 + n2)), first=(2, 2), last=(n2 + 1, n2 + 1))
     return G
 
@@ -814,13 +857,18 @@ def TadpoleGraph(n1, n2, immutable=False):
         raise ValueError("invalid graph description, n2 should be >= 0")
 
     from itertools import chain
+
     C = ((i, i + 1) for i in range(n1 - 1))
     e = ((0, n1 - 1),)
     s = 1 if n2 else 0  # need edge connecting the cycle and the path
     P = ((i, i + 1) for i in range(n1 - s, n1 + n2 - 1))
-    G = Graph([range(n1 + n2), chain(C, e, P)], format="vertices_and_edges",
-              name="Tadpole graph", immutable=immutable)
-    G._circle_embedding(list(range(n1)), shift=1, angle=pi/4)
+    G = Graph(
+        [range(n1 + n2), chain(C, e, P)],
+        format="vertices_and_edges",
+        name="Tadpole graph",
+        immutable=immutable,
+    )
+    G._circle_embedding(list(range(n1)), shift=1, angle=pi / 4)
     G._line_embedding(list(range(n1, n1 + n2)), first=(2, 2), last=(n2 + 1, n2 + 1))
     return G
 
@@ -862,12 +910,18 @@ def AztecDiamondGraph(n, immutable=False):
         True
     """
     from sage.graphs.generators.basic import Grid2dGraph
+
     if n:
         N = 2 * n
         G = Grid2dGraph(N, N, immutable=immutable)
-        H = G.subgraph([(i, j) for i in range(N) for j in range(N)
-                        if i - n <= j <= n + i and
-                        n - 1 - i <= j <= 3 * n - i - 1])
+        H = G.subgraph(
+            [
+                (i, j)
+                for i in range(N)
+                for j in range(N)
+                if i - n <= j <= n + i and n - 1 - i <= j <= 3 * n - i - 1
+            ]
+        )
     else:
         H = Graph(immutable=immutable)
     H._name = f"Aztec Diamond graph of order {n}"
@@ -928,8 +982,12 @@ def DipoleGraph(n, immutable=False):
     if n < 0:
         raise ValueError("invalid graph description, n should be >= 0")
 
-    return Graph([[0, 1], [(0, 1)]*n], name="Dipole graph",
-                 multiedges=True, immutable=immutable)
+    return Graph(
+        [[0, 1], [(0, 1)] * n],
+        name="Dipole graph",
+        multiedges=True,
+        immutable=immutable,
+    )
 
 
 def BubbleSortGraph(n, immutable=False):
@@ -1002,12 +1060,13 @@ def BubbleSortGraph(n, immutable=False):
     """
     # sanity checks
     if n < 1:
-        raise ValueError(
-            "Invalid number of symbols to permute, n should be >= 1")
+        raise ValueError("Invalid number of symbols to permute, n should be >= 1")
     if n == 1:
         from sage.graphs.generators.basic import CompleteGraph
+
         return Graph(CompleteGraph(n), name="Bubble sort", immutable=immutable)
     from sage.combinat.permutation import Permutations
+
     # create set from which to permute
     label_set = [str(i) for i in range(1, n + 1)]
     d = {}
@@ -1026,8 +1085,7 @@ def BubbleSortGraph(n, immutable=False):
             v[i], v[i + 1] = v[i + 1], v[i]
         # add adjacency dict
         d[''.join(v)] = neighbors
-    return Graph(d, format="dict_of_lists", name="Bubble sort",
-                 immutable=immutable)
+    return Graph(d, format="dict_of_lists", name="Bubble sort", immutable=immutable)
 
 
 def chang_graphs(immutable=False):
@@ -1072,12 +1130,24 @@ def chang_graphs(immutable=False):
         ....:  for x, G in zip(s, chang_graphs)]
         [True, True, True]
     """
-    g1 = Graph("[}~~EebhkrRb_~SoLOIiAZ?LBBxDb?bQcggjHKEwoZFAaiZ?Yf[?dxb@@tdWGkwn",
-               loops=False, multiedges=False, immutable=immutable)
-    g2 = Graph("[~z^UipkkZPr_~Y_LOIiATOLBBxPR@`acoojBBSoWXTaabN?Yts?Yji_QyioClXZ",
-               loops=False, multiedges=False, immutable=immutable)
-    g3 = Graph(r"[~~vVMWdKFpV`^UGIaIERQ`\DBxpA@g`CbGRI`AxICNaFM[?fM\?Ytj@CxrGGlYt",
-               loops=False, multiedges=False, immutable=immutable)
+    g1 = Graph(
+        "[}~~EebhkrRb_~SoLOIiAZ?LBBxDb?bQcggjHKEwoZFAaiZ?Yf[?dxb@@tdWGkwn",
+        loops=False,
+        multiedges=False,
+        immutable=immutable,
+    )
+    g2 = Graph(
+        "[~z^UipkkZPr_~Y_LOIiATOLBBxPR@`acoojBBSoWXTaabN?Yts?Yji_QyioClXZ",
+        loops=False,
+        multiedges=False,
+        immutable=immutable,
+    )
+    g3 = Graph(
+        r"[~~vVMWdKFpV`^UGIaIERQ`\DBxpA@g`CbGRI`AxICNaFM[?fM\?Ytj@CxrGGlYt",
+        loops=False,
+        multiedges=False,
+        immutable=immutable,
+    )
     return [g1, g2, g3]
 
 
@@ -1187,8 +1257,9 @@ def CirculantGraph(n, adjacency, immutable=False, name=None):
         name = f"Circulant graph ({adjacency})"
 
     edges = ((v, (v + j) % n) for v in range(n) for j in adjacency)
-    G = Graph([range(n), edges], format="vertices_and_edges",
-              name=name, immutable=immutable)
+    G = Graph(
+        [range(n), edges], format="vertices_and_edges", name=name, immutable=immutable
+    )
     G._circle_embedding(list(range(n)))
     return G
 
@@ -1279,9 +1350,9 @@ def CubeGraph(n, embedding=1, immutable=False):
     """
     if embedding == 1 or embedding == 3:
         # construct recursively the adjacency dict and the embedding
-        theta = float(pi/n)
+        theta = float(pi / n)
         if embedding == 3 and n > 2:
-            theta = float(pi/(2*n-2))
+            theta = float(pi / (2 * n - 2))
 
         d = {'': []}
         dn = {}
@@ -1309,8 +1380,9 @@ def CubeGraph(n, embedding=1, immutable=False):
             p, pn = pn, {}
 
         # construct the graph
-        G = Graph(d, format='dict_of_lists', pos=p, name=f"{n}-Cube",
-                  immutable=immutable)
+        G = Graph(
+            d, format='dict_of_lists', pos=p, name=f"{n}-Cube", immutable=immutable
+        )
 
     else:
         # construct recursively the adjacency dict
@@ -1335,12 +1407,14 @@ def CubeGraph(n, embedding=1, immutable=False):
 
         if embedding == 2:
             # Orthogonal projection
-            s = '0'*n
+            s = '0' * n
             L = [[] for _ in range(n + 1)]
             for u, d in G.breadth_first_search(s, report_distance=True):
                 L[d].append(u)
 
-            p = G._circle_embedding(list(range(2*n)), radius=(n + 1)//2, angle=pi, return_dict=True)
+            p = G._circle_embedding(
+                list(range(2 * n)), radius=(n + 1) // 2, angle=pi, return_dict=True
+            )
             for i in range(n + 1):
                 y = p[i][1] / 1.5
                 G._line_embedding(L[i], first=(i, y), last=(i, -y), return_dict=False)
@@ -1387,8 +1461,8 @@ def GoethalsSeidelGraph(k, r, immutable=False):
     from sage.matrix.constructor import Matrix
     from sage.matrix.constructor import block_matrix
 
-    v = (k-1)*r + 1
-    n = v*(r + 1)
+    v = (k - 1) * r + 1
+    n = v * (r + 1)
 
     # N is the (v times b) incidence matrix of a bibd
     N = balanced_incomplete_block_design(v, k).incidence_matrix()
@@ -1396,20 +1470,19 @@ def GoethalsSeidelGraph(k, r, immutable=False):
     # L is a (r+1 times r) matrix, where r is the row sum of N
     L = hadamard_matrix(r + 1).submatrix(0, 1)
     L = [Matrix(C).transpose() for C in L.columns()]
-    zero = Matrix(r + 1, 1, [0]*(r + 1))
+    zero = Matrix(r + 1, 1, [0] * (r + 1))
 
     # For every row of N, we replace the 0s with a column of zeros, and we
     # replace the ith 1 with the ith column of L. The result is P.
     P = []
     for row in N:
         Ltmp = L[:]
-        P.append([Ltmp.pop(0) if i else zero
-                  for i in row])
+        P.append([Ltmp.pop(0) if i else zero for i in row])
 
     P = block_matrix(P)
 
     # The final graph
-    PP = P*P.transpose()
+    PP = P * P.transpose()
     for i in range(n):
         PP[i, i] = 0
 
@@ -1455,9 +1528,12 @@ def DorogovtsevGoltsevMendesGraph(n, immutable=False):
     if n < 0:
         raise ValueError("n must be greater than or equal to 0")
     import networkx
-    return Graph(networkx.dorogovtsev_goltsev_mendes_graph(n),
-                 name=f"Dorogovtsev-Goltsev-Mendes Graph, {n}-th generation",
-                 immutable=immutable)
+
+    return Graph(
+        networkx.dorogovtsev_goltsev_mendes_graph(n),
+        name=f"Dorogovtsev-Goltsev-Mendes Graph, {n}-th generation",
+        immutable=immutable,
+    )
 
 
 def FoldedCubeGraph(n, immutable=False):
@@ -1499,11 +1575,15 @@ def FoldedCubeGraph(n, immutable=False):
         return x
 
     from itertools import chain
+
     H = CubeGraph(n - 1)
     extra = ((x, complement(x)) for x in H if x[0] == '0')
-    return Graph([H, chain(H.edges(labels=False), extra)],
-                 format="vertices_and_edges", immutable=immutable,
-                 name="Folded Cube Graph")
+    return Graph(
+        [H, chain(H.edges(labels=False), extra)],
+        format="vertices_and_edges",
+        immutable=immutable,
+        name="Folded Cube Graph",
+    )
 
 
 def FriendshipGraph(n, immutable=False):
@@ -1605,17 +1685,20 @@ def FriendshipGraph(n, immutable=False):
     # construct the friendship graph
     if n == 1:
         from sage.graphs.generators.basic import CycleGraph
+
         G = CycleGraph(3, immutable=immutable)
         G._name = "Friendship graph"
         return G
     # build the edges and position dictionaries
-    N = 2 * n + 1           # order of F_n
+    N = 2 * n + 1  # order of F_n
     center = 2 * n
-    edges = (e
-             for i in range(0, N - 1, 2)
-             for e in combinations([center, i, i + 1], 2))
-    G = Graph([range(N), edges], format="vertices_and_edges",
-              name="Friendship graph", immutable=immutable)
+    edges = (e for i in range(0, N - 1, 2) for e in combinations([center, i, i + 1], 2))
+    G = Graph(
+        [range(N), edges],
+        format="vertices_and_edges",
+        name="Friendship graph",
+        immutable=immutable,
+    )
     G.set_pos({center: (0, 0)})
     G._circle_embedding(list(range(N - 1)), radius=1)
     return G
@@ -1675,6 +1758,7 @@ def FuzzyBallGraph(partition, q, immutable=False):
           - 120877/3240*x^3 + 1351/100*x^2 - 931/450*x}
     """
     from sage.graphs.generators.basic import CompleteGraph
+
     if not partition or any(i <= 0 for i in partition):
         raise ValueError("partition must be a nonempty list of positive integers")
     if q < 0:
@@ -1690,8 +1774,12 @@ def FuzzyBallGraph(partition, q, immutable=False):
                 yield (u, v)
             curr_vertex += p
 
-    return Graph(edges(), format="list_of_edges", immutable=immutable,
-                 name=f"Fuzzy-Ball({partition}, {q})")
+    return Graph(
+        edges(),
+        format="list_of_edges",
+        immutable=immutable,
+        name=f"Fuzzy-Ball({partition}, {q})",
+    )
 
 
 def GeneralizedPetersenGraph(n, k, immutable=False, name=None):
@@ -1766,13 +1854,18 @@ def GeneralizedPetersenGraph(n, k, immutable=False, name=None):
     if name is None:
         name = f"Generalized Petersen graph (n={n},k={k})"
     from itertools import chain
+
     E1 = ((i, (i + 1) % n) for i in range(n))
     E2 = ((i, i + n) for i in range(n))
-    E3 = (( i + n, n + (i + k) % n) for i in range(n))
-    G = Graph([range(2*n), chain(E1, E2, E3)], format="vertices_and_edges",
-              name=name, immutable=immutable)
-    G._circle_embedding(list(range(n)), radius=1, angle=pi/2)
-    G._circle_embedding(list(range(n, 2*n)), radius=.5, angle=pi/2)
+    E3 = ((i + n, n + (i + k) % n) for i in range(n))
+    G = Graph(
+        [range(2 * n), chain(E1, E2, E3)],
+        format="vertices_and_edges",
+        name=name,
+        immutable=immutable,
+    )
+    G._circle_embedding(list(range(n)), radius=1, angle=pi / 2)
+    G._circle_embedding(list(range(n, 2 * n)), radius=0.5, angle=pi / 2)
     return G
 
 
@@ -1855,14 +1948,18 @@ def IGraph(n, j, k, immutable=False):
         raise ValueError("k must be in 1 <= k <= floor((n - 1) / 2)")
 
     from itertools import chain
+
     E1 = ((i, (i + j) % n) for i in range(n))
     E2 = ((i, i + n) for i in range(n))
-    E3 = (( i + n, n + (i + k) % n) for i in range(n))
-    G = Graph([range(2*n), chain(E1, E2, E3)], format="vertices_and_edges",
-              name=f"I-graph (n={n}, j={j}, k={k})",
-              immutable=immutable)
-    G._circle_embedding(list(range(n)), radius=1, angle=pi/2)
-    G._circle_embedding(list(range(n, 2 * n)), radius=.5, angle=pi/2)
+    E3 = ((i + n, n + (i + k) % n) for i in range(n))
+    G = Graph(
+        [range(2 * n), chain(E1, E2, E3)],
+        format="vertices_and_edges",
+        name=f"I-graph (n={n}, j={j}, k={k})",
+        immutable=immutable,
+    )
+    G._circle_embedding(list(range(n)), radius=1, angle=pi / 2)
+    G._circle_embedding(list(range(n, 2 * n)), radius=0.5, angle=pi / 2)
     return G
 
 
@@ -1926,19 +2023,23 @@ def DoubleGeneralizedPetersenGraph(n, k, immutable=False):
         raise ValueError("k must be in 1 <= k <= floor((n - 1) / 2)")
 
     from itertools import chain
+
     E1 = ((i, (i + 1) % n) for i in range(n))
     E2 = ((i + 3 * n, (i + 1) % n + 3 * n) for i in range(n))
     E3 = ((i, i + n) for i in range(n))
     E4 = ((i + 2 * n, i + 3 * n) for i in range(n))
     E5 = ((i + n, (i + k) % n + 2 * n) for i in range(n))
     E6 = ((i + 2 * n, (i + k) % n + n) for i in range(n))
-    G = Graph([range(4*n), chain(E1, E2, E3, E4, E5, E6)],
-              format="vertices_and_edges", immutable=immutable,
-              name=f"Double generalized Petersen graph (n={n}, k={k})")
-    G._circle_embedding(list(range(n)), radius=3, angle=pi/2)
-    G._circle_embedding(list(range(n, 2 * n)), radius=2, angle=pi/2)
-    G._circle_embedding(list(range(2 * n, 3 * n)), radius=1.5, angle=pi/2)
-    G._circle_embedding(list(range(3 * n, 4 * n)), radius=0.5, angle=pi/2)
+    G = Graph(
+        [range(4 * n), chain(E1, E2, E3, E4, E5, E6)],
+        format="vertices_and_edges",
+        immutable=immutable,
+        name=f"Double generalized Petersen graph (n={n}, k={k})",
+    )
+    G._circle_embedding(list(range(n)), radius=3, angle=pi / 2)
+    G._circle_embedding(list(range(n, 2 * n)), radius=2, angle=pi / 2)
+    G._circle_embedding(list(range(2 * n, 3 * n)), radius=1.5, angle=pi / 2)
+    G._circle_embedding(list(range(3 * n, 4 * n)), radius=0.5, angle=pi / 2)
     return G
 
 
@@ -2024,15 +2125,19 @@ def RoseWindowGraph(n, a, r, immutable=False):
         raise ValueError("r must be different than n / 2")
 
     from itertools import chain
+
     E1 = ((i, (i + 1) % n) for i in range(n))
     E2 = ((i, i + n) for i in range(n))
     E3 = (((i + a) % n, i + n) for i in range(n))
     E4 = ((i + n, (i + r) % n + n) for i in range(n))
-    G = Graph([range(2*n), chain(E1, E2, E3, E4)],
-              format="vertices_and_edges", immutable=immutable,
-              name=f"Rose window graph (n={n}, a={a}, r={r})")
-    G._circle_embedding(list(range(n)), radius=1, angle=pi/2)
-    G._circle_embedding(list(range(n, 2 * n)), radius=0.5, angle=pi/2)
+    G = Graph(
+        [range(2 * n), chain(E1, E2, E3, E4)],
+        format="vertices_and_edges",
+        immutable=immutable,
+        name=f"Rose window graph (n={n}, a={a}, r={r})",
+    )
+    G._circle_embedding(list(range(n)), radius=1, angle=pi / 2)
+    G._circle_embedding(list(range(n, 2 * n)), radius=0.5, angle=pi / 2)
     return G
 
 
@@ -2133,20 +2238,24 @@ def TabacjnGraph(n, a, b, r, immutable=False):
         raise ValueError("a must be different than b")
     if r < 1 or r >= n:
         raise ValueError("r must be an integer such that 1 <= r < n")
-    if r == n/2:
+    if r == n / 2:
         raise ValueError("r must be different than n / 2")
 
     from itertools import chain
+
     E1 = ((i, (i + 1) % n) for i in range(n))
     E2 = ((i, i + n) for i in range(n))
     E3 = ((i + n, n + (i + r) % n) for i in range(n))
     E4 = ((i, (i + a) % n + n) for i in range(n))
     E5 = ((i, (i + b) % n + n) for i in range(n))
-    G = Graph([range(2*n), chain(E1, E2, E3, E4, E5)],
-              format="vertices_and_edges", immutable=immutable,
-              name=f"Tabačjn graph (n={n}, a={a}, b={b}, r={r})")
-    G._circle_embedding(list(range(n)), radius=1, angle=pi/2)
-    G._circle_embedding(list(range(n, 2 * n)), radius=0.5, angle=pi/2)
+    G = Graph(
+        [range(2 * n), chain(E1, E2, E3, E4, E5)],
+        format="vertices_and_edges",
+        immutable=immutable,
+        name=f"Tabačjn graph (n={n}, a={a}, b={b}, r={r})",
+    )
+    G._circle_embedding(list(range(n)), radius=1, angle=pi / 2)
+    G._circle_embedding(list(range(n, 2 * n)), radius=0.5, angle=pi / 2)
     return G
 
 
@@ -2203,17 +2312,16 @@ def HararyGraph(k, n, immutable=False):
 
     name = f"Harary graph {k}, {n}"
     if not k % 2:
-        return CirculantGraph(n, list(range(1, k//2 + 1)),
-                              immutable=immutable, name=name)
+        return CirculantGraph(
+            n, list(range(1, k // 2 + 1)), immutable=immutable, name=name
+        )
     if not n % 2:
-        shift_list = list(range(1, (k - 1)//2 + 1))
-        shift_list.append(n//2)
-        return CirculantGraph(n, shift_list,
-                              immutable=immutable, name=name)
-    G = CirculantGraph(n, list(range(1, (k - 1)//2 + 1)),
-                       immutable=False, name=name)
-    for i in range((n - 1)//2 + 1):
-        G.add_edge(i, (i + (n - 1)//2) % n)
+        shift_list = list(range(1, (k - 1) // 2 + 1))
+        shift_list.append(n // 2)
+        return CirculantGraph(n, shift_list, immutable=immutable, name=name)
+    G = CirculantGraph(n, list(range(1, (k - 1) // 2 + 1)), immutable=False, name=name)
+    for i in range((n - 1) // 2 + 1):
+        G.add_edge(i, (i + (n - 1) // 2) % n)
     return G.copy(immutable=True) if immutable else G
 
 
@@ -2265,16 +2373,18 @@ def HyperStarGraph(n, k, immutable=False):
     - Michael Yurko (2009-09-01)
     """
     if n < 0 or k < 0 or k > n:
-        raise ValueError("parameters n and k must be nonnegative integers "
-                         "satisfying n >= k >= 0")
+        raise ValueError(
+            "parameters n and k must be nonnegative integers satisfying n >= k >= 0"
+        )
     if not n:
         adj = {}
     elif not k:
-        adj = {'0'*n: []}
+        adj = {'0' * n: []}
     elif k == n:
-        adj = {'1'*n: []}
+        adj = {'1' * n: []}
     else:
         from sage.data_structures.bitset import Bitset
+
         adj = dict()
         # We consider the strings of n bits with k 1s and starting with a 0
         for c in combinations(range(1, n), k):
@@ -2290,8 +2400,7 @@ def HyperStarGraph(n, k, immutable=False):
                 c[i] = one
             adj[u] = L
 
-    return Graph(adj, format='dict_of_lists', name=f"HS({n},{k})",
-                 immutable=immutable)
+    return Graph(adj, format='dict_of_lists', name=f"HS({n},{k})", immutable=immutable)
 
 
 def LCFGraph(n, shift_list, repeats, immutable=False, name=None):
@@ -2384,16 +2493,23 @@ def LCFGraph(n, shift_list, repeats, immutable=False, name=None):
         return Graph(name=name, immutable=immutable)
 
     from itertools import chain, repeat
+
     # Edges of a cycle
     E1 = ((i, i + 1) for i in range(n - 1))
     E2 = ((0, n - 1),)
     # Edges obtained from repeated iterations over the shift list
-    E3 = ((i % n, (i + shift) % n)
-          for i, shift in enumerate(chain(*repeat(shift_list, repeats))))
+    E3 = (
+        (i % n, (i + shift) % n)
+        for i, shift in enumerate(chain(*repeat(shift_list, repeats)))
+    )
 
-    G = Graph([range(n), chain(E1, E2, E3)], format="vertices_and_edges",
-              name=name, immutable=immutable)
-    G._circle_embedding(list(range(n)), radius=1, angle=pi/2)
+    G = Graph(
+        [range(n), chain(E1, E2, E3)],
+        format="vertices_and_edges",
+        name=name,
+        immutable=immutable,
+    )
+    G._circle_embedding(list(range(n)), radius=1, angle=pi / 2)
     return G
 
 
@@ -2460,8 +2576,7 @@ def MycielskiGraph(k=1, relabel=True, immutable=False):
     if k == 1:
         return Graph(1, name=name, immutable=immutable)
     if k == 2:
-        return Graph([(0, 1)], format="list_of_edges", name=name,
-                     immutable=immutable)
+        return Graph([(0, 1)], format="list_of_edges", name=name, immutable=immutable)
 
     g = Graph([(0, 1)], format="list_of_edges")
     for _ in range(k - 2):
@@ -2576,6 +2691,7 @@ def NKStarGraph(n, k, immutable=False):
     - Michael Yurko (2009-09-01)
     """
     from sage.combinat.permutation import Arrangements
+
     # set from which to permute
     set = [str(i) for i in range(1, n + 1)]
     # create dict
@@ -2603,8 +2719,7 @@ def NKStarGraph(n, k, immutable=False):
                 neighbors.append(vert)
             v[0] = tmp_bit
         d["".join(v)] = neighbors
-    return Graph(d, format="dict_of_lists", name=f"({n},{k})-star",
-                 immutable=immutable)
+    return Graph(d, format="dict_of_lists", name=f"({n},{k})-star", immutable=immutable)
 
 
 def NStarGraph(n, immutable=False):
@@ -2637,6 +2752,7 @@ def NStarGraph(n, immutable=False):
     - Michael Yurko (2009-09-01)
     """
     from sage.combinat.permutation import Permutations
+
     # set from which to permute
     set = [str(i) for i in range(1, n + 1)]
     # create dictionary of lists
@@ -2655,8 +2771,7 @@ def NStarGraph(n, immutable=False):
                 # swap back
                 v[0], v[i] = v[i], v[0]
         d["".join(v)] = neighbors
-    return Graph(d, format="dict_of_lists", name=f"{n}-star",
-                 immutable=immutable)
+    return Graph(d, format="dict_of_lists", name=f"{n}-star", immutable=immutable)
 
 
 def OddGraph(n, immutable=False):
@@ -2699,8 +2814,9 @@ def OddGraph(n, immutable=False):
     """
     if n <= 1:
         raise ValueError("parameter n should be an integer strictly greater than 1")
-    return KneserGraph(2*n - 1, n - 1, immutable=immutable,
-                       name=f"Odd Graph with parameter {n}")
+    return KneserGraph(
+        2 * n - 1, n - 1, immutable=immutable, name=f"Odd Graph with parameter {n}"
+    )
 
 
 def PaleyGraph(q, immutable=False):
@@ -2745,13 +2861,18 @@ def PaleyGraph(q, immutable=False):
     from sage.rings.finite_rings.integer_mod import mod
     from sage.rings.finite_rings.finite_field_constructor import FiniteField
     from sage.arith.misc import is_prime_power
+
     if not is_prime_power(q):
         raise ValueError("parameter q must be a prime power")
     if not mod(q, 4) == 1:
         raise ValueError("parameter q must be congruent to 1 mod 4")
-    return Graph([FiniteField(q, 'a'), lambda i, j: (i - j).is_square()],
-                 format="rule", immutable=immutable,
-                 loops=False, name=f"Paley graph with parameter {q}")
+    return Graph(
+        [FiniteField(q, 'a'), lambda i, j: (i - j).is_square()],
+        format="rule",
+        immutable=immutable,
+        loops=False,
+        name=f"Paley graph with parameter {q}",
+    )
 
 
 def PasechnikGraph(n, immutable=False):
@@ -2794,10 +2915,14 @@ def PasechnikGraph(n, immutable=False):
         raise ValueError("parameter n must be >= 1")
     from sage.combinat.matrices.hadamard_matrix import skew_hadamard_matrix
     from sage.matrix.constructor import identity_matrix
+
     H = skew_hadamard_matrix(4 * n)
     M = H[1:].T[1:] - identity_matrix(4 * n - 1)
-    G = Graph(M.tensor_product(M.T), format='seidel_adjacency_matrix',
-              name=f"Pasechnik Graph_{n}")
+    G = Graph(
+        M.tensor_product(M.T),
+        format='seidel_adjacency_matrix',
+        name=f"Pasechnik Graph_{n}",
+    )
     G.relabel()
     return G.copy(immutable=True) if immutable else G
 
@@ -2846,6 +2971,7 @@ def SquaredSkewHadamardMatrixGraph(n, immutable=False):
         raise ValueError("parameter n must be >= 1")
     from sage.combinat.matrices.hadamard_matrix import skew_hadamard_matrix
     from sage.matrix.constructor import identity_matrix, matrix
+
     idm = identity_matrix(4 * n - 1)
     e = matrix([1] * (4 * n - 1))
     H = skew_hadamard_matrix(4 * n)
@@ -2903,7 +3029,7 @@ def SwitchedSquaredSkewHadamardMatrixGraph(n, immutable=False):
         ValueError: parameter n must be >= 1
     """
     G = SquaredSkewHadamardMatrixGraph(n).complement()
-    G.add_vertex((4 * n - 1)**2)
+    G.add_vertex((4 * n - 1) ** 2)
     G.seidel_switching(list(range((4 * n - 1) * (2 * n - 1))))
     G.name("switch skewhad^2+*_" + str(n))
     return G.copy(immutable=True) if immutable else G
@@ -3070,12 +3196,17 @@ def HanoiTowerGraph(pegs, disks, labels=True, positions=True, immutable=False):
     """
     # sanitize input
     from sage.rings.integer import Integer
+
     pegs = Integer(pegs)
     if pegs < 2:
-        raise ValueError("Pegs for Tower of Hanoi graph should be two or greater (not %d)" % pegs)
+        raise ValueError(
+            "Pegs for Tower of Hanoi graph should be two or greater (not %d)" % pegs
+        )
     disks = Integer(disks)
     if disks < 1:
-        raise ValueError("Disks for Tower of Hanoi graph should be one or greater (not %d)" % disks)
+        raise ValueError(
+            "Disks for Tower of Hanoi graph should be one or greater (not %d)" % disks
+        )
 
     # Each state of the puzzle is a tuple with length
     # equal to the number of disks, ordered by largest disk first
@@ -3089,16 +3220,16 @@ def HanoiTowerGraph(pegs, disks, labels=True, positions=True, immutable=False):
     edges = [[i, j] for i in range(pegs) for j in range(i + 1, pegs)]
 
     nverts = 1
-    for d in range(2, disks+1):
-        prevedges = edges      # remember subgraph to build from
-        nverts = pegs*nverts   # pegs^(d-1)
+    for d in range(2, disks + 1):
+        prevedges = edges  # remember subgraph to build from
+        nverts = pegs * nverts  # pegs^(d-1)
         edges = []
 
         # Take an edge, change its two states in the same way by adding
         # a large disk to the bottom of the same peg in each state
         # This is accomplished by adding a multiple of pegs^(d-1)
         for p in range(pegs):
-            largedisk = p*nverts
+            largedisk = p * nverts
             for anedge in prevedges:
                 edges.append([anedge[0] + largedisk, anedge[1] + largedisk])
 
@@ -3107,19 +3238,25 @@ def HanoiTowerGraph(pegs, disks, labels=True, positions=True, immutable=False):
         # otherwise being a common state with one less disk
         # We construct all such pairs of new states and add as edges
         from sage.combinat.subset import Subsets
+
         for state in range(nverts):
             emptypegs = list(range(pegs))
             reduced_state = state
-            for i in range(d-1):
+            for i in range(d - 1):
                 apeg = reduced_state % pegs
                 if apeg in emptypegs:
                     emptypegs.remove(apeg)
-                reduced_state = reduced_state//pegs
+                reduced_state = reduced_state // pegs
             for freea, freeb in Subsets(emptypegs, 2):
-                edges.append([freea*nverts + state, freeb*nverts + state])
+                edges.append([freea * nverts + state, freeb * nverts + state])
 
-    H = Graph(edges, format="list_of_edges", loops=False, multiedges=False,
-              immutable=immutable and not labels)
+    H = Graph(
+        edges,
+        format="list_of_edges",
+        loops=False,
+        multiedges=False,
+        immutable=immutable and not labels,
+    )
 
     # Making labels and/or computing positions can take a long time,
     # relative to just constructing the edges on integer vertices.
@@ -3138,11 +3275,11 @@ def HanoiTowerGraph(pegs, disks, labels=True, positions=True, immutable=False):
         a = Integer(-1)
         one = Integer(1)
         if positions:
-            radius_multiplier = 1 + 1/sin(pi/pegs)
+            radius_multiplier = 1 + 1 / sin(pi / pegs)
             sine = []
             cosine = []
             for i in range(pegs):
-                angle = 2*i*pi/float(pegs)
+                angle = 2 * i * pi / float(pegs)
                 sine.append(sin(angle))
                 cosine.append(cos(angle))
         for i in range(pegs**disks):
@@ -3161,8 +3298,14 @@ def HanoiTowerGraph(pegs, disks, labels=True, positions=True, immutable=False):
                     p = state[index]
                     radius *= radius_multiplier
                     parity *= -1.0
-                    locx_temp = cosine[p]*locx - parity*sine[p]*locy + radius*cosine[p]
-                    locy_temp = parity*sine[p]*locx + cosine[p]*locy - radius*parity*sine[p]
+                    locx_temp = (
+                        cosine[p] * locx - parity * sine[p] * locy + radius * cosine[p]
+                    )
+                    locy_temp = (
+                        parity * sine[p] * locx
+                        + cosine[p] * locy
+                        - radius * parity * sine[p]
+                    )
                     locx = locx_temp
                     locy = locy_temp
                 pos[i] = (locx, locy)
@@ -3203,16 +3346,19 @@ def line_graph_forbidden_subgraphs(immutable=False):
         Graph on 5 vertices]
     """
     from sage.graphs.generators.basic import ClawGraph
+
     L = [ClawGraph(immutable=immutable)]
 
-    dd = [{0: [1, 2, 3], 1: [2, 3], 4: [2], 5: [3]},
-          {0: [1, 2, 3, 4], 1: [2, 3, 4], 3: [4], 2: [5]},
-          {0: [1, 2, 3], 1: [2, 3], 4: [2, 3]},
-          {0: [1, 2, 3], 1: [2, 3], 4: [2], 5: [3, 4]},
-          {0: [1, 2, 3, 4], 1: [2, 3, 4], 3: [4], 5: [2, 0, 1]},
-          {5: [0, 1, 2, 3, 4], 0: [1, 4], 2: [1, 3], 3: [4]},
-          {1: [0, 2, 3, 4], 3: [0, 4], 2: [4, 5], 4: [5]},
-          {0: [1, 2, 3], 1: [2, 3, 4], 2: [3, 4], 3: [4]}]
+    dd = [
+        {0: [1, 2, 3], 1: [2, 3], 4: [2], 5: [3]},
+        {0: [1, 2, 3, 4], 1: [2, 3, 4], 3: [4], 2: [5]},
+        {0: [1, 2, 3], 1: [2, 3], 4: [2, 3]},
+        {0: [1, 2, 3], 1: [2, 3], 4: [2], 5: [3, 4]},
+        {0: [1, 2, 3, 4], 1: [2, 3, 4], 3: [4], 5: [2, 0, 1]},
+        {5: [0, 1, 2, 3, 4], 0: [1, 4], 2: [1, 3], 3: [4]},
+        {1: [0, 2, 3, 4], 3: [0, 4], 2: [4, 5], 4: [5]},
+        {0: [1, 2, 3], 1: [2, 3, 4], 2: [3, 4], 3: [4]},
+    ]
 
     for d in dd:
         L.append(Graph(d, format="dict_of_lists", immutable=immutable))
@@ -3276,23 +3422,30 @@ def petersen_family(generate=False, immutable=False):
         True
     """
     from sage.graphs.generators.smallgraphs import PetersenGraph
+
     if not generate:
-        from sage.graphs.generators.basic import CompleteGraph, \
-             CompleteBipartiteGraph, CompleteMultipartiteGraph
-        l = [PetersenGraph(immutable=immutable),
-             CompleteGraph(6, immutable=immutable),
-             CompleteMultipartiteGraph([3, 3, 1], immutable=immutable)]
+        from sage.graphs.generators.basic import (
+            CompleteGraph,
+            CompleteBipartiteGraph,
+            CompleteMultipartiteGraph,
+        )
+
+        l = [
+            PetersenGraph(immutable=immutable),
+            CompleteGraph(6, immutable=immutable),
+            CompleteMultipartiteGraph([3, 3, 1], immutable=immutable),
+        ]
         g = CompleteBipartiteGraph(4, 4)
         g.delete_edge(0, 4)
         g.name("")
         l.append(g.copy(immutable=True) if immutable else g)
         g = Graph('HKN?Yeb', format="graph6", immutable=immutable)
         g._circle_embedding([1, 2, 4, 3, 0, 5])
-        g._circle_embedding([6, 7, 8], radius=.6, shift=1.25)
+        g._circle_embedding([6, 7, 8], radius=0.6, shift=1.25)
         l.append(g)
         g = Graph('Fs\\zw', format="graph6", immutable=immutable)
         g._circle_embedding([1, 2, 3])
-        g._circle_embedding([4, 5, 6], radius=.7)
+        g._circle_embedding([4, 5, 6], radius=0.7)
         g._pos[0] = (0, 0)
         l.append(g)
         g = Graph('GYQ[p{', format="graph6", immutable=immutable)
@@ -3336,7 +3489,9 @@ def petersen_family(generate=False, immutable=False):
         l.add(g)
         g = Graph(g)
         # All possible Delta-Y transforms
-        for t in g.subgraph_search_iterator(Graph({1: [2, 3], 2: [3]}), return_graphs=False):
+        for t in g.subgraph_search_iterator(
+            Graph({1: [2, 3], 2: [3]}), return_graphs=False
+        ):
             l_new.append(DeltaYTrans(g, t).graph6_string())
         # All possible Y-Delta transforms
         for v in g:
@@ -3400,11 +3555,13 @@ def p2_forbidden_minors(immutable=False):
         'Hl`HGvV',
         'HhcIHmv',
         'IhEGICRiw',
-        'JhEIDSD?ga_'
+        'JhEIDSD?ga_',
     ]
 
-    return [Graph(graph_str, format="graph6", immutable=immutable)
-            for graph_str in p2_forbidden_minors_graph6]
+    return [
+        Graph(graph_str, format="graph6", immutable=immutable)
+        for graph_str in p2_forbidden_minors_graph6
+    ]
 
 
 def SierpinskiGasketGraph(n, immutable=False):
@@ -3488,8 +3645,7 @@ def SierpinskiGasketGraph(n, immutable=False):
     dg.add_edges([(tuple(a), tuple(b)) for a, b, c in tri_list])
     dg.add_edges([(tuple(b), tuple(c)) for a, b, c in tri_list])
     dg.add_edges([(tuple(c), tuple(a)) for a, b, c in tri_list])
-    dg.set_pos({(x, y): (x + y / 2, y * 3 / 4)
-                for x, y in dg})
+    dg.set_pos({(x, y): (x + y / 2, y * 3 / 4) for x, y in dg})
     dg.relabel()
     return dg.copy(immutable=True) if immutable else dg
 
@@ -3625,7 +3781,7 @@ def GeneralizedSierpinskiGraph(G, k, stretch=None, immutable=False):
         # For each edge {u, v} of G, add edge {(u, v, ..., v), (v, u, ..., u)}
         l = len(next(H.vertex_iterator()))
         for u, v in G.edges(sort=True, labels=False):
-            I.add_edge((u,) + (v,)*l, (v,) + (u,)*l)
+            I.add_edge((u,) + (v,) * l, (v,) + (u,) * l)
         return rec(I, kk - 1)
 
     H = G.relabel(perm={u: (u,) for u in G}, inplace=False)
@@ -3639,12 +3795,19 @@ def GeneralizedSierpinskiGraph(G, k, stretch=None, immutable=False):
         if stretch is None:
             # Find the geometric diameter
             from sage.modules.free_module_element import vector
+
             L = [vector(p) for p in pos.values()]
             stretch = 2 * max((u - v).norm() for u, v in combinations(L, 2))
 
-        H.set_pos({u: (sum(pos[x][0]*stretch**(k-i) for i, x in enumerate(u)),
-                       sum(pos[y][1]*stretch**(k-i) for i, y in enumerate(u)))
-                   for u in H})
+        H.set_pos(
+            {
+                u: (
+                    sum(pos[x][0] * stretch ** (k - i) for i, x in enumerate(u)),
+                    sum(pos[y][1] * stretch ** (k - i) for i, y in enumerate(u)),
+                )
+                for u in H
+            }
+        )
     return H.copy(immutable=True) if immutable else H
 
 
@@ -3724,16 +3887,22 @@ def WheelGraph(n, immutable=False):
         raise ValueError("parameter n must be a positive integer")
     if n < 4:
         from sage.graphs.generators.basic import CycleGraph
+
         G = CycleGraph(n, immutable=immutable)
         G._name = "Wheel graph"
     else:
         from itertools import chain
+
         E1 = ((i, i + 1) for i in range(1, n - 1))
         E2 = ((1, n - 1),)
         E3 = ((0, i) for i in range(1, n))
-        G = Graph([range(n), chain(E1, E2, E3)], format="vertices_and_edges",
-                  immutable=immutable, name="Wheel graph")
-        G._circle_embedding(list(range(1, n)), angle=pi/2)
+        G = Graph(
+            [range(n), chain(E1, E2, E3)],
+            format="vertices_and_edges",
+            immutable=immutable,
+            name="Wheel graph",
+        )
+        G._circle_embedding(list(range(1, n)), angle=pi / 2)
         G._pos[0] = (0, 0)
     return G
 
@@ -3813,33 +3982,44 @@ def WindmillGraph(k, n, immutable=False):
     name = f"Windmill graph Wd({k}, {n})"
     if k == 2:
         from sage.graphs.generators.basic import StarGraph
+
         G = StarGraph(n, immutable=immutable)
         G._name = name
     else:
-        sector = 2*pi/n
-        slide = 1/sin(sector/4)
+        sector = 2 * pi / n
+        slide = 1 / sin(sector / 4)
 
         pos_dict = {}
         for i in range(k):
-            x = float(cos(i*pi/(k-2)))
-            y = float(sin(i*pi/(k-2))) + slide
+            x = float(cos(i * pi / (k - 2)))
+            y = float(sin(i * pi / (k - 2))) + slide
             pos_dict[i] = (x, y)
 
         pos = {0: (0, 0)}
         for i in range(n):
-            V = range(i*(k - 1) + 1, (i + 1)*(k - 1) + 1)
+            V = range(i * (k - 1) + 1, (i + 1) * (k - 1) + 1)
             for j, v in enumerate(V):
                 x, y = pos_dict[j]
-                xv = x*cos(i*sector) - y*sin(i*sector)
-                yv = x*sin(i*sector) + y*cos(i*sector)
+                xv = x * cos(i * sector) - y * sin(i * sector)
+                yv = x * sin(i * sector) + y * cos(i * sector)
                 pos[v] = (xv, yv)
 
         from itertools import chain, combinations
-        K = chain(*(combinations(range(i*(k - 1) + 1, (i + 1)*(k - 1) + 1), 2)
-                    for i in range(n)))
-        S = ((0, i) for i in range(1, n*(k - 1) + 1))
-        G = Graph([range((k - 1) * n + 1), chain(K, S)], format="vertices_and_edges",
-                  name=name, immutable=immutable, pos=pos)
+
+        K = chain(
+            *(
+                combinations(range(i * (k - 1) + 1, (i + 1) * (k - 1) + 1), 2)
+                for i in range(n)
+            )
+        )
+        S = ((0, i) for i in range(1, n * (k - 1) + 1))
+        G = Graph(
+            [range((k - 1) * n + 1), chain(K, S)],
+            format="vertices_and_edges",
+            name=name,
+            immutable=immutable,
+            pos=pos,
+        )
     return G
 
 
@@ -3895,19 +4075,20 @@ def RingedTree(k, vertex_labels=True, immutable=False):
 
     # Creating the Balanced tree, which contains most edges already
     from sage.graphs.generators.trees import BalancedTree
+
     g = BalancedTree(2, k - 1)
     g.name('Ringed Tree on ' + str(k) + ' levels')
 
     # We consider edges layer by layer
     for i in range(1, k):
-        vertices = list(range(2**(i) - 1, 2**(i + 1) - 1))
+        vertices = list(range(2 ** (i) - 1, 2 ** (i + 1) - 1))
 
         # Add the missing edges
         g.add_cycle(vertices)
 
         # And set the vertices' positions
         radius = i if i <= 1 else 1.5**i
-        shift = -2**(i - 2) + .5 if i > 1 else 0
+        shift = -(2 ** (i - 2)) + 0.5 if i > 1 else 0
         g._circle_embedding(vertices, radius=radius, shift=shift)
 
     # Specific position for the central vertex
@@ -3919,7 +4100,7 @@ def RingedTree(k, vertex_labels=True, immutable=False):
 
     vertices = ['']
     for i in range(k - 1):
-        for j in range(2**(i) - 1, 2**(i + 1) - 1):
+        for j in range(2 ** (i) - 1, 2 ** (i + 1) - 1):
             v = vertices[j]
             vertices.append(v + '0')
             vertices.append(v + '1')
@@ -3977,6 +4158,7 @@ def MathonPseudocyclicMergingGraph(M, t, immutable=False):
         AssertionError...
     """
     from sage.matrix.constructor import identity_matrix
+
     assert len(M) == 4
     assert M[0] == identity_matrix(M[0].nrows())
     A = sum(x.tensor_product(x) for x in M[1:])
@@ -4071,52 +4253,62 @@ def MathonPseudocyclicStronglyRegularGraph(t, G=None, L=None, immutable=False):
     """
     from sage.rings.finite_rings.finite_field_constructor import FiniteField as GF
     from sage.rings.integer_ring import ZZ
-    from sage.matrix.constructor import matrix, block_matrix, \
-        ones_matrix, identity_matrix
+    from sage.matrix.constructor import (
+        matrix,
+        block_matrix,
+        ones_matrix,
+        identity_matrix,
+    )
     from sage.arith.misc import two_squares
-    p = 4*t + 1
+
+    p = 4 * t + 1
     try:
         x = two_squares(p)
     except ValueError:
-        raise ValueError(str(p)+" must be a sum of two squares!")
+        raise ValueError(str(p) + " must be a sum of two squares!")
     if G is None:
         from sage.graphs.strongly_regular_db import strongly_regular_graph as SRG
-        G = SRG(p, 2*t, t - 1)
+
+        G = SRG(p, 2 * t, t - 1)
         G.relabel(range(p))
     if L is None:
         from sage.matrix.constructor import circulant
+
         L = circulant(list(range(2 * t + 1)) + list(range(-2 * t, 0)))
-    q = 4*t - 1
+    q = 4 * t - 1
     K = GF(q, prefix='x')
     K_pairs = set(frozenset([x, -x]) for x in K)
     K_pairs.discard(frozenset([0]))
-    a = [None]*(q-1)    # order the non-0 elements of K as required
+    a = [None] * (q - 1)  # order the non-0 elements of K as required
     for i, (x, y) in enumerate(K_pairs):
         a[i] = x
-        a[-i-1] = y
-    a.append(K(0))      # and append the 0 of K at the end
-    P = [matrix(ZZ, q, q, lambda i, j: 1 if a[j] == a[i] + b else 0)
-         for b in a]
+        a[-i - 1] = y
+    a.append(K(0))  # and append the 0 of K at the end
+    P = [matrix(ZZ, q, q, lambda i, j: 1 if a[j] == a[i] + b else 0) for b in a]
     g = K.primitive_element()
-    F = sum(P[a.index(g**(2*i))] for i in range(1, 2*t))
+    F = sum(P[a.index(g ** (2 * i))] for i in range(1, 2 * t))
     E = matrix(ZZ, q, q, lambda i, j: 0 if (a[j] - a[0]).is_square() else 1)
 
     def B(m):
         I = identity_matrix(q)
         J = ones_matrix(q)
         if m == 0:
+
             def f(i, j):
                 if i == j:
                     return 0 * I
                 if (a[j] - a[i]).is_square():
                     return I + F
                 return J - F
-        elif m < 2*t:
+        elif m < 2 * t:
+
             def f(i, j):
-                return F * P[a.index(g**(2*m) * (a[i] + a[j]))]
-        elif m == 2*t:
+                return F * P[a.index(g ** (2 * m) * (a[i] + a[j]))]
+        elif m == 2 * t:
+
             def f(i, j):
                 return E * P[i]
+
         return block_matrix(q, q, [f(i, j) for i in range(q) for j in range(q)])
 
     def Acon(i, j):
@@ -4132,7 +4324,7 @@ def MathonPseudocyclicStronglyRegularGraph(t, G=None, L=None, immutable=False):
         return J - B(-L[i, j]).T
 
     A = Graph(block_matrix(p, p, [Acon(i, j) for i in range(p) for j in range(p)]))
-    A.name("Mathon's PC SRG on " + str(p*q**2) + " vertices")
+    A.name("Mathon's PC SRG on " + str(p * q**2) + " vertices")
     A.relabel()
     return A.copy(immutable=True) if immutable else A
 
@@ -4196,15 +4388,14 @@ def TuranGraph(n, r, immutable=False):
 
     p = n // r
     s = n % r
-    vertex_sets = [p]*(r - s) + [p + 1]*s
+    vertex_sets = [p] * (r - s) + [p + 1] * s
 
     g = CompleteMultipartiteGraph(vertex_sets, immutable=immutable)
     g._name = f"Turan Graph with n: {n}, r: {r}"
     return g
 
 
-def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False,
-                    immutable=False):
+def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False, immutable=False):
     r"""
     Return a strongly regular graph of S6 type from [Muz2007]_ on
     `n^d((n^d-1)/(n-1)+1)` vertices.
@@ -4314,16 +4505,16 @@ def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False,
     from time import time
 
     assert d > 1, 'd must be at least 2'
-    assert is_even(n * (d-1)), 'n must be even or d must be odd'
+    assert is_even(n * (d - 1)), 'n must be even or d must be odd'
     assert is_prime_power(n), 'n must be a prime power'
     t = time()
 
     # build L, L_i and the design
-    m = int((n**d - 1)/(n - 1) + 1)  # from m = p + 1, p = (n^d-1) / (n-1)
+    m = int((n**d - 1) / (n - 1) + 1)  # from m = p + 1, p = (n^d-1) / (n-1)
     L = CompleteGraph(m)
     L.delete_edges([(2 * x, 2 * x + 1) for x in range(m // 2)])
     L_i = [L.edges_incident(x, labels=False) for x in range(m)]
-    Design = ProjectiveGeometryDesign(d, d-1, GF(n, 'a'), point_coordinates=False)
+    Design = ProjectiveGeometryDesign(d, d - 1, GF(n, 'a'), point_coordinates=False)
     projBlocks = Design.blocks()
     atInf = projBlocks[-1]
     Blocks = [[x for x in block if x not in atInf] for block in projBlocks[:-1]]
@@ -4353,14 +4544,14 @@ def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False,
     # build E^C_j
     E = {}
     v = ZZ(n**d)
-    k = ZZ(n**(d-1))
+    k = ZZ(n ** (d - 1))
     ones = ones_matrix(v)
-    ones_v = ones/v
+    ones_v = ones / v
     for C in ParClasses:
         EC = matrix(QQ, v)
         for line in C:
             for i, j in combinations(line, 2):
-                EC[i, j] = EC[j, i] = 1/k
+                EC[i, j] = EC[j, i] = 1 / k
         EC -= ones_v
         E[tuple(C[0])] = EC
     if verbose:
@@ -4376,21 +4567,20 @@ def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False,
                 rand = randrange(0, len(temp))
                 Phi[(x, line)] = temp.pop(rand)
     elif Phi == 'fixed':
-        Phi = {(x, line): val for x in range(m)
-               for val, line in enumerate(L_i[x])}
+        Phi = {(x, line): val for x in range(m) for val, line in enumerate(L_i[x])}
     else:
-        assert isinstance(Phi, dict), \
-               "Phi must be a dictionary or 'random' or 'fixed'"
-        assert set(Phi.keys()) == {(x, line) for x in range(m)
-                                   for line in L_i[x]}, \
-               'each Phi_i must have domain L_i'
+        assert isinstance(Phi, dict), "Phi must be a dictionary or 'random' or 'fixed'"
+        assert set(Phi.keys()) == {(x, line) for x in range(m) for line in L_i[x]}, (
+            'each Phi_i must have domain L_i'
+        )
         for x in range(m):
-            assert m - 2 == len({val for key, val in Phi.items()
-                                 if key[0] == x}), \
-                   'each phi_i must be injective'
+            assert m - 2 == len({val for key, val in Phi.items() if key[0] == x}), (
+                'each phi_i must be injective'
+            )
         for val in Phi.values():
-            assert val in range(m - 1), \
-                   'codomain should be {0,..., (n^d - 1)/(n - 1) - 1}'
+            assert val in range(m - 1), (
+                'codomain should be {0,..., (n^d - 1)/(n - 1) - 1}'
+            )
     phi = {(x, line): ParClasses[Phi[(x, line)]] for x in range(m) for line in L_i[x]}
     if verbose:
         print('finished phi at %f (+%f)' % (time() - t, time() - t1))
@@ -4428,8 +4618,7 @@ def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False,
     for i, j in L.edges(sort=True, labels=False):
         for hyp in phi[(i, (i, j))]:
             for x in hyp:
-                newEdges = [((i, x), (j, y))
-                            for y in sigma[(i, j, tuple(hyp))]]
+                newEdges = [((i, x), (j, y)) for y in sigma[(i, j, tuple(hyp))]]
                 edges.extend(newEdges)
     if verbose:
         print('finished edges at %f (+%f)' % (time() - t, time() - t1))
@@ -4440,12 +4629,12 @@ def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False,
     t1 = time()
 
     # build D_i, F_i and A_i
-    D_i = [0]*m
+    D_i = [0] * m
     for x in range(m):
         D_i[x] = sum([E[tuple(phi[x, line][0])] for line in L_i[x]])
     F_i = [1 - D_i[x] - ones_v for x in range(m)]
     # as the sum of (1/v)*J_\Omega_i, D_i, F_i is identity
-    A_i = [(v-k)*ones_v - k*F_i[x] for x in range(m)]
+    A_i = [(v - k) * ones_v - k * F_i[x] for x in range(m)]
     #   we know A_i = k''*(1/v)*J_\Omega_i + r''*D_i + s''*F_i,
     #   and (k'', s'', r'') = (v - k, 0, -k)
     if verbose:
@@ -4454,10 +4643,11 @@ def MuzychukS6Graph(n, d, Phi='fixed', Sigma='fixed', verbose=False,
 
     # add the edges of the graph of B to V
     for i in range(m):
-        V.add_edges([((i, x), (i, y)) for x in range(v)
-                     for y in range(v) if not A_i[i][(x, y)]])
+        V.add_edges(
+            [((i, x), (i, y)) for x in range(v) for y in range(v) if not A_i[i][(x, y)]]
+        )
 
-    V.name('Muzychuk S6 graph with parameters ('+str(n)+','+str(d)+')')
+    V.name('Muzychuk S6 graph with parameters (' + str(n) + ',' + str(d) + ')')
     if verbose:
         print('finished at %f (+%f)' % ((time() - t), time() - t1))
     return V.copy(immutable=True) if immutable else V
@@ -4526,29 +4716,49 @@ def CubeConnectedCycle(d, immutable=False):
 
     if d == 1:
         # only d = 1 requires loops
-        return Graph([((0, 0), (0, 1)), ((0, 0), (0, 0)), ((0, 1), (0, 1))],
-                     format="list_of_edges", loops=True, name=name,
-                     immutable=immutable)
+        return Graph(
+            [((0, 0), (0, 1)), ((0, 0), (0, 0)), ((0, 1), (0, 1))],
+            format="list_of_edges",
+            loops=True,
+            name=name,
+            immutable=immutable,
+        )
 
     if d == 2:
         # only d = 2 require multiple edges
-        return Graph([((0, 0), (0, 1)), ((0, 0), (0, 1)), ((0, 0), (1, 0)),
-                      ((0, 1), (2, 1)), ((1, 0), (1, 1)), ((1, 0), (1, 1)),
-                      ((1, 1), (3, 1)), ((2, 0), (2, 1)), ((2, 0), (2, 1)),
-                      ((2, 0), (3, 0)), ((3, 0), (3, 1)), ((3, 0), (3, 1))],
-                     format="list_of_edges", multiedges=True, name=name,
-                     immutable=immutable)
+        return Graph(
+            [
+                ((0, 0), (0, 1)),
+                ((0, 0), (0, 1)),
+                ((0, 0), (1, 0)),
+                ((0, 1), (2, 1)),
+                ((1, 0), (1, 1)),
+                ((1, 0), (1, 1)),
+                ((1, 1), (3, 1)),
+                ((2, 0), (2, 1)),
+                ((2, 0), (2, 1)),
+                ((2, 0), (3, 0)),
+                ((3, 0), (3, 1)),
+                ((3, 0), (3, 1)),
+            ],
+            format="list_of_edges",
+            multiedges=True,
+            name=name,
+            immutable=immutable,
+        )
 
     from itertools import chain
 
     def cycle(x, d):
-        return chain((((x, y), (x, y + 1)) for y in range(d - 1)),
-                     (((x, 0), (x, d - 1)),))
+        return chain(
+            (((x, y), (x, y + 1)) for y in range(d - 1)), (((x, 0), (x, d - 1)),)
+        )
 
     cycles = chain(*(cycle(x, d) for x in range(1 << d)))
     cube = (((x, y), (x ^ (1 << y), y)) for x in range(1 << d) for y in range(d))
-    return Graph(chain(cycles, cube), format="list_of_edges", name=name,
-                 immutable=immutable)
+    return Graph(
+        chain(cycles, cube), format="list_of_edges", name=name, immutable=immutable
+    )
 
 
 def StaircaseGraph(n, immutable=False):
@@ -4637,31 +4847,34 @@ def StaircaseGraph(n, immutable=False):
     if n < 3:
         raise ValueError("parameter n must be at least 3")
 
-    pos_dict = {
-        0: (0, 1),
-        n - 2: (n, 1),
-        2*n - 2: (0, -1),
-        2*n - 1: (n, -1)
-    }
+    pos_dict = {0: (0, 1), n - 2: (n, 1), 2 * n - 2: (0, -1), 2 * n - 1: (n, -1)}
     for v in range(1, n - 2):
         pos_dict[v] = (v + 1, 1)
-    for v in range(n - 1, 2*n - 2):
+    for v in range(n - 1, 2 * n - 2):
         pos_dict[v] = (v - n + 2, 0)
 
     from itertools import chain
-    E1 = ((0, n - 1),
-          (0, 2*n - 2),
-          (n - 2, 2*n - 3),
-          (n - 2, 2*n - 1),
-          (n - 1, 2*n - 2),
-          (2*n - 3, 2*n - 1),
-          (2*n - 2, 2*n - 1))
+
+    E1 = (
+        (0, n - 1),
+        (0, 2 * n - 2),
+        (n - 2, 2 * n - 3),
+        (n - 2, 2 * n - 1),
+        (n - 1, 2 * n - 2),
+        (2 * n - 3, 2 * n - 1),
+        (2 * n - 2, 2 * n - 1),
+    )
     E2 = ((v, v + n - 1) for v in range(1, n - 2))
     E3 = ((i, i + 1) for i in range(n - 2))
-    E4 = ((i, i + 1) for i in range(n - 1, 2*n - 3))
+    E4 = ((i, i + 1) for i in range(n - 1, 2 * n - 3))
 
-    return Graph([range(2 * n), chain(E1, E2, E3, E4)], name="Staircase graph",
-                 format="vertices_and_edges", pos=pos_dict, immutable=immutable)
+    return Graph(
+        [range(2 * n), chain(E1, E2, E3, E4)],
+        name="Staircase graph",
+        format="vertices_and_edges",
+        pos=pos_dict,
+        immutable=immutable,
+    )
 
 
 def BiwheelGraph(n, immutable=False):
@@ -4750,18 +4963,26 @@ def BiwheelGraph(n, immutable=False):
         raise ValueError("parameter n must be at least 4")
 
     from itertools import chain
-    C1 = ((i, i + 1) for i in range(2*n - 3))
-    C2 = ((0, 2*n - 3),)
-    S1 = ((i, 2*n - 1) for i in range(0, 2*n - 2, 2))
-    S2 = ((i, 2*n - 2) for i in range(1, 2*n - 2, 2))
-    G = Graph([range(2*n), chain(C1, C2, S1, S2)], format="vertices_and_edges",
-              name="Biwheel graph", immutable=immutable)
+
+    C1 = ((i, i + 1) for i in range(2 * n - 3))
+    C2 = ((0, 2 * n - 3),)
+    S1 = ((i, 2 * n - 1) for i in range(0, 2 * n - 2, 2))
+    S2 = ((i, 2 * n - 2) for i in range(1, 2 * n - 2, 2))
+    G = Graph(
+        [range(2 * n), chain(C1, C2, S1, S2)],
+        format="vertices_and_edges",
+        name="Biwheel graph",
+        immutable=immutable,
+    )
 
     from sage.rings.rational_field import QQ
-    angle_param = (pi / (2*n - 2)) if n % 2 else 0
-    pos_dict = G._circle_embedding(list(range(2*n - 2)), angle=angle_param, return_dict=True)
-    pos_dict[2*n - 2] = (-QQ((1, 3)), 0)
-    pos_dict[2*n - 1] = (QQ((1, 3)), 0)
+
+    angle_param = (pi / (2 * n - 2)) if n % 2 else 0
+    pos_dict = G._circle_embedding(
+        list(range(2 * n - 2)), angle=angle_param, return_dict=True
+    )
+    pos_dict[2 * n - 2] = (-QQ((1, 3)), 0)
+    pos_dict[2 * n - 1] = (QQ((1, 3)), 0)
     G.set_pos(pos_dict)
     return G
 
@@ -4845,15 +5066,20 @@ def TruncatedBiwheelGraph(n, immutable=False):
     if n < 3:
         raise ValueError("parameter n must be at least 3")
 
-    pos_dict = {2*n - 2: (0, n), 2*n - 1: (0, -n)}
-    for v in range(2*n - 2):
-        pos_dict[v] = (2*(v-n) + 3, 0)
+    pos_dict = {2 * n - 2: (0, n), 2 * n - 1: (0, -n)}
+    for v in range(2 * n - 2):
+        pos_dict[v] = (2 * (v - n) + 3, 0)
 
     from itertools import chain
-    E1 = ((0, 2*n - 2), (2*n - 3, 2*n - 1))
-    E2 = ((i, i + 1) for i in range(2*n - 3))
-    S1 = ((v, 2*n - 1) for v in range(0, 2*n - 2, 2))
-    S2 = ((v, 2*n - 2) for v in range(1, 2*n - 2, 2))
-    return Graph([range(2 * n), chain(E1, E2, S1, S2)],
-                 format="vertices_and_edges", pos=pos_dict,
-                 name="Truncated biwheel graph", immutable=immutable)
+
+    E1 = ((0, 2 * n - 2), (2 * n - 3, 2 * n - 1))
+    E2 = ((i, i + 1) for i in range(2 * n - 3))
+    S1 = ((v, 2 * n - 1) for v in range(0, 2 * n - 2, 2))
+    S2 = ((v, 2 * n - 2) for v in range(1, 2 * n - 2, 2))
+    return Graph(
+        [range(2 * n), chain(E1, E2, S1, S2)],
+        format="vertices_and_edges",
+        pos=pos_dict,
+        name="Truncated biwheel graph",
+        immutable=immutable,
+    )

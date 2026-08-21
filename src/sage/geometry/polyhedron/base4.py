@@ -247,12 +247,12 @@ class Polyhedron_base4(Polyhedron_base3):
             :meth:`vertex_graph`
         """
         from sage.modules.vector_space_morphism import VectorSpaceMorphism
+
         if isinstance(f, VectorSpaceMorphism):
             if f.codomain().dimension() == 1:
                 orientation_check = lambda v: f(v) >= 0
             else:
-                raise TypeError('the linear map f must have '
-                                'one-dimensional codomain')
+                raise TypeError('the linear map f must have one-dimensional codomain')
         else:
             try:
                 if f.is_vector():
@@ -264,6 +264,7 @@ class Polyhedron_base4(Polyhedron_base3):
         if not increasing:
             f = -f
         from sage.graphs.digraph import DiGraph
+
         dg = DiGraph()
         for j in range(self.n_vertices()):
             vj = self.Vrepresentation(j)
@@ -386,6 +387,7 @@ class Polyhedron_base4(Polyhedron_base3):
             [[()], [(0, 1)]]
         """
         from sage.combinat.posets.lattices import FiniteLatticePoset
+
         return FiniteLatticePoset(self.hasse_diagram())
 
     @cached_method
@@ -449,12 +451,14 @@ class Polyhedron_base4(Polyhedron_base3):
         """
 
         from sage.geometry.polyhedron.face import combinatorial_face_to_polyhedral_face
+
         C = self.combinatorial_polyhedron()
         D = C.hasse_diagram()
 
         def index_to_polyhedron_face(n):
             return combinatorial_face_to_polyhedral_face(
-                    self, C.face_by_face_lattice_index(n))
+                self, C.face_by_face_lattice_index(n)
+            )
 
         return D.relabel(index_to_polyhedron_face, inplace=False, immutable=True)
 
@@ -961,7 +965,9 @@ class Polyhedron_base4(Polyhedron_base3):
 
         outputs = ("abstract", "permutation", "matrix", "matrixlist")
         if output not in outputs:
-            raise ValueError("unknown output {!r}, valid values are {}".format(output, outputs))
+            raise ValueError(
+                "unknown output {!r}, valid values are {}".format(output, outputs)
+            )
 
         # For backwards compatibility, we treat "abstract" as
         # "permutation", but where we add 1 to the indices of the
@@ -972,6 +978,7 @@ class Polyhedron_base4(Polyhedron_base3):
             output = "permutation"
 
         if self.base_ring().is_exact():
+
             def rational_approximation(c):
                 return c
         else:
@@ -989,6 +996,7 @@ class Polyhedron_base4(Polyhedron_base3):
                 return len(c_list) - 1
 
         if self.is_compact():
+
             def edge_label(i, j, c_ij):
                 return c_ij
         else:
@@ -997,7 +1005,11 @@ class Polyhedron_base4(Polyhedron_base3):
             # vertices, rays, and lines are only permuted amongst
             # themselves.
             def edge_label(i, j, c_ij):
-                return (self.Vrepresentation(i).type(), c_ij, self.Vrepresentation(j).type())
+                return (
+                    self.Vrepresentation(i).type(),
+                    c_ij,
+                    self.Vrepresentation(j).type(),
+                )
 
         # Homogeneous coordinates for the V-representation objects.
         # Mathematically, V is a matrix. For efficiency however, we
@@ -1009,11 +1021,12 @@ class Polyhedron_base4(Polyhedron_base3):
 
         # Construct the graph.
         from sage.graphs.graph import Graph
+
         G = Graph()
         for i in range(len(V)):
-            for j in range(i+1, len(V)):
+            for j in range(i + 1, len(V)):
                 c_ij = rational_approximation(V[i] * Qplus * V[j])
-                G.add_edge(index0+i, index0+j, edge_label(i, j, c_ij))
+                G.add_edge(index0 + i, index0 + j, edge_label(i, j, c_ij))
 
         permgroup = G.automorphism_group(edge_labels=True)
         if output == "permutation":
@@ -1023,6 +1036,7 @@ class Polyhedron_base4(Polyhedron_base3):
 
         # Compute V+ = Vt Q+ as list of row vectors
         from sage.matrix.constructor import matrix
+
         Vplus = list(matrix(V) * Qplus)  # matrix(V) is Vt
 
         # Compute W = 1 - V V+
@@ -1045,6 +1059,7 @@ class Polyhedron_base4(Polyhedron_base3):
         if output == "matrixlist":
             return tuple(matrices)
         from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+
         return MatrixGroup(matrices)
 
     def is_combinatorially_isomorphic(self, other, algorithm='bipartite_graph'):
@@ -1162,12 +1177,17 @@ class Polyhedron_base4(Polyhedron_base3):
         assert isinstance(other, Polyhedron_base4), "input `other` must be a polyhedron"
         assert self.is_compact(), "polyhedron `self` must be bounded"
         assert other.is_compact(), "polyhedron `other` must be bounded"
-        assert algorithm in ['bipartite_graph', 'face_lattice'], "`algorithm` must be 'bipartite graph' or 'face_lattice'"
+        assert algorithm in ['bipartite_graph', 'face_lattice'], (
+            "`algorithm` must be 'bipartite graph' or 'face_lattice'"
+        )
 
         # For speed, we check if the polyhedra have the same number of facets and vertices.
         # This is faster than building the bipartite graphs first and
         # then check that they won't be isomorphic.
-        if self.n_vertices() != other.n_vertices() or self.n_facets() != other.n_facets():
+        if (
+            self.n_vertices() != other.n_vertices()
+            or self.n_facets() != other.n_facets()
+        ):
             return False
 
         if algorithm == 'bipartite_graph':
@@ -1203,14 +1223,23 @@ class Polyhedron_base4(Polyhedron_base3):
             return
 
         from sage.rings.integer_ring import ZZ
-        tester.assertTrue(self.is_combinatorially_isomorphic(ZZ(4)*self))
+
+        tester.assertTrue(self.is_combinatorially_isomorphic(ZZ(4) * self))
         if self.n_vertices():
             tester.assertTrue(self.is_combinatorially_isomorphic(self + self.center()))
 
         if self.n_vertices() < 20 and self.n_facets() < 20 and self.is_immutable():
-            tester.assertTrue(self.is_combinatorially_isomorphic(ZZ(4)*self, algorithm='face_lattice'))
+            tester.assertTrue(
+                self.is_combinatorially_isomorphic(
+                    ZZ(4) * self, algorithm='face_lattice'
+                )
+            )
             if self.n_vertices():
-                tester.assertTrue(self.is_combinatorially_isomorphic(self + self.center(), algorithm='face_lattice'))
+                tester.assertTrue(
+                    self.is_combinatorially_isomorphic(
+                        self + self.center(), algorithm='face_lattice'
+                    )
+                )
 
     def is_self_dual(self):
         r"""

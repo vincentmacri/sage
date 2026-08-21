@@ -84,11 +84,11 @@ from . import space
 from . import submodule
 
 
-class ModularFormsAmbient(space.ModularFormsSpace,
-                          AmbientHeckeModule):
+class ModularFormsAmbient(space.ModularFormsSpace, AmbientHeckeModule):
     """
     An ambient space of modular forms.
     """
+
     def __init__(self, group, weight, base_ring, character=None, eis_only=False):
         """
         Create an ambient space of modular forms.
@@ -134,9 +134,16 @@ class ModularFormsAmbient(space.ModularFormsSpace,
         """
         if self._eis_only:
             return "Modular Forms space for %s of weight %s over %s" % (
-                self.group(), self.weight(), self.base_ring())
+                self.group(),
+                self.weight(),
+                self.base_ring(),
+            )
         return "Modular Forms space of dimension %s for %s of weight %s over %s" % (
-            self.dimension(), self.group(), self.weight(), self.base_ring())
+            self.dimension(),
+            self.group(),
+            self.weight(),
+            self.base_ring(),
+        )
 
     def _submodule_class(self):
         """
@@ -178,9 +185,14 @@ class ModularFormsAmbient(space.ModularFormsSpace,
              1 + q^3 + q^4 + 2*q^5 + O(q^6)]
         """
         from . import constructor
-        return constructor.ModularForms(self.group(), self.weight(),
-                                        base_ring, prec=self.prec(),
-                                        eis_only=self._eis_only)
+
+        return constructor.ModularForms(
+            self.group(),
+            self.weight(),
+            base_ring,
+            prec=self.prec(),
+            eis_only=self._eis_only,
+        )
 
     @cached_method
     def dimension(self):
@@ -215,9 +227,18 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             ValueError: N (=9) must be a divisor or a multiple of the level of self (=4)
         """
         if not (N % self.level() == 0 or self.level() % N == 0):
-            raise ValueError("N (=%s) must be a divisor or a multiple of the level of self (=%s)" % (N, self.level()))
+            raise ValueError(
+                "N (=%s) must be a divisor or a multiple of the level of self (=%s)"
+                % (N, self.level())
+            )
         from . import constructor
-        return constructor.ModularForms(self.group()._new_group_from_level(N), self.weight(), self.base_ring(), prec=self.prec())
+
+        return constructor.ModularForms(
+            self.group()._new_group_from_level(N),
+            self.weight(),
+            self.base_ring(),
+            prec=self.prec(),
+        )
 
     def _degeneracy_raising_matrix(self, M, t):
         r"""
@@ -241,6 +262,7 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             [0 0 0 0 0 0 0 1 0]
         """
         from sage.matrix.matrix_space import MatrixSpace
+
         A = MatrixSpace(self.base_ring(), self.dimension(), M.dimension())
         d = M.sturm_bound() + 1
         q = self.an_element().qexp(d).parent().gen()
@@ -293,7 +315,9 @@ class ModularFormsAmbient(space.ModularFormsSpace,
         """
         return True
 
-    @cached_method(key=lambda self, sign: Integer(sign))  # convert sign to an Integer before looking this up in the cache
+    @cached_method(
+        key=lambda self, sign: Integer(sign)
+    )  # convert sign to an Integer before looking this up in the cache
     def modular_symbols(self, sign=0):
         """
         Return the corresponding space of modular symbols with the given
@@ -315,10 +339,12 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             Modular Symbols space of dimension 3 for Gamma_0(1) of weight 12 with sign 0 over Rational Field
         """
         sign = Integer(sign)
-        return ModularSymbols(group=self.group(),
-                                     weight=self.weight(),
-                                     sign=sign,
-                                     base_ring=self.base_ring())
+        return ModularSymbols(
+            group=self.group(),
+            weight=self.weight(),
+            sign=sign,
+            base_ring=self.base_ring(),
+        )
 
     @cached_method
     def module(self):
@@ -425,6 +451,7 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             Congruence Subgroup Gamma1(13) of weight 2 over Rational Field
         """
         from .cuspidal_submodule import CuspidalSubmodule
+
         return CuspidalSubmodule(self)
 
     @cached_method
@@ -441,7 +468,9 @@ class ModularFormsAmbient(space.ModularFormsSpace,
         """
         return eisenstein_submodule.EisensteinSubmodule(self)
 
-    @cached_method(key=lambda self, p: (Integer(p) if p is not None else p))  # convert p to an Integer before looking this up in the cache
+    @cached_method(
+        key=lambda self, p: Integer(p) if p is not None else p
+    )  # convert p to an Integer before looking this up in the cache
     def new_submodule(self, p=None):
         """
         Return the new or `p`-new submodule of this ambient
@@ -491,7 +520,9 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             p = Integer(p)
             if not p.is_prime():
                 raise ValueError("p (=%s) must be a prime or None." % p)
-        return self.cuspidal_submodule().new_submodule(p) + self.eisenstein_submodule().new_submodule(p)
+        return self.cuspidal_submodule().new_submodule(
+            p
+        ) + self.eisenstein_submodule().new_submodule(p)
 
     def _q_expansion(self, element, prec):
         r"""
@@ -557,8 +588,7 @@ class ModularFormsAmbient(space.ModularFormsSpace,
         if self._eis_only:
             return 0
         if isinstance(self.group(), Gamma1_class) and self.character() is not None:
-            return self.group().dimension_cusp_forms(self.weight(),
-                                                     self.character())
+            return self.group().dimension_cusp_forms(self.weight(), self.character())
         return self.group().dimension_cusp_forms(self.weight())
 
     @cached_method
@@ -608,7 +638,9 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             22
         """
         if isinstance(self.group(), Gamma1_class) and self.character() is not None:
-            return self.group().dimension_new_cusp_forms(self.weight(), self.character())
+            return self.group().dimension_new_cusp_forms(
+                self.weight(), self.character()
+            )
         return self.group().dimension_new_cusp_forms(self.weight())
 
     @cached_method
@@ -762,10 +794,10 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             if d == 0:
                 return matrix(self.base_ring(), 0, 0, [])
             from sage.modular.all import victor_miller_basis, hecke_operator_on_basis
+
             vmb = victor_miller_basis(k, prec=d * n + 1)[1:]
             Tcusp = hecke_operator_on_basis(vmb, n, k)
-            return Tcusp.block_sum(matrix(self.base_ring(), 1, 1,
-                                          [sigma(n, k - 1)]))
+            return Tcusp.block_sum(matrix(self.base_ring(), 1, 1, [sigma(n, k - 1)]))
         return space.ModularFormsSpace._compute_hecke_matrix(self, n)
 
     def _compute_hecke_matrix_prime_power(self, p, r):
@@ -807,4 +839,6 @@ class ModularFormsAmbient(space.ModularFormsSpace,
             sage: ModularForms(17,4).hecke_matrix(2).charpoly()
             x^6 - 16*x^5 + 18*x^4 + 608*x^3 - 1371*x^2 - 4968*x + 7776
         """
-        return self.cuspidal_submodule().hecke_polynomial(n, var) * self.eisenstein_submodule().hecke_polynomial(n, var)
+        return self.cuspidal_submodule().hecke_polynomial(
+            n, var
+        ) * self.eisenstein_submodule().hecke_polynomial(n, var)

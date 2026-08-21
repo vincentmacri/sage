@@ -417,7 +417,11 @@ class RelativeInterior(ConvexSet_relatively_open):
             sage: A.closure().vertices()
             (A vertex at (3), A vertex at (7))
         """
-        return self.closure().linear_transformation(linear_transf, **kwds).relative_interior()
+        return (
+            self.closure()
+            .linear_transformation(linear_transf, **kwds)
+            .relative_interior()
+        )
 
     def translation(self, displacement):
         """

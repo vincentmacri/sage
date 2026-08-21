@@ -9,12 +9,12 @@ filtered-module structure). See
 :class:`~sage.categories.filtered_modules_with_basis.FilteredModulesWithBasis`
 for these two notions.
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.filtered_modules import FilteredModulesCategory
 
@@ -45,6 +45,7 @@ class FilteredAlgebrasWithBasis(FilteredModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     class ParentMethods:
         def graded_algebra(self):
             r"""
@@ -111,6 +112,7 @@ class FilteredAlgebrasWithBasis(FilteredModulesCategory):
                  Lie algebra of RR^3 with cross product over Integer Ring
             """
             from sage.algebras.associated_graded import AssociatedGradedAlgebra
+
             return AssociatedGradedAlgebra(self)
 
         # Maps
@@ -141,8 +143,9 @@ class FilteredAlgebrasWithBasis(FilteredModulesCategory):
                 True
             """
             base_one = self.base_ring().one()
-            return self.module_morphism(diagonal=lambda x: base_one,
-                                        codomain=self.graded_algebra())
+            return self.module_morphism(
+                diagonal=lambda x: base_one, codomain=self.graded_algebra()
+            )
 
         def from_graded_conversion(self):
             r"""
@@ -171,8 +174,9 @@ class FilteredAlgebrasWithBasis(FilteredModulesCategory):
                 True
             """
             base_one = self.base_ring().one()
-            return self.graded_algebra().module_morphism(diagonal=lambda x: base_one,
-                                                         codomain=self)
+            return self.graded_algebra().module_morphism(
+                diagonal=lambda x: base_one, codomain=self
+            )
 
         def projection(self, i):
             r"""
@@ -206,8 +210,7 @@ class FilteredAlgebrasWithBasis(FilteredModulesCategory):
             base_zero = self.base_ring().zero()
             base_one = self.base_ring().one()
             grA = self.graded_algebra()
-            proj = lambda x: (base_one if self.degree_on_basis(x) == i
-                              else base_zero)
+            proj = lambda x: base_one if self.degree_on_basis(x) == i else base_zero
             return self.module_morphism(diagonal=proj, codomain=grA)
 
         def induced_graded_map(self, other, f):
@@ -522,6 +525,7 @@ class FilteredAlgebrasWithBasis(FilteredModulesCategory):
             grA = self.graded_algebra()
             grB = other.graded_algebra()
             from sage.categories.graded_modules_with_basis import GradedModulesWithBasis
+
             cat = GradedModulesWithBasis(self.base_ring())
             from_gr = self.from_graded_conversion()
 
@@ -529,8 +533,8 @@ class FilteredAlgebrasWithBasis(FilteredModulesCategory):
                 i = grA.degree_on_basis(m)
                 lifted_img_of_m = f(from_gr(grA.monomial(m)))
                 return other.projection(i)(lifted_img_of_m)
-            return grA.module_morphism(on_basis=on_basis,
-                                       codomain=grB, category=cat)
+
+            return grA.module_morphism(on_basis=on_basis, codomain=grB, category=cat)
             # If we could assume that the projection of the basis
             # element of ``self`` indexed by an index ``m`` is the
             # basis element of ``grA`` indexed by ``m``, then this

@@ -72,6 +72,7 @@ Assumptions are added and in some cases checked for consistency::
     ValueError: Assumption is inconsistent
     sage: forget()
 """
+
 from sage.rings.cc import CC
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
@@ -212,14 +213,17 @@ class GenericDeclaration(UniqueRepresentation):
             ValueError: bougie not a valid assumption, must be one of ['analytic', ... 'symmetric']
         """
         from sage.calculus.calculus import maxima
+
         if self._assumption in _valid_feature_strings:
             return
         # We get the list here because features may be added with time.
         _valid_feature_strings.update(repr(x).strip() for x in list(maxima("features")))
         if self._assumption in _valid_feature_strings:
             return
-        raise ValueError("%s not a valid assumption, must be one of %s"
-                         % (self._assumption, sorted(_valid_feature_strings)))
+        raise ValueError(
+            "%s not a valid assumption, must be one of %s"
+            % (self._assumption, sorted(_valid_feature_strings))
+        )
 
     def assume(self):
         """
@@ -242,6 +246,7 @@ class GenericDeclaration(UniqueRepresentation):
         if self in _assumptions:
             return
         from sage.calculus.calculus import maxima
+
         cur = None
         context = None
         if self._context is None:
@@ -269,9 +274,13 @@ class GenericDeclaration(UniqueRepresentation):
 
         if must_declare:
             try:
-                maxima.eval("declare(%s, %s)" % (self._var._maxima_init_(), self._assumption))
+                maxima.eval(
+                    "declare(%s, %s)" % (self._var._maxima_init_(), self._assumption)
+                )
             except RuntimeError as mess:
-                if 'inconsistent' in str(mess):  # note Maxima doesn't tell you if declarations are redundant
+                if 'inconsistent' in str(
+                    mess
+                ):  # note Maxima doesn't tell you if declarations are redundant
                     # Inconsistency with one of the active contexts.
                     raise ValueError("Assumption is inconsistent")
                 else:
@@ -309,6 +318,7 @@ class GenericDeclaration(UniqueRepresentation):
         """
         self._var.decl_forget(self._assumption)
         from sage.calculus.calculus import maxima
+
         if self._context is not None:
             try:
                 del _assumptions[self]
@@ -317,7 +327,9 @@ class GenericDeclaration(UniqueRepresentation):
             maxima.deactivate(self._context)
         else:  # trying to forget a declaration explicitly rather than implicitly
             for x in _assumptions:
-                if repr(self) == repr(x):  # so by implication x is also a GenericDeclaration
+                if repr(self) == repr(
+                    x
+                ):  # so by implication x is also a GenericDeclaration
                     x.forget()
                     break
             return
@@ -426,9 +438,9 @@ def preprocess_assumptions(args):
         if isinstance(x, str):
             del args[i]
             last = x
-        elif ((not hasattr(x, 'assume')
-               or (isinstance(x, Expression) and x.is_symbol()))
-              and last is not None):
+        elif (
+            not hasattr(x, 'assume') or (isinstance(x, Expression) and x.is_symbol())
+        ) and last is not None:
             args[i] = GenericDeclaration(x, last)
         else:
             last = None
@@ -776,12 +788,16 @@ def assumptions(*args):
 
     result = []
     if len(args) == 1:
-        result.extend([statement for statement in _assumptions
-                       if statement.has(args[0])])
+        result.extend(
+            [statement for statement in _assumptions if statement.has(args[0])]
+        )
     else:
         for v in args:
-            result += [statement for statement in list(_assumptions)
-                       if str(v) in str(statement)]
+            result += [
+                statement
+                for statement in list(_assumptions)
+                if str(v) in str(statement)
+            ]
     return result
 
 
@@ -929,6 +945,7 @@ class assuming:
         ...
         ValueError: Assumption is inconsistent
     """
+
     def __init__(self, *args, **kwds):
         r"""
         EXAMPLES::

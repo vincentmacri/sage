@@ -61,7 +61,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 import sage.misc.prandom as random
 
 from sage.arith.misc import factor
@@ -79,8 +78,10 @@ try:
     from sage.libs.pari import pari
     from cypari2.handle_error import PariError
 except ImportError:
+
     class PariError(Exception):
         pass
+
 
 from sage.misc.cachefunc import cached_method
 
@@ -204,6 +205,7 @@ class IntegerModFactory(UniqueFactory):
 
         sage: IntegerModRing._cache.clear()
     """
+
     def get_object(self, version, key, extra_args):
         out = super().get_object(version, key, extra_args)
         category = extra_args.get('category', None)
@@ -225,6 +227,7 @@ class IntegerModFactory(UniqueFactory):
         """
         if is_field:
             from sage.categories.fields import Fields
+
             return order, {'category': Fields()}
         return order, {}
 
@@ -252,6 +255,7 @@ Zmod = Integers = IntegerModRing = IntegerModFactory("IntegerModRing")
 from sage.categories.noetherian_rings import NoetherianRings
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.category import JoinCategory
+
 default_category = JoinCategory((NoetherianRings(), FiniteEnumeratedSets()))
 ZZ = integer_ring.IntegerRing()
 
@@ -276,16 +280,24 @@ def _unit_gens_primepowercase(p, r):
             return []
         if r == 2:
             return [(integer_mod.Mod(3, 4), integer.Integer(2))]
-        return [(integer_mod.Mod(-1, pr), integer.Integer(2)),
-                (integer_mod.Mod(5, pr), integer.Integer(2**(r - 2)))]
+        return [
+            (integer_mod.Mod(-1, pr), integer.Integer(2)),
+            (integer_mod.Mod(5, pr), integer.Integer(2 ** (r - 2))),
+        ]
 
     # odd prime
-    return [(integer_mod.Mod(primitive_root(pr, check=False), pr),
-             integer.Integer(p**(r - 1) * (p - 1)))]
+    return [
+        (
+            integer_mod.Mod(primitive_root(pr, check=False), pr),
+            integer.Integer(p ** (r - 1) * (p - 1)),
+        )
+    ]
 
 
 @richcmp_method
-class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.IntegerModRing):
+class IntegerModRing_generic(
+    quotient_ring.QuotientRing_generic, sage.rings.abc.IntegerModRing
+):
     """
     The ring of integers modulo `N`.
 
@@ -424,6 +436,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
         sage: a**(10^62)
         61
     """
+
     def __init__(self, order, cache=None, category=None):
         """
         Create with the command ``IntegerModRing(order)``.
@@ -468,9 +481,9 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
         # name 'x' is used because it's also used for the ring of
         # integers: see the __init__ method for IntegerRing_class in
         # sage/rings/integer_ring.pyx.
-        quotient_ring.QuotientRing_generic.__init__(self, ZZ, ZZ.ideal(order),
-                                                    names=('x',),
-                                                    category=category)
+        quotient_ring.QuotientRing_generic.__init__(
+            self, ZZ, ZZ.ideal(order), names=('x',), category=category
+        )
         # We want that the ring is its own base ring.
         self._base = self
         if cache is None:
@@ -569,12 +582,15 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             [0]
         """
         import sage.rings.fast_arith as a
-        if self.__order <= 46340:   # todo: don't hard code
+
+        if self.__order <= 46340:  # todo: don't hard code
             gcd = a.arith_int().gcd_int
-        elif self.__order <= 2147483647:   # todo: don't hard code
+        elif self.__order <= 2147483647:  # todo: don't hard code
             gcd = a.arith_llong().gcd_longlong
         else:
-            raise NotImplementedError("list_of_elements_of_multiplicative_group() is not implemented for large moduli")
+            raise NotImplementedError(
+                "list_of_elements_of_multiplicative_group() is not implemented for large moduli"
+            )
         N = self.__order
         # Don't use N.coprime_integers() here because we want Python ints
         return [i for i in range(N) if gcd(i, N) == 1]
@@ -605,8 +621,9 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             sage: IntegerModRing(3).multiplicative_subgroups()  # optional - gap_package_polycyclic
             ((2,), ())
         """
-        return tuple(tuple(g.value() for g in H.gens())
-                     for H in self.unit_group().subgroups())
+        return tuple(
+            tuple(g.value() for g in H.gens()) for H in self.unit_group().subgroups()
+        )
 
     def is_integral_domain(self, proof=None):
         """
@@ -710,6 +727,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             sage: IntegerModRing._cache.clear()
         """
         from sage.categories.fields import Fields
+
         if not proof:
             if self.category().is_subcategory(Fields()):
                 return True
@@ -719,12 +737,16 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             self._factory_data[3]['category'] = Fields()
         else:
             if self.category().is_subcategory(Fields()):
-                raise ValueError(("THIS SAGE SESSION MIGHT BE SERIOUSLY COMPROMISED!\n"
-                    "The order {} is not prime, but this ring has been put\n"
-                    "into the category of fields. This may already have consequences\n"
-                    "in other parts of Sage. Either it was a mistake of the user,\n"
-                    "or a probabilistic primality test has failed.\n"
-                    "In the latter case, please inform the developers.").format(self.order()))
+                raise ValueError(
+                    (
+                        "THIS SAGE SESSION MIGHT BE SERIOUSLY COMPROMISED!\n"
+                        "The order {} is not prime, but this ring has been put\n"
+                        "into the category of fields. This may already have consequences\n"
+                        "in other parts of Sage. Either it was a mistake of the user,\n"
+                        "or a probabilistic primality test has failed.\n"
+                        "In the latter case, please inform the developers."
+                    ).format(self.order())
+                )
         return is_prime
 
     @cached_method
@@ -752,6 +774,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             if not self.is_field():
                 raise ValueError("self must be a field")
             from . import finite_field_constructor
+
             k = finite_field_constructor.FiniteField(self.order())
             self.__field = k
             return k
@@ -928,8 +951,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
                     v = [self(1), self(3)]
                 else:  # n >= 8
                     half_ord = n // 2
-                    v = [self(1), self(-1),
-                         self(half_ord - 1), self(half_ord + 1)]
+                    v = [self(1), self(-1), self(half_ord - 1), self(half_ord + 1)]
             else:
                 v = [self(1), self(-1)]
         else:
@@ -946,6 +968,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             # Now combine in all possible ways using the CRT
             basis = CRT_basis(moduli)
             from sage.misc.mrange import cartesian_product_iterator
+
             v = []
             for x in cartesian_product_iterator(vmod):
                 # x is a specific choice of roots modulo each prime power divisor
@@ -985,9 +1008,11 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
         """
         ans = []
         from sage.structure.factorization import Factorization
+
         for p, e in self.factored_order():
-            ans.append(Factorization([(p, e - 1)]) *
-                       factor(p - 1, int_=(self.__order < 2**31)))
+            ans.append(
+                Factorization([(p, e - 1)]) * factor(p - 1, int_=(self.__order < 2**31))
+            )
         return ans
 
     def characteristic(self):
@@ -1142,6 +1167,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
         except TypeError:
             if isinstance(x, GapElement):
                 from sage.libs.gap.libgap import libgap
+
                 return libgap(x).sage()
             raise  # Continue up with the original TypeError
 
@@ -1247,6 +1273,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
               To:   Ring of integers modulo 81
         """
         from sage.rings.padics.padic_generic import pAdicGeneric, ResidueReductionMap
+
         if isinstance(other, pAdicGeneric) and other.degree() == 1:
             p = other.prime()
             N = self.cardinality()
@@ -1466,6 +1493,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             ValueError: unknown algorithm 'bogus' for computing the unit group
         """
         from sage.groups.abelian_gps.values import AbelianGroupWithValues
+
         if algorithm == 'sage':
             n = self.order()
             gens = []
@@ -1481,7 +1509,9 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             gens = [self(g) for g in gens]
             orders = [integer.Integer(o) for o in orders]
         else:
-            raise ValueError('unknown algorithm %r for computing the unit group' % algorithm)
+            raise ValueError(
+                'unknown algorithm %r for computing the unit group' % algorithm
+            )
         return AbelianGroupWithValues(gens, orders, values_group=self)
 
     def random_element(self, bound=None):
@@ -1636,7 +1666,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
             # Unique lift, use Newton iteration
             prec = 1
             while True:
-                prec = min(2*prec, e)
+                prec = min(2 * prec, e)
                 Zp_prec = Zmod(p**prec)
                 root = Zp_prec(root.lift())
                 deriv = fprime(root)
@@ -1668,7 +1698,9 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
 
             return current_roots
 
-    def _roots_univariate_polynomial(self, f, ring=None, multiplicities=True, algorithm=None):
+    def _roots_univariate_polynomial(
+        self, f, ring=None, multiplicities=True, algorithm=None
+    ):
         r"""
         Return the roots of ``f`` in the ring ``ring``.
 
@@ -1934,7 +1966,9 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
                     " implemented (try the multiplicities=False option)"
                 )
             # Roots of non-zero polynomial over finite fields by factorization
-            return f.change_ring(f.base_ring().field()).roots(multiplicities=multiplicities)
+            return f.change_ring(f.base_ring().field()).roots(
+                multiplicities=multiplicities
+            )
 
         # Constant and linear polynomials are base cases
         if deg < 0:
@@ -2000,7 +2034,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
         for res in cartesian_product_iterator(prime_power_roots):
             root = self.zero()
             for c, x in zip(ppwr_basis, res):
-                root += c*x.lift()
+                root += c * x.lift()
             result.append(root)
         return result
 
@@ -2047,7 +2081,10 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
 # Register unpickling methods for backward compatibility.
 
 from sage.misc.persist import register_unpickle_override
-register_unpickle_override('sage.rings.integer_mod_ring', 'IntegerModRing_generic', IntegerModRing_generic)
+
+register_unpickle_override(
+    'sage.rings.integer_mod_ring', 'IntegerModRing_generic', IntegerModRing_generic
+)
 
 
 def crt(v):

@@ -1,14 +1,14 @@
 r"""
 Commutative algebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
 #                2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
@@ -60,8 +60,11 @@ class CommutativeAlgebras(CategoryWithAxiom_over_base_ring):
         TODO: get rid of this method once all commutative algebras in
         Sage declare themselves in this category
         """
-        return super().__contains__(A) or \
-            (A in Algebras(self.base_ring()) and hasattr(A, "is_commutative") and A.is_commutative())
+        return super().__contains__(A) or (
+            A in Algebras(self.base_ring())
+            and hasattr(A, "is_commutative")
+            and A.is_commutative()
+        )
 
     class TensorProducts(TensorProductsCategory):
         """

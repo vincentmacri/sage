@@ -20,10 +20,15 @@ from sage.structure.sage_object import SageObject
 
 
 class CharacterArtFactory(SageObject):
-
-    def __init__(self,
-                 art_type, string_type, magic_method_name,
-                 parenthesis, square_bracet, curly_brace):
+    def __init__(
+        self,
+        art_type,
+        string_type,
+        magic_method_name,
+        parenthesis,
+        square_bracet,
+        curly_brace,
+    ):
         r"""
         Abstract base class for character art factory.
 
@@ -110,6 +115,7 @@ class CharacterArtFactory(SageObject):
         if isinstance(obj, self.art_type):
             if baseline is not None:
                 from copy import copy
+
                 obj = copy(obj)
                 obj._baseline = baseline
             return obj
@@ -261,6 +267,7 @@ class CharacterArtFactory(SageObject):
             lines.append(left + pad + line.ljust(w) + pad + right)
         shift = len(left_border) + len(pad)
         from .character_art import _shifted_breakpoints
+
         basepoints = list(_shifted_breakpoints(content._breakpoints, shift))
         return self.art_type(lines, basepoints, baseline=baseline)
 
@@ -291,8 +298,8 @@ class CharacterArtFactory(SageObject):
         comma = self.art_type([', '], baseline=0)
         repr_elems = self.concatenate(s, comma, nested=True)
         return self.build_container(
-            repr_elems, self.left_curly_brace, self.right_curly_brace,
-            baseline)
+            repr_elems, self.left_curly_brace, self.right_curly_brace, baseline
+        )
 
     def build_dict(self, d, baseline=0):
         r"""
@@ -316,9 +323,7 @@ class CharacterArtFactory(SageObject):
             sage: ascii_art({'a': '', '': ''})
             { a:, : }
         """
-        comma = self.art_type([', '],
-                              baseline=0,
-                              breakpoints=[1])
+        comma = self.art_type([', '], baseline=0, breakpoints=[1])
         colon = self.art_type([':'], baseline=0)
 
         def concat_no_breakpoint(k, v):
@@ -330,12 +335,13 @@ class CharacterArtFactory(SageObject):
             if v._l:
                 elt._breakpoints.remove(k._l + 1)
             return elt
+
         repr_elems = self.concatenate(
-            (concat_no_breakpoint(k, v) for k, v in d.items()),
-            comma, nested=True)
+            (concat_no_breakpoint(k, v) for k, v in d.items()), comma, nested=True
+        )
         return self.build_container(
-            repr_elems, self.left_curly_brace, self.right_curly_brace,
-            baseline)
+            repr_elems, self.left_curly_brace, self.right_curly_brace, baseline
+        )
 
     def build_list(self, l, baseline=0):
         r"""
@@ -371,13 +377,11 @@ class CharacterArtFactory(SageObject):
               22, 23, 24, 25 ], [ 1, 2, 3, 4, 5 ],\n\n
               [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ] ]'
         """
-        comma = self.art_type([', '],
-                              baseline=0,
-                              breakpoints=[1])
+        comma = self.art_type([', '], baseline=0, breakpoints=[1])
         repr_elems = self.concatenate(l, comma, nested=True)
         return self.build_container(
-            repr_elems, self.left_square_bracket, self.right_square_bracket,
-            baseline)
+            repr_elems, self.left_square_bracket, self.right_square_bracket, baseline
+        )
 
     def build_tuple(self, t, baseline=0):
         r"""
@@ -390,16 +394,13 @@ class CharacterArtFactory(SageObject):
             (            /\    /\      /\/\    /  \  )
             ( /\/\/\, /\/  \, /  \/\, /    \, /    \ )
         """
-        comma = self.art_type([', '],
-                              baseline=0,
-                              breakpoints=[1])
+        comma = self.art_type([', '], baseline=0, breakpoints=[1])
         repr_elems = self.concatenate(t, comma, nested=True)
         return self.build_container(
-            repr_elems, self.left_parenthesis, self.right_parenthesis,
-            baseline)
+            repr_elems, self.left_parenthesis, self.right_parenthesis, baseline
+        )
 
-    def concatenate(self, iterable, separator, empty=None, baseline=0,
-                    nested=False):
+    def concatenate(self, iterable, separator, empty=None, baseline=0, nested=False):
         r"""
         Concatenate multiple character art instances.
 
@@ -476,18 +477,21 @@ class CharacterArtFactory(SageObject):
             return line + ' ' * (obj._l - len(line))
 
         # Note that this scales linearly with the length of the string
-        new_matrix = [padded_line(separator, i).join(
-            padded_line(obj, i) for obj in iterable)
-            for i in range(top - 1, -bot - 1, -1)]
+        new_matrix = [
+            padded_line(separator, i).join(padded_line(obj, i) for obj in iterable)
+            for i in range(top - 1, -bot - 1, -1)
+        ]
 
         from .character_art import _shifted_breakpoints
+
         breakpoints = []
         bk_sep = separator._breakpoints
         if not bk_sep:
             bk_sep = [separator._l]
         if nested and isinstance(bk_sep[0], tuple):
-            raise ValueError("nested structure must be followed by a "
-                             "regular breakpoint")
+            raise ValueError(
+                "nested structure must be followed by a regular breakpoint"
+            )
         idx = None
         for obj in iterable:
             if idx is None:
@@ -499,13 +503,10 @@ class CharacterArtFactory(SageObject):
                 if nested:
                     breakpoints.append((idx, obj._breakpoints))
                 else:
-                    breakpoints.extend(_shifted_breakpoints(obj._breakpoints,
-                                                            idx))
+                    breakpoints.extend(_shifted_breakpoints(obj._breakpoints, idx))
             idx += obj._l
         baseline = bot if baseline is None else bot + baseline
-        return self.art_type(new_matrix,
-                             breakpoints=breakpoints,
-                             baseline=baseline)
+        return self.art_type(new_matrix, breakpoints=breakpoints, baseline=baseline)
 
     def parse_keywords(self, kwds):
         """

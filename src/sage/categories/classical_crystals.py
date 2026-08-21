@@ -111,7 +111,6 @@ class ClassicalCrystals(Category_singleton):
         return None
 
     class ParentMethods:
-
         def demazure_character(self, w, f=None):
             r"""
             Return the Demazure character associated to ``w``.
@@ -175,6 +174,7 @@ class ClassicalCrystals(Category_singleton):
             """
             from sage.misc.misc_c import prod
             from sage.rings.integer_ring import ZZ
+
             if hasattr(w, 'reduced_word'):
                 word = w.reduced_word()
             else:
@@ -184,9 +184,17 @@ class ClassicalCrystals(Category_singleton):
             u = self.demazure_operator(u, word)
             if f is None:
                 from sage.symbolic.ring import SR as P
-                x = [P.var('x%s' % (i+1)) for i in range(n)]
+
+                x = [P.var('x%s' % (i + 1)) for i in range(n)]
                 # TODO: use P.linear_combination when PolynomialRing will be a ModulesWithBasis
-                return sum((coeff*prod((x[i]**(c.weight()[i]) for i in range(n)), P.one()) for c, coeff in u), P.zero())
+                return sum(
+                    (
+                        coeff
+                        * prod((x[i] ** (c.weight()[i]) for i in range(n)), P.one())
+                        for c, coeff in u
+                    ),
+                    P.zero(),
+                )
             return sum(coeff * f(c) for c, coeff in u)
 
         def character(self, R=None):
@@ -230,13 +238,16 @@ class ClassicalCrystals(Category_singleton):
                 ValueError: Weyl character ring does not have the right Cartan type
             """
             from sage.combinat.root_system.weyl_characters import WeylCharacterRing
+
             if R is None:
                 R = WeylCharacterRing(self.cartan_type())
             if not R.cartan_type() == self.cartan_type():
-                raise ValueError("Weyl character ring does not have the right Cartan type")
+                raise ValueError(
+                    "Weyl character ring does not have the right Cartan type"
+                )
             assert R.basis().keys() == self.weight_lattice_realization()
 
-            return R.sum_of_monomials( x.weight() for x in self.highest_weight_vectors() )
+            return R.sum_of_monomials(x.weight() for x in self.highest_weight_vectors())
 
         def __iter__(self):
             r"""
@@ -386,6 +397,7 @@ class ClassicalCrystals(Category_singleton):
                 #True
             """
             from sage.combinat.crystals.crystals import CrystalBacktracker
+
             return iter(CrystalBacktracker(self))
 
         def _test_fast_iter(self, **options):
@@ -417,11 +429,12 @@ class ClassicalCrystals(Category_singleton):
                 sage: C.cardinality()
                 6
             """
-            return sum(self.weight_lattice_realization().weyl_dimension(x.weight())
-                       for x in self.highest_weight_vectors())
+            return sum(
+                self.weight_lattice_realization().weyl_dimension(x.weight())
+                for x in self.highest_weight_vectors()
+            )
 
     class ElementMethods:
-
         def lusztig_involution(self):
             r"""
             Return the Lusztig involution on the classical highest weight
@@ -475,6 +488,7 @@ class ClassicalCrystals(Category_singleton):
         The category of classical crystals constructed by tensor
         product of classical crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """

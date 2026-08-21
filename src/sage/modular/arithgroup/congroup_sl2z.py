@@ -30,6 +30,7 @@ class SL2Z_class(Gamma0_class):
     The full modular group `\SL_2(\ZZ)`, regarded as a congruence
     subgroup of itself.
     """
+
     def __init__(self) -> None:
         r"""
         The modular group `\SL_2(\Z)`.
@@ -156,7 +157,7 @@ class SL2Z_class(Gamma0_class):
             sage: SL2Z.reduce_cusp(Cusps(-1/4))
             Infinity
         """
-        return Cusp(1,0)
+        return Cusp(1, 0)
 
     def random_element(self, bound=100, *args, **kwds):
         r"""
@@ -198,31 +199,31 @@ class SL2Z_class(Gamma0_class):
         """
         if bound <= 1:
             raise ValueError("bound must be greater than 1")
-        c = ZZ.random_element(1-bound, bound, *args, **kwds)
-        d = ZZ.random_element(1-bound, bound, *args, **kwds)
-        if gcd(c,d) != 1: # try again
+        c = ZZ.random_element(1 - bound, bound, *args, **kwds)
+        d = ZZ.random_element(1 - bound, bound, *args, **kwds)
+        if gcd(c, d) != 1:  # try again
             return self.random_element(bound, *args, **kwds)
-        a,b,c,d = lift_to_sl2z(c,d,0)
+        a, b, c, d = lift_to_sl2z(c, d, 0)
         whi = bound
         wlo = bound
         if c > 0:
-            whi = min(whi, ((bound - a)/ZZ(c)).ceil())
-            wlo = min(wlo, ((bound + a)/ZZ(c)).ceil())
+            whi = min(whi, ((bound - a) / ZZ(c)).ceil())
+            wlo = min(wlo, ((bound + a) / ZZ(c)).ceil())
         elif c < 0:
-            whi = min(whi, ((bound + a)/ZZ(-c)).ceil())
-            wlo = min(wlo, ((bound - a)/ZZ(-c)).ceil())
+            whi = min(whi, ((bound + a) / ZZ(-c)).ceil())
+            wlo = min(wlo, ((bound - a) / ZZ(-c)).ceil())
 
         if d > 0:
-            whi = min(whi, ((bound - b)/ZZ(d)).ceil())
-            wlo = min(wlo, ((bound + b)/ZZ(d)).ceil())
+            whi = min(whi, ((bound - b) / ZZ(d)).ceil())
+            wlo = min(wlo, ((bound + b) / ZZ(d)).ceil())
         elif d < 0:
-            whi = min(whi, ((bound + b)/ZZ(-d)).ceil())
-            wlo = min(wlo, ((bound - b)/ZZ(-d)).ceil())
+            whi = min(whi, ((bound + b) / ZZ(-d)).ceil())
+            wlo = min(wlo, ((bound - b) / ZZ(-d)).ceil())
 
-        w = ZZ.random_element(1-wlo, whi, *args, **kwds)
-        a += c*w
-        b += d*w
-        return self([a,b,c,d])
+        w = ZZ.random_element(1 - wlo, whi, *args, **kwds)
+        a += c * w
+        b += d * w
+        return self([a, b, c, d])
 
 
 SL2Z = SL2Z_class()

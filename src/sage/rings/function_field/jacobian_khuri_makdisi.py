@@ -168,6 +168,7 @@ class JacobianPoint(JacobianPoint_base):
         [0 0 0 0 0 1 0 0 5]
         [0 0 0 0 0 0 1 0 4]
     """
+
     def __init__(self, parent, w) -> None:
         """
         Initialize.
@@ -353,7 +354,10 @@ class JacobianPoint(JacobianPoint_base):
         r"""
         Deprecated alias of ``self * n``.
         """
-        deprecation(41453, 'this method is deprecated, use regular multiplication with * instead')
+        deprecation(
+            41453,
+            'this method is deprecated, use regular multiplication with * instead',
+        )
         return self * n
 
     def addflip(self, other):
@@ -480,6 +484,7 @@ class JacobianGroupEmbedding(Map):
           To:   Group of rational points of Jacobian
                 over Finite Field in z2 of size 5^2 (Khuri-Makdisi large model)
     """
+
     def __init__(self, base_group, extension_group) -> None:
         """
         Initialize.
@@ -502,7 +507,9 @@ class JacobianGroupEmbedding(Map):
 
         self._K_ext = K_ext
 
-        Map.__init__(self, Hom(base_group, extension_group, CommutativeAdditiveGroups()))
+        Map.__init__(
+            self, Hom(base_group, extension_group, CommutativeAdditiveGroups())
+        )
 
     def _repr_type(self) -> str:
         """
@@ -572,6 +579,7 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
         Group of rational points of Jacobian
          over Finite Field of size 7 (Khuri-Makdisi large model)
     """
+
     Element = JacobianPoint
     _embedding_map_class = JacobianGroupEmbedding
 
@@ -719,20 +727,26 @@ class JacobianGroup(UniqueRepresentation, JacobianGroup_base):
             return self.zero()
 
         if isinstance(x, FunctionFieldPlace):
-            if (self._base_place is not None
+            if (
+                self._base_place is not None
                 and x in self._function_field.place_set()
-                and x.degree() == 1):
+                and x.degree() == 1
+            ):
                 x = x - self._base_place
             else:
                 x = x.divisor()
 
-        if (isinstance(x, FunctionFieldDivisor)
-            and x in self._function_field.divisor_group()):
+        if (
+            isinstance(x, FunctionFieldDivisor)
+            and x in self._function_field.divisor_group()
+        ):
             if x.degree() == 0:
                 return self.point(x)
             if x.is_effective():
                 if x.degree() != self._base_div_degree:
-                    raise ValueError(f"effective divisor is not of degree {self._base_div_degree}")
+                    raise ValueError(
+                        f"effective divisor is not of degree {self._base_div_degree}"
+                    )
                 wd = self._wd_from_divisor(x)
                 return self.element_class(self, wd)
 
@@ -827,6 +841,7 @@ class JacobianGroup_finite_field(JacobianGroup, JacobianGroup_finite_field_base)
           To:   Group of rational points of Jacobian
                 over Finite Field in z2 of size 7^2 (Khuri-Makdisi large model)
     """
+
     Element = JacobianPoint_finite_field
 
     def __init__(self, parent, function_field, base_div) -> None:
@@ -953,6 +968,7 @@ class Jacobian(UniqueRepresentation, Jacobian_base):
         Jacobian of Projective Plane Curve over Finite Field of size 7
          defined by x^3 - y^2*z - 2*z^3 (Khuri-Makdisi large model)
     """
+
     def __init__(self, function_field, base_div, model, **kwds) -> None:
         """
         Initialize.

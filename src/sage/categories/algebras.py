@@ -56,6 +56,7 @@ class Algebras(CategoryWithAxiom_over_base_ring):
 
         sage: TestSuite(Algebras(ZZ)).run()
     """
+
     _base_category_class_and_axiom = (AssociativeAlgebras, 'Unital')
 
     # For backward compatibility?
@@ -103,6 +104,7 @@ class Algebras(CategoryWithAxiom_over_base_ring):
                 Category of finite dimensional semisimple algebras with basis over Rational Field
             """
             from sage.categories.semisimple_algebras import SemisimpleAlgebras
+
             return self & SemisimpleAlgebras(self.base_ring())
 
         @cached_method
@@ -126,20 +128,18 @@ class Algebras(CategoryWithAxiom_over_base_ring):
             """
             return self.Super().Supercommutative()
 
-    Commutative = LazyImport('sage.categories.commutative_algebras',
-                             'CommutativeAlgebras', at_startup=True)
-    Filtered = LazyImport('sage.categories.filtered_algebras',
-                          'FilteredAlgebras')
-    Graded = LazyImport('sage.categories.graded_algebras',
-                        'GradedAlgebras')
-    Super = LazyImport('sage.categories.super_algebras',
-                       'SuperAlgebras')
+    Commutative = LazyImport(
+        'sage.categories.commutative_algebras', 'CommutativeAlgebras', at_startup=True
+    )
+    Filtered = LazyImport('sage.categories.filtered_algebras', 'FilteredAlgebras')
+    Graded = LazyImport('sage.categories.graded_algebras', 'GradedAlgebras')
+    Super = LazyImport('sage.categories.super_algebras', 'SuperAlgebras')
     # at_startup currently needed for MatrixSpace, see #22955 (e.g., comment:20)
-    WithBasis = LazyImport('sage.categories.algebras_with_basis',
-                           'AlgebrasWithBasis', at_startup=True)
+    WithBasis = LazyImport(
+        'sage.categories.algebras_with_basis', 'AlgebrasWithBasis', at_startup=True
+    )
     # if/when Semisimple becomes an axiom
-    Semisimple = LazyImport('sage.categories.semisimple_algebras',
-                            'SemisimpleAlgebras')
+    Semisimple = LazyImport('sage.categories.semisimple_algebras', 'SemisimpleAlgebras')
 
     class ParentMethods:
         def characteristic(self):
@@ -183,7 +183,7 @@ class Algebras(CategoryWithAxiom_over_base_ring):
                 Traceback (most recent call last):
                 ...
                 NotImplementedError: has_standard_involution is not implemented for this algebra
-                """
+            """
             field = self.base_ring()
             try:
                 basis = self.basis()
@@ -212,11 +212,13 @@ class Algebras(CategoryWithAxiom_over_base_ring):
                         b = ej**2
                         coef = b.coefficient_tuple()
                         tj = coef[j]
-                        nij = (ei + ej)**2 - (ti + tj) * (ei + ej)
+                        nij = (ei + ej) ** 2 - (ti + tj) * (ei + ej)
                         if nij not in field:
                             return False
             except AttributeError:
-                raise NotImplementedError("has_standard_involution is not implemented for this algebra")
+                raise NotImplementedError(
+                    "has_standard_involution is not implemented for this algebra"
+                )
             return True
 
     class ElementMethods:
@@ -245,9 +247,7 @@ class Algebras(CategoryWithAxiom_over_base_ring):
             return self.parent().product(self, ~y)
 
     class Quotients(QuotientsCategory):
-
         class ParentMethods:
-
             def algebra_generators(self):
                 r"""
                 Return algebra generators for ``self``.
@@ -280,6 +280,7 @@ class Algebras(CategoryWithAxiom_over_base_ring):
          - http://groups.google.fr/group/sage-devel/browse_thread/thread/35a72b1d0a2fc77a/348f42ae77a66d16#348f42ae77a66d16
          - :wikipedia:`Direct_product`
         """
+
         def extra_super_categories(self):
             """
             A Cartesian product of algebras is endowed with a natural
@@ -323,7 +324,6 @@ class Algebras(CategoryWithAxiom_over_base_ring):
             pass
 
     class DualObjects(DualObjectsCategory):
-
         def extra_super_categories(self):
             r"""
             Return the dual category.
@@ -345,4 +345,5 @@ class Algebras(CategoryWithAxiom_over_base_ring):
                 See :issue:`15647`.
             """
             from sage.categories.coalgebras import Coalgebras
+
             return [Coalgebras(self.base_category().base_ring())]

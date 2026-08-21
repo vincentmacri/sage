@@ -1,6 +1,7 @@
 """
 Lazy import cache
 """
+
 import os
 import hashlib
 
@@ -31,5 +32,4 @@ def get_cache_file():
         sage: sage.misc.lazy_import_cache.DOT_SAGE = OLD
     """
     mangled = hashlib.sha256(os.path.realpath(SAGE_LIB).encode('utf-8')).hexdigest()
-    return os.path.join(DOT_SAGE, 'cache',
-                        "%s-lazy_import_cache.pickle" % mangled)
+    return os.path.join(DOT_SAGE, 'cache', "%s-lazy_import_cache.pickle" % mangled)

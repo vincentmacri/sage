@@ -68,7 +68,10 @@ class ImageSubobject(Parent):
         ...
         ValueError: The map <built-in function abs> from Integer Ring is not injective: 1
     """
-    def __init__(self, map, domain_subset, *, category=None, is_injective=None, inverse=None):
+
+    def __init__(
+        self, map, domain_subset, *, category=None, is_injective=None, inverse=None
+    ):
         """
         Initialize ``self``.
 
@@ -96,6 +99,7 @@ class ImageSubobject(Parent):
         """
         if not isinstance(domain_subset, Parent):
             from sage.sets.set import Set
+
             domain_subset = Set(domain_subset)
 
         if not isinstance(map, Map) and not isinstance(map, PoorManMap):
@@ -104,6 +108,7 @@ class ImageSubobject(Parent):
                 domain = map.parent().base()
                 if len(map.arguments()) != 1:
                     from sage.modules.free_module import FreeModule
+
                     domain = FreeModule(domain, len(map.arguments()))
                 function = map
 
@@ -177,8 +182,7 @@ class ImageSubobject(Parent):
         """
         if not isinstance(other, ImageSubobject):
             return False
-        return (self._map == other._map
-                and self._domain_subset == other._domain_subset)
+        return self._map == other._map and self._domain_subset == other._domain_subset
 
     def __ne__(self, other):
         r"""
@@ -365,7 +369,9 @@ class ImageSubobject(Parent):
         if self in Sets().Infinite():
             return Infinity
         if domain_cardinality == Infinity:
-            raise NotImplementedError('cannot determine cardinality of a non-injective image of an infinite set')
+            raise NotImplementedError(
+                'cannot determine cardinality of a non-injective image of an infinite set'
+            )
         # Fallback like EnumeratedSets.ParentMethods.__len__
         return Integer(len(list(iter(self))))
 
@@ -424,12 +430,12 @@ class ImageSubobject(Parent):
             ImageSet(Lambda(x, sin(x)), Interval.open(0, pi/4))
         """
         from sympy import imageset
+
         try:
             sympy_map = self._map._sympy_()
         except AttributeError:
             sympy_map = self._map
-        return imageset(sympy_map,
-                        self._domain_subset._sympy_())
+        return imageset(sympy_map, self._domain_subset._sympy_())
 
 
 class ImageSet(ImageSubobject, Set_base, Set_add_sub_operators, Set_boolean_operators):
@@ -462,4 +468,5 @@ class ImageSet(ImageSubobject, Set_base, Set_add_sub_operators, Set_boolean_oper
         sage: _.an_element()
         25
     """
+
     pass

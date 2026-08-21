@@ -30,6 +30,7 @@ def RingHomset(R, S, category=None):
     """
     if isinstance(R, quotient_ring.QuotientRing_nc):
         from .polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
+
         if not isinstance(R, PolynomialQuotientRing_generic):  # backwards compatibility
             return RingHomset_quo_ring(R, S, category=category)
     return RingHomset_generic(R, S, category=category)
@@ -142,9 +143,12 @@ class RingHomset_generic(HomsetWithBase):
             True
         """
         from sage.categories.map import Map
+
         # Case 0: the homomorphism is given by images of generators
         if not (isinstance(x, Map) and x.category_for().is_subcategory(Rings())):
-            return morphism.RingHomomorphism_im_gens(self, x, base_map=base_map, check=check)
+            return morphism.RingHomomorphism_im_gens(
+                self, x, base_map=base_map, check=check
+            )
         if base_map is not None:
             raise ValueError("cannot specify base_map when providing a map")
         # Case 1: the parent fits
@@ -157,8 +161,9 @@ class RingHomset_generic(HomsetWithBase):
                 return morphism.RingHomomorphism_from_base(self, x.underlying_map())
         # Case 2: unique extension via fraction field
         try:
-            if (isinstance(x, morphism.RingHomomorphism_im_gens) and
-                    x.domain().fraction_field().has_coerce_map_from(self.domain())):
+            if isinstance(
+                x, morphism.RingHomomorphism_im_gens
+            ) and x.domain().fraction_field().has_coerce_map_from(self.domain()):
                 return morphism.RingHomomorphism_im_gens(self, x.im_gens())
         except (TypeError, ValueError):
             pass
@@ -168,8 +173,10 @@ class RingHomset_generic(HomsetWithBase):
         except (TypeError, ValueError):
             pass
         # Case 4: the homomorphism is induced from the base ring
-        if (self.domain() != self.domain().base()
-                or self.codomain() != self.codomain().base()):
+        if (
+            self.domain() != self.domain().base()
+            or self.codomain() != self.codomain().base()
+        ):
             x = self.domain().base().Hom(self.codomain().base())(x)
             return morphism.RingHomomorphism_from_base(self, x)
         raise ValueError(f'cannot convert {x} to an element of {self}')
@@ -191,7 +198,10 @@ class RingHomset_generic(HomsetWithBase):
         """
         f = self.codomain().coerce_map_from(self.domain())
         if f is None:
-            raise TypeError("natural coercion morphism from %s to %s not defined" % (self.domain(), self.codomain()))
+            raise TypeError(
+                "natural coercion morphism from %s to %s not defined"
+                % (self.domain(), self.codomain())
+            )
         return f
 
     def zero(self):

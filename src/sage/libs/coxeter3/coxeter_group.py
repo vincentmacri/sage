@@ -11,9 +11,12 @@ Coxeter Groups implemented with Coxeter3
 
 from sage.features.coxeter3 import Coxeter3
 from sage.misc.lazy_import import lazy_import
-lazy_import("sage.libs.coxeter3.coxeter",
-            ["get_CoxGroup", "CoxGroupElement"],
-            feature=Coxeter3())
+
+lazy_import(
+    "sage.libs.coxeter3.coxeter",
+    ["get_CoxGroup", "CoxGroupElement"],
+    feature=Coxeter3(),
+)
 
 from sage.misc.cachefunc import cached_method
 
@@ -43,6 +46,7 @@ class CoxeterGroup(UniqueRepresentation, Parent):
             implemented by Coxeter3
         """
         from sage.combinat.root_system.cartan_type import CartanType
+
         ct = CartanType(cartan_type)
         return super().__classcall__(cls, ct, *args, **options)
 
@@ -165,6 +169,7 @@ class CoxeterGroup(UniqueRepresentation, Parent):
             [1, 2, 1]
         """
         from sage.sets.family import Family
+
         return Family(self.index_set(), lambda i: self.element_class(self, [i]))
 
     gens = simple_reflections
@@ -346,8 +351,7 @@ class CoxeterGroup(UniqueRepresentation, Parent):
         ZZq = PolynomialRing(ZZ, 'q', sparse=True)
         # This is the same as q**len_diff * p(q**(-2))
         len_diff = v.length() - u.length()
-        d = {-2 * deg + len_diff: coeff for deg, coeff in enumerate(p)
-             if coeff != 0}
+        d = {-2 * deg + len_diff: coeff for deg, coeff in enumerate(p) if coeff != 0}
         return ZZq(d)
 
     def parabolic_kazhdan_lusztig_polynomial(self, u, v, J, constant_term_one=True):
@@ -406,11 +410,20 @@ class CoxeterGroup(UniqueRepresentation, Parent):
         WOI = self.weak_order_ideal(lambda x: J_set.issuperset(x.descents()))
         if constant_term_one:
             P = PolynomialRing(ZZ, 'q')
-            return P.sum((-1)**(z.length()) * self.kazhdan_lusztig_polynomial(u * z, v)
-                         for z in WOI if (u * z).bruhat_le(v))
+            return P.sum(
+                (-1) ** (z.length()) * self.kazhdan_lusztig_polynomial(u * z, v)
+                for z in WOI
+                if (u * z).bruhat_le(v)
+            )
         P = PolynomialRing(ZZ, 'q', sparse=True)
-        return P.sum((-1)**(z.length()) * self.kazhdan_lusztig_polynomial(u * z, v, constant_term_one=False).shift(z.length())
-                     for z in WOI if (u * z).bruhat_le(v))
+        return P.sum(
+            (-1) ** (z.length())
+            * self.kazhdan_lusztig_polynomial(u * z, v, constant_term_one=False).shift(
+                z.length()
+            )
+            for z in WOI
+            if (u * z).bruhat_le(v)
+        )
 
     class Element(ElementWrapper):
         wrapped_class = CoxGroupElement
@@ -679,9 +692,11 @@ class CoxeterGroup(UniqueRepresentation, Parent):
             n = W.rank()
 
             if Q.ngens() != n:
-                raise ValueError("the number of generators for the polynomial "
-                                 "ring must be the same as the rank of the "
-                                 "root system")
+                raise ValueError(
+                    "the number of generators for the polynomial "
+                    "ring must be the same as the rank of the "
+                    "root system"
+                )
 
             basis_elements = [alpha[i] for i in W.index_set()]
             basis_to_order = {s: i for i, s in enumerate(W.index_set())}
@@ -698,7 +713,7 @@ class CoxeterGroup(UniqueRepresentation, Parent):
 
                     monomial = 1
                     for s, c in exponent.monomial_coefficients().items():
-                        monomial *= Q_gens[basis_to_order[s]]**int(c)
+                        monomial *= Q_gens[basis_to_order[s]] ** int(c)
 
                     result += monomial
 

@@ -24,6 +24,7 @@ class LatticePolytopeError(Exception):
     """
     Base class for errors from lattice polytopes
     """
+
     pass
 
 
@@ -32,6 +33,7 @@ class LatticePolytopesNotIsomorphicError(LatticePolytopeError):
     """
     Raised when two lattice polytopes are not isomorphic.
     """
+
     pass
 
 
@@ -40,12 +42,12 @@ class LatticePolytopeNoEmbeddingError(LatticePolytopeError):
     """
     Raised when no embedding of the desired kind can be found.
     """
+
     pass
 
 
 ########################################################################
 class LatticeEuclideanGroupElement(SageObject):
-
     def __init__(self, A, b):
         """
         An element of the lattice Euclidean group.
@@ -102,12 +104,15 @@ class LatticeEuclideanGroupElement(SageObject):
             A 2-dimensional lattice polytope in ZZ^3 with 3 vertices
         """
         from sage.geometry.polyhedron.ppl_lattice_polytope import (
-            LatticePolytope_PPL, LatticePolytope_PPL_class)
+            LatticePolytope_PPL,
+            LatticePolytope_PPL_class,
+        )
+
         if isinstance(x, LatticePolytope_PPL_class):
             if x.is_empty():
                 from ppl import C_Polyhedron
-                return LatticePolytope_PPL(C_Polyhedron(self._b.degree(),
-                                                        'empty'))
+
+                return LatticePolytope_PPL(C_Polyhedron(self._b.degree(), 'empty'))
             return LatticePolytope_PPL(*[self(v) for v in x.vertices()])
         v = self._A * x + self._b
         v.set_immutable()
@@ -124,8 +129,8 @@ class LatticeEuclideanGroupElement(SageObject):
             sage: M._repr_()
             'The map A*x+b with A=\n[ 1  2]\n[ 2  3]\n[-1  2]\nb = \n(1, 2, 3)'
         """
-        s = 'The map A*x+b with A=\n'+str(self._A)
-        s += '\nb = \n'+str(self._b)
+        s = 'The map A*x+b with A=\n' + str(self._A)
+        s += '\nb = \n' + str(self._b)
         return s
 
     def domain_dim(self):

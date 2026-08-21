@@ -17,6 +17,7 @@ from sage.categories.sets_cat import Sets
 from sage.categories.sets_cat import EmptySetError
 from sage.categories.cartesian_product import CartesianProductsCategory
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.rings.integer", "Integer")
 
 
@@ -151,12 +152,14 @@ class EnumeratedSets(CategoryWithAxiom):
             {0, 1, 2, 3}
         """
         import sage.sets.set
-        if isinstance(X, (tuple, list, set, range, sage.sets.set.Set_object_enumerated)):
+
+        if isinstance(
+            X, (tuple, list, set, range, sage.sets.set.Set_object_enumerated)
+        ):
             return sage.sets.finite_enumerated_set.FiniteEnumeratedSet(X)
         raise NotImplementedError
 
     class ParentMethods:
-
         def __iter__(self):
             """
             An iterator for the enumerated set.
@@ -231,13 +234,15 @@ class EnumeratedSets(CategoryWithAxiom):
                 [5, 6, 7]
             """
             # Check if .first() and .next(x) are overridden in the subclass
-            if ( self.first != self._first_from_iterator and
-                 self.next != self._next_from_iterator ):
+            if (
+                self.first != self._first_from_iterator
+                and self.next != self._next_from_iterator
+            ):
                 return self._iterator_from_next()
-            #Check to see if .unrank() is overridden in the subclass
+            # Check to see if .unrank() is overridden in the subclass
             if self.unrank != self._unrank_from_iterator:
                 return self._iterator_from_unrank()
-            #Finally, check to see if .list() is overridden in the subclass
+            # Finally, check to see if .list() is overridden in the subclass
             if self.list != self._list_default:
                 return self._iterator_from_list()
             raise NotImplementedError("iterator called but not implemented")
@@ -470,6 +475,7 @@ class EnumeratedSets(CategoryWithAxiom):
                 to an integer
             """
             from sage.rings.infinity import Infinity
+
             if isinstance(i, slice):
                 return self.unrank_range(i.start, i.stop, i.step)
             i = Integer(i)
@@ -493,6 +499,7 @@ class EnumeratedSets(CategoryWithAxiom):
                 512
             """
             from sage.rings.infinity import Infinity
+
             try:
                 c = self.cardinality()
                 if c is Infinity:
@@ -522,7 +529,7 @@ class EnumeratedSets(CategoryWithAxiom):
                 sage: l is R.tuple()
                 True
             """
-            try: # shortcut
+            try:  # shortcut
                 if self._list is not None:
                     return self._tuple_from_list()
             except AttributeError:
@@ -532,13 +539,15 @@ class EnumeratedSets(CategoryWithAxiom):
                 return tuple(self.list())
 
             from sage.rings.infinity import Infinity
+
             try:
                 if self.cardinality() is Infinity:
                     raise NotImplementedError('cannot list an infinite set')
-                else: # finite cardinality
+                else:  # finite cardinality
                     return self._tuple_from_iterator()
             except AttributeError:
                 raise NotImplementedError('unknown cardinality')
+
         _tuple_default = tuple
 
         def _tuple_from_iterator(self):
@@ -612,7 +621,8 @@ class EnumeratedSets(CategoryWithAxiom):
                 [1, 2, 3]
             """
             return list(self.tuple())
-        _list_default = list # needed by the check system.
+
+        _list_default = list  # needed by the check system.
 
         def _list_from_iterator(self):
             r"""
@@ -693,6 +703,7 @@ class EnumeratedSets(CategoryWithAxiom):
                 1
             """
             return next(iter(self))
+
         first = _first_from_iterator
 
         def _next_from_iterator(self, obj):
@@ -721,6 +732,7 @@ class EnumeratedSets(CategoryWithAxiom):
             while el != obj:
                 el = next(it)
             return next(it)
+
         next = _next_from_iterator
 
         def _unrank_from_iterator(self, r):
@@ -751,6 +763,7 @@ class EnumeratedSets(CategoryWithAxiom):
                 ValueError: the rank must be greater than or equal to 0
             """
             from sage.rings.integer_ring import ZZ
+
             if r < 0:
                 raise ValueError("the rank must be greater than or equal to 0")
             if r not in ZZ:
@@ -758,7 +771,10 @@ class EnumeratedSets(CategoryWithAxiom):
             for counter, u in enumerate(self):
                 if counter == r:
                     return u
-            raise ValueError("the rank must be in the range from %s to %s" % (0,counter))
+            raise ValueError(
+                "the rank must be in the range from %s to %s" % (0, counter)
+            )
+
         unrank = _unrank_from_iterator
 
         def _rank_from_iterator(self, x):
@@ -910,7 +926,7 @@ class EnumeratedSets(CategoryWithAxiom):
         # Should this be implemented from first instead?
         _an_element_ = _an_element_from_iterator
 
-        #FIXME: use combinatorial_class_from_iterator once class_from_iterator.patch is in
+        # FIXME: use combinatorial_class_from_iterator once class_from_iterator.patch is in
         def _some_elements_from_iterator(self):
             """
             Return some elements in ``self``.
@@ -1011,9 +1027,9 @@ class EnumeratedSets(CategoryWithAxiom):
                 image.rename(name)
             return image
 
-#
-#  Consistency test suite for an enumerated set:
-#
+        #
+        #  Consistency test suite for an enumerated set:
+        #
         def _test_enumerated_set_contains(self, **options):
             """
             Check that the methods :meth:`.__contains__` and :meth:`.__iter__` are consistent.
@@ -1093,7 +1109,9 @@ class EnumeratedSets(CategoryWithAxiom):
                 # we could make sure to stop the counting at
                 # self.max_test_enumerated_set_loop
                 if self.cardinality() > tester._max_runs:
-                    tester.info("Enumerated set too big; skipping test; increase tester._max_runs")
+                    tester.info(
+                        "Enumerated set too big; skipping test; increase tester._max_runs"
+                    )
                     return
                 ls = self.list()
                 i = 0
@@ -1103,7 +1121,6 @@ class EnumeratedSets(CategoryWithAxiom):
                 tester.assertEqual(i, len(ls))
 
     class ElementMethods:
-
         def rank(self):
             """
             Return the rank of ``self`` in its parent.
@@ -1121,13 +1138,19 @@ class EnumeratedSets(CategoryWithAxiom):
             """
             return self.parent().rank(self)
 
-    Finite = LazyImport('sage.categories.finite_enumerated_sets', 'FiniteEnumeratedSets', at_startup=True)
-    Infinite = LazyImport('sage.categories.infinite_enumerated_sets', 'InfiniteEnumeratedSets', at_startup=True)
+    Finite = LazyImport(
+        'sage.categories.finite_enumerated_sets',
+        'FiniteEnumeratedSets',
+        at_startup=True,
+    )
+    Infinite = LazyImport(
+        'sage.categories.infinite_enumerated_sets',
+        'InfiniteEnumeratedSets',
+        at_startup=True,
+    )
 
     class CartesianProducts(CartesianProductsCategory):
-
         class ParentMethods:
-
             def first(self):
                 r"""
                 Return the first element.
@@ -1138,4 +1161,5 @@ class EnumeratedSets(CategoryWithAxiom):
                     (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 """
                 return self._cartesian_product_of_elements(
-                        tuple(c.first() for c in self.cartesian_factors()))
+                    tuple(c.first() for c in self.cartesian_factors())
+                )

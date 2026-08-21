@@ -19,8 +19,11 @@ AUTHORS:
 
 from sage.categories.algebras import Algebras
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
-from sage.combinat.diagram_algebras import (TemperleyLiebDiagrams, diagram_latex,
-                                            TL_diagram_ascii_art)
+from sage.combinat.diagram_algebras import (
+    TemperleyLiebDiagrams,
+    diagram_latex,
+    TL_diagram_ascii_art,
+)
 from sage.combinat.dyck_word import DyckWords
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.combinat.subset import powerset
@@ -71,10 +74,10 @@ class BlobDiagram(Element):
             sage: BD4([[1,-3]], [[2,-4], [3,4], [-1,-2]])
             ({{-3, 1}}, {{-4, 2}, {-2, -1}, {3, 4}})
         """
-        return '({{{}}}, {{{}}})'.format(', '.join('{' + repr(X)[1:-1] + '}'
-                                                   for X in self.marked),
-                                         ', '.join('{' + repr(X)[1:-1] + '}'
-                                                   for X in self.unmarked))
+        return '({{{}}}, {{{}}})'.format(
+            ', '.join('{' + repr(X)[1:-1] + '}' for X in self.marked),
+            ', '.join('{' + repr(X)[1:-1] + '}' for X in self.unmarked),
+        )
 
     def __hash__(self):
         r"""
@@ -130,9 +133,11 @@ class BlobDiagram(Element):
              ({{-1, 3}, {1, 2}}, {{-3, -2}}),
              ({{-3, 3}, {-2, -1}, {1, 2}}, {})]
         """
-        return richcmp((len(self.marked), self.marked, self.unmarked),
-                       (len(other.marked), other.marked, other.unmarked),
-                       op)
+        return richcmp(
+            (len(self.marked), self.marked, self.unmarked),
+            (len(other.marked), other.marked, other.unmarked),
+            op,
+        )
 
     def temperley_lieb_diagram(self):
         r"""
@@ -354,21 +359,23 @@ class BlobDiagrams(Parent, UniqueRepresentation):
             unmarked = []
             unpaired = []
             # Determine the pairing and which pairings are markable
-            for i,d in enumerate(D):
+            for i, d in enumerate(D):
                 if i >= self._n:
-                    i = -2*self._n + i
+                    i = -2 * self._n + i
                 else:
                     i += 1
                 if d == 1:
                     unpaired.append(i)
-                else: # d == 0
+                else:  # d == 0
                     m = unpaired.pop()
                     if not unpaired:
                         markable.add((m, i))
                     else:
                         unmarked.append((m, i))
             for X in powerset(markable):
-                yield self.element_class(self, X, unmarked + list(markable.difference(X)))
+                yield self.element_class(
+                    self, X, unmarked + list(markable.difference(X))
+                )
 
     Element = BlobDiagram
 
@@ -414,6 +421,7 @@ class BlobAlgebra(CombinatorialFreeModule):
     - [MS1994]_
     - [ILZ2018]_
     """
+
     @staticmethod
     def __classcall_private__(cls, k, q1, q2, q3, base_ring=None, prefix='B'):
         r"""
@@ -453,8 +461,9 @@ class BlobAlgebra(CombinatorialFreeModule):
         self._q3 = q3
         diagrams = BlobDiagrams(k)
         cat = Algebras(base_ring.category()).FiniteDimensional().WithBasis()
-        CombinatorialFreeModule.__init__(self, base_ring, diagrams, category=cat,
-                                         prefix=prefix, bracket=False)
+        CombinatorialFreeModule.__init__(
+            self, base_ring, diagrams, category=cat, prefix=prefix, bracket=False
+        )
 
     def _ascii_art_term(self, diagram):
         r"""
@@ -471,8 +480,9 @@ class BlobAlgebra(CombinatorialFreeModule):
                .-.      .0.      .-.
                o o      o o      o o
         """
-        return TL_diagram_ascii_art(diagram.marked+diagram.unmarked, use_unicode=False,
-                                    blobs=diagram.marked)
+        return TL_diagram_ascii_art(
+            diagram.marked + diagram.unmarked, use_unicode=False, blobs=diagram.marked
+        )
 
     def _unicode_art_term(self, diagram):
         r"""
@@ -489,8 +499,9 @@ class BlobAlgebra(CombinatorialFreeModule):
                ╭─╮      ╭●╮      ╭─╮
                ⚬ ⚬      ⚬ ⚬      ⚬ ⚬
         """
-        return TL_diagram_ascii_art(diagram.marked+diagram.unmarked, use_unicode=True,
-                                    blobs=diagram.marked)
+        return TL_diagram_ascii_art(
+            diagram.marked + diagram.unmarked, use_unicode=True, blobs=diagram.marked
+        )
 
     def _latex_term(self, diagram):
         r"""
@@ -529,6 +540,7 @@ class BlobAlgebra(CombinatorialFreeModule):
             \draw[] (G--2) .. controls +(-0.5, 0.5) and +(0.5, 0.5) .. (G--1);
             \end{tikzpicture}
         """
+
         def edge_options(P):
             if P[1] < P[0]:
                 P = [P[1], P[0]]
@@ -542,9 +554,12 @@ class BlobAlgebra(CombinatorialFreeModule):
             if tuple(P) in diagram.marked:
                 return 'node[midway,circle,fill,scale=0.6] {} '
             return ''
-        return diagram_latex(diagram.marked+diagram.unmarked,
-                             edge_options=edge_options,
-                             edge_additions=edge_additions)
+
+        return diagram_latex(
+            diagram.marked + diagram.unmarked,
+            edge_options=edge_options,
+            edge_additions=edge_additions,
+        )
 
     def order(self):
         r"""
@@ -575,7 +590,7 @@ class BlobAlgebra(CombinatorialFreeModule):
             ({}, {{-4, 4}, {-3, 3}, {-2, 2}, {-1, 1}})
         """
         B = self._indices
-        return B.element_class(B, [], [[i, -i] for i in range(1, self.order()+1)])
+        return B.element_class(B, [], [[i, -i] for i in range(1, self.order() + 1)])
 
     def product_on_basis(self, top, bot):
         r"""
@@ -609,7 +624,7 @@ class BlobAlgebra(CombinatorialFreeModule):
                 # We are starting a new strand
                 cur, stop = top_set.pop()  # note that cur < stop
                 unmarked = is_unmarked
-                #print(top_set, unmarked, cur, stop)
+                # print(top_set, unmarked, cur, stop)
                 if cur > 0:  # Both are anchored to the top
                     ret_lists[unmarked].append((cur, stop))
                     continue
@@ -618,7 +633,7 @@ class BlobAlgebra(CombinatorialFreeModule):
                 # Follow the path from cur until we either reach stop or
                 #   we break out of the loop because both ends are anchored
                 while anchored or cur != stop:
-                    #print(anchored, unmarked, cur, stop)
+                    # print(anchored, unmarked, cur, stop)
                     cur = -cur  # Move cur to the bottom diagram
                     for X in bot_marked:
                         if cur in X:
@@ -627,13 +642,13 @@ class BlobAlgebra(CombinatorialFreeModule):
                             else:
                                 coeff *= self._q2
                             prev = cur
-                            cur = X[1-X.index(prev)]
+                            cur = X[1 - X.index(prev)]
                             bot_marked.remove(X)
                             break
                     for X in bot_unmarked:
                         if cur in X:
                             prev = cur
-                            cur = X[1-X.index(prev)]
+                            cur = X[1 - X.index(prev)]
                             bot_unmarked.remove(X)
                             break
                     if cur < 0:  # cur is anchored at the bottom
@@ -642,7 +657,7 @@ class BlobAlgebra(CombinatorialFreeModule):
                             break
                         else:
                             anchored = True
-                            stop, cur = cur, stop # stop is now anchored to the bottom
+                            stop, cur = cur, stop  # stop is now anchored to the bottom
                             continue
                     cur = -cur  # bring cur back to the top diagram
                     for X in top_marked:
@@ -652,13 +667,13 @@ class BlobAlgebra(CombinatorialFreeModule):
                             else:
                                 coeff *= self._q2
                             prev = cur
-                            cur = X[1-X.index(prev)]
+                            cur = X[1 - X.index(prev)]
                             top_marked.remove(X)
                             break
                     for X in top_unmarked:
                         if cur in X:
                             prev = cur
-                            cur = X[1-X.index(prev)]
+                            cur = X[1 - X.index(prev)]
                             top_unmarked.remove(X)
                             break
                     if cur > 0:  # cur is anchored at the top
@@ -667,7 +682,7 @@ class BlobAlgebra(CombinatorialFreeModule):
                             break
                         else:
                             anchored = True
-                            stop, cur = cur, stop # stop is now anchored to the top
+                            stop, cur = cur, stop  # stop is now anchored to the top
                 if cur == stop:  # We have found a (marked) loop
                     if unmarked:
                         coeff *= self._q1

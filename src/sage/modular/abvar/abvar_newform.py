@@ -8,6 +8,7 @@ TESTS::
     sage: loads(dumps(A)) == A
     True
 """
+
 ###########################################################################
 #       Copyright (C) 2008 William Stein <wstein@gmail.com>               #
 #  Distributed under the terms of the GNU General Public License (GPL)    #
@@ -25,6 +26,7 @@ from sage.modular.arithgroup.congroup_gammaH import GammaH_class
 
 from .abvar import ModularAbelianVariety_modsym_abstract
 from sage.modular.abvar import homspace
+
 lazy_import('sage.databases.cremona', 'cremona_letter_code')
 
 
@@ -32,6 +34,7 @@ class ModularAbelianVariety_newform(ModularAbelianVariety_modsym_abstract):
     """
     A modular abelian variety attached to a specific newform.
     """
+
     def __init__(self, f, internal_name=False):
         """
         Create the modular abelian variety `A_f` attached to the
@@ -66,9 +69,15 @@ class ModularAbelianVariety_newform(ModularAbelianVariety_modsym_abstract):
         self.__named_newforms = {variable_name: self.__f}
         if not internal_name:
             self.__named_newforms[None] = self.__f
-        ModularAbelianVariety_modsym_abstract.__init__(self, (f.group(),), QQ,
-            is_simple=True, newform_level=(f.level(), f.group()),
-            isogeny_number=f.number(), number=0)
+        ModularAbelianVariety_modsym_abstract.__init__(
+            self,
+            (f.group(),),
+            QQ,
+            is_simple=True,
+            newform_level=(f.level(), f.group()),
+            isogeny_number=f.number(),
+            number=0,
+        )
 
     def _modular_symbols(self, sign=0):
         """
@@ -118,7 +127,12 @@ class ModularAbelianVariety_newform(ModularAbelianVariety_modsym_abstract):
         try:
             return self.__named_newforms[names]
         except KeyError:
-            self.__named_newforms[names] = Newform(self.__f.parent().change_ring(QQ), self.__f.modular_symbols(1), names=names, check=False)
+            self.__named_newforms[names] = Newform(
+                self.__f.parent().change_ring(QQ),
+                self.__f.modular_symbols(1),
+                names=names,
+                check=False,
+            )
             return self.__named_newforms[names]
 
     def label(self) -> str:
@@ -141,7 +155,11 @@ class ModularAbelianVariety_newform(ModularAbelianVariety_modsym_abstract):
             group = 'G1'
         elif isinstance(G, GammaH_class):
             group = 'GH[' + ','.join(str(z) for z in G._generators_for_H()) + ']'
-        return '%s%s%s' % (self.level(), cremona_letter_code(self.factor_number()), group)
+        return '%s%s%s' % (
+            self.level(),
+            cremona_letter_code(self.factor_number()),
+            group,
+        )
 
     def factor_number(self):
         """
@@ -171,7 +189,10 @@ class ModularAbelianVariety_newform(ModularAbelianVariety_modsym_abstract):
             'Newform abelian subvariety 37a of dimension 1 of J0(37)'
         """
         return "Newform abelian subvariety %s of dimension %s of %s" % (
-            self.newform_label(), self.dimension(), self._ambient_repr())
+            self.newform_label(),
+            self.dimension(),
+            self._ambient_repr(),
+        )
 
     def endomorphism_ring(self):
         """
@@ -230,13 +251,17 @@ class ModularAbelianVariety_newform(ModularAbelianVariety_modsym_abstract):
 
         d = self.dimension()
         T1list = self.hecke_operator(1).matrix().list()
-        EndVecZ = ZZ**(len(T1list))
+        EndVecZ = ZZ ** (len(T1list))
         V = EndVecZ.submodule([T1list])
         n = 2
 
         while V.dimension() < d:
-            W = EndVecZ.submodule([((self.hecke_operator(n).matrix())**i).list()
-                                   for i in range(1, d + 1)])
+            W = EndVecZ.submodule(
+                [
+                    ((self.hecke_operator(n).matrix()) ** i).list()
+                    for i in range(1, d + 1)
+                ]
+            )
             V = V + W
             n += 1
             if n > bound:

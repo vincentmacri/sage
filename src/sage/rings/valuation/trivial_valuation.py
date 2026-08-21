@@ -21,7 +21,11 @@ EXAMPLES::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .valuation import DiscretePseudoValuation, DiscreteValuation, InfiniteDiscretePseudoValuation
+from .valuation import (
+    DiscretePseudoValuation,
+    DiscreteValuation,
+    InfiniteDiscretePseudoValuation,
+)
 from .valuation_space import DiscretePseudoValuationSpace
 from sage.structure.factory import UniqueFactory
 
@@ -37,6 +41,7 @@ class TrivialValuationFactory(UniqueFactory):
         sage: v(1)
         0
     """
+
     def __init__(self, clazz, parent, *args, **kwargs):
         r"""
         TESTS::
@@ -58,7 +63,7 @@ class TrivialValuationFactory(UniqueFactory):
             sage: valuations.TrivialValuation(QQ) is valuations.TrivialValuation(QQ) # indirect doctest
             True
         """
-        return domain,
+        return (domain,)
 
     def create_object(self, version, key, **extra_args):
         r"""
@@ -69,7 +74,7 @@ class TrivialValuationFactory(UniqueFactory):
             sage: valuations.TrivialValuation(QQ) # indirect doctest
             Trivial valuation on Rational Field
         """
-        domain, = key
+        (domain,) = key
         parent = self._parent(domain)
         return parent.__make_element_class__(self._class)(parent)
 
@@ -87,6 +92,7 @@ class TrivialDiscretePseudoValuation_base(DiscretePseudoValuation):
 
         sage: TestSuite(v).run() # long time
     """
+
     def uniformizer(self):
         r"""
         Return a uniformizing element for this valuation.
@@ -126,7 +132,9 @@ class TrivialDiscretePseudoValuation_base(DiscretePseudoValuation):
         return False
 
 
-class TrivialDiscretePseudoValuation(TrivialDiscretePseudoValuation_base, InfiniteDiscretePseudoValuation):
+class TrivialDiscretePseudoValuation(
+    TrivialDiscretePseudoValuation_base, InfiniteDiscretePseudoValuation
+):
     r"""
     The trivial pseudo-valuation that is `\infty` everywhere.
 
@@ -139,6 +147,7 @@ class TrivialDiscretePseudoValuation(TrivialDiscretePseudoValuation_base, Infini
 
         sage: TestSuite(v).run() # long time
     """
+
     def __init__(self, parent):
         r"""
         TESTS::
@@ -164,6 +173,7 @@ class TrivialDiscretePseudoValuation(TrivialDiscretePseudoValuation_base, Infini
             +Infinity
         """
         from sage.rings.infinity import infinity
+
         return infinity
 
     def _repr_(self):
@@ -191,7 +201,9 @@ class TrivialDiscretePseudoValuation(TrivialDiscretePseudoValuation_base, Infini
             ...
             ValueError: The trivial pseudo-valuation that is infinity everywhere does not have a value group.
         """
-        raise ValueError("The trivial pseudo-valuation that is infinity everywhere does not have a value group.")
+        raise ValueError(
+            "The trivial pseudo-valuation that is infinity everywhere does not have a value group."
+        )
 
     def residue_ring(self):
         r"""
@@ -259,6 +271,7 @@ class TrivialDiscreteValuation(TrivialDiscretePseudoValuation_base, DiscreteValu
 
         sage: TestSuite(v).run() # long time
     """
+
     def __init__(self, parent):
         r"""
         TESTS::
@@ -284,6 +297,7 @@ class TrivialDiscreteValuation(TrivialDiscretePseudoValuation_base, DiscreteValu
             0
         """
         from sage.rings.infinity import infinity
+
         return infinity if x == 0 else self.codomain().zero()
 
     def _repr_(self):
@@ -310,6 +324,7 @@ class TrivialDiscreteValuation(TrivialDiscretePseudoValuation_base, DiscreteValu
             Trivial Additive Abelian Group
         """
         from .value_group import DiscreteValueGroup
+
         return DiscreteValueGroup(0)
 
     def residue_ring(self):
@@ -377,5 +392,13 @@ class TrivialDiscreteValuation(TrivialDiscretePseudoValuation_base, DiscreteValu
         return self is other
 
 
-TrivialValuation = TrivialValuationFactory(TrivialDiscreteValuation, DiscretePseudoValuationSpace, "sage.rings.valuation.trivial_valuation.TrivialValuation")
-TrivialPseudoValuation = TrivialValuationFactory(TrivialDiscretePseudoValuation, DiscretePseudoValuationSpace, "sage.rings.valuation.trivial_valuation.TrivialPseudoValuation")
+TrivialValuation = TrivialValuationFactory(
+    TrivialDiscreteValuation,
+    DiscretePseudoValuationSpace,
+    "sage.rings.valuation.trivial_valuation.TrivialValuation",
+)
+TrivialPseudoValuation = TrivialValuationFactory(
+    TrivialDiscretePseudoValuation,
+    DiscretePseudoValuationSpace,
+    "sage.rings.valuation.trivial_valuation.TrivialPseudoValuation",
+)

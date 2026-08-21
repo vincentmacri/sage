@@ -74,6 +74,7 @@ class ProjectiveConic_rational_function_field(ProjectiveConic_field):
     - [HC2006]_
     - [Ack2016]_
     """
+
     def __init__(self, A, f):
         r"""
         See ``Conic`` for full documentation.
@@ -86,8 +87,7 @@ class ProjectiveConic_rational_function_field(ProjectiveConic_field):
         """
         ProjectiveConic_field.__init__(self, A, f)
 
-    def has_rational_point(self, point=False, algorithm='default',
-                           read_cache=True):
+    def has_rational_point(self, point=False, algorithm='default', read_cache=True):
         r"""
         Return ``True`` if and only if the conic ``self``
         has a point over its base field `F(t)`, which is a field of rational
@@ -236,13 +236,16 @@ class ProjectiveConic_rational_function_field(ProjectiveConic_field):
                 return (True, self._rational_point) if point else True
 
         if algorithm != 'default':
-            return ProjectiveConic_field.has_rational_point(self, point,
-                algorithm, read_cache)
+            return ProjectiveConic_field.has_rational_point(
+                self, point, algorithm, read_cache
+            )
 
         # Default algorithm
         if self.base_ring().characteristic() == 2:
-            raise NotImplementedError("has_rational_point not implemented \
-for function field of characteristic 2.")
+            raise NotImplementedError(
+                "has_rational_point not implemented \
+for function field of characteristic 2."
+            )
         new_conic, transformation, inverse = self.diagonalization()
         coeff = new_conic.coefficients()
         if coeff[0] == 0:
@@ -257,15 +260,16 @@ for function field of characteristic 2.")
         # to get a zero of the old conic
         (coeff, multipliers) = new_conic._reduce_conic()
         new_conic = Conic(coeff)
-        transformation = transformation \
-            * new_conic.hom(diagonal_matrix(multipliers))
-        if coeff[0].degree() % 2 == coeff[1].degree() % 2 and \
-                coeff[1].degree() % 2 == coeff[2].degree() % 2:
+        transformation = transformation * new_conic.hom(diagonal_matrix(multipliers))
+        if (
+            coeff[0].degree() % 2 == coeff[1].degree() % 2
+            and coeff[1].degree() % 2 == coeff[2].degree() % 2
+        ):
             case = 0
         else:
             case = 1
 
-        t, = self.base_ring().base().gens()  # t in F[t]
+        (t,) = self.base_ring().base().gens()  # t in F[t]
         supp = []
         roots = [[], [], []]
         remove = None
@@ -280,7 +284,7 @@ for function field of characteristic 2.")
                 x = p[0] / list(p[0])[-1]
                 N = p[0].base_ring().extension(x, 'tbar')
                 R = PolynomialRing(N, 'u')
-                u, = R.gens()
+                (u,) = R.gens()
                 # If p[0] has degree 1, sage might forget the "defining
                 # polynomial" of N, so we define our own modulo operation
                 if p[0].degree() == 1:
@@ -312,15 +316,18 @@ for function field of characteristic 2.")
 
         if case == 0:
             # Find a solution of (5) in [HC2006]
-            leading_conic = Conic(self.base_ring().base_ring(),
-                        [coeff[0].leading_coefficient(),
-                        coeff[1].leading_coefficient(),
-                        coeff[2].leading_coefficient()])
+            leading_conic = Conic(
+                self.base_ring().base_ring(),
+                [
+                    coeff[0].leading_coefficient(),
+                    coeff[1].leading_coefficient(),
+                    coeff[2].leading_coefficient(),
+                ],
+            )
             has_point = leading_conic.has_rational_point(True)
             if has_point[0]:
                 if point:
-                    pt = new_conic.find_point(supp, roots, case,
-                        has_point[1])
+                    pt = new_conic.find_point(supp, roots, case, has_point[1])
                 else:
                     pt = True
                 return (True, transformation(pt)) if point else True
@@ -360,10 +367,10 @@ for function field of characteristic 2.")
         """
 
         # start with removing fractions
-        coeff = [self.coefficients()[0], self.coefficients()[3],
-                self.coefficients()[5]]
-        coeff = lcm(lcm(coeff[0].denominator(), coeff[1].denominator()),
-                coeff[2].denominator()) * vector(coeff)
+        coeff = [self.coefficients()[0], self.coefficients()[3], self.coefficients()[5]]
+        coeff = lcm(
+            lcm(coeff[0].denominator(), coeff[1].denominator()), coeff[2].denominator()
+        ) * vector(coeff)
         # go to base ring of fraction field
         coeff = [self.base().base()(x) for x in coeff]
         coeff = vector(coeff) / gcd(coeff)
@@ -475,11 +482,17 @@ for function field of characteristic 2.")
         """
         Ft = self.base().base()
         F = Ft.base()
-        t, = Ft.gens()
-        coefficients = [Ft(self.coefficients()[0]), Ft(self.coefficients()[3]),
-            Ft(self.coefficients()[5])]
-        deg = [coefficients[0].degree(), coefficients[1].degree(),
-               coefficients[2].degree()]
+        (t,) = Ft.gens()
+        coefficients = [
+            Ft(self.coefficients()[0]),
+            Ft(self.coefficients()[3]),
+            Ft(self.coefficients()[5]),
+        ]
+        deg = [
+            coefficients[0].degree(),
+            coefficients[1].degree(),
+            coefficients[2].degree(),
+        ]
         # definitions as in [HC2006] and [Ack2016]
         A = ((deg[1] + deg[2]) / 2).ceil() - case
         B = ((deg[2] + deg[0]) / 2).ceil() - case
@@ -491,7 +504,7 @@ for function field of characteristic 2.")
         # of monomials of x, y and z in the space V of potential solutions:
         # t^0, ..., t^A, t^0, ..., t^B and t^0, ..., t^C.
         phi = []
-        for (i, p) in enumerate(supports[0]):
+        for i, p in enumerate(supports[0]):
             # lift to F[t] and map to R, with R as defined above
             if roots[0][i].parent().is_finite():
                 root = roots[0][i].polynomial()
@@ -501,7 +514,7 @@ for function field of characteristic 2.")
             d = p.degree()
             # Calculate y - alpha*z mod p for all basis vectors
             phi_p = [[] for i in range(A + B + C + 4)]
-            phi_p[0:A + 1] = [vector(F, d)] * (A + 1)
+            phi_p[0 : A + 1] = [vector(F, d)] * (A + 1)
             phi_p[A + 1] = vector(F, d, {0: F(1)})
             lastpoly = F(1)
             for n in range(B):
@@ -514,7 +527,7 @@ for function field of characteristic 2.")
                 phi_p[A + B + 3 + n] = vector(F, d, lastpoly.monomial_coefficients())
             phi_p[A + B + C + 3] = vector(F, d)
             phi.append(matrix(phi_p).transpose())
-        for (i, p) in enumerate(supports[1]):
+        for i, p in enumerate(supports[1]):
             if roots[1][i].parent().is_finite():
                 root = roots[1][i].polynomial()
             else:
@@ -523,7 +536,7 @@ for function field of characteristic 2.")
             d = p.degree()
             # Calculate z - alpha*x mod p for all basis vectors
             phi_p = [[] for i in range(A + B + C + 4)]
-            phi_p[A + 1:A + B + 2] = [vector(F, d)] * (B + 1)
+            phi_p[A + 1 : A + B + 2] = [vector(F, d)] * (B + 1)
             phi_p[A + B + 2] = vector(F, d, {0: F(1)})
             lastpoly = F(1)
             for n in range(C):
@@ -536,7 +549,7 @@ for function field of characteristic 2.")
                 phi_p[1 + n] = vector(F, d, lastpoly.monomial_coefficients())
             phi_p[A + B + C + 3] = vector(F, d)
             phi.append(matrix(phi_p).transpose())
-        for (i, p) in enumerate(supports[2]):
+        for i, p in enumerate(supports[2]):
             if roots[2][i].parent().is_finite():
                 root = roots[2][i].polynomial()
             else:
@@ -545,7 +558,7 @@ for function field of characteristic 2.")
             d = p.degree()
             # Calculate x - alpha*y mod p for all basis vectors
             phi_p = [[] for i in range(A + B + C + 4)]
-            phi_p[A + B + 2:A + B + C + 3] = [vector(F, d)] * (C + 1)
+            phi_p[A + B + 2 : A + B + C + 3] = [vector(F, d)] * (C + 1)
             phi_p[0] = vector(F, d, {0: F(1)})
             lastpoly = F(1)
             for n in range(A):
@@ -564,19 +577,26 @@ for function field of characteristic 2.")
             ly = Ft(solution[1]).leading_coefficient()
             lz = Ft(solution[2]).leading_coefficient()
             ABC = A + B + C
-            phi.append(matrix([vector(F, ABC + 4, {A: 1, ABC + 3: -lx}),
-                vector(F, ABC + 4, {A + B + 1: 1, ABC + 3: -ly}),
-                vector(F, ABC + 4, {ABC + 2: 1, ABC + 3: -lz})]))
+            phi.append(
+                matrix(
+                    [
+                        vector(F, ABC + 4, {A: 1, ABC + 3: -lx}),
+                        vector(F, ABC + 4, {A + B + 1: 1, ABC + 3: -ly}),
+                        vector(F, ABC + 4, {ABC + 2: 1, ABC + 3: -lz}),
+                    ]
+                )
+            )
         # Create the final matrix which we will solve
         M = block_matrix(phi, ncols=1, subdivide=False)
         solution_space = M.right_kernel()
         for v in solution_space.basis():
-            if v[:A + B + C + 3] != 0:
+            if v[: A + B + C + 3] != 0:
                 # we do not want to return a trivial solution
-                X = Ft(list(v[:A + 1]))
-                Y = Ft(list(v[A + 1:A + B + 2]))
-                Z = Ft(list(v[A + B + 2:A + B + C + 3]))
+                X = Ft(list(v[: A + 1]))
+                Y = Ft(list(v[A + 1 : A + B + 2]))
+                Z = Ft(list(v[A + B + 2 : A + B + C + 3]))
                 return self.point([X, Y, Z])
 
-        raise RuntimeError("No solution has been found: possibly incorrect "
-                           "solubility certificate.")
+        raise RuntimeError(
+            "No solution has been found: possibly incorrect solubility certificate."
+        )

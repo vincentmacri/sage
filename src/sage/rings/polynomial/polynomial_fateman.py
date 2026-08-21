@@ -1,4 +1,5 @@
 "Polynomial multiplication by Kronecker substitution"
+
 ################################################################################
 #       Copyright (C) 2007 William Stein <wstein@gmail.com>
 #

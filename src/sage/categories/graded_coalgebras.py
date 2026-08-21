@@ -1,13 +1,13 @@
 r"""
 Graded Coalgebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008      Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2011-2013 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.graded_modules import GradedModulesCategory
 from sage.categories.signed_tensor import SignedTensorProductsCategory
@@ -29,6 +29,7 @@ class GradedCoalgebras(GradedModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     class SubcategoryMethods:
         def SignedTensorProducts(self):
             r"""

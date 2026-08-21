@@ -118,8 +118,15 @@ def setprint_s(X, toplevel=False):
     if isinstance(X, (frozenset, set)):
         return '{' + ', '.join(sorted(setprint_s(x) for x in X)) + '}'
     if isinstance(X, dict):
-        return '{' + ', '.join(sorted(setprint_s(key) + ': ' + setprint_s(val)
-                                      for key, val in X.items())) + '}'
+        return (
+            '{'
+            + ', '.join(
+                sorted(
+                    setprint_s(key) + ': ' + setprint_s(val) for key, val in X.items()
+                )
+            )
+            + '}'
+        )
     if isinstance(X, str):
         if toplevel:
             return X
@@ -234,7 +241,9 @@ def sanitize_contractions_deletions(matroid, contractions, deletions):
     conset = matroid._max_independent(contractions)
     delset = matroid._max_coindependent(deletions)
 
-    return conset.union(deletions.difference(delset)), delset.union(contractions.difference(conset))
+    return conset.union(deletions.difference(delset)), delset.union(
+        contractions.difference(conset)
+    )
 
 
 def make_regular_matroid_from_matroid(matroid):
@@ -260,6 +269,7 @@ def make_regular_matroid_from_matroid(matroid):
         True
     """
     import sage.matroids.linear_matroid
+
     M = matroid
     if isinstance(M, sage.matroids.linear_matroid.RegularMatroid):
         return M
@@ -273,7 +283,9 @@ def make_regular_matroid_from_matroid(matroid):
     dB = {e: i for i, e in enumerate(B)}
     dNB = {e: i for i, e in enumerate(NB)}
     A = Matrix(ZZ, len(B), len(NB), 0)
-    G = BipartiteGraph(A.transpose())  # Sage's BipartiteGraph uses the column set as first color class. This is an edgeless graph.
+    G = BipartiteGraph(
+        A.transpose()
+    )  # Sage's BipartiteGraph uses the column set as first color class. This is an edgeless graph.
     for e in NB:
         C = M.circuit(B + [e])
         for f in C.difference([e]):
@@ -299,7 +311,9 @@ def make_regular_matroid_from_matroid(matroid):
                 A[entries[mindex][0], entries[mindex][1] - rk] = -1
         G.add_edge(entries[mindex][0], entries[mindex][1])
         entries.pop(mindex)
-    return sage.matroids.linear_matroid.RegularMatroid(groundset=B + NB, reduced_matrix=A)
+    return sage.matroids.linear_matroid.RegularMatroid(
+        groundset=B + NB, reduced_matrix=A
+    )
 
 
 def get_nonisomorphic_matroids(MSet):
@@ -370,13 +384,13 @@ def spanning_forest(M):
     # Given a matrix, produce a spanning tree
     G = Graph()
     m = M.ncols()
-    for (x, y) in M.dict():
+    for x, y in M.dict():
         G.add_edge(x + m, y)
     T = []
     # find spanning tree in each component
     for component in G.connected_components_subgraphs():
         spanning_tree = kruskal(component)
-        for (x, y, z) in spanning_tree:
+        for x, y, z in spanning_tree:
             if x < m:
                 x, y = y, x
             T.append((x - m, y))
@@ -413,7 +427,7 @@ def spanning_stars(M):
     for x, y in M.dict():
         G.add_edge(x + m, y)
 
-    delta = (M.nrows() + m)**0.5
+    delta = (M.nrows() + m) ** 0.5
     # remove low degree vertices
     H = []
     # candidate vertices
@@ -464,6 +478,7 @@ def spanning_stars(M):
             x, y = y, x
         T.append((x - m, y))
     return T
+
 
 # Partial fields and lifting
 
@@ -606,7 +621,11 @@ def lift_cross_ratios(A, lift_map=None):
                 monomial[minus_one1] = 1
 
         if cr != plus_one1 and cr not in lift_map:
-            raise ValueError("Input matrix has a cross ratio " + str(cr) + ", which is not in the lift_map")
+            raise ValueError(
+                "Input matrix has a cross ratio "
+                + str(cr)
+                + ", which is not in the lift_map"
+            )
         # - write the entry as a product of cross ratios of A
         div = True
         for entry2 in entries:
@@ -635,7 +654,7 @@ def lift_cross_ratios(A, lift_map=None):
             if cr == minus_one1:
                 Z[entry] = Z[entry] * (minus_one2**degree)
             else:
-                Z[entry] = Z[entry] * (lift_map[cr]**degree)
+                Z[entry] = Z[entry] * (lift_map[cr] ** degree)
 
     return Z
 
@@ -700,7 +719,7 @@ def lift_map(target):
         z = ZZ['z'].gen()
         S = NumberField(z * z - z + 1, 'z')
         z = S(z)
-        return {R.one(): S.one(), R(3): z, R(3)**(-1): z**5}
+        return {R.one(): S.one(), R(3): z, R(3) ** (-1): z**5}
 
     if target == "dyadic":
         R = GF(11)
@@ -712,10 +731,15 @@ def lift_map(target):
         R = GF(19)
         t = QQ['t'].gen()
         G = NumberField(t * t - t - 1, 't')
-        return {R(1): G(1), R(5): G(t),
-                R(1) / R(5): G(1) / G(t), R(-5): G(-t),
-                R(-5)**(-1): G(-t)**(-1), R(5)**2: G(t)**2,
-                R(5)**(-2): G(t)**(-2)}
+        return {
+            R(1): G(1),
+            R(5): G(t),
+            R(1) / R(5): G(1) / G(t),
+            R(-5): G(-t),
+            R(-5) ** (-1): G(-t) ** (-1),
+            R(5) ** 2: G(t) ** 2,
+            R(5) ** (-2): G(t) ** (-2),
+        }
 
     raise NotImplementedError(target)
 

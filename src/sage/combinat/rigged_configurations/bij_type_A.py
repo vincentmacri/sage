@@ -37,8 +37,12 @@ TESTS::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.combinat.rigged_configurations.bij_abstract_class import KRTToRCBijectionAbstract
-from sage.combinat.rigged_configurations.bij_abstract_class import RCToKRTBijectionAbstract
+from sage.combinat.rigged_configurations.bij_abstract_class import (
+    KRTToRCBijectionAbstract,
+)
+from sage.combinat.rigged_configurations.bij_abstract_class import (
+    RCToKRTBijectionAbstract,
+)
 
 
 class KRTToRCBijectionTypeA(KRTToRCBijectionAbstract):
@@ -152,11 +156,15 @@ class RCToKRTBijectionTypeA(RCToKRTBijectionAbstract):
 
             self._update_vacancy_numbers(a - 1)
             if row_num is not None:
-                self.cur_partitions[a - 1].rigging[row_num] = self.cur_partitions[a - 1].vacancy_numbers[row_num]
+                self.cur_partitions[a - 1].rigging[row_num] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[row_num]
             row_num = row_num_next
 
         self._update_vacancy_numbers(n - 1)
         if row_num is not None:
-            self.cur_partitions[n - 1].rigging[row_num] = self.cur_partitions[n - 1].vacancy_numbers[row_num]
+            self.cur_partitions[n - 1].rigging[row_num] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[row_num]
 
         return b

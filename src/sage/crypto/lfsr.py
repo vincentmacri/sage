@@ -222,7 +222,7 @@ def lfsr_autocorrelation(L, p, k):
     p = Integer(p)
     _p = int(p)
     k = int(k)
-    L0 = L[:_p]     # slices makes a copy
+    L0 = L[:_p]  # slices makes a copy
     L0 = L0 + L0[:k]
     return sum([int(L0[i]) * int(L0[i + k]) / p for i in range(_p)])
 
@@ -280,12 +280,12 @@ def lfsr_connection_polynomial(s):
             N += 1
         if d > 0:
             if 2 * L > N:
-                C = C - d*b**(-1)*x**m*B
+                C = C - d * b ** (-1) * x**m * B
                 m += 1
                 N += 1
             else:
                 T = C
-                C = C - d*b**(-1)*x**m*B
+                C = C - d * b ** (-1) * x**m * B
                 L = N + 1 - L
                 m = 1
                 b = d

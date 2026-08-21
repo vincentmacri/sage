@@ -11,8 +11,11 @@ Highest Weight Crystals
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_singleton import Category_singleton
-from sage.categories.crystals import (Crystals, CrystalHomset,
-                                      CrystalMorphismByGenerators)
+from sage.categories.crystals import (
+    Crystals,
+    CrystalHomset,
+    CrystalMorphismByGenerators,
+)
 from sage.categories.tensor import TensorProductsCategory
 
 
@@ -90,6 +93,7 @@ class HighestWeightCrystals(Category_singleton):
             Highest weight crystal of type A_3 of highest weight omega_1
         """
         from sage.categories.crystals import Crystals
+
         return Crystals().example()
 
     def additional_structure(self):
@@ -112,7 +116,6 @@ class HighestWeightCrystals(Category_singleton):
         return None
 
     class ParentMethods:
-
         @cached_method
         def highest_weight_vectors(self) -> tuple:
             r"""
@@ -156,7 +159,9 @@ class HighestWeightCrystals(Category_singleton):
             hw = self.highest_weight_vectors()
             if len(hw) == 1:
                 return hw[0]
-            raise RuntimeError("The crystal does not have exactly one highest weight vector")
+            raise RuntimeError(
+                "The crystal does not have exactly one highest weight vector"
+            )
 
         # TODO: Not every highest weight crystal is a lowest weight crystal
         @cached_method
@@ -212,10 +217,13 @@ class HighestWeightCrystals(Category_singleton):
             if index_set is None:
                 index_set = self.index_set()
             from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet
-            return RecursivelyEnumeratedSet(self.module_generators,
-                           lambda x: [x.f(i) for i in index_set],
-                           structure='graded',
-                           max_depth=max_depth).breadth_first_search_iterator()
+
+            return RecursivelyEnumeratedSet(
+                self.module_generators,
+                lambda x: [x.f(i) for i in index_set],
+                structure='graded',
+                max_depth=max_depth,
+            ).breadth_first_search_iterator()
 
         @cached_method
         def q_dimension(self, q=None, prec=None, use_product=False):
@@ -332,6 +340,7 @@ class HighestWeightCrystals(Category_singleton):
                 [1, 1, 2, 2, 4, 5, 7, 9, 13, 16, 22, 27, 36, 44, 57, 70]
             """
             from sage.rings.integer_ring import ZZ
+
             WLR = self.weight_lattice_realization()
             I = self.index_set()
             mg = self.highest_weight_vectors()
@@ -354,9 +363,13 @@ class HighestWeightCrystals(Category_singleton):
                 # def iter_by_deg
 
             from sage.categories.finite_crystals import FiniteCrystals
+
             if self in FiniteCrystals():
                 if q is None:
-                    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+                    from sage.rings.polynomial.polynomial_ring_constructor import (
+                        PolynomialRing,
+                    )
+
                     q = PolynomialRing(ZZ, 'q').gen(0)
 
                 if use_product:
@@ -367,8 +380,10 @@ class HighestWeightCrystals(Category_singleton):
                     ret = P.zero()
                     for v in self.highest_weight_vectors():
                         hw = v.weight()
-                        ret += P.prod((1 - q**(rho+hw).scalar(ac)) / (1 - q**rho.scalar(ac))
-                                      for ac in pos_coroots)
+                        ret += P.prod(
+                            (1 - q ** (rho + hw).scalar(ac)) / (1 - q ** rho.scalar(ac))
+                            for ac in pos_coroots
+                        )
                     # We do a cast since the result would otherwise live in the fraction field
                     return P(ret)
 
@@ -376,6 +391,7 @@ class HighestWeightCrystals(Category_singleton):
                 # If we're here, we may not be a finite crystal.
                 # In fact, we're probably infinite.
                 from sage.rings.lazy_series_ring import LazyPowerSeriesRing
+
                 if q is None:
                     P = LazyPowerSeriesRing(ZZ, names='q')
                 else:
@@ -385,7 +401,11 @@ class HighestWeightCrystals(Category_singleton):
                 ret = P(iter_by_deg(mg))
                 return ret
 
-            from sage.rings.power_series_ring import PowerSeriesRing, PowerSeriesRing_generic
+            from sage.rings.power_series_ring import (
+                PowerSeriesRing,
+                PowerSeriesRing_generic,
+            )
+
             if q is None:
                 q = PowerSeriesRing(ZZ, 'q', default_prec=prec).gen(0)
             P = q.parent()
@@ -442,7 +462,9 @@ class HighestWeightCrystals(Category_singleton):
             if category is None:
                 category = self.category()
             elif not category.is_subcategory(Crystals()):
-                raise TypeError("{} is not a subcategory of Crystals()".format(category))
+                raise TypeError(
+                    "{} is not a subcategory of Crystals()".format(category)
+                )
             if Y not in Crystals():
                 raise TypeError("{} is not a crystal".format(Y))
             return HighestWeightCrystalHomset(self, Y, category=category, **options)
@@ -494,10 +516,13 @@ class HighestWeightCrystals(Category_singleton):
                 return Crystals().parent_class.digraph(self, subset, index_set)
 
             if self not in Crystals().Finite() and depth is None:
-                raise NotImplementedError("crystals not known to be finite must"
-                                          " specify either the subset or depth")
+                raise NotImplementedError(
+                    "crystals not known to be finite must"
+                    " specify either the subset or depth"
+                )
 
             from sage.graphs.digraph import DiGraph
+
             if index_set is None:
                 index_set = self.index_set()
 
@@ -508,23 +533,26 @@ class HighestWeightCrystals(Category_singleton):
             while depth is None or rank < depth:
                 recently_visited = set()
                 for x in visited:
-                    d.setdefault(x, {}) # does nothing if there's a default
+                    d.setdefault(x, {})  # does nothing if there's a default
                     for i in index_set:
                         xfi = x.f(i)
                         if xfi is not None:
                             d[x][xfi] = i
                             recently_visited.add(xfi)
-                if not recently_visited: # No new nodes, nothing more to do
+                if not recently_visited:  # No new nodes, nothing more to do
                     break
                 rank += 1
                 visited = recently_visited
 
             G = DiGraph(d)
             from sage.graphs.dot2tex_utils import have_dot2tex
+
             if have_dot2tex():
-                G.set_latex_options(format='dot2tex',
-                                    edge_labels=True,
-                                    color_by_label=self.cartan_type()._index_set_coloring)
+                G.set_latex_options(
+                    format='dot2tex',
+                    edge_labels=True,
+                    color_by_label=self.cartan_type()._index_set_coloring,
+                )
             return G
 
     class ElementMethods:
@@ -637,9 +665,12 @@ class HighestWeightCrystals(Category_singleton):
             """
             if word is None:
                 if not self.cartan_type().is_finite():
-                    raise ValueError("the word must be specified because"
-                                     " the Weyl group is not finite")
+                    raise ValueError(
+                        "the word must be specified because"
+                        " the Weyl group is not finite"
+                    )
                 from sage.combinat.root_system.weyl_group import WeylGroup
+
                 word = WeylGroup(self.cartan_type()).long_element().reduced_word()
             x = self
             params = []
@@ -658,6 +689,7 @@ class HighestWeightCrystals(Category_singleton):
         The category of highest weight crystals constructed by tensor
         product of highest weight crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """
@@ -672,6 +704,7 @@ class HighestWeightCrystals(Category_singleton):
             """
             Implement operations on tensor products of crystals.
             """
+
             @cached_method
             def highest_weight_vectors(self) -> tuple:
                 r"""
@@ -785,20 +818,24 @@ class HighestWeightCrystals(Category_singleton):
                 except (TypeError, NotImplementedError, AttributeError):
                     raise NotImplementedError("not implemented for infinite crystals")
                 from sage.categories.regular_crystals import RegularCrystals
+
                 if self in RegularCrystals:
+
                     def hw_test(b2, i, d):
                         return d < 0
                 else:
+
                     def hw_test(b2, i, d):
                         return d < 0 and b2.e(i) is not None
+
                 T_len = [len(elts) for elts in T_elts]
                 m = len(self.crystals) - 1
                 for b in self.crystals[-1].highest_weight_vectors():
                     T_pos = m - 1  # current tensor position
-                    T_cur = [0]*m  # index of current element for each tensor position
-                    path = [None]*m + [b]
+                    T_cur = [0] * m  # index of current element for each tensor position
+                    path = [None] * m + [b]
                     # cache phi for path up to current tensor position
-                    T_phi = [None]*(m-1) + [{i: b.phi(i) for i in I}]
+                    T_phi = [None] * (m - 1) + [{i: b.phi(i) for i in I}]
                     while T_pos < m:
                         if T_cur[T_pos] == T_len[T_pos]:
                             T_cur[T_pos] = 0
@@ -826,10 +863,13 @@ class HighestWeightCrystals(Category_singleton):
                                 T_pos -= 1
                                 # In the regular case, the next line is simply
                                 #   T_phi[T_pos] = {i: b2.phi(i) + b1_phi_minus_b2_epsilon[i] for i in I}
-                                T_phi[T_pos] = {i: b2.phi(i) + max(0, b1_phi_minus_b2_epsilon[i])
-                                                for i in I}
+                                T_phi[T_pos] = {
+                                    i: b2.phi(i) + max(0, b1_phi_minus_b2_epsilon[i])
+                                    for i in I
+                                }
                             else:
                                 yield self.element_class(self, path)
+
 
 ###############################################################################
 ## Morphisms
@@ -858,9 +898,17 @@ class HighestWeightCrystalMorphism(CrystalMorphismByGenerators):
     - ``check`` -- boolean (default: ``True``); check if the crystal morphism
       is valid
     """
-    def __init__(self, parent, on_gens, cartan_type=None,
-                 virtualization=None, scaling_factors=None,
-                 gens=None, check=True):
+
+    def __init__(
+        self,
+        parent,
+        on_gens,
+        cartan_type=None,
+        virtualization=None,
+        scaling_factors=None,
+        gens=None,
+        check=True,
+    ):
         """
         Construct a crystal morphism.
 
@@ -890,9 +938,16 @@ class HighestWeightCrystalMorphism(CrystalMorphismByGenerators):
             self._hw_gens = all(x.is_highest_weight(I) for x in gens)
         else:
             self._hw_gens = False
-        CrystalMorphismByGenerators.__init__(self, parent, on_gens, cartan_type,
-                                             virtualization, scaling_factors,
-                                             gens, check)
+        CrystalMorphismByGenerators.__init__(
+            self,
+            parent,
+            on_gens,
+            cartan_type,
+            virtualization,
+            scaling_factors,
+            gens,
+            check,
+        )
 
     def _call_(self, x):
         """
@@ -948,7 +1003,7 @@ class HighestWeightCrystalMorphism(CrystalMorphismByGenerators):
             s = []
             sf = self._scaling_factors[i]
             for j in self._virtualization[i]:
-                s += [j]*sf
+                s += [j] * sf
             cur = cur.f_string(s)
         return cur
 
@@ -963,6 +1018,7 @@ class HighestWeightCrystalHomset(CrystalHomset):
         See :class:`sage.categories.crystals.CrystalHomset` for more
         information.
     """
+
     def __init__(self, X, Y, category=None):
         """
         Initialize ``self``.

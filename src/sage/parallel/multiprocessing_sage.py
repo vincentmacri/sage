@@ -68,8 +68,7 @@ def parallel_iter(processes, f, inputs):
     p = Pool(processes)
     fp = pickle_function(f)
 
-    result = p.imap_unordered(call_pickled_function,
-                              [(fp, t) for t in inputs])
+    result = p.imap_unordered(call_pickled_function, [(fp, t) for t in inputs])
     yield from result
     p.close()
     p.join()

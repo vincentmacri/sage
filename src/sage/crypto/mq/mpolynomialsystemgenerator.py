@@ -5,6 +5,7 @@ AUTHOR:
 
 Martin Albrecht <malb@informatik.uni-bremen.de>
 """
+
 from sage.structure.sage_object import SageObject
 
 
@@ -27,7 +28,9 @@ class MPolynomialSystemGenerator(SageObject):
         if attr == "R":
             self.R = self.ring()
             return self.R
-        raise AttributeError("'%s' object has no attribute '%s'" % (self.__class__,attr))
+        raise AttributeError(
+            "'%s' object has no attribute '%s'" % (self.__class__, attr)
+        )
 
     def varformatstr(self, name):
         """

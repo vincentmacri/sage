@@ -2,10 +2,11 @@ from typing import Any
 from collections.abc import Callable
 
 
-def verify_no_leak(callback: Callable[[], Any],
-                   repeat: int = 10000,
-                   fuzzy: int = 10,
-                   ) -> None:
+def verify_no_leak(
+    callback: Callable[[], Any],
+    repeat: int = 10000,
+    fuzzy: int = 10,
+) -> None:
     """
     Verify that the callback does not generate new definitely lost blocks
 
@@ -13,7 +14,7 @@ def verify_no_leak(callback: Callable[[], Any],
     """
     import valgrind
 
-    callback()   # warm_up
+    callback()  # warm_up
     initial_blocks = (0, 0, 0, 0)
     valgrind.memcheck_do_leak_check()
     initial_blocks = valgrind.memcheck_count_leak_blocks()

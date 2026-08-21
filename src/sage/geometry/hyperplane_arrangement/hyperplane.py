@@ -149,6 +149,7 @@ class Hyperplane(LinearExpression):
         sage: x + 0 == x + ambient(0)    # because coercion requires them
         True
     """
+
     def __init__(self, parent, coefficients, constant):
         """
         Initialize ``self``.
@@ -196,7 +197,9 @@ class Hyperplane(LinearExpression):
             sage: V([4, 1, 0, -1])._latex_()
             '$x - z = -4$'
         """
-        linear = self._repr_linear(include_zero=False, include_constant=False, multiplication='')
+        linear = self._repr_linear(
+            include_zero=False, include_constant=False, multiplication=''
+        )
         s = '{0} = {1}'.format(linear, -self.b())
         return '${0}$'.format(s)
 
@@ -240,6 +243,7 @@ class Hyperplane(LinearExpression):
             values = [abs(x) for x in self.A()]
         except ArithmeticError:
             from sage.rings.real_double import RDF
+
             values = [abs(RDF(x)) for x in self.A()]
         max_pos = 0
         max_value = values[max_pos]
@@ -293,6 +297,7 @@ class Hyperplane(LinearExpression):
              A vertex at (0, 0, 4/3))
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         R = kwds.pop('base_ring', None)
         if R is None:
             R = self.parent().base_ring()
@@ -320,6 +325,7 @@ class Hyperplane(LinearExpression):
         """
         AA = self.parent().ambient_module()
         from sage.matrix.constructor import matrix
+
         return matrix(AA.base_ring(), [self.A()]).right_kernel()
 
     def linear_part_projection(self, point):
@@ -401,6 +407,7 @@ class Hyperplane(LinearExpression):
         norm2 = sum(x**2 for x in self.A())
         if norm2 == 0:
             from sage.matrix.constructor import matrix, vector
+
             solution = matrix(R, self.A()).solve_right(vector(R, [-self.b()]))
         else:
             solution = [-x * self.b() / norm2 for x in self.A()]
@@ -442,6 +449,7 @@ class Hyperplane(LinearExpression):
             A 2-dimensional polyhedron in QQ^3 defined as the convex hull of 3 vertices
         """
         from sage.geometry.polyhedron.constructor import Polyhedron
+
         if not isinstance(other, sage.geometry.abc.Polyhedron):
             try:
                 other = other.polyhedron()
@@ -490,7 +498,7 @@ class Hyperplane(LinearExpression):
             raise ValueError('norm of hyperplane normal is zero')
         point = P.ambient_vector_space()(point)
         n = self.normal()
-        return point - n * (self.b() + point*n) / norm2
+        return point - n * (self.b() + point * n) / norm2
 
     def primitive(self, signed=True):
         """
@@ -551,19 +559,23 @@ class Hyperplane(LinearExpression):
             60
         """
         from sage.rings.rational_field import QQ
+
         base_ring = self.parent().base_ring()
         coeffs = self.coefficients()
         # first check if the linear expression even defines a hyperplane
         if self.is_zero():
-            raise ValueError('linear expression must be non-constant to define a hyperplane')
+            raise ValueError(
+                'linear expression must be non-constant to define a hyperplane'
+            )
         # for scalar adjustment over the base ring QQ,
         # get rid of the denominators and use gcd
         if base_ring is QQ:
             from sage.arith.functions import lcm
             from sage.arith.misc import gcd
+
             d = lcm(x.denominator() for x in coeffs)
             n = gcd(x.numerator() for x in coeffs)
-            adjustment = d/n
+            adjustment = d / n
         # over other base rings, rescale the coefficients so that
         # the first nonzero of the normal vector is one or negative one
         else:
@@ -606,6 +618,7 @@ class Hyperplane(LinearExpression):
             [  1 2/3]
         """
         from sage.geometry.hyperplane_arrangement.affine_subspace import AffineSubspace
+
         return AffineSubspace(self.point(), self.linear_part())
 
     def plot(self, **kwds):
@@ -621,6 +634,7 @@ class Hyperplane(LinearExpression):
             Graphics object consisting of 2 graphics primitives
         """
         from sage.geometry.hyperplane_arrangement.plot import plot_hyperplane
+
         return plot_hyperplane(self, **kwds)
 
     def __or__(self, other):
@@ -640,7 +654,10 @@ class Hyperplane(LinearExpression):
             sage: (x | y).parent() is L
             True
         """
-        from sage.geometry.hyperplane_arrangement.arrangement import HyperplaneArrangements
+        from sage.geometry.hyperplane_arrangement.arrangement import (
+            HyperplaneArrangements,
+        )
+
         parent = self.parent()
         arrangement = HyperplaneArrangements(parent.base_ring(), names=parent._names)
         return arrangement(self, other)
@@ -669,7 +686,7 @@ class Hyperplane(LinearExpression):
         S = self.parent().symmetric_space()
         G = S.gens()
         # We skip the first coefficient since it corresponds to the constant term
-        return S.sum(G[i]*c for i, c in enumerate(coeff[1:]))
+        return S.sum(G[i] * c for i, c in enumerate(coeff[1:]))
 
 
 class AmbientVectorSpace(LinearExpressionModule):
@@ -704,7 +721,8 @@ class AmbientVectorSpace(LinearExpressionModule):
             self.dimension(),
             's' if self.ngens() > 1 else '',
             ', '.join(self._names),
-            self.base_ring())
+            self.base_ring(),
+        )
 
     def dimension(self):
         """
@@ -766,4 +784,5 @@ class AmbientVectorSpace(LinearExpressionModule):
             Multivariate Polynomial Ring in x, y, z over Rational Field
         """
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         return PolynomialRing(self.base_ring(), self.variable_names())

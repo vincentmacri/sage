@@ -1,14 +1,14 @@
 r"""
 Graded coalgebras with basis
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2008 Teresa Gomez-Diaz (CNRS) <Teresa.Gomez-Diaz@univ-mlv.fr>
 #                2011 Nicolas M. Thiery <nthiery at users.sf.net>
 #                2019 Travis Scrimshaw <tcscrims at gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.graded_modules import GradedModulesCategory
@@ -30,11 +30,13 @@ class GradedCoalgebrasWithBasis(GradedModulesCategory):
 
         sage: TestSuite(C).run()
     """
+
     class SignedTensorProducts(SignedTensorProductsCategory):
         """
         The category of coalgebras with basis constructed by signed tensor
         product of coalgebras with basis.
         """
+
         @cached_method
         def extra_super_categories(self):
             """

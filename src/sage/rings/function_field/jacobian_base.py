@@ -194,6 +194,7 @@ class JacobianPoint_finite_field_base(JacobianPoint_base):
     """
     Points of Jacobians over finite fields.
     """
+
     def additive_order(self):
         """
         Return the order of this point.
@@ -292,6 +293,7 @@ class JacobianGroupFunctor(ConstructionFunctor):
         sage: F
         JacobianGroupFunctor
     """
+
     rank = 20
 
     def __init__(self, base_field, field) -> None:
@@ -384,9 +386,12 @@ class JacobianGroup_base(Parent):
         sage: J.group()
         Group of rational points of Jacobian over Finite Field of size 7 (Hess model)
     """
+
     _embedding_map_class: type[Map] | None = None
 
-    def __init__(self, parent, function_field: FunctionField, base_div: FunctionFieldDivisor) -> None:
+    def __init__(
+        self, parent, function_field: FunctionField, base_div: FunctionFieldDivisor
+    ) -> None:
         """
         Initialize.
 
@@ -540,6 +545,7 @@ class JacobianGroup_finite_field_base(JacobianGroup_base):
         sage: J.group()
         Group of rational points of Jacobian over Finite Field of size 7 (Hess model)
     """
+
     def _bound_on_order(self):
         """
         Return an upper bound on the order of the abelian group.
@@ -584,14 +590,25 @@ class JacobianGroup_finite_field_base(JacobianGroup_base):
         """
         F = self._parent._function_field
         g = F.genus()
-        b = self._function_field.constant_base_field().degree() // F.constant_base_field().degree()
+        b = (
+            self._function_field.constant_base_field().degree()
+            // F.constant_base_field().degree()
+        )
 
         f = F.L_polynomial()
 
         if algorithm == 'numeric':
             # numeric method - fast but might be inaccurate by numerical noise
             from sage.rings.qqbar import AlgebraicField
-            h = Integer(math.prod([(1 - a**(-b))**m for a, m in f.change_ring(AlgebraicField()).roots()]))
+
+            h = Integer(
+                math.prod(
+                    [
+                        (1 - a ** (-b)) ** m
+                        for a, m in f.change_ring(AlgebraicField()).roots()
+                    ]
+                )
+            )
             return h
 
         # algebraic method - slow
@@ -686,7 +703,13 @@ class Jacobian_base(Parent):
         sage: F.jacobian()
         Jacobian of Function field in y defined by y^2 + y + (x^2 + 1)/x (Hess model)
     """
-    def __init__(self, function_field: FunctionField, base_div: FunctionFieldDivisor | FunctionFieldPlace, **kwds) -> None:
+
+    def __init__(
+        self,
+        function_field: FunctionField,
+        base_div: FunctionFieldDivisor | FunctionFieldPlace,
+        **kwds,
+    ) -> None:
         """
         Initialize.
 
@@ -702,9 +725,11 @@ class Jacobian_base(Parent):
         self._system: dict[Field, tuple[JacobianGroup_base, Field]] = {}
         self._base_place = None
         self._curve = kwds.get('curve')
-        super().__init__(category=Jacobians(function_field.constant_base_field()),
-                         base=function_field.constant_base_field(),
-                         facade=True)
+        super().__init__(
+            category=Jacobians(function_field.constant_base_field()),
+            base=function_field.constant_base_field(),
+            facade=True,
+        )
 
     def _repr_(self) -> str:
         """

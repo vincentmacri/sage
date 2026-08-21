@@ -71,8 +71,7 @@ class IdealMonoid_c(Parent):
         cat = Monoids()
         if R.is_commutative():
             cat = cat.Commutative()
-        Parent.__init__(self, base=sage.rings.integer_ring.ZZ,
-                        category=cat)
+        Parent.__init__(self, base=sage.rings.integer_ring.ZZ, category=cat)
         self._populate_coercion_lists_()
 
     def _repr_(self):

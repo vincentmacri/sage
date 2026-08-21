@@ -2,12 +2,12 @@
 r"""
 Finite Crystals
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2010    Anne Schilling <anne at math.ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category_with_axiom import CategoryWithAxiom
@@ -86,6 +86,7 @@ class FiniteCrystals(CategoryWithAxiom):
             Highest weight crystal of type A_3 of highest weight omega_1
         """
         from sage.categories.crystals import Crystals
+
         return Crystals().example(n)
 
     class TensorProducts(TensorProductsCategory):
@@ -93,6 +94,7 @@ class FiniteCrystals(CategoryWithAxiom):
         The category of finite crystals constructed by tensor
         product of finite crystals.
         """
+
         @cached_method
         def extra_super_categories(self):
             """

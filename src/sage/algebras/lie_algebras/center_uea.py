@@ -30,7 +30,9 @@ from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
 from sage.sets.family import Family
 from sage.rings.integer_ring import ZZ
 from sage.categories.kac_moody_algebras import KacMoodyAlgebras
-from sage.categories.finite_dimensional_lie_algebras_with_basis import FiniteDimensionalLieAlgebrasWithBasis
+from sage.categories.finite_dimensional_lie_algebras_with_basis import (
+    FiniteDimensionalLieAlgebrasWithBasis,
+)
 from sage.categories.graded_algebras_with_basis import GradedAlgebrasWithBasis
 from sage.categories.fields import Fields
 from sage.categories.monoids import Monoids
@@ -51,6 +53,7 @@ class CenterIndices(IndexedFreeAbelianMonoid):
     component in increasing order (as each is a finite dimensional vector
     space). For more precise details, see [Motsak2006]_.
     """
+
     @staticmethod
     def __classcall__(cls, center):
         r"""
@@ -128,6 +131,7 @@ class CenterIndices(IndexedFreeAbelianMonoid):
             B\left( Z\left( PBW\left( \mathcal{W}(5)_{\Bold{F}_{5}} \right) \right) \right)
         """
         from sage.misc.latex import latex
+
         return r"B\left( {} \right)".format(latex(self._center))
 
     def lift_on_basis(self, m):
@@ -166,10 +170,16 @@ class CenterIndices(IndexedFreeAbelianMonoid):
             supp = m.support()
             # We might have not computed the correct degree, but we can lift the
             #   element if we have computed all of the corresponding generators.
-            if all(i in self._gen_degrees and self._gen_degrees[i] in self._lift_map
-                   for i in supp):
+            if all(
+                i in self._gen_degrees and self._gen_degrees[i] in self._lift_map
+                for i in supp
+            ):
                 ret = self._envelop_alg.one()
-                divisors = [mp for mp in self._cur_basis_inv if mp.divides(m) and not mp.is_one()]
+                divisors = [
+                    mp
+                    for mp in self._cur_basis_inv
+                    if mp.divides(m) and not mp.is_one()
+                ]
                 while not m.is_one():
                     div = max(divisors, key=lambda elt: len(elt))
                     ls = self._cur_basis_inv[div]
@@ -223,7 +233,9 @@ class CenterIndices(IndexedFreeAbelianMonoid):
         gens = [next(it) for _ in range(4)]
         # We construct it as a set in case we introduce duplicates.
         ret = set(gens)
-        ret.update([self.prod(gens), gens[1] * gens[3]**4, gens[1]**4 * gens[2]**3])
+        ret.update(
+            [self.prod(gens), gens[1] * gens[3] ** 4, gens[1] ** 4 * gens[2] ** 3]
+        )
         # Sort the output for uniqueness
         return sorted(ret, key=lambda m: (self.degree(m), m.to_word_list()))
 
@@ -274,8 +286,8 @@ class CenterIndices(IndexedFreeAbelianMonoid):
         #   so the product order doesn't matter.
         # Since we always update this, it is sufficient to compute it
         new_red = {}
-        for i in range(1, self._cur_deg//2+1):
-            for ls, lelt in self._lift_map[self._cur_deg-i].items():
+        for i in range(1, self._cur_deg // 2 + 1):
+            for ls, lelt in self._lift_map[self._cur_deg - i].items():
                 for rs, relt in self._lift_map[i].items():
                     supp = ls * rs
                     new_red[supp] = lelt * relt
@@ -288,7 +300,9 @@ class CenterIndices(IndexedFreeAbelianMonoid):
         # Determine the PBW elements of the current degree that are not reduced
         #   modulo the currently computed center.
         for exps in IntegerListsLex(n=self._cur_deg, length=len(gens)):
-            elt = monoid.element_class(monoid, {k: p for k, p in zip(monoid._indices, exps) if p})
+            elt = monoid.element_class(
+                monoid, {k: p for k, p in zip(monoid._indices, exps) if p}
+            )
             if elt in new_red:  # already has a central element with this leading term
                 continue
             # A new basis element to consider
@@ -309,11 +323,15 @@ class CenterIndices(IndexedFreeAbelianMonoid):
                 continue
             M = matrix(R, [[v[s] for v in ad] for s in supp])
             ker = M.right_kernel_matrix()
-            vecs = [self._reduce(UEA.linear_combination((vecs[i], c) for i, c in kv.items()))
-                    for kv in ker.rows()]
+            vecs = [
+                self._reduce(
+                    UEA.linear_combination((vecs[i], c) for i, c in kv.items())
+                )
+                for kv in ker.rows()
+            ]
 
         # Lastly, update the appropriate data
-        if not vecs: # No new central elements, so nothing to do
+        if not vecs:  # No new central elements, so nothing to do
             return
         new_gens = {}
         for v in vecs:
@@ -323,8 +341,10 @@ class CenterIndices(IndexedFreeAbelianMonoid):
             ls = v.trailing_support(key=UEA._monomial_key)
             self._cur_vecs.remove(UEA.monomial(ls))
             new_gens[ls] = self._reduce(v)
-            assert (self._cur_num_gens not in self._gen_degrees
-                    or self._gen_degrees[self._cur_num_gens] == self._cur_deg)
+            assert (
+                self._cur_num_gens not in self._gen_degrees
+                or self._gen_degrees[self._cur_num_gens] == self._cur_deg
+            )
             self._gen_degrees[self._cur_num_gens] = self._cur_deg
             mon = self.gen(self._cur_num_gens)
             self._cur_basis[ls] = mon
@@ -382,6 +402,7 @@ class SimpleLieCenterIndices(CenterIndices):
     For more information, see
     :class:`~sage.algebras.lie_algebras.center_uea.CenterIndices`.
     """
+
     def __init__(self, center):
         r"""
         Initialize ``self``.
@@ -419,7 +440,9 @@ class SimpleLieCenterIndices(CenterIndices):
         wts = sorted(self._gen_degrees.values(), reverse=True)
         while True:
             for exps in intvecwt_iterator(deg, wts):
-                yield self.element_class(self, {n-1-i: e for i, e in enumerate(exps) if e})
+                yield self.element_class(
+                    self, {n - 1 - i: e for i, e in enumerate(exps) if e}
+                )
             deg += 1
 
 
@@ -497,6 +520,7 @@ class CenterUEA(CombinatorialFreeModule):
         sage: all(v * g == g * v for g in U.algebra_generators() for v in elts)
         True
     """
+
     def __init__(self, g, UEA):
         r"""
         Initialize ``self``.
@@ -514,7 +538,9 @@ class CenterUEA(CombinatorialFreeModule):
             sage: TestSuite(Z).run()
         """
         if g not in FiniteDimensionalLieAlgebrasWithBasis:
-            raise NotImplementedError("only implemented for finite dimensional Lie algebras with a distinguished basis")
+            raise NotImplementedError(
+                "only implemented for finite dimensional Lie algebras with a distinguished basis"
+            )
 
         R = UEA.base_ring()
         if R not in Fields():
@@ -522,18 +548,27 @@ class CenterUEA(CombinatorialFreeModule):
 
         self._g = g
         self._envelop_alg = UEA
-        if (self._g in KacMoodyAlgebras
+        if (
+            self._g in KacMoodyAlgebras
             and self._g.cartan_type().is_finite()
-            and R.characteristic() == 0):
+            and R.characteristic() == 0
+        ):
             indices = SimpleLieCenterIndices(self)
         else:
             indices = CenterIndices(self)
         category = UEA.category()
         base = category.base()
         category = GradedAlgebrasWithBasis(base).Commutative() | category.Subobjects()
-        CombinatorialFreeModule.__init__(self, R, indices, category=category,
-                                         prefix='', bracket=False, latex_bracket=False,
-                                         sorting_key=self._sorting_key)
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            indices,
+            category=category,
+            prefix='',
+            bracket=False,
+            latex_bracket=False,
+            sorting_key=self._sorting_key,
+        )
         self.lift.register_as_coercion()
 
     def _repr_(self):
@@ -563,6 +598,7 @@ class CenterUEA(CombinatorialFreeModule):
             Z\left( PBW\left( \mathcal{W}(5)_{\Bold{F}_{5}} \right) \right)
         """
         from sage.misc.latex import latex
+
         return r"Z\left( {} \right)".format(latex(self._envelop_alg))
 
     def _sorting_key(self, m):
@@ -615,7 +651,9 @@ class CenterUEA(CombinatorialFreeModule):
         """
         mon_gens = self._indices.monoid_generators()
         if mon_gens.cardinality() == float("inf"):
-            return Family(NonNegativeIntegers(), lambda m: self.monomial(self._indices.unrank(m)))
+            return Family(
+                NonNegativeIntegers(), lambda m: self.monomial(self._indices.unrank(m))
+            )
         return Family({i: self.monomial(mon_gens[i]) for i in mon_gens.keys()})
 
     @cached_method
@@ -704,7 +742,11 @@ class CenterUEA(CombinatorialFreeModule):
         """
         # This is correct if we are using key=self._envelop_alg._monomial_key,
         #   but we are currently unable to pass such an option.
-        return self.module_morphism(self._indices.lift_on_basis, codomain=self._envelop_alg, unitriangular='upper')
+        return self.module_morphism(
+            self._indices.lift_on_basis,
+            codomain=self._envelop_alg,
+            unitriangular='upper',
+        )
 
     def retract(self, elt):
         r"""
@@ -743,7 +785,7 @@ class CenterUEA(CombinatorialFreeModule):
         # in the Chevalley basis as ee are unable to pass a key for the
         # module morphism. Additionally, the implementation below does more
         # operations in-place than the module morphism.
-        #return self.lift.section()
+        # return self.lift.section()
         UEA = self._envelop_alg
         elt = UEA(elt)
         # We manipulate the dictionary (in place) to avoid creating elements

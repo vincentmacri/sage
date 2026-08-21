@@ -56,6 +56,7 @@ REFERENCES:
 - Anders N. Jensen; *Gfan, a software system for Groebner fans*;
   http://home.math.au.dk/jensen/software/gfan/gfan.html
 """
+
 from subprocess import PIPE, Popen
 import pexpect
 import re
@@ -71,6 +72,7 @@ from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.modules.free_module_element import vector
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.all", ["line", "Graphics", "polygon"])
 lazy_import("sage.plot.plot3d.shapes2", "line3d")
 from sage.geometry.polyhedron.constructor import Polyhedron
@@ -96,7 +98,7 @@ def prefix_check(str_list) -> bool:
     for index1, string1 in enumerate(str_list):
         for index2, string2 in enumerate(str_list):
             if index1 != index2:
-                if string1[:len(string2)] == string2:
+                if string1[: len(string2)] == string2:
                     return False
     return True
 
@@ -155,7 +157,6 @@ def _cone_parse(fan_dict_cone) -> dict:
 
 
 class PolyhedralCone(SageObject):
-
     def __init__(self, gfan_polyhedral_cone, ring=QQ) -> None:
         """
         Convert polymake/gfan data on a polyhedral cone into a sage class.
@@ -170,9 +171,15 @@ class PolyhedralCone(SageObject):
             sage: a.facets()
             [[0, 0, 1], [0, 1, 0], [1, 0, 0]]
         """
-        cone_keys = ['AMBIENT_DIM', 'DIM', 'IMPLIED_EQUATIONS',
-                     'LINEALITY_DIM', 'LINEALITY_SPACE', 'FACETS',
-                     'RELATIVE_INTERIOR_POINT']
+        cone_keys = [
+            'AMBIENT_DIM',
+            'DIM',
+            'IMPLIED_EQUATIONS',
+            'LINEALITY_DIM',
+            'LINEALITY_SPACE',
+            'FACETS',
+            'RELATIVE_INTERIOR_POINT',
+        ]
         poly_lines = gfan_polyhedral_cone.split('\n')
         self.cone_dict = {}
         cur_key = None
@@ -206,7 +213,9 @@ class PolyhedralCone(SageObject):
             sage: a # indirect doctests
             Polyhedral cone in 3 dimensions of dimension 3
         """
-        return "Polyhedral cone in {} dimensions of dimension {}".format(self.ambient_dim(), self.dim())
+        return "Polyhedral cone in {} dimensions of dimension {}".format(
+            self.ambient_dim(), self.dim()
+        )
 
     def facets(self) -> list:
         """
@@ -301,10 +310,21 @@ class PolyhedralFan(SageObject):
         """
         if parameter_indices is None:
             parameter_indices = []
-        fan_keys = ['AMBIENT_DIM', 'DIM', 'LINEALITY_DIM', 'RAYS', 'N_RAYS',
-                    'LINEALITY_SPACE', 'ORTH_LINEALITY_SPACE', 'F_VECTOR',
-                    'CONES', 'MAXIMAL_CONES', 'PURE', 'SIMPLICIAL',
-                    'MULTIPLICITIES']
+        fan_keys = [
+            'AMBIENT_DIM',
+            'DIM',
+            'LINEALITY_DIM',
+            'RAYS',
+            'N_RAYS',
+            'LINEALITY_SPACE',
+            'ORTH_LINEALITY_SPACE',
+            'F_VECTOR',
+            'CONES',
+            'MAXIMAL_CONES',
+            'PURE',
+            'SIMPLICIAL',
+            'MULTIPLICITIES',
+        ]
         poly_lines = gfan_polyhedral_fan.split('\n')
         self.fan_dict = {}
         cur_key = None
@@ -342,7 +362,9 @@ class PolyhedralFan(SageObject):
             sage: pf # indirect doctest
             Polyhedral fan in 3 dimensions of dimension 3
         """
-        return "Polyhedral fan in {} dimensions of dimension {}".format(self.ambient_dim(), self.dim())
+        return "Polyhedral fan in {} dimensions of dimension {}".format(
+            self.ambient_dim(), self.dim()
+        )
 
     def _str_(self) -> str:
         r"""
@@ -647,9 +669,9 @@ def verts_for_normal(normal, poly) -> list:
 
 
 class TropicalPrevariety(PolyhedralFan):
-
-    def __init__(self, gfan_polyhedral_fan, polynomial_system, poly_ring,
-                 parameters=None) -> None:
+    def __init__(
+        self, gfan_polyhedral_fan, polynomial_system, poly_ring, parameters=None
+    ) -> None:
         """
         This class is a subclass of the PolyhedralFan class,
         with some additional methods for tropical prevarieties.
@@ -675,8 +697,9 @@ class TropicalPrevariety(PolyhedralFan):
         if parameters is not None:
             allvars = poly_ring.gens()
             parameter_indices = [allvars.index(q) for q in parameters]
-        PolyhedralFan.__init__(self, gfan_polyhedral_fan,
-                               parameter_indices=parameter_indices)
+        PolyhedralFan.__init__(
+            self, gfan_polyhedral_fan, parameter_indices=parameter_indices
+        )
         self._polynomial_system = polynomial_system
         self._parameters = parameters
 
@@ -713,9 +736,11 @@ class TropicalPrevariety(PolyhedralFan):
                         verts = verts_for_normal(repray, poly)
                         nform = 0
                         for x in verts:
-                            factorlist = [pvars[i]**x[i] for i in range(nvars)]
+                            factorlist = [pvars[i] ** x[i] for i in range(nvars)]
                             temp_monomial = prod(factorlist)
-                            nform += poly.monomial_coefficient(temp_monomial) * temp_monomial
+                            nform += (
+                                poly.monomial_coefficient(temp_monomial) * temp_monomial
+                            )
                         iforms.append(nform)
                     initial_form_systems.append(InitialForm(acone, rays, iforms))
             self._initial_form_systems = initial_form_systems
@@ -765,16 +790,20 @@ def ideal_to_gfan_format(input_ring, polys) -> str:
             sage: ideal_to_gfan_format(P,I.gens())
             'Q[x11, x12, x13, x14, x15, x21, x22, x23, x24, x25, x31, x32, x33, x34, x35]{-x12*x21+x11*x22,-x13*x21+x11*x23,-x14*x21+x11*x24,-x15*x21+x11*x25,-x13*x22+x12*x23,-x14*x22+x12*x24,-x15*x22+x12*x25,-x14*x23+x13*x24,-x15*x23+x13*x25,-x15*x24+x14*x25,-x12*x31+x11*x32,-x13*x31+x11*x33,-x14*x31+x11*x34,-x15*x31+x11*x35,-x13*x32+x12*x33,-x14*x32+x12*x34,-x15*x32+x12*x35,-x14*x33+x13*x34,-x15*x33+x13*x35,-x15*x34+x14*x35,-x22*x31+x21*x32,-x23*x31+x21*x33,-x24*x31+x21*x34,-x25*x31+x21*x35,-x23*x32+x22*x33,-x24*x32+x22*x34,-x25*x32+x22*x35,-x24*x33+x23*x34,-x25*x33+x23*x35,-x25*x34+x24*x35}'
     """
-    ideal_gen_str = "{" + ",".join(str(poly).replace(" ", "").replace("'", "")
-                                   for poly in polys) + "}"
+    ideal_gen_str = (
+        "{"
+        + ",".join(str(poly).replace(" ", "").replace("'", "") for poly in polys)
+        + "}"
+    )
     ring_str = ring_to_gfan_format(input_ring)
     output = ring_str + ideal_gen_str
     return output
 
 
 class GroebnerFan(SageObject):
-
-    def __init__(self, I, is_groebner_basis=False, symmetry=None, verbose=False) -> None:
+    def __init__(
+        self, I, is_groebner_basis=False, symmetry=None, verbose=False
+    ) -> None:
         """
         This class is used to access capabilities of the program ``Gfan``.
 
@@ -829,12 +858,20 @@ class GroebnerFan(SageObject):
         R = S.base_ring()
         # todo: add support for ZZ, which only works for bases computation, not tropical intersections
         if not R.is_field():
-            raise NotImplementedError("Groebner fan computation only implemented over fields")
-        if not (R is QQ or (R.is_finite() and R.is_prime_field() and R.order() <= 32749)):
+            raise NotImplementedError(
+                "Groebner fan computation only implemented over fields"
+            )
+        if not (
+            R is QQ or (R.is_finite() and R.is_prime_field() and R.order() <= 32749)
+        ):
             # 32749 is previous_prime(2^15)
-            raise NotImplementedError("Groebner fan computation only implemented over Q or GF(p) for p <= 32749.")
+            raise NotImplementedError(
+                "Groebner fan computation only implemented over Q or GF(p) for p <= 32749."
+            )
         if S.ngens() > 52:
-            raise NotImplementedError("Groebner fan computation only implemented for rings in at most 52 variables.")
+            raise NotImplementedError(
+                "Groebner fan computation only implemented for rings in at most 52 variables."
+            )
 
         self.__ideal = I
         self.__ring = S
@@ -949,8 +986,7 @@ class GroebnerFan(SageObject):
             sage: G._gfan_ideal()
             'Q[x, y, z]{x^2*y-z,y^2*z-x,x*z^2-y}'
         """
-        return ideal_to_gfan_format(self.ring(),
-                                    self.__ideal.gens())
+        return ideal_to_gfan_format(self.ring(), self.__ideal.gens())
 
     def weight_vectors(self) -> list:
         """
@@ -968,8 +1004,9 @@ class GroebnerFan(SageObject):
             sage: len(g4.weight_vectors())
             23
         """
-        gfan_processes = Popen(['gfan', '_weightvector', '-m'],
-                               stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        gfan_processes = Popen(
+            ['gfan', '_weightvector', '-m'], stdin=PIPE, stdout=PIPE, stderr=PIPE
+        )
         b_ans, _ = gfan_processes.communicate(input=self.gfan().encode("utf8"))
         s_ans = b_ans.decode()
         vect = re.compile(r"\([0-9,/\s]*\)")
@@ -1053,8 +1090,10 @@ class GroebnerFan(SageObject):
             G = G.split(']')[1]
         G = G.replace('{{', '').replace('}}', '').split('},{')
         S = self.__ring
-        return [ReducedGroebnerBasis(self, [S(f) for f in G[i].split(',')],
-                                     G[i]) for i in range(len(G))]
+        return [
+            ReducedGroebnerBasis(self, [S(f) for f in G[i].split(',')], G[i])
+            for i in range(len(G))
+        ]
 
     @cached_method
     def _gfan_mod(self) -> str:
@@ -1190,8 +1229,15 @@ class GroebnerFan(SageObject):
         """
         return self.gfan(cmd='homogeneityspace')
 
-    def render(self, file=None, larger=False, shift=0, rgbcolor=(0, 0, 0),
-               polyfill=True, scale_colors=True):
+    def render(
+        self,
+        file=None,
+        larger=False,
+        shift=0,
+        rgbcolor=(0, 0, 0),
+        polyfill=True,
+        scale_colors=True,
+    ):
         """
         Render a Groebner fan as sage graphics or save as an xfig file.
 
@@ -1254,7 +1300,9 @@ class GroebnerFan(SageObject):
             polyfill = max_degree
         S = self.__ring
         if S.ngens() < 3:
-            print("For 2-D fan rendering the polynomial ring must have 3 variables (or more, which are ignored).")
+            print(
+                "For 2-D fan rendering the polynomial ring must have 3 variables (or more, which are ignored)."
+            )
             raise NotImplementedError
         cmd = 'render'
         if shift:
@@ -1275,9 +1323,10 @@ class GroebnerFan(SageObject):
                 sp2.append(y)
         sp3 = []
         for j in range(len(sp2)):
-            temp = [[float(sp2[j][i]) / 1200.0,
-                     float(sp2[j][i + 1]) / 1200.0]
-                    for i in range(0, len(sp2[j]) - 1, 2)]
+            temp = [
+                [float(sp2[j][i]) / 1200.0, float(sp2[j][i + 1]) / 1200.0]
+                for i in range(0, len(sp2[j]) - 1, 2)
+            ]
             sp3.append(temp)
         r_lines = Graphics()
         for x in sp3:
@@ -1290,9 +1339,12 @@ class GroebnerFan(SageObject):
                     vmaxs = [max([q[i] for q in vals]) for i in (0, 1, 2)]
                     for i in (0, 1, 2):
                         if vmaxs[i] == vmins[i]:
-                            vmaxs[i] = vmins[i] + .01
+                            vmaxs[i] = vmins[i] + 0.01
                     for index, sp in enumerate(sp3):
-                        col = [1 - (vals[index][i] - vmins[i]) / (vmaxs[i] - vmins[i]) for i in (0, 1, 2)]
+                        col = [
+                            1 - (vals[index][i] - vmins[i]) / (vmaxs[i] - vmins[i])
+                            for i in (0, 1, 2)
+                        ]
                         r_lines += polygon(sp, rgbcolor=col)
                 else:
                     for index, sp in enumerate(sp3):
@@ -1301,9 +1353,11 @@ class GroebnerFan(SageObject):
                 vmin = min(vals)
                 vmax = max(vals)
                 if vmin == vmax:
-                    vmax = vmin + .01
+                    vmax = vmin + 0.01
                 for index, sp in enumerate(sp3):
-                    r_lines += polygon(sp, hue=.1 + .6 * (vals[index] - vmin) / (vmax - vmin))
+                    r_lines += polygon(
+                        sp, hue=0.1 + 0.6 * (vals[index] - vmin) / (vmax - vmin)
+                    )
             else:
                 for index, sp in enumerate(sp3):
                     r_lines += polygon(sp, hue=vals[index])
@@ -1433,19 +1487,31 @@ class GroebnerFan(SageObject):
         g_cones_facets = [q.facets() for q in g_cones]
         g_cones_ieqs = [self._cone_to_ieq(q) for q in g_cones_facets]
         # Now the cones are intersected with a plane:
-        cone_info = [Polyhedron(ieqs=q, eqns=[[1, -1, -1, -1, -1]])
-                     for q in g_cones_ieqs]
+        cone_info = [
+            Polyhedron(ieqs=q, eqns=[[1, -1, -1, -1, -1]]) for q in g_cones_ieqs
+        ]
         # This is really just for debugging
         if verbose:
             for x in cone_info:
-                print(x.inequalities() + ([1, 1, 0, 0, 0], [1, 0, 1, 0, 0],
-                                          [1, 0, 0, 1, 0], [1, 0, 0, 0, 1]))
+                print(
+                    x.inequalities()
+                    + (
+                        [1, 1, 0, 0, 0],
+                        [1, 0, 1, 0, 0],
+                        [1, 0, 0, 1, 0],
+                        [1, 0, 0, 0, 1],
+                    )
+                )
                 print(x.equations())
                 print()
-        cone_info = [Polyhedron(ieqs=x.inequalities() +
-                                ([1, 1, 0, 0, 0], [1, 0, 1, 0, 0],
-                                 [1, 0, 0, 1, 0], [1, 0, 0, 0, 1]),
-                                eqns=x.equations()) for x in cone_info]
+        cone_info = [
+            Polyhedron(
+                ieqs=x.inequalities()
+                + ([1, 1, 0, 0, 0], [1, 0, 1, 0, 0], [1, 0, 0, 1, 0], [1, 0, 0, 0, 1]),
+                eqns=x.equations(),
+            )
+            for x in cone_info
+        ]
         all_lines = []
         for cone_data in cone_info:
             try:
@@ -1474,8 +1540,9 @@ class GroebnerFan(SageObject):
              'Number of reduced Groebner bases': 3,
              'Number of variables': 2}
         """
-        s = self.gfan(cmd='stats',
-                      I=self._gfan_reduced_groebner_bases().replace(' ', ','))
+        s = self.gfan(
+            cmd='stats', I=self._gfan_reduced_groebner_bases().replace(' ', ',')
+        )
         d = {}
         for v in s.split('\n'):
             if v:
@@ -1613,8 +1680,9 @@ class GroebnerFan(SageObject):
         self[0].interactive(*args, **kwds)
 
     @cached_method
-    def tropical_intersection(self, parameters=None, symmetry_generators=None,
-                              *args, **kwds):
+    def tropical_intersection(
+        self, parameters=None, symmetry_generators=None, *args, **kwds
+    ):
         """
         Return information about the tropical intersection of the
         polynomials defining the ideal.
@@ -1672,8 +1740,9 @@ class GroebnerFan(SageObject):
             allvars = self.ring().gens()
             truevars = [q for q in allvars if q not in parameters]
             base_ring = self.ring().base_ring()
-            new_ring = PolynomialRing(base_ring, len(truevars),
-                                      ",".join(str(q) for q in truevars))
+            new_ring = PolynomialRing(
+                base_ring, len(truevars), ",".join(str(q) for q in truevars)
+            )
             old_polys = self.ideal().gens()
             new_polys = []
             sub = {v: 1 for v in parameters}
@@ -1686,8 +1755,9 @@ class GroebnerFan(SageObject):
             cmd = cmd + ' --symmetryExploit'
             id_str = id_str + '{' + symmetry_generators + '}'
         f = self.gfan(cmd=cmd, I=id_str)
-        pf = TropicalPrevariety(f, self.ideal().gens(), self.ring(),
-                                parameters=parameters)
+        pf = TropicalPrevariety(
+            f, self.ideal().gens(), self.ring(), parameters=parameters
+        )
         pf._gfan_output = f
         return pf
 
@@ -1793,8 +1863,9 @@ class ReducedGroebnerBasis(SageObject, list):
         """
         return self.__groebner_fan
 
-    def interactive(self, latex=False, flippable=False, wall=False,
-                    inequalities=False, weight=False):
+    def interactive(
+        self, latex=False, flippable=False, wall=False, inequalities=False, weight=False
+    ):
         """
         Do an interactive walk of the Groebner fan starting at this reduced
         Groebner basis.

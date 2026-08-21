@@ -148,9 +148,9 @@ def _ex_set(p):
         29 [0, 1, 2, 4, 25, 7]
     """
     k = GF(p)
-    res = [ k(0), k(1), k(2), k(4) ]
+    res = [k(0), k(1), k(2), k(4)]
     R = k['X']
-    f = R([1,-3,1]) #(X**2 - 3*X+1)
+    f = R([1, -3, 1])  # (X**2 - 3*X+1)
     ro = f.roots()
     for a in ro:
         if a[0] not in res:
@@ -201,7 +201,9 @@ class GaloisRepresentation(SageObject):
             sage: rho
             Compatible family of Galois representations associated to the Elliptic Curve defined by y^2 = x^3 + 1 over Rational Field
         """
-        return "Compatible family of Galois representations associated to the " + repr(self._E)
+        return "Compatible family of Galois representations associated to the " + repr(
+            self._E
+        )
 
     def __eq__(self, other):
         r"""
@@ -245,11 +247,12 @@ class GaloisRepresentation(SageObject):
             True
         """
         from copy import copy
+
         return copy(self._E)
 
-#####################################################################
-# reducibility
-#####################################################################
+    #####################################################################
+    # reducibility
+    #####################################################################
 
     def is_reducible(self, p):
         r"""
@@ -297,7 +300,7 @@ class GaloisRepresentation(SageObject):
             self.__is_reducible[p] = False
             return False  # definitely not reducible
         isogeny_matrix = self._E.isogeny_class().matrix(fill=True)
-        v = isogeny_matrix.row(0) # first row
+        v = isogeny_matrix.row(0)  # first row
         for a in v:
             if a != 0 and a % p == 0:
                 self.__is_reducible[p] = True
@@ -349,16 +352,17 @@ class GaloisRepresentation(SageObject):
         E = self._E
         j = E.j_invariant()
         from .isogeny_small_degree import sporadic_j
-        if j in sporadic_j: # includes all CM j-invariants
+
+        if j in sporadic_j:  # includes all CM j-invariants
             R = [sporadic_j[j]]
         else:
-            R = [l for l in [2,3,5,7,13] if len(E.isogenies_prime_degree(l)) > 0]
+            R = [l for l in [2, 3, 5, 7, 13] if len(E.isogenies_prime_degree(l)) > 0]
         self.__reducible_primes = R
         return R
 
-#####################################################################
-# image
-#####################################################################
+    #####################################################################
+    # image
+    #####################################################################
 
     def is_surjective(self, p, A=1000):
         r"""
@@ -464,7 +468,10 @@ class GaloisRepresentation(SageObject):
         T = self._E.torsion_subgroup().order()
         if T % p == 0 and p != 2:
             # we could probably determine the group structure directly
-            self.__image_type[p] = "The image is meta-cyclic inside a Borel subgroup as there is a %s-torsion point on the curve." % p
+            self.__image_type[p] = (
+                "The image is meta-cyclic inside a Borel subgroup as there is a %s-torsion point on the curve."
+                % p
+            )
             return False
 
         R = PolynomialRing(self._E.base_ring(), 'x')
@@ -472,19 +479,25 @@ class GaloisRepresentation(SageObject):
 
         if p == 2:
             # E is isomorphic to  [0,b2,0,8*b4,16*b6]
-            b2,b4,b6,b8 = self._E.b_invariants()
-            f = x**3 + b2*x**2 + 8*b4*x + 16*b6
+            b2, b4, b6, b8 = self._E.b_invariants()
+            f = x**3 + b2 * x**2 + 8 * b4 * x + 16 * b6
             if not f.is_irreducible():
                 if len(f.roots()) > 2:
-                    self.__image_type[p] = "The image is trivial as all 2-torsion points are rational."
+                    self.__image_type[p] = (
+                        "The image is trivial as all 2-torsion points are rational."
+                    )
                 else:
-                    self.__image_type[p] = "The image is cyclic of order 2 as there is exactly one rational 2-torsion point."
-                return False    #, '2-torsion'
+                    self.__image_type[p] = (
+                        "The image is cyclic of order 2 as there is exactly one rational 2-torsion point."
+                    )
+                return False  # , '2-torsion'
             if arith.is_square(f.discriminant()):
                 self.__image_type[p] = "The image is cyclic of order 3."
-                return False    #, "A3"
-            self.__image_type[p] = "The image is all of GL_2(F_2), i.e. a symmetric group of order 6."
-            return True  #, None
+                return False  # , "A3"
+            self.__image_type[p] = (
+                "The image is all of GL_2(F_2), i.e. a symmetric group of order 6."
+            )
+            return True  # , None
 
         if p == 3:
             # Algorithm: Let f be the 3-division polynomial, which is
@@ -506,21 +519,21 @@ class GaloisRepresentation(SageObject):
             # reason, so just used the NormalSubgroups command in MAGMA
             # and it output exactly one of index 2.)
 
-            #sage: G = SymmetricGroup(4)
-            #sage: [H.group_id() for H in G.conjugacy_classes_subgroups()]
-            #[[1, 1], [2, 1], [2, 1], [3, 1], [4, 2], [4, 2], [4, 1], [6, 1], [8, 3], [12, 3], [24, 12]]
-            #sage: G = GL(2,GF(3)).as_matrix_group().as_permutation_group()
-            #sage: [H.group_id() for H in G.conjugacy_classes_subgroups()]
-            #[[1, 1], [2, 1], [2, 1], [3, 1], [4, 2], [4, 1], [6, 2], [6, 1], [6, 1], [8, 4], [8, 1], [8, 3], [12, 4], [16, 8], [24, 3], [48, 29]]
+            # sage: G = SymmetricGroup(4)
+            # sage: [H.group_id() for H in G.conjugacy_classes_subgroups()]
+            # [[1, 1], [2, 1], [2, 1], [3, 1], [4, 2], [4, 2], [4, 1], [6, 1], [8, 3], [12, 3], [24, 12]]
+            # sage: G = GL(2,GF(3)).as_matrix_group().as_permutation_group()
+            # sage: [H.group_id() for H in G.conjugacy_classes_subgroups()]
+            # [[1, 1], [2, 1], [2, 1], [3, 1], [4, 2], [4, 1], [6, 2], [6, 1], [6, 1], [8, 4], [8, 1], [8, 3], [12, 4], [16, 8], [24, 3], [48, 29]]
 
             # Here's Noam Elkies proof for the other direction:
 
-            #> Let E be an elliptic curve over Q.  Is the mod-3
-            #> representation E[3]  surjective if and only if the
-            #> (degree 4) division polynomial has Galois group S_4?  I
-            #> can see why the group being S_4 implies the
-            #> representation is surjective, but the converse is not
-            #> clear to me.
+            # > Let E be an elliptic curve over Q.  Is the mod-3
+            # > representation E[3]  surjective if and only if the
+            # > (degree 4) division polynomial has Galois group S_4?  I
+            # > can see why the group being S_4 implies the
+            # > representation is surjective, but the converse is not
+            # > clear to me.
             # I would have thought that this is the easier part: to
             # say that E[3] is surjective is to say the 3-torsion
             # field Q(E[3]) has Galois group GL_2(Z/3) over Q.  Let
@@ -538,15 +551,15 @@ class GaloisRepresentation(SageObject):
 
             f = self._E.division_polynomial(3)
             if not f.is_irreducible():
-                return False   #, "reducible_3-divpoly"
+                return False  # , "reducible_3-divpoly"
             n = pari(f).polgalois()[0]
             if n == 24:
                 self.__image_type[p] = "The image is all of GL_2(F_3)."
-                return True   #, None
-            return False   #, "3-divpoly_galgroup_order_%s"%n
+                return True  # , None
+            return False  # , "3-divpoly_galgroup_order_%s"%n
 
         if self._E.has_cm():
-            return False   #, "CM"
+            return False  # , "CM"
 
         # Now we try to prove that the rep IS surjective.
 
@@ -570,25 +583,27 @@ class GaloisRepresentation(SageObject):
                 a_ell = self._E.ap(ell)
                 if a_ell % p != 0:
                     if not exclude_exceptional_image:
-                        u = k(a_ell)**2 * k(ell)**(-1)
+                        u = k(a_ell) ** 2 * k(ell) ** (-1)
                         if u not in ex_setp:
                             exclude_exceptional_image = True
-                    s = arith.kronecker(a_ell**2 - 4*ell, p)
+                    s = arith.kronecker(a_ell**2 - 4 * ell, p)
                     if s != 0 and s not in signs:
                         signs.append(s)
                     if len(signs) == 2 and exclude_exceptional_image:
                         self.__image_type[p] = "The image is all of GL_2(F_%s)." % p
-                        return True   #,None
+                        return True  # ,None
 
-        if A == -1: # we came in from is reducible. Now go out with False
+        if A == -1:  # we came in from is reducible. Now go out with False
             return False
 
         if self.is_reducible(p):
-            return False  #, Borel
+            return False  # , Borel
 
         # if we reach this, then we do not know if it is surjective. Most likely
         # not but we can't be certain. See trac 11271.
-        verbose("We can not conclude if the representation is surjective or not. Increasing the parameter A may help.")
+        verbose(
+            "We can not conclude if the representation is surjective or not. Increasing the parameter A may help."
+        )
         return None
 
     def non_surjective(self, A=1000):
@@ -668,25 +683,29 @@ class GaloisRepresentation(SageObject):
         elif not self._E.j_invariant().is_integral():
             # prop 24 in Serre
             vs = self._E.j_invariant().denominator().prime_factors()
-            C1 = arith.gcd([-arith.valuation(self._E.j_invariant(),v) for v in vs])
+            C1 = arith.gcd([-arith.valuation(self._E.j_invariant(), v) for v in vs])
             p0 = 2
             while self._E.has_bad_reduction(p0):
-                p0 = arith.next_prime(p0+1)
-            C2 = (sqrt(p0)+1)**8
-            C = max(C1,C2)
+                p0 = arith.next_prime(p0 + 1)
+            C2 = (sqrt(p0) + 1) ** 8
+            C = max(C1, C2)
             verbose("j is not integral -- Serre's bound is %s" % C)
-            C3 = 1 + 4*sqrt(6)*int(N)/3 * sqrt(mul([1+1.0/int(p) for p,_ in arith.factor(N)]))
-            C = min(C,C3)
-            verbose("conductor = %s, and bound is %s" % (N,C))
+            C3 = 1 + 4 * sqrt(6) * int(N) / 3 * sqrt(
+                mul([1 + 1.0 / int(p) for p, _ in arith.factor(N)])
+            )
+            C = min(C, C3)
+            verbose("conductor = %s, and bound is %s" % (N, C))
         else:
             # Cojocaru's bound (depends on the conductor)
-            C = 1 + 4*sqrt(6)*int(N)/3 * sqrt(mul([1+1.0/int(p) for p,_ in arith.factor(N)]))
-            verbose("conductor = %s, and bound is %s" % (N,C))
+            C = 1 + 4 * sqrt(6) * int(N) / 3 * sqrt(
+                mul([1 + 1.0 / int(p) for p, _ in arith.factor(N)])
+            )
+            verbose("conductor = %s, and bound is %s" % (N, C))
         B = []
         p = 2
         while p <= C:
             t = self.is_surjective(p, A=A)
-            verbose("(%s,%s)" % (p,t))
+            verbose("(%s,%s)" % (p, t))
             # both False and None will be appended here.
             if not t:
                 B.append(p)
@@ -832,7 +851,10 @@ class GaloisRepresentation(SageObject):
         # check if the rep is reducible
 
         if self.is_reducible(p):
-            self.__image_type[p] = "The image is contained in a Borel subgroup as there is a %s-isogeny." % p
+            self.__image_type[p] = (
+                "The image is contained in a Borel subgroup as there is a %s-isogeny."
+                % p
+            )
             return self.__image_type[p]
 
         # if we are then the image of rho is not surjective and not contained in a Borel subgroup
@@ -841,7 +863,9 @@ class GaloisRepresentation(SageObject):
         #                  normalizer of a non-split Cartan,
         # or the image in PGL_2 is one of the three exceptional groups A_4 S_4 A_5
 
-        non_split_str = "The image is contained in the normalizer of a non-split Cartan group."
+        non_split_str = (
+            "The image is contained in the normalizer of a non-split Cartan group."
+        )
         split_str = "The image is contained in the normalizer of a split Cartan group."
         s4_str = "The image in PGL_2(F_%s) is the exceptional group S_4." % p
         a4_str = "The image in PGL_2(F_%s) is the exceptional group A_4." % p
@@ -855,23 +879,29 @@ class GaloisRepresentation(SageObject):
             f = self._E.division_polynomial(3)
             if not f.is_irreducible():
                 # must be a product of two polynomials of degree 2
-                self.__image_type[p] = "The image is contained in a dihedral group of order 8."
+                self.__image_type[p] = (
+                    "The image is contained in a dihedral group of order 8."
+                )
                 return self.__image_type[p]
             n = pari(f).polgalois()[0]
             # the following is due to a simple classification of all subgroups of GL_2(F_3)
             if n == 2:
                 self.__image_type[p] = "The image is a cyclic group of order 4."
             elif n == 4:
-                for ell in prime_range(5,1000):
+                for ell in prime_range(5, 1000):
                     if ell % 3 == 2 and self._E.ap(ell) % 3 != 0:
                         # there is an element of order 8 in the image
                         self.__image_type[p] = "The image is a cyclic group of order 8."
                         return self.__image_type[p]
-                self.__image_type[p] = "The image is a group of order 8, most likely a quaternion group."
+                self.__image_type[p] = (
+                    "The image is a group of order 8, most likely a quaternion group."
+                )
             elif n == 6:
                 self.__image_type[p] = "The image is a dihedral group of order 12."
             elif n == 8:
-                self.__image_type[p] = "The image is a semi-dihedral group of order 16, gap.SmallGroup([16,8])."
+                self.__image_type[p] = (
+                    "The image is a semi-dihedral group of order 16, gap.SmallGroup([16,8])."
+                )
             elif n == 12:
                 self.__image_type[p] = "The image is SL_2(F_3)."
             else:
@@ -889,7 +919,9 @@ class GaloisRepresentation(SageObject):
                 return self.__image_type[p]
             # if the reduction is bad (additive nec.) then
             # the image is in a Borel subgroup and we should have found this before
-            raise NotImplementedError("image_type is not implemented for cm-curves at bad prime.")
+            raise NotImplementedError(
+                "image_type is not implemented for cm-curves at bad prime."
+            )
 
         # now to p=5 where a lot of non-standard thing happen
         # we run through primes if we hit an element of order 6 in PGL_2, we know that it is the normaliser of a NON-split Cartan
@@ -899,14 +931,14 @@ class GaloisRepresentation(SageObject):
             # we filter here a few cases and leave the rest to the computation of the Galois group later
             ell = 1
             k = GF(p)
-            Np = self._E.conductor()*p
+            Np = self._E.conductor() * p
             has_an_el_order_4 = False
             has_an_el_order_3 = False
             while ell < 10000:
                 ell = arith.next_prime(ell)
                 if Np % ell != 0:
                     a_ell = self._E.ap(ell)
-                    u = k(a_ell)**2 * k(ell)**(-1)
+                    u = k(a_ell) ** 2 * k(ell) ** (-1)
                     if u == 3:
                         verbose("found an element of order 6", level=2)
                         # found an element of order 6:
@@ -942,12 +974,13 @@ class GaloisRepresentation(SageObject):
 
             f = self._E.division_polynomial(5)
             from sage.rings.number_field.splitting_field import SplittingFieldAbort
+
             try:
                 K = f.splitting_field('x', degree_multiple=240, abort_degree=24)
             except SplittingFieldAbort:
                 pass
             else:
-                if K.degree() in (4,8,16):
+                if K.degree() in (4, 8, 16):
                     self.__image_type[p] = split_str
                     return self.__image_type[p]
                 if K.degree() == 24:
@@ -958,7 +991,9 @@ class GaloisRepresentation(SageObject):
                     return self.__image_type[p]
                 if K.degree() == 12:
                     # PGL - image could be a S_3 in the normalizer of the split or A4
-                    self.__image_type[p] = "The image is of order 6 or 12. Probably contained in the normalizer of the split Cartan g."
+                    self.__image_type[p] = (
+                        "The image is of order 6 or 12. Probably contained in the normalizer of the split Cartan g."
+                    )
                     return self.__image_type[p]
 
         ## now E has no cm, is not semi-stable,
@@ -975,30 +1010,46 @@ class GaloisRepresentation(SageObject):
             ex_setp = _ex_set(p)
             ell = 1
             k = GF(p)
-            Np = self._E.conductor()*p
+            Np = self._E.conductor() * p
             could_be_exc = 1
             could_be_split = 1
             could_be_non_split = 1
             # loops over primes as long as we still have two options left
-            while ell < 10000 and (could_be_exc + could_be_split + could_be_non_split > 1):
+            while ell < 10000 and (
+                could_be_exc + could_be_split + could_be_non_split > 1
+            ):
                 ell = arith.next_prime(ell)
                 if Np % ell != 0:
                     a_ell = self._E.ap(ell)
-                    u = k(a_ell)**2 * k(ell)**(-1)
+                    u = k(a_ell) ** 2 * k(ell) ** (-1)
                     if (u not in ex_setp) and could_be_exc == 1:
                         # it can not be in the exceptional
-                        verbose("the image cannot be exceptional, found u=%s" % u, level=2)
+                        verbose(
+                            "the image cannot be exceptional, found u=%s" % u, level=2
+                        )
                         could_be_exc = 0
-                    if a_ell != 0 and arith.kronecker(a_ell**2 - 4*ell,p) == 1 and could_be_non_split == 1:
+                    if (
+                        a_ell != 0
+                        and arith.kronecker(a_ell**2 - 4 * ell, p) == 1
+                        and could_be_non_split == 1
+                    ):
                         # it can not be in the normalizer of the non-split Cartan
-                        verbose("the image cannot be non-split, found u=%s" % u, level=2)
+                        verbose(
+                            "the image cannot be non-split, found u=%s" % u, level=2
+                        )
                         could_be_non_split = 0
-                    if a_ell != 0 and arith.kronecker(a_ell**2 - 4*ell,p) == -1 and could_be_split == 1:
+                    if (
+                        a_ell != 0
+                        and arith.kronecker(a_ell**2 - 4 * ell, p) == -1
+                        and could_be_split == 1
+                    ):
                         # it can not be in the normalizer of the split Cartan
                         verbose("the image cannot be split, found u=%s" % u, level=2)
                         could_be_split = 0
 
-            assert could_be_exc + could_be_split + could_be_non_split > 0, "bug in image_type."
+            assert could_be_exc + could_be_split + could_be_non_split > 0, (
+                "bug in image_type."
+            )
 
             if could_be_exc + could_be_split + could_be_non_split == 1:
                 # it is only one of the three cases:
@@ -1017,14 +1068,14 @@ class GaloisRepresentation(SageObject):
                         could_be_a5 = 0
                     # elements of order 5 # bug corrected see trac 14577
                     R = k['X']
-                    f = R([1,-3,1]) #(X**2 - 3*X+1)
+                    f = R([1, -3, 1])  # (X**2 - 3*X+1)
                     el5 = f.roots()
                     # loops over primes as long as we still have two options left
                     while ell < 10000 and (could_be_s4 + could_be_a4 + could_be_a5 > 1):
                         ell = arith.next_prime(ell)
                         if Np % ell != 0:
                             a_ell = self._E.ap(ell)
-                            u = k(a_ell)**2 * k(ell)**(-1)
+                            u = k(a_ell) ** 2 * k(ell) ** (-1)
                             if u == 2:
                                 # it can not be A4 not A5 as they have no elements of order 4
                                 could_be_a4 = 0
@@ -1034,7 +1085,9 @@ class GaloisRepresentation(SageObject):
                                 could_be_a4 = 0
                                 could_be_s4 = 0
 
-                    assert (could_be_s4 + could_be_a4 + could_be_a5 > 0), "bug in image_type."
+                    assert could_be_s4 + could_be_a4 + could_be_a5 > 0, (
+                        "bug in image_type."
+                    )
 
                     if could_be_s4 + could_be_a4 + could_be_a5 == 1:
                         if could_be_s4 == 1:
@@ -1048,7 +1101,10 @@ class GaloisRepresentation(SageObject):
                             return self.__image_type[p]
 
                     else:
-                        self.__image_type[p] = "The image in PGL_2(F_%s) is an exceptional group A_4, S_4 or A_5, but we could not determine which one." % p
+                        self.__image_type[p] = (
+                            "The image in PGL_2(F_%s) is an exceptional group A_4, S_4 or A_5, but we could not determine which one."
+                            % p
+                        )
                         return self.__image_type[p]
 
         # If all fails, we probably have a fairly small group and we can try to detect it using the galois_group
@@ -1073,7 +1129,9 @@ class GaloisRepresentation(SageObject):
                     ab = ""
                 else:
                     ab = "non-"
-                self.__image_type[p] = "The image is a " + ab + "abelian group of order %s." % G.order()
+                self.__image_type[p] = (
+                    "The image is a " + ab + "abelian group of order %s." % G.order()
+                )
                 return self.__image_type[p]
 
         ## everything failed :
@@ -1215,18 +1273,18 @@ class GaloisRepresentation(SageObject):
         while ell <= bound:
             ell = arith.next_prime(ell)
             if ell != p and self._E.is_good(ell):
-                d = (self._E.ap(ell)**2 * ell.inverse_mod(p)) % p
+                d = (self._E.ap(ell) ** 2 * ell.inverse_mod(p)) % p
                 res[d] += 1
                 co += 1
         Rt = RealField(16)
-        res = [Rt(x)/Rt(co) for x in res]
+        res = [Rt(x) / Rt(co) for x in res]
         return res
 
-#####################################################################
-# classification of ell and p-adic reps
-#####################################################################
+    #####################################################################
+    # classification of ell and p-adic reps
+    #####################################################################
 
-# ell-adic reps
+    # ell-adic reps
 
     def is_unramified(self, p, ell):
         r"""
@@ -1298,7 +1356,9 @@ class GaloisRepresentation(SageObject):
         if not arith.is_prime(ell):
             raise ValueError('ell (=%s) must be prime' % ell)
         if ell == p:
-            raise ValueError("unipotent is not defined for l = p, use semistable instead.")
+            raise ValueError(
+                "unipotent is not defined for l = p, use semistable instead."
+            )
         return not self._E.has_additive_reduction(ell)
 
     def is_quasi_unipotent(self, p, ell):
@@ -1325,10 +1385,12 @@ class GaloisRepresentation(SageObject):
         if not arith.is_prime(ell):
             raise ValueError('ell (=%s) must be prime' % ell)
         if ell == p:
-            raise ValueError("quasi unipotent is not defined for l = p, use semistable instead.")
+            raise ValueError(
+                "quasi unipotent is not defined for l = p, use semistable instead."
+            )
         return True
 
-# p-adic reps
+    # p-adic reps
 
     def is_ordinary(self, p):
         r"""
@@ -1357,8 +1419,12 @@ class GaloisRepresentation(SageObject):
         if not arith.is_prime(p):
             raise ValueError('p (=%s) must be prime' % p)
         if self._E.has_additive_reduction(p):
-            raise NotImplementedError('is_ordinary is only implemented for semi-stable representations')
-        return self._E.has_multiplicative_reduction(p) or (self._E.has_good_reduction(p) and self._E.ap(p) % p != 0)
+            raise NotImplementedError(
+                'is_ordinary is only implemented for semi-stable representations'
+            )
+        return self._E.has_multiplicative_reduction(p) or (
+            self._E.has_good_reduction(p) and self._E.ap(p) % p != 0
+        )
 
     def is_crystalline(self, p):
         r"""

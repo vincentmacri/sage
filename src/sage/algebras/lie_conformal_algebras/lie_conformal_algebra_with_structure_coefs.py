@@ -32,8 +32,7 @@ from sage.structure.indexed_generators import (
 )
 
 
-class LieConformalAlgebraWithStructureCoefficients(
-        FinitelyFreelyGeneratedLCA):
+class LieConformalAlgebraWithStructureCoefficients(FinitelyFreelyGeneratedLCA):
     r"""
     A Lie conformal algebra with a set of specified structure
     coefficients.
@@ -120,6 +119,7 @@ class LieConformalAlgebraWithStructureCoefficients(
         ValueError: two distinct values given for one and the same bracket.
         Skew-symmetry is not satisfied?
     """
+
     @staticmethod
     def _standardize_s_coeff(s_coeff, index_set, ce, parity=None):
         """
@@ -168,9 +168,11 @@ class LieConformalAlgebraWithStructureCoefficients(
             myvals = tuple((k, tuple(v.items())) for k, v in vals.items() if v)
 
             if key in sc and sorted(sc[key]) != sorted(myvals):
-                raise ValueError("two distinct values given for one "
-                                 "and the same bracket, skew-symmetry"
-                                 "is not satisfied?")
+                raise ValueError(
+                    "two distinct values given for one "
+                    "and the same bracket, skew-symmetry"
+                    "is not satisfied?"
+                )
             if myvals:
                 sc[key] = myvals
 
@@ -192,10 +194,13 @@ class LieConformalAlgebraWithStructureCoefficients(
                             i0, i1 = i
                             i1j = i1 + j
                             if (i0 not in ce) or (i0 in ce and i1j == 0):
-                                kth_product[(i0, i1j)] = \
-                                    kth_product.get((i0, i1j), 0)
-                                kth_product[(i0, i1j)] += parsgn *\
-                                    v[kj][i] * (-1)**(kj+1)*binomial(i1j, j)
+                                kth_product[(i0, i1j)] = kth_product.get((i0, i1j), 0)
+                                kth_product[(i0, i1j)] += (
+                                    parsgn
+                                    * v[kj][i]
+                                    * (-1) ** (kj + 1)
+                                    * binomial(i1j, j)
+                                )
                 kth_product = {k: v for k, v in kth_product.items() if v}
                 if kth_product:
                     vals[k] = kth_product
@@ -203,16 +208,29 @@ class LieConformalAlgebraWithStructureCoefficients(
             myvals = tuple((k, tuple(v.items())) for k, v in vals.items() if v)
 
             if key in sc and sorted(sc[key]) != sorted(myvals):
-                raise ValueError("two distinct values given for one "
-                                 "and the same bracket. "
-                                 "Skew-symmetry is not satisfied?")
+                raise ValueError(
+                    "two distinct values given for one "
+                    "and the same bracket. "
+                    "Skew-symmetry is not satisfied?"
+                )
             if myvals:
                 sc[key] = myvals
         return Family(sc)
 
-    def __init__(self, R, s_coeff, index_set=None, central_elements=None,
-                 category=None, element_class=None, prefix=None, names=None,
-                 latex_names=None, parity=None, **kwds) -> None:
+    def __init__(
+        self,
+        R,
+        s_coeff,
+        index_set=None,
+        central_elements=None,
+        category=None,
+        element_class=None,
+        prefix=None,
+        names=None,
+        latex_names=None,
+        parity=None,
+        **kwds,
+    ) -> None:
         """
         Initialize ``self``.
 
@@ -228,15 +246,18 @@ class LieConformalAlgebraWithStructureCoefficients(
         if names is not None and names != tuple(index_set):
             names2 = names + tuple(central_elements)
             index_set2 = DisjointUnionEnumeratedSets(
-                (index_set, Family(tuple(central_elements))))
+                (index_set, Family(tuple(central_elements)))
+            )
             d = {x: index_set2[i] for i, x in enumerate(names2)}
             try:
                 # If we are given a dictionary with names as keys,
                 # convert to index_set as keys
-                s_coeff = {(d[k[0]], d[k[1]]):
-                           {a: {(d[x[1]], x[2]): sck[a][x] for x in sck[a]}
-                            for a in sck}
-                           for k, sck in s_coeff.items()}
+                s_coeff = {
+                    (d[k[0]], d[k[1]]): {
+                        a: {(d[x[1]], x[2]): sck[a][x] for x in sck[a]} for a in sck
+                    }
+                    for k, sck in s_coeff.items()
+                }
 
             except KeyError:
                 # We assume the dictionary was given with keys in the
@@ -252,12 +273,14 @@ class LieConformalAlgebraWithStructureCoefficients(
         try:
             assert len(parity) == index_set.cardinality()
         except AssertionError:
-            raise ValueError("parity should have the same length as the "
-                             f"number of generators, got {parity}")
+            raise ValueError(
+                "parity should have the same length as the "
+                f"number of generators, got {parity}"
+            )
 
-        s_coeff = LieConformalAlgebraWithStructureCoefficients\
-            ._standardize_s_coeff(s_coeff, index_set, central_elements,
-                                  parity)
+        s_coeff = LieConformalAlgebraWithStructureCoefficients._standardize_s_coeff(
+            s_coeff, index_set, central_elements, parity
+        )
 
         if names is not None and central_elements is not None:
             names += tuple(central_elements)
@@ -279,17 +302,26 @@ class LieConformalAlgebraWithStructureCoefficients(
             element_class = LCAStructureCoefficientsElement
 
         FinitelyFreelyGeneratedLCA.__init__(
-            self, R, index_set=index_set, central_elements=central_elements,
-            category=category, element_class=element_class,
-            prefix=prefix, names=names, latex_names=latex_names, **kwds)
+            self,
+            R,
+            index_set=index_set,
+            central_elements=central_elements,
+            category=category,
+            element_class=element_class,
+            prefix=prefix,
+            names=names,
+            latex_names=latex_names,
+            **kwds,
+        )
 
         s_coeff = dict(s_coeff)
-        self._s_coeff = Family({k:
-                                tuple((j, sum(c * self.monomial(i)
-                                              for i, c in v)) for j, v in sck)
-                                for k, sck in s_coeff.items()})
-        self._parity = dict(zip(self.gens(),
-                                parity + (0,) * len(central_elements)))
+        self._s_coeff = Family(
+            {
+                k: tuple((j, sum(c * self.monomial(i) for i, c in v)) for j, v in sck)
+                for k, sck in s_coeff.items()
+            }
+        )
+        self._parity = dict(zip(self.gens(), parity + (0,) * len(central_elements)))
 
     def structure_coefficients(self) -> AbstractFamily:
         """

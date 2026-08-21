@@ -77,20 +77,29 @@ class KRTToRCBijectionTypeD(KRTToRCBijectionTypeA):
             <BLANKLINE>
         """
         if verbose:
-            from sage.combinat.rigged_configurations.tensor_product_kr_tableaux_element \
-              import TensorProductOfKirillovReshetikhinTableauxElement
+            from sage.combinat.rigged_configurations.tensor_product_kr_tableaux_element import (
+                TensorProductOfKirillovReshetikhinTableauxElement,
+            )
 
         for cur_crystal in reversed(self.tp_krt):
             r = cur_crystal.parent().r()
             # Iterate through the columns
-            for col_number, cur_column in enumerate(reversed(cur_crystal.to_array(False))):
+            for col_number, cur_column in enumerate(
+                reversed(cur_crystal.to_array(False))
+            ):
                 self.cur_path.insert(0, [])  # Prepend an empty list
 
                 # Check to see if we are a spinor column
-                if r >= self.n-1:
+                if r >= self.n - 1:
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -107,7 +116,13 @@ class KRTToRCBijectionTypeD(KRTToRCBijectionTypeA):
 
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -117,10 +132,16 @@ class KRTToRCBijectionTypeD(KRTToRCBijectionTypeA):
                     self.next_state(val)
 
                 # Check to see if we are a spinor column
-                if r >= self.n-1:
+                if r >= self.n - 1:
                     if verbose:
                         print("====================")
-                        print(repr(TensorProductOfKirillovReshetikhinTableauxElement(self.tp_krt.parent(), self.cur_path)))
+                        print(
+                            repr(
+                                TensorProductOfKirillovReshetikhinTableauxElement(
+                                    self.tp_krt.parent(), self.cur_path
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(repr(self.ret_rig_con))
                         print("--------------------\n")
@@ -183,8 +204,8 @@ class KRTToRCBijectionTypeD(KRTToRCBijectionTypeA):
             #    where we only update the vacancy numbers
             # This only occurs with `r = n - 1`
             if self.cur_dims[0][0] == n - 1 and tableau_height == n - 1:
-                self._update_vacancy_nums(n-2)
-                self._update_vacancy_nums(n-1)
+                self._update_vacancy_nums(n - 2)
+                self._update_vacancy_nums(n - 1)
                 self._correct_vacancy_nums()
                 return
 
@@ -225,8 +246,11 @@ class KRTToRCBijectionTypeD(KRTToRCBijectionTypeA):
         else:
             max_width = 1
         # Special case for `\overline{n-1}` to take the larger of the last two
-        if pos_val == n - 1 and len(self.ret_rig_con[n - 1]) > 0 and \
-          self.ret_rig_con[n - 1][0] + 1 > max_width:
+        if (
+            pos_val == n - 1
+            and len(self.ret_rig_con[n - 1]) > 0
+            and self.ret_rig_con[n - 1][0] + 1 > max_width
+        ):
             max_width = self.ret_rig_con[n - 1][0] + 1
 
         # Add cells similar to type A_n but we move to the right until we reach
@@ -269,8 +293,8 @@ class KRTToRCBijectionTypeD(KRTToRCBijectionTypeA):
                     self._update_vacancy_nums(a)
                     self._update_partition_values(a)
                 if pos_val > 1:
-                    self._update_vacancy_nums(pos_val-2)
-                    self._update_partition_values(pos_val-2)
+                    self._update_vacancy_nums(pos_val - 2)
+                    self._update_partition_values(pos_val - 2)
             elif 0 < tableau_height:
                 self._update_vacancy_nums(tableau_height - 1)
                 self._update_partition_values(tableau_height - 1)
@@ -279,8 +303,8 @@ class KRTToRCBijectionTypeD(KRTToRCBijectionTypeA):
                 self._update_vacancy_nums(a)
                 self._update_partition_values(a)
             if pos_val > 1:
-                self._update_vacancy_nums(pos_val-2)
-                self._update_partition_values(pos_val-2)
+                self._update_vacancy_nums(pos_val - 2)
+                self._update_partition_values(pos_val - 2)
 
     def _correct_vacancy_nums(self):
         r"""
@@ -443,6 +467,7 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
             Digraph on 3 vertices
         """
         from sage.combinat.crystals.letters import CrystalOfLetters
+
         letters = CrystalOfLetters(self.rigged_con.parent()._cartan_type.classical())
 
         # This is technically bad, but because the first thing we do is append
@@ -467,14 +492,25 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
                         self._update_vacancy_numbers(a)
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), 'ls'])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), 'ls']
+                        )
 
                 # Check to see if we are a spinor
                 if dim[0] >= self.n - 1:
                     if verbose:
                         print("====================")
-                        print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                        print(
+                            repr(
+                                self.rigged_con.parent()(
+                                    *self.cur_partitions, use_vacancy_numbers=True
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(ret_crystal_path)
                         print("--------------------\n")
@@ -482,13 +518,24 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
                     self.doubling_map()
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), '2x'])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), '2x']
+                        )
 
                     if dim[0] == self.n - 1:
                         if verbose:
                             print("====================")
-                            print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                            print(
+                                repr(
+                                    self.rigged_con.parent()(
+                                        *self.cur_partitions, use_vacancy_numbers=True
+                                    )
+                                )
+                            )
                             print("--------------------")
                             print(ret_crystal_path)
                             print("--------------------\n")
@@ -498,13 +545,24 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
                         ret_crystal_path[-1].append(letters(b))  # Append the rank
 
                         if build_graph:
-                            y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                            self._graph.append([self._graph[-1][1], (y, len(self._graph)), letters(b)])
+                            y = self.rigged_con.parent()(
+                                *[x._clone() for x in self.cur_partitions],
+                                use_vacancy_numbers=True,
+                            )
+                            self._graph.append(
+                                [self._graph[-1][1], (y, len(self._graph)), letters(b)]
+                            )
 
                 while self.cur_dims[0][0] > 0:
                     if verbose:
                         print("====================")
-                        print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                        print(
+                            repr(
+                                self.rigged_con.parent()(
+                                    *self.cur_partitions, use_vacancy_numbers=True
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(ret_crystal_path)
                         print("--------------------\n")
@@ -513,24 +571,38 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
                     b = self.next_state(self.cur_dims[0][0])
 
                     # Corrections for spinor
-                    if dim[0] == self.n and b == -self.n \
-                      and self.cur_dims[0][0] == self.n - 1:
-                        b = -(self.n-1)
+                    if (
+                        dim[0] == self.n
+                        and b == -self.n
+                        and self.cur_dims[0][0] == self.n - 1
+                    ):
+                        b = -(self.n - 1)
 
                     # Make sure we have a crystal letter
                     ret_crystal_path[-1].append(letters(b))  # Append the rank
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), letters(b)])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), letters(b)]
+                        )
 
                 self.cur_dims.pop(0)  # Pop off the leading column
 
                 # Check to see if we were a spinor
-                if dim[0] >= self.n-1:
+                if dim[0] >= self.n - 1:
                     if verbose:
                         print("====================")
-                        print(repr(self.rigged_con.parent()(*self.cur_partitions, use_vacancy_numbers=True)))
+                        print(
+                            repr(
+                                self.rigged_con.parent()(
+                                    *self.cur_partitions, use_vacancy_numbers=True
+                                )
+                            )
+                        )
                         print("--------------------")
                         print(ret_crystal_path)
                         print("--------------------\n")
@@ -538,13 +610,19 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
                     self.halving_map()
 
                     if build_graph:
-                        y = self.rigged_con.parent()(*[x._clone() for x in self.cur_partitions], use_vacancy_numbers=True)
-                        self._graph.append([self._graph[-1][1], (y, len(self._graph)), '1/2x'])
+                        y = self.rigged_con.parent()(
+                            *[x._clone() for x in self.cur_partitions],
+                            use_vacancy_numbers=True,
+                        )
+                        self._graph.append(
+                            [self._graph[-1][1], (y, len(self._graph)), '1/2x']
+                        )
 
         if build_graph:
-            self._graph.pop(0) # Remove the dummy at the start
+            self._graph.pop(0)  # Remove the dummy at the start
             from sage.graphs.digraph import DiGraph
             from sage.graphs.dot2tex_utils import have_dot2tex
+
             self._graph = DiGraph(self._graph, format='list_of_edges')
             if have_dot2tex():
                 self._graph.set_latex_options(format='dot2tex', edge_labels=True)
@@ -564,7 +642,7 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
             1
         """
         n = self.n
-        ell = [None] * (2 * n - 2) # No `\bar{\ell}^{n-1}` and `\bar{\ell}^n`
+        ell = [None] * (2 * n - 2)  # No `\bar{\ell}^{n-1}` and `\bar{\ell}^n`
         b = None
 
         # Calculate the rank and ell values
@@ -581,22 +659,30 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
 
         if height == n:
             # Special case from height `n` spinor with `r = n-1`
-            ell[n - 2] = self._find_singular_string(self.cur_partitions[n - 2], last_size)
+            ell[n - 2] = self._find_singular_string(
+                self.cur_partitions[n - 2], last_size
+            )
             if ell[n - 2] is not None:
                 last_size = self.cur_partitions[n - 2][ell[n - 2]]
             else:
                 b = -n
         elif height == n - 1:
             # Special case for height `n-1` spinor
-            ell[n - 1] = self._find_singular_string(self.cur_partitions[n - 1], last_size)
+            ell[n - 1] = self._find_singular_string(
+                self.cur_partitions[n - 1], last_size
+            )
             if ell[n - 1] is not None:
                 last_size = self.cur_partitions[n - 1][ell[n - 1]]
             else:
                 b = n
         elif b is None:
             # Do the special cases when we've reached n - 2
-            ell[n - 2] = self._find_singular_string(self.cur_partitions[n - 2], last_size)
-            ell[n - 1] = self._find_singular_string(self.cur_partitions[n - 1], last_size)
+            ell[n - 2] = self._find_singular_string(
+                self.cur_partitions[n - 2], last_size
+            )
+            ell[n - 1] = self._find_singular_string(
+                self.cur_partitions[n - 1], last_size
+            )
 
             if ell[n - 2] is not None:
                 temp_size = self.cur_partitions[n - 2][ell[n - 2]]
@@ -619,8 +705,11 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
                 if a < height:
                     end = len(self.cur_partitions[a])
                 for i in reversed(range(end)):
-                    if self.cur_partitions[a][i] >= last_size and \
-                      self.cur_partitions[a].vacancy_numbers[i] == self.cur_partitions[a].rigging[i]:
+                    if (
+                        self.cur_partitions[a][i] >= last_size
+                        and self.cur_partitions[a].vacancy_numbers[i]
+                        == self.cur_partitions[a].rigging[i]
+                    ):
                         ell[n + a] = i
                         break
 
@@ -643,11 +732,13 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
 
             self._update_vacancy_numbers(a - 1)
             if ret_row is not None:
-                self.cur_partitions[a - 1].rigging[ret_row] = \
-                  self.cur_partitions[a - 1].vacancy_numbers[ret_row]
+                self.cur_partitions[a - 1].rigging[ret_row] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[ret_row]
             if ret_row_bar is not None:
-                self.cur_partitions[a - 1].rigging[ret_row_bar] = \
-                  self.cur_partitions[a - 1].vacancy_numbers[ret_row_bar]
+                self.cur_partitions[a - 1].rigging[ret_row_bar] = self.cur_partitions[
+                    a - 1
+                ].vacancy_numbers[ret_row_bar]
 
             ret_row = ret_row_next
             ret_row_bar = ret_row_bar_next
@@ -658,23 +749,27 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
 
         self._update_vacancy_numbers(n - 3)
         if ret_row is not None:
-            self.cur_partitions[n - 3].rigging[ret_row] = \
-              self.cur_partitions[n - 3].vacancy_numbers[ret_row]
+            self.cur_partitions[n - 3].rigging[ret_row] = self.cur_partitions[
+                n - 3
+            ].vacancy_numbers[ret_row]
         if ret_row_bar is not None:
-            self.cur_partitions[n - 3].rigging[ret_row_bar] = \
-              self.cur_partitions[n - 3].vacancy_numbers[ret_row_bar]
+            self.cur_partitions[n - 3].rigging[ret_row_bar] = self.cur_partitions[
+                n - 3
+            ].vacancy_numbers[ret_row_bar]
 
         self._update_vacancy_numbers(n - 2)
         if ret_row_next is not None:
-            self.cur_partitions[n - 2].rigging[ret_row_next] = \
-              self.cur_partitions[n - 2].vacancy_numbers[ret_row_next]
+            self.cur_partitions[n - 2].rigging[ret_row_next] = self.cur_partitions[
+                n - 2
+            ].vacancy_numbers[ret_row_next]
 
         self._update_vacancy_numbers(n - 1)
         if height >= n - 1:
             self._correct_vacancy_nums()
         if ret_row_bar_next is not None:
-            self.cur_partitions[n - 1].rigging[ret_row_bar_next] = \
-              self.cur_partitions[n - 1].vacancy_numbers[ret_row_bar_next]
+            self.cur_partitions[n - 1].rigging[ret_row_bar_next] = self.cur_partitions[
+                n - 1
+            ].vacancy_numbers[ret_row_bar_next]
 
         return b
 
@@ -766,5 +861,5 @@ class RCToKRTBijectionTypeD(RCToKRTBijectionTypeA):
             -4
         """
         n = self.n
-        for i in range(len(self.cur_partitions[n-1]._list)):
-            self.cur_partitions[n-1].vacancy_numbers[i] += 1
+        for i in range(len(self.cur_partitions[n - 1]._list)):
+            self.cur_partitions[n - 1].vacancy_numbers[i] += 1

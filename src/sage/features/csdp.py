@@ -32,6 +32,7 @@ class CSDP(Executable):
         sage: CSDP().is_present()  # optional - csdp
         FeatureTestResult('csdp', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -40,8 +41,13 @@ class CSDP(Executable):
             sage: isinstance(CSDP(), CSDP)
             True
         """
-        Executable.__init__(self, name='csdp', spkg='csdp', executable='theta',
-                                url='https://github.com/dimpase/csdp')
+        Executable.__init__(
+            self,
+            name='csdp',
+            spkg='csdp',
+            executable='theta',
+            url='https://github.com/dimpase/csdp',
+        )
 
     def is_functional(self):
         r"""
@@ -64,16 +70,24 @@ class CSDP(Executable):
             try:
                 lines = subprocess.check_output(command, stderr=devnull)
             except subprocess.CalledProcessError as e:
-                return FeatureTestResult(self, False,
-                    reason="Call to `{command}` failed with exit code {e.returncode}."
-                                             .format(command=" ".join(command), e=e))
+                return FeatureTestResult(
+                    self,
+                    False,
+                    reason="Call to `{command}` failed with exit code {e.returncode}.".format(
+                        command=" ".join(command), e=e
+                    ),
+                )
 
         result = bytes_to_str(lines).strip().split('\n')[-1]
         match = re.match("^The Lovasz Theta Number is (.*)$", result)
         if match is None:
-            return FeatureTestResult(self, False,
-                reason="Last line of the output of `{command}` did not have the expected format."
-                                         .format(command=" ".join(command)))
+            return FeatureTestResult(
+                self,
+                False,
+                reason="Last line of the output of `{command}` did not have the expected format.".format(
+                    command=" ".join(command)
+                ),
+            )
 
         return FeatureTestResult(self, True)
 

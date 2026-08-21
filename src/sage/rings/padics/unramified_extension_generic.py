@@ -19,7 +19,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from .padic_extension_generic import pAdicExtensionGeneric
 from sage.rings.finite_rings.finite_field_constructor import GF
 from sage.misc.cachefunc import cached_method
@@ -29,6 +28,7 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
     r"""
     An unramified extension of `\QQ_p` or `\ZZ_p`.
     """
+
     def __init__(self, poly, prec, print_mode, names, element_class):
         """
         Initialize ``self``.
@@ -46,13 +46,19 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
 
             sage: R.<a> = Zq(27)  # indirect doctest                                    # needs sage.libs.ntl
         """
-        #base = poly.base_ring()
-        #if base.is_field():
+        # base = poly.base_ring()
+        # if base.is_field():
         #    self._PQR = pqr.PolynomialQuotientRing_field(poly.parent(), poly, name = names)
-        #else:
+        # else:
         #    self._PQR = pqr.PolynomialQuotientRing_domain(poly.parent(), poly, name = names)
-        pAdicExtensionGeneric.__init__(self, poly, prec, print_mode, names, element_class)
-        self._res_field = GF(self.prime_pow.pow_Integer_Integer(poly.degree()), name=names[1], modulus=poly.change_ring(poly.base_ring().residue_field()))
+        pAdicExtensionGeneric.__init__(
+            self, poly, prec, print_mode, names, element_class
+        )
+        self._res_field = GF(
+            self.prime_pow.pow_Integer_Integer(poly.degree()),
+            name=names[1],
+            modulus=poly.change_ring(poly.base_ring().residue_field()),
+        )
 
     def _extension_type(self):
         """
@@ -92,10 +98,10 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
         """
         return self.modulus().degree() * self.base_ring().absolute_f()
 
-    #def extension(self, *args, **kwds):
+    # def extension(self, *args, **kwds):
     #    raise NotImplementedError
 
-    #def get_extension(self):
+    # def get_extension(self):
     #    raise NotImplementedError
 
     def residue_class_field(self):
@@ -107,10 +113,10 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
             sage: R.<a> = Zq(125); R.residue_class_field()                              # needs sage.libs.ntl
             Finite Field in a0 of size 5^3
         """
-        #should eventually take advantage of finite field
-        #\code{extension} or finite field
-        #\code{unramified_extension_of_degree} over the automatic
-        #coercion base.
+        # should eventually take advantage of finite field
+        # \code{extension} or finite field
+        # \code{unramified_extension_of_degree} over the automatic
+        # coercion base.
         return self._res_field
 
     def residue_ring(self, n):
@@ -154,10 +160,10 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
             return 1
         raise NotImplementedError
 
-    #def automorphisms(self):
+    # def automorphisms(self):
     #    raise NotImplementedError
 
-    #def galois_group(self):
+    # def galois_group(self):
     #    r"""
     #    Returns the Galois group of ``self``'s fraction field over Qp.
     #    """
@@ -169,7 +175,7 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
     #    from sage.groups.perm_gps.permgroup import CyclicPermutationGroup
     #    return CyclicPermutationGroup(self.modulus().degree())
 
-    #def is_abelian(self):
+    # def is_abelian(self):
     #    return True
 
     def is_galois(self, K=None):
@@ -206,7 +212,7 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
         """
         if n != 0:
             raise IndexError("only one generator")
-        return self([0,1])
+        return self([0, 1])
 
     @cached_method
     def _frob_gen(self, arithmetic=True):
@@ -223,8 +229,10 @@ class UnramifiedExtensionGeneric(pAdicExtensionGeneric):
         exp = p
         a = self.gen()
         if not arithmetic:
-            exp = p**(self.absolute_degree() - 1)
-        approx = (self(a.residue()**exp)).lift_to_precision(self.precision_cap()) #first approximation
+            exp = p ** (self.absolute_degree() - 1)
+        approx = (self(a.residue() ** exp)).lift_to_precision(
+            self.precision_cap()
+        )  # first approximation
         f = self.defining_polynomial()
         g = f.derivative()
         while f(approx) != 0:  # hensel lift frobenius(a)

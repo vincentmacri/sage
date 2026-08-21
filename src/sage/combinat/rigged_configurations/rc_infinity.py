@@ -29,8 +29,12 @@ from sage.categories.highest_weight_crystals import HighestWeightCrystals
 from sage.categories.homset import Hom
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.rigged_configurations.rigged_configuration_element import (
-     RiggedConfigurationElement, RCNonSimplyLacedElement)
-from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+    RiggedConfigurationElement,
+    RCNonSimplyLacedElement,
+)
+from sage.combinat.rigged_configurations.rigged_configurations import (
+    RiggedConfigurations,
+)
 from sage.combinat.rigged_configurations.rigged_partition import RiggedPartition
 
 # Note on implementation, this class is used for simply-laced types only
@@ -130,6 +134,7 @@ class InfinityCrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
 
         sage: RiggedConfigurations.options._reset()
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type):
         r"""
@@ -143,6 +148,7 @@ class InfinityCrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
             True
         """
         from sage.combinat.root_system.type_folded import CartanTypeFolded
+
         if isinstance(cartan_type, CartanTypeFolded):
             return InfinityCrystalOfNonSimplyLacedRC(cartan_type)
 
@@ -171,7 +177,9 @@ class InfinityCrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
         # We store the Cartan matrix for the vacancy number
         # calculations for speed
         self._cartan_matrix = self._cartan_type.cartan_matrix()
-        self.module_generators = (self.element_class(self, rigging_list=[[]]*cartan_type.rank()),)
+        self.module_generators = (
+            self.element_class(self, rigging_list=[[]] * cartan_type.rank()),
+        )
 
     options = RiggedConfigurations.options
 
@@ -184,7 +192,9 @@ class InfinityCrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
             sage: crystals.infinity.RiggedConfigurations(['A', 3])
             The infinity crystal of rigged configurations of type ['A', 3]
         """
-        return "The infinity crystal of rigged configurations of type {}".format(self._cartan_type)
+        return "The infinity crystal of rigged configurations of type {}".format(
+            self._cartan_type
+        )
 
     def _element_constructor_(self, lst=None, **options):
         """
@@ -218,7 +228,9 @@ class InfinityCrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
         """
         if isinstance(lst, RiggedConfigurationElement):
             lst = [p._clone() for p in lst]  # Make a deep copy
-        elif isinstance(lst, list) and bool(lst) and isinstance(lst[0], RiggedPartition):
+        elif (
+            isinstance(lst, list) and bool(lst) and isinstance(lst[0], RiggedPartition)
+        ):
             lst = [p._clone() for p in lst]  # Make a deep copy
         return self.element_class(self, lst, **options)
 
@@ -236,10 +248,18 @@ class InfinityCrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
               To:   The infinity crystal of rigged configurations of type ['A', 3]
         """
         if self.cartan_type().is_finite():
-            from sage.combinat.crystals.infinity_crystals import InfinityCrystalOfTableaux
-            if (isinstance(P, InfinityCrystalOfTableaux)
-                and self.cartan_type().is_simply_laced()):
-                from sage.combinat.rigged_configurations.bij_infinity import FromTableauIsomorphism
+            from sage.combinat.crystals.infinity_crystals import (
+                InfinityCrystalOfTableaux,
+            )
+
+            if (
+                isinstance(P, InfinityCrystalOfTableaux)
+                and self.cartan_type().is_simply_laced()
+            ):
+                from sage.combinat.rigged_configurations.bij_infinity import (
+                    FromTableauIsomorphism,
+                )
+
                 return FromTableauIsomorphism(Hom(P, self))
         return super()._coerce_map_from_(P)
 
@@ -266,11 +286,14 @@ class InfinityCrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
             -1
         """
         if i == float('inf'):
-            return -sum(self._cartan_matrix[a, b] * sum(nu)
-                        for b, nu in enumerate(partitions))
+            return -sum(
+                self._cartan_matrix[a, b] * sum(nu) for b, nu in enumerate(partitions)
+            )
 
-        return -sum(self._cartan_matrix[a, b] * nu.get_num_cells_to_column(i)
-                    for b, nu in enumerate(partitions))
+        return -sum(
+            self._cartan_matrix[a, b] * nu.get_num_cells_to_column(i)
+            for b, nu in enumerate(partitions)
+        )
 
     # FIXME: Remove this method!!!
     def weight_lattice_realization(self):
@@ -354,9 +377,15 @@ class InfinityCrystalOfNonSimplyLacedRC(InfinityCrystalOfRiggedConfigurations):
               To:   The infinity crystal of rigged configurations of type ['C', 3]
         """
         if self.cartan_type().is_finite():
-            from sage.combinat.crystals.infinity_crystals import InfinityCrystalOfTableaux
+            from sage.combinat.crystals.infinity_crystals import (
+                InfinityCrystalOfTableaux,
+            )
+
             if isinstance(P, InfinityCrystalOfTableaux):
-                from sage.combinat.rigged_configurations.bij_infinity import FromTableauIsomorphism
+                from sage.combinat.rigged_configurations.bij_infinity import (
+                    FromTableauIsomorphism,
+                )
+
                 return FromTableauIsomorphism(Hom(P, self))
         return super()._coerce_map_from_(P)
 
@@ -388,8 +417,9 @@ class InfinityCrystalOfNonSimplyLacedRC(InfinityCrystalOfRiggedConfigurations):
         vac_num = 0
 
         if i == float('inf'):
-            return -sum(self._cartan_matrix[a, b] * sum(nu)
-                        for b, nu in enumerate(partitions))
+            return -sum(
+                self._cartan_matrix[a, b] * sum(nu) for b, nu in enumerate(partitions)
+            )
 
         gamma = self._folded_ct.scaling_factors()
         g = gamma[ia]
@@ -457,8 +487,9 @@ class InfinityCrystalOfNonSimplyLacedRC(InfinityCrystalOfRiggedConfigurations):
                 k = vindex.index(i)
                 partitions[k] = [row_len * gamma[a] for row_len in rp._list]
                 riggings[k] = [rig_val * gamma[a] for rig_val in rp.rigging]
-        return self.virtual.element_class(self.virtual, partition_list=partitions,
-                                          rigging_list=riggings)
+        return self.virtual.element_class(
+            self.virtual, partition_list=partitions, rigging_list=riggings
+        )
 
     def from_virtual(self, vrc):
         """
@@ -484,7 +515,9 @@ class InfinityCrystalOfNonSimplyLacedRC(InfinityCrystalOfRiggedConfigurations):
             sage: ret == elt
             True
         """
-        gamma = list(self._folded_ct.scaling_factors())  # map(int, self._folded_ct.scaling_factors())
+        gamma = list(
+            self._folded_ct.scaling_factors()
+        )  # map(int, self._folded_ct.scaling_factors())
         sigma = self._folded_ct._orbit
         n = self._cartan_type.rank()
         partitions = [None] * n
@@ -495,8 +528,9 @@ class InfinityCrystalOfNonSimplyLacedRC(InfinityCrystalOfRiggedConfigurations):
             index = vindex.index(sigma[a][0])
             partitions[a] = [row_len // gamma[a] for row_len in vrc[index]._list]
             riggings[a] = [rig_val / gamma[a] for rig_val in vrc[index].rigging]
-        return self.element_class(self, partition_list=partitions,
-                                  rigging_list=riggings)
+        return self.element_class(
+            self, partition_list=partitions, rigging_list=riggings
+        )
 
     class Element(RCNonSimplyLacedElement):
         r"""

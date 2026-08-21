@@ -17,7 +17,9 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.latex import latex
 from sage.matrix.matrix_space import MatrixSpace
@@ -80,6 +82,7 @@ class HeisenbergGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gap):
 
     - :wikipedia:`Heisenberg_group`
     """
+
     @staticmethod
     def __classcall_private__(cls, n=1, R=0):
         """
@@ -132,9 +135,10 @@ class HeisenbergGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gap):
             sage: groups.matrix.Heisenberg(n=2, R=ZZ).category()
             Category of finitely generated infinite enumerated groups
         """
+
         def elementary_matrix(i, j, val, MS):
             elm = copy(MS.one())
-            elm[i,j] = val
+            elm[i, j] = val
             elm.set_immutable()
             return elm
 
@@ -153,14 +157,21 @@ class HeisenbergGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gap):
 
         dim = ZZ(n + 2)
         MS = MatrixSpace(self._ring, dim)
-        gens_x = [elementary_matrix(0, j, gen, MS)
-                  for j in range(1, dim-1) for gen in ring_gens]
-        gens_y = [elementary_matrix(i, dim-1, gen, MS)
-                  for i in range(1, dim-1) for gen in ring_gens]
-        gen_z = [elementary_matrix(0, dim-1, gen, MS) for gen in ring_gens]
+        gens_x = [
+            elementary_matrix(0, j, gen, MS)
+            for j in range(1, dim - 1)
+            for gen in ring_gens
+        ]
+        gens_y = [
+            elementary_matrix(i, dim - 1, gen, MS)
+            for i in range(1, dim - 1)
+            for gen in ring_gens
+        ]
+        gen_z = [elementary_matrix(0, dim - 1, gen, MS) for gen in ring_gens]
         gens = gens_x + gens_y + gen_z
 
         from sage.libs.gap.libgap import libgap
+
         gap_gens = [libgap(single_gen) for single_gen in gens]
         gap_group = libgap.Group(gap_gens)
 
@@ -170,8 +181,9 @@ class HeisenbergGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gap):
         else:
             cat = cat.Infinite()
 
-        FinitelyGeneratedMatrixGroup_gap.__init__(self, ZZ(dim), self._ring,
-                                                  gap_group, category=cat)
+        FinitelyGeneratedMatrixGroup_gap.__init__(
+            self, ZZ(dim), self._ring, gap_group, category=cat
+        )
 
     def _repr_(self):
         """
@@ -220,8 +232,9 @@ class HeisenbergGroup(UniqueRepresentation, FinitelyGeneratedMatrixGroup_gap):
         """
         if self._ring is ZZ:
             from sage.rings.infinity import Infinity
+
             return Infinity
-        return ZZ(self._ring.cardinality() ** (2*self._n + 1))
+        return ZZ(self._ring.cardinality() ** (2 * self._n + 1))
 
     cardinality = order
 

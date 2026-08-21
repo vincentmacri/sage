@@ -1,6 +1,7 @@
 r"""
 Rings
 """
+
 # ****************************************************************************
 #  Copyright (C) 2005      David Kohel <kohel@maths.usyd.edu>
 #                          William Stein <wstein@math.ucsd.edu>
@@ -58,6 +59,7 @@ class Rings(CategoryWithAxiom):
         - A parent P in the category ``Rings()`` should automatically be
           in the category ``Algebras(P)``.
     """
+
     _base_category_class_and_axiom = (Rngs, "Unital")
 
     class MorphismMethods:
@@ -146,6 +148,7 @@ class Rings(CategoryWithAxiom):
                 return False
 
             from sage.categories.fields import Fields
+
             if self.domain() in Fields():
                 # A ring homomorphism from a field to a ring is injective
                 # (unless the codomain is the zero ring.) Note that ring
@@ -163,11 +166,13 @@ class Rings(CategoryWithAxiom):
                 if self.codomain().characteristic() != 0:
                     return False
                 from sage.categories.integral_domains import IntegralDomains
+
                 if self.domain() in IntegralDomains():
                     # if all elements of the domain are algebraic over ZZ,
                     # then the homomorphism must be injective (in
                     # particular if the domain is ZZ)
                     from sage.categories.number_fields import NumberFields
+
                     if self.domain().fraction_field() in NumberFields():
                         return True
 
@@ -247,20 +252,20 @@ class Rings(CategoryWithAxiom):
                   Defn: x |--> x + 1.00000000000000
             """
             from sage.rings.morphism import RingHomomorphism_from_fraction_field
+
             if self.domain().is_field() and self.codomain().is_field():
                 return self
             try:
                 if not self.is_injective():
                     raise ValueError("the morphism is not injective")
-            except (NotImplementedError, TypeError):   # we trust the user
+            except (NotImplementedError, TypeError):  # we trust the user
                 pass
             domain = self.domain().fraction_field()
             codomain = self.codomain().fraction_field()
-            parent = domain.Hom(codomain)   # category = category=self.category_for() ???
+            parent = domain.Hom(codomain)  # category = category=self.category_for() ???
             return RingHomomorphism_from_fraction_field(parent, self)
 
     class SubcategoryMethods:
-
         def NoZeroDivisors(self):
             r"""
             Return the full subcategory of the objects of ``self`` having
@@ -307,8 +312,12 @@ class Rings(CategoryWithAxiom):
             return self._with_axiom('Division')
 
     NoZeroDivisors = LazyImport('sage.categories.domains', 'Domains', at_startup=True)
-    Division = LazyImport('sage.categories.division_rings', 'DivisionRings', at_startup=True)
-    Commutative = LazyImport('sage.categories.commutative_rings', 'CommutativeRings', at_startup=True)
+    Division = LazyImport(
+        'sage.categories.division_rings', 'DivisionRings', at_startup=True
+    )
+    Commutative = LazyImport(
+        'sage.categories.commutative_rings', 'CommutativeRings', at_startup=True
+    )
 
     class ParentMethods:
         def is_ring(self) -> bool:
@@ -502,11 +511,18 @@ class Rings(CategoryWithAxiom):
                 False
             """
             # the case of QQ is handled by QQ itself
-            from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
+            from sage.rings.polynomial.polynomial_quotient_ring import (
+                PolynomialQuotientRing_generic,
+            )
             from sage.rings.rational_field import QQ
-            if isinstance(self, PolynomialQuotientRing_generic) and self.base_ring() is QQ:
+
+            if (
+                isinstance(self, PolynomialQuotientRing_generic)
+                and self.base_ring() is QQ
+            ):
                 return self.absolute_degree() == 1
             from sage.categories.finite_fields import FiniteFields
+
             return self in FiniteFields() and self.absolute_degree() == 1
 
         def is_zero(self) -> bool:
@@ -624,7 +640,9 @@ class Rings(CategoryWithAxiom):
                 return False
 
             if proof:
-                raise NotImplementedError("No way to prove that %s is an integral domain!" % self)
+                raise NotImplementedError(
+                    "No way to prove that %s is an integral domain!" % self
+                )
             else:
                 return False
 
@@ -710,6 +728,7 @@ class Rings(CategoryWithAxiom):
                 if P.degree() == 1:
                     return -P[0]
             from sage.rings.integer_ring import ZZ
+
             raise ValueError("no %s root of unity in %r" % (ZZ(n).ordinal_str(), self))
 
         def zeta_order(self):
@@ -814,6 +833,7 @@ class Rings(CategoryWithAxiom):
             if Y not in Rings():
                 raise TypeError(f"{Y} is not a ring")
             from sage.rings.homset import RingHomset
+
             return RingHomset(self, Y, category=category)
 
         # this is already in sage.rings.ring.Ring,
@@ -901,7 +921,9 @@ class Rings(CategoryWithAxiom):
                 if side == 'right':
                     return self.ideal(x, side='twosided')
             # duck typing failed
-            raise TypeError("do not know how to transform %s into an ideal of %s" % (x, self))
+            raise TypeError(
+                "do not know how to transform %s into an ideal of %s" % (x, self)
+            )
 
         def __pow__(self, n):
             """
@@ -921,8 +943,10 @@ class Rings(CategoryWithAxiom):
             if isinstance(n, tuple):
                 m, n = n
                 from sage.matrix.matrix_space import MatrixSpace
+
                 return MatrixSpace(self, m, n)
             from sage.modules.free_module import FreeModule
+
             return FreeModule(self, n)
 
         def nilradical(self):
@@ -969,6 +993,7 @@ class Rings(CategoryWithAxiom):
             """
             from sage.rings.infinity import infinity
             from sage.rings.integer_ring import ZZ
+
             order_1 = self.one().additive_order()
             return ZZ.zero() if order_1 is infinity else order_1
 
@@ -993,6 +1018,7 @@ class Rings(CategoryWithAxiom):
 
             # test that #12988 is fixed
             from sage.rings.integer import Integer
+
             tester.assertIsInstance(characteristic, Integer)
 
         def ideal(self, *args, **kwds):
@@ -1098,6 +1124,7 @@ class Rings(CategoryWithAxiom):
                 coerce = True
 
             from sage.rings.ideal import Ideal_generic
+
             if not args:
                 gens = [self(0)]
             else:
@@ -1128,6 +1155,7 @@ class Rings(CategoryWithAxiom):
                 gens = [self(g) for g in gens]
 
             from sage.categories.principal_ideal_domains import PrincipalIdealDomains
+
             if self in PrincipalIdealDomains():
                 # Use GCD algorithm to obtain a principal ideal
                 g = gens[0]
@@ -1223,6 +1251,7 @@ class Rings(CategoryWithAxiom):
                 False
             """
             from sage.rings.quotient_ring import QuotientRing
+
             return QuotientRing(self, I, names=names, **kwds)
 
         def quo(self, I, names=None, **kwds):
@@ -1551,6 +1580,7 @@ class Rings(CategoryWithAxiom):
                   To:   Real Lazy Field
                   Defn: a -> 1.414213562373095?
             """
+
             def normalize_arg(arg):
                 if isinstance(arg, (tuple, list)):
                     # Allowing arbitrary iterables would create confusion,
@@ -1564,7 +1594,9 @@ class Rings(CategoryWithAxiom):
 
             if isinstance(arg, list):
                 if not arg:
-                    raise TypeError("power series rings must have at least one variable")
+                    raise TypeError(
+                        "power series rings must have at least one variable"
+                    )
                 elif len(arg) == 1:
                     # R[["a,b"]], R[[(a,b)]]...
                     if isinstance(arg[0], list):
@@ -1573,16 +1605,21 @@ class Rings(CategoryWithAxiom):
                 else:
                     elts = normalize_arg(arg)
                 from sage.rings.power_series_ring import PowerSeriesRing
+
                 return PowerSeriesRing(self, elts)
 
             if isinstance(arg, tuple):
                 from sage.categories.morphism import Morphism
+
                 try:
                     from sage.rings.derivation import RingDerivation
                 except ImportError:
                     RingDerivation = ()
                 if len(arg) == 2 and isinstance(arg[1], (Morphism, RingDerivation)):
-                    from sage.rings.polynomial.ore_polynomial_ring import OrePolynomialRing
+                    from sage.rings.polynomial.ore_polynomial_ring import (
+                        OrePolynomialRing,
+                    )
+
                     return OrePolynomialRing(self, arg[1], names=arg[0])
 
             # 2. Otherwise, if all specified elements are algebraic, try to
@@ -1600,6 +1637,7 @@ class Rings(CategoryWithAxiom):
                 names = tuple(_gen_names(elts))
                 if len(elts) == 1:
                     from sage.rings.cif import CIF
+
                     elt = elts[0]
                     try:
                         iv = CIF(elt)
@@ -1615,6 +1653,7 @@ class Rings(CategoryWithAxiom):
                         # TODO: Rewrite using #19362 and/or #17886 and/or
                         # #15600 once those issues are solved.
                         from sage.rings.qqbar import AlgebraicNumber, ANRoot
+
                         try:
                             elt = AlgebraicNumber(ANRoot(minpolys[0], iv))
                         except ValueError:
@@ -1622,8 +1661,12 @@ class Rings(CategoryWithAxiom):
                         # Force a real embedding when possible, to get the
                         # right ordered ring structure.
                         from sage.rings.real_lazy import CLF, RLF
-                        if (iv.imag().is_zero() or iv.imag().contains_zero()
-                                and elt.imag().is_zero()):
+
+                        if (
+                            iv.imag().is_zero()
+                            or iv.imag().contains_zero()
+                            and elt.imag().is_zero()
+                        ):
                             emb = RLF(elt)
                         else:
                             emb = CLF(elt)
@@ -1633,11 +1676,14 @@ class Rings(CategoryWithAxiom):
                     return self.extension(minpolys, names)
                 except (TypeError, ValueError):
                     # ...but we can also construct it iteratively
-                    return reduce(lambda R, ext: R.extension(*ext), zip(minpolys, names), self)
+                    return reduce(
+                        lambda R, ext: R.extension(*ext), zip(minpolys, names), self
+                    )
 
             # 2. Otherwise, try to return a polynomial ring
 
             from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
             return PolynomialRing(self, elts)
 
         def free_module(self, base=None, basis=None, map=True):
@@ -1695,11 +1741,19 @@ class Rings(CategoryWithAxiom):
                     basis = self(basis)
                     if not basis.is_unit():
                         raise ValueError("basis element must be a unit")
-                from sage.modules.free_module_morphism import BaseIsomorphism1D_from_FM, BaseIsomorphism1D_to_FM
+                from sage.modules.free_module_morphism import (
+                    BaseIsomorphism1D_from_FM,
+                    BaseIsomorphism1D_to_FM,
+                )
+
                 Hfrom = V.Hom(self)
                 Hto = self.Hom(V)
-                from_V = Hfrom.__make_element_class__(BaseIsomorphism1D_from_FM)(Hfrom, basis=basis)
-                to_V = Hto.__make_element_class__(BaseIsomorphism1D_to_FM)(Hto, basis=basis)
+                from_V = Hfrom.__make_element_class__(BaseIsomorphism1D_from_FM)(
+                    Hfrom, basis=basis
+                )
+                to_V = Hto.__make_element_class__(BaseIsomorphism1D_to_FM)(
+                    Hto, basis=basis
+                )
                 return V, from_V, to_V
             if not self.has_coerce_map_from(base):
                 raise ValueError("base must be a subring of this ring")
@@ -1950,6 +2004,7 @@ def _gen_names(elts):
     import re
     from sage.structure.category_object import certify_names
     from sage.combinat.words.words import Words
+
     it = iter(Words("abcdefghijklmnopqrstuvwxyz", infinite=False))
     next(it)  # skip empty word
     for x in elts:

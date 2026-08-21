@@ -305,11 +305,22 @@ class LieConformalAlgebra(UniqueRepresentation, Parent):
 
         :mod:`sage.algebras.lie_conformal_algebras.graded_lie_conformal_algebra`
     """
+
     @staticmethod
-    def __classcall_private__(cls, R=None, arg0=None, index_set=None,
-                              central_elements=None, category=None,
-                              prefix=None, names=None, latex_names=None,
-                              parity=None, weights=None, **kwds):
+    def __classcall_private__(
+        cls,
+        R=None,
+        arg0=None,
+        index_set=None,
+        central_elements=None,
+        category=None,
+        prefix=None,
+        names=None,
+        latex_names=None,
+        parity=None,
+        weights=None,
+        **kwds,
+    ):
         """
         Lie conformal algebra factory.
 
@@ -324,8 +335,16 @@ class LieConformalAlgebra(UniqueRepresentation, Parent):
             raise ValueError(f"arg0 must be a commutative ring got {R}")
 
         # This is the only exposed class so we clean keywords here
-        known_keywords = ['category', 'prefix', 'bracket', 'latex_bracket',
-                          'string_quotes', 'sorting_key', 'graded', 'super']
+        known_keywords = [
+            'category',
+            'prefix',
+            'bracket',
+            'latex_bracket',
+            'string_quotes',
+            'sorting_key',
+            'graded',
+            'super',
+        ]
         for key in kwds:
             if key not in known_keywords:
                 raise ValueError("got an unexpected keyword argument '%s'" % key)
@@ -336,18 +355,34 @@ class LieConformalAlgebra(UniqueRepresentation, Parent):
                 from sage.algebras.lie_conformal_algebras.graded_lie_conformal_algebra import (
                     GradedLieConformalAlgebra,
                 )
+
                 return GradedLieConformalAlgebra(
-                    R, Family(arg0),
-                    index_set=index_set, central_elements=central_elements,
-                    category=category, prefix=prefix, names=names,
-                    latex_names=latex_names, parity=parity, weights=weights,
-                    **kwds)
+                    R,
+                    Family(arg0),
+                    index_set=index_set,
+                    central_elements=central_elements,
+                    category=category,
+                    prefix=prefix,
+                    names=names,
+                    latex_names=latex_names,
+                    parity=parity,
+                    weights=weights,
+                    **kwds,
+                )
             from sage.algebras.lie_conformal_algebras.lie_conformal_algebra_with_structure_coefs import (
                 LieConformalAlgebraWithStructureCoefficients,
             )
+
             return LieConformalAlgebraWithStructureCoefficients(
-                R, Family(arg0),
-                index_set=index_set, central_elements=central_elements,
-                category=category, prefix=prefix, names=names,
-                latex_names=latex_names, parity=parity, **kwds)
+                R,
+                Family(arg0),
+                index_set=index_set,
+                central_elements=central_elements,
+                category=category,
+                prefix=prefix,
+                names=names,
+                latex_names=latex_names,
+                parity=parity,
+                **kwds,
+            )
         raise NotImplementedError("not implemented")

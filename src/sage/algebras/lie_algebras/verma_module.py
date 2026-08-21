@@ -37,6 +37,7 @@ class ModulePrinting:
     """
     Helper mixin class for printing the module vectors.
     """
+
     def __init__(self, vector_name='v'):
         r"""
         Initialize ``self``.
@@ -100,6 +101,7 @@ class ModulePrinting:
         if ret == '1':
             ret = ''
         from sage.misc.latex import latex
+
         return ret + " {}_{{{}}}".format(self.__vector_name, latex(self._weight))
 
     _repr_term = _repr_generator
@@ -153,6 +155,7 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
 
     - :wikipedia:`Verma_module`
     """
+
     def __init__(self, g, weight, basis_key=None, prefix='f', **kwds):
         """
         Initialize ``self``.
@@ -181,14 +184,19 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
         R = g.base_ring()
         self._g = g
         self._pbw = g.pbw_basis(basis_key=self._triangular_key)
-        monomials = IndexedFreeAbelianMonoid(g._negative_half_index_set(),
-                                             prefix,
-                                             sorting_key=self._monoid_key,
-                                             **kwds)
-        CombinatorialFreeModule.__init__(self, R, monomials,
-                                         prefix='', bracket=False, latex_bracket=False,
-                                         sorting_key=self._monomial_key,
-                                         category=Modules(R).WithBasis().Graded())
+        monomials = IndexedFreeAbelianMonoid(
+            g._negative_half_index_set(), prefix, sorting_key=self._monoid_key, **kwds
+        )
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            monomials,
+            prefix='',
+            bracket=False,
+            latex_bracket=False,
+            sorting_key=self._monomial_key,
+            category=Modules(R).WithBasis().Graded(),
+        )
         ModulePrinting.__init__(self)
 
     def _triangular_key(self, x):
@@ -303,6 +311,7 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
             M_{2 \Lambda_{1} + 7 \Lambda_{4} - \frac{3}{4} \Lambda_{7}}
         """
         from sage.misc.latex import latex
+
         return "M_{{{}}}".format(latex(self._weight))
 
     def lie_algebra(self):
@@ -351,8 +360,9 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
             v[Lambda[1] - 3*Lambda[2]]
         """
         one = self.base_ring().one()
-        return self._from_dict({self._indices.one(): one},
-                               remove_zeros=False, coerce=False)
+        return self._from_dict(
+            {self._indices.one(): one}, remove_zeros=False, coerce=False
+        )
 
     def gens(self) -> tuple:
         r"""
@@ -400,6 +410,7 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
         if self.is_simple():
             return self
         from sage.algebras.lie_algebras.bgg_dual_module import BGGDualModule
+
         return BGGDualModule(self)
 
     def degree_on_basis(self, m):
@@ -423,8 +434,9 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
             -Lambda[1] + 3*Lambda[2]
         """
         P = self._weight.parent()
-        return self._weight + P.sum(P(e * self._g.degree_on_basis(k))
-                                    for k,e in m.dict().items())
+        return self._weight + P.sum(
+            P(e * self._g.degree_on_basis(k)) for k, e in m.dict().items()
+        )
 
     def _coerce_map_from_(self, R):
         r"""
@@ -520,13 +532,19 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
         """
         pbw = self._pbw
         I = pbw._indices
-        xlift = pbw.element_class(pbw, {I(m._monomial): c for m, c in x._monomial_coefficients.items()})
-        ylift = pbw.element_class(pbw, {I(m._monomial): c for m, c in y._monomial_coefficients.items()})
+        xlift = pbw.element_class(
+            pbw, {I(m._monomial): c for m, c in x._monomial_coefficients.items()}
+        )
+        ylift = pbw.element_class(
+            pbw, {I(m._monomial): c for m, c in y._monomial_coefficients.items()}
+        )
         univ = pbw.contravariant_form(xlift, ylift)
         la = self._weight
         R = self.base_ring()
-        return R.sum(c * R.prod(la.scalar(k) ** e for k, e in m._monomial.items())
-                     for m, c in univ._monomial_coefficients.items())
+        return R.sum(
+            c * R.prod(la.scalar(k) ** e for k, e in m._monomial.items())
+            for m, c in univ._monomial_coefficients.items()
+        )
 
     @lazy_attribute
     def _dominant_data(self):
@@ -707,15 +725,14 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
             m = m.dict()
             if not m:
                 return d.parent().zero()
-            return sum(e * self._g.degree_on_basis(k)
-                       for k, e in m.items()).to_vector()
+            return sum(e * self._g.degree_on_basis(k) for k, e in m.items()).to_vector()
+
         for i, fi in f.items():
             if d[i] == 0:
                 continue
             for b in self._homogeneous_component_f(d + basis[i]):
                 temp = fi * b
-                ret.update([self.monomial(m) for m in temp.support()
-                            if degree(m) == d])
+                ret.update([self.monomial(m) for m in temp.support() if degree(m) == d])
         return frozenset(ret)
 
     def _Hom_(self, Y, category=None, **options):
@@ -746,13 +763,25 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
             sage: type(H)
             <...VermaModuleHomset_with_category_with_equality_by_id'>
         """
-        from sage.algebras.lie_algebras.bgg_dual_module import BGGDualModule, SimpleModule
-        if not ((isinstance(Y, (VermaModule, SimpleModule))
-                 or (isinstance(Y, BGGDualModule) and Y._module is self))
-                and self._g is Y.lie_algebra()):
-            raise TypeError("{} must be an object in Category O of {}".format(Y, self._g))
+        from sage.algebras.lie_algebras.bgg_dual_module import (
+            BGGDualModule,
+            SimpleModule,
+        )
+
+        if not (
+            (
+                isinstance(Y, (VermaModule, SimpleModule))
+                or (isinstance(Y, BGGDualModule) and Y._module is self)
+            )
+            and self._g is Y.lie_algebra()
+        ):
+            raise TypeError(
+                "{} must be an object in Category O of {}".format(Y, self._g)
+            )
         if category is not None and not category.is_subcategory(self.category()):
-            raise TypeError("{} is not a subcategory of {}".format(category, self.category()))
+            raise TypeError(
+                "{} is not a subcategory of {}".format(category, self.category())
+            )
         return VermaModuleHomset(self, Y)
 
     class Element(CombinatorialFreeModule.Element):
@@ -788,7 +817,9 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
             # TODO: Pass by these checks if a PBW basis element of the Lie algebra
             if scalar in P.base_ring():
                 # Don't have this be a super call
-                return CombinatorialFreeModule.Element._acted_upon_(self, scalar, self_on_left)
+                return CombinatorialFreeModule.Element._acted_upon_(
+                    self, scalar, self_on_left
+                )
 
             # Check for Lie algebra elements
             try:
@@ -801,8 +832,9 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
                 scalar = P._pbw(scalar)
             except (ValueError, TypeError):
                 # Cannot be made into a PBW element, so propagate it up
-                return CombinatorialFreeModule.Element._acted_upon_(self,
-                        scalar, self_on_left)
+                return CombinatorialFreeModule.Element._acted_upon_(
+                    self, scalar, self_on_left
+                )
 
             # We only implement x * self, i.e., as a left module
             if self_on_left:
@@ -810,7 +842,7 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
 
             # Lift ``self`` to the PBW basis and do multiplication there
             mc = self._monomial_coefficients
-            d = {P._pbw._indices(x.dict()): mc[x] for x in mc} # Lift the index set
+            d = {P._pbw._indices(x.dict()): mc[x] for x in mc}  # Lift the index set
             ret = scalar * P._pbw._from_dict(d, remove_zeros=False, coerce=False)
 
             # Now have ``ret`` act on the highest weight vector
@@ -824,7 +856,7 @@ class VermaModule(ModulePrinting, CombinatorialFreeModule):
                         mp = None
                         break
                     if part == 0:
-                        c *= P._g._weight_action(k, P._weight)**e
+                        c *= P._g._weight_action(k, P._weight) ** e
                     else:
                         mp[k] = e
                 # This term is 0, so nothing to do
@@ -850,6 +882,7 @@ class VermaModuleMorphism(Morphism):
     r"""
     A morphism of a Verma module to another module in Category `\mathcal{O}`.
     """
+
     def __init__(self, parent, scalar):
         """
         Initialize ``self``.
@@ -913,7 +946,9 @@ class VermaModuleMorphism(Morphism):
         v = self.domain().highest_weight_vector()
         if not self._scalar:
             return "{} |--> {}".format(v, self.codomain().zero())
-        return "{} |--> {}".format(v, self._scalar * self.parent().highest_weight_image())
+        return "{} |--> {}".format(
+            v, self._scalar * self.parent().highest_weight_image()
+        )
 
     def _richcmp_(self, other, op):
         r"""
@@ -967,8 +1002,9 @@ class VermaModuleMorphism(Morphism):
         if not self._scalar or not self.parent().highest_weight_image():
             return self.codomain().zero()
         mc = x.monomial_coefficients(copy=False)
-        return self.codomain().linear_combination((self._on_basis(m), self._scalar * c)
-                                                  for m,c in mc.items())
+        return self.codomain().linear_combination(
+            (self._on_basis(m), self._scalar * c) for m, c in mc.items()
+        )
 
     def _on_basis(self, m):
         r"""
@@ -1078,8 +1114,10 @@ class VermaModuleMorphism(Morphism):
             sage: xi._scalar
             0
         """
-        if (isinstance(right, VermaModuleMorphism)
-            and right.domain()._g is self.codomain()._g):
+        if (
+            isinstance(right, VermaModuleMorphism)
+            and right.domain()._g is self.codomain()._g
+        ):
             return homset.element_class(homset, right._scalar * self._scalar)
         return super()._composition_(right, homset)
 
@@ -1145,6 +1183,7 @@ class VermaModuleMorphism(Morphism):
             return self.domain() == self.codomain()
 
         from sage.algebras.lie_algebras.bgg_dual_module import SimpleModule
+
         if isinstance(self.codomain(), SimpleModule):
             return self.domain().highest_weight() == self.codomain().highest_weight()
 
@@ -1182,10 +1221,18 @@ class VermaModuleMorphism(Morphism):
                 return C
             raise NotImplementedError("submodules of Verma modules not yet implemented")
 
-        from sage.algebras.lie_algebras.bgg_dual_module import BGGDualModule, SimpleModule
+        from sage.algebras.lie_algebras.bgg_dual_module import (
+            BGGDualModule,
+            SimpleModule,
+        )
+
         if isinstance(C, BGGDualModule) and isinstance(C._module, VermaModule):
-            return SimpleModule(C.lie_algebra(), C.highest_weight(), prefix=C._indices.prefix(),
-                                basis_key=C._module._basis_key)
+            return SimpleModule(
+                C.lie_algebra(),
+                C.highest_weight(),
+                prefix=C._indices.prefix(),
+                basis_key=C._module._basis_key,
+            )
 
         if isinstance(self.codomain(), SimpleModule):
             return self.codomain()
@@ -1214,6 +1261,7 @@ class VermaModuleHomset(Homset):
     homset is `\delta_{\lambda\mu}` dimensional. When `\mu = \lambda`,
     the image is the simple module `L_{\lambda}`.
     """
+
     def __call__(self, x, **options):
         r"""
         Construct a morphism in this homset from ``x`` if possible.
@@ -1253,7 +1301,7 @@ class VermaModuleHomset(Homset):
             if x.parent() is self:
                 return x
             if x.parent() == self:
-                x._set_parent(self) # needed due to non-uniqueness of homsets
+                x._set_parent(self)  # needed due to non-uniqueness of homsets
                 return x
 
             if x.domain() != self.domain():
@@ -1427,6 +1475,7 @@ class VermaModuleHomset(Homset):
 
         from sage.combinat.root_system.coxeter_group import CoxeterGroup
         from sage.matrix.constructor import matrix
+
         W = CoxeterGroup(self.domain()._g._cartan_type)
         # We take the inverse to account for the left versus right action
         wp = W.from_reduced_word(reversed(self.domain()._dominant_data[1]))
@@ -1443,10 +1492,14 @@ class VermaModuleHomset(Homset):
         ac = C._weight.parent().simple_coroots()
         elt = pbw.one()
         wt = C._weight
-        pos_roots_by_ht = C._g._cartan_type.root_system().root_lattice().positive_roots_by_height()
-        assert all(sum(rt.coefficients()) == 1 for rt in pos_roots_by_ht[:len(index_set)])
+        pos_roots_by_ht = (
+            C._g._cartan_type.root_system().root_lattice().positive_roots_by_height()
+        )
+        assert all(
+            sum(rt.coefficients()) == 1 for rt in pos_roots_by_ht[: len(index_set)]
+        )
         # for this, we don't need to check the simple roots
-        pos_roots_by_ht = pos_roots_by_ht[len(index_set):]
+        pos_roots_by_ht = pos_roots_by_ht[len(index_set) :]
 
         while cur_w != wp:
             ind = None
@@ -1471,7 +1524,9 @@ class VermaModuleHomset(Homset):
                     # We need to check that the result is still smaller in Bruhat order
                     i, wd = rt.to_simple_root(reduced_word=True)
                     refl = wd + (i,) + tuple(reversed(wd))
-                    next_w = cur_w.apply_reflections(refl, side='right', word_type="simple")
+                    next_w = cur_w.apply_reflections(
+                        refl, side='right', word_type="simple"
+                    )
                     if exp not in ZZ or exp <= 0:
                         continue
                     if not next_w.bruhat_le(wp):
@@ -1479,7 +1534,9 @@ class VermaModuleHomset(Homset):
                     # We construct the Verma module of the appropriate weight in
                     #   order to reduce the dimension and number of multiplications.
                     Mp = C._g.verma_module(wt)
-                    basis = sorted(Mp._homogeneous_component_f(-rt.to_vector()), key=str)
+                    basis = sorted(
+                        Mp._homogeneous_component_f(-rt.to_vector()), key=str
+                    )
                     for i in index_set:
                         image = [E[i] * b for b in basis]
                         supp = set()
@@ -1488,25 +1545,33 @@ class VermaModuleHomset(Homset):
                         supp = sorted(supp, key=pbw._monomial_key)
                         if not supp:  # everything is in the kernel
                             continue
-                        M = matrix(pbw.base_ring(), [[v[s] for v in image] for s in supp])
+                        M = matrix(
+                            pbw.base_ring(), [[v[s] for v in image] for s in supp]
+                        )
                         ker = M.right_kernel_matrix()
-                        basis = [C.linear_combination((basis[j], c)
-                                                      for j, c in kv.items())
-                                 for kv in ker.rows()]
+                        basis = [
+                            C.linear_combination((basis[j], c) for j, c in kv.items())
+                            for kv in ker.rows()
+                        ]
 
                     assert len(basis) == 1
                     if Mp is C:  # We've constructed the element in the codomain
                         assert next_w == wp
                         assert basis[0].degree() == self.domain().highest_weight()
                         return basis[0]
-                    pbw_elt = pbw.element_class(pbw, {pbw._indices(m._monomial): c
-                                                      for m, c in basis[0]._monomial_coefficients.items()})
+                    pbw_elt = pbw.element_class(
+                        pbw,
+                        {
+                            pbw._indices(m._monomial): c
+                            for m, c in basis[0]._monomial_coefficients.items()
+                        },
+                    )
                     elt = pbw_elt * elt
                     wt = wt.dot_action(refl)
                     cur_w = next_w
                     break
                 else:
-                    #assert False, "unable to find root"
+                    # assert False, "unable to find root"
                     # Have a more explicit check at the beginning using the integral
                     #   orbit action for the correct version of dominance; see, e.g.,
                     #   Humphreys "Representations of Semisimple Lie Algebras in the BGG Category O".
@@ -1515,7 +1580,7 @@ class VermaModuleHomset(Homset):
                 # Construct the singular vector by iterated embeddings of Verma
                 #   modules from the sl_2 relations (without constructing
                 #   the modules themselves)
-                elt = F[ind]**ZZ(exp) * elt
+                elt = F[ind] ** ZZ(exp) * elt
                 wt = wt.dot_action([ind])
                 cur_w = cur_w.apply_simple_reflection_right(ind)
         ret = C.highest_weight_vector()._acted_upon_(elt, False)

@@ -161,7 +161,7 @@ class NonNegativeIntegers(UniqueRepresentation, Parent):
             sage: NN.next(3)
             4
         """
-        return self._element_constructor_(o+1)
+        return self._element_constructor_(o + 1)
 
     def _element_constructor_(self, i):
         """

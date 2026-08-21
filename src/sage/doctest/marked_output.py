@@ -43,6 +43,7 @@ class MarkedOutput(str):
         sage: MarkedOutput("56 µs")
         '56 \xb5s'
     """
+
     random = False
     rel_tol = 0
     abs_tol = 0

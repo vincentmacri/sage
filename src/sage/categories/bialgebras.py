@@ -63,7 +63,6 @@ class Bialgebras(Category_over_base_ring):
         return None
 
     class ElementMethods:
-
         def is_primitive(self):
             """
             Return whether ``self`` is a primitive element.
@@ -98,4 +97,6 @@ class Bialgebras(Category_over_base_ring):
     class Super(SuperModulesCategory):
         pass
 
-    WithBasis = LazyImport('sage.categories.bialgebras_with_basis', 'BialgebrasWithBasis')
+    WithBasis = LazyImport(
+        'sage.categories.bialgebras_with_basis', 'BialgebrasWithBasis'
+    )

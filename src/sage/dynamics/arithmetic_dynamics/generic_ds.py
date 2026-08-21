@@ -39,12 +39,15 @@ from sage.schemes.affine.affine_subscheme import AlgebraicScheme_subscheme_affin
 from sage.schemes.berkovich.berkovich_space import Berkovich_Cp
 from sage.schemes.generic.morphism import SchemeMorphism_polynomial
 
-lazy_import('sage.rings.algebraic_closure_finite_field', 'AlgebraicClosureFiniteField_generic')
+lazy_import(
+    'sage.rings.algebraic_closure_finite_field', 'AlgebraicClosureFiniteField_generic'
+)
 lazy_import('sage.rings.qqbar', 'AlgebraicField_common')
 
 
-class DynamicalSystem(SchemeMorphism_polynomial,
-                      metaclass=InheritComparisonClasscallMetaclass):
+class DynamicalSystem(
+    SchemeMorphism_polynomial, metaclass=InheritComparisonClasscallMetaclass
+):
     r"""
     Base class for dynamical systems of schemes.
 
@@ -165,15 +168,25 @@ class DynamicalSystem(SchemeMorphism_polynomial,
         if isinstance(morphism_or_polys, SchemeMorphism_polynomial):
             domain = morphism_or_polys.domain()
         if domain is not None:
-            if isinstance(domain, (AffineSpace_generic,
-                                   AlgebraicScheme_subscheme_affine)):
-                from sage.dynamics.arithmetic_dynamics.affine_ds import DynamicalSystem_affine
+            if isinstance(
+                domain, (AffineSpace_generic, AlgebraicScheme_subscheme_affine)
+            ):
+                from sage.dynamics.arithmetic_dynamics.affine_ds import (
+                    DynamicalSystem_affine,
+                )
+
                 return DynamicalSystem_affine(morphism_or_polys, domain)
             if isinstance(domain, Berkovich_Cp):
-                from sage.dynamics.arithmetic_dynamics.berkovich_ds import DynamicalSystem_Berkovich
-                return DynamicalSystem_Berkovich(morphism_or_polys,domain)
+                from sage.dynamics.arithmetic_dynamics.berkovich_ds import (
+                    DynamicalSystem_Berkovich,
+                )
 
-        from sage.dynamics.arithmetic_dynamics.projective_ds import DynamicalSystem_projective
+                return DynamicalSystem_Berkovich(morphism_or_polys, domain)
+
+        from sage.dynamics.arithmetic_dynamics.projective_ds import (
+            DynamicalSystem_projective,
+        )
+
         return DynamicalSystem_projective(morphism_or_polys, domain, names)
 
     def __init__(self, polys_or_rat_fncts, domain):
@@ -338,7 +351,9 @@ class DynamicalSystem(SchemeMorphism_polynomial,
         F = self.as_scheme_morphism().specialization(D, phi, homset)
         return F.as_dynamical_system()
 
-    def field_of_definition_critical(self, return_embedding=False, simplify_all=False, names='a'):
+    def field_of_definition_critical(
+        self, return_embedding=False, simplify_all=False, names='a'
+    ):
         r"""
         Return smallest extension of the base field which contains the critical points.
 
@@ -409,20 +424,24 @@ class DynamicalSystem(SchemeMorphism_polynomial,
         space = ds.domain().ambient_space()
         K = ds.base_ring()
         if space.dimension() != 1:
-            raise ValueError('ambient space of dynamical system must be either the affine line or projective line')
+            raise ValueError(
+                'ambient space of dynamical system must be either the affine line or projective line'
+            )
         if isinstance(K, (AlgebraicClosureFiniteField_generic, AlgebraicField_common)):
             if return_embedding:
                 return (K, K.hom(K))
             return K
         if space.is_projective():
             ds = ds.dehomogenize(1)
-        f,g = ds[0].numerator(), ds[0].denominator()
+        f, g = ds[0].numerator(), ds[0].denominator()
         CR = space.coordinate_ring()
         if CR.is_field():
-            #want the polynomial ring not the fraction field
+            # want the polynomial ring not the fraction field
             CR = CR.ring()
         x = CR.gen(0)
-        poly = (g*CR(f).derivative(x) - f*CR(g).derivative(x)).univariate_polynomial()
+        poly = (
+            g * CR(f).derivative(x) - f * CR(g).derivative(x)
+        ).univariate_polynomial()
         if isinstance(ds.base_ring(), FiniteField):
             return poly.splitting_field(names, map=return_embedding)
         K = poly.splitting_field(names, map=return_embedding, simplify_all=simplify_all)
@@ -432,11 +451,13 @@ class DynamicalSystem(SchemeMorphism_polynomial,
             N = K
         if N.absolute_degree() == 1:
             if return_embedding:
-                return (QQ,ds.base_ring().embeddings(QQ)[0])
+                return (QQ, ds.base_ring().embeddings(QQ)[0])
             return QQ
         return K
 
-    def field_of_definition_periodic(self, n, formal=False, return_embedding=False, simplify_all=False, names='a'):
+    def field_of_definition_periodic(
+        self, n, formal=False, return_embedding=False, simplify_all=False, names='a'
+    ):
         r"""
         Return smallest extension of the base field which contains all fixed points
         of the ``n``-th iterate
@@ -524,7 +545,9 @@ class DynamicalSystem(SchemeMorphism_polynomial,
             raise ValueError('`n` must be >= 1')
         space = ds.domain().ambient_space()
         if space.dimension() != 1:
-            raise NotImplementedError("not implemented for affine or projective spaces of dimension >1")
+            raise NotImplementedError(
+                "not implemented for affine or projective spaces of dimension >1"
+            )
         if isinstance(K, (AlgebraicClosureFiniteField_generic, AlgebraicField_common)):
             if return_embedding:
                 return (K, K.hom(K))
@@ -533,7 +556,7 @@ class DynamicalSystem(SchemeMorphism_polynomial,
             ds = ds.dehomogenize(1)
         CR = space.coordinate_ring()
         if CR.is_field():
-            #want the polynomial ring not the fraction field
+            # want the polynomial ring not the fraction field
             CR = CR.ring()
         x = CR.gen(0)
         if formal:
@@ -541,8 +564,8 @@ class DynamicalSystem(SchemeMorphism_polynomial,
             poly = CR(poly).univariate_polynomial()
         else:
             fn = ds.nth_iterate_map(n)
-            f,g = fn[0].numerator(), fn[0].denominator()
-            poly = (f - g*x).univariate_polynomial()
+            f, g = fn[0].numerator(), fn[0].denominator()
+            poly = (f - g * x).univariate_polynomial()
         if isinstance(ds.base_ring(), FiniteField):
             return poly.splitting_field(names, map=return_embedding)
         K = poly.splitting_field(names, map=return_embedding, simplify_all=simplify_all)
@@ -552,11 +575,13 @@ class DynamicalSystem(SchemeMorphism_polynomial,
             N = K
         if N.absolute_degree() == 1:
             if return_embedding:
-                return (QQ,ds.base_ring().embeddings(QQ)[0])
+                return (QQ, ds.base_ring().embeddings(QQ)[0])
             return QQ
         return K
 
-    def field_of_definition_preimage(self, point, n, return_embedding=False, simplify_all=False, names='a'):
+    def field_of_definition_preimage(
+        self, point, n, return_embedding=False, simplify_all=False, names='a'
+    ):
         r"""
         Return smallest extension of the base field which contains the
         ``n``-th preimages of ``point``
@@ -622,7 +647,9 @@ class DynamicalSystem(SchemeMorphism_polynomial,
             raise ValueError('`n` must be >= 1')
         space = ds.domain().ambient_space()
         if space.dimension() != 1:
-            raise NotImplementedError("not implemented for affine or projective spaces of dimension >1")
+            raise NotImplementedError(
+                "not implemented for affine or projective spaces of dimension >1"
+            )
         try:
             point = space(point)
         except TypeError:
@@ -630,14 +657,14 @@ class DynamicalSystem(SchemeMorphism_polynomial,
         if space.is_projective():
             ds = ds.dehomogenize(1)
         else:
-            point = (point[0],1)
+            point = (point[0], 1)
         fn = ds.nth_iterate_map(n)
         f, g = fn[0].numerator(), fn[0].denominator()
         CR = space.coordinate_ring()
         if CR.is_field():
-            #want the polynomial ring not the fraction field
+            # want the polynomial ring not the fraction field
             CR = CR.ring()
-        poly = (f*point[1] - g*CR(point[0])).univariate_polynomial()
+        poly = (f * point[1] - g * CR(point[0])).univariate_polynomial()
         if isinstance(ds.base_ring(), FiniteField):
             return poly.splitting_field(names, map=return_embedding)
         K = poly.splitting_field(names, map=return_embedding, simplify_all=simplify_all)

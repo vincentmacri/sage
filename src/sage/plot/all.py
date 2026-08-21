@@ -1,8 +1,18 @@
 from sage.plot.graphics import Graphics
-from sage.plot.plot import (plot, graphics_array, multi_graphics, list_plot,
-                            parametric_plot, polar_plot, plot_loglog, plot_semilogx,
-                            plot_semilogy, list_plot_loglog, list_plot_semilogx,
-                            list_plot_semilogy)
+from sage.plot.plot import (
+    plot,
+    graphics_array,
+    multi_graphics,
+    list_plot,
+    parametric_plot,
+    polar_plot,
+    plot_loglog,
+    plot_semilogx,
+    plot_semilogy,
+    list_plot_loglog,
+    list_plot_semilogx,
+    list_plot_semilogy,
+)
 from sage.plot.line import line, line2d
 from sage.plot.arrow import arrow, arrow2d
 from sage.plot.bar_chart import bar_chart
@@ -22,6 +32,7 @@ from sage.plot.density_plot import density_plot
 from sage.plot.streamline_plot import streamline_plot
 
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.complex_plot", ["complex_plot"])
 
 from sage.plot.arc import arc
@@ -36,4 +47,5 @@ from sage.plot.step import plot_step_function
 
 from sage.plot.hyperbolic_arc import hyperbolic_arc
 from sage.plot.hyperbolic_polygon import hyperbolic_triangle, hyperbolic_polygon
+
 lazy_import("sage.plot.hyperbolic_regular_polygon", "hyperbolic_regular_polygon")

@@ -74,8 +74,7 @@ class FunctionFieldMaximalOrder_polymod(FunctionFieldMaximalOrder):
         n = len(basis)
         self._mtable = []
         for i in range(n):
-            row = [self._coordinate_vector(basis[i] * basis[j])
-                   for j in range(n)]
+            row = [self._coordinate_vector(basis[i] * basis[j]) for j in range(n)]
             self._mtable.append(row)
 
         zero = vector(R._ring, n * [0])
@@ -90,6 +89,7 @@ class FunctionFieldMaximalOrder_polymod(FunctionFieldMaximalOrder):
                         continue
                     s += f[i] * g[j] * self._mtable[i][j]
             return s
+
         self._mul_vecs = mul_vecs
 
         # We prepare for using Kummer's theorem to decompose primes. Note
@@ -112,7 +112,7 @@ class FunctionFieldMaximalOrder_polymod(FunctionFieldMaximalOrder):
             gen_vec_pow.append(g)
 
         # find places where {1,gen,...,gen^(n-1)} is not integral basis
-        W = V.span_of_basis([to(gen ** i) for i in range(phi.degree())])
+        W = V.span_of_basis([to(gen**i) for i in range(phi.degree())])
 
         supp = []
         for g in basis:
@@ -631,9 +631,10 @@ class FunctionFieldMaximalOrder_polymod(FunctionFieldMaximalOrder):
         # Given an element of the function field expressed as a K-vector times
         # the basis of this order, construct the n n-by-n matrices that show
         # how to multiply by each of the basis elements.
-        matrices = [matrix(o, [self.coordinate_vector(b1 * b2)
-                               for b1 in self.basis()])
-                    for b2 in self.basis()]
+        matrices = [
+            matrix(o, [self.coordinate_vector(b1 * b2) for b1 in self.basis()])
+            for b2 in self.basis()
+        ]
 
         # Let O denote the maximal order self. When reduced modulo p,
         # matrices_reduced give the multiplication matrices used to form the
@@ -719,6 +720,7 @@ class FunctionFieldMaximalOrderInfinite_polymod(FunctionFieldMaximalOrderInfinit
         sage: L.maximal_order_infinite()                                                # needs sage.rings.finite_rings
         Maximal infinite order of Function field in y defined by y^2 + y + (x^2 + 1)/x
     """
+
     def __init__(self, field, category=None) -> None:
         """
         Initialize.
@@ -730,7 +732,9 @@ class FunctionFieldMaximalOrderInfinite_polymod(FunctionFieldMaximalOrderInfinit
             sage: O = F.maximal_order_infinite()
             sage: TestSuite(O).run()
         """
-        FunctionFieldMaximalOrderInfinite.__init__(self, field, ideal_class=FunctionFieldIdealInfinite_polymod)
+        FunctionFieldMaximalOrderInfinite.__init__(
+            self, field, ideal_class=FunctionFieldIdealInfinite_polymod
+        )
 
         M, from_M, to_M = field._inversion_isomorphism()
         basis = [from_M(g) for g in M.maximal_order().basis()]
@@ -918,7 +922,7 @@ class FunctionFieldMaximalOrderInfinite_polymod(FunctionFieldMaximalOrderInfinit
             i = 0
             while d[i].is_zero():
                 i += 1
-            d = x ** i
+            d = x**i
 
             # find the largest n such that I + (xO)^n stabilizes
             h1 = h
@@ -1040,8 +1044,10 @@ class FunctionFieldMaximalOrderInfinite_polymod(FunctionFieldMaximalOrderInfinit
             defined by y^2 + y + (x^2 + 1)/x
         """
         T = self._codifferent_matrix()
-        codiff_gens = [sum([ci * bi for ci, bi in zip(c, self.basis())])
-                       for c in T.inverse().columns()]
+        codiff_gens = [
+            sum([ci * bi for ci, bi in zip(c, self.basis())])
+            for c in T.inverse().columns()
+        ]
         codiff = self.ideal_with_gens_over_base(codiff_gens)
         return ~codiff
 
@@ -1119,7 +1125,9 @@ class FunctionFieldMaximalOrder_global(FunctionFieldMaximalOrder_polymod):
             sage: O = L.maximal_order()
             sage: TestSuite(O).run()
         """
-        FunctionFieldMaximalOrder_polymod.__init__(self, field, ideal_class=FunctionFieldIdeal_global)
+        FunctionFieldMaximalOrder_polymod.__init__(
+            self, field, ideal_class=FunctionFieldIdeal_global
+        )
 
     @cached_method
     def p_radical(self, prime):
@@ -1162,7 +1170,7 @@ class FunctionFieldMaximalOrder_global(FunctionFieldMaximalOrder_polymod):
 
         # exp = q^j should be at least extension degree where q is
         # the order of the residue field o/p
-        q = F.constant_base_field().order()**p.degree()
+        q = F.constant_base_field().order() ** p.degree()
         exp = q
         while exp <= F.degree():
             exp = exp**q
@@ -1224,8 +1232,7 @@ class FunctionFieldMaximalOrder_global(FunctionFieldMaximalOrder_polymod):
 
         mtable = []
         for i in range(n):
-            row = [V([to(e) for e in self._mtable[i][j]])
-                   for j in range(n)]
+            row = [V([to(e) for e in self._mtable[i][j]]) for j in range(n)]
             mtable.append(row)
 
         if p not in self._kummer_places:
@@ -1257,8 +1264,7 @@ class FunctionFieldMaximalOrder_global(FunctionFieldMaximalOrder_polymod):
 
                 # p and qgen generates the prime; modulo pO, qgenb generates the prime
                 qgenb = [to(qgen[i]) for i in range(n)]
-                m = [sum(qgenb[j] * mtable[i][j] for j in range(n))
-                     for i in range(n)]
+                m = [sum(qgenb[j] * mtable[i][j] for j in range(n)) for i in range(n)]
                 beta = [fr(coeff) for coeff in matrix(m).left_kernel().basis()[0]]
 
                 prime.is_prime.set_cache(True)
@@ -1329,8 +1335,7 @@ class FunctionFieldMaximalOrder_global(FunctionFieldMaximalOrder_polymod):
 
             # Algorithm 6.2.5 of [Coh1993]
             def mul(Ib, Jb):
-                m = [mul_vec(v1, v2)
-                     for v1 in Ib for v2 in Jb]
+                m = [mul_vec(v1, v2) for v1 in Ib for v2 in Jb]
                 h = matrix(m).echelon_form()
                 return cut_last_zero_rows(h)
 
@@ -1393,7 +1398,7 @@ class FunctionFieldMaximalOrder_global(FunctionFieldMaximalOrder_polymod):
                         continue
                     break
 
-                minpol = X**len(sol) - P(list(sol))
+                minpol = X ** len(sol) - P(list(sol))
 
                 # The minimal polynomial of a has only linear factors and at least two
                 # of them. We set f to the first factor and g to the product of the rest.

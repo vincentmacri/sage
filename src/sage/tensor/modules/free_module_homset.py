@@ -30,7 +30,9 @@ REFERENCES:
 from sage.categories.homset import Homset
 from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.tensor.modules.free_module_morphism import (
-    FiniteRankFreeModuleEndomorphism, FiniteRankFreeModuleMorphism)
+    FiniteRankFreeModuleEndomorphism,
+    FiniteRankFreeModuleMorphism,
+)
 from sage.tensor.modules.free_module_automorphism import FreeModuleAutomorphism
 from sage.tensor.modules.free_module_tensor import FreeModuleTensor
 
@@ -145,21 +147,31 @@ class FreeModuleHomset(Homset, metaclass=ClasscallMetaclass):
             True
         """
         from .finite_rank_free_module import FiniteRankFreeModule
+
         if not isinstance(fmodule1, FiniteRankFreeModule):
-            raise TypeError("fmodule1 = {} is not an ".format(fmodule1) +
-                            "instance of FiniteRankFreeModule")
+            raise TypeError(
+                "fmodule1 = {} is not an ".format(fmodule1)
+                + "instance of FiniteRankFreeModule"
+            )
         if not isinstance(fmodule2, FiniteRankFreeModule):
-            raise TypeError("fmodule2 = {} is not an ".format(fmodule2) +
-                            "instance of FiniteRankFreeModule")
+            raise TypeError(
+                "fmodule2 = {} is not an ".format(fmodule2)
+                + "instance of FiniteRankFreeModule"
+            )
         if fmodule1.base_ring() != fmodule2.base_ring():
-            raise TypeError("the domain and codomain are not defined over " +
-                            "the same ring")
+            raise TypeError(
+                "the domain and codomain are not defined over " + "the same ring"
+            )
         if name is None:
             name = "Hom(" + fmodule1._name + "," + fmodule2._name + ")"
         if latex_name is None:
-            latex_name = \
-                r"\mathrm{Hom}\left(" + fmodule1._latex_name + "," + \
-                fmodule2._latex_name + r"\right)"
+            latex_name = (
+                r"\mathrm{Hom}\left("
+                + fmodule1._latex_name
+                + ","
+                + fmodule2._latex_name
+                + r"\right)"
+            )
         if fmodule1 == fmodule2:
             return FreeModuleEndset(fmodule1, name, latex_name)
         return type.__call__(cls, fmodule1, fmodule2, name, latex_name)
@@ -237,12 +249,14 @@ class FreeModuleHomset(Homset, metaclass=ClasscallMetaclass):
             True
         """
         from sage.structure.parent import Parent
+
         return Parent.__call__(self, *args, **kwds)
 
     # ### Methods required for any Parent ###
 
-    def _element_constructor_(self, matrix_rep, bases=None, name=None,
-                              latex_name=None, is_identity=False):
+    def _element_constructor_(
+        self, matrix_rep, bases=None, name=None, latex_name=None, is_identity=False
+    ):
         r"""
         Construct an element of ``self``, i.e. a homomorphism M --> N, where
         M is the domain of ``self`` and N its codomain.
@@ -318,9 +332,14 @@ class FreeModuleHomset(Homset, metaclass=ClasscallMetaclass):
             True
         """
         # Standard construction:
-        return self.element_class(self, matrix_rep, bases=bases, name=name,
-                                  latex_name=latex_name,
-                                  is_identity=is_identity)
+        return self.element_class(
+            self,
+            matrix_rep,
+            bases=bases,
+            name=name,
+            latex_name=latex_name,
+            is_identity=is_identity,
+        )
 
     def _an_element_(self):
         r"""
@@ -492,23 +511,24 @@ class FreeModuleEndset(FreeModuleHomset):
             True
         """
         from sage.tensor.modules.tensor_free_module import TensorFreeModule
-        from sage.tensor.modules.free_module_linear_group import \
-            FreeModuleLinearGroup
+        from sage.tensor.modules.free_module_linear_group import FreeModuleLinearGroup
+
         if isinstance(other, TensorFreeModule):
             # Coercion of a type-(1,1) tensor to an endomorphism:
             if other.tensor_type() == (1, 1):
-                return self.is_endomorphism_set() and \
-                                           other.base_module() is self.domain()
+                return (
+                    self.is_endomorphism_set() and other.base_module() is self.domain()
+                )
         if isinstance(other, FreeModuleLinearGroup):
             # Coercion of an automorphism to an endomorphism:
-            return self.is_endomorphism_set() and \
-                                           other.base_module() is self.domain()
+            return self.is_endomorphism_set() and other.base_module() is self.domain()
         return False
 
     # ### Methods required for any Parent ###
 
-    def _element_constructor_(self, matrix_rep, bases=None, name=None,
-                              latex_name=None, is_identity=False):
+    def _element_constructor_(
+        self, matrix_rep, bases=None, name=None, latex_name=None, is_identity=False
+    ):
         r"""
         Construct an element of ``self``, i.e. a homomorphism M --> N, where
         M is the domain of ``self`` and N its codomain.
@@ -574,21 +594,32 @@ class FreeModuleEndset(FreeModuleHomset):
                 basis = tensor.pick_a_basis()
                 tcomp = tensor.comp(basis)
                 fmodule = tensor.base_module()
-                mat = [[tcomp[[i, j]] for j in fmodule.irange()]
-                       for i in fmodule.irange()]
+                mat = [
+                    [tcomp[[i, j]] for j in fmodule.irange()] for i in fmodule.irange()
+                ]
                 if isinstance(tensor, FreeModuleAutomorphism):
                     is_identity = tensor._is_identity
                 else:
                     is_identity = False
-                return self.element_class(self, mat, bases=(basis, basis),
-                                          name=tensor._name,
-                                          latex_name=tensor._latex_name,
-                                          is_identity=is_identity)
-            raise TypeError("cannot coerce the {}".format(tensor) +
-                            " to an element of {}".format(self))
-        return super()._element_constructor_(matrix_rep, bases=bases,
-                                             name=name, latex_name=latex_name,
-                                             is_identity=is_identity)
+                return self.element_class(
+                    self,
+                    mat,
+                    bases=(basis, basis),
+                    name=tensor._name,
+                    latex_name=tensor._latex_name,
+                    is_identity=is_identity,
+                )
+            raise TypeError(
+                "cannot coerce the {}".format(tensor)
+                + " to an element of {}".format(self)
+            )
+        return super()._element_constructor_(
+            matrix_rep,
+            bases=bases,
+            name=name,
+            latex_name=latex_name,
+            is_identity=is_identity,
+        )
 
     # ### Monoid methods ###
 

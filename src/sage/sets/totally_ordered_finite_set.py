@@ -41,6 +41,7 @@ class TotallyOrderedFiniteSetElement(Element):
         sage: x.parent()
         {2, 7}
     """
+
     def __init__(self, parent, data):
         r"""
         TESTS::
@@ -227,6 +228,7 @@ class TotallyOrderedFiniteSet(FiniteEnumeratedSet):
         sage: TotallyOrderedFiniteSet([1,1,2,1,2,2,5,4])
         {1, 2, 5, 4}
     """
+
     Element = TotallyOrderedFiniteSetElement
 
     @staticmethod
@@ -253,9 +255,8 @@ class TotallyOrderedFiniteSet(FiniteEnumeratedSet):
                 elements.append(x)
                 seen.add(x)
         return super(FiniteEnumeratedSet, cls).__classcall__(
-            cls,
-            tuple(elements),
-            facade)
+            cls, tuple(elements), facade
+        )
 
     def __init__(self, elements, facade=True):
         """
@@ -268,7 +269,9 @@ class TotallyOrderedFiniteSet(FiniteEnumeratedSet):
             sage: TestSuite(TotallyOrderedFiniteSet([1,3,2],facade=False)).run()
             sage: TestSuite(TotallyOrderedFiniteSet([])).run()
         """
-        Parent.__init__(self, facade=facade, category=(Posets(), FiniteEnumeratedSets()))
+        Parent.__init__(
+            self, facade=facade, category=(Posets(), FiniteEnumeratedSets())
+        )
         self._elements = elements
         if facade:
             self._facade_elements = None

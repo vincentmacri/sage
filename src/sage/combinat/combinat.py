@@ -344,6 +344,7 @@ def bell_number(n, algorithm='flint', **options) -> Integer:
         raise ArithmeticError('Bell numbers not defined for negative indices')
     if algorithm == 'mpmath':
         from mpmath import bell, mag, mp
+
         old_prec = mp.dps
         if 'prec' in options:
             mp.dps = options['prec']
@@ -361,10 +362,12 @@ def bell_number(n, algorithm='flint', **options) -> Integer:
 
     if algorithm == 'flint':
         import sage.libs.flint.arith_sage
+
         return sage.libs.flint.arith_sage.bell_number(n)
 
     if algorithm == 'gap':
         from sage.libs.gap.libgap import libgap
+
         return libgap.Bell(n).sage()
 
     if algorithm == 'dobinski':
@@ -380,7 +383,7 @@ def bell_number(n, algorithm='flint', **options) -> Integer:
             partfact = ZZ.one()
             v = ZZ.zero()
             for i in range(si - 1, -1, -1):
-                v += partfact * (k + i)**n
+                v += partfact * (k + i) ** n
                 partfact *= k + i
             fact *= partfact
             v = (q * v) // fact
@@ -389,6 +392,7 @@ def bell_number(n, algorithm='flint', **options) -> Integer:
             b += v
             k += si
         from sage.rings.real_mpfr import RealField
+
         R = RealField(b.exact_log(2) + 1, rnd='RNDD')
         return ((R(-1).exp() / q) * b).ceil()
 
@@ -526,6 +530,7 @@ def euler_number(n, algorithm='flint') -> Integer:
         return ZZ(maxima.euler(n))  # type:ignore
     if algorithm == 'flint':
         import sage.libs.flint.arith_sage
+
         return sage.libs.flint.arith_sage.euler_number(n)
     raise ValueError("algorithm must be 'flint' or 'maxima'")
 
@@ -571,8 +576,7 @@ def eulerian_number(n, k, algorithm='recursive') -> Integer:
         s = (n - k) * eulerian_number(n - 1, k - 1, algorithm=algorithm)
         s += (k + 1) * eulerian_number(n - 1, k, algorithm=algorithm)
         return s
-    return sum((-1)**m * (n + 1).binomial(m) * (k + 1 - m)**n
-               for m in range(k + 1))
+    return sum((-1) ** m * (n + 1).binomial(m) * (k + 1 - m) ** n for m in range(k + 1))
 
 
 @cached_function(key=lambda n, a: n)
@@ -677,6 +681,7 @@ def fibonacci(n, algorithm='pari') -> Integer:
         return ZZ(pari(n).fibonacci())
     if algorithm == 'gap':
         from sage.libs.gap.libgap import libgap
+
         return libgap.Fibonacci(n).sage()
     raise ValueError("no algorithm {}".format(algorithm))
 
@@ -747,6 +752,7 @@ def lucas_number1(n, P, Q):
     P = QQ(P)
     Q = QQ(Q)
     from sage.libs.gap.libgap import libgap
+
     return libgap.Lucas(P, Q, n)[0].sage()
 
 
@@ -795,6 +801,7 @@ def lucas_number2(n, P, Q):
     P = QQ(P)
     Q = QQ(Q)
     from sage.libs.gap.libgap import libgap
+
     return libgap.Lucas(P, Q, n)[1].sage()
 
 
@@ -847,9 +854,11 @@ def stirling_number1(n, k, algorithm='gap') -> Integer:
         return ZZ.zero() if n else ZZ.one()
     if algorithm == 'gap':
         from sage.libs.gap.libgap import libgap
+
         return libgap.Stirling1(n, k).sage()
     if algorithm == 'flint':
         import sage.libs.flint.arith_sage
+
         return sage.libs.flint.arith_sage.stirling_number_1(n, k)
     raise ValueError("unknown algorithm: %s" % algorithm)
 
@@ -979,9 +988,11 @@ def stirling_number2(n, k, algorithm=None) -> Integer:
         return _stirling_number2(n, k)
     if algorithm == 'gap':
         from sage.libs.gap.libgap import libgap
+
         return libgap.Stirling2(n, k).sage()
     if algorithm == 'flint':
         import sage.libs.flint.arith_sage
+
         return sage.libs.flint.arith_sage.stirling_number_2(n, k)
     if algorithm == 'maxima':
         return ZZ(maxima.stirling2(n, k))  # type:ignore
@@ -1481,8 +1492,9 @@ class CombinatorialObject(SageObject):
         return self._list.index(key)
 
 
-class CombinatorialElement(CombinatorialObject, Element,
-        metaclass=InheritComparisonClasscallMetaclass):
+class CombinatorialElement(
+    CombinatorialObject, Element, metaclass=InheritComparisonClasscallMetaclass
+):
     """
     ``CombinatorialElement`` is both a :class:`CombinatorialObject`
     and an :class:`Element`. So it represents a list which is an
@@ -1564,11 +1576,16 @@ class CombinatorialElement(CombinatorialObject, Element,
         if len(args) == 1 and not kwds:
             L = args[0]
         elif len(kwds) == 1 and not args:
-            L, = kwds.values()
+            (L,) = kwds.values()
         else:
-            raise TypeError("__init__() takes exactly 2 arguments ({} given)".format(1 + len(args) + len(kwds)))
+            raise TypeError(
+                "__init__() takes exactly 2 arguments ({} given)".format(
+                    1 + len(args) + len(kwds)
+                )
+            )
         super().__init__(L)
         super(CombinatorialObject, self).__init__(parent)
+
 
 #####################################################
 # combinatorial sets/lists
@@ -1637,6 +1654,7 @@ def tuples(S, k, algorithm='itertools'):
     """
     if algorithm == 'itertools':
         import itertools
+
         return list(itertools.product(S, repeat=k))
     if algorithm == 'native':
         return _tuples_native(S, k)
@@ -1712,10 +1730,11 @@ def number_of_tuples(S, k, algorithm='naive') -> Integer:
         1
     """
     if algorithm == 'naive':
-        return ZZ(len(set(S)))**k  # The set is there to avoid duplicates
+        return ZZ(len(set(S))) ** k  # The set is there to avoid duplicates
     if algorithm == 'gap':
         k = ZZ(k)
         from sage.libs.gap.libgap import libgap
+
         S = libgap.eval(str(S))
         return libgap.NrTuples(S, k).sage()
     raise ValueError('invalid algorithm')
@@ -1781,10 +1800,12 @@ def unordered_tuples(S, k, algorithm='itertools'):
     """
     if algorithm == 'itertools':
         import itertools
+
         return list(itertools.combinations_with_replacement(sorted(set(S)), k))
     if algorithm == 'gap':
         k = ZZ(k)
         from sage.libs.gap.libgap import libgap
+
         S = libgap.eval(str(S))
         return [tuple(x) for x in libgap.UnorderedTuples(S, k).sage()]
     raise ValueError('invalid algorithm')
@@ -1828,10 +1849,13 @@ def number_of_unordered_tuples(S, k, algorithm='naive') -> Integer:
         1
     """
     if algorithm == 'naive':
-        return ZZ(len(set(S)) + k - 1).binomial(k)  # The set is there to avoid duplicates
+        return ZZ(len(set(S)) + k - 1).binomial(
+            k
+        )  # The set is there to avoid duplicates
     if algorithm == 'gap':
         k = ZZ(k)
         from sage.libs.gap.libgap import libgap
+
         S = libgap.eval(str(S))
         return libgap.NrUnorderedTuples(S, k).sage()
     raise ValueError('invalid algorithm')
@@ -1881,6 +1905,7 @@ def unshuffle_iterator(a, one=1) -> Iterator:
          (((3, 1), ()), 3/2)]
     """
     from sage.combinat.subset import powerset
+
     n = len(a)
     for I in powerset(range(n)):
         sorted_I = tuple(sorted(I))
@@ -1894,9 +1919,10 @@ def unshuffle_iterator(a, one=1) -> Iterator:
                 sign = not sign
         if len(sorted_I) % 4 > 1:
             sign = not sign
-        yield ((tuple([a[i] for i in sorted_I]),
-                tuple([a[i] for i in sorted_nonI])),
-               (one if sign else - one))
+        yield (
+            (tuple([a[i] for i in sorted_I]), tuple([a[i] for i in sorted_nonI])),
+            (one if sign else -one),
+        )
 
 
 def bell_polynomial(n: Integer, k=None, ordinary=False):
@@ -2052,6 +2078,7 @@ def bell_polynomial(n: Integer, k=None, ordinary=False):
     """
     from sage.arith.misc import multinomial
     from sage.combinat.partition import Partitions
+
     if k is None:
         partitions = Partitions(n)
         # We set k = 1 to use the correct ring
@@ -2071,7 +2098,7 @@ def bell_polynomial(n: Integer, k=None, ordinary=False):
         else:
             factorial_product = 1
             for part, count in p.to_exp_dict().items():
-                factorial_product *= factorial(count) * factorial(part)**count
+                factorial_product *= factorial(count) * factorial(part) ** count
             coefficient = factorial(n) // factorial_product
         result += coefficient * prod(vars[i - 1] for i in p)
     return result
@@ -2239,14 +2266,15 @@ def bernoulli_polynomial(x, n: Integer):
         raise ValueError("the second argument must be a nonnegative integer")
 
     if n == 0:
-        return x**0   # result should be in the parent of x
+        return x**0  # result should be in the parent of x
 
     if n == 1:
         return x - ZZ.one() / 2
 
     k = n.mod(2)
-    coeffs = [0] * k + sum(([n.binomial(i) * bernoulli(n - i), 0]
-                            for i in range(k, n + 1, 2)), [])
+    coeffs = [0] * k + sum(
+        ([n.binomial(i) * bernoulli(n - i), 0] for i in range(k, n + 1, 2)), []
+    )
     coeffs[-3] = -n / 2
 
     if isinstance(x, Polynomial):

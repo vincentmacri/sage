@@ -246,8 +246,16 @@ class table(SageObject):
 
     .. automethod:: _rich_repr_
     """
-    def __init__(self, rows=None, columns=None, header_row=False,
-                 header_column=False, frame=False, align='left'):
+
+    def __init__(
+        self,
+        rows=None,
+        columns=None,
+        header_row=False,
+        header_column=False,
+        frame=False,
+        align='left',
+    ):
         r"""
         EXAMPLES::
 
@@ -258,7 +266,9 @@ class table(SageObject):
         """
         # If both rows and columns are set, raise an error.
         if rows and columns:
-            raise ValueError("do not set both 'rows' and 'columns' when defining a table")
+            raise ValueError(
+                "do not set both 'rows' and 'columns' when defining a table"
+            )
         # If columns is set, use its transpose for rows.
         if columns:
             rows = list(zip(*columns))
@@ -305,7 +315,7 @@ class table(SageObject):
             sage: T == T2
             False
         """
-        return (self._rows == other._rows and self.options() == other.options())
+        return self._rows == other._rows and self.options() == other.options()
 
     def options(self, **kwds):
         r"""
@@ -405,11 +415,13 @@ class table(SageObject):
             │ z ║ 3 │ 6 │
             └───╨───┴───┘
         """
-        return table(list(zip(*self._rows)),
-                     header_row=self._options['header_column'],
-                     header_column=self._options['header_row'],
-                     frame=self._options['frame'],
-                     align=self._options['align'])
+        return table(
+            list(zip(*self._rows)),
+            header_row=self._options['header_column'],
+            header_column=self._options['header_row'],
+            frame=self._options['frame'],
+            align=self._options['align'],
+        )
 
     @cached_method
     def _widths(self):
@@ -427,7 +439,7 @@ class table(SageObject):
         widths = [0] * nc
         for row in self._rows:
             w = []
-            for (idx, x) in zip(range(nc), row):
+            for idx, x in zip(range(nc), row):
                 w.append(max(widths[idx], len(str(x))))
             widths = w
         return tuple(widths)
@@ -609,7 +621,7 @@ class table(SageObject):
         if len(rows) == 0 or nc == 0:
             return ""
 
-        align_char = self._options['align'][0]   # 'l', 'c', 'r'
+        align_char = self._options['align'][0]  # 'l', 'c', 'r'
         if self._options['frame']:
             frame_char = '|'
             frame_str = ' \\hline'
@@ -631,13 +643,21 @@ class table(SageObject):
         s += frame_char.join([align_char] * (nc - 1))
         s += frame_char + "}" + frame_str + "\n"
         # first row
-        s += " & ".join(LatexExpr(x) if isinstance(x, (str, LatexExpr))
-                        else '$' + latex(x).strip() + '$' for x in rows[0])
+        s += " & ".join(
+            LatexExpr(x)
+            if isinstance(x, (str, LatexExpr))
+            else '$' + latex(x).strip() + '$'
+            for x in rows[0]
+        )
         s += " \\\\" + frame_str + head_row_str + "\n"
         # other rows
         for row in rows[1:]:
-            s += " & ".join(LatexExpr(x) if isinstance(x, (str, LatexExpr))
-                            else '$' + latex(x).strip() + '$' for x in row)
+            s += " & ".join(
+                LatexExpr(x)
+                if isinstance(x, (str, LatexExpr))
+                else '$' + latex(x).strip() + '$'
+                for x in row
+            )
             s += " \\\\" + frame_str + "\n"
         s += "\\end{tabular}"
         return s
@@ -736,6 +756,7 @@ class table(SageObject):
             </div>
         """
         from itertools import cycle
+
         rows = self._rows
         header_row = self._options['header_row']
         if self._options['frame']:
@@ -744,12 +765,16 @@ class table(SageObject):
             frame = ''
         s = StringIO()
         if rows:
-            s.writelines([
-                # If the table has < 100 rows, don't truncate the output in the notebook
-                '<div class="notruncate">\n' if len(rows) <= 100 else '<div class="truncate">',
-                '<table {} class="table_form">\n'.format(frame),
-                '<tbody>\n',
-            ])
+            s.writelines(
+                [
+                    # If the table has < 100 rows, don't truncate the output in the notebook
+                    '<div class="notruncate">\n'
+                    if len(rows) <= 100
+                    else '<div class="truncate">',
+                    '<table {} class="table_form">\n'.format(frame),
+                    '<tbody>\n',
+                ]
+            )
             # First row:
             if header_row:
                 s.write('<tr>\n')
@@ -814,7 +839,7 @@ class table(SageObject):
         elif not isinstance(row, (list, tuple)):
             row = [row]
 
-        align_char = self._options['align'][0]   # 'l', 'c', 'r'
+        align_char = self._options['align'][0]  # 'l', 'c', 'r'
 
         if align_char == 'l':
             style = 'text-align:left'
@@ -827,10 +852,16 @@ class table(SageObject):
 
         style_attr = f' style="{style}"' if style else ''
 
-        column_tag = f'<th{style_attr}>%s</th>\n' if header else f'<td{style_attr}>%s</td>\n'
+        column_tag = (
+            f'<th{style_attr}>%s</th>\n' if header else f'<td{style_attr}>%s</td>\n'
+        )
 
         if self._options['header_column']:
-            first_column_tag = '<th class="ch"{style_attr}>%s</th>\n' if header else '<td class="ch"{style_attr}>%s</td>\n'
+            first_column_tag = (
+                '<th class="ch"{style_attr}>%s</th>\n'
+                if header
+                else '<td class="ch"{style_attr}>%s</td>\n'
+            )
         else:
             first_column_tag = column_tag
 

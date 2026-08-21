@@ -131,6 +131,7 @@ class EllipticCurves:
             []
         """
         from sage.features.databases import DatabaseEllcurves
+
         db = DatabaseEllcurves()
         data = Path(db.absolute_filename()).parent / f'rank{rank}'
         try:

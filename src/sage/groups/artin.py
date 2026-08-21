@@ -31,7 +31,10 @@ AUTHORS:
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.combinat.root_system.coxeter_group import CoxeterGroup
 from sage.groups.free_group import FreeGroup
-from sage.groups.finitely_presented import FinitelyPresentedGroup, FinitelyPresentedGroupElement
+from sage.groups.finitely_presented import (
+    FinitelyPresentedGroup,
+    FinitelyPresentedGroupElement,
+)
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.infinity import Infinity
@@ -56,6 +59,7 @@ class ArtinGroupElement(FinitelyPresentedGroupElement):
         sage: A((1, 2, -3, -2))
         s1*s2*s3^-1*s2^-1
     """
+
     def _latex_(self):
         r"""
         Return a LaTeX representation of ``self``.
@@ -79,8 +83,9 @@ class ArtinGroupElement(FinitelyPresentedGroupElement):
         word = self.Tietze()
         if not word:
             return '1'
-        return ''.join(r"\sigma_{%s}^{-1}" % (-i) if i < 0 else r"\sigma_{%s}" % i
-                       for i in word)
+        return ''.join(
+            r"\sigma_{%s}^{-1}" % (-i) if i < 0 else r"\sigma_{%s}" % i for i in word
+        )
 
     def exponent_sum(self):
         """
@@ -305,12 +310,13 @@ class ArtinGroupElement(FinitelyPresentedGroupElement):
         """
         gens, invs = self.parent()._burau_generators
         MS = gens[0].parent()
-        ret = MS.prod(gens[i-1] if i > 0 else invs[-i-1] for i in self.Tietze())
+        ret = MS.prod(gens[i - 1] if i > 0 else invs[-i - 1] for i in self.Tietze())
 
         if var == 't':
             return ret
 
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
+
         poly_ring = LaurentPolynomialRing(ret.base_ring().base_ring(), var)
         return ret.change_ring(poly_ring)
 
@@ -319,6 +325,7 @@ class FiniteTypeArtinGroupElement(ArtinGroupElement):
     """
     An element of a finite-type Artin group.
     """
+
     def _richcmp_(self, other, op):
         """
         Compare ``self`` and ``other``.
@@ -414,8 +421,7 @@ class FiniteTypeArtinGroupElement(ArtinGroupElement):
         """
         lnfp = self._left_normal_form_coxeter()
         P = self.parent()
-        return tuple([P.delta() ** lnfp[0]] +
-                     [P._standard_lift(w) for w in lnfp[1:]])
+        return tuple([P.delta() ** lnfp[0]] + [P._standard_lift(w) for w in lnfp[1:]])
 
     def _left_normal_form_coxeter(self):
         r"""
@@ -475,12 +481,12 @@ class FiniteTypeArtinGroupElement(ArtinGroupElement):
                 while S:
                     a = list(S)[0]
                     form[i] = form[i] * sr[a]
-                    form[i + 1] = sr[a] * form[i+1]
+                    form[i + 1] = sr[a] * form[i + 1]
                     e = form[i].descents(side='right')
                     s = form[i + 1].descents(side='left')
                     S = set(s).difference(set(e))
-                if form[i+1].length() == 0:
-                    form.pop(i+1)
+                if form[i + 1].length() == 0:
+                    form.pop(i + 1)
                     i = 0
                 else:
                     i += 1
@@ -569,6 +575,7 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
 
         :class:`~sage.groups.raag.RightAngledArtinGroup`
     """
+
     @staticmethod
     def __classcall_private__(cls, coxeter_data, names=None):
         """
@@ -610,15 +617,18 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
                 names = [names + str(i) for i in coxeter_data.index_set()]
         names = tuple(names)
         if len(names) != coxeter_data.rank():
-            raise ValueError("the number of generators must match"
-                             " the rank of the Coxeter type")
+            raise ValueError(
+                "the number of generators must match the rank of the Coxeter type"
+            )
         if all(m == Infinity for m in coxeter_data.coxeter_graph().edge_labels()):
             from sage.groups.raag import RightAngledArtinGroup
+
             return RightAngledArtinGroup(coxeter_data.coxeter_graph(), names)
         if not coxeter_data.is_finite():
             return super().__classcall__(cls, coxeter_data, names)
         if coxeter_data.coxeter_type().cartan_type().type() == 'A':
             from sage.groups.braid import BraidGroup
+
             return BraidGroup(coxeter_data.rank() + 1, names)
         return FiniteTypeArtinGroup(coxeter_data, names)
 
@@ -641,7 +651,7 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
         I = coxeter_matrix.index_set()
         gens = free_group.gens()
         for ii, i in enumerate(I):
-            for jj, j in enumerate(I[ii + 1:], start=ii + 1):
+            for jj, j in enumerate(I[ii + 1 :], start=ii + 1):
                 m = coxeter_matrix[i, j]
                 if m == Infinity:  # no relation
                     continue
@@ -688,6 +698,7 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
             +Infinity
         """
         from sage.rings.infinity import Infinity
+
         return Infinity
 
     order = cardinality
@@ -929,9 +940,11 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
         # Determine the base field
         if data.is_simply_laced():
             from sage.rings.integer_ring import ZZ
+
             base_ring = ZZ
         elif data.is_finite():
             from sage.rings.number_field.number_field import QuadraticField
+
             letter = data.cartan_type().type()
             if letter in ['B', 'C', 'F']:
                 base_ring = QuadraticField(2)
@@ -940,10 +953,14 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
             elif letter == 'H':
                 base_ring = QuadraticField(5)
             else:
-                from sage.rings.universal_cyclotomic_field import UniversalCyclotomicField
+                from sage.rings.universal_cyclotomic_field import (
+                    UniversalCyclotomicField,
+                )
+
                 base_ring = UniversalCyclotomicField()
         else:
             from sage.rings.universal_cyclotomic_field import UniversalCyclotomicField
+
             base_ring = UniversalCyclotomicField()
 
         # Construct the matrices
@@ -951,6 +968,7 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
         from sage.matrix.matrix_space import MatrixSpace
         from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
         import sage.rings.abc
+
         poly_ring = LaurentPolynomialRing(base_ring, 't')
         q = -poly_ring.gen()
         MS = MatrixSpace(poly_ring, n, sparse=True)
@@ -968,6 +986,7 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
                 return q * (E2x + ~E2x)
         elif isinstance(base_ring, sage.rings.abc.NumberField_quadratic):
             from sage.rings.universal_cyclotomic_field import UniversalCyclotomicField
+
             E = UniversalCyclotomicField().gen
 
             def val(x):
@@ -977,6 +996,7 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
                     return 1 + q**2
                 return q * base_ring((E(2 * x) + ~E(2 * x)).to_cyclotomic_field())
         else:
+
             def val(x):
                 if x == -1:
                     return 2 * q
@@ -988,14 +1008,31 @@ class ArtinGroup(UniqueRepresentation, FinitelyPresentedGroup):
                     return q
                 from sage.functions.trig import cos
                 from sage.symbolic.constants import pi
+
                 return q * base_ring(2 * cos(pi / x))
+
         index_set = data.index_set()
-        gens = [one - MS([SparseEntry(i, j, val(coxeter_matrix[index_set[i], index_set[j]]))
-                          for j in range(n)])
-                for i in range(n)]
-        invs = [one - q**-2 * MS([SparseEntry(i, j, val(coxeter_matrix[index_set[i], index_set[j]]))
-                                  for j in range(n)])
-                for i in range(n)]
+        gens = [
+            one
+            - MS(
+                [
+                    SparseEntry(i, j, val(coxeter_matrix[index_set[i], index_set[j]]))
+                    for j in range(n)
+                ]
+            )
+            for i in range(n)
+        ]
+        invs = [
+            one
+            - q**-2
+            * MS(
+                [
+                    SparseEntry(i, j, val(coxeter_matrix[index_set[i], index_set[j]]))
+                    for j in range(n)
+                ]
+            )
+            for i in range(n)
+        ]
         return [gens, invs]
 
     Element = ArtinGroupElement
@@ -1040,6 +1077,7 @@ class FiniteTypeArtinGroup(ArtinGroup):
         sage: GF = F.cayley_graph(elements=ball(F, 4), generators=F.gens()); GF         # needs sage.combinat
         Digraph on 40 vertices
     """
+
     def delta(self):
         r"""
         Return the `\Delta` element of ``self``.

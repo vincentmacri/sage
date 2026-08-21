@@ -33,6 +33,7 @@ class Brial(BuildModule):
         FeatureTestResult('brial', True)
 
     """
+
     _enabled_in_build = brial_enabled
 
     def __init__(self):
@@ -45,9 +46,7 @@ class Brial(BuildModule):
 
         """
         module_name = "sage.rings.polynomial.pbori.pbori"
-        super().__init__("brial",
-                         module_name,
-                         type="standard")
+        super().__init__("brial", module_name, type="standard")
 
 
 def all_features():

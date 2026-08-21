@@ -692,6 +692,7 @@ class GrowthDiagram(SageObject):
         0  0  0  1
         1  0
     """
+
     def __init__(self, rule, filling=None, shape=None, labels=None):
         r"""
         Initialize ``self``.
@@ -733,12 +734,16 @@ class GrowthDiagram(SageObject):
             if labels is not None:
                 labels = self._process_labels(labels)
 
-            self._filling, (self._lambda, self._mu) = self._process_filling_shape_labels(filling, shape, labels)
+            self._filling, (self._lambda, self._mu) = (
+                self._process_filling_shape_labels(filling, shape, labels)
+            )
 
             if labels is None:
                 rule = self.rule
                 if rule.has_multiple_edges:
-                    self._in_labels = [rule.zero, rule.zero_edge]*(self.half_perimeter()-1) + [rule.zero]
+                    self._in_labels = [rule.zero, rule.zero_edge] * (
+                        self.half_perimeter() - 1
+                    ) + [rule.zero]
                 else:
                     self._in_labels = [rule.zero] * self.half_perimeter()
             else:
@@ -774,21 +779,28 @@ class GrowthDiagram(SageObject):
               0  0  1  0
             sage: GrowthDiagram.options._reset()
         """
+
         NAME = 'GrowthDiagram'
         module = 'sage.combinat.growth'
-        convention = dict(default='matrix',
-                          description='Sets the convention used for displaying a growth diagram',
-                          values=dict(
-                              Cartesian='use Cartesian coordinates',
-                              matrix='use matrix coordinates',
-                          ),
-                          case_sensitive=False)
-        x_unit = dict(default="0.9em",
-                      description='Sets the horizontal size of a cell',
-                      checker=lambda x: isinstance(x, str))
-        y_unit = dict(default="0.9em",
-                      description='Sets the vertical size of a cell',
-                      checker=lambda x: isinstance(x, str))
+        convention = dict(
+            default='matrix',
+            description='Sets the convention used for displaying a growth diagram',
+            values=dict(
+                Cartesian='use Cartesian coordinates',
+                matrix='use matrix coordinates',
+            ),
+            case_sensitive=False,
+        )
+        x_unit = dict(
+            default="0.9em",
+            description='Sets the horizontal size of a cell',
+            checker=lambda x: isinstance(x, str),
+        )
+        y_unit = dict(
+            default="0.9em",
+            description='Sets the vertical size of a cell',
+            checker=lambda x: isinstance(x, str),
+        )
 
     def filling(self):
         r"""
@@ -838,10 +850,12 @@ class GrowthDiagram(SageObject):
             True
         """
         F = {(j, i): v for (i, j), v in self._filling.items()}
-        return GrowthDiagram(self.rule,
-                             filling=F,
-                             shape=self.shape().conjugate(),
-                             labels=self.in_labels()[::-1])
+        return GrowthDiagram(
+            self.rule,
+            filling=F,
+            shape=self.shape().conjugate(),
+            labels=self.in_labels()[::-1],
+        )
 
     def rotate(self):
         r"""
@@ -892,10 +906,8 @@ class GrowthDiagram(SageObject):
         shape_lambda = [l - p for p in self._mu] + [l] * (h - len(self._mu))
         shape_mu = [l - p for p in self._lambda]
         shape = SkewPartition([shape_lambda[::-1], shape_mu[::-1]])
-        F = {(l-i-1, h-j-1): v for (i, j), v in self._filling.items()}
-        return GrowthDiagram(self.rule,
-                             filling=F,
-                             shape=shape)
+        F = {(l - i - 1, h - j - 1): v for (i, j), v in self._filling.items()}
+        return GrowthDiagram(self.rule, filling=F, shape=shape)
 
     def half_perimeter(self):
         r"""
@@ -1013,7 +1025,7 @@ class GrowthDiagram(SageObject):
             raise ValueError("the P symbol is only defined for rectangular shapes")
         if self._lambda:
             if self.rule.has_multiple_edges:
-                r = 2*self._lambda[0]
+                r = 2 * self._lambda[0]
             else:
                 r = self._lambda[0]
         else:
@@ -1042,9 +1054,9 @@ class GrowthDiagram(SageObject):
             raise ValueError("the Q symbol is only defined for rectangular shapes")
         if self._lambda:
             if self.rule.has_multiple_edges:
-                r = 2*self._lambda[0]+1
+                r = 2 * self._lambda[0] + 1
             else:
-                r = self._lambda[0]+1
+                r = self._lambda[0] + 1
         else:
             r = 1
         return self._out_labels[:r]
@@ -1061,8 +1073,9 @@ class GrowthDiagram(SageObject):
             sage: GrowthDiagram(RuleRSK, [[1,0,1],[0,1]]).is_rectangular()
             False
         """
-        return (all(x == 0 for x in self._mu)
-                and all(x == self._lambda[0] for x in self._lambda))
+        return all(x == 0 for x in self._mu) and all(
+            x == self._lambda[0] for x in self._lambda
+        )
 
     def to_word(self):
         r"""
@@ -1089,19 +1102,24 @@ class GrowthDiagram(SageObject):
             if v != 0:
                 if v == 1:
                     if w[i] == 0:
-                        w[i] = j+1
+                        w[i] = j + 1
                     else:
-                        raise ValueError("can only convert fillings with at"
-                                         " most one entry per column to words")
+                        raise ValueError(
+                            "can only convert fillings with at"
+                            " most one entry per column to words"
+                        )
                 elif v == -1:
                     if w[i] == 0:
-                        w[i] = -(j+1)
+                        w[i] = -(j + 1)
                     else:
-                        raise ValueError("can only convert fillings with at"
-                                         " most one entry per column to words")
+                        raise ValueError(
+                            "can only convert fillings with at"
+                            " most one entry per column to words"
+                        )
                 else:
-                    raise ValueError("can only convert 0-1 fillings to words;"
-                                     " try 'to_biword'")
+                    raise ValueError(
+                        "can only convert 0-1 fillings to words; try 'to_biword'"
+                    )
         return w
 
     def to_biword(self):
@@ -1135,11 +1153,12 @@ class GrowthDiagram(SageObject):
         w2 = []
         for (i, j), v in sorted(self._filling.items()):
             if v >= 0:
-                w1.extend([i+1]*v)
-                w2.extend([j+1]*v)
+                w1.extend([i + 1] * v)
+                w2.extend([j + 1] * v)
             else:
-                raise ValueError("can only convert fillings with"
-                                 " nonnegative entries to words")
+                raise ValueError(
+                    "can only convert fillings with nonnegative entries to words"
+                )
         return (w1, w2)
 
     def __iter__(self):
@@ -1163,9 +1182,14 @@ class GrowthDiagram(SageObject):
              [0, 0, 0, 0, 0, 1],
              [0, 0, 0, 1, 0, 0]]
         """
-        return ([None]*self._mu[r] + [self._filling.get((self._mu[r]+j, r), 0)
-                                      for j in range(self._lambda[r]-self._mu[r])]
-                for r in range(len(self._lambda)))
+        return (
+            [None] * self._mu[r]
+            + [
+                self._filling.get((self._mu[r] + j, r), 0)
+                for j in range(self._lambda[r] - self._mu[r])
+            ]
+            for r in range(len(self._lambda))
+        )
 
     def _repr_(self):
         r"""
@@ -1185,13 +1209,22 @@ class GrowthDiagram(SageObject):
             .  0  1
             1
         """
-        S = SkewTableau(expr=[self._mu,
-                              [[self._filling.get((self._mu[r]+j, r), 0)
-                                for j in range(self._lambda[r]-self._mu[r])]
-                               for r in range(len(self._lambda))][::-1]])
+        S = SkewTableau(
+            expr=[
+                self._mu,
+                [
+                    [
+                        self._filling.get((self._mu[r] + j, r), 0)
+                        for j in range(self._lambda[r] - self._mu[r])
+                    ]
+                    for r in range(len(self._lambda))
+                ][::-1],
+            ]
+        )
 
         def none_str(x):
             return "  ." if x is None else "%3s" % str(x)
+
         if self.options.convention == 'Cartesian':
             new_rows = ["".join(map(none_str, row)) for row in reversed(S)]
         elif self.options.convention == 'matrix':
@@ -1229,11 +1262,13 @@ class GrowthDiagram(SageObject):
             sage: G1 == G2
             False
         """
-        return (type(self) is type(other) and
-                self.rule == other.rule and
-                self._lambda == other._lambda and
-                self._mu == other._mu and
-                self._filling == other._filling)
+        return (
+            type(self) is type(other)
+            and self.rule == other.rule
+            and self._lambda == other._lambda
+            and self._mu == other._mu
+            and self._filling == other._filling
+        )
 
     def __ne__(self, other):
         r"""
@@ -1287,8 +1322,10 @@ class GrowthDiagram(SageObject):
         """
         rule = self.rule
         if rule.has_multiple_edges:
-            return [rule.normalize_vertex(val) if i % 2 == 0 else val
-                    for i, val in enumerate(labels)]
+            return [
+                rule.normalize_vertex(val) if i % 2 == 0 else val
+                for i, val in enumerate(labels)
+            ]
         return [rule.normalize_vertex(la) for la in labels]
 
     def _shape_from_labels(self, labels, complement=False):
@@ -1335,30 +1372,46 @@ class GrowthDiagram(SageObject):
         seq = []
         if rule.has_multiple_edges:
             for i in range(0, len(labels) - 2, 2):
-                la, e, mu = labels[i], labels[i+1], labels[i+2]
+                la, e, mu = labels[i], labels[i + 1], labels[i + 2]
                 if rule.rank(la) < rule.rank(mu):
                     if is_Q_edge is not None and e not in is_Q_edge(la, mu):
-                        raise ValueError("%s has smaller rank than %s but there is no edge of color %s in Q" % (la, mu, e))
+                        raise ValueError(
+                            "%s has smaller rank than %s but there is no edge of color %s in Q"
+                            % (la, mu, e)
+                        )
                     seq.append(1)
                 elif rule.rank(la) > rule.rank(mu):
                     if is_P_edge is not None and e not in is_P_edge(mu, la):
-                        raise ValueError("%s has smaller rank than %s but there is no edge of color %s in P" % (mu, la, e))
+                        raise ValueError(
+                            "%s has smaller rank than %s but there is no edge of color %s in P"
+                            % (mu, la, e)
+                        )
                     seq.append(0)
                 else:
-                    raise ValueError("can only determine the shape of the growth diagram if ranks of successive labels differ")
+                    raise ValueError(
+                        "can only determine the shape of the growth diagram if ranks of successive labels differ"
+                    )
         else:
             for i in range(len(labels) - 1):
-                la, mu = labels[i], labels[i+1]
+                la, mu = labels[i], labels[i + 1]
                 if rule.rank(la) < rule.rank(mu):
                     if is_Q_edge is not None and not is_Q_edge(la, mu):
-                        raise ValueError("%s has smaller rank than %s but is not covered by it in Q" % (la, mu))
+                        raise ValueError(
+                            "%s has smaller rank than %s but is not covered by it in Q"
+                            % (la, mu)
+                        )
                     seq.append(1)
                 elif rule.rank(la) > rule.rank(mu):
                     if is_P_edge is not None and not is_P_edge(mu, la):
-                        raise ValueError("%s has smaller rank than %s but is not covered by it in P" % (mu, la))
+                        raise ValueError(
+                            "%s has smaller rank than %s but is not covered by it in P"
+                            % (mu, la)
+                        )
                     seq.append(0)
                 else:
-                    raise ValueError("can only determine the shape of the growth diagram if ranks of successive labels differ")
+                    raise ValueError(
+                        "can only determine the shape of the growth diagram if ranks of successive labels differ"
+                    )
 
         inner = _Partitions.from_zero_one(seq)
         if complement:
@@ -1396,14 +1449,19 @@ class GrowthDiagram(SageObject):
         half_perimeter = self.half_perimeter()
         if self.rule.has_multiple_edges:
             if not (len(labels) % 2):
-                raise ValueError("only a list of odd length can specify a path, but %s has even length" % len(labels))
+                raise ValueError(
+                    "only a list of odd length can specify a path, but %s has even length"
+                    % len(labels)
+                )
             path_length = (len(labels) + 1) / 2
         else:
             path_length = len(labels)
 
         if path_length != half_perimeter:
-            raise ValueError("the number of labels is %s, but for this shape we need %s"
-                             % (path_length, half_perimeter))
+            raise ValueError(
+                "the number of labels is %s, but for this shape we need %s"
+                % (path_length, half_perimeter)
+            )
 
     def _process_shape(self, shape):
         r"""
@@ -1436,9 +1494,11 @@ class GrowthDiagram(SageObject):
                 shape = SkewPartition(shape)
             except ValueError:
                 raise ValueError("cannot make sense of shape %s" % shape)
-            return (list(shape[0]),
-                    list(shape[1]) + [0]*(len(shape[0])-len(shape[1])))
-        return list(shape), [0]*len(shape)
+            return (
+                list(shape[0]),
+                list(shape[1]) + [0] * (len(shape[0]) - len(shape[1])),
+            )
+        return list(shape), [0] * len(shape)
 
     def _process_filling_shape_labels(self, filling, shape, labels):
         r"""
@@ -1535,8 +1595,7 @@ class GrowthDiagram(SageObject):
                                 F[(i, j)] = int(v)
                 else:
                     # it is dict of coordinates
-                    F = {(i, j): v for (i, j), v in filling.items()
-                         if v != 0}
+                    F = {(i, j): v for (i, j), v in filling.items() if v != 0}
             except StopIteration:
                 # it is an empty dict of coordinates
                 F = filling
@@ -1558,9 +1617,9 @@ class GrowthDiagram(SageObject):
                 # it is a word - for convenience we allow signed words
                 for i, l in enumerate(filling):
                     if l > 0:
-                        F[i, l-1] = 1
+                        F[i, l - 1] = 1
                     else:
-                        F[i, -l-1] = -1
+                        F[i, -l - 1] = -1
 
         if shape is None:
             if labels is not None:
@@ -1574,8 +1633,8 @@ class GrowthDiagram(SageObject):
                     shape = []
                 else:
                     # find bounding rectangle of ``filling``
-                    max_row = max(i for i, _ in F)+1
-                    max_col = max(j for _, j in F)+1
+                    max_row = max(i for i, _ in F) + 1
+                    max_col = max(j for _, j in F) + 1
                     shape = [max_row] * max_col
 
         return F, self._process_shape(shape)
@@ -1621,26 +1680,30 @@ class GrowthDiagram(SageObject):
         rule = self.rule
         if rule.has_multiple_edges:
             for r in range(l):
-                for c in range(self._mu[r]+l-r, self._lambda[r]+l-r):
+                for c in range(self._mu[r] + l - r, self._lambda[r] + l - r):
                     j = r
-                    i = c-l+r
-                    (labels[2*c-1],
-                     labels[2*c],
-                     labels[2*c+1]) = rule.forward_rule(labels[2*c-2],
-                                                        labels[2*c-1],
-                                                        labels[2*c],
-                                                        labels[2*c+1],
-                                                        labels[2*c+2],
-                                                        self._filling.get((i,j), 0))
+                    i = c - l + r
+                    (labels[2 * c - 1], labels[2 * c], labels[2 * c + 1]) = (
+                        rule.forward_rule(
+                            labels[2 * c - 2],
+                            labels[2 * c - 1],
+                            labels[2 * c],
+                            labels[2 * c + 1],
+                            labels[2 * c + 2],
+                            self._filling.get((i, j), 0),
+                        )
+                    )
         else:
             for r in range(l):
-                for c in range(self._mu[r]+l-r, self._lambda[r]+l-r):
+                for c in range(self._mu[r] + l - r, self._lambda[r] + l - r):
                     j = r
-                    i = c-l+r
-                    labels[c] = rule.forward_rule(labels[c-1],
-                                                  labels[c],
-                                                  labels[c+1],
-                                                  self._filling.get((i,j), 0))
+                    i = c - l + r
+                    labels[c] = rule.forward_rule(
+                        labels[c - 1],
+                        labels[c],
+                        labels[c + 1],
+                        self._filling.get((i, j), 0),
+                    )
 
         self._out_labels = labels
 
@@ -1709,29 +1772,35 @@ class GrowthDiagram(SageObject):
         rule = self.rule
         if rule.has_multiple_edges:
             for r in range(l):
-                for c in range(self._lambda[l-r-1]+r, self._mu[l-r-1]+r, -1):
-                    j = l-r-1
-                    i = c-r-1
-                    (labels[2*c-1],
-                     labels[2*c],
-                     labels[2*c+1], v) = rule.backward_rule(labels[2*c-2],
-                                                            labels[2*c-1],
-                                                            labels[2*c],
-                                                            labels[2*c+1],
-                                                            labels[2*c+2])
+                for c in range(
+                    self._lambda[l - r - 1] + r, self._mu[l - r - 1] + r, -1
+                ):
+                    j = l - r - 1
+                    i = c - r - 1
+                    (labels[2 * c - 1], labels[2 * c], labels[2 * c + 1], v) = (
+                        rule.backward_rule(
+                            labels[2 * c - 2],
+                            labels[2 * c - 1],
+                            labels[2 * c],
+                            labels[2 * c + 1],
+                            labels[2 * c + 2],
+                        )
+                    )
                     if v != 0:
-                        F[(i,j)] = v
+                        F[(i, j)] = v
 
         else:
             for r in range(l):
-                for c in range(self._lambda[l-r-1]+r, self._mu[l-r-1]+r, -1):
-                    j = l-r-1
-                    i = c-r-1
-                    labels[c], v = rule.backward_rule(labels[c-1],
-                                                      labels[c],
-                                                      labels[c+1])
+                for c in range(
+                    self._lambda[l - r - 1] + r, self._mu[l - r - 1] + r, -1
+                ):
+                    j = l - r - 1
+                    i = c - r - 1
+                    labels[c], v = rule.backward_rule(
+                        labels[c - 1], labels[c], labels[c + 1]
+                    )
                     if v != 0:
-                        F[(i,j)] = v
+                        F[(i, j)] = v
 
         self._in_labels = labels
         self._filling = F
@@ -1837,12 +1906,14 @@ class GrowthDiagram(SageObject):
 
         # Coordinate transforms (draw top row at the top)
         if self.options.convention == 'matrix':
+
             def y_rect(j):
                 return h - 1 - j
 
             def y_vert(y):
                 return h - y
         elif self.options.convention == 'Cartesian':
+
             def y_rect(j):
                 return j
 
@@ -1850,9 +1921,11 @@ class GrowthDiagram(SageObject):
                 return y
 
         if not self._lambda:
-            return (f"\\begin{{tikzpicture}}[baseline=(BL.base),x={x_unit},y={y_unit}]\n"
-                    "  \\coordinate (BL) at (0,0);\n"
-                    "\\end{tikzpicture}")
+            return (
+                f"\\begin{{tikzpicture}}[baseline=(BL.base),x={x_unit},y={y_unit}]\n"
+                "  \\coordinate (BL) at (0,0);\n"
+                "\\end{tikzpicture}"
+            )
 
         h = len(self._lambda)
         rule = self.rule
@@ -1871,17 +1944,24 @@ class GrowthDiagram(SageObject):
                     i = c - h + j
                     fill_val = self._filling.get((i, j), 0)
                     if rule.has_multiple_edges:
-                        NW, mW, SW, mS, SE = labels[2*c-2: 2*c+3]
-                        labels[2*c-1: 2*c+2] = forward(NW, mW, SW, mS, SE, fill_val)
-                        mN, NE, mE = labels[2*c-1: 2*c+2]
+                        NW, mW, SW, mS, SE = labels[2 * c - 2 : 2 * c + 3]
+                        labels[2 * c - 1 : 2 * c + 2] = forward(
+                            NW, mW, SW, mS, SE, fill_val
+                        )
+                        mN, NE, mE = labels[2 * c - 1 : 2 * c + 2]
 
-                        E[i, j+0.5], E[i+1, j+0.5], E[i+0.5, j], E[i+0.5, j+1] = mW, mE, mS, mN
+                        (
+                            E[i, j + 0.5],
+                            E[i + 1, j + 0.5],
+                            E[i + 0.5, j],
+                            E[i + 0.5, j + 1],
+                        ) = mW, mE, mS, mN
                     else:
-                        NW, SW, SE = labels[c-1: c+2]
+                        NW, SW, SE = labels[c - 1 : c + 2]
                         labels[c] = forward(NW, SW, SE, fill_val)
                         NE = labels[c]
 
-                    V[i, j], V[i+1, j], V[i, j+1], V[i+1, j+1] = SW, SE, NW, NE
+                    V[i, j], V[i + 1, j], V[i, j + 1], V[i + 1, j + 1] = SW, SE, NW, NE
 
         else:
             labels = list(self._out_labels)  # local copy
@@ -1891,17 +1971,24 @@ class GrowthDiagram(SageObject):
                 for c in range(self._lambda[j] + r, self._mu[j] + r, -1):
                     i = c - r - 1
                     if rule.has_multiple_edges:
-                        NW, mN, NE, mE, SE = labels[2*c-2: 2*c+3]
-                        labels[2*c-1], labels[2*c], labels[2*c+1], _ = rule.backward_rule(NW, mN, NE, mE, SE)
-                        mW, SW, mS = labels[2*c-1: 2*c+2]
+                        NW, mN, NE, mE, SE = labels[2 * c - 2 : 2 * c + 3]
+                        labels[2 * c - 1], labels[2 * c], labels[2 * c + 1], _ = (
+                            rule.backward_rule(NW, mN, NE, mE, SE)
+                        )
+                        mW, SW, mS = labels[2 * c - 1 : 2 * c + 2]
 
-                        E[i, j+0.5], E[i+1, j+0.5], E[i+0.5, j], E[i+0.5, j+1] = mW, mE, mS, mN
+                        (
+                            E[i, j + 0.5],
+                            E[i + 1, j + 0.5],
+                            E[i + 0.5, j],
+                            E[i + 0.5, j + 1],
+                        ) = mW, mE, mS, mN
                     else:
-                        NW, NE, SE = labels[c-1: c+2]
+                        NW, NE, SE = labels[c - 1 : c + 2]
                         labels[c] = rule.backward_rule(NW, NE, SE)[0]
                         SW = labels[c]
 
-                    V[i, j], V[i+1, j], V[i, j+1], V[i+1, j+1] = SW, SE, NW, NE
+                    V[i, j], V[i + 1, j], V[i, j + 1], V[i + 1, j + 1] = SW, SE, NW, NE
 
         # Target size inside a 1x1 cell (in ems, consistent with x=..., y=...):
         target_em = 0.80
@@ -1929,7 +2016,9 @@ class GrowthDiagram(SageObject):
                 all_labels.append(label)
                 box_id = f"GDlbl@{k}"
                 tikz.append(f"\\expandafter\\newbox\\csname {box_id}\\endcsname")
-                tikz.append(f"\\expandafter\\sbox\\csname {box_id}\\endcsname{{\\GDwrap{{{latex(label)}}}}}")
+                tikz.append(
+                    f"\\expandafter\\sbox\\csname {box_id}\\endcsname{{\\GDwrap{{{latex(label)}}}}}"
+                )
                 # width max
                 tikz.append(f"\\GDtmp=\\wd\\csname {box_id}\\endcsname")
                 tikz.append("\\ifdim\\GDtmp>\\GDWmax\\GDWmax=\\GDtmp\\fi")
@@ -1978,16 +2067,23 @@ class GrowthDiagram(SageObject):
             for (i, j), v in self._filling.items():
                 if v != 0:
                     y = y_rect(j)
-                    tikz.append(f"    \\node at ({i+0.5},{y+0.5}) {{${rule.latex_vertex(v)}$}};")
+                    tikz.append(
+                        f"    \\node at ({i + 0.5},{y + 0.5}) {{${rule.latex_vertex(v)}$}};"
+                    )
             tikz.append("  \\end{scope}")
 
-        tikz.append("  \\begin{scope}[every node/.style={inner sep=0.2pt,outer sep=0pt}]")
-        tikz.extend(f"\\node at ({x},{y_vert(y)}) {{\\scalebox{{\\GDscale}}{{\\usebox{{\\csname {box_id}\\endcsname}}}}}};"
-                    for (x, y), box_id in coord_dict.items())
+        tikz.append(
+            "  \\begin{scope}[every node/.style={inner sep=0.2pt,outer sep=0pt}]"
+        )
+        tikz.extend(
+            f"\\node at ({x},{y_vert(y)}) {{\\scalebox{{\\GDscale}}{{\\usebox{{\\csname {box_id}\\endcsname}}}}}};"
+            for (x, y), box_id in coord_dict.items()
+        )
         tikz.append("  \\end{scope}")
         tikz.append("\\end{tikzpicture}")
         tikz.append("\\endgroup")
         return "\n".join(tikz)
+
 
 ######################################################################
 # ABC for rules of growth diagrams
@@ -2084,12 +2180,13 @@ class Rule(UniqueRepresentation, SageObject):
     .. automethod:: _test_local_rules
 
     """
-    has_multiple_edges = False          # override when necessary
-    zero_edge = 0                       # override when necessary
-    r = 1                               # override when necessary
+
+    has_multiple_edges = False  # override when necessary
+    zero_edge = 0  # override when necessary
+    r = 1  # override when necessary
 
     @lazy_attribute
-    def allowed_contents(self):         # override when necessary
+    def allowed_contents(self):  # override when necessary
         r"""
         Return an enumeration of the allowed contents, excluding
         zero.
@@ -2104,9 +2201,9 @@ class Rule(UniqueRepresentation, SageObject):
             sage: Domino.allowed_contents
             [1, -1]
         """
-        return list(range(1, self.r+1))
+        return list(range(1, self.r + 1))
 
-    def normalize_vertex(self, v):      # override when necessary
+    def normalize_vertex(self, v):  # override when necessary
         r"""
         Return ``v`` as a vertex of the dual graded graph.
 
@@ -2184,7 +2281,7 @@ class Rule(UniqueRepresentation, SageObject):
             doctest:...: UserWarning: RulePascal has no forward rule implemented,
             skipping these tests.
         """
-        for n in range(N+1):
+        for n in range(N + 1):
             self._check_local_rules(n)
 
     def _test_duality(self, N=5, **options):
@@ -2209,7 +2306,7 @@ class Rule(UniqueRepresentation, SageObject):
             D U = []
             U D + 1 I = [[]]
         """
-        for n in range(N+1):
+        for n in range(N + 1):
             self._check_duality(n)
 
     def _check_duality(self, n):
@@ -2253,6 +2350,7 @@ class Rule(UniqueRepresentation, SageObject):
             D U = [[2]]
             U D + 1 I = [[2], [1, 1], [2]]
         """
+
         # compare multisets of possibly non-hashable, non-sortable objects
         def equal(s, t):
             t = list(t)
@@ -2268,9 +2366,12 @@ class Rule(UniqueRepresentation, SageObject):
             UDw = [v[1] for lw in self._Q_in_edges(w) for v in self._P_out_edges(lw[0])]
             UDw.extend([w] * self.r)
             if not equal(DUw, UDw):
-                raise ValueError(f"D U - U D differs from {self.r} I for vertex {w}:\n"
-                                 f"D U = {DUw}\n"
-                                 f"U D + {self.r} I = {UDw}")
+                raise ValueError(
+                    f"D U - U D differs from {self.r} I for vertex {w}:\n"
+                    f"D U = {DUw}\n"
+                    f"U D + {self.r} I = {UDw}"
+                )
+
         for w in self.vertices(n):
             check_vertex(w)
 
@@ -2387,15 +2488,21 @@ class Rule(UniqueRepresentation, SageObject):
             sage: RulePascal()._check_local_rules(2)
         """
         from warnings import warn
+
         has_fwd = hasattr(self, "forward_rule")
         if not has_fwd:
-            warn(f"{self.__class__.__name__} has no forward rule implemented, skipping these tests.")
+            warn(
+                f"{self.__class__.__name__} has no forward rule implemented, skipping these tests."
+            )
         has_bwd = hasattr(self, "backward_rule")
         if not has_bwd:
-            warn(f"{self.__class__.__name__} has no backward rule implemented, skipping these tests.")
+            warn(
+                f"{self.__class__.__name__} has no backward rule implemented, skipping these tests."
+            )
 
         z_edge = self.zero_edge
         if self.has_multiple_edges:
+
             def fwd(*args):
                 g, z, h = self.forward_rule(*args)
                 return g, self.normalize_vertex(z), h
@@ -2410,6 +2517,7 @@ class Rule(UniqueRepresentation, SageObject):
             def is_Q(t, f, x):
                 return f in self.is_Q_edge(t, x)
         else:
+
             def fwd(y, e, t, f, x, a):
                 z = self.normalize_vertex(self.forward_rule(y, t, x, a))
                 return z_edge, z, z_edge
@@ -2435,55 +2543,69 @@ class Rule(UniqueRepresentation, SageObject):
                 # 1. both degenerate, a = 0
                 g, z, h = fwd(t, z_edge, t, z_edge, t, 0)
                 if (g, z, h) != (z_edge, t, z_edge):
-                    raise ValueError(f"forward rule for degenerate edges at {t}, "
-                                     f"content 0, yields {g, z, h}")
+                    raise ValueError(
+                        f"forward rule for degenerate edges at {t}, "
+                        f"content 0, yields {g, z, h}"
+                    )
 
                 # 2. P-edge + degenerate Q
                 for _, y, e in P_edges:
                     g, z, h = fwd(y, e, t, z_edge, t, 0)
                     if (g, z, h) != (z_edge, y, e):
-                        raise ValueError(f"forward rule for degenerate Q-edge at {t} "
-                                         f"and P-edge {t, e, y}, content 0, "
-                                         f"yields {g, z, h}")
+                        raise ValueError(
+                            f"forward rule for degenerate Q-edge at {t} "
+                            f"and P-edge {t, e, y}, content 0, "
+                            f"yields {g, z, h}"
+                        )
 
                 # 3. Q-edge + degenerate P
                 for _, x, f in Q_edges:
                     g, z, h = fwd(t, z_edge, t, f, x, 0)
                     if (g, z, h) != (f, x, z_edge):
-                        raise ValueError(f"forward rule for degenerate P-edge at {t} "
-                                         f" and Q-edge {t, f, x}, content 0, "
-                                         f" yields {g, z, h}")
+                        raise ValueError(
+                            f"forward rule for degenerate P-edge at {t} "
+                            f" and Q-edge {t, f, x}, content 0, "
+                            f" yields {g, z, h}"
+                        )
 
                 # 4a. both degenerate, a != 0
                 for a in self.allowed_contents:
                     g, z, h = fwd(t, z_edge, t, z_edge, t, a)
                     if not (is_P(t, h, z) and is_Q(t, g, z)):
-                        raise ValueError(f"forward rule for degenerate edges at {t} "
-                                         f"yields non-edge {t, h, z} or {t, g, z}")
+                        raise ValueError(
+                            f"forward rule for degenerate edges at {t} "
+                            f"yields non-edge {t, h, z} or {t, g, z}"
+                        )
 
                     if has_bwd:
                         e2, t2, f2, a2 = bwd(t, g, z, h, t)
                         if (e2, t2, f2, a2) != (z_edge, t, z_edge, a2):
-                            raise ValueError(f"forward rule at {t}, content {a} "
-                                             f"yields {g, z, h}, but "
-                                             f"backward rule at {t, g, z, h, t} "
-                                             f"yields {e2, t2, f2, a2}")
+                            raise ValueError(
+                                f"forward rule at {t}, content {a} "
+                                f"yields {g, z, h}, but "
+                                f"backward rule at {t, g, z, h, t} "
+                                f"yields {e2, t2, f2, a2}"
+                            )
 
             # 4b. both non-degenerate
             for _, y, e in P_edges:
                 for _, x, f in Q_edges:
                     g, z, h = fwd(y, e, t, f, x, 0)
                     if not (is_P(x, h, z) and is_Q(y, g, z)):
-                        raise ValueError(f"forward rule for {y, e, t, f, x, 0} "
-                                         f"yields non-edge {x, h, z} or {y, g, z}")
+                        raise ValueError(
+                            f"forward rule for {y, e, t, f, x, 0} "
+                            f"yields non-edge {x, h, z} or {y, g, z}"
+                        )
 
                     if has_bwd:
                         e2, t2, f2, a2 = bwd(y, g, z, h, x)
                         if (e2, t2, f2, a2) != (e, t, f, 0):
-                            raise ValueError(f"forward rule for P-edge {t, e, x} "
-                                             f"and Q-edge {t, f, y} yields {g, z, h}, but "
-                                             f"backward rule at {y, g, z, h, x} "
-                                             f"yields {e2, t2, f2, a2}")
+                            raise ValueError(
+                                f"forward rule for P-edge {t, e, x} "
+                                f"and Q-edge {t, f, y} yields {g, z, h}, but "
+                                f"backward rule at {y, g, z, h, x} "
+                                f"yields {e2, t2, f2, a2}"
+                            )
 
         def test_bwd(z):
             """
@@ -2496,45 +2618,59 @@ class Rule(UniqueRepresentation, SageObject):
                 # 1. both degenerate
                 e, t, f, a = bwd(z, z_edge, z, z_edge, z)
                 if (e, t, f, a) != (z_edge, z, z_edge, 0):
-                    raise ValueError(f"backward rule for degenerate edges at {z} "
-                                     f"yields {e, t, f, a} instead of {z_edge, z, z_edge, 0}")
+                    raise ValueError(
+                        f"backward rule for degenerate edges at {z} "
+                        f"yields {e, t, f, a} instead of {z_edge, z, z_edge, 0}"
+                    )
 
                 # 2. P-edge + degenerate Q
                 for x, _, h in P_edges:
                     e, t, f, a = bwd(z, z_edge, z, h, x)
                     if (e, t, f, a) != (h, x, z_edge, 0):
-                        raise ValueError(f"backward rule for degenerate Q-edge at {z} "
-                                         f"and P-edge {x, h, z} "
-                                         f"yields {e, t, f, a}")
+                        raise ValueError(
+                            f"backward rule for degenerate Q-edge at {z} "
+                            f"and P-edge {x, h, z} "
+                            f"yields {e, t, f, a}"
+                        )
 
                 # 3. Q-edge + degenerate P
                 for y, _, g in Q_edges:
                     e, t, f, a = bwd(y, g, z, z_edge, z)
                     if (e, t, f, a) != (z_edge, y, g, 0):
-                        raise ValueError(f"backward rule for degenerate P-edge at {z} "
-                                         f"and Q-edge {y, g, z} "
-                                         f"yields {e, t, f, a}")
+                        raise ValueError(
+                            f"backward rule for degenerate P-edge at {z} "
+                            f"and Q-edge {y, g, z} "
+                            f"yields {e, t, f, a}"
+                        )
 
             # 4. both non-degenerate
             for x, _, h in P_edges:
                 for y, _, g in Q_edges:
                     e, t, f, a = bwd(y, g, z, h, x)
-                    if not (((t, e) == (y, z_edge) or is_P(t, e, y))
-                            and ((t, f) == (x, z_edge) or is_Q(t, f, x))):
-                        raise ValueError(f"backward rule for P-edge {x, h, z} "
-                                         f"and Q-edge {y, g, z} yields "
-                                         f"non-edge {t, e, y} or {t, f, x}")
+                    if not (
+                        ((t, e) == (y, z_edge) or is_P(t, e, y))
+                        and ((t, f) == (x, z_edge) or is_Q(t, f, x))
+                    ):
+                        raise ValueError(
+                            f"backward rule for P-edge {x, h, z} "
+                            f"and Q-edge {y, g, z} yields "
+                            f"non-edge {t, e, y} or {t, f, x}"
+                        )
                     if not (a == 0 or a in self.allowed_contents):
-                        raise ValueError(f"backward rule for P-edge {x, h, z} "
-                                         f"and Q-edge {y, g, z} yields content {a}")
+                        raise ValueError(
+                            f"backward rule for P-edge {x, h, z} "
+                            f"and Q-edge {y, g, z} yields content {a}"
+                        )
 
                     if has_fwd:
                         g2, z2, h2 = fwd(y, e, t, f, x, a)
                         if (g2, z2, h2) != (g, z, h):
-                            raise ValueError(f"backward rule for P-edge {x, h, z} "
-                                             f"and Q-edge {y, g, z} yields {e, t, f, a}, but "
-                                             f"forward rule at {y, e, t, f, x, a} "
-                                             f"yields {g2, z2, h2}")
+                            raise ValueError(
+                                f"backward rule for P-edge {x, h, z} "
+                                f"and Q-edge {y, g, z} yields {e, t, f, a}, but "
+                                f"forward rule at {y, e, t, f, x, a} "
+                                f"yields {g2, z2, h2}"
+                            )
 
         for t in self.vertices(n):
             if has_fwd:
@@ -2556,16 +2692,24 @@ class Rule(UniqueRepresentation, SageObject):
             Finite poset containing 8 elements
         """
         if self.has_multiple_edges:
-            D = DiGraph([(x,y,e) for k in range(n-1)
-                         for x in self.vertices(k)
-                         for y in self.vertices(k+1)
-                         for e in self.is_P_edge(x, y)], multiedges=True)
+            D = DiGraph(
+                [
+                    (x, y, e)
+                    for k in range(n - 1)
+                    for x in self.vertices(k)
+                    for y in self.vertices(k + 1)
+                    for e in self.is_P_edge(x, y)
+                ],
+                multiedges=True,
+            )
             # unfortunately, layout_acyclic will not show multiple edges
             # D.layout_default = D.layout_acyclic
             return D
 
-        return Poset(([w for k in range(n) for w in self.vertices(k)],
-                      self.is_P_edge), cover_relations=True)
+        return Poset(
+            ([w for k in range(n) for w in self.vertices(k)], self.is_P_edge),
+            cover_relations=True,
+        )
 
     def Q_graph(self, n):
         r"""
@@ -2584,16 +2728,25 @@ class Rule(UniqueRepresentation, SageObject):
             [[1, 1, 1, 1], [3, 1], [2, 2]]
         """
         if self.has_multiple_edges:
-            D = DiGraph([(x, y, e) for k in range(n - 1)
-                         for x in self.vertices(k)
-                         for y in self.vertices(k + 1)
-                         for e in self.is_Q_edge(x, y)], multiedges=True)
+            D = DiGraph(
+                [
+                    (x, y, e)
+                    for k in range(n - 1)
+                    for x in self.vertices(k)
+                    for y in self.vertices(k + 1)
+                    for e in self.is_Q_edge(x, y)
+                ],
+                multiedges=True,
+            )
             # unfortunately, layout_acyclic will not show multiple edges
             # D.layout_default = D.layout_acyclic
             return D
 
-        return Poset(([w for k in range(n) for w in self.vertices(k)],
-                      self.is_Q_edge), cover_relations=True)
+        return Poset(
+            ([w for k in range(n) for w in self.vertices(k)], self.is_Q_edge),
+            cover_relations=True,
+        )
+
 
 ######################################################################
 # Specific rules of growth diagrams
@@ -2649,6 +2802,7 @@ class RuleShiftedShapes(Rule):
         sage: list(Shifted(labels=G.out_labels())) == list(G)
         True
     """
+
     zero = _make_partition([])
     has_multiple_edges = True
 
@@ -2776,10 +2930,10 @@ class RuleShiftedShapes(Rule):
         chain = P_chain[::2]
         shape = chain[-1]
         T = [[None for _ in range(r)] for r in shape]
-        for i in range(1,len(chain)):
+        for i in range(1, len(chain)):
             la = chain[i]
-            mu = chain[i-1]
-            mu += [0]*(len(la) - len(mu))
+            mu = chain[i - 1]
+            mu += [0] * (len(la) - len(mu))
 
             for r in range(len(la)):
                 for c in range(mu[r], la[r]):
@@ -2828,14 +2982,14 @@ class RuleShiftedShapes(Rule):
         chain = Q_chain
         shape = chain[-1]
         T = [[None for _ in range(r)] for r in shape]
-        for i in range(1,(len(chain)+1)//2):
-            la = chain[2*i]
-            if chain[2*i-1] == 3:
+        for i in range(1, (len(chain) + 1) // 2):
+            la = chain[2 * i]
+            if chain[2 * i - 1] == 3:
                 prime = 0.5
             else:
                 prime = 0
-            mu = chain[2*(i-1)]
-            mu += [0]*(len(la) - len(mu))
+            mu = chain[2 * (i - 1)]
+            mu += [0] * (len(la) - len(mu))
 
             for r in range(len(la)):
                 for c in range(mu[r], la[r]):
@@ -2914,8 +3068,10 @@ class RuleShiftedShapes(Rule):
             else:
                 raise NotImplementedError
         elif content != 0:
-            raise ValueError("for y=%s, t=%s, x=%s, the content should be 0 but is %s"
-                             % (y, t, x, content))
+            raise ValueError(
+                "for y=%s, t=%s, x=%s, the content should be 0 but is %s"
+                % (y, t, x, content)
+            )
         elif x != t == y:
             g, z = f, x
         elif x == t != y:
@@ -2927,17 +3083,17 @@ class RuleShiftedShapes(Rule):
                 row = SkewPartition([x, t]).cells()[0][0]
                 g, z = f, _make_partition(y).add_cell(row)
             elif x == y != t and f == 2:  # blue
-                row = 1+SkewPartition([x, t]).cells()[0][0]
+                row = 1 + SkewPartition([x, t]).cells()[0][0]
                 if row == len(y):
                     g, z = 1, _make_partition(y).add_cell(row)  # black
                 else:
                     g, z = 2, _make_partition(y).add_cell(row)  # blue
-            elif x == y != t and f in [1, 3]:   # black or red
+            elif x == y != t and f in [1, 3]:  # black or red
                 c = SkewPartition([x, t]).cells()[0]
                 col = c[0] + c[1] + 1
                 for i in range(len(y)):
                     if i + y[i] == col:
-                        z = y[:i] + [y[i] + 1] + y[i + 1:]
+                        z = y[:i] + [y[i] + 1] + y[i + 1 :]
                         break
                 g = 3
             else:
@@ -3016,16 +3172,16 @@ class RuleShiftedShapes(Rule):
 
         row, col = SkewPartition([z, x]).cells()[0]
         if row > 0 and g in [1, 2]:  # black or blue
-            return (0, _make_partition(y).remove_cell(row-1), 2, 0)
+            return (0, _make_partition(y).remove_cell(row - 1), 2, 0)
         if row == 0 and g in [1, 2]:  # black or blue
             return (0, y, 0, 1)
         # find last cell in column col-1
-        for i in range(len(y)-1,-1,-1):
+        for i in range(len(y) - 1, -1, -1):
             if i + y[i] == col + row:
                 if y[i] == 1:
                     t = y[:i]
                     return (0, t, 1, 0)
-                t = y[:i] + [y[i]-1] + y[i+1:]
+                t = y[:i] + [y[i] - 1] + y[i + 1 :]
                 return (0, t, 3, 0)
         raise ValueError("this should not happen")
 
@@ -3115,6 +3271,7 @@ class RuleLLMS(Rule):
         sage: LLMS3.zero
         []
     """
+
     zero_edge = None  # to prevent confusion with the edge labelled with content 0
     has_multiple_edges = True
 
@@ -3208,7 +3365,10 @@ class RuleLLMS(Rule):
         """
         if w in v.strong_covers():
             T = SkewPartition([w.to_partition(), v.to_partition()])
-            return [max([j-i for i,j in c]) for c in T.cell_poset().connected_components()]
+            return [
+                max([j - i for i, j in c])
+                for c in T.cell_poset().connected_components()
+            ]
         return []
 
     def P_symbol(self, P_chain):
@@ -3229,11 +3389,11 @@ class RuleLLMS(Rule):
         T = SkewTableau(chain=C[::2])
         S = T.to_list()
         for entry, content in enumerate(C[1::2], 1):
-            for i,j in T.cells_containing(entry):
-                if j-i == content:
+            for i, j in T.cells_containing(entry):
+                if j - i == content:
                     S[i][j] = -S[i][j]
                     break
-        return StrongTableau(S, self.k-1)
+        return StrongTableau(S, self.k - 1)
 
     def Q_symbol(self, Q_chain):
         r"""
@@ -3249,7 +3409,7 @@ class RuleLLMS(Rule):
             1 2
             3 4
         """
-        return WeakTableau(SkewTableau(chain=Q_chain[::2]), self.k-1)
+        return WeakTableau(SkewTableau(chain=Q_chain[::2]), self.k - 1)
 
     def forward_rule(self, y, e, t, f, x, content):
         r"""
@@ -3337,19 +3497,21 @@ class RuleLLMS(Rule):
             else:
                 assert False, "BUG in RuleLLMS"
         elif content != 0:
-            raise ValueError("for y=%s, t=%s, x=%s, the content should be 0 but is %s"
-                             % (y, t, x, content))
+            raise ValueError(
+                "for y=%s, t=%s, x=%s, the content should be 0 but is %s"
+                % (y, t, x, content)
+            )
         elif x != t == y:
             if e is not None:
                 raise ValueError("degenerate edge e should have color None")
             z, h = x, e
         elif x == t != y:
             z, h = y, e
-        else:   # x != t and y != t
+        else:  # x != t and y != t
             qx = SkewPartition([x.to_partition(), t.to_partition()])
             qy = SkewPartition([y.to_partition(), t.to_partition()])
             if not all(c in qx.cells() for c in qy.cells()):
-                res = [(j-i) % self.k for i, j in qx.cells()]
+                res = [(j - i) % self.k for i, j in qx.cells()]
                 assert len(set(res)) == 1
                 r = res[0]
                 z = y.affine_symmetric_group_simple_action(r)
@@ -3361,9 +3523,10 @@ class RuleLLMS(Rule):
                     h = e
             elif x == y != t:
                 # the addable cell with largest content at most e
-                cprime = sorted([c for c in y.to_partition().addable_cells()
-                                 if c[1]-c[0] <= e],
-                                key=lambda c: -(c[1]-c[0]))[0]
+                cprime = sorted(
+                    [c for c in y.to_partition().addable_cells() if c[1] - c[0] <= e],
+                    key=lambda c: -(c[1] - c[0]),
+                )[0]
                 h = cprime[1] - cprime[0]
                 z = y.affine_symmetric_group_simple_action(h % self.k)
 
@@ -3448,7 +3611,8 @@ class RuleBinaryWord(Rule):
         ....:     for w in Permutations(r))
         True
     """
-    zero = Word([], alphabet=[0,1])
+
+    zero = Word([], alphabet=[0, 1])
 
     def normalize_vertex(self, v):
         r"""
@@ -3460,7 +3624,7 @@ class RuleBinaryWord(Rule):
             sage: BinaryWord.normalize_vertex([0,1]).parent()
             Finite words over {0, 1}
         """
-        return Word(v, alphabet=[0,1])
+        return Word(v, alphabet=[0, 1])
 
     def vertices(self, n):
         r"""
@@ -3476,8 +3640,8 @@ class RuleBinaryWord(Rule):
             return []
         if n == 0:
             return [self.zero]
-        w1 = Word([1], [0,1])
-        return [w1 + w for w in Words([0,1], n-1)]
+        w1 = Word([1], [0, 1])
+        return [w1 + w for w in Words([0, 1], n - 1)]
 
     def rank(self, v):
         r"""
@@ -3574,21 +3738,23 @@ class RuleBinaryWord(Rule):
             if content == 0:
                 z = x
             elif content == 1:
-                z = Word(list(y) + [1], alphabet=[0,1])
+                z = Word(list(y) + [1], alphabet=[0, 1])
             else:
                 raise NotImplementedError
         elif content != 0:
-            raise ValueError("for y=%s, t=%s, x=%s, the content should be 0 but is %s"
-                             % (y, t, x, content))
+            raise ValueError(
+                "for y=%s, t=%s, x=%s, the content should be 0 but is %s"
+                % (y, t, x, content)
+            )
         elif x != t == y:
             z = x
         elif x == t != y:
             z = y
         else:
             if x != y:
-                z = Word(list(y) + [x[-1]], alphabet=[0,1])
+                z = Word(list(y) + [x[-1]], alphabet=[0, 1])
             elif x == y != t:
-                z = Word(list(y) + [0], alphabet=[0,1])
+                z = Word(list(y) + [0], alphabet=[0, 1])
             else:
                 raise NotImplementedError
         return z
@@ -3716,6 +3882,7 @@ class RuleSylvester(Rule):
         sage: list(Sylvester(labels=G.out_labels())) == list(G)
         True
     """
+
     zero = BinaryTree()  # type:ignore
 
     def normalize_vertex(self, v):
@@ -3779,6 +3946,7 @@ class RuleSylvester(Rule):
             sage: [w for w in Sylvester.vertices(4) if Sylvester.is_Q_edge(v, w)]
             []
         """
+
         def is_subtree(T1, T2):
             if T2.is_empty():
                 return False
@@ -3786,8 +3954,10 @@ class RuleSylvester(Rule):
                 return T1.is_empty()
             if T1.is_empty():
                 return False
-            return ((T1[0] == T2[0] and is_subtree(T1[1], T2[1])) or
-                    (T1[1] == T2[1] and is_subtree(T1[0], T2[0])))
+            return (T1[0] == T2[0] and is_subtree(T1[1], T2[1])) or (
+                T1[1] == T2[1] and is_subtree(T1[0], T2[0])
+            )
+
         return is_subtree(v, w)
 
     def is_P_edge(self, v, w):
@@ -3849,6 +4019,7 @@ class RuleSylvester(Rule):
                     /
                    2
         """
+
         def add_label(L, S, T, m):
             if T[0] == S:
                 L = LabelledBinaryTree([L, None], m)
@@ -3860,7 +4031,7 @@ class RuleSylvester(Rule):
 
         L = LabelledBinaryTree(P_chain[0])
         for i in range(1, len(P_chain)):
-            S, T = P_chain[i-1], P_chain[i]
+            S, T = P_chain[i - 1], P_chain[i]
             L = add_label(L, S, T, i)
         return L
 
@@ -3894,6 +4065,7 @@ class RuleSylvester(Rule):
                     /
                    2
         """
+
         def add_label(L, S, T, m):
             if L.is_empty():
                 assert T.number_of_nodes() == 1
@@ -3905,7 +4077,7 @@ class RuleSylvester(Rule):
 
         L = LabelledBinaryTree(Q_chain[0])
         for i in range(1, len(Q_chain)):
-            S, T = Q_chain[i-1], Q_chain[i]
+            S, T = Q_chain[i - 1], Q_chain[i]
             L = add_label(L, S, T, i)
         return L
 
@@ -4020,6 +4192,7 @@ class RuleSylvester(Rule):
              /
             o
         """
+
         def successors(b):
             r"""
             Return all trees obtained from ``b`` by adding a node.
@@ -4040,7 +4213,7 @@ class RuleSylvester(Rule):
             for t in successors(y):
                 if RuleSylvester._delete_right_most_node(t) == x:
                     return t
-            raise ValueError("could not find union of %s and %s" % (y,x))
+            raise ValueError("could not find union of %s and %s" % (y, x))
 
         if y == t == x:
             if content == 0:
@@ -4050,7 +4223,10 @@ class RuleSylvester(Rule):
             else:
                 raise NotImplementedError
         elif content != 0:
-            raise ValueError("for y=%s, t=%s, x=%s, the content should be 0 but is %s" % (y, t, x, content))
+            raise ValueError(
+                "for y=%s, t=%s, x=%s, the content should be 0 but is %s"
+                % (y, t, x, content)
+            )
         elif y != t == x:
             z = y
         elif y == t != x:
@@ -4170,7 +4346,8 @@ class RuleYoungFibonacci(Rule):
         sage: list(YF(labels=G.out_labels())) == list(G)
         True
     """
-    zero = Word([], alphabet=[1,2])
+
+    zero = Word([], alphabet=[1, 2])
 
     def normalize_vertex(self, v):
         r"""
@@ -4182,7 +4359,7 @@ class RuleYoungFibonacci(Rule):
             sage: YF.normalize_vertex([1,2,1]).parent()
             Finite words over {1, 2}
         """
-        return Word(v, alphabet=[1,2])
+        return Word(v, alphabet=[1, 2])
 
     def vertices(self, n):
         r"""
@@ -4196,7 +4373,7 @@ class RuleYoungFibonacci(Rule):
         """
         if n == 0:
             return [self.zero]
-        return [Word(list(w), [1,2]) for w in Compositions(n, max_part=2)]
+        return [Word(list(w), [1, 2]) for w in Compositions(n, max_part=2)]
 
     def rank(self, v):
         r"""
@@ -4231,7 +4408,7 @@ class RuleYoungFibonacci(Rule):
             return False
         ell = len(v)
         w = list(w)
-        for i in range(ell+1):
+        for i in range(ell + 1):
             d = list(v)
             d.insert(i, 1)
             if w == d:
@@ -4284,22 +4461,26 @@ class RuleYoungFibonacci(Rule):
             if content == 0:
                 r = x
             elif content == 1:
-                r = Word([1] + list(y), alphabet=[1,2])
+                r = Word([1] + list(y), alphabet=[1, 2])
             else:
                 raise NotImplementedError
         elif content != 0:
-            raise ValueError("for y=%s, t=%s, x=%s, the content should be 0 but is %s"
-                             % (y, t, x, content))
+            raise ValueError(
+                "for y=%s, t=%s, x=%s, the content should be 0 but is %s"
+                % (y, t, x, content)
+            )
         elif x == t:
             r = y
         elif y == t:
             r = x
         else:
             if x != t != y:
-                r = Word([2] + list(t), alphabet=[1,2])
+                r = Word([2] + list(t), alphabet=[1, 2])
             else:
-                raise NotImplementedError("for y=%s, t=%s, x=%s, content %s we have no rule"
-                                          % (y, t, x, content))
+                raise NotImplementedError(
+                    "for y=%s, t=%s, x=%s, content %s we have no rule"
+                    % (y, t, x, content)
+                )
         return r
 
     def backward_rule(self, y, z, x):
@@ -4355,6 +4536,7 @@ class RulePartitions(Rule):
         ValueError: can only determine the shape of the growth diagram
          if ranks of successive labels differ
     """
+
     zero = _make_partition([])
 
     def vertices(self, n):
@@ -4577,14 +4759,14 @@ class RuleRSK(RulePartitions):
             if len(x) < i:
                 row1 = 0
             else:
-                row1 = x[i-1]
+                row1 = x[i - 1]
             if len(y) < i:
                 row3 = 0
             else:
-                row3 = y[i-1]
+                row3 = y[i - 1]
             t = [min(row1, row3) - carry] + t
-            carry = z[i-1] - max(row1, row3)
-            i = i-1
+            carry = z[i - 1] - max(row1, row3)
+            i = i - 1
         return (_make_partition(t), carry)
 
 
@@ -4670,10 +4852,10 @@ class RuleBurge(RulePartitions):
         # n is the maximal length of longest decreasing chain by
         # Kleitman-Greene's theorem
         n = content + len(x) + len(y)
-        x += [0]*(n-len(x))
-        y += [0]*(n-len(y))
-        t += [0]*(n-len(t))
-        z = [0]*n
+        x += [0] * (n - len(x))
+        y += [0] * (n - len(y))
+        t += [0] * (n - len(t))
+        z = [0] * n
         carry = content
         for i, (row1, row2, row3) in enumerate(zip(x, t, y)):
             s = min(int(row1 == row2 == row3), carry)
@@ -4719,9 +4901,9 @@ class RuleBurge(RulePartitions):
             sage: GrowthDiagram(Burge, labels=G._out_labels).to_word() == w  # indirect doctest
             True
         """
-        t = [0]*len(z)  # z must be the longest partition
-        mu = [0]*(len(z)-len(x)) + x[::-1]
-        nu = [0]*(len(z)-len(y)) + y[::-1]
+        t = [0] * len(z)  # z must be the longest partition
+        mu = [0] * (len(z) - len(x)) + x[::-1]
+        nu = [0] * (len(z) - len(y)) + y[::-1]
         la = z[::-1]
         carry = 0
         for i, (mu_i, la_i, nu_i) in enumerate(zip(mu, la, nu)):
@@ -4842,6 +5024,7 @@ class RuleDomino(Rule):
         ...
         ValueError: [1] has smaller rank than [2, 1] but is not covered by it in P
     """
+
     r = 2
     allowed_contents = [1, -1]
     zero = _make_partition([])
@@ -4882,7 +5065,7 @@ class RuleDomino(Rule):
             sage: Domino.vertices(2)
             [[4], [3, 1], [2, 2], [2, 1, 1], [1, 1, 1, 1]]
         """
-        return [la for la in Partitions(2*n) if len(la.core(2)) == 0]
+        return [la for la in Partitions(2 * n) if len(la.core(2)) == 0]
 
     def rank(self, v):
         r"""
@@ -5009,6 +5192,7 @@ class RuleDomino(Rule):
             sage: Domino.forward_rule([2,1,1], [2], [4], 0)
             [4, 1, 1]
         """
+
         def union(la, mu):
             r"""
             Return the union of the two partitions.
@@ -5029,7 +5213,7 @@ class RuleDomino(Rule):
         elif content == -1:
             if not (x == t == y):
                 raise ValueError("all shapes must be equal")
-            z = t + [1,1]
+            z = t + [1, 1]
 
         elif content == 0 and (t == x or t == y):
             z = union(x, y)
@@ -5054,11 +5238,11 @@ class RuleDomino(Rule):
                 # either (k, l+1) or (k+1, l) must also be added
                 if z[k] <= l + 1:
                     z[k] += 1
-                    z[k+1] += 1
+                    z[k + 1] += 1
                 elif len(z) <= k + 1:
                     z += [2]
                 else:
-                    z[k+1] += 2
+                    z[k + 1] += 2
 
             # diff has size 2, that is x == y
             elif cell1[0] == cell2[0]:
@@ -5067,7 +5251,7 @@ class RuleDomino(Rule):
                 if len(z) <= cell1[0] + 1:
                     z += [2]
                 else:
-                    z[cell1[0]+1] += 2
+                    z[cell1[0] + 1] += 2
 
             else:
                 z = x[:]
@@ -5076,11 +5260,13 @@ class RuleDomino(Rule):
                 for r, p in enumerate(z):
                     if p <= cell1[1] + 1:
                         z[r] += 1
-                        z[r+1] += 1
+                        z[r + 1] += 1
                         break
                 else:
-                    raise NotImplementedError("domino: cannot call forward rule with shapes %s and content %s"
-                                              % ((y, t, x), content))
+                    raise NotImplementedError(
+                        "domino: cannot call forward rule with shapes %s and content %s"
+                        % ((y, t, x), content)
+                    )
 
         return z
 
@@ -5110,11 +5296,11 @@ def _mason_insert(k, T):
 
     for j in range(r, 0, -1):
         for row in S:
-            if len(row) == j and row[j-1] >= k:
+            if len(row) == j and row[j - 1] >= k:
                 row.append(k)
                 return S
 
-            if len(row) > j and row[j-1] >= k > row[j]:
+            if len(row) > j and row[j - 1] >= k > row[j]:
                 row[j], k = k, row[j]
 
     return sorted([[k]] + S)
@@ -5170,6 +5356,7 @@ class RuleCompositions(Rule):
         sage: [len(L.Q_graph(n).maximal_chains()) for n in range(1,8)]
         [1, 1, 2, 6, 19, 69, 285]
     """
+
     zero = Composition([])
 
     def rank(self, v):
@@ -5235,10 +5422,10 @@ class RuleCompositions(Rule):
         for j in range(len(v)):
             if v[j] != w[j]:
                 if w[j] == v[j] + 1:
-                    if w[j+1:] == v[j+1:] and w[j] not in w[j+1:]:
+                    if w[j + 1 :] == v[j + 1 :] and w[j] not in w[j + 1 :]:
                         return w[j]
                 else:
-                    if w[j] == 1 and w[j+1:] == v[j:] and w[j] not in w[j+1:]:
+                    if w[j] == 1 and w[j + 1 :] == v[j:] and w[j] not in w[j + 1 :]:
                         return w[j]
                 return None
         if w[len(v)] == 1:
@@ -5271,7 +5458,9 @@ class RuleCompositions(Rule):
             sage: L.is_Q_edge(Composition([1,2]), Composition([2,2]))
             False
         """
-        return self.rank(v) + 1 == self.rank(w) and self._is_Q_edge_aux(v, w) is not None
+        return (
+            self.rank(v) + 1 == self.rank(w) and self._is_Q_edge_aux(v, w) is not None
+        )
 
 
 class RuleLeftCompositions(RuleCompositions):
@@ -5331,6 +5520,7 @@ class RuleLeftCompositions(RuleCompositions):
         sage: len(set([tuple(G.out_labels()) for G in l.values()]))
         24
     """
+
     def _is_P_edge_aux(self, v, w):
         r"""
         Return `i` if `w = t_i(v)`, ``None`` otherwise.
@@ -5363,7 +5553,7 @@ class RuleLeftCompositions(RuleCompositions):
 
         for j in range(len(v)):
             if v[j] != w[j]:
-                if w[j] == v[j] + 1 and w[j+1:] == v[j+1:] and v[j] not in v[:j]:
+                if w[j] == v[j] + 1 and w[j + 1 :] == v[j + 1 :] and v[j] not in v[:j]:
                     return w[j]
                 return None
         return None
@@ -5387,7 +5577,9 @@ class RuleLeftCompositions(RuleCompositions):
             sage: L.is_P_edge(Composition([2]), Composition([2,1]))
             False
         """
-        return self.rank(v) + 1 == self.rank(w) and self._is_P_edge_aux(v, w) is not None
+        return (
+            self.rank(v) + 1 == self.rank(w) and self._is_P_edge_aux(v, w) is not None
+        )
 
     def P_symbol(self, P_chain):
         """
@@ -5428,15 +5620,15 @@ class RuleLeftCompositions(RuleCompositions):
         n = len(P_chain)
         for i in range(1, n):
             la = P_chain[i]
-            mu = P_chain[i-1]
+            mu = P_chain[i - 1]
             if len(la) > len(mu):
                 # la and mu differ in first position
-                T = [[n-i]] + T
+                T = [[n - i]] + T
             else:
                 # one part of la is larger
                 for j, p in enumerate(la):
                     if p == mu[j] + 1:
-                        T[j] = T[j] + [n-i]
+                        T[j] = T[j] + [n - i]
         return CompositionTableau(T)
 
     def forward_rule(self, y, t, x, content):
@@ -5476,6 +5668,7 @@ class RuleLeftCompositions(RuleCompositions):
             sage: all(L(pi).P_symbol() == _mason(pi.complement()) for pi in Permutations(n))
             True
         """
+
         def t_operator(i, c):
             """
             Increase leftmost part equal to i-1.
@@ -5486,11 +5679,11 @@ class RuleLeftCompositions(RuleCompositions):
             if i == 1:
                 return [1] + list(c)
             try:
-                j = c.index(i-1)
+                j = c.index(i - 1)
             except ValueError:
                 return 0
 
-            return c[:j] + [c[j]+1] + c[j+1:]
+            return c[:j] + [c[j] + 1] + c[j + 1 :]
 
         if content == 0:
             if y == t:
@@ -5499,18 +5692,18 @@ class RuleLeftCompositions(RuleCompositions):
                 return y
             if x == y:
                 # find part in which they differ from t:
-                x_sorted = sorted(x, reverse=True)+[0]
-                t_sorted = sorted(t, reverse=True)+[0]
+                x_sorted = sorted(x, reverse=True) + [0]
+                t_sorted = sorted(t, reverse=True) + [0]
                 for i, (e, f) in enumerate(zip(t_sorted, x_sorted)):
                     if e != f:
-                        return Composition(t_operator(x_sorted[i+1]+1, x))
+                        return Composition(t_operator(x_sorted[i + 1] + 1, x))
                 raise ValueError(f"y={y}, t={t}, x={x}")
             i = self._is_P_edge_aux(t, y)
             return Composition(t_operator(i, x))
         assert y == t == x
         if not y:
             return Composition([1])
-        return Composition(t_operator(max(t)+1, t))
+        return Composition(t_operator(max(t) + 1, t))
 
 
 class RuleRightCompositions(RuleCompositions):
@@ -5529,6 +5722,7 @@ class RuleRightCompositions(RuleCompositions):
         doctest:...: UserWarning: RuleRightCompositions has no backward rule
         implemented, skipping these tests.
     """
+
     def _is_P_edge_aux(self, v, w):
         r"""
         Return `i` if `w = u_i(v)`, ``None`` otherwise.
@@ -5587,7 +5781,9 @@ class RuleRightCompositions(RuleCompositions):
              ([2, 1, 3], [2, 1, 4], 0),
              ([2, 1, 3], [2, 3, 2], 0)]
         """
-        return self.rank(v) + 1 == self.rank(w) and self._is_P_edge_aux(v, w) is not None
+        return (
+            self.rank(v) + 1 == self.rank(w) and self._is_P_edge_aux(v, w) is not None
+        )
 
 
 #####################################################################
@@ -5599,6 +5795,7 @@ class Rules:
     """
     Catalog of rules for growth diagrams.
     """
+
     ShiftedShapes = RuleShiftedShapes
     LLMS = RuleLLMS
     BinaryWord = RuleBinaryWord

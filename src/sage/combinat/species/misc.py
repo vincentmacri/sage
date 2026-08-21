@@ -22,7 +22,9 @@ from functools import wraps
 from sage.misc.misc_c import prod
 from sage.misc.lazy_import import lazy_import
 
-lazy_import('sage.groups.perm_gps.permgroup', ['PermutationGroup', 'PermutationGroup_generic'])
+lazy_import(
+    'sage.groups.perm_gps.permgroup', ['PermutationGroup', 'PermutationGroup_generic']
+)
 lazy_import('sage.groups.perm_gps.constructor', 'PermutationGroupElement')
 lazy_import('sage.groups.perm_gps.permgroup_named', 'SymmetricGroup')
 
@@ -41,15 +43,21 @@ def change_support(perm, support, change_perm=None):
         (3,4,5)
     """
     if change_perm is None:
-        change_perm = prod([PermutationGroupElement((i+1, support[i]))
-                            for i in range(len(support))
-                            if i+1 != support[i]],
-                           PermutationGroupElement([], SymmetricGroup(support)))
+        change_perm = prod(
+            [
+                PermutationGroupElement((i + 1, support[i]))
+                for i in range(len(support))
+                if i + 1 != support[i]
+            ],
+            PermutationGroupElement([], SymmetricGroup(support)),
+        )
 
     if isinstance(perm, PermutationGroup_generic):
-        return PermutationGroup([change_support(g, support, change_perm) for g in perm.gens()])
+        return PermutationGroup(
+            [change_support(g, support, change_perm) for g in perm.gens()]
+        )
 
-    return change_perm*perm*~change_perm
+    return change_perm * perm * ~change_perm
 
 
 def accept_size(f):
@@ -70,6 +78,7 @@ def accept_size(f):
         sage: f(size=2)
         () [('max', 3), ('min', 2)]
     """
+
     @wraps(f)
     def new_func(*args, **kwds):
         if 'size' in kwds:
@@ -79,4 +88,5 @@ def accept_size(f):
             kwds['max'] = kwds['size'] + 1
             del kwds['size']
         return f(*args, **kwds)
+
     return new_func

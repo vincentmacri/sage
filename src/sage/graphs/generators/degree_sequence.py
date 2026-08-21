@@ -64,8 +64,10 @@ def DegreeSequence(deg_sequence, immutable=False):
         sage: G.show()                          # long time                             # needs networkx sage.plot
     """
     import networkx
-    return Graph(networkx.havel_hakimi_graph([int(i) for i in deg_sequence]),
-                 immutable=immutable)
+
+    return Graph(
+        networkx.havel_hakimi_graph([int(i) for i in deg_sequence]), immutable=immutable
+    )
 
 
 def DegreeSequenceBipartite(s1, s2, immutable=False):
@@ -128,8 +130,10 @@ def DegreeSequenceBipartite(s1, s2, immutable=False):
     m = gale_ryser_theorem(s1, s2)
 
     if m is False:
-        raise ValueError("there exists no bipartite graph corresponding to "
-                         "the given degree sequences")
+        raise ValueError(
+            "there exists no bipartite graph corresponding to "
+            "the given degree sequences"
+        )
     return Graph(BipartiteGraph(m), immutable=immutable)
 
 
@@ -179,9 +183,15 @@ def DegreeSequenceConfigurationModel(deg_sequence, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
+
     deg_sequence = [int(i) for i in deg_sequence]
-    return Graph(networkx.configuration_model(deg_sequence, seed=seed),
-                 loops=True, multiedges=True, sparse=True, immutable=immutable)
+    return Graph(
+        networkx.configuration_model(deg_sequence, seed=seed),
+        loops=True,
+        multiedges=True,
+        sparse=True,
+        immutable=immutable,
+    )
 
 
 def DegreeSequenceTree(deg_sequence, immutable=False):
@@ -209,8 +219,11 @@ def DegreeSequenceTree(deg_sequence, immutable=False):
         sage: G.show()                          # long time                             # needs networkx sage.plot
     """
     import networkx
-    return Graph(networkx.degree_sequence_tree([int(i) for i in deg_sequence]),
-                 immutable=immutable)
+
+    return Graph(
+        networkx.degree_sequence_tree([int(i) for i in deg_sequence]),
+        immutable=immutable,
+    )
 
 
 def DegreeSequenceExpected(deg_sequence, seed=None, immutable=False):
@@ -247,6 +260,10 @@ def DegreeSequenceExpected(deg_sequence, seed=None, immutable=False):
     if seed is None:
         seed = int(current_randstate().long_seed() % sys.maxsize)
     import networkx
+
     deg_sequence = [int(i) for i in deg_sequence]
-    return Graph(networkx.expected_degree_graph(deg_sequence, seed=seed),
-                 loops=True, immutable=immutable)
+    return Graph(
+        networkx.expected_degree_graph(deg_sequence, seed=seed),
+        loops=True,
+        immutable=immutable,
+    )

@@ -29,6 +29,7 @@ Symmetric functions
 - :ref:`sage.combinat.sf.witt`
 - :ref:`sage.combinat.sf.abreu_nigro`
 """
+
 # install the docstring of this module to the containing package
 from sage.misc.namespace_package import install_doc
 
@@ -44,6 +45,7 @@ lazy_import('sage.combinat.sf.sf', 'SymmetricFunctions')
 
 lazy_import('sage.combinat.sf.kfpoly', 'KostkaFoulkesPolynomial')
 
-lazy_import('sage.combinat.sf.ns_macdonald', ['NonattackingFillings',
-                                              'AugmentedLatticeDiagramFilling',
-                                              'LatticeDiagram'])
+lazy_import(
+    'sage.combinat.sf.ns_macdonald',
+    ['NonattackingFillings', 'AugmentedLatticeDiagramFilling', 'LatticeDiagram'],
+)

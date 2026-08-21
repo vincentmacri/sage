@@ -34,6 +34,7 @@ class HeckeModuleElement(ModuleElement):
     """
     Element of a Hecke module.
     """
+
     def __init__(self, parent, x=None):
         """
         INPUT:
@@ -93,7 +94,9 @@ class HeckeModuleElement(ModuleElement):
         # terms of the basis only when needed.
 
         # Not in use at present.
-        raise NotImplementedError("_compute_element *must* be defined in the derived class if element is set to None in constructor")
+        raise NotImplementedError(
+            "_compute_element *must* be defined in the derived class if element is set to None in constructor"
+        )
 
     def element(self):
         """

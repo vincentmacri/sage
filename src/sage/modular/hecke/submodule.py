@@ -33,8 +33,8 @@ class HeckeSubmodule(module.HeckeModule_free_module):
     """
     Submodule of a Hecke module.
     """
-    def __init__(self, ambient, submodule,
-                 dual_free_module=None, check=True) -> None:
+
+    def __init__(self, ambient, submodule, dual_free_module=None, check=True) -> None:
         r"""
         Initialise a submodule of an ambient Hecke module.
 
@@ -66,6 +66,7 @@ class HeckeSubmodule(module.HeckeModule_free_module):
             True
         """
         from . import ambient_module
+
         if not isinstance(ambient, ambient_module.AmbientHeckeModule):
             raise TypeError("ambient must be an ambient Hecke module")
         if not isinstance(submodule, FreeModule_generic):
@@ -75,18 +76,22 @@ class HeckeSubmodule(module.HeckeModule_free_module):
 
         if check:
             if not ambient._is_hecke_equivariant_free_module(submodule):
-                raise ValueError("The submodule must be invariant under all Hecke operators.")
+                raise ValueError(
+                    "The submodule must be invariant under all Hecke operators."
+                )
 
         self.__ambient = ambient
         self.__submodule = submodule
-        module.HeckeModule_free_module.__init__(self, ambient.base_ring(),
-                                                ambient.level(),
-                                                ambient.weight())
+        module.HeckeModule_free_module.__init__(
+            self, ambient.base_ring(), ambient.level(), ambient.weight()
+        )
         if dual_free_module is not None:
             if not isinstance(dual_free_module, FreeModule_generic):
                 raise TypeError("dual_free_module must be a free module")
             if dual_free_module.rank() != submodule.rank():
-                raise ArithmeticError("dual_free_module must have the same rank as submodule")
+                raise ArithmeticError(
+                    "dual_free_module must have the same rank as submodule"
+                )
             self.dual_free_module.set_cache(dual_free_module)
 
     def _repr_(self):
@@ -101,7 +106,9 @@ class HeckeSubmodule(module.HeckeModule_free_module):
             'Rank 3 submodule of a Hecke module of level 4'
         """
         return "Rank %s submodule of a Hecke module of level %s" % (
-            self.rank(), self.level())
+            self.rank(),
+            self.level(),
+        )
 
     def __add__(self, other):
         r"""
@@ -119,7 +126,9 @@ class HeckeSubmodule(module.HeckeModule_free_module):
         if not isinstance(other, module.HeckeModule_free_module):
             raise TypeError("other (=%s) must be a Hecke module." % other)
         if self.ambient() != other.ambient():
-            raise ArithmeticError("sum only defined for submodules of a common ambient space")
+            raise ArithmeticError(
+                "sum only defined for submodules of a common ambient space"
+            )
         if other.is_ambient():
             return other
         # Neither is ambient
@@ -238,7 +247,11 @@ class HeckeSubmodule(module.HeckeModule_free_module):
             [1 0]
             [0 1]
         """
-        return self.ambient_hecke_module().diamond_bracket_matrix(d).restrict(self.free_module(), check=False)
+        return (
+            self.ambient_hecke_module()
+            .diamond_bracket_matrix(d)
+            .restrict(self.free_module(), check=False)
+        )
 
     def _compute_atkin_lehner_matrix(self, d):
         """
@@ -276,7 +289,9 @@ class HeckeSubmodule(module.HeckeModule_free_module):
             sage: S._set_dual_free_module(S)
         """
         if V.degree() != self.ambient_hecke_module().rank():
-            raise ArithmeticError("The degree of V must equal the rank of the ambient space.")
+            raise ArithmeticError(
+                "The degree of V must equal the rank of the ambient space."
+            )
         if V.rank() != self.rank():
             raise ArithmeticError("The rank of V must equal the rank of self.")
         self.dual_free_module.set_cache(V)
@@ -380,8 +395,10 @@ class HeckeSubmodule(module.HeckeModule_free_module):
             return C
 
         # failed miserably
-        raise RuntimeError("Computation of complementary space failed (cut down to rank %s, but should have cut down to rank %s)." % (
-            V.rank(), A.rank() - self.rank()))
+        raise RuntimeError(
+            "Computation of complementary space failed (cut down to rank %s, but should have cut down to rank %s)."
+            % (V.rank(), A.rank() - self.rank())
+        )
 
     def degeneracy_map(self, level, t=1):
         """
@@ -497,7 +514,9 @@ class HeckeSubmodule(module.HeckeModule_free_module):
 
         # if we know the complement we can read off the dual module
         if self.complement.is_in_cache():
-            verbose('This module knows its complement already -- cheating in dual_free_module')
+            verbose(
+                'This module knows its complement already -- cheating in dual_free_module'
+            )
             C = self.complement()
             return C.basis_matrix().right_kernel()
 
@@ -535,8 +554,10 @@ class HeckeSubmodule(module.HeckeModule_free_module):
             # then we compute the dual on each eigenspace, then put them
             # together.
             if len(self.star_eigenvalues()) == 2:
-                V = self.plus_submodule(compute_dual=False).dual_free_module() + \
-                    self.minus_submodule(compute_dual=False).dual_free_module()
+                V = (
+                    self.plus_submodule(compute_dual=False).dual_free_module()
+                    + self.minus_submodule(compute_dual=False).dual_free_module()
+                )
                 return V
 
             # At this point, we know that self is an eigenspace for star.
@@ -571,8 +592,11 @@ class HeckeSubmodule(module.HeckeModule_free_module):
         if V2.rank() == self.rank():
             return V2
 
-        raise RuntimeError("Computation of embedded dual vector space failed "
-                           "(cut down to rank %s, but should have cut down to rank %s)." % (V.rank(), self.rank()))
+        raise RuntimeError(
+            "Computation of embedded dual vector space failed "
+            "(cut down to rank %s, but should have cut down to rank %s)."
+            % (V.rank(), self.rank())
+        )
 
     def free_module(self):
         """
@@ -628,8 +652,10 @@ class HeckeSubmodule(module.HeckeModule_free_module):
             1
         """
         if self.ambient_hecke_module() != other.ambient_hecke_module():
-            raise ArithmeticError("intersection only defined for subspaces of"
-                                  " a common ambient modular symbols space")
+            raise ArithmeticError(
+                "intersection only defined for subspaces of"
+                " a common ambient modular symbols space"
+            )
         if other.is_ambient():
             return self
         if self.is_ambient():
@@ -730,8 +756,10 @@ class HeckeSubmodule(module.HeckeModule_free_module):
         """
         if not isinstance(V, module.HeckeModule_free_module):
             return False
-        return self.ambient_hecke_module() == V.ambient_hecke_module() and \
-            self.free_module().is_subspace(V.free_module())
+        return (
+            self.ambient_hecke_module() == V.ambient_hecke_module()
+            and self.free_module().is_subspace(V.free_module())
+        )
 
     def linear_combination_of_basis(self, v):
         """
@@ -897,7 +925,10 @@ class HeckeSubmodule(module.HeckeModule_free_module):
 
         if check:
             if not M.is_submodule(self.free_module()):
-                raise TypeError("M (=%s) must be a submodule of the free module (=%s) associated to this module." % (M, self.free_module()))
+                raise TypeError(
+                    "M (=%s) must be a submodule of the free module (=%s) associated to this module."
+                    % (M, self.free_module())
+                )
 
         return self.ambient().submodule(M, Mdual, check=check)
 

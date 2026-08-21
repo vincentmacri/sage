@@ -153,13 +153,14 @@ class pAdicLseries(SageObject):
         else:
             lb = log_gamma_binomial(p, gamma, n, 2 * M)
             if precision is None:
-                precision = min(j + lb[j].valuation(p)
-                                for j in range(M, len(lb)))
+                precision = min(j + lb[j].valuation(p) for j in range(M, len(lb)))
             lb = [lb[a] for a in range(M)]
 
         for j, cjn in enumerate(lb):
-            temp = sum((ZZ(K.teichmuller(a)) ** (-j)) *
-                       self._basic_integral(a, j) for a in range(1, p))
+            temp = sum(
+                (ZZ(K.teichmuller(a)) ** (-j)) * self._basic_integral(a, j)
+                for a in range(1, p)
+            )
             dn += cjn * temp
         self._coefficients[n] = dn.add_bigoh(precision)
         self._coefficients[n] /= self._cinf
@@ -179,10 +180,12 @@ class pAdicLseries(SageObject):
         if not isinstance(other, pAdicLseries):
             return False
 
-        return (self._symb == other._symb and
-                self._quadratic_twist == other._quadratic_twist and
-                self._gamma == other._gamma and
-                self._precision == other._precision)
+        return (
+            self._symb == other._symb
+            and self._quadratic_twist == other._quadratic_twist
+            and self._gamma == other._gamma
+            and self._precision == other._precision
+        )
 
     def __ne__(self, other):
         r"""
@@ -335,7 +338,7 @@ class pAdicLseries(SageObject):
         if psi is not None:
             ap = psi(ap)
         ap = ap * chip
-        sdisc = R(ap ** 2 - 4 * p).sqrt()
+        sdisc = R(ap**2 - 4 * p).sqrt()
         v0 = (R(ap) + sdisc) / 2
         v1 = (R(ap) - sdisc) / 2
         if v0.valuation() > 0:
@@ -372,10 +375,16 @@ class pAdicLseries(SageObject):
         ap = ap * kronecker(D, p)
         K = pAdicField(p, M)
         symb_twisted = symb.evaluate_twisted(a, D)
-        return sum(ZZ(j).binomial(r) *
-                   ((a - ZZ(K.teichmuller(a))) ** (j - r)) *
-                   (p ** r) *
-                   symb_twisted.moment(r) for r in range(j + 1)) / ap
+        return (
+            sum(
+                ZZ(j).binomial(r)
+                * ((a - ZZ(K.teichmuller(a))) ** (j - r))
+                * (p**r)
+                * symb_twisted.moment(r)
+                for r in range(j + 1)
+            )
+            / ap
+        )
 
 
 def log_gamma_binomial(p, gamma, n, M):
@@ -404,7 +413,7 @@ def log_gamma_binomial(p, gamma, n, M):
         [0, 2/205, -223/42025, 95228/25845375]
     """
     S = PowerSeriesRing(QQ, 'z')
-    L = S([0] + [ZZ(-1)**j / j for j in range(1, M)])  # log_p(1+z)
+    L = S([0] + [ZZ(-1) ** j / j for j in range(1, M)])  # log_p(1+z)
     loggam = L.O(M) / L(gamma - 1)
     # log_{gamma}(1+z)= log_p(1+z)/log_p(gamma)
     return binomial(loggam, n).list()

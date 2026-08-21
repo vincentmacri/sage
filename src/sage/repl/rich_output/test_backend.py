@@ -38,14 +38,12 @@ We switch to the test backend for the remainder of this file::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.structure.sage_object import SageObject
 from sage.repl.rich_output.backend_base import BackendBase
 from sage.repl.rich_output.output_catalog import OutputPlainText, OutputImagePng
 
 
 class TestOutputPlainText(OutputPlainText):
-
     def __init__(self, *args, **kwds):
         """
         Backend-specific subclass of the plain text output container.
@@ -129,7 +127,6 @@ class TestObject(SageObject):
 
 
 class BackendTest(BackendBase):
-
     def _repr_(self):
         """
         Return the string representation.

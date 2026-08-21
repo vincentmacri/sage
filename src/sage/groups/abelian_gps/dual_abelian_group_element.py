@@ -42,6 +42,7 @@ AUTHORS:
 - Volker Braun (2012-11) port to new Parent base. Use tuples for immutables.
   Default to cyclotomic base ring.
 """
+
 # ****************************************************************************
 #       Copyright (C) 2006 William Stein <wstein@gmail.com>
 #       Copyright (C) 2006 David Joyner<wdjoyner@gmail.com>
@@ -102,8 +103,9 @@ class DualAbelianGroupElement(AbelianGroupElementBase):
         N = LCM(order)
         order_not = [N / o for o in order]
         zeta = F.zeta(N)
-        return F.prod(zeta**(expsX[i] * expsg[i] * order_not[i])
-                      for i in range(len(expsX)))
+        return F.prod(
+            zeta ** (expsX[i] * expsg[i] * order_not[i]) for i in range(len(expsX))
+        )
 
     def word_problem(self, words):
         """
@@ -133,11 +135,13 @@ class DualAbelianGroupElement(AbelianGroupElementBase):
             [[b^2*c^2*d^3*e^5, 245]]
         """
         from sage.libs.gap.libgap import libgap
+
         A = libgap.AbelianGroup(self.parent().gens_orders())
         gens = A.GeneratorsOfGroup()
         gap_g = libgap.Product([gi**Li for gi, Li in zip(gens, self.list())])
-        gensH = [libgap.Product([gi**Li for gi, Li in zip(gens, w.list())])
-                 for w in words]
+        gensH = [
+            libgap.Product([gi**Li for gi, Li in zip(gens, w.list())]) for w in words
+        ]
         H = libgap.Group(gensH)
 
         hom = H.EpimorphismFromFreeGroup()

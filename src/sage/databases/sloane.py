@@ -98,6 +98,7 @@ class SloaneEncyclopediaClass:
     that contains only the sequence numbers and the sequences
     themselves.
     """
+
     def __init__(self):
         """
         Initialize the database but do not load any of the data.
@@ -194,8 +195,12 @@ class SloaneEncyclopediaClass:
 
         return answer
 
-    def install(self, oeis_url='https://oeis.org/stripped.gz',
-                names_url='https://oeis.org/names.gz', overwrite=False):
+    def install(
+        self,
+        oeis_url='https://oeis.org/stripped.gz',
+        names_url='https://oeis.org/names.gz',
+        overwrite=False,
+    ):
         """
         Download and install the online encyclopedia, raising an IOError if
         either step fails.
@@ -222,13 +227,19 @@ class SloaneEncyclopediaClass:
         try:
             fname, _ = urlretrieve(oeis_url)
         except OSError as msg:
-            raise OSError("%s\nError fetching the following website:\n    %s\nTry checking your internet connection." % (msg, oeis_url))
+            raise OSError(
+                "%s\nError fetching the following website:\n    %s\nTry checking your internet connection."
+                % (msg, oeis_url)
+            )
 
         if names_url is not None:
             try:
                 nname, _ = urlretrieve(names_url)
             except OSError as msg:
-                raise OSError("%s\nError fetching the following website:\n    %s\nTry checking your internet connection." % (msg, names_url))
+                raise OSError(
+                    "%s\nError fetching the following website:\n    %s\nTry checking your internet connection."
+                    % (msg, names_url)
+                )
         else:
             nname = None
         verbose("Finished downloading", tm)
@@ -281,8 +292,10 @@ class SloaneEncyclopediaClass:
         try:
             file_seq = bz2.BZ2File(self.__file__, 'r')
         except OSError:
-            raise OSError("The Sloane Encyclopedia database must be installed."
-                          " Use e.g. 'SloaneEncyclopedia.install()' to download and install it.")
+            raise OSError(
+                "The Sloane Encyclopedia database must be installed."
+                " Use e.g. 'SloaneEncyclopedia.install()' to download and install it."
+            )
 
         self.__data__ = {}
 
@@ -310,13 +323,20 @@ class SloaneEncyclopediaClass:
                     if seqnum in self.__data__:
                         self.__data__[seqnum][3] = m.group('body').strip()
                     else:
-                        self.__data__[seqnum] = [seqnum, None, 'unknown', m.group('body').strip()]
+                        self.__data__[seqnum] = [
+                            seqnum,
+                            None,
+                            'unknown',
+                            m.group('body').strip(),
+                        ]
             file_names.close()
             self.__loaded_names__ = True
         except KeyError:
             # Some sequence in the names file is not in the database
-            raise KeyError("Sloane OEIS sequence and name files do not match."
-                           " Try reinstalling, e.g. SloaneEncyclopedia.install(overwrite=True).")
+            raise KeyError(
+                "Sloane OEIS sequence and name files do not match."
+                " Try reinstalling, e.g. SloaneEncyclopedia.install(overwrite=True)."
+            )
         except OSError:
             # The names database is not installed
             self.__loaded_names__ = False
@@ -344,8 +364,10 @@ class SloaneEncyclopediaClass:
         """
         self.load()
         if not self.__loaded_names__:
-            raise OSError("The Sloane OEIS names file is not installed."
-                          " Try reinstalling, e.g. SloaneEncyclopedia.install(overwrite=True).")
+            raise OSError(
+                "The Sloane OEIS names file is not installed."
+                " Try reinstalling, e.g. SloaneEncyclopedia.install(overwrite=True)."
+            )
 
         if N not in self.__data__:  # sequence N does not exist
             return ''

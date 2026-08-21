@@ -66,6 +66,7 @@ class Homology(HeckeModule_free_module):
     A homology group of an abelian variety, equipped with a Hecke
     action.
     """
+
     def hecke_polynomial(self, n, var='x'):
         r"""
         Return the `n`-th Hecke polynomial in the given variable.
@@ -96,6 +97,7 @@ class Homology_abvar(Homology):
     """
     The homology of a modular abelian variety.
     """
+
     def __init__(self, abvar, base):
         """
         This is an abstract base class, so it is called implicitly in the
@@ -115,8 +117,7 @@ class Homology_abvar(Homology):
         """
         if base not in CommutativeRings():
             raise TypeError("base ring must be a commutative ring")
-        HeckeModule_free_module.__init__(
-            self, base, abvar.level(), weight=2)
+        HeckeModule_free_module.__init__(self, base, abvar.level(), weight=2)
         self.__abvar = abvar
 
     def __richcmp__(self, other, op):
@@ -134,8 +135,11 @@ class Homology_abvar(Homology):
         """
         if not isinstance(other, Homology_abvar):
             return NotImplemented
-        return richcmp((self.abelian_variety(), self.base_ring()),
-                       (other.abelian_variety(), other.base_ring()), op)
+        return richcmp(
+            (self.abelian_variety(), self.base_ring()),
+            (other.abelian_variety(), other.base_ring()),
+            op,
+        )
 
     def _repr_(self) -> str:
         """
@@ -225,7 +229,7 @@ class Homology_abvar(Homology):
         try:
             return self.__free_module
         except AttributeError:
-            M = self.base_ring()**self.rank()
+            M = self.base_ring() ** self.rank()
             self.__free_module = M
             return M
 
@@ -336,6 +340,7 @@ class IntegralHomology(Homology_abvar):
     The integral homology `H_1(A,\ZZ)` of a modular
     abelian variety.
     """
+
     def __init__(self, abvar):
         """
         Create the integral homology of a modular abelian variety.
@@ -403,7 +408,7 @@ class IntegralHomology(Homology_abvar):
         """
         n = Integer(n)
         M = self.abelian_variety().modular_symbols(sign=1)
-        return (M.hecke_polynomial(n, var)**2).change_ring(ZZ)
+        return (M.hecke_polynomial(n, var) ** 2).change_ring(ZZ)
 
 
 class RationalHomology(Homology_abvar):
@@ -411,6 +416,7 @@ class RationalHomology(Homology_abvar):
     The rational homology `H_1(A,\QQ)` of a modular
     abelian variety.
     """
+
     def __init__(self, abvar):
         """
         Create the rational homology of a modular abelian variety.
@@ -489,6 +495,7 @@ class Homology_over_base(Homology_abvar):
     The homology over a modular abelian variety over an arbitrary base
     commutative ring (not `\ZZ` or `\QQ`).
     """
+
     def __init__(self, abvar, base_ring):
         r"""
         Called when creating homology with coefficients not
@@ -524,7 +531,10 @@ class Homology_over_base(Homology_abvar):
             sage: H._repr_()
             'Homology with coefficients in Finite Field of size 5 of Abelian variety J0(23) of dimension 2'
         """
-        return "Homology with coefficients in %s of %s" % (self.base_ring(), self.abelian_variety())
+        return "Homology with coefficients in %s of %s" % (
+            self.base_ring(),
+            self.abelian_variety(),
+        )
 
     def hecke_matrix(self, n):
         """
@@ -542,13 +552,18 @@ class Homology_over_base(Homology_abvar):
             Finite Field of size 3
         """
         n = Integer(n)
-        return self.abelian_variety()._integral_hecke_matrix(n).change_ring(self.base_ring())
+        return (
+            self.abelian_variety()
+            ._integral_hecke_matrix(n)
+            .change_ring(self.base_ring())
+        )
 
 
 class Homology_submodule(Homology):
     """
     A submodule of the homology of a modular abelian variety.
     """
+
     def __init__(self, ambient, submodule):
         """
         Create a submodule of the homology of a modular abelian variety.
@@ -578,7 +593,8 @@ class Homology_submodule(Homology):
         submodule = ambient.free_module().submodule(submodule)
         self.__submodule = submodule
         HeckeModule_free_module.__init__(
-            self, ambient.base_ring(), ambient.level(), weight=2)
+            self, ambient.base_ring(), ambient.level(), weight=2
+        )
 
     def _repr_(self):
         """

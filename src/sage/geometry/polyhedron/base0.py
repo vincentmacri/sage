@@ -71,7 +71,18 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
         sage: Polyhedron_base0.base_extend(P, QQ)
         A 2-dimensional polyhedron in QQ^3 defined as the convex hull of 1 vertex, 1 ray, 1 line
     """
-    def __init__(self, parent, Vrep, Hrep, Vrep_minimal=None, Hrep_minimal=None, pref_rep=None, mutable=False, **kwds):
+
+    def __init__(
+        self,
+        parent,
+        Vrep,
+        Hrep,
+        Vrep_minimal=None,
+        Hrep_minimal=None,
+        pref_rep=None,
+        mutable=False,
+        **kwds,
+    ):
         """
         Initialize the polyhedron.
 
@@ -128,8 +139,10 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
         Element.__init__(self, parent=parent)
         if Vrep is not None and Hrep is not None:
             if not (Vrep_minimal is True and Hrep_minimal is True):
-                raise ValueError("if both Vrep and Hrep are provided, they must be minimal"
-                                 " and Vrep_minimal and Hrep_minimal must both be True")
+                raise ValueError(
+                    "if both Vrep and Hrep are provided, they must be minimal"
+                    " and Vrep_minimal and Hrep_minimal must both be True"
+                )
             if hasattr(self, "_init_from_Vrepresentation_and_Hrepresentation"):
                 self._init_from_Vrepresentation_and_Hrepresentation(Vrep, Hrep)
                 return
@@ -146,7 +159,9 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
             elif pref_rep == 'Hrep':
                 Vrep = None
             else:
-                raise ValueError("``pref_rep`` must be one of ``(None, 'Vrep', 'Hrep')``")
+                raise ValueError(
+                    "``pref_rep`` must be one of ``(None, 'Vrep', 'Hrep')``"
+                )
         if Vrep is not None:
             vertices, rays, lines = Vrep
 
@@ -435,7 +450,9 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
             raise ValueError("invalid base ring")
 
         try:
-            vertices = [[base_ring(x) for x in vertex] for vertex in self.vertices_list()]
+            vertices = [
+                [base_ring(x) for x in vertex] for vertex in self.vertices_list()
+            ]
             rays = [[base_ring(x) for x in ray] for ray in self.rays_list()]
             lines = [[base_ring(x) for x in line] for line in self.lines_list()]
 
@@ -614,7 +631,9 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
             return self._Hrepresentation
         return self._Hrepresentation[index]
 
-    def Hrepresentation_str(self, separator='\n', latex=False, style='>=', align=None, **kwds):
+    def Hrepresentation_str(
+        self, separator='\n', latex=False, style='>=', align=None, **kwds
+    ):
         r"""
         Return a human-readable string representation of the Hrepresentation of this
         polyhedron.
@@ -697,7 +716,10 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
             sage: c.Hrepresentation_str(separator=', ', style='positive')
             '1 >= x0, 1 >= x1, 1 >= x2, 1 + x0 >= 0, 1 + x2 >= 0, 1 + x1 >= 0'
         """
-        pretty_hs = [h.repr_pretty(split=True, latex=latex, style=style, **kwds) for h in self.Hrepresentation()]
+        pretty_hs = [
+            h.repr_pretty(split=True, latex=latex, style=style, **kwds)
+            for h in self.Hrepresentation()
+        ]
         shift = any(pretty_h[2].startswith('-') for pretty_h in pretty_hs)
 
         if align is None:
@@ -705,19 +727,32 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
         if align:
             lengths = [(len(s[0]), len(s[1]), len(s[2])) for s in pretty_hs]
             from operator import itemgetter
+
             length_left = max(lengths, key=itemgetter(0))[0]
             length_middle = max(lengths, key=itemgetter(1))[1]
             length_right = max(lengths, key=itemgetter(2))[2]
             if shift:
                 length_right += 1
             if latex:
-                h_line = "{:>" + "{}".format(length_left) + "} & {:" + \
-                         "{}".format(length_middle) + "} & {:" + \
-                         "{}".format(length_right) + "}\\\\"
+                h_line = (
+                    "{:>"
+                    + "{}".format(length_left)
+                    + "} & {:"
+                    + "{}".format(length_middle)
+                    + "} & {:"
+                    + "{}".format(length_right)
+                    + "}\\\\"
+                )
             else:
-                h_line = "{:>" + "{}".format(length_left) \
-                         + "} {:" + "{}".format(length_middle) \
-                         + "} {:" + "{}".format(length_right) + "}"
+                h_line = (
+                    "{:>"
+                    + "{}".format(length_left)
+                    + "} {:"
+                    + "{}".format(length_middle)
+                    + "} {:"
+                    + "{}".format(length_right)
+                    + "}"
+                )
         elif latex:
             h_line = "{} & {} & {}\\\\"
         else:
@@ -727,8 +762,11 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
             if align and shift and not s.startswith('-'):
                 return ' ' + s
             return s
-        h_list = [h_line.format(pretty_h[0], pretty_h[1], pad_non_minus(pretty_h[2]))
-                  for pretty_h in pretty_hs]
+
+        h_list = [
+            h_line.format(pretty_h[0], pretty_h[1], pad_non_minus(pretty_h[2]))
+            for pretty_h in pretty_hs
+        ]
         pretty_print = separator.join(h_list)
 
         if not latex:
@@ -1334,20 +1372,22 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
             TypeError: the base ring must be ZZ, QQ, or RDF
         """
         from .cdd_file_format import cdd_Hrepresentation
+
         try:
             cdd_type = self._cdd_type
         except AttributeError:
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
+
             if self.base_ring() is ZZ or self.base_ring() is QQ:
                 cdd_type = 'rational'
             elif isinstance(self.base_ring(), sage.rings.abc.RealDoubleField):
                 cdd_type = 'real'
             else:
                 raise TypeError('the base ring must be ZZ, QQ, or RDF')
-        return cdd_Hrepresentation(cdd_type,
-                                   list(self.inequality_generator()),
-                                   list(self.equation_generator()))
+        return cdd_Hrepresentation(
+            cdd_type, list(self.inequality_generator()), list(self.equation_generator())
+        )
 
     def write_cdd_Hrepresentation(self, filename):
         r"""
@@ -1397,21 +1437,25 @@ class Polyhedron_base0(Element, sage.geometry.abc.Polyhedron):
             end
         """
         from .cdd_file_format import cdd_Vrepresentation
+
         try:
             cdd_type = self._cdd_type
         except AttributeError:
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
+
             if self.base_ring() is ZZ or self.base_ring() is QQ:
                 cdd_type = 'rational'
             elif isinstance(self.base_ring(), sage.rings.abc.RealDoubleField):
                 cdd_type = 'real'
             else:
                 raise TypeError('the base ring must be ZZ, QQ, or RDF')
-        return cdd_Vrepresentation(cdd_type,
-                                   list(self.vertex_generator()),
-                                   list(self.ray_generator()),
-                                   list(self.line_generator()))
+        return cdd_Vrepresentation(
+            cdd_type,
+            list(self.vertex_generator()),
+            list(self.ray_generator()),
+            list(self.line_generator()),
+        )
 
     def write_cdd_Vrepresentation(self, filename):
         r"""

@@ -8,6 +8,7 @@ import setuptools
 from distutils import log
 from setuptools.command.build_ext import build_ext
 from distutils.dep_util import newer_group
+
 try:
     # Available since https://setuptools.pypa.io/en/latest/history.html#v59-0-0
     from setuptools.errors import DistutilsSetupError
@@ -39,6 +40,7 @@ class sage_build_ext(build_ext):
             # errors, the problem is most likely with some external
             # library and not with Sage.
             import re
+
             forbidden = re.compile(r"-march=|-mpcu=|-msse3|-msse4|-mpopcnt|-mavx")
 
         if forbidden is not None:
@@ -60,7 +62,7 @@ class sage_build_ext(build_ext):
             print("self.compiler.compiler:")
             print(self.compiler.compiler)
             print("self.compiler.compiler_cxx:")
-            print(self.compiler.compiler_cxx) # currently not used
+            print(self.compiler.compiler_cxx)  # currently not used
             print("self.compiler.compiler_so:")
             print(self.compiler.compiler_so)
             print("self.compiler.linker_so:")
@@ -75,6 +77,7 @@ class sage_build_ext(build_ext):
         self.check_extensions_list(self.extensions)
 
         import time
+
         t = time.time()
 
         compile_commands = []
@@ -85,14 +88,22 @@ class sage_build_ext(build_ext):
 
         execute_list_of_commands(compile_commands)
 
-        print("Total time spent compiling C/C++ extensions: %.2f seconds." % (time.time() - t))
+        print(
+            "Total time spent compiling C/C++ extensions: %.2f seconds."
+            % (time.time() - t)
+        )
 
     def prepare_extension(self, ext):
         sources = ext.sources
         if sources is None or not isinstance(sources, (list, tuple)):
-            raise DistutilsSetupError(("in 'ext_modules' option (extension '%s'), " +
-                   "'sources' must be present and must be " +
-                   "a list of source filenames") % ext.name)
+            raise DistutilsSetupError(
+                (
+                    "in 'ext_modules' option (extension '%s'), "
+                    + "'sources' must be present and must be "
+                    + "a list of source filenames"
+                )
+                % ext.name
+            )
         sources = list(sources)
 
         fullname = self.get_ext_fullname(ext.name)
@@ -106,12 +117,10 @@ class sage_build_ext(build_ext):
 
             build_py = self.get_finalized_command('build_py')
             package_dir = build_py.get_package_dir(package)
-            ext_filename = os.path.join(package_dir,
-                                        self.get_ext_filename(base))
+            ext_filename = os.path.join(package_dir, self.get_ext_filename(base))
             relative_ext_filename = self.get_ext_filename(base)
         else:
-            ext_filename = os.path.join(self.build_lib,
-                                        self.get_ext_filename(fullname))
+            ext_filename = os.path.join(self.build_lib, self.get_ext_filename(fullname))
             relative_ext_filename = self.get_ext_filename(fullname)
 
         # while dispatching the calls to gcc in parallel, we sometimes
@@ -169,13 +178,15 @@ class sage_build_ext(build_ext):
         for undef in ext.undef_macros:
             macros.append((undef,))
 
-        objects = self.compiler.compile(sources,
-                                        output_dir=self.build_temp,
-                                        macros=macros,
-                                        include_dirs=ext.include_dirs,
-                                        debug=self.debug,
-                                        extra_postargs=extra_args,
-                                        depends=ext.depends)
+        objects = self.compiler.compile(
+            sources,
+            output_dir=self.build_temp,
+            macros=macros,
+            include_dirs=ext.include_dirs,
+            debug=self.debug,
+            extra_postargs=extra_args,
+            depends=ext.depends,
+        )
 
         # XXX -- this is a Vile HACK!
         #
@@ -199,7 +210,8 @@ class sage_build_ext(build_ext):
         language = ext.language or self.compiler.detect_language(sources)
 
         self.compiler.link_shared_object(
-            objects, ext_filename,
+            objects,
+            ext_filename,
             libraries=self.get_libraries(ext),
             library_dirs=ext.library_dirs,
             runtime_library_dirs=ext.runtime_library_dirs,
@@ -207,4 +219,5 @@ class sage_build_ext(build_ext):
             export_symbols=self.get_export_symbols(ext),
             debug=self.debug,
             build_temp=self.build_temp,
-            target_lang=language)
+            target_lang=language,
+        )

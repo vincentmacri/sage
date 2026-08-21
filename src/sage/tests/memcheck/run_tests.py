@@ -6,6 +6,7 @@ def run_tests() -> None:
     Run all memcheck tests
     """
     from sage.tests.memcheck import symbolic_expression
+
     run_tests_in_module(symbolic_expression)
 
 

@@ -5,12 +5,12 @@ AUTHORS:
 
  - Nicolas M. Thiery (2008-2010): initial revision and refactorization
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2010 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from typing import Self
 
@@ -24,7 +24,9 @@ from sage.misc.lazy_import import lazy_import
 native_python_containers = {tuple, list, set, frozenset, range}
 
 
-class CartesianProductFunctor(CovariantFunctorialConstruction, MultivariateConstructionFunctor):
+class CartesianProductFunctor(
+    CovariantFunctorialConstruction, MultivariateConstructionFunctor
+):
     """
     The Cartesian product functor.
 
@@ -110,6 +112,7 @@ class CartesianProductFunctor(CovariantFunctorialConstruction, MultivariateConst
     ``Monoids(QQ)``. This nested class is itself a subclass of
     :class:`CartesianProductsCategory`.
     """
+
     _functor_name = "cartesian_product"
     _functor_category = "CartesianProducts"
     symbol = " (+) "
@@ -127,6 +130,7 @@ class CartesianProductFunctor(CovariantFunctorialConstruction, MultivariateConst
         CovariantFunctorialConstruction.__init__(self)
         self._forced_category = category
         from sage.categories.sets_cat import Sets
+
         if self._forced_category is not None:
             codomain = self._forced_category
         else:
@@ -182,15 +186,18 @@ class CartesianProductFunctor(CovariantFunctorialConstruction, MultivariateConst
         """
         if any(type(arg) in native_python_containers for arg in args):
             from sage.categories.sets_cat import Sets
+
             S = Sets()
             args = [S(a, enumerated_set=True) for a in args]
         elif not args:
             if self._forced_category is None:
                 from sage.categories.sets_cat import Sets
+
                 cat = Sets().CartesianProducts()
             else:
                 cat = self._forced_category
             from sage.sets.cartesian_product import CartesianProduct
+
             return CartesianProduct((), cat)
         elif self._forced_category is not None:
             return super().__call__(args, category=self._forced_category, **kwds)

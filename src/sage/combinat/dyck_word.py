@@ -296,10 +296,16 @@ class DyckWord(CombinatorialElement):
          _|  .
         |  . .
     """
+
     @staticmethod
-    def __classcall_private__(cls, dw=None, noncrossing_partition=None,
-                              area_sequence=None, heights_sequence=None,
-                              catalan_code=None):
+    def __classcall_private__(
+        cls,
+        dw=None,
+        noncrossing_partition=None,
+        area_sequence=None,
+        heights_sequence=None,
+        catalan_code=None,
+    ):
         """
         Return an element with the appropriate parent.
 
@@ -318,7 +324,9 @@ class DyckWord(CombinatorialElement):
             if area_sequence is not None:
                 return CompleteDyckWords_all().from_area_sequence(area_sequence)
             if noncrossing_partition is not None:
-                return CompleteDyckWords_all().from_noncrossing_partition(noncrossing_partition)
+                return CompleteDyckWords_all().from_noncrossing_partition(
+                    noncrossing_partition
+                )
             if heights_sequence is not None:
                 if heights_sequence[-1] == 0:
                     P = CompleteDyckWords_all()
@@ -450,7 +458,9 @@ class DyckWord(CombinatorialElement):
         if "diagonal" not in d:
             d["diagonal"] = self.parent().options.latex_diagonal
         if "line width" not in d:
-            d["line width"] = self.parent().options.latex_line_width_scalar * d["tikz_scale"]
+            d["line width"] = (
+                self.parent().options.latex_line_width_scalar * d["tikz_scale"]
+            )
         if "color" not in d:
             d["color"] = self.parent().options.latex_color
         if "bounce path" not in d:
@@ -522,7 +532,9 @@ class DyckWord(CombinatorialElement):
 
         if type == "NE-SE":
             if labelling is not None or underpath is not True:
-                raise ValueError("the labelling cannot be shown with Northeast-Southeast paths")
+                raise ValueError(
+                    "the labelling cannot be shown with Northeast-Southeast paths"
+                )
             return self.to_path_string()
         if type == "N-E":
             alst = self.to_area_sequence()
@@ -547,15 +559,29 @@ class DyckWord(CombinatorialElement):
             row = "  " * (n - alst[-1] - 1) + final_fall + "\n"
             for i in range(n - 1):
                 c = 0
-                row = row + "  " * (n-i-2-alst[-i-2])
-                c += n-i-2-alst[-i-2]
-                if alst[-i-2]+1 != alst[-i-1]:
+                row = row + "  " * (n - i - 2 - alst[-i - 2])
+                c += n - i - 2 - alst[-i - 2]
+                if alst[-i - 2] + 1 != alst[-i - 1]:
                     row += " _"
-                c += alst[-i-2] - alst[-i-1]
+                c += alst[-i - 2] - alst[-i - 1]
                 if underpath:
-                    row += "__" * (alst[-i-2]-alst[-i-1]) + "|" + labels[-1] + "x "*(n-c-2-i) + " ." * i + "\n"
+                    row += (
+                        "__" * (alst[-i - 2] - alst[-i - 1])
+                        + "|"
+                        + labels[-1]
+                        + "x " * (n - c - 2 - i)
+                        + " ." * i
+                        + "\n"
+                    )
                 else:
-                    row += "__"*(alst[-i-2]-alst[-i-1])+"| " + "x "*(n-c-2-i) + " ."*i + labels[-1] + "\n"
+                    row += (
+                        "__" * (alst[-i - 2] - alst[-i - 1])
+                        + "| "
+                        + "x " * (n - c - 2 - i)
+                        + " ." * i
+                        + labels[-1]
+                        + "\n"
+                    )
                 labels.pop()
             if underpath:
                 row += "|" + labels[-1] + " ." * (n - 1) + "\n"
@@ -576,6 +602,7 @@ class DyckWord(CombinatorialElement):
             [ /\/\/\, /\/  \, /  \/\, /    \, /    \ ]
         """
         from sage.typeset.ascii_art import AsciiArt
+
         rep = self.parent().options.ascii_art
         if rep == "path":
             ret = self.to_path_string()
@@ -595,6 +622,7 @@ class DyckWord(CombinatorialElement):
             ⎣ ╱╲╱╲╱╲, ╱╲╱  ╲, ╱  ╲╱╲, ╱    ╲, ╱    ╲ ⎦
         """
         from sage.typeset.unicode_art import UnicodeArt
+
         return UnicodeArt(self.to_path_string(unicode=True).splitlines())
 
     def __str__(self) -> str:
@@ -634,9 +662,14 @@ class DyckWord(CombinatorialElement):
         """
         if unicode:
             import unicodedata
+
             space = ' '
-            up = unicodedata.lookup('BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT')
-            down = unicodedata.lookup('BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT')
+            up = unicodedata.lookup(
+                'BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT'
+            )
+            down = unicodedata.lookup(
+                'BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT'
+            )
         else:
             space = ' '
             up = '/'
@@ -867,31 +900,47 @@ class DyckWord(CombinatorialElement):
                     valleys.append(ht[-1])
         hti = iter(ht)
         if diagonal:
-            grid = [((0, i), (i, i + 1))
-                    for i in range(self.number_of_open_symbols())]
+            grid = [((0, i), (i, i + 1)) for i in range(self.number_of_open_symbols())]
         else:
             grid = [((0, 0), (len(self), self.height()))]
-        res = "\\vcenter{\\hbox{$\\begin{tikzpicture}[scale=" + str(latex_options['tikz_scale']) + "]\n"
+        res = (
+            "\\vcenter{\\hbox{$\\begin{tikzpicture}[scale="
+            + str(latex_options['tikz_scale'])
+            + "]\n"
+        )
         mark_points = []
         if latex_options['valleys']:
             mark_points.extend(valleys)
         if latex_options['peaks']:
             mark_points.extend(peaks)
         for v in mark_points:
-            res += "  \\draw[line width=2,color=red,fill=red] %s circle (%s);\n" % (str(v), 0.15 + .03 * latex_options['line width'])
+            res += "  \\draw[line width=2,color=red,fill=red] %s circle (%s);\n" % (
+                str(v),
+                0.15 + 0.03 * latex_options['line width'],
+            )
         if latex_options["bounce path"]:
             D = self.bounce_path()
             D.set_latex_options(latex_options)
-            D.set_latex_options({"color": "green",
-                                 "line width": 2 * latex_options['line width'],
-                                 "bounce path": False,
-                                 "peaks": False, "valleys": False})
+            D.set_latex_options(
+                {
+                    "color": "green",
+                    "line width": 2 * latex_options['line width'],
+                    "bounce path": False,
+                    "peaks": False,
+                    "valleys": False,
+                }
+            )
             res += D._latex_().split("\n")[-2] + "\n"
         for v1, v2 in grid:
             res += "  \\draw[dotted] %s grid %s;\n" % (str(v1), str(v2))
         if diagonal:
-            res += "  \\draw (0,0) -- %s;\n" % str((self.number_of_open_symbols(), self.number_of_open_symbols()))
-        res += "  \\draw[rounded corners=1, color=%s, line width=%s] (0, 0)" % (latex_options['color'], str(latex_options['line width']))
+            res += "  \\draw (0,0) -- %s;\n" % str(
+                (self.number_of_open_symbols(), self.number_of_open_symbols())
+            )
+        res += "  \\draw[rounded corners=1, color=%s, line width=%s] (0, 0)" % (
+            latex_options['color'],
+            str(latex_options['line width']),
+        )
         next(hti)
         for i, j in hti:
             res += " -- (%s, %s)" % (i, j)
@@ -913,21 +962,23 @@ class DyckWord(CombinatorialElement):
         """
         N = self.length()
         width = 0.1 if N < 20 else N / 200
-        resu = '<?xml version=\"1.0\" standalone=\"no\"?>'
-        resu += '<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" '
-        resu += '\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">'
-        resu += '<svg xmlns=\"http://www.w3.org/2000/svg\" '
-        resu += 'xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"500\" viewBox='
+        resu = '<?xml version="1.0" standalone="no"?>'
+        resu += '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" '
+        resu += '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'
+        resu += '<svg xmlns="http://www.w3.org/2000/svg" '
+        resu += 'xmlns:xlink="http://www.w3.org/1999/xlink" width="500" viewBox='
 
-        resu1 = '<g style=\"stroke-width:{};stroke-linejoin:bevel; '.format(width)
-        resu1 += 'stroke-linecap:butt; stroke:black; fill:snow\">'
+        resu1 = '<g style="stroke-width:{};stroke-linejoin:bevel; '.format(width)
+        resu1 += 'stroke-linecap:butt; stroke:black; fill:snow">'
 
-        resu3 = '<g style=\"stroke-width:{};stroke-linejoin:bevel;stroke-dasharray:0.25; '.format(width / 2)
-        resu3 += 'stroke-linecap:butt; stroke:gray; fill:none\">'
+        resu3 = '<g style="stroke-width:{};stroke-linejoin:bevel;stroke-dasharray:0.25; '.format(
+            width / 2
+        )
+        resu3 += 'stroke-linecap:butt; stroke:gray; fill:none">'
 
         horizontal = "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\"/>"
         hori_lines = []
-        path = ['<polyline points=\"0,0']
+        path = ['<polyline points="0,0']
         y = 0
         max_y = 0
         last_seen_level = [0]
@@ -941,15 +992,16 @@ class DyckWord(CombinatorialElement):
                 old_x = last_seen_level.pop()
                 hori_lines.append(horizontal.format(old_x, -y, x, -y))
             path.append(f"{x},{-y}")
-        path.append('\"/>')
+        path.append('"/>')
         path.append('</g>')
         resu1 += " ".join(path)
         hori_lines.append('</g></svg>')
         resu3 += "".join(hori_lines)
 
         margin = 2 * width
-        resu += '\"{} {} {} {} \">'.format(-margin, -max_y - margin,
-                                           N + 2 * margin, max_y + 2 * margin)
+        resu += '"{} {} {} {} ">'.format(
+            -margin, -max_y - margin, N + 2 * margin, max_y + 2 * margin
+        )
 
         return resu + resu1 + resu3
 
@@ -964,6 +1016,7 @@ class DyckWord(CombinatorialElement):
             Graphics object consisting of 1 graphics primitive
         """
         from sage.plot.plot import list_plot
+
         step = [-1, 1]
         sigma = 0
         list_sigma = [0]
@@ -1233,8 +1286,12 @@ class DyckWord(CombinatorialElement):
                     break
                 j += 1
             else:
-                result.extend([DyckWord([open_symbol] * up),  # type:ignore
-                               DyckWord(self[i:j])])  # type:ignore
+                result.extend(
+                    [
+                        DyckWord([open_symbol] * up),  # type:ignore
+                        DyckWord(self[i:j]),
+                    ]
+                )  # type:ignore
                 i = j
                 up = 0
 
@@ -1332,8 +1389,11 @@ class DyckWord(CombinatorialElement):
             sage: DyckWord([1,1,0,1,0,1,0,0]).peaks() # Haglund's def gives 2
             [1, 3, 5]
         """
-        return [i for i in range(len(self) - 1)
-                if self[i] == open_symbol and self[i + 1] == close_symbol]
+        return [
+            i
+            for i in range(len(self) - 1)
+            if self[i] == open_symbol and self[i + 1] == close_symbol
+        ]
 
     def number_of_peaks(self) -> int:
         r"""
@@ -1371,8 +1431,11 @@ class DyckWord(CombinatorialElement):
             sage: DyckWord([1,1,0,1,0,1,0,0]).valleys()
             [2, 4]
         """
-        return [i for i in range(len(self) - 1)
-                if self[i] == close_symbol and self[i + 1] == open_symbol]
+        return [
+            i
+            for i in range(len(self) - 1)
+            if self[i] == close_symbol and self[i + 1] == open_symbol
+        ]
 
     def number_of_valleys(self) -> int:
         r"""
@@ -1437,8 +1500,9 @@ class DyckWord(CombinatorialElement):
             sage: DyckWord([1, 0, 1, 0]).positions_of_double_rises()
             []
         """
-        return [i for i in range(len(self) - 1)
-                if self[i] == self[i + 1] == open_symbol]
+        return [
+            i for i in range(len(self) - 1) if self[i] == self[i + 1] == open_symbol
+        ]
 
     def number_of_double_rises(self) -> int:
         r"""
@@ -1532,6 +1596,7 @@ class DyckWord(CombinatorialElement):
             []
         """
         from sage.combinat.composition import Composition
+
         if not self:
             return Composition([])
         return Composition(descents=[i - 1 for i in self.touch_points()])
@@ -1585,11 +1650,12 @@ class DyckWord(CombinatorialElement):
             [1, 1]
         """
         from sage.combinat.composition import Composition
+
         L = list(self)
         rise_comp = []
         while L:
             i = L.index(0)
-            L = L[i + 1:]
+            L = L[i + 1 :]
             if i:
                 rise_comp.append(i)
         return Composition(rise_comp)
@@ -1624,6 +1690,7 @@ class DyckWord(CombinatorialElement):
             else:
                 close_positions.append(i + 1)
         from sage.combinat.tableau import StandardTableau
+
         return StandardTableau([x for x in [open_positions, close_positions] if x])
 
     def to_tamari_sorting_tuple(self) -> list[int]:
@@ -1663,7 +1730,9 @@ class DyckWord(CombinatorialElement):
                 resu[previous] += position
         return resu
 
-    @combinatorial_map(name="to binary trees: up step, left tree, down step, right tree")
+    @combinatorial_map(
+        name="to binary trees: up step, left tree, down step, right tree"
+    )
     def to_binary_tree(self, usemap='1L0R'):
         r"""
         Return a binary tree recursively constructed from the Dyck path
@@ -1716,6 +1785,7 @@ class DyckWord(CombinatorialElement):
         if usemap not in ["1L0R", "1R0L", "L1R0", "R1L0"]:
             raise ValueError("%s is not a correct map" % usemap)
         from sage.combinat.binary_tree import BinaryTree
+
         if not self:
             return BinaryTree()
         tp = [0]
@@ -1731,8 +1801,10 @@ class DyckWord(CombinatorialElement):
             e0 = tp[len(tp) - 2]
             s1 = e0 + 1
             e1 = l - 1
-        trees = [DyckWord(self[s0:e0]).to_binary_tree(usemap),
-                 DyckWord(self[s1:e1]).to_binary_tree(usemap)]
+        trees = [
+            DyckWord(self[s0:e0]).to_binary_tree(usemap),
+            DyckWord(self[s1:e1]).to_binary_tree(usemap),
+        ]
         if usemap[0] == "R" or usemap[1] == "R":
             trees.reverse()
         return BinaryTree(trees)
@@ -1757,6 +1829,7 @@ class DyckWord(CombinatorialElement):
         """
         # return self.to_binary_tree("L1R0")  # slower and recursive
         from sage.combinat.binary_tree import from_tamari_sorting_tuple
+
         tup = self.to_tamari_sorting_tuple()
         return from_tamari_sorting_tuple(tup)
 
@@ -1804,6 +1877,7 @@ class DyckWord(CombinatorialElement):
             ValueError: the two Dyck words are not comparable on the Tamari lattice
         """
         from sage.combinat.interval_posets import TamariIntervalPosets
+
         return TamariIntervalPosets.from_dyck_words(self, other)
 
     def _area_sequence_iter(self) -> Iterator[int]:
@@ -1941,6 +2015,7 @@ class DyckWord_complete(DyckWord):
             [1, 1]
         """
         from sage.combinat.partition import Partition
+
         n = len(self) // 2
         res = []
         for c in reversed(self):
@@ -1975,6 +2050,7 @@ class DyckWord_complete(DyckWord):
             6
         """
         from sage.arith.misc import multinomial
+
         return multinomial(self.rise_composition())
 
     def list_parking_functions(self) -> list:
@@ -1998,6 +2074,7 @@ class DyckWord_complete(DyckWord):
             [[1, 1, 2], [1, 2, 1], [2, 1, 1]]
         """
         from sage.combinat.parking_functions import ParkingFunction
+
         alist = self._area_sequence_iter()
         for pi in Permutations([i - ai + 1 for i, ai in enumerate(alist)]):
             yield ParkingFunction(pi)
@@ -2030,12 +2107,12 @@ class DyckWord_complete(DyckWord):
             return Permutation([])  # type:ignore
         alist = self.to_area_sequence()
         m = max(alist)
-        p1 = Word([m - alist[-i - 1]
-                   for i in range(len(alist))]).standard_permutation()
+        p1 = Word([m - alist[-i - 1] for i in range(len(alist))]).standard_permutation()
         return p1.inverse().complement()
 
-    def characteristic_symmetric_function(self, q=None,
-                                          R=QQ['q', 't'].fraction_field()):
+    def characteristic_symmetric_function(
+        self, q=None, R=QQ['q', 't'].fraction_field()
+    ):
         r"""
         The characteristic function of ``self`` is the sum of
         `q^{dinv(D,F)} Q_{ides(read(D,F))}` over all permutation
@@ -2068,6 +2145,7 @@ class DyckWord_complete(DyckWord):
         """
         from sage.combinat.ncsf_qsym.qsym import QuasiSymmetricFunctions
         from sage.combinat.sf.sf import SymmetricFunctions
+
         if q is None:
             q = R('q')
         else:
@@ -2075,9 +2153,14 @@ class DyckWord_complete(DyckWord):
                 raise ValueError("q=%s must be an element of the base ring %s" % (q, R))
         F = QuasiSymmetricFunctions(R).Fundamental()
         p = self.reading_permutation().inverse()
-        perms = [Word(perm).standard_permutation()
-                 for perm in self.list_parking_functions()]
-        QSexpr = sum(q**self.dinv(pv.inverse()) * F(Permutation([p(i) for i in pv]).descents_composition()) for pv in perms)
+        perms = [
+            Word(perm).standard_permutation() for perm in self.list_parking_functions()
+        ]
+        QSexpr = sum(
+            q ** self.dinv(pv.inverse())
+            * F(Permutation([p(i) for i in pv]).descents_composition())
+            for pv in perms
+        )
         s = SymmetricFunctions(R).s()
         return s(QSexpr.to_symmetric_function())
 
@@ -2096,6 +2179,7 @@ class DyckWord_complete(DyckWord):
             ([[1, 2, 4, 7], [3, 5, 6]], [[1, 2, 4, 6], [3, 5, 7]])
         """
         from sage.combinat.tableau import Tableau
+
         n = self.semilength()
         if n == 0:
             return (Tableau([]), Tableau([]))  # type:ignore
@@ -2250,6 +2334,7 @@ class DyckWord_complete(DyckWord):
             True
         """
         from sage.combinat.rsk import RSK_inverse
+
         A, B = self.to_pair_of_standard_tableaux()
         return RSK_inverse(A, B, output='permutation')
 
@@ -2410,7 +2495,7 @@ class DyckWord_complete(DyckWord):
 
                 partition.append(stack[-nz:])
 
-                stack = stack[: -nz]
+                stack = stack[:-nz]
             i = j
             p += 1
 
@@ -2462,7 +2547,7 @@ class DyckWord_complete(DyckWord):
         cut = self.associated_parenthesis(0)
         if cut is None:
             raise ValueError('not valid for incomplete Dyck words')
-        recdw = DyckWord(self[1:cut] + self[cut + 1:])  # type:ignore
+        recdw = DyckWord(self[1:cut] + self[cut + 1 :])  # type:ignore
         returns = [0] + recdw.returns_to_zero()
         res = recdw.to_Catalan_code()
         res.append(returns.index(cut - 1))
@@ -2497,6 +2582,7 @@ class DyckWord_complete(DyckWord):
             True
         """
         from sage.combinat.ordered_tree import OrderedTree
+
         levels = [OrderedTree().clone()]
         for u in self:
             if u == 1:
@@ -2591,6 +2677,7 @@ class DyckWord_complete(DyckWord):
         n = self.number_of_open_symbols()
         edges = self.to_triangulation()
         from sage.graphs.graph import Graph
+
         peri = [(i, i + 1) for i in range(n + 1)] + [(n + 1, 0)]
         g = Graph(n + 2)
         g.add_edges(peri)
@@ -2626,7 +2713,10 @@ class DyckWord_complete(DyckWord):
             sage: list(ld) == [dw.to_non_decreasing_parking_function().to_dyck_word() for dw in ld]
             True
         """
-        from sage.combinat.non_decreasing_parking_function import NonDecreasingParkingFunction
+        from sage.combinat.non_decreasing_parking_function import (
+            NonDecreasingParkingFunction,
+        )
+
         return NonDecreasingParkingFunction.from_dyck_word(self)
 
     def major_index(self) -> int:
@@ -2690,8 +2780,10 @@ class DyckWord_complete(DyckWord):
                 bpeak.append(i)
         out = 0
         for i, apeaki in enumerate(apeak):
-            out += min(aseq[apeaki] - aseq[apeaki + 1] + 1,
-                       bseq[bpeak[-i - 1]] - bseq[bpeak[-i - 1] + 1] + 1)
+            out += min(
+                aseq[apeaki] - aseq[apeaki + 1] + 1,
+                bseq[bpeak[-i - 1]] - bseq[bpeak[-i - 1] + 1] + 1,
+            )
         return out
 
     def tunnels(self) -> Iterator[tuple[int, int]]:
@@ -2711,7 +2803,7 @@ class DyckWord_complete(DyckWord):
         for i in range(len(heights) - 1):
             height = heights[i]
             if height < heights[i + 1]:
-                yield (i, i + 1 + heights[i + 1:].index(height))
+                yield (i, i + 1 + heights[i + 1 :].index(height))
 
     def number_of_tunnels(self, tunnel_type='centered') -> int:
         r"""
@@ -2800,7 +2892,7 @@ class DyckWord_complete(DyckWord):
             ([], [1, 0])
         """
         k = self.position_of_first_return() * 2
-        return DyckWord(self[1:k - 1]), DyckWord(self[k:])  # type:ignore
+        return DyckWord(self[1 : k - 1]), DyckWord(self[k:])  # type:ignore
 
     def decomposition_reverse(self) -> DyckWord:
         r"""
@@ -3155,7 +3247,9 @@ class DyckWord_complete(DyckWord):
             if labeling is not None:
                 lj = labeling[j]
             for i in range(j):
-                if (alist[i] == aj and (labeling is None or labeling[i] < lj)) or (alist[i] - aj == 1 and (labeling is None or labeling[i] > lj)):
+                if (alist[i] == aj and (labeling is None or labeling[i] < lj)) or (
+                    alist[i] - aj == 1 and (labeling is None or labeling[i] > lj)
+                ):
                     cnt += 1
         return cnt
 
@@ -3182,8 +3276,7 @@ class DyckWord_complete(DyckWord):
         """
         parkfn = self.reverse().to_non_decreasing_parking_function()
         parkfn2 = [len(parkfn) + 1 - parkfn[i] for i in range(len(parkfn))]
-        monotone_triangle = [[0] * (len(parkfn2) - j)
-                             for j in range(len(parkfn2))]
+        monotone_triangle = [[0] * (len(parkfn2) - j) for j in range(len(parkfn2))]
         for i in range(len(monotone_triangle)):
             for j in range(len(monotone_triangle[i])):
                 monotone_triangle[i][j] = len(monotone_triangle[i]) - j
@@ -3265,6 +3358,7 @@ class DyckWords(UniqueRepresentation, Parent):
          [1, 1, 0, 1, 0],
          [1, 1, 1, 0, 0]]
     """
+
     @staticmethod
     def __classcall_private__(cls, k1=None, k2=None, complete=True):
         """
@@ -3291,7 +3385,9 @@ class DyckWords(UniqueRepresentation, Parent):
 
         k2 = Integer(k2)
         if k1 < 0 or (k2 is not None and k2 < 0):
-            raise ValueError("k1 (= %s) and k2 (= %s) must be nonnegative, with k1 >= k2" % (k1, k2))
+            raise ValueError(
+                "k1 (= %s) and k2 (= %s) must be nonnegative, with k1 >= k2" % (k1, k2)
+            )
         if k1 < k2:
             raise ValueError("k1 (= %s) must be >= k2 (= %s)" % (k1, k2))
 
@@ -3330,46 +3426,72 @@ class DyckWords(UniqueRepresentation, Parent):
             /    \
             sage: DyckWords.options._reset()
         """
+
         NAME = 'DyckWords'
         module = 'sage.combinat.dyck_word'
-        display = dict(default='list',
+        display = dict(
+            default='list',
             description='Specifies how Dyck words should be printed',
-            values=dict(list='displayed as a list',
-                        lattice='displayed on the lattice defined by ``diagram_style``'),
-            case_sensitive=False)
-        ascii_art = dict(default='path',
+            values=dict(
+                list='displayed as a list',
+                lattice='displayed on the lattice defined by ``diagram_style``',
+            ),
+            case_sensitive=False,
+        )
+        ascii_art = dict(
+            default='path',
             description='Specifies how the ascii art of Dyck words should be printed',
-            values=dict(path="Using the path string",
-                        pretty_output="Using pretty printing"),
+            values=dict(
+                path="Using the path string", pretty_output="Using pretty printing"
+            ),
             alias=dict(pretty_print='pretty_output', path_string='path'),
-            case_sensitive=False)
-        diagram_style = dict(default='grid',
-            values=dict(grid='printing as paths on a grid using N and E steps',
-                        line='printing as paths on a line using NE and SE steps',),
+            case_sensitive=False,
+        )
+        diagram_style = dict(
+            default='grid',
+            values=dict(
+                grid='printing as paths on a grid using N and E steps',
+                line='printing as paths on a line using NE and SE steps',
+            ),
             alias={'N-E': 'grid', 'NE-SE': 'line'},
-            case_sensitive=False)
-        latex_tikz_scale = dict(default=1,
+            case_sensitive=False,
+        )
+        latex_tikz_scale = dict(
+            default=1,
             description='The default value for the tikz scale when latexed',
-            checker=lambda x: True)  # More trouble than it's worth to check
-        latex_diagonal = dict(default=False,
+            checker=lambda x: True,
+        )  # More trouble than it's worth to check
+        latex_diagonal = dict(
+            default=False,
             description='The default value for displaying the diagonal when latexed',
-            checker=lambda x: isinstance(x, bool))
-        latex_line_width_scalar = dict(default=2,
+            checker=lambda x: isinstance(x, bool),
+        )
+        latex_line_width_scalar = dict(
+            default=2,
             description='The default value for the line width as a '
-                        'multiple of the tikz scale when latexed',
-            checker=lambda x: True)  # More trouble than it's worth to check
-        latex_color = dict(default='black',
+            'multiple of the tikz scale when latexed',
+            checker=lambda x: True,
+        )  # More trouble than it's worth to check
+        latex_color = dict(
+            default='black',
             description='The default value for the color when latexed',
-            checker=lambda x: isinstance(x, str))
-        latex_bounce_path = dict(default=False,
+            checker=lambda x: isinstance(x, str),
+        )
+        latex_bounce_path = dict(
+            default=False,
             description='The default value for displaying the bounce path when latexed',
-            checker=lambda x: isinstance(x, bool))
-        latex_peaks = dict(default=False,
+            checker=lambda x: isinstance(x, bool),
+        )
+        latex_peaks = dict(
+            default=False,
             description='The default value for displaying the peaks when latexed',
-            checker=lambda x: isinstance(x, bool))
-        latex_valleys = dict(default=False,
+            checker=lambda x: isinstance(x, bool),
+        )
+        latex_valleys = dict(
+            default=False,
             description='The default value for displaying the valleys when latexed',
-            checker=lambda x: isinstance(x, bool))
+            checker=lambda x: isinstance(x, bool),
+        )
 
     def _element_constructor_(self, word):
         """
@@ -3483,7 +3605,9 @@ class DyckWords(UniqueRepresentation, Parent):
             if heights[i] == heights[i + 1] - 1:
                 res[i] = 1
             elif heights[i] != heights[i + 1] + 1:
-                raise ValueError("consecutive heights must differ by exactly 1: %s" % (heights,))
+                raise ValueError(
+                    "consecutive heights must differ by exactly 1: %s" % (heights,)
+                )
         return self.element_class(self, res)
 
     def min_from_heights(self, heights) -> DyckWord:
@@ -3719,7 +3843,10 @@ class DyckWords_size(DyckWords):
             sage: DyckWords(4)
             Dyck words with 4 opening parentheses and 4 closing parentheses
         """
-        return "Dyck words with %s opening parentheses and %s closing parentheses" % (self.k1, self.k2)
+        return "Dyck words with %s opening parentheses and %s closing parentheses" % (
+            self.k1,
+            self.k2,
+        )
 
     def __contains__(self, x) -> bool:
         r"""
@@ -3791,7 +3918,12 @@ class DyckWords_size(DyckWords):
             ....:      for p in range(7))
             True
         """
-        return (self.k1 - self.k2 + 1) * (self.k1 + self.k2).binomial(self.k2) // (self.k1 + 1)
+        return (
+            (self.k1 - self.k2 + 1)
+            * (self.k1 + self.k2).binomial(self.k2)
+            // (self.k1 + 1)
+        )
+
 
 ################################################################
 # Complete Dyck words
@@ -3801,6 +3933,7 @@ class CompleteDyckWords(DyckWords):
     """
     Abstract base class for all complete Dyck words.
     """
+
     Element = DyckWord_complete
 
     def __contains__(self, x) -> bool:
@@ -3863,7 +3996,7 @@ class CompleteDyckWords(DyckWords):
             return self.element_class(self, [])
         res = self.from_Catalan_code(code[:-1])
         cuts = [0] + res.returns_to_zero()
-        lst = [1] + res[:cuts[code[-1]]] + [0] + res[cuts[code[-1]]:]
+        lst = [1] + res[: cuts[code[-1]]] + [0] + res[cuts[code[-1]] :]
         return self.element_class(self, lst)
 
     def from_area_sequence(self, code) -> DyckWord:
@@ -3893,9 +4026,11 @@ class CompleteDyckWords(DyckWords):
             [1, 0, 1, 0]
         """
         if not is_area_sequence(code):
-            raise ValueError("the given sequence is not a sequence giving "
-                             "the number of cells between the Dyck path "
-                             "and the diagonal")
+            raise ValueError(
+                "the given sequence is not a sequence giving "
+                "the number of cells between the Dyck path "
+                "and the diagonal"
+            )
         dyck_word = []
         for i in range(len(code)):
             if i:
@@ -4152,6 +4287,7 @@ class CompleteDyckWords_size(CompleteDyckWords, DyckWords_size):
             True
         """
         from sage.misc.prandom import shuffle
+
         n = self.k1
         w = [0] * n + [1] * (n + 1)
         shuffle(w)
@@ -4237,8 +4373,9 @@ def is_area_sequence(seq) -> bool:
     """
     if not seq:
         return True
-    return seq[0] == 0 and all(0 <= seq[i + 1] <= seq[i] + 1
-                               for i in range(len(seq) - 1))
+    return seq[0] == 0 and all(
+        0 <= seq[i + 1] <= seq[i] + 1 for i in range(len(seq) - 1)
+    )
 
 
 def is_a(obj, k1=None, k2=None) -> bool:
@@ -4355,4 +4492,5 @@ def pealing(D, return_touches=False):
 
 
 from sage.misc.persist import register_unpickle_override
+
 register_unpickle_override('sage.combinat.dyck_word', 'DyckWord', DyckWord)

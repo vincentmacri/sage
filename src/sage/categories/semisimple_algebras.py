@@ -1,12 +1,12 @@
 r"""
 Semisimple Algebras
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2011-2015 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.categories.algebras import Algebras
 from sage.categories.category_types import Category_over_base_ring
@@ -55,6 +55,7 @@ class SemisimpleAlgebras(Category_over_base_ring):
 
         sage: TestSuite(C).run()
     """
+
     @staticmethod
     def __classget__(cls, base_category, base_category_class):
         """
@@ -86,7 +87,6 @@ class SemisimpleAlgebras(Category_over_base_ring):
         return [Algebras(R)]
 
     class ParentMethods:
-
         def radical_basis(self, **keywords):
             r"""
             Return a basis of the Jacobson radical of this algebra.
@@ -109,5 +109,7 @@ class SemisimpleAlgebras(Category_over_base_ring):
             return ()
 
     class FiniteDimensional(CategoryWithAxiom_over_base_ring):
-
-        WithBasis = LazyImport('sage.categories.finite_dimensional_semisimple_algebras_with_basis', 'FiniteDimensionalSemisimpleAlgebrasWithBasis')
+        WithBasis = LazyImport(
+            'sage.categories.finite_dimensional_semisimple_algebras_with_basis',
+            'FiniteDimensionalSemisimpleAlgebrasWithBasis',
+        )

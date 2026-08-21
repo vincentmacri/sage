@@ -36,9 +36,13 @@ class ModularFormsAmbient_R(ambient.ModularFormsAmbient):
             self.__R_character = M.character().change_ring(base_ring)
         else:
             self.__R_character = None
-        ambient.ModularFormsAmbient.__init__(self, M.group(), M.weight(), base_ring, M.character(), M._eis_only)
+        ambient.ModularFormsAmbient.__init__(
+            self, M.group(), M.weight(), base_ring, M.character(), M._eis_only
+        )
 
-    @cached_method(key=lambda self, sign: ZZ(sign))  # convert sign to an Integer before looking this up in the cache
+    @cached_method(
+        key=lambda self, sign: ZZ(sign)
+    )  # convert sign to an Integer before looking this up in the cache
     def modular_symbols(self, sign=0):
         r"""
         Return the space of modular symbols attached to this space, with the given sign (default 0).
@@ -116,8 +120,12 @@ class ModularFormsAmbient_R(ambient.ModularFormsAmbient):
             K = self.base_ring()
             p = K.characteristic().prime_factors()[0]
             from sage.rings.finite_rings.finite_field_constructor import GF
+
             Kp = GF(p)
-            newB = [f.change_ring(K) for f in list(self.__M.cuspidal_subspace().q_integral_basis(prec))]
+            newB = [
+                f.change_ring(K)
+                for f in list(self.__M.cuspidal_subspace().q_integral_basis(prec))
+            ]
             A = Kp**prec
             gens = [f.padded_list(prec) for f in newB]
             V = A.span(gens)
@@ -129,9 +137,12 @@ class ModularFormsAmbient_R(ambient.ModularFormsAmbient):
                     newB.append(f)
                     V = A.span(gens)
             if len(newB) != self.dimension():
-                raise RuntimeError("The dimension of the space is %s but the basis we computed has %s elements" % (self.dimension(), len(newB)))
+                raise RuntimeError(
+                    "The dimension of the space is %s but the basis we computed has %s elements"
+                    % (self.dimension(), len(newB))
+                )
             lst = [R(f) for f in newB]
-            return [f/f[f.valuation()] for f in lst]
+            return [f / f[f.valuation()] for f in lst]
         # this returns a basis of q-expansions, without guaranteeing that
         # the first vectors form a basis of the cuspidal subspace
         # TODO: bring this in line with the other cases

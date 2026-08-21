@@ -165,6 +165,7 @@ class CellularBasis(CombinatorialFreeModule):
          - C([2, 1], [[1, 3], [2]], [[1, 3], [2]])
          + C([3], [[1, 2, 3]], [[1, 2, 3]])
     """
+
     def __init__(self, A, to_algebra=None, from_algebra=None, **kwargs):
         r"""
         Initialize ``self``.
@@ -176,17 +177,25 @@ class CellularBasis(CombinatorialFreeModule):
             sage: TestSuite(C).run()
         """
         self._algebra = A
-        I = [(la, s, t) for la in A.cell_poset()
-             for s in A.cell_module_indices(la)
-             for t in A.cell_module_indices(la)]
+        I = [
+            (la, s, t)
+            for la in A.cell_poset()
+            for s in A.cell_module_indices(la)
+            for t in A.cell_module_indices(la)
+        ]
 
         # TODO: Use instead A.category().Realizations() so
         #   operations are defined by coercion?
         prefix = kwargs.pop('prefix', 'C')
-        cat = Algebras(A.category().base_ring()).FiniteDimensional().WithBasis().Cellular()
-        CombinatorialFreeModule.__init__(self, A.base_ring(), I,
-                                         prefix=prefix, bracket=False,
-                                         category=cat, **kwargs)
+        cat = (
+            Algebras(A.category().base_ring())
+            .FiniteDimensional()
+            .WithBasis()
+            .Cellular()
+        )
+        CombinatorialFreeModule.__init__(
+            self, A.base_ring(), I, prefix=prefix, bracket=False, category=cat, **kwargs
+        )
 
         # Register coercions
         if from_algebra is None:
@@ -194,13 +203,11 @@ class CellularBasis(CombinatorialFreeModule):
         if to_algebra is None:
             to_algebra = A._from_cellular_index
         if from_algebra is not NotImplemented:
-            to_cellular = A.module_morphism(from_algebra, codomain=self,
-                                            category=cat)
+            to_cellular = A.module_morphism(from_algebra, codomain=self, category=cat)
         if to_algebra is NotImplemented:
             from_cellular = ~to_cellular
         else:
-            from_cellular = self.module_morphism(to_algebra, codomain=A,
-                                                 category=cat)
+            from_cellular = self.module_morphism(to_algebra, codomain=A, category=cat)
             if from_algebra is NotImplemented:
                 to_cellular = ~from_cellular
         to_cellular.register_as_coercion()
@@ -231,6 +238,7 @@ class CellularBasis(CombinatorialFreeModule):
             'C^{...}_{\\left(...\\right)}'
         """
         from sage.misc.latex import latex
+
         la = x[0]
         m = (x[1], x[2])
         # m contains "non-LaTeXed" strings, use string representation

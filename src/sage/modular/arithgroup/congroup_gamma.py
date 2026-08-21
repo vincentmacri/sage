@@ -64,6 +64,7 @@ class Gamma_class(CongruenceSubgroup):
     r"""
     The principal congruence subgroup `\Gamma(N)`.
     """
+
     def _repr_(self) -> str:
         """
         Return the string representation of ``self``.
@@ -135,7 +136,9 @@ class Gamma_class(CongruenceSubgroup):
             sage: Gamma(32041).index()
             32893086819240
         """
-        return prod([p**(3*e-2)*(p*p-1) for (p,e) in self.level().factor()])
+        return prod(
+            [p ** (3 * e - 2) * (p * p - 1) for (p, e) in self.level().factor()]
+        )
 
     def _contains_sl2(self, a, b, c, d):
         r"""
@@ -153,7 +156,7 @@ class Gamma_class(CongruenceSubgroup):
         """
         N = self.level()
         # don't need to check d == 1 as this is automatic from det
-        return ((a % N == 1) and (b % N == 0) and (c % N == 0))
+        return (a % N == 1) and (b % N == 0) and (c % N == 0)
 
     def ncusps(self):
         r"""
@@ -173,7 +176,7 @@ class Gamma_class(CongruenceSubgroup):
             return ZZ(1)
         if n == 2:
             return ZZ(3)
-        return prod([p**(2*e) - p**(2*e-2) for (p,e) in n.factor()])//2
+        return prod([p ** (2 * e) - p ** (2 * e - 2) for (p, e) in n.factor()]) // 2
 
     def nirregcusps(self):
         r"""
@@ -200,24 +203,24 @@ class Gamma_class(CongruenceSubgroup):
         n = self.level()
         C = [QQ(x) for x in range(n)]
 
-        n0 = n//2
-        n1 = (n+1)//2
+        n0 = n // 2
+        n1 = (n + 1) // 2
 
         for r in range(1, n1):
-            if r > 1 and gcd(r,n) == 1:
-                C.append(ZZ(r)/ZZ(n))
-            if n0 == n/2 and gcd(r,n0) == 1:
-                C.append(ZZ(r)/ZZ(n0))
+            if r > 1 and gcd(r, n) == 1:
+                C.append(ZZ(r) / ZZ(n))
+            if n0 == n / 2 and gcd(r, n0) == 1:
+                C.append(ZZ(r) / ZZ(n0))
 
-        for s in range(2,n1):
-            for r in range(1, 1+n):
-                if GCD_list([s,r,n]) == 1:
+        for s in range(2, n1):
+            for r in range(1, 1 + n):
+                if GCD_list([s, r, n]) == 1:
                     # GCD_list is ~40x faster than gcd, since gcd wastes loads
                     # of time initialising a Sequence type.
-                    u,v = _lift_pair(r,s,n)
-                    C.append(ZZ(u)/ZZ(v))
+                    u, v = _lift_pair(r, s, n)
+                    C.append(ZZ(u) / ZZ(v))
 
-        return [Cusp(x) for x in sorted(C)] + [Cusp(1,0)]
+        return [Cusp(x) for x in sorted(C)] + [Cusp(1, 0)]
 
     def reduce_cusp(self, c):
         r"""
@@ -248,11 +251,11 @@ class Gamma_class(CongruenceSubgroup):
         """
         N = self.level()
         c = Cusp(c)
-        u,v = c.numerator() % N, c.denominator() % N
-        if (v > N//2) or (2*v == N and u > N//2):
-            u,v = -u,-v
-        u,v = _lift_pair(u,v,N)
-        return Cusp(u,v)
+        u, v = c.numerator() % N, c.denominator() % N
+        if (v > N // 2) or (2 * v == N and u > N // 2):
+            u, v = -u, -v
+        u, v = _lift_pair(u, v, N)
+        return Cusp(u, v)
 
     def are_equivalent(self, x, y, trans=False):
         r"""
@@ -267,12 +270,12 @@ class Gamma_class(CongruenceSubgroup):
             True
         """
         if trans:
-            return CongruenceSubgroup.are_equivalent(self, x,y,trans=trans)
+            return CongruenceSubgroup.are_equivalent(self, x, y, trans=trans)
         N = self.level()
-        u1,v1 = (x.numerator() % N, x.denominator() % N)
-        u2,v2 = (y.numerator(), y.denominator())
+        u1, v1 = (x.numerator() % N, x.denominator() % N)
+        u2, v2 = (y.numerator(), y.denominator())
 
-        return ((u1,v1) == (u2 % N, v2 % N)) or ((u1,v1) == (-u2 % N, -v2 % N))
+        return ((u1, v1) == (u2 % N, v2 % N)) or ((u1, v1) == (-u2 % N, -v2 % N))
 
     def nu3(self):
         r"""

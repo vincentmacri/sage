@@ -6,7 +6,6 @@ from sage.numerical.mip import MixedIntegerLinearProgram
 
 
 class TestPPLBackend(GenericBackendTests):
-
     @pytest.fixture
     def backend(self) -> GenericBackend:
         return MixedIntegerLinearProgram(solver='PPL').get_backend()

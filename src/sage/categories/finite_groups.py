@@ -42,10 +42,10 @@ class FiniteGroups(CategoryWithAxiom):
             General Linear Group of degree 2 over Finite Field of size 3
         """
         from sage.groups.matrix_gps.linear import GL
-        return GL(2,3)
+
+        return GL(2, 3)
 
     class ParentMethods:
-
         def semigroup_generators(self):
             """
             Return semigroup generators for ``self``.
@@ -132,14 +132,17 @@ class FiniteGroups(CategoryWithAxiom):
             else:
                 for g in connecting_set:
                     if g not in self:
-                        raise RuntimeError("each element of the connecting set must be in the group")
+                        raise RuntimeError(
+                            "each element of the connecting set must be in the group"
+                        )
                 connecting_set = [self(g) for g in connecting_set]
             from sage.graphs.digraph import DiGraph
+
             arrows = {}
             for x in self:
                 arrows[x] = {}
                 for g in connecting_set:
-                    xg = x*g # cache the multiplication
+                    xg = x * g  # cache the multiplication
                     if not xg == x:
                         arrows[x][xg] = g
 
@@ -163,7 +166,9 @@ class FiniteGroups(CategoryWithAxiom):
                 ...
                 NotImplementedError: Listing the conjugacy classes for group <sage.groups.group.FiniteGroup object at ...> is not implemented
             """
-            raise NotImplementedError("Listing the conjugacy classes for group %s is not implemented" % self)
+            raise NotImplementedError(
+                "Listing the conjugacy classes for group %s is not implemented" % self
+            )
 
         def conjugacy_classes_representatives(self):
             r"""
@@ -209,9 +214,11 @@ class FiniteGroups(CategoryWithAxiom):
                 False
             """
             from sage.categories.fields import Fields
+
             K = self.base_ring()
             if K in Fields() and K.characteristic() == 0:
                 from sage.categories.algebras import Algebras
+
                 return [Algebras(self.base_ring()).Semisimple()]
             return []
 
@@ -242,11 +249,14 @@ class FiniteGroups(CategoryWithAxiom):
                 base_ring = self.base_ring()
                 group = self.group()
                 from sage.categories.fields import Fields
+
                 # If base_ring is of characteristic 0, this is handled
                 #    in the FiniteGroups.Algebras category
                 # Maschke's theorem: under some conditions, the algebra is semisimple.
-                if (base_ring in Fields
+                if (
+                    base_ring in Fields
                     and base_ring.characteristic() > 0
                     and hasattr(group, "cardinality")
-                    and group.cardinality() % base_ring.characteristic() != 0):
+                    and group.cardinality() % base_ring.characteristic() != 0
+                ):
                     self._refine_category_(self.category().Semisimple())

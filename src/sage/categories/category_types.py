@@ -7,14 +7,14 @@ This is placed in a separate file from categories.py to avoid circular imports
 (as morphisms must be very low in the hierarchy with the new coercion model).
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2005 David Kohel <kohel@maths.usyd.edu> and
 #                     William Stein <wstein@math.ucsd.edu>
 #                2008-2009 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.categories.category import Category, CategoryWithParameters, JoinCategory
 from sage.misc.lazy_import import lazy_import
@@ -23,8 +23,7 @@ from sage.misc.unknown import Unknown
 lazy_import('sage.categories.objects', 'Objects')
 lazy_import('sage.misc.latex', 'latex')
 
-lazy_import('sage.categories.chain_complexes', 'ChainComplexes',
-            deprecation=29917)
+lazy_import('sage.categories.chain_complexes', 'ChainComplexes', deprecation=29917)
 
 ####################################################################
 #   Different types of categories
@@ -51,6 +50,7 @@ class Elements(Category):
         sage: loads(C.dumps()) == C
         True
     """
+
     def __init__(self, object):
         """
         EXAMPLES::
@@ -71,6 +71,7 @@ class Elements(Category):
             Category of elements of Rational Field
         """
         from sage.rings.rational_field import QQ
+
         return cls(QQ)
 
     def _call_(self, x):
@@ -120,7 +121,7 @@ class Elements(Category):
             sage: loads(dumps(C)) == C
             True
         """
-        return Elements, (self.__object, )
+        return Elements, (self.__object,)
 
     def _repr_object_names(self):
         """
@@ -206,13 +207,23 @@ class Category_over_base(CategoryWithParameters):
         from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
         from .bimodules import Bimodules
         from .schemes import Schemes
+
         for cat in self.super_categories():
-            tester.assertTrue(isinstance(cat, (Category_singleton, Category_over_base,
-                                               CategoryWithAxiom_over_base_ring,
-                                               Bimodules, Schemes)),
-                           "The super categories of a category over base should"
-                           " be a category over base (or the related Bimodules)"
-                           " or a singleton category")
+            tester.assertTrue(
+                isinstance(
+                    cat,
+                    (
+                        Category_singleton,
+                        Category_over_base,
+                        CategoryWithAxiom_over_base_ring,
+                        Bimodules,
+                        Schemes,
+                    ),
+                ),
+                "The super categories of a category over base should"
+                " be a category over base (or the related Bimodules)"
+                " or a singleton category",
+            )
 
     def _make_named_class_key(self, name):
         r"""
@@ -263,6 +274,7 @@ class Category_over_base(CategoryWithParameters):
             Category of algebras over Rational Field
         """
         from sage.rings.rational_field import QQ
+
         return cls(QQ)
 
     def base(self):
@@ -296,7 +308,13 @@ class Category_over_base(CategoryWithParameters):
         base = self.__base
         if isinstance(base, Category):
             if isinstance(base, JoinCategory):
-                name = '('+' and '.join(C._repr_object_names() for C in base.super_categories())+')'
+                name = (
+                    '('
+                    + ' and '.join(
+                        C._repr_object_names() for C in base.super_categories()
+                    )
+                    + ')'
+                )
             else:
                 name = base._repr_object_names()
         else:
@@ -311,6 +329,7 @@ class Category_over_base(CategoryWithParameters):
             \mathbf{ModulesWithBasis}_{\Bold{Z}}
         """
         return "\\mathbf{%s}_{%s}" % (self._label, latex(self.__base))
+
 
 #    def construction(self):
 #        return (self.__class__, self.__base)
@@ -357,8 +376,12 @@ class Category_over_base_ring(Category_over_base):
             sage: TestSuite(C).run()
         """
         from sage.categories.rings import Rings
-        if not (base in Rings() or
-                isinstance(base, Category) and base.is_subcategory(Rings())):
+
+        if not (
+            base in Rings()
+            or isinstance(base, Category)
+            and base.is_subcategory(Rings())
+        ):
             raise ValueError("base must be a ring or a subcategory of Rings()")
         Category_over_base.__init__(self, base, name)
 
@@ -519,8 +542,9 @@ class Category_over_base_ring(Category_over_base):
         try:
             # The issubclass test handles extension types or when the
             # category is not fully initialized
-            if isinstance(x, self.parent_class) or \
-               issubclass(x.category().parent_class, self.parent_class):
+            if isinstance(x, self.parent_class) or issubclass(
+                x.category().parent_class, self.parent_class
+            ):
                 if isinstance(self.base(), Category):
                     return True
                 return x.base_ring() is self.base_ring()
@@ -569,6 +593,7 @@ class Category_in_ambient(Category):
         """
         return Category._repr_(self) + " in %s" % self.__ambient
 
+
 #    def construction(self):
 #        return (self.__class__, self.__ambient)
 
@@ -578,7 +603,6 @@ class Category_module(AbelianCategory, Category_over_base_ring):
 
 
 class Category_ideal(Category_in_ambient):
-
     @classmethod
     def an_instance(cls):
         """
@@ -590,6 +614,7 @@ class Category_ideal(Category_in_ambient):
             Category of algebra ideals in Univariate Polynomial Ring in x over Rational Field
         """
         from sage.rings.rational_field import QQ
+
         return cls(QQ['x'])
 
     def ring(self):
@@ -615,6 +640,7 @@ class Category_ideal(Category_in_ambient):
         if super().__contains__(x):
             return True
         from sage.rings.ideal import Ideal_generic
+
         return isinstance(x, Ideal_generic) and x.ring() == self.ring()
 
     def __call__(self, v):

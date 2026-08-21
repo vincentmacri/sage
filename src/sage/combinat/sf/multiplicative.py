@@ -6,7 +6,8 @@ A realization `h` of the ring of symmetric functions is multiplicative if for
 a partition `\lambda = (\lambda_1,\lambda_2,\ldots)` we have
 `h_\lambda = h_{\lambda_1} h_{\lambda_2} \cdots`.
 """
-#*****************************************************************************
+
+# *****************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -19,13 +20,15 @@ a partition `\lambda = (\lambda_1,\lambda_2,\ldots)` we have
 #  The full text of the GPL is available at:
 #
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 import sage.combinat.partition
 
 from . import classical
 
 
-class SymmetricFunctionAlgebra_multiplicative(classical.SymmetricFunctionAlgebra_classical):
+class SymmetricFunctionAlgebra_multiplicative(
+    classical.SymmetricFunctionAlgebra_classical
+):
     r"""
     The class of multiplicative bases of the ring of symmetric functions.
 

@@ -208,6 +208,7 @@ def get_trees(*statements):
     """
     trees = []
     from . import boolformula
+
     for statement in statements:
         if not isinstance(statement, boolformula.BooleanFormula):
             try:
@@ -323,6 +324,7 @@ def recover_formula_internal(prefix_tree):
     - Paul Scurek (2013-08-06)
     """
     from .propcalc import formula as propcalc_formula
+
     if len(prefix_tree) == 3:
         bool_formula = '(' + prefix_tree[1] + prefix_tree[0] + prefix_tree[2] + ')'
     else:
@@ -464,15 +466,19 @@ def tokenize(s):
         skip = valid = 1
         if s[i] in '()~&|^':
             tok = s[i]
-        elif s[i:i + 2] == '->':
+        elif s[i : i + 2] == '->':
             tok = '->'
             skip = 2
-        elif s[i:i + 3] == '<->':
+        elif s[i : i + 3] == '<->':
             tok = '<->'
             skip = 3
         # check to see if '-', '<' or '>' are used incorrectly
         elif s[i] in '<->':
-            raise SyntaxError("'{}' can only be used as part of the operators '<->' or '->'.".format(s[i]))
+            raise SyntaxError(
+                "'{}' can only be used as part of the operators '<->' or '->'.".format(
+                    s[i]
+                )
+            )
 
         if len(tok) > 0:
             toks.append(tok)
@@ -492,7 +498,11 @@ def tokenize(s):
             if tok[0] not in string.ascii_letters:
                 valid = 0
             for c in tok:
-                if c not in string.ascii_letters and c not in string.digits and c != '_':
+                if (
+                    c not in string.ascii_letters
+                    and c not in string.digits
+                    and c != '_'
+                ):
                     valid = 0
 
         if valid == 1:

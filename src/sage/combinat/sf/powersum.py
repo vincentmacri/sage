@@ -2,6 +2,7 @@
 """
 Power sum symmetric functions
 """
+
 # ***************************************************************************
 #       Copyright (C) 2007 Mike Hansen <mhansen@gmail.com>
 #                     2012 Mike Zabrocki <mike.zabrocki@gmail.com>
@@ -27,7 +28,9 @@ from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from . import classical, multiplicative, sfa
 
 
-class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_multiplicative):
+class SymmetricFunctionAlgebra_power(
+    multiplicative.SymmetricFunctionAlgebra_multiplicative
+):
     def __init__(self, Sym):
         """
         A class for methods associated to the power sum basis of the symmetric functions.
@@ -45,7 +48,9 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
             sage: TestSuite(p).run(skip=['_test_associativity', '_test_distributivity', '_test_prod'])
             sage: TestSuite(p).run(elements = [p[1,1]+p[2], p[1]+2*p[1,1]])
         """
-        classical.SymmetricFunctionAlgebra_classical.__init__(self, Sym, "powersum", 'p')
+        classical.SymmetricFunctionAlgebra_classical.__init__(
+            self, Sym, "powersum", 'p'
+        )
 
     def coproduct_on_generators(self, i):
         r"""
@@ -105,7 +110,7 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
         if len(partition) % 2 == 0:
             return self[partition]
         return -self[partition]
-        #This is slightly faster than: return (-1)**len(partition) * self[partition]
+        # This is slightly faster than: return (-1)**len(partition) * self[partition]
 
     def bottom_schur_function(self, partition, degree=None):
         r"""
@@ -160,14 +165,15 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
             1/8*p[2, 2, 1] - 1/6*p[3, 1, 1]
         """
         from sage.combinat.partition import _Partitions
+
         s = self.realization_of().schur()
         partition = _Partitions(partition)
         if degree is None:
             degree = partition.frobenius_rank()
         s_partition = self(s[partition])
-        return self.sum_of_terms([(p, coeff) for p, coeff
-                                  in s_partition if len(p) == degree],
-                                 distinct=True)
+        return self.sum_of_terms(
+            [(p, coeff) for p, coeff in s_partition if len(p) == degree], distinct=True
+        )
 
     def eval_at_permutation_roots_on_generators(self, k, rho):
         r"""
@@ -214,7 +220,7 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
             sage: p.eval_at_permutation_roots_on_generators(3, [1,1,1,1,1])
             5
         """
-        return self.base_ring().sum(d*list(rho).count(d) for d in divisors(k))
+        return self.base_ring().sum(d * list(rho).count(d) for d in divisors(k))
 
     def _magma_init_(self, magma):
         """
@@ -288,7 +294,7 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                 sage: (p([3,1,1]) - 2 * p([2,1])).omega()
                 2*p[2, 1] + p[3, 1, 1]
             """
-            f = lambda part, coeff: (part, (-1)**(sum(part)-len(part)) * coeff)
+            f = lambda part, coeff: (part, (-1) ** (sum(part) - len(part)) * coeff)
             return self.map_item(f)
 
         omega_involution = omega
@@ -490,8 +496,10 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
 
                 :meth:`~sage.combinat.sf.sfa.SymmetricFunctionAlgebra_generic_Element.plethysm`
             """
-            dct = {lam.stretch(n): coeff
-                   for lam, coeff in self.monomial_coefficients().items()}
+            dct = {
+                lam.stretch(n): coeff
+                for lam, coeff in self.monomial_coefficients().items()
+            }
             return self.parent()._from_dict(dct)
 
         def verschiebung(self, n):
@@ -611,9 +619,11 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
             """
             parent = self.parent()
             p_coords_of_self = self.monomial_coefficients().items()
-            dct = {Partition([i // n for i in lam]): coeff * (n ** len(lam))
-                   for (lam, coeff) in p_coords_of_self
-                   if all(i % n == 0 for i in lam)}
+            dct = {
+                Partition([i // n for i in lam]): coeff * (n ** len(lam))
+                for (lam, coeff) in p_coords_of_self
+                if all(i % n == 0 for i in lam)
+            }
             result_in_p_basis = parent._from_dict(dct)
             return parent(result_in_p_basis)
 
@@ -660,7 +670,7 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                 sage: (3*p([])).expand(0)
                 3
             """
-            if n == 0:   # Symmetrica crashes otherwise...
+            if n == 0:  # Symmetrica crashes otherwise...
                 return self.counit()
             condition = lambda part: False
             return self._expand(condition, n, alphabet)
@@ -713,7 +723,8 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
             p = self.parent()
             R = self.base_ring()
             on_basis = lambda lam: R.prod(
-                p.eval_at_permutation_roots_on_generators(k, rho) for k in lam)
+                p.eval_at_permutation_roots_on_generators(k, rho) for k in lam
+            )
             return p._apply_module_morphism(self, on_basis, R)
 
         def principal_specialization(self, n=infinity, q=None):
@@ -801,21 +812,27 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q is None:
                 q = get_variable(self.base_ring(), 'q')
 
             if q == 1:
                 if n == infinity:
-                    raise ValueError("the stable principal specialization at q=1 is not defined")
-                f = lambda partition: n**len(partition)
+                    raise ValueError(
+                        "the stable principal specialization at q=1 is not defined"
+                    )
+                f = lambda partition: n ** len(partition)
             elif n == infinity:
-                f = lambda partition: prod(1/(1-q**part) for part in partition)
+                f = lambda partition: prod(1 / (1 - q**part) for part in partition)
             else:
                 from sage.rings.integer_ring import ZZ
+
                 ZZq = PolynomialRing(ZZ, "q")
                 q_lim = ZZq.gen()
 
@@ -823,12 +840,19 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                     denom = prod((1 - q**part) for part in partition)
                     try:
                         ~denom
-                        rational = prod((1 - q**(n*part)) for part in partition) / denom
+                        rational = (
+                            prod((1 - q ** (n * part)) for part in partition) / denom
+                        )
                         return q.parent()(rational)
                     except (ZeroDivisionError, NotImplementedError, TypeError):
                         # If denom is not invertible, we need to do the
                         # computation with universal coefficients instead:
-                        quotient = ZZq(prod((1-q_lim**(n*part))/(1-q_lim**part) for part in partition))
+                        quotient = ZZq(
+                            prod(
+                                (1 - q_lim ** (n * part)) / (1 - q_lim**part)
+                                for part in partition
+                            )
+                        )
                         return quotient.subs({q_lim: q})
 
             return self.parent()._apply_module_morphism(self, f, q.parent())
@@ -907,6 +931,7 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                 sage: p.zero().exponential_specialization()
                 0
             """
+
             def get_variable(ring, name):
                 try:
                     ring(name)
@@ -914,9 +939,12 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                     from sage.rings.polynomial.polynomial_ring_constructor import (
                         PolynomialRing,
                     )
+
                     return PolynomialRing(ring, name).gen()
                 else:
-                    raise ValueError("the variable %s is in the base ring, pass it explicitly" % name)
+                    raise ValueError(
+                        "the variable %s is in the base ring, pass it explicitly" % name
+                    )
 
             if q == 1:
                 if t is None:
@@ -925,7 +953,7 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                 def f(partition):
                     if partition and partition[0] != 1:
                         return 0
-                    return t**len(partition)
+                    return t ** len(partition)
 
                 return self.parent()._apply_module_morphism(self, f, t.parent())
 
@@ -942,8 +970,8 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
                 m = 1
                 for part in partition:
                     n += part
-                    m *= 1-q**part
-                return (1-q)**n * t**n / m
+                    m *= 1 - q**part
+                return (1 - q) ** n * t**n / m
 
             return self.parent()._apply_module_morphism(self, f, t.parent())
 
@@ -951,6 +979,8 @@ class SymmetricFunctionAlgebra_power(multiplicative.SymmetricFunctionAlgebra_mul
 # Backward compatibility for unpickling
 from sage.misc.persist import register_unpickle_override
 
-register_unpickle_override('sage.combinat.sf.powersum',
-                           'SymmetricFunctionAlgebraElement_power',
-                           SymmetricFunctionAlgebra_power.Element)
+register_unpickle_override(
+    'sage.combinat.sf.powersum',
+    'SymmetricFunctionAlgebraElement_power',
+    SymmetricFunctionAlgebra_power.Element,
+)

@@ -1,6 +1,7 @@
 """
 Find isomorphisms between fans
 """
+
 # ****************************************************************************
 #       Copyright (C) 2012 Volker Braun <vbraun.name@gmail.com>
 #
@@ -18,6 +19,7 @@ class FanNotIsomorphicError(Exception):
     """
     Exception to return if there is no fan isomorphism
     """
+
     pass
 
 
@@ -142,40 +144,44 @@ def fan_isomorphism_generator(fan1, fan2):
     # Pick a basis of rays in fan1
     max_cone = fan1(fan1.dim())[0]
     fan1_pivot_rays = max_cone.rays()
-    fan1_basis = fan1_pivot_rays + fan1.virtual_rays()   # A QQ-basis for N_1
-    fan1_pivot_cones = [ fan1.embed(Cone([r])) for r in fan1_pivot_rays ]
+    fan1_basis = fan1_pivot_rays + fan1.virtual_rays()  # A QQ-basis for N_1
+    fan1_pivot_cones = [fan1.embed(Cone([r])) for r in fan1_pivot_rays]
 
     # The fan2 cones as set(set(ray indices))
     fan2_cones = frozenset(
-        frozenset(cone.ambient_ray_indices())
-        for cone in fan2.generating_cones() )
+        frozenset(cone.ambient_ray_indices()) for cone in fan2.generating_cones()
+    )
 
     # iterate over all graph isomorphisms graph1 -> graph2
     for perm in graph2.automorphism_group(edge_labels=True):
         # find a candidate m that maps fan1_basis to the image rays under the graph isomorphism
-        fan2_pivot_cones = [ perm(graph_iso[c]) for c in fan1_pivot_cones ]
-        fan2_pivot_rays = fan2.rays([ c.ambient_ray_indices()[0] for c in fan2_pivot_cones  ])
+        fan2_pivot_cones = [perm(graph_iso[c]) for c in fan1_pivot_cones]
+        fan2_pivot_rays = fan2.rays(
+            [c.ambient_ray_indices()[0] for c in fan2_pivot_cones]
+        )
         fan2_basis = fan2_pivot_rays + fan2.virtual_rays()
         try:
             m = matrix(ZZ, fan1_basis).solve_right(matrix(ZZ, fan2_basis))
             m = m.change_ring(ZZ)
         except (ValueError, TypeError):
-            continue # no solution
+            continue  # no solution
 
         # check that the candidate m lifts the vertex graph homomorphism
-        graph_image_ray_indices = [ perm(graph_iso[c]).ambient_ray_indices()[0] for c in fan1(1) ]
+        graph_image_ray_indices = [
+            perm(graph_iso[c]).ambient_ray_indices()[0] for c in fan1(1)
+        ]
         try:
-            matrix_image_ray_indices = [ fan2.rays().index(r*m) for r in fan1.rays() ]
+            matrix_image_ray_indices = [fan2.rays().index(r * m) for r in fan1.rays()]
         except ValueError:
             continue
         if graph_image_ray_indices != matrix_image_ray_indices:
             continue
 
         # check that the candidate m maps generating cone to generating cone
-        image_cones = frozenset( # The image(fan1) cones as set(set(integers)
-            frozenset(graph_image_ray_indices[i]
-                      for i in cone.ambient_ray_indices())
-            for cone in fan1.generating_cones() )
+        image_cones = frozenset(  # The image(fan1) cones as set(set(integers)
+            frozenset(graph_image_ray_indices[i] for i in cone.ambient_ray_indices())
+            for cone in fan1.generating_cones()
+        )
         if image_cones == fan2_cones:
             m.set_immutable()
             yield m
@@ -236,6 +242,7 @@ def find_isomorphism(fan1, fan2, check=False):
         raise FanNotIsomorphicError
 
     from sage.geometry.fan_morphism import FanMorphism
+
     return FanMorphism(m, domain_fan=fan1, codomain=fan2, check=check)
 
 
@@ -281,9 +288,11 @@ def fan_2d_cyclically_ordered_rays(fan):
     """
     assert fan.lattice_dim() == 2
     import math
-    rays = [ (math.atan2(r[0],r[1]), r) for r in fan.rays() ]
-    rays = [ r[1] for r in sorted(rays) ]
+
+    rays = [(math.atan2(r[0], r[1]), r) for r in fan.rays()]
+    rays = [r[1] for r in sorted(rays)]
     from sage.geometry.point_collection import PointCollection
+
     return PointCollection(rays, fan.lattice())
 
 

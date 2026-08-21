@@ -40,7 +40,12 @@ def normalize_input(a):
         sage: sage.parallel.decorate.normalize_input( 5 )
         ((5,), {})
     """
-    if isinstance(a, tuple) and len(a) == 2 and isinstance(a[0], tuple) and isinstance(a[1], dict):
+    if (
+        isinstance(a, tuple)
+        and len(a) == 2
+        and isinstance(a[0], tuple)
+        and isinstance(a[1], dict)
+    ):
         return a
     if isinstance(a, tuple):
         return (a, {})
@@ -54,6 +59,7 @@ class Parallel:
     Create a ``parallel``-decorated function.
     This is the object created by :func:`parallel`.
     """
+
     def __init__(self, p_iter='fork', ncpus=None, **kwds):
         """
         EXAMPLES::
@@ -71,10 +77,12 @@ class Parallel:
 
         if ncpus is None:
             from .ncpus import ncpus as compute_ncpus
+
             ncpus = compute_ncpus()
 
         if p_iter == 'fork':
             from .use_fork import p_iter_fork
+
             self.p_iter = p_iter_fork(ncpus, **kwds)
         elif p_iter == 'multiprocessing':
             self.p_iter = multiprocessing_sage.pyprocessing(ncpus)
@@ -124,6 +132,7 @@ class ParallelFunction:
     This is typically accessed indirectly through
     ``Parallel.__call__``.
     """
+
     def __init__(self, parallel, func):
         """
         .. NOTE::
@@ -157,8 +166,9 @@ class ParallelFunction:
             [(((2,), {}), 4), (((3,), {}), 9)]
         """
         if len(args) > 0 and isinstance(args[0], (list, types.GeneratorType)):
-            return self.parallel.p_iter(self.func, (normalize_input(a)
-                                                    for a in args[0]))
+            return self.parallel.p_iter(
+                self.func, (normalize_input(a) for a in args[0])
+            )
         return self.func(*args, **kwds)
 
     def __get__(self, instance, owner):
@@ -241,6 +251,7 @@ class ParallelFunction:
                         kwonlyargs=[], kwonlydefaults=None, annotations={})
         """
         from sage.misc.sageinspect import sage_getargspec
+
         return sage_getargspec(self.func)
 
     def _sage_src_(self):
@@ -261,6 +272,7 @@ class ParallelFunction:
             True
         """
         from sage.misc.sageinspect import sage_getsource
+
         return sage_getsource(self.func)
 
     def _instancedoc_(self):
@@ -431,10 +443,12 @@ def parallel(p_iter='fork', ncpus=None, **kwds):
 #   def f(...): ...
 ###################################################################
 
+
 class Fork:
     """
     A ``fork`` decorator class.
     """
+
     def __init__(self, timeout=0, verbose=False):
         """
         INPUT:
@@ -470,12 +484,12 @@ class Fork:
             sage: h(2,3)
             5
         """
-        P = Parallel(p_iter='fork', ncpus=1, timeout=self.timeout,
-                     verbose=self.verbose)
+        P = Parallel(p_iter='fork', ncpus=1, timeout=self.timeout, verbose=self.verbose)
         g = P(f)
 
         def h(*args, **kwds):
             return list(g([(args, kwds)]))[0][1]
+
         return h
 
 

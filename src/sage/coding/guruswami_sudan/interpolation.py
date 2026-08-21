@@ -19,7 +19,6 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from sage.arith.misc import binomial
 from sage.matrix.constructor import matrix
 from sage.misc.misc_c import prod
@@ -49,6 +48,7 @@ def _flatten_once(lstlst):
     """
     for lst in lstlst:
         yield from lst
+
 
 # *************************************************************
 #  Linear algebraic Interpolation algorithm, helper functions
@@ -122,6 +122,7 @@ def _interpolation_matrix_given_monomials(points, s, monomials):
         [ 0  0  1 10]
         [ 0  1  5  0]
     """
+
     def eqs_affine(x0, y0):
         r"""
         Make equation for the affine point x0, y0. Return a list of
@@ -136,13 +137,12 @@ def _interpolation_matrix_given_monomials(points, s, monomials):
                     ihat = monomial[0]
                     jhat = monomial[1]
                     if ihat >= i and jhat >= j:
-                        icoeff = binomial(ihat, i) * x0**(ihat-i) \
-                            if ihat > i else 1
-                        jcoeff = binomial(jhat, j) * y0**(jhat-j) \
-                            if jhat > j else 1
+                        icoeff = binomial(ihat, i) * x0 ** (ihat - i) if ihat > i else 1
+                        jcoeff = binomial(jhat, j) * y0 ** (jhat - j) if jhat > j else 1
                         eq[monomial] = jcoeff * icoeff
                 eqs.append([eq.get(monomial, 0) for monomial in monomials])
         return eqs
+
     return matrix(list(_flatten_once([eqs_affine(*point) for point in points])))
 
 
@@ -157,7 +157,7 @@ def _interpolation_max_weighted_deg(n, tau, s):
         sage: _interpolation_max_weighted_deg(10, 3, 5)
         35
     """
-    return (n-tau) * s
+    return (n - tau) * s
 
 
 def _interpolation_matrix_problem(points, tau, parameters, wy):
@@ -218,7 +218,9 @@ def _interpolation_matrix_problem(points, tau, parameters, wy):
         )
     """
     s, l = parameters[0], parameters[1]
-    monomials = list(_monomial_list(_interpolation_max_weighted_deg(len(points), tau, s), l, wy))
+    monomials = list(
+        _monomial_list(_interpolation_max_weighted_deg(len(points), tau, s), l, wy)
+    )
     M = _interpolation_matrix_given_monomials(points, s, monomials)
     return (M, monomials)
 
@@ -286,8 +288,8 @@ def gs_interpolation_linalg(points, tau, parameters, wy):
     # Construct the Q polynomial
     PF = M.base_ring()['x', 'y']  # make that ring a ring in <x>
     x, y = PF.gens()
-    return sum([x**m[0] * y**m[1] * sol[i]
-                for i, m in enumerate(monomials)])
+    return sum([x ** m[0] * y ** m[1] * sol[i] for i, m in enumerate(monomials)])
+
 
 # ###################### Lee-O'Sullivan's method ###############################
 
@@ -345,11 +347,12 @@ def lee_osullivan_module(points, parameters, wy):
     G = prod(x - points[i][0] for i in range(len(points)))
     PFy = PF['y']
     y = PFy.gens()[0]
-    ybasis = [(y-R)**i * G**(s-i) for i in range(s + 1)] \
-            + [y**(i-s) * (y-R)**s for i in range(s + 1, l + 1)]
+    ybasis = [(y - R) ** i * G ** (s - i) for i in range(s + 1)] + [
+        y ** (i - s) * (y - R) ** s for i in range(s + 1, l + 1)
+    ]
 
     def pad(lst):
-        return lst + [0]*(l+1-len(lst))
+        return lst + [0] * (l + 1 - len(lst))
 
     modbasis = [pad(yb.coefficients(sparse=False)) for yb in ybasis]
     return matrix(PF, modbasis)
@@ -396,6 +399,7 @@ def gs_interpolation_lee_osullivan(points, tau, parameters, wy):
         x^3*y + 2*x^3 - x^2*y + 5*x^2 + 5*x*y - 5*x + 2*y - 4
     """
     from .utils import _degree_of_vector
+
     s, l = parameters[0], parameters[1]
     F = points[0][0].parent()
     M = lee_osullivan_module(points, (s, l), wy)

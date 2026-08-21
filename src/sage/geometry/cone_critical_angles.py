@@ -164,15 +164,17 @@ def _random_admissible_cone(ambient_dim):
         # The random_cone() method already crashes if we ask the
         # impossible of it, but having this here emits a more sensible
         # error message.
-        raise ValueError("there are no nontrivial cones in dimension %d"
-                         % ambient_dim)
+        raise ValueError("there are no nontrivial cones in dimension %d" % ambient_dim)
 
-    args = { 'min_ambient_dim': ambient_dim,
-             'max_ambient_dim': ambient_dim,
-             'min_rays': 1,
-             'max_rays': ambient_dim+2 }
+    args = {
+        'min_ambient_dim': ambient_dim,
+        'max_ambient_dim': ambient_dim,
+        'min_rays': 1,
+        'max_rays': ambient_dim + 2,
+    }
 
     from sage.geometry.cone import random_cone
+
     return random_cone(**args)
 
     return K
@@ -312,22 +314,16 @@ def _solve_gevp_naive(GG, HH, M, I, J):
         ....:      for (v,_,_,m) in _solve_gevp_naive(GG,HH,M,I,J) )
         True
     """
-    A = matrix.block([
-        [ZZ.zero(), M[I,J]],
-        [M.transpose()[J,I], ZZ.zero()]
-    ])
-    B = matrix.block([
-        [GG[I,I], ZZ.zero()],
-        [ZZ.zero(), HH[J,J]]
-    ])
+    A = matrix.block([[ZZ.zero(), M[I, J]], [M.transpose()[J, I], ZZ.zero()]])
+    B = matrix.block([[GG[I, I], ZZ.zero()], [ZZ.zero(), HH[J, J]]])
     M = B.inverse() * A
 
     # We'll format the result to match the solve_gevp_nonzero() return value.
-    for (evalue, evectors, multiplicity) in M.eigenvectors_right():
+    for evalue, evectors, multiplicity in M.eigenvectors_right():
         for z in evectors:
-            xi = z[0:len(I)]
+            xi = z[0 : len(I)]
             xi.set_immutable()
-            eta = z[len(I):]
+            eta = z[len(I) :]
             eta.set_immutable()
             yield (evalue, xi, eta, multiplicity)
 
@@ -387,7 +383,7 @@ def solve_gevp_zero(M, I, J):
     # A Cartesian product would be more appropriate here, but Sage
     # isn't smart enough to figure out a basis for the product. So,
     # we use the direct sum and then chop it up.
-    M_IJ = M[I,J]
+    M_IJ = M[I, J]
     xi_space = M_IJ.left_kernel()
     eta_space = M_IJ.right_kernel()
 
@@ -395,9 +391,9 @@ def solve_gevp_zero(M, I, J):
     multiplicity = fake_cartprod.dimension()
 
     for z in fake_cartprod.basis():
-        z1 = z[0:len(I)]
+        z1 = z[0 : len(I)]
         z1.set_immutable()
-        z2 = z[len(I):]
+        z2 = z[len(I) :]
         z2.set_immutable()
 
         # The base ring of M will either be RDF or AA, which is enough
@@ -580,28 +576,26 @@ def solve_gevp_nonzero(GG, HH, M, I, J):
         # convince yourself that switching GG <-> HH, I <-> J, and
         # transposing M does in fact switch from the "xi problem" to
         # the "eta problem."
-        yield from ((l, xi, eta, m)
-                    for (l, eta, xi, m)
-                    in solve_gevp_nonzero(HH, GG, M.transpose(), J, I))
+        yield from (
+            (l, xi, eta, m)
+            for (l, eta, xi, m) in solve_gevp_nonzero(HH, GG, M.transpose(), J, I)
+        )
     else:
-        M_IJ = M[I,J]
-        G_I_pinv_H_J = GG[I,I].inverse_positive_definite() * M_IJ
-        H_J_pinv_G_I = HH[J,J].inverse_positive_definite() * M_IJ.transpose()
-        L = (G_I_pinv_H_J * H_J_pinv_G_I)
+        M_IJ = M[I, J]
+        G_I_pinv_H_J = GG[I, I].inverse_positive_definite() * M_IJ
+        H_J_pinv_G_I = HH[J, J].inverse_positive_definite() * M_IJ.transpose()
+        L = G_I_pinv_H_J * H_J_pinv_G_I
 
-        for (sigma, xis, m) in L.eigenvectors_right():
+        for sigma, xis, m in L.eigenvectors_right():
             if sigma > 0:
                 # Avoid recomputing these for each xi in xis
                 sigma_sqrt = sigma.sqrt()
                 inv_sqrt = ~sigma_sqrt
-                pm_sqrt_inv_pairs = [
-                    (-sigma_sqrt, -inv_sqrt),
-                    (sigma_sqrt, inv_sqrt)
-                ]
+                pm_sqrt_inv_pairs = [(-sigma_sqrt, -inv_sqrt), (sigma_sqrt, inv_sqrt)]
 
                 for xi in xis:
                     for l, li in pm_sqrt_inv_pairs:
-                        eta = li * H_J_pinv_G_I*xi
+                        eta = li * H_J_pinv_G_I * xi
                         eta.set_immutable()
                         yield (l, xi, eta, m)
 
@@ -697,7 +691,7 @@ def compute_gevp_M(gs, hs):
         for h in hs:
             val = g.inner_product(h)
             M_i.append(val)
-            if (val < min_ip):
+            if val < min_ip:
                 min_ip = val
                 min_u = g
                 min_v = h
@@ -706,8 +700,7 @@ def compute_gevp_M(gs, hs):
     return (matrix(M), min_ip, min_u, min_v)
 
 
-def check_gevp_feasibility(cos_theta, xi, eta, G_I, G_I_c_T,
-                           H_J, H_J_c_T, epsilon):
+def check_gevp_feasibility(cos_theta, xi, eta, G_I, G_I_c_T, H_J, H_J_c_T, epsilon):
     r"""
     Determine if a solution to the generalized eigenvalue problem
     in Theorem 3 [Or2020]_ is feasible.
@@ -832,7 +825,7 @@ def check_gevp_feasibility(cos_theta, xi, eta, G_I, G_I_c_T,
         sage: check_gevp_feasibility(0,xi,eta,G_I,G_I_c_T,H_J,H_J_c_T,0)
         (True, (1/2, 1/2, 1/2, 1/2), (1/2, 1/2, 1/2, 1/2))
     """
-    infeasible_result = (False, 0*xi, 0*eta)
+    infeasible_result = (False, 0 * xi, 0 * eta)
     if min(xi) <= -epsilon or min(eta) <= -epsilon:
         # xi or eta isn't in the interior of the nonnegative orthant,
         # so skip this (non-)solution.
@@ -841,23 +834,23 @@ def check_gevp_feasibility(cos_theta, xi, eta, G_I, G_I_c_T,
     # Rescale xi to satisfy (44), and rescale eta by the same amount,
     # because (xi,eta) needs to remain in the same one-dimensional
     # eigenspace.
-    scale = ~((G_I*xi).norm())
+    scale = ~((G_I * xi).norm())
     xi_hat = xi * scale
     eta_hat = eta * scale
 
     # Now check that (45) is satisfied.
-    if ((H_J*eta_hat).norm() - 1).abs() > epsilon:
+    if ((H_J * eta_hat).norm() - 1).abs() > epsilon:
         return infeasible_result
 
     # And check that (42,43) are satisfied.
     v = H_J * eta_hat
-    rhs = v - cos_theta*G_I*xi_hat
+    rhs = v - cos_theta * G_I * xi_hat
 
     if any(x < -epsilon for x in G_I_c_T * rhs):
         return infeasible_result
 
     u = G_I * xi_hat
-    rhs = u - cos_theta*H_J*eta_hat
+    rhs = u - cos_theta * H_J * eta_hat
     if any(x < -epsilon for x in H_J_c_T * rhs):
         return infeasible_result
 
@@ -903,15 +896,15 @@ def max_angle(P, Q, exact, epsilon):
     # so; then if P is contained in dual(Q), we just return the pair
     # with the smallest inner product.
     gs = [g.change_ring(ring).normalized() for g in P]
-    Q_is_P = (P == Q) # This is used again later
+    Q_is_P = P == Q  # This is used again later
     if Q_is_P:
         hs = gs
     else:
         hs = [h.change_ring(ring).normalized() for h in Q]
 
-    (M, min_ip, min_u, min_v) = compute_gevp_M(gs,hs)
+    (M, min_ip, min_u, min_v) = compute_gevp_M(gs, hs)
 
-    if min_ip >= 0: # The maximal angle is acute!
+    if min_ip >= 0:  # The maximal angle is acute!
         return (arccos(min_ip), min_u, min_v)
 
     # Also check to see if the maximal angle is pi. In particular this
@@ -962,8 +955,7 @@ def max_angle(P, Q, exact, epsilon):
             H_J = H.matrix_from_columns(J)
             H_J_c_T = H.matrix_from_columns(J_complement).transpose()
 
-            for (cos_theta,xi,eta,mult) in solve_gevp_nonzero(GG, HH, M, I, J):
-
+            for cos_theta, xi, eta, mult in solve_gevp_nonzero(GG, HH, M, I, J):
                 if cos_theta >= min_ip:
                     # This potential critical angle is smaller than or
                     # equal to one that we've already found. Why
@@ -975,14 +967,9 @@ def max_angle(P, Q, exact, epsilon):
                     # "P_and_negative_Q" trick.
                     continue
 
-                (is_feasible, u, v) = check_gevp_feasibility(cos_theta,
-                                                             xi,
-                                                             eta,
-                                                             G_I,
-                                                             G_I_c_T,
-                                                             H_J,
-                                                             H_J_c_T,
-                                                             epsilon)
+                (is_feasible, u, v) = check_gevp_feasibility(
+                    cos_theta, xi, eta, G_I, G_I_c_T, H_J, H_J_c_T, epsilon
+                )
 
                 if is_feasible:
                     min_ip = cos_theta
@@ -994,7 +981,7 @@ def max_angle(P, Q, exact, epsilon):
                     big_eigenspaces.append((cos_theta, xi, eta, mult))
                     continue
 
-    for (cos_theta, xi, eta, mult) in big_eigenspaces:
+    for cos_theta, xi, eta, mult in big_eigenspaces:
         if cos_theta < min_ip:
             # The existence of a big eigenspace is only a problem if
             # cos_theta could actually be minimal.
@@ -1015,8 +1002,9 @@ def max_angle(P, Q, exact, epsilon):
             # that the case where either P or Q is the ambient space
             # was handled much earlier, since in that case the maximal
             # angle is obviously pi.)
-            raise ValueError('eigenspace of dimension %d > 1 '
-                             'corresponding to eigenvalue %s'
-                              % (mult, cos_theta))
+            raise ValueError(
+                'eigenspace of dimension %d > 1 '
+                'corresponding to eigenvalue %s' % (mult, cos_theta)
+            )
 
     return (arccos(min_ip), min_u, min_v)

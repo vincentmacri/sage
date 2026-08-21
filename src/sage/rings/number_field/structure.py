@@ -44,7 +44,7 @@ AUTHORS:
 
 - Julian Rueth (2014-04-03): initial version
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2014 Julian Rueth <julian.rueth@fsfe.org>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -52,7 +52,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -90,6 +90,7 @@ class NumberFieldStructure(UniqueRepresentation):
         sage: KK is LL
         False
     """
+
     def __init__(self, other):
         """
         Initialization.
@@ -163,6 +164,7 @@ class NameChange(NumberFieldStructure):
         sage: [id(v) for v in gc.get_objects() if id(v) == u]
         []
     """
+
     def create_structure(self, field):
         r"""
         Return a pair of isomorphisms which send the generator of ``field`` to
@@ -179,7 +181,10 @@ class NameChange(NumberFieldStructure):
               To:   Number Field in a with defining polynomial x^4 + x^3 + x^2 + x + 1)
         """
         from . import maps
-        return maps.NameChangeMap(field, self.other), maps.NameChangeMap(self.other, field)
+
+        return maps.NameChangeMap(field, self.other), maps.NameChangeMap(
+            self.other, field
+        )
 
 
 class AbsoluteFromRelative(NumberFieldStructure):
@@ -200,6 +205,7 @@ class AbsoluteFromRelative(NumberFieldStructure):
         sage: AbsoluteFromRelative(L)
         <sage.rings.number_field.structure.AbsoluteFromRelative object at 0x...>
     """
+
     def create_structure(self, field):
         r"""
         Return a pair of isomorphisms which go from ``field`` to ``other`` and
@@ -219,7 +225,10 @@ class AbsoluteFromRelative(NumberFieldStructure):
               To:   Number Field in c with defining polynomial x^4 - 10*x^2 + 1)
         """
         from . import maps
-        return maps.MapAbsoluteToRelativeNumberField(field, self.other), maps.MapRelativeToAbsoluteNumberField(self.other, field)
+
+        return maps.MapAbsoluteToRelativeNumberField(
+            field, self.other
+        ), maps.MapRelativeToAbsoluteNumberField(self.other, field)
 
 
 class RelativeFromAbsolute(NumberFieldStructure):
@@ -240,6 +249,7 @@ class RelativeFromAbsolute(NumberFieldStructure):
         sage: RelativeFromAbsolute(QQ, 1/2)
         <sage.rings.number_field.structure.RelativeFromAbsolute object at 0x...>
     """
+
     def __init__(self, other, gen):
         r"""
         Initialization.
@@ -316,6 +326,7 @@ class RelativeFromRelative(NumberFieldStructure):
         sage: RelativeFromRelative(L)
         <sage.rings.number_field.structure.RelativeFromRelative object at 0x...>
     """
+
     def create_structure(self, field):
         r"""
         Return a pair of isomorphisms which go from ``field`` to the relative
@@ -365,15 +376,17 @@ class RelativeFromRelative(NumberFieldStructure):
 
         # First, we construct the isomorphism from other to field by embedding
         # other.base_field() into field.
-        gf = g*f
+        gf = g * f
         base = other.base_field()
         base_to_field = base.Hom(field)([h(gf(other.gen(1)))])
         other_to_field = other.Hom(field)([h(gf(other.gen()))], base_map=base_to_field)
 
         # And its inverse, essentially the same construction:
-        f_g_ = f_*g_
+        f_g_ = f_ * g_
         base = field.base_field()
         base_to_other = base.Hom(other)([f_g_(h_(field.gen(1)))])
-        field_to_other = field.Hom(other)([f_g_(h_(field.gen()))], base_map=base_to_other)
+        field_to_other = field.Hom(other)(
+            [f_g_(h_(field.gen()))], base_map=base_to_other
+        )
 
         return field_to_other, other_to_field

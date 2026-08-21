@@ -23,6 +23,7 @@ class EllipticCurveFormalGroup(SageObject):
     r"""
     The formal group associated to an elliptic curve.
     """
+
     def __init__(self, E):
         """
         EXAMPLES::
@@ -176,10 +177,10 @@ class EllipticCurveFormalGroup(SageObject):
 
         a1, a2, a3, a4, a6 = self.curve().ainvs()
         current_prec = cached_prec
-        w = w.truncate()   # work with polynomials instead of power series
+        w = w.truncate()  # work with polynomials instead of power series
 
-        numerator_const = w.parent()([0, 0, 0, 1])      # z^3
-        denominator_const = w.parent()([1, -a1, -a2])   # 1 - a_1 z - a_2 z^2
+        numerator_const = w.parent()([0, 0, 0, 1])  # z^3
+        denominator_const = w.parent()([1, -a1, -a2])  # 1 - a_1 z - a_2 z^2
 
         last_prec = 0
         for next_prec in misc.newton_method_sizes(prec):
@@ -201,15 +202,19 @@ class EllipticCurveFormalGroup(SageObject):
                 w_squared = w.square()
                 w_cubed = (w_squared * w).truncate(next_prec)
 
-                numerator = numerator_const                \
-                            - a3 * w_squared               \
-                            - a4 * w_squared.shift(1)      \
-                            - (2*a6) * w_cubed
+                numerator = (
+                    numerator_const
+                    - a3 * w_squared
+                    - a4 * w_squared.shift(1)
+                    - (2 * a6) * w_cubed
+                )
 
-                denominator = denominator_const           \
-                              - (2*a3) * w                \
-                              - (2*a4) * w.shift(1)       \
-                              - (3*a6) * w_squared
+                denominator = (
+                    denominator_const
+                    - (2 * a3) * w
+                    - (2 * a4) * w.shift(1)
+                    - (3 * a6) * w_squared
+                )
 
                 # todo: this is quite inefficient, because it gets
                 # converted to a power series, then the power series
@@ -263,7 +268,7 @@ class EllipticCurveFormalGroup(SageObject):
         prec = max(prec, 0)
         y = self.y(prec)
         t = y.parent().gen()
-        return -t*y + O(t**prec)
+        return -t * y + O(t**prec)
 
     def y(self, prec=20):
         r"""
@@ -298,7 +303,7 @@ class EllipticCurveFormalGroup(SageObject):
             sage: EllipticCurve([0, 0, 1, -1, 0]).formal_group().y(10)
              -t^-3 + 1 - t + t^3 - 2*t^4 + t^5 + 2*t^6 - 6*t^7 + 6*t^8 + 3*t^9 + O(t^10)
         """
-        prec = max(prec,0)
+        prec = max(prec, 0)
         try:
             pr, y = self.__y
         except AttributeError:
@@ -306,9 +311,9 @@ class EllipticCurveFormalGroup(SageObject):
         if prec <= pr:
             t = y.parent().gen()
             return y + O(t**prec)
-        w = self.w(prec+6) # XXX why 6?
+        w = self.w(prec + 6)  # XXX why 6?
         t = w.parent().gen()
-        y = -(w**(-1)) + O(t**prec)
+        y = -(w ** (-1)) + O(t**prec)
         self.__y = (prec, y)
         return self.__y[1]
 
@@ -353,7 +358,7 @@ class EllipticCurveFormalGroup(SageObject):
 
         - David Harvey (2006-09-10): factored out of log
         """
-        prec = max(prec,0)
+        prec = max(prec, 0)
         try:
             cached_prec, omega = self.__omega
         except AttributeError:
@@ -362,10 +367,10 @@ class EllipticCurveFormalGroup(SageObject):
             return omega.add_bigoh(prec)
 
         a = self.curve().ainvs()
-        x = self.x(prec+1)
-        y = self.y(prec+1)
+        x = self.x(prec + 1)
+        y = self.y(prec + 1)
         xprime = x.derivative()
-        g = xprime / (2*y + a[0]*x + a[2])
+        g = xprime / (2 * y + a[0] * x + a[2])
         self.__omega = (prec, g.power_series().add_bigoh(prec))
         return self.__omega[1]
 
@@ -392,7 +397,7 @@ class EllipticCurveFormalGroup(SageObject):
 
         - David Harvey (2006-09-10): rewrote to use differential
         """
-        return self.differential(prec-1).integral().add_bigoh(prec)
+        return self.differential(prec - 1).integral().add_bigoh(prec)
 
     def inverse(self, prec=20):
         r"""
@@ -431,7 +436,7 @@ class EllipticCurveFormalGroup(SageObject):
             sage: F(i.parent().gen(), i)
             O(t^6)
         """
-        prec = max(prec,0)
+        prec = max(prec, 0)
         try:
             pr, inv = self.__inverse
         except AttributeError:
@@ -442,7 +447,7 @@ class EllipticCurveFormalGroup(SageObject):
         x = self.x(prec)
         y = self.y(prec)
         a1, _, a3, _, _ = self.curve().ainvs()
-        inv = x / ( y + a1*x + a3)          # page 114 of Silverman, AEC I
+        inv = x / (y + a1 * x + a3)  # page 114 of Silverman, AEC I
         inv = inv.power_series().add_bigoh(prec)
         self.__inverse = (prec, inv)
         return inv
@@ -522,7 +527,7 @@ class EllipticCurveFormalGroup(SageObject):
             sage: F.coefficients()[t1*t2^2]
             -a2
         """
-        prec = max(prec,0)
+        prec = max(prec, 0)
         if prec <= 0:
             raise ValueError("The precision must be positive.")
 
@@ -532,7 +537,7 @@ class EllipticCurveFormalGroup(SageObject):
         if prec == 1:
             return R(0)
         if prec == 2:
-            return t1 + t2 - self.curve().a1()*t1*t2
+            return t1 + t2 - self.curve().a1() * t1 * t2
 
         try:
             pr, F = self.__group_law
@@ -541,18 +546,26 @@ class EllipticCurveFormalGroup(SageObject):
         except AttributeError:
             pass
 
-        w = self.w(prec+1)
-        lam = sum([w[n]*sum(t2**m * t1**(n-m-1) for m in range(n)) for n in range(3, prec+1)])
+        w = self.w(prec + 1)
+        lam = sum(
+            [
+                w[n] * sum(t2**m * t1 ** (n - m - 1) for m in range(n))
+                for n in range(3, prec + 1)
+            ]
+        )
         lam = lam.add_bigoh(prec)
-        nu = w(t1) - lam*t1
+        nu = w(t1) - lam * t1
         a1, a2, a3, a4, a6 = self.curve().ainvs()
-        lam2 = lam*lam
-        lam3 = lam2*lam
+        lam2 = lam * lam
+        lam3 = lam2 * lam
         # note that the following formula differs from the one in Silverman page 119.
         # See github issue 9646 for the explanation and justification.
-        t3 = -t1 - t2 - \
-             (a1*lam + a3*lam2 + a2*nu + 2*a4*lam*nu + 3*a6*lam2*nu) / \
-             (1 + a2*lam + a4*lam2 + a6*lam3)
+        t3 = (
+            -t1
+            - t2
+            - (a1 * lam + a3 * lam2 + a2 * nu + 2 * a4 * lam * nu + 3 * a6 * lam2 * nu)
+            / (1 + a2 * lam + a4 * lam2 + a6 * lam3)
+        )
         inv = self.inverse(prec)
 
         F = inv(t3).add_bigoh(prec)
@@ -641,7 +654,11 @@ class EllipticCurveFormalGroup(SageObject):
             sage: E.formal().mult_by_n(2, prec=5)
             2*t - t^2 - 4*t^3 - 19*t^4 + O(t^5)
         """
-        if self.curve().base_ring().is_field() and self.curve().base_ring().characteristic() == 0 and n != 0:
+        if (
+            self.curve().base_ring().is_field()
+            and self.curve().base_ring().characteristic() == 0
+            and n != 0
+        ):
             # The following algorithm only works over a field of
             # characteristic zero. I don't know whether something similar
             # can be done over a general ring. It would be nice if it did,
@@ -652,14 +669,14 @@ class EllipticCurveFormalGroup(SageObject):
             # Our answer only needs prec-1 coefficients (since lowest term
             # is t^1), and x(t) = t^(-2) + ... and y(t) = t^(-3) + ...,
             # so we only need x(t) mod t^(prec-3) and y(t) mod t^(prec-4)
-            x = self.x(prec-3)
-            y = self.y(prec-4)
-            R = x.parent()    # the Laurent series ring over the base ring
+            x = self.x(prec - 3)
+            y = self.y(prec - 4)
+            R = x.parent()  # the Laurent series ring over the base ring
             X = self.curve().change_ring(R)
             P = X(x, y)
 
             # and multiply it by n, using the group law on E
-            Q = n*P
+            Q = n * P
 
             # express it in terms of the formal parameter
             return -Q[0] / Q[1]
@@ -738,21 +755,21 @@ class EllipticCurveFormalGroup(SageObject):
             sage: F.sigma(5)
             t + 1/2*t^2 + 1/3*t^3 + 3/4*t^4 + O(t^5)
         """
-        a1,a2,a3,a4,a6 = self.curve().ainvs()
+        a1, a2, a3, a4, a6 = self.curve().ainvs()
 
         k = self.curve().base_ring()
         fl = self.log(prec)
         F = fl.revert()
 
-        S = LaurentSeriesRing(k,'z')
+        S = LaurentSeriesRing(k, 'z')
         z = S.gen()
         F = F(z + O(z**prec))
-        wp = self.x()(F) + (a1**2 + 4*a2)/12
-        g = (1/z**2 - wp).power_series()
+        wp = self.x()(F) + (a1**2 + 4 * a2) / 12
+        g = (1 / z**2 - wp).power_series()
         h = g.integral().integral()
         sigma_of_z = z.power_series() * h.exp()
 
-        T = PowerSeriesRing(k,'t')
-        fl = fl(T.gen()+O(T.gen()**prec))
+        T = PowerSeriesRing(k, 't')
+        fl = fl(T.gen() + O(T.gen() ** prec))
         sigma_of_t = sigma_of_z(fl)
         return sigma_of_t

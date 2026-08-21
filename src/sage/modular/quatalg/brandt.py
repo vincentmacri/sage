@@ -221,8 +221,14 @@ from sage.rings.power_series_ring import PowerSeriesRing
 from sage.rings.rational_field import QQ
 from sage.structure.richcmp import richcmp, richcmp_method
 
-lazy_import('sage.algebras.quatalg.quaternion_algebra', ['QuaternionAlgebra', 'basis_for_quaternion_lattice'])
-lazy_import('sage.algebras.quatalg.quaternion_algebra_cython', 'rational_matrix_from_rational_quaternions')
+lazy_import(
+    'sage.algebras.quatalg.quaternion_algebra',
+    ['QuaternionAlgebra', 'basis_for_quaternion_lattice'],
+)
+lazy_import(
+    'sage.algebras.quatalg.quaternion_algebra_cython',
+    'rational_matrix_from_rational_quaternions',
+)
 
 
 cache = {}
@@ -290,7 +296,9 @@ def BrandtModule(N, M=1, weight=2, base_ring=QQ, use_cache=True):
     """
     N, M, weight = Integer(N), Integer(M), Integer(weight)
     if not N.is_prime():
-        raise NotImplementedError("Brandt modules currently only implemented when N is a prime")
+        raise NotImplementedError(
+            "Brandt modules currently only implemented when N is a prime"
+        )
     if M < 1:
         raise ValueError("M must be positive")
     if M.gcd(N) != 1:
@@ -357,7 +365,10 @@ class BrandtSubmodule(HeckeSubmodule):
             sage: BrandtModule(11)[0]._repr_()
             'Subspace of dimension 1 of Brandt module of dimension 2 of level 11 of weight 2 over Rational Field'
         """
-        return "Subspace of dimension %s of %s" % (self.dimension(), self.ambient_module())
+        return "Subspace of dimension %s of %s" % (
+            self.dimension(),
+            self.ambient_module(),
+        )
 
 
 class BrandtModuleElement(HeckeModuleElement):
@@ -488,6 +499,7 @@ class BrandtModule_class(AmbientHeckeModule):
         sage: BrandtModule(3, 10)
         Brandt module of dimension 4 of level 3*10 of weight 2 over Rational Field
     """
+
     def __init__(self, N, M, weight, base_ring):
         """
         INPUT:
@@ -603,9 +615,11 @@ class BrandtModule_class(AmbientHeckeModule):
         if not isinstance(other, BrandtModule_class):
             return NotImplemented
 
-        return richcmp((self.__M, self.__N, self.weight(), self.base_ring()),
-                       (other.__M, other.__N, other.weight(), other.base_ring()),
-                       op)
+        return richcmp(
+            (self.__M, self.__N, self.weight(), self.base_ring()),
+            (other.__M, other.__N, other.weight(), other.base_ring()),
+            op,
+        )
 
     @cached_method
     def quaternion_algebra(self):
@@ -702,7 +716,7 @@ class BrandtModule_class(AmbientHeckeModule):
         R = self.order_of_level_N()
         A = R.quaternion_algebra()
         B = R.basis()
-        V = GF(p)**4
+        V = GF(p) ** 4
 
         # step 1: Compute alpha, beta, and the matrix of their action on I/pI.
         # NOTE: Move this code to orders once we have it all working...
@@ -758,10 +772,12 @@ class BrandtModule_class(AmbientHeckeModule):
         # Compute the matrix of right multiplication by alpha acting on
         # our fixed choice of basis for this ideal.
 
-        M_alpha = (matrix([(i * alpha).coefficient_tuple()
-                           for i in basis]) * X).change_ring(GF(p))
-        M_beta = (matrix([(i * beta).coefficient_tuple()
-                          for i in basis]) * X).change_ring(GF(p))
+        M_alpha = (
+            matrix([(i * alpha).coefficient_tuple() for i in basis]) * X
+        ).change_ring(GF(p))
+        M_beta = (
+            matrix([(i * beta).coefficient_tuple() for i in basis]) * X
+        ).change_ring(GF(p))
 
         # step 2: Find j such that if f=I[j], then mod 2 we have span(I[0],alpha*I[i])
         #         has trivial intersection with span(I[j],alpha*I[j]).
@@ -789,21 +805,23 @@ class BrandtModule_class(AmbientHeckeModule):
         M2_4 = MatrixSpace(GF(p), 4)
         M2_2 = MatrixSpace(QQ, 2, 4)
         Yp = p * Y
-        from sage.algebras.quatalg.quaternion_algebra_cython import \
-            rational_quaternions_from_integral_matrix_and_denom
-        for v in [f + g * (a + b * M_alpha)
-                  for a in GF(p) for b in GF(p)] + [g]:
+        from sage.algebras.quatalg.quaternion_algebra_cython import (
+            rational_quaternions_from_integral_matrix_and_denom,
+        )
+
+        for v in [f + g * (a + b * M_alpha) for a in GF(p) for b in GF(p)] + [g]:
             v0 = v
             v1 = v * M_alpha
             v2 = v * M_beta
             v3 = v1 * M_beta
             W = M2_4([v0, v1, v2, v3], coerce=False)
             if W.rank() == 2:
-                gen_mat = Yp.stack(M2_2([v0.lift() * Y, v1.lift() * Y],
-                                        coerce=False))
+                gen_mat = Yp.stack(M2_2([v0.lift() * Y, v1.lift() * Y], coerce=False))
                 gen_mat, d = gen_mat._clear_denom()
                 H = gen_mat._hnf_pari(0, include_zero_rows=False)
-                gens = tuple(rational_quaternions_from_integral_matrix_and_denom(A, H, d))
+                gens = tuple(
+                    rational_quaternions_from_integral_matrix_and_denom(A, H, d)
+                )
                 answer.append(R.right_ideal(gens, check=False))
                 if len(answer) == p + 1:
                     break
@@ -1098,9 +1116,13 @@ class BrandtModule_class(AmbientHeckeModule):
             B = self._brandt_series_vectors(2 * n + 10)
         m = len(B)
         K = self.base_ring()
-        return matrix(K, m, m, {(i, j): K(B[j][i][n])
-                                for i in range(m)
-                                for j in range(m)}, sparse=sparse)
+        return matrix(
+            K,
+            m,
+            m,
+            {(i, j): K(B[j][i][n]) for i in range(m) for j in range(m)},
+            sparse=sparse,
+        )
 
     @cached_method
     def _smallest_good_prime(self):
@@ -1178,12 +1200,17 @@ class BrandtModule_class(AmbientHeckeModule):
                             ideals_theta[J_theta].append(J)
                         else:
                             ideals_theta[J_theta] = [J]
-                        verbose("found %s of %s ideals" % (len(ideals), self.dimension()), level=2)
+                        verbose(
+                            "found %s of %s ideals" % (len(ideals), self.dimension()),
+                            level=2,
+                        )
                         if len(ideals) >= self.dimension():
                             # order by basis matrix (as ideals were previously
                             # ordered) for backward compatibility and
                             # deterministic order of the output
-                            ideals = tuple(sorted(ideals, key=lambda x: x.basis_matrix()))
+                            ideals = tuple(
+                                sorted(ideals, key=lambda x: x.basis_matrix())
+                            )
                             self.__right_ideals = ideals
                             return ideals
                         got_something_new = True
@@ -1279,8 +1306,9 @@ class BrandtModule_class(AmbientHeckeModule):
 
         n = len(L)
         # 1. Compute the theta series
-        theta = [[I.theta_series_vector(prec) for I in x]
-                 for x in self._ideal_products()]
+        theta = [
+            [I.theta_series_vector(prec) for I in x] for x in self._ideal_products()
+        ]
 
         # 2. Compute the number e_j
         e = [theta[j][j][1] for j in range(n)]
@@ -1336,8 +1364,7 @@ class BrandtModule_class(AmbientHeckeModule):
         A = self._brandt_series_vectors(prec)
         R = PowerSeriesRing(QQ, var)
         n = len(A[0])
-        return matrix(R, n, n,
-                      [[R(x.list()[:prec], prec) for x in Y] for Y in A])
+        return matrix(R, n, n, [[R(x.list()[:prec], prec) for x in Y] for Y in A])
 
     @cached_method
     def eisenstein_subspace(self):
@@ -1468,6 +1495,7 @@ def benchmark_magma(levels, silent=False):
     """
     ans = []
     from sage.interfaces.magma import magma
+
     for p, M in levels:
         t = magma.cputime()
         magma.eval('HeckeOperator(BrandtModule(%s, %s),2)' % (p, M))
@@ -1507,6 +1535,7 @@ def benchmark_sage(levels, silent=False):
         ('sage', 97, 2, ...)
     """
     from sage.misc.timing import cputime
+
     ans = []
     for p, M in levels:
         t = cputime()

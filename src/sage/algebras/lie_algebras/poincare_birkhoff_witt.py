@@ -7,7 +7,7 @@ AUTHORS:
 - Travis Scrimshaw (2024-01-02): Adding the center
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013-2024 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
@@ -108,6 +108,7 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
         run any nontrivial sorting only once and avoid other potentially
         expensive comparisons between keys.
     """
+
     @staticmethod
     def __classcall_private__(cls, g, basis_key=None, prefix='PBW', **kwds):
         r"""
@@ -123,7 +124,9 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
             True
         """
         if g in TriangularKacMoodyAlgebras.FiniteDimensional:
-            return PoincareBirkhoffWittBasisSemisimpleLieAlgebra(g, basis_key, prefix, **kwds)
+            return PoincareBirkhoffWittBasisSemisimpleLieAlgebra(
+                g, basis_key, prefix, **kwds
+            )
         return super().__classcall__(cls, g, basis_key, prefix, **kwds)
 
     def __init__(self, g, basis_key, prefix, **kwds):
@@ -149,12 +152,19 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
 
         R = g.base_ring()
         self._g = g
-        monomials = IndexedFreeAbelianMonoid(g.basis().keys(), prefix,
-                                             sorting_key=self._monoid_key, **kwds)
-        CombinatorialFreeModule.__init__(self, R, monomials,
-                                         prefix='', bracket=False, latex_bracket=False,
-                                         sorting_key=self._monomial_key,
-                                         category=Algebras(R).WithBasis().Filtered())
+        monomials = IndexedFreeAbelianMonoid(
+            g.basis().keys(), prefix, sorting_key=self._monoid_key, **kwds
+        )
+        CombinatorialFreeModule.__init__(
+            self,
+            R,
+            monomials,
+            prefix='',
+            bracket=False,
+            latex_bracket=False,
+            sorting_key=self._monomial_key,
+            category=Algebras(R).WithBasis().Filtered(),
+        )
 
     def _basis_key(self, x):
         """
@@ -197,7 +207,7 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
         if self._basis_key_inverse is None:
             K = self._g.basis().keys()
             if isinstance(K, (list, tuple)) or K.cardinality() < float('inf'):
-                self._basis_key_inverse = {k: i for i,k in enumerate(K)}
+                self._basis_key_inverse = {k: i for i, k in enumerate(K)}
             else:
                 self._basis_key_inverse = False
         if self._basis_key_inverse is False:
@@ -260,7 +270,9 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
              Lie algebra of ['A', 1] in the Chevalley basis
              in the Poincare-Birkhoff-Witt basis
         """
-        return "Universal enveloping algebra of {} in the Poincare-Birkhoff-Witt basis".format(self._g)
+        return "Universal enveloping algebra of {} in the Poincare-Birkhoff-Witt basis".format(
+            self._g
+        )
 
     def _latex_(self):
         r"""
@@ -274,6 +286,7 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
             PBW\left( \mathcal{W}(6)_{\Bold{F}_{3}} \right)
         """
         from sage.misc.latex import latex
+
         return r"PBW\left( {} \right)".format(latex(self._g))
 
     def _coerce_map_from_(self, R):
@@ -360,10 +373,15 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
 
             def inv_supp(m):
                 return None if m.length() != 1 else m.leading_support()
+
             # TODO: this diagonal, but with a smaller indexing set...
-            return self._g.module_morphism(basis_function, codomain=self,
-                                           triangular='upper', unitriangular=True,
-                                           inverse_on_support=inv_supp)
+            return self._g.module_morphism(
+                basis_function,
+                codomain=self,
+                triangular='upper',
+                unitriangular=True,
+                inverse_on_support=inv_supp,
+            )
 
         coerce_map = self._g.coerce_map_from(R)
         if coerce_map:
@@ -374,8 +392,10 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
                 I = self._indices
 
                 def basis_function(x):
-                    return self.prod(self.monomial(I.gen(g)**e)
-                                     for g, e in x._sorted_items())
+                    return self.prod(
+                        self.monomial(I.gen(g) ** e) for g, e in x._sorted_items()
+                    )
+
                 # TODO: this diagonal, but with a smaller indexing set...
                 return R.module_morphism(basis_function, codomain=self)
             coerce_map = self._g.coerce_map_from(R._g)
@@ -384,8 +404,10 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
                 lift = self.coerce_map_from(self._g)
 
                 def basis_function(x):
-                    return self.prod(lift(coerce_map(g))**e
-                                     for g, e in x._sorted_items())
+                    return self.prod(
+                        lift(coerce_map(g)) ** e for g, e in x._sorted_items()
+                    )
+
                 # TODO: this diagonal, but with a smaller indexing set...
                 return R.module_morphism(basis_function, codomain=self)
 
@@ -416,8 +438,9 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
             Finite family {alpha[1]: PBW[alpha[1]], alphacheck[1]: PBW[alphacheck[1]], -alpha[1]: PBW[-alpha[1]]}
         """
         G = self._indices.gens()
-        return Family(self._indices._indices, lambda x: self.monomial(G[x]),
-                      name="generator map")
+        return Family(
+            self._indices._indices, lambda x: self.monomial(G[x]), name="generator map"
+        )
 
     gens = algebra_generators
 
@@ -502,7 +525,7 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
         lead = I.gen(lead)
         trail = I.gen(trail)
         mc = terms.monomial_coefficients(copy=False)
-        terms = self.sum_of_terms((I.gen(t), c) for t,c in mc.items())
+        terms = self.sum_of_terms((I.gen(t), c) for t, c in mc.items())
         terms += self.monomial(lead * trail)
         return self.monomial(lhs // trail) * terms * self.monomial(rhs // lead)
 
@@ -561,6 +584,7 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
             ValueError: the Lie algebra must be finite dimensional
         """
         from sage.rings.infinity import Infinity
+
         if self._g.dimension() == Infinity:
             raise ValueError("the Lie algebra must be finite dimensional")
         return self._g.casimir_element(order=order, UEA=self, *args, **kwds)
@@ -588,6 +612,7 @@ class PoincareBirkhoffWittBasis(CombinatorialFreeModule):
              over Finite Field of size 3 in the Poincare-Birkhoff-Witt basis
         """
         from sage.algebras.lie_algebras.center_uea import CenterUEA
+
         return CenterUEA(self._g, self)
 
     class Element(CombinatorialFreeModule.Element):
@@ -643,6 +668,7 @@ class PoincareBirkhoffWittBasisSemisimpleLieAlgebra(PoincareBirkhoffWittBasis):
     The Poincare-Birkhoff-Witt basis of a finite dimensional triangular
     Kac-Moody Lie algebra (i.e., a semisimple Lie algebra).
     """
+
     def __init__(self, g, basis_key=None, *args, **kwds):
         r"""
         Initialize ``self``.
@@ -750,7 +776,9 @@ class PoincareBirkhoffWittBasisSemisimpleLieAlgebra(PoincareBirkhoffWittBasis):
         y = self._triangular_pbw(y)
         temp = (x.transpose() * y)._monomial_coefficients
         part = self._g._part_on_basis
-        ret = {mon: temp[mon] for mon in temp if all(part(b) == 0 for b in mon.support())}
+        ret = {
+            mon: temp[mon] for mon in temp if all(part(b) == 0 for b in mon.support())
+        }
         # TODO: Construct this direct in ``self``
         return self(self._triangular_pbw.element_class(self._triangular_pbw, ret))
 
@@ -771,8 +799,10 @@ class PoincareBirkhoffWittBasisSemisimpleLieAlgebra(PoincareBirkhoffWittBasis):
         """
         I = self._indices
         basis_mapping = self._g._transpose_basis_mapping
-        return self.prod(self.monomial(I({basis_mapping[k]: e}))
-                         for k, e in reversed(m._sorted_items()))
+        return self.prod(
+            self.monomial(I({basis_mapping[k]: e}))
+            for k, e in reversed(m._sorted_items())
+        )
 
     @lazy_attribute
     def transpose(self):

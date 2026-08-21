@@ -2,13 +2,16 @@
 Quartic curve constructor
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2006 David Kohel <kohel@maths.usyd.edu>
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
-from sage.schemes.projective.projective_space import ProjectiveSpace_ring, ProjectiveSpace
+from sage.schemes.projective.projective_space import (
+    ProjectiveSpace_ring,
+    ProjectiveSpace,
+)
 from sage.rings.polynomial.multi_polynomial import MPolynomial
 
 from .quartic_generic import QuarticCurve_generic
@@ -56,7 +59,9 @@ def QuarticCurve(F, PP=None, check=False):
     if not P.ngens() == 3:
         raise ValueError("Argument F (=%s) must be a polynomial in 3 variables" % F)
     if not (F.is_homogeneous() and F.degree() == 4):
-        raise ValueError("Argument F (=%s) must be a homogeneous polynomial of degree 4" % F)
+        raise ValueError(
+            "Argument F (=%s) must be a homogeneous polynomial of degree 4" % F
+        )
 
     if PP is not None:
         if not isinstance(PP, ProjectiveSpace_ring) and PP.dimension == 2:
@@ -65,6 +70,8 @@ def QuarticCurve(F, PP=None, check=False):
         PP = ProjectiveSpace(P)
 
     if check:
-        raise NotImplementedError("Argument checking (for nonsingularity) is not implemented.")
+        raise NotImplementedError(
+            "Argument checking (for nonsingularity) is not implemented."
+        )
 
     return QuarticCurve_generic(PP, F)

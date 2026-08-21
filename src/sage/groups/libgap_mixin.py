@@ -301,7 +301,11 @@ class GroupMixinLibGAP:
         if not self.is_finite():
             raise NotImplementedError("only implemented for finite groups")
         from sage.groups.conjugacy_classes import ConjugacyClassGAP
-        return tuple(ConjugacyClassGAP(self, self(g)) for g in self.conjugacy_classes_representatives())
+
+        return tuple(
+            ConjugacyClassGAP(self, self(g))
+            for g in self.conjugacy_classes_representatives()
+        )
 
     def conjugacy_class(self, g):
         r"""
@@ -322,6 +326,7 @@ class GroupMixinLibGAP:
             [0 1] in Special Linear Group of degree 2 over Rational Field
         """
         from sage.groups.conjugacy_classes import ConjugacyClassGAP
+
         return ConjugacyClassGAP(self, self(g))
 
     def class_function(self, values):
@@ -341,6 +346,7 @@ class GroupMixinLibGAP:
             [0, 1, 2, 3, 4, 5, 6, 7]
         """
         from sage.groups.class_function import ClassFunction
+
         return ClassFunction(self, values)
 
     @cached_method
@@ -505,8 +511,9 @@ class GroupMixinLibGAP:
         if not self.is_finite():
             raise NotImplementedError("group must be finite")
         ccs = self.gap().ConjugacyClassesSubgroups()
-        return [self.subgroup(h.GeneratorsOfGroup())
-                for cc in ccs for h in cc.Elements()]
+        return [
+            self.subgroup(h.GeneratorsOfGroup()) for cc in ccs for h in cc.Elements()
+        ]
 
     def conjugacy_classes_subgroups(self):
         r"""
@@ -542,8 +549,10 @@ class GroupMixinLibGAP:
         """
         if not self.is_finite():
             raise NotImplementedError("group must be finite")
-        return [self.subgroup(sub.Representative().GeneratorsOfGroup())
-                for sub in self.gap().ConjugacyClassesSubgroups()]
+        return [
+            self.subgroup(sub.Representative().GeneratorsOfGroup())
+            for sub in self.gap().ConjugacyClassesSubgroups()
+        ]
 
     def group_id(self):
         r"""
@@ -573,6 +582,7 @@ class GroupMixinLibGAP:
             GAPError: Error, the group identification for groups of size infinity is not available
         """
         from sage.rings.integer import Integer
+
         return [Integer(n) for n in self.gap().IdGroup()]
 
     id = group_id
@@ -600,6 +610,7 @@ class GroupMixinLibGAP:
         if not self.is_finite():
             raise NotImplementedError("group must be finite")
         from sage.rings.integer import Integer
+
         return Integer(self._libgap_().Exponent())
 
     def intersection(self, other):
@@ -766,17 +777,20 @@ class GroupMixinLibGAP:
         G = self._libgap_()
         cl = self.conjugacy_classes()
         from sage.rings.integer import Integer
+
         n = Integer(len(cl))
         irrG = G.Irr()
         ct = [[irrG[i][j] for j in range(n)] for i in range(n)]
 
         from sage.rings.number_field.number_field import CyclotomicField
+
         e = irrG.Flat().Conductor()
         K = CyclotomicField(e)
         ct = [[K(x) for x in v] for v in ct]
 
         # Finally return the result as a matrix.
         from sage.matrix.matrix_space import MatrixSpace
+
         MS = MatrixSpace(K, n)
         return MS(ct)
 

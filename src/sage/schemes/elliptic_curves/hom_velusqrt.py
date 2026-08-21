@@ -151,6 +151,7 @@ class _VeluBoundObj:
         sage: _velu_sqrt_bound.get()
         50
     """
+
     def __init__(self):
         self.bound = Integer(1000)
 
@@ -196,11 +197,11 @@ def _choose_IJK(n):
     """
     if n % 2 != 1 or n < 5:
         raise ValueError('n must be odd and >= 5')
-    b = (n-1).isqrt() // 2
-    c = (n-1) // (4*b)
-    I = range(2*b, 2*b*(2*c-1)+1, 4*b)
-    J = range(1, 2*b, 2)
-    K = range(4*b*c+1, n, 2)
+    b = (n - 1).isqrt() // 2
+    c = (n - 1) // (4 * b)
+    I = range(2 * b, 2 * b * (2 * c - 1) + 1, 4 * b)
+    J = range(1, 2 * b, 2)
+    K = range(4 * b * c + 1, n, 2)
     return I, J, K
 
 
@@ -240,11 +241,11 @@ def _points_range(rr, P, Q=None):
     """
     if not rr:
         return
-    a,b,s = rr.start, rr.stop, rr.step
-    R = a*P if Q is None else Q + a*P
+    a, b, s = rr.start, rr.stop, rr.step
+    R = a * P if Q is None else Q + a * P
     yield R
-    sP = s*P
-    for _ in range(a+s, b, s):
+    sP = s * P
+    for _ in range(a + s, b, s):
         yield (R := R + sP)
 
 
@@ -339,6 +340,7 @@ class FastEllipticPolynomial:
         sage: hP(7 + t)
         15*t + 19
     """
+
     def __init__(self, E, n, P, Q=None):
         r"""
         Initialize this elliptic polynomial and precompute some
@@ -358,31 +360,31 @@ class FastEllipticPolynomial:
         n = Integer(n)
 
         if Q is None:
-            IJK = _choose_IJK(n)        # [1,3,5,7,...,n-4,n-2]
+            IJK = _choose_IJK(n)  # [1,3,5,7,...,n-4,n-2]
         else:
-            IJK = _choose_IJK(2*n+1)    # [1,3,5,7,...,2n-1] = [0,1,2,3,...,n-2,n-1]
+            IJK = _choose_IJK(2 * n + 1)  # [1,3,5,7,...,2n-1] = [0,1,2,3,...,n-2,n-1]
 
         self.base = E.base_ring()
         R, Z = self.base['Z'].objgen()
 
         # Cassels, Lectures on Elliptic Curves, p.132
-        A,B = E.a_invariants()[-2:]
-        Fs = lambda X,Y: (
-                (X - Y)**2,
-                -2 * (X*Y + A) * (X + Y) - 4*B,
-                (X*Y - A)**2 - 4*B*(X+Y),
-            )
+        A, B = E.a_invariants()[-2:]
+        Fs = lambda X, Y: (
+            (X - Y) ** 2,
+            -2 * (X * Y + A) * (X + Y) - 4 * B,
+            (X * Y - A) ** 2 - 4 * B * (X + Y),
+        )
 
         I, J, K = IJK
         xI = (R.x() for R in _points_range(I, P, Q))
-        xJ = [R.x() for R in _points_range(J, P   )]
+        xJ = [R.x() for R in _points_range(J, P)]
         xK = (R.x() for R in _points_range(K, P, Q))
 
         self.hItree = ProductTree(Z - xi for xi in xI)
 
-        self.EJparts = [Fs(Z,xj) for xj in xJ]
+        self.EJparts = [Fs(Z, xj) for xj in xJ]
 
-        DJ = prod(F0j for F0j,_,_ in self.EJparts)
+        DJ = prod(F0j for F0j, _, _ in self.EJparts)
         self.DeltaIJ = self._hI_resultant(DJ)
 
         self.hK = R(prod(Z - xk for xk in xK))
@@ -420,11 +422,11 @@ class FastEllipticPolynomial:
 
         EJparts = [tuple(F.base_extend(base) for F in part) for part in self.EJparts]
 
-        EJfacs = [(F0j * alpha + F1j) * alpha + F2j for F0j,F1j,F2j in EJparts]
+        EJfacs = [(F0j * alpha + F1j) * alpha + F2j for F0j, F1j, F2j in EJparts]
         if not derivative:
             EJ = prod(EJfacs)
         else:
-            dEJfacs = [2 * F0j * alpha + F1j for F0j,F1j,_ in EJparts]
+            dEJfacs = [2 * F0j * alpha + F1j for F0j, F1j, _ in EJparts]
             EJ, dEJ = prod_with_derivative(zip(EJfacs, dEJfacs))
 
         EJrems = self.hItree.remainders(EJ)
@@ -579,7 +581,7 @@ def _point_outside_subgroup(P):
     # assert E.cardinality() > n
     for _ in range(1000):
         Q = E.random_point()
-        if n*Q or not P.weil_pairing(Q,n).is_one():
+        if n * Q or not P.weil_pairing(Q, n).is_one():
             return Q
     raise NotImplementedError('could not find a point outside the kernel')
 
@@ -674,6 +676,7 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
 
         :class:`~sage.schemes.elliptic_curves.ell_curve_isogeny.EllipticCurveIsogeny`
     """
+
     def __init__(self, E, P, *, codomain=None, model=None, Q=None):
         r"""
         Initialize this square-root Vélu isogeny from a kernel point of odd order.
@@ -727,10 +730,14 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
             sage: assert phi.codomain().is_isomorphic(psi.codomain())   # not tested
         """
         if not isinstance(E, EllipticCurve_finite_field):
-            raise NotImplementedError('only implemented for elliptic curves over finite fields')
+            raise NotImplementedError(
+                'only implemented for elliptic curves over finite fields'
+            )
 
         if codomain is not None and model is not None:
-            raise ValueError('cannot specify a codomain curve and model name simultaneously')
+            raise ValueError(
+                'cannot specify a codomain curve and model name simultaneously'
+            )
 
         try:
             P = E(P)
@@ -740,12 +747,14 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
         if self._degree % 2 != 1 or self._degree < 9:
             raise NotImplementedError('only implemented for odd degrees >= 9')
 
-        self._kernel_gens = P,  # cache for .kernel_gens()
+        self._kernel_gens = (P,)  # cache for .kernel_gens()
 
         try:
             self._raw_domain = E.short_weierstrass_model()
         except ValueError:
-            raise NotImplementedError('only implemented for curves having a short Weierstrass model')
+            raise NotImplementedError(
+                'only implemented for curves having a short Weierstrass model'
+            )
         self._pre_iso = E.isomorphism_to(self._raw_domain)
         self._P = self._pre_iso(P)
 
@@ -827,8 +836,8 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
             h0, h0d = self._h0(x, derivative=True)
             h1, h1d = self._h1(x, derivative=True)
 
-#        assert h0 == prod(x - (        i*self._P).x() for i in range(1,self._P.order(),2))
-#        assert h1 == prod(x - (self._Q+i*self._P).x() for i in range(  self._P.order()  ))
+        #        assert h0 == prod(x - (        i*self._P).x() for i in range(1,self._P.order(),2))
+        #        assert h1 == prod(x - (self._Q+i*self._P).x() for i in range(  self._P.order()  ))
 
         if not h0:
             return ()
@@ -838,8 +847,8 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
         if y is None:
             return xx
 
-#        assert h0d == sum(prod(x - (        i*self._P).x() for i in range(1,self._P.order(),2) if i!=j) for j in range(1,self._P.order(),2))
-#        assert h1d == sum(prod(x - (self._Q+i*self._P).x() for i in range(  self._P.order()  ) if i!=j) for j in range(  self._P.order()  ))
+        #        assert h0d == sum(prod(x - (        i*self._P).x() for i in range(1,self._P.order(),2) if i!=j) for j in range(1,self._P.order(),2))
+        #        assert h1d == sum(prod(x - (self._Q+i*self._P).x() for i in range(  self._P.order()  ) if i!=j) for j in range(  self._P.order()  ))
 
         yy = y * (h1d - 2 * h1 / h0 * h0d) / h0**2
 
@@ -893,27 +902,28 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
         poly = self._raw_domain.two_division_polynomial().monic()(Z)
 
         f = 1
-        for g,_ in poly.factor():
+        for g, _ in poly.factor():
             if g.degree() == 1:
                 f *= Z - self._raw_eval(-g[0])
             else:
-                K, X0 = self._internal_base_ring.extension(g,'T').objgen()
+                K, X0 = self._internal_base_ring.extension(g, 'T').objgen()
                 imX0 = self._raw_eval(X0)
                 try:
-                    imX0 = imX0.polynomial()    # K is a FiniteField
+                    imX0 = imX0.polynomial()  # K is a FiniteField
                 except AttributeError:
-                    imX0 = imX0.lift()          # K is a PolynomialQuotientRing
+                    imX0 = imX0.lift()  # K is a PolynomialQuotientRing
                 V = R['V'].gen()
                 f *= (Z - imX0(V)).resultant(g(V))
 
-        a6,a4,a2,_ = f.monic().list()
+        a6, a4, a2, _ = f.monic().list()
 
-        self._raw_codomain = EllipticCurve(self._domain.base_ring(), [0,a2,0,a4,a6])
+        self._raw_codomain = EllipticCurve(self._domain.base_ring(), [0, a2, 0, a4, a6])
 
         if model is None:
             model = 'short_weierstrass'
 
         from sage.schemes.elliptic_curves.ell_field import compute_model
+
         self._codomain = compute_model(self._raw_codomain, model)
         self._post_iso = self._raw_codomain.isomorphism_to(self._codomain)
 
@@ -1003,9 +1013,11 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
               From: Elliptic Curve defined by y^2 = x^3 + 5*x + 5 over Finite Field of size 71
               To:   Elliptic Curve defined by y^2 = x^3 + 19*x + 45 over Finite Field of size 71
         """
-        return f'Elliptic-curve isogeny (using square-root Vélu) of degree {self._degree}:' \
-                f'\n  From: {self._domain}' \
-                f'\n  To:   {self._codomain}'
+        return (
+            f'Elliptic-curve isogeny (using square-root Vélu) of degree {self._degree}:'
+            f'\n  From: {self._domain}'
+            f'\n  To:   {self._codomain}'
+        )
 
     @staticmethod
     def _comparison_impl(left, right, op):
@@ -1101,8 +1113,11 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
             True
         """
         ker = self.kernel_polynomial()
-        phi = self.domain().isogeny(ker, degree=self.degree(), codomain=self.codomain(), check=False)
+        phi = self.domain().isogeny(
+            ker, degree=self.degree(), codomain=self.codomain(), check=False
+        )
         from sage.schemes.elliptic_curves.hom import find_post_isomorphism
+
         iso = find_post_isomorphism(self, phi)
         return iso * phi
 
@@ -1154,15 +1169,21 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
         """
         if self.base_ring().characteristic().divides(self.degree()):
             # The dual is inseparable.
-            #TODO: This is a lazy workaround; it could be optimized more.
+            # TODO: This is a lazy workaround; it could be optimized more.
             return self.as_EllipticCurveIsogeny().dual(algorithm=algorithm)
 
         # The dual is separable.
         F = self._raw_domain.base_ring()
-        from sage.schemes.elliptic_curves.weierstrass_morphism import WeierstrassIsomorphism
+        from sage.schemes.elliptic_curves.weierstrass_morphism import (
+            WeierstrassIsomorphism,
+        )
+
         isom = ~WeierstrassIsomorphism(self._raw_domain, (~F(self._degree), 0, 0, 0))
         from sage.schemes.elliptic_curves.ell_curve_isogeny import EllipticCurveIsogeny
-        phi = EllipticCurveIsogeny(self._raw_codomain, None, isom.domain(), self._degree)
+
+        phi = EllipticCurveIsogeny(
+            self._raw_codomain, None, isom.domain(), self._degree
+        )
         return ~self._pre_iso * isom * phi * ~self._post_iso
 
     @cached_method
@@ -1318,7 +1339,10 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
             sage: psi = E.isogeny([P, Q], algorithm='factored')
             sage: assert phi.kernel_subgroup() == psi.kernel_subgroup()
         """
-        from sage.groups.additive_abelian.additive_abelian_wrapper import AdditiveAbelianGroupWrapper
+        from sage.groups.additive_abelian.additive_abelian_wrapper import (
+            AdditiveAbelianGroupWrapper,
+        )
+
         pt = (~self._pre_iso)(self._P)
         return AdditiveAbelianGroupWrapper(pt.parent(), [pt], [self._degree])
 
@@ -1366,9 +1390,10 @@ class EllipticCurveHom_velusqrt(EllipticCurveHom):
             (1, 0)
         """
         from sage.rings.infinity import Infinity as oo
+
         proj = isinstance(xP, (tuple, list))
         if proj:
-            #TODO This implementation currently does everything in affine coordinates.
+            # TODO This implementation currently does everything in affine coordinates.
             # It would not be very difficult to properly support projective coordinates
             # as well; mainly this would require some minor adjustments in ._raw_eval().
             xP = xP[0] / xP[1] if xP[1] else oo
@@ -1420,8 +1445,8 @@ def _random_example_for_testing():
 
     while True:
         p = choice(prime_range(2, 100))
-        e = randrange(1,5)
-        F,t = GF((p,e),'t').objgen()
+        e = randrange(1, 5)
+        F, t = GF((p, e), 't').objgen()
         try:
             E = EllipticCurve([F.random_element() for _ in range(5)])
         except ArithmeticError:
@@ -1442,7 +1467,7 @@ def _random_example_for_testing():
     os = G.generator_orders()
     while True:
         v = [randrange(o) for o in os]
-        if lcm(Mod(c,o).additive_order() for c,o in zip(v,os)) == deg:
+        if lcm(Mod(c, o).additive_order() for c, o in zip(v, os)) == deg:
             break
     K = G(v).element()
     assert K.order() == deg

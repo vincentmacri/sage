@@ -111,6 +111,7 @@ class NumberFieldOrderIdeal_generic(Ideal_generic):
     r"""
     An ideal of a not necessarily maximal order in a number field.
     """
+
     def __init__(self, O, gens, *, coerce=True):
         r"""
         Ideals of not necessarily maximal orders.
@@ -139,7 +140,7 @@ class NumberFieldOrderIdeal_generic(Ideal_generic):
             gens = Sequence(gens, O)
 
         _, from_V, to_V = O.number_field().absolute_vector_space()
-        span = [to_V(a*g) for a in O.basis() for g in gens]
+        span = [to_V(a * g) for a in O.basis() for g in gens]
         self._module = O.free_module().submodule(span)
         basis = [O(from_V(v)) for v in self._module.basis()]
 
@@ -280,7 +281,7 @@ def _positive_sqrt(R, D):
     """
     if D.is_zero():
         return R.zero()
-    sqrtD, = (s for s in R(D).sqrt(all=True) if s.real() > 0 or s.imag() > 0)
+    (sqrtD,) = (s for s in R(D).sqrt(all=True) if s.real() > 0 or s.imag() > 0)
     return sqrtD
 
 
@@ -342,15 +343,16 @@ def _gens_from_bqf(O, Q):
         raise ValueError('order and form must have the same discriminant')
     a, b, c = Q
     sqrtD = _positive_sqrt(O.number_field(), D)
-    g = (- b + sqrtD) / 2
+    g = (-b + sqrtD) / 2
     t = sqrtD if a < 0 else 1
-    return a*t, g*t
+    return a * t, g * t
 
 
 class NumberFieldOrderIdeal_quadratic(NumberFieldOrderIdeal_generic):
     r"""
     An ideal of a not necessarily maximal order in a *quadratic* number field.
     """
+
     def __init__(self, O, gens, *, coerce=True):
         r"""
         Ideals of *quadratic* orders are implemented by a specialized
@@ -371,6 +373,7 @@ class NumberFieldOrderIdeal_quadratic(NumberFieldOrderIdeal_generic):
             True
         """
         from sage.quadratic_forms.binary_qf import BinaryQF
+
         if isinstance(gens, BinaryQF):
             gens = _gens_from_bqf(O, gens)
             coerce = False
@@ -443,15 +446,15 @@ class NumberFieldOrderIdeal_quadratic(NumberFieldOrderIdeal_generic):
         """
         O = self.ring()
         if self.is_zero():
-            return (O.zero(),)*2
-        M = self._module & (ZZ**2).submodule([(1,0)])
-        (N,_), = M.gens()
-        NOgens = [N*g for g in O.free_module().basis()]
+            return (O.zero(),) * 2
+        M = self._module & (ZZ**2).submodule([(1, 0)])
+        ((N, _),) = M.gens()
+        NOgens = [N * g for g in O.free_module().basis()]
         Q = self._module / self._module.submodule(NOgens)
         if Q.invariants():
             assert len(Q.invariants()) == 1
             _, from_V, _ = O.number_field().absolute_vector_space()
-            alpha, = (from_V(g.lift()) for g in Q.gens())
+            (alpha,) = (from_V(g.lift()) for g in Q.gens())
         else:
             alpha = 0
         return tuple(map(O, (N, alpha)))
@@ -614,7 +617,7 @@ class NumberFieldOrderIdeal_quadratic(NumberFieldOrderIdeal_generic):
         if other.is_zero():
             return False
         gs = (self * other.conjugate()).gens_reduced()
-        assert len(gs) in (1,2)
+        assert len(gs) in (1, 2)
         if len(gs) > 1:
             return False
         if narrow:
@@ -732,27 +735,28 @@ class NumberFieldOrderIdeal_quadratic(NumberFieldOrderIdeal_generic):
         """
         if self.is_zero():
             if basis:
-                return BinaryQF(0), (self.ring().zero(),)*2
+                return BinaryQF(0), (self.ring().zero(),) * 2
             return BinaryQF(0)
 
         O = self.ring()
         sqrtD = _positive_sqrt(O.number_field(), O.discriminant())
 
         # find a "good" ZZ-basis of the ideal
-        M = self._module.basis_matrix()[:,::-1]
-        M = M.row_space(ZZ).basis_matrix()[:,::-1]
+        M = self._module.basis_matrix()[:, ::-1]
+        M = M.row_space(ZZ).basis_matrix()[:, ::-1]
         beta, alpha = map(O, M.rows())
         assert alpha in QQ
         if QQ(alpha * (beta - beta.galois_conjugate()) / sqrtD) < 0:
             alpha = -alpha
 
         # compute the (reduced) norm form of the ideal
-        A,B = (g.matrix() for g in (alpha, beta))
-        x,y = polygens(QQ, 'x,y')
-        Q = (x*A - y*B).determinant() / self.norm()
+        A, B = (g.matrix() for g in (alpha, beta))
+        x, y = polygens(QQ, 'x,y')
+        Q = (x * A - y * B).determinant() / self.norm()
         Q = Q.change_ring(ZZ)
 
         from sage.quadratic_forms.binary_qf import BinaryQF
+
         Q = BinaryQF(Q)
         assert Q.discriminant() == O.discriminant()
         return (Q, (alpha, -beta)) if basis else Q
@@ -776,28 +780,29 @@ def _random_for_testing():
     from sage.rings.number_field.number_field import QuadraticField
     from sage.arith.misc import primes
     from sage.rings.finite_rings.integer_mod_ring import Zmod
+
     while True:
         d = ZZ(choice((-1, +1)) * randrange(1, 10**5))
         if not d.is_square():
             break
-    K,t = QuadraticField(d).objgen()
-    g, = K.ring_of_integers().ring_generators()
+    K, t = QuadraticField(d).objgen()
+    (g,) = K.ring_of_integers().ring_generators()
 
     f = randrange(1, 100)
-    O = K.order(f*g)
+    O = K.order(f * g)
     assert O.discriminant() == f**2 * K.discriminant()
 
-    poly = (f*g).minpoly()
+    poly = (f * g).minpoly()
     base = []
     for l in primes(1000):
         vs = poly.roots(ring=Zmod(l), multiplicities=False)
-        base += [NumberFieldOrderIdeal(O, [l, f*g-ZZ(v)]) for v in vs]
+        base += [NumberFieldOrderIdeal(O, [l, f * g - ZZ(v)]) for v in vs]
 
     def random_ideal():
         I = NumberFieldOrderIdeal(O, [1])
         for _ in range(randrange(20)):
             J = choice(base)
-            I = NumberFieldOrderIdeal(O, [x*y for x in I.gens() for y in J.gens()])
+            I = NumberFieldOrderIdeal(O, [x * y for x in I.gens() for y in J.gens()])
         return I
 
     return O, random_ideal

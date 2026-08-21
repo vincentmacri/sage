@@ -35,6 +35,7 @@ class AlgebraIdeals(Category_ideal):
           ``AlgebraRightIdeals`` of which ``AlgebraIdeals``
           would be a subcategory.
     """
+
     def __init__(self, A):
         """
         EXAMPLES::

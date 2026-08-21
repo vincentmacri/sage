@@ -18,7 +18,9 @@ def benchmark(n: int = ...) -> BenchmarkResult: ...
 def benchmark(n: Literal[-1]) -> tuple[list[BenchmarkResult], float]: ...
 
 
-def benchmark(n: list[int] | int = -1) -> tuple[list[BenchmarkResult], float] | BenchmarkResult:
+def benchmark(
+    n: list[int] | int = -1,
+) -> tuple[list[BenchmarkResult], float] | BenchmarkResult:
     """
     Run a well-chosen range of Sage commands and record the time it
     takes for each to run.
@@ -106,7 +108,7 @@ def bench0() -> tuple[str, float]:
     desc = """Benchmark 0: Factor the following polynomial over
     the rational numbers: (x^97+19*x+1)*(x^103-19*x^97+14)*(x^100-1)"""
     x = polygen(QQ, "x")
-    f = (x**97+19*x+1)*(x**103-19*x**97+14)*(x**100-1)
+    f = (x**97 + 19 * x + 1) * (x**103 - 19 * x**97 + 14) * (x**100 - 1)
     t = cputime()
     f.factor()
     return (desc, cputime(t))
@@ -141,7 +143,7 @@ def bench2() -> tuple[str, float]:
     """
     desc = """Some basic arithmetic with very large Integer numbers: '3^1000001 * 19^100001"""
     t = cputime()
-    _ = ZZ(3)**1000001 * ZZ(19)**100001
+    _ = ZZ(3) ** 1000001 * ZZ(19) ** 100001
     return (desc, cputime(t))
 
 
@@ -157,7 +159,7 @@ def bench3() -> tuple[str, float]:
     """
     desc = """Some basic arithmetic with very large Rational numbers: '(2/3)^100001 * (17/19)^100001"""
     t = cputime()
-    _ = QQ((2, 3))**100001 * QQ((17, 19))**100001
+    _ = QQ((2, 3)) ** 100001 * QQ((17, 19)) ** 100001
     return (desc, cputime(t))
 
 
@@ -174,7 +176,7 @@ def bench4() -> tuple[str, float]:
     desc = """Rational polynomial arithmetic using Sage. Compute (x^29+17*x-5)^200."""
     x = PolynomialRing(QQ, 'x').gen()
     t = cputime()
-    f = x**29 + 17*x-5
+    f = x**29 + 17 * x - 5
     _ = f**200
     return (desc, cputime(t))
 
@@ -192,7 +194,7 @@ def bench5() -> tuple[str, float]:
     desc = """Rational polynomial arithmetic using Sage. Compute (x^19 - 18*x + 1)^50 one hundred times."""
     x = PolynomialRing(QQ, 'x').gen()
     t = cputime()
-    f = x**19 - 18*x + 1
+    f = x**19 - 18 * x + 1
     _ = [f**50 for _ in range(100)]
     return (desc, cputime(t))
 

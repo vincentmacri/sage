@@ -26,6 +26,7 @@ EXAMPLES: We illustrate each of the calculus functional functions.
     sage: expand((x - a)^3)
     -a^3 + 3*a^2*x - 3*a*x^2 + x^3
 """
+
 from sage.structure.element import Expression
 
 
@@ -165,6 +166,7 @@ def derivative(f, *args, **kwds):
         pass
     if not isinstance(f, Expression):
         from sage.symbolic.ring import SR
+
         f = SR(f)
     return f.derivative(*args, **kwds)
 
@@ -316,6 +318,7 @@ def integral(f, *args, **kwds):
 
     if not isinstance(f, Expression):
         from sage.symbolic.ring import SR
+
         f = SR(f)
     return f.integral(*args, **kwds)
 
@@ -372,6 +375,7 @@ def limit(f, dir=None, taylor=False, **argv):
     """
     if not isinstance(f, Expression):
         from sage.symbolic.ring import SR
+
         f = SR(f)
     return f.limit(dir=dir, taylor=taylor, **argv)
 
@@ -419,6 +423,7 @@ def taylor(f, *args):
     """
     if not isinstance(f, Expression):
         from sage.symbolic.ring import SR
+
         f = SR(f)
     return f.taylor(*args)
 

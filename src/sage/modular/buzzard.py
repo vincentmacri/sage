@@ -11,6 +11,7 @@ AUTHORS:
 
 - Kevin Buzzard: PARI program that implements underlying functionality
 """
+
 #############################################################################
 #       Copyright (C) 2006 William Stein <wstein@gmail.com>
 #
@@ -95,5 +96,5 @@ def buzzard_tpslopes(p, N, kmax):
     pari.read(buzzard_dir / "Tpprog.g")
     # v = pari.tpslopes(p, N, kmax).sage()
     v = pari('tpslopes(%s, %s, %s)' % (p, N, kmax)).sage()
-    v.insert(0, [])   # so that v[k] = info about weight k
+    v.insert(0, [])  # so that v[k] = info about weight k
     return v

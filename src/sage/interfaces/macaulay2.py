@@ -183,9 +183,16 @@ class Macaulay2(ExtraTabCompletion, Expect):
     """
     Interface to the Macaulay2 interpreter.
     """
-    def __init__(self, maxread=None, script_subdirectory=None,
-                 logfile=None, server=None,
-                 server_tmpdir=None, command=None) -> None:
+
+    def __init__(
+        self,
+        maxread=None,
+        script_subdirectory=None,
+        logfile=None,
+        server=None,
+        server_tmpdir=None,
+        command=None,
+    ) -> None:
         """
         Initialize a Macaulay2 interface instance.
 
@@ -213,26 +220,30 @@ class Macaulay2(ExtraTabCompletion, Expect):
             # Prompt changing commands
             'sageLoadMode = false;'
             'ZZ#{Standard,Core#"private dictionary"#"InputPrompt"} = '
-            'ZZ#{Standard,Core#"private dictionary"#"InputContinuationPrompt"} = ' +
-            'lineno -> if(sageLoadMode) then "%s" else "%s";' % (PROMPT_LOAD, PROMPT) +
+            'ZZ#{Standard,Core#"private dictionary"#"InputContinuationPrompt"} = '
+            + 'lineno -> if(sageLoadMode) then "%s" else "%s";' % (PROMPT_LOAD, PROMPT)
+            +
             # Also prevent line wrapping in Macaulay2
-            "printWidth = 0;" +
+            "printWidth = 0;"
+            +
             # And make all output labels to be of the same width
             "lineNumber = 10^9;"
             # Assignment of internal expect variables.
             'sageAssign = (k, v) -> (if not instance(v, Sequence) then use v; k <- v);'
         )
         command = "%s --no-debug --no-readline --silent -e '%s'" % (command, init_str)
-        Expect.__init__(self,
-                        name='macaulay2',
-                        prompt=PROMPT,
-                        command=command,
-                        server=server,
-                        server_tmpdir=server_tmpdir,
-                        script_subdirectory=script_subdirectory,
-                        verbose_start=False,
-                        logfile=logfile,
-                        eval_using_file_cutoff=500)
+        Expect.__init__(
+            self,
+            name='macaulay2',
+            prompt=PROMPT,
+            command=command,
+            server=server,
+            server_tmpdir=server_tmpdir,
+            script_subdirectory=script_subdirectory,
+            verbose_start=False,
+            logfile=logfile,
+            eval_using_file_cutoff=500,
+        )
 
     # Macaulay2 provides no "clear" function. However, Macaulay2 does provide
     # garbage collection; since expect automatically reuses variable names,
@@ -301,8 +312,9 @@ class Macaulay2(ExtraTabCompletion, Expect):
             ....:     macaulay2.eval('ZZ^2\n%sZZ^3' % (' ' * macaulay2._eval_using_file_cutoff)))
             True
         """
-        return '\n'.join(line for line in s.split('\n')
-                         if not line.startswith(PROMPT_LOAD))
+        return '\n'.join(
+            line for line in s.split('\n') if not line.startswith(PROMPT_LOAD)
+        )
 
     def eval(self, code, strip=True, **kwds):
         """
@@ -386,12 +398,14 @@ class Macaulay2(ExtraTabCompletion, Expect):
             ZZ-module, submodule of ZZ
             sage: macaulay2.options.after_print = False
         """
+
         NAME = 'Macaulay2'
         module = 'sage.interfaces.macaulay2'
-        after_print = dict(default=False,
-                           description='append AfterPrint type information to '
-                                       'textual representations',
-                           checker=lambda val: isinstance(val, bool))
+        after_print = dict(
+            default=False,
+            description='append AfterPrint type information to textual representations',
+            checker=lambda val: isinstance(val, bool),
+        )
 
     def get(self, var):
         """
@@ -453,7 +467,9 @@ class Macaulay2(ExtraTabCompletion, Expect):
             cmd = '%s=(%s);' % (var, value)
         ans = Expect.eval(self, cmd, strip=False)
         if ans.find("stdio:") != -1:
-            raise RuntimeError("Error evaluating Macaulay2 code.\nIN:%s\nOUT:%s" % (cmd, ans))
+            raise RuntimeError(
+                "Error evaluating Macaulay2 code.\nIN:%s\nOUT:%s" % (cmd, ans)
+            )
 
     def clear(self, var) -> None:
         """
@@ -854,12 +870,17 @@ class Macaulay2(ExtraTabCompletion, Expect):
         varstr = str(vars)[1:-1].rstrip(',')
         r = re.compile(r"(?<=,)|(?<=\.\.<)|(?<=\.\.)(?!<)")
         varstr = "symbol " + r.sub("symbol ", varstr)
-        return '%s[%s, MonomialSize=>16, MonomialOrder=>%s]' % (base_ring, varstr,
-                                                                order)
+        return '%s[%s, MonomialSize=>16, MonomialOrder=>%s]' % (
+            base_ring,
+            varstr,
+            order,
+        )
 
 
 @instancedoc
-class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Macaulay2Element):
+class Macaulay2Element(
+    ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Macaulay2Element
+):
     """
     Instances of this class represent objects in Macaulay2.
 
@@ -868,6 +889,7 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
 
     .. automethod:: _sage_
     """
+
     def _latex_(self) -> str:
         r"""
         EXAMPLES::
@@ -939,6 +961,7 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
             sage: macaulay2.options.after_print = False
         """
         from sage.typeset.ascii_art import empty_ascii_art
+
         P = self.parent()
         if P.options.after_print:
             # In M2, the wrapped output is indented by the width of the prompt,
@@ -949,9 +972,11 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
             return P.eval('printWidth=%d;%s' % (width, self._name))
         # Otherwise manually wrap the net representation which does not display
         # AfterPrint text
-        return P.eval('print(wrap(%d,"-",net %s))'
-                      % (empty_ascii_art._terminal_width(), self._name),
-                      strip=False)
+        return P.eval(
+            'print(wrap(%d,"-",net %s))'
+            % (empty_ascii_art._terminal_width(), self._name),
+            strip=False,
+        )
 
     def external_string(self) -> str:
         """
@@ -968,7 +993,9 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
         if 'stdio:' in X:
             if 'to external string' in X:
                 return P.eval('%s' % self.name())
-            raise RuntimeError("Error evaluating Macaulay2 code.\nIN:%s\nOUT:%s" % (code, X))
+            raise RuntimeError(
+                "Error evaluating Macaulay2 code.\nIN:%s\nOUT:%s" % (code, X)
+            )
 
         return multiple_replace({'\r': '', '\n': ' '}, X)
 
@@ -1023,8 +1050,9 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
             ))()""".format(self._name, new_name)
         ans = P.eval(cmd)
         if ans.find("stdio:") != -1:
-            raise RuntimeError("Error evaluating Macaulay2 code.\n"
-                               "IN:%s\nOUT:%s" % (cmd, ans))
+            raise RuntimeError(
+                "Error evaluating Macaulay2 code.\nIN:%s\nOUT:%s" % (cmd, ans)
+            )
         return P._object_class()(P, new_name, is_name=True)
 
     def __len__(self) -> int:
@@ -1248,7 +1276,9 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
                 currentClass = parent currentClass;
                 );
             print toString total
-            ))()""" % self.name())
+            ))()"""
+            % self.name()
+        )
         r = sorted(r[1:-1].split(", "))
         return r
 
@@ -1285,8 +1315,9 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
                                       2
             ZZ-module, submodule of ZZ
         """
-        return self.parent().eval('(lookup({topLevelMode,AfterPrint},' +
-                                  'class {0}))({0})'.format(self._name))
+        return self.parent().eval(
+            '(lookup({topLevelMode,AfterPrint},' + 'class {0}))({0})'.format(self._name)
+        )
 
     ############################
     # Aliases for M2 operators #
@@ -1502,9 +1533,11 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
 
         if repr_str == "ZZ":
             from sage.rings.integer_ring import ZZ
+
             return ZZ
         if repr_str == "QQ":
             from sage.rings.rational_field import QQ
+
             return QQ
 
         if cls_cls_str == "Type":
@@ -1525,6 +1558,7 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
                 if ambient.external_string() == 'ZZ':
                     from sage.rings.finite_rings.finite_field_constructor import GF
                     from sage.rings.integer_ring import ZZ
+
                     external_string = self.external_string()
                     zz, n = external_string.split("/")
 
@@ -1549,7 +1583,9 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
 
                 # Check that we are dealing with default degrees, i.e. 1's.
                 if self.options().sharp("Degrees").any("x -> x != {1}")._sage_():
-                    raise ValueError("cannot convert Macaulay2 polynomial ring with non-default degrees to Sage")
+                    raise ValueError(
+                        "cannot convert Macaulay2 polynomial ring with non-default degrees to Sage"
+                    )
                 # Handle the term order
                 external_string = self.external_string()
                 order = None
@@ -1560,12 +1596,15 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
                         if order_name in external_string:
                             order = inv_macaulay2_name_mapping[order_name]
                 if len(gens) > 1 and order is None:
-                    raise ValueError("cannot convert Macaulay2's term order to a Sage term order")
+                    raise ValueError(
+                        "cannot convert Macaulay2's term order to a Sage term order"
+                    )
 
                 return PolynomialRing(base_ring, order=order, names=gens)
             if cls_str == "GaloisField":
                 from sage.rings.finite_rings.finite_field_constructor import GF
                 from sage.rings.integer_ring import ZZ
+
                 gf, n = repr_str.split(" ")
                 n = ZZ(n)
                 if n.is_prime():
@@ -1581,6 +1620,7 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
                 return str(repr_str)
             if cls_str == "Module":
                 from sage.modules.free_module import FreeModule
+
                 if self.isFreeModule()._sage_():
                     ring = self.ring()._sage_()
                     rank = self.rank()._sage_()
@@ -1588,9 +1628,11 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
             if cls_str in ("Graph", "Digraph"):
                 if cls_str == "Graph":
                     from sage.graphs.graph import Graph
+
                     graph_cls = Graph
                 else:
                     from sage.graphs.digraph import DiGraph
+
                     graph_cls = DiGraph
                 adj_mat = self.adjacencyMatrix().sage()
                 g = graph_cls(adj_mat, format='adjacency_matrix')
@@ -1598,23 +1640,25 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
                 return g
             if cls_str == "ChainComplex":
                 from sage.homology.chain_complex import ChainComplex
+
                 ring = self.ring()._sage_()
                 dd = self.dot('dd')
                 degree = dd.degree()._sage_()
                 a = self.min()._sage_()
                 b = self.max()._sage_()
-                matrices = {i: dd.underscore(i)._matrix_(ring)
-                            for i in range(a, b + 1)}
+                matrices = {i: dd.underscore(i)._matrix_(ring) for i in range(a, b + 1)}
                 return ChainComplex(matrices, degree=degree)
             if cls_str == "ChainComplexMap":
                 from sage.homology.chain_complex_morphism import ChainComplexMorphism
+
                 ring = self.ring()._sage_()
                 source = self.source()
                 a = source.min()._sage_()
                 b = source.max()._sage_()
                 degree = self.degree()._sage_()
-                matrices = {i: self.underscore(i)._matrix_(ring)
-                            for i in range(a, b + 1)}
+                matrices = {
+                    i: self.underscore(i)._matrix_(ring) for i in range(a, b + 1)
+                }
                 C = source._sage_()
                 # in Sage, chain complex morphisms are degree-preserving,
                 # so we shift the degrees of the target
@@ -1624,11 +1668,12 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
             # Handle the integers and rationals separately
             if cls_str == "ZZ":
                 from sage.rings.integer_ring import ZZ
+
                 return ZZ(repr_str)
             if cls_str == "QQ":
                 from sage.rings.rational_field import QQ
-                return QQ((self.numerator()._sage_(),
-                           self.denominator()._sage_()))
+
+                return QQ((self.numerator()._sage_(), self.denominator()._sage_()))
 
             m2_parent = self.cls()
             parent = m2_parent._sage_()
@@ -1636,11 +1681,15 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
             if cls_cls_str == "PolynomialRing":
                 # going through a dict
                 if len(m2_parent.gens()) == 1:
-                    d = {monome[0].sage(): coeff.sage()
-                         for monome, coeff in self.listForm()}
+                    d = {
+                        monome[0].sage(): coeff.sage()
+                        for monome, coeff in self.listForm()
+                    }
                 else:
-                    d = {tuple(monome.sage()): coeff.sage()
-                         for monome, coeff in self.listForm()}
+                    d = {
+                        tuple(monome.sage()): coeff.sage()
+                        for monome, coeff in self.listForm()
+                    }
                 return parent(d)
             if cls_cls_str == "QuotientRing":
                 return parent(self.external_string())
@@ -1649,6 +1698,7 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
                 return parent._element_constructor_(entries)
 
         from sage.misc.sage_eval import sage_eval
+
         try:
             return sage_eval(repr_str)
         except Exception:
@@ -1683,6 +1733,7 @@ class Macaulay2Element(ExtraTabCompletion, ExpectElement, sage.interfaces.abc.Ma
             (0, 2)
         """
         from sage.matrix.constructor import matrix
+
         m = matrix(R, self.entries()._sage_())
         if not m.nrows():
             return matrix(R, 0, self.numcols()._sage_())
@@ -1780,8 +1831,11 @@ class Macaulay2FunctionElement(FunctionElement):
             ...
         """
         P = self._obj.parent()
-        r = P.eval('help prepend({0}, select(methods {0}, m->'
-                   'instance({1}, m#1)))'.format(self._name, self._obj._name))
+        r = P.eval(
+            'help prepend({0}, select(methods {0}, m->instance({1}, m#1)))'.format(
+                self._name, self._obj._name
+            )
+        )
         end = r.rfind("\n\nDIV")
         if end != -1:
             r = r[:end]
@@ -1797,7 +1851,8 @@ class Macaulay2FunctionElement(FunctionElement):
         """
         return self._obj.parent().eval(
             'code select(methods %s, m->instance(%s, m#1))'
-            % (self._name, self._obj._name))
+            % (self._name, self._obj._name)
+        )
 
 
 # An instance
@@ -1816,8 +1871,11 @@ def macaulay2_console():
         ...
     """
     from sage.repl.rich_output.display_manager import get_display_manager
+
     if not get_display_manager().is_in_terminal():
-        raise RuntimeError('Can use the console only in the terminal. Try %%macaulay2 magics instead.')
+        raise RuntimeError(
+            'Can use the console only in the terminal. Try %%macaulay2 magics instead.'
+        )
     os.system('M2')
 
 

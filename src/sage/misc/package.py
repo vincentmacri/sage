@@ -115,7 +115,10 @@ def pip_remote_version(pkg, pypi_url=DEFAULT_PYPI, ignore_URLError=False):
     except URLError:
         if ignore_URLError:
             import warnings
-            warnings.warn("failed to fetch the version of pkg={!r} at {}".format(pkg, url))
+
+            warnings.warn(
+                "failed to fetch the version of pkg={!r} at {}".format(pkg, url)
+            )
             return
         raise
 
@@ -147,6 +150,7 @@ def spkg_type(name):
     """
     spkg_type = None
     from sage.env import SAGE_PKGS
+
     if not SAGE_PKGS:
         return None
     try:
@@ -203,10 +207,15 @@ def pip_installed_packages(normalization=None):
                 return name
             if normalization == 'spkg':
                 return name.lower().replace('-', '_').replace('.', '_')
-            raise NotImplementedError(f'normalization {normalization} is not implemented')
+            raise NotImplementedError(
+                f'normalization {normalization} is not implemented'
+            )
+
         try:
-            return {normalize(package['name']): package['version']
-                    for package in json.loads(stdout)}
+            return {
+                normalize(package['name']): package['version']
+                for package in json.loads(stdout)
+            }
         except json.decoder.JSONDecodeError:
             # Something went wrong while parsing the output from pip.
             # This may happen if pip is not correctly installed.
@@ -215,6 +224,7 @@ def pip_installed_packages(normalization=None):
 
 class PackageInfo(NamedTuple):
     """Represents information about a package."""
+
     name: str
     type: Optional[str] = None
     source: Optional[str] = None
@@ -228,8 +238,13 @@ class PackageInfo(NamedTuple):
         return self.installed_version is not None
 
 
-def list_packages(*pkg_types: str, pkg_sources: list[str] = ['normal', 'pip', 'script'],
-                  local: bool = False, ignore_URLError: bool = False, exclude_pip: bool = False) -> dict[str, PackageInfo]:
+def list_packages(
+    *pkg_types: str,
+    pkg_sources: list[str] = ['normal', 'pip', 'script'],
+    local: bool = False,
+    ignore_URLError: bool = False,
+    exclude_pip: bool = False,
+) -> dict[str, PackageInfo]:
     r"""
     Return a dictionary of information about each package.
 
@@ -289,14 +304,21 @@ def list_packages(*pkg_types: str, pkg_sources: list[str] = ['normal', 'pip', 's
     """
     if not pkg_types:
         pkg_types = ('base', 'standard', 'optional', 'experimental')
-    elif any(pkg_type not in ('base', 'standard', 'optional', 'experimental') for pkg_type in pkg_types):
-        raise ValueError("Each pkg_type must be one of 'base', 'standard', 'optional', 'experimental'")
+    elif any(
+        pkg_type not in ('base', 'standard', 'optional', 'experimental')
+        for pkg_type in pkg_types
+    ):
+        raise ValueError(
+            "Each pkg_type must be one of 'base', 'standard', 'optional', 'experimental'"
+        )
 
     if exclude_pip:
         pkg_sources = [s for s in pkg_sources if s != 'pip']
 
-    pkgs = {p: PackageInfo(name=p, installed_version=v)
-            for p, v in installed_packages('pip' not in pkg_sources).items()}
+    pkgs = {
+        p: PackageInfo(name=p, installed_version=v)
+        for p, v in installed_packages('pip' not in pkg_sources).items()
+    }
 
     # Add additional information based on Sage's package repository
     lp = []
@@ -310,7 +332,6 @@ def list_packages(*pkg_types: str, pkg_sources: list[str] = ['normal', 'pip', 's
         return pkgs
 
     for p in lp:
-
         typ = spkg_type(p)
         if not typ:
             continue
@@ -404,8 +425,9 @@ def installed_packages(exclude_pip=True):
     if inst_dir is not None:
         try:
             lp = os.listdir(inst_dir)
-            installed.update(pkgname_split(pkgname) for pkgname in lp
-                             if not pkgname.startswith('.'))
+            installed.update(
+                pkgname_split(pkgname) for pkgname in lp if not pkgname.startswith('.')
+            )
         except FileNotFoundError:
             pass
     return installed
@@ -503,7 +525,10 @@ def package_versions(package_type, local=False):
         sage: std['zipp']  # random
         ('3.19.0', '3.19.0')
     """
-    return {pkg.name: (pkg.installed_version, pkg.remote_version) for pkg in list_packages(package_type, local=local).values()}
+    return {
+        pkg.name: (pkg.installed_version, pkg.remote_version)
+        for pkg in list_packages(package_type, local=local).values()
+    }
 
 
 def package_manifest(package):
@@ -539,8 +564,7 @@ def package_manifest(package):
     version = installed_packages()[package]
     inst_dir = _spkg_inst_dirs()
     if inst_dir is not None:
-        stamp_file = os.path.join(inst_dir,
-                                  '{}-{}'.format(package, version))
+        stamp_file = os.path.join(inst_dir, '{}-{}'.format(package, version))
         try:
             with open(stamp_file) as f:
                 return json.load(f)

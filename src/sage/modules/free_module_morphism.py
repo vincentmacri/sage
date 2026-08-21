@@ -49,7 +49,6 @@ from sage.structure.sequence import Sequence
 
 
 class FreeModuleMorphism(matrix_morphism.MatrixMorphism):
-
     def __init__(self, parent, A, side='left'):
         """
         INPUT:
@@ -342,7 +341,10 @@ class FreeModuleMorphism(matrix_morphism.MatrixMorphism):
 
         else:
             if not hasattr(A, 'hermite_form'):
-                raise NotImplementedError("base ring (%s) must have hermite_form algorithm in order to compute inverse image" % R)
+                raise NotImplementedError(
+                    "base ring (%s) must have hermite_form algorithm in order to compute inverse image"
+                    % R
+                )
 
             # 1. Compute H such that U*A = H = hnf(A) without zero
             # rows. What this "does" is find a basis for the image of
@@ -359,7 +361,7 @@ class FreeModuleMorphism(matrix_morphism.MatrixMorphism):
             # 3. Multiply Y by U then takes those same linear combinations
             # from step 2 above and lifts them to coefficients that define
             # linear combinations of the basis for the domain.
-            C = Y*U
+            C = Y * U
 
         # Finally take the linear combinations of the basis for the
         # domain defined by C. Together with the kernel K, this spans
@@ -436,6 +438,7 @@ class FreeModuleMorphism(matrix_morphism.MatrixMorphism):
             (1, 0)
         """
         from .free_module_element import vector
+
         x = self.codomain()(x)
         if self.side() == "right":
             A = self.matrix().transpose()
@@ -450,10 +453,13 @@ class FreeModuleMorphism(matrix_morphism.MatrixMorphism):
         else:
             # see inverse_image for similar code but with comments
             if not hasattr(A, 'hermite_form'):
-                raise NotImplementedError("base ring (%s) must have hermite_form algorithm in order to compute inverse image" % R)
+                raise NotImplementedError(
+                    "base ring (%s) must have hermite_form algorithm in order to compute inverse image"
+                    % R
+                )
             H, U = A.hermite_form(transformation=True, include_zero_rows=False)
             Y = H.solve_left(vector(self.codomain().coordinates(x)))
-            C = Y*U
+            C = Y * U
         try:
             t = self.domain().linear_combination_of_basis(C)
         except TypeError:
@@ -547,7 +553,9 @@ class FreeModuleMorphism(matrix_morphism.MatrixMorphism):
                 resu = []
                 for i in seigenvec:
                     V = self.domain().base_extend(i[0].parent())
-                    svectors = Sequence([V(j * V.basis_matrix()) for j in i[1]], cr=True)
+                    svectors = Sequence(
+                        [V(j * V.basis_matrix()) for j in i[1]], cr=True
+                    )
                     resu.append((i[0], svectors, i[2]))
                 return resu
             raise TypeError("not an endomorphism")
@@ -615,8 +623,7 @@ class FreeModuleMorphism(matrix_morphism.MatrixMorphism):
                   [0 1])]
         """
         ev = self.eigenvectors(extend)
-        return [(vec[0], Sequence(vec[1]).universe().subspace(vec[1]))
-                for vec in ev]
+        return [(vec[0], Sequence(vec[1]).universe().subspace(vec[1])) for vec in ev]
 
 
 class BaseIsomorphism1D(Morphism):
@@ -633,6 +640,7 @@ class BaseIsomorphism1D(Morphism):
                 Multivariate Polynomial Ring in x, y over Rational Field
           To:   Multivariate Polynomial Ring in x, y over Rational Field
     """
+
     def _repr_type(self) -> str:
         r"""
         EXAMPLES::
@@ -712,6 +720,7 @@ class BaseIsomorphism1D_to_FM(BaseIsomorphism1D):
         ...
         ValueError: basis element must be a unit
     """
+
     def __init__(self, parent, basis=None):
         """
         TESTS::
@@ -769,6 +778,7 @@ class BaseIsomorphism1D_from_FM(BaseIsomorphism1D):
         ...
         ValueError: basis element must be a unit
     """
+
     def __init__(self, parent, basis=None):
         """
         TESTS::

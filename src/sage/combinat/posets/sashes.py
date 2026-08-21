@@ -100,13 +100,13 @@ def cover_relations(s: tuple[str, ...]) -> Iterator[tuple[str, ...]]:
     """
     for i, letter in enumerate(s):
         if letter == BB:
-            yield s[:i] + (B, B) + s[i + 1:]
+            yield s[:i] + (B, B) + s[i + 1 :]
     for i, (l1, l2) in enumerate(pairwise(s)):
         if l1 == N:
             if l2 == B:
-                yield s[:i] + (BB,) + s[i + 2:]
+                yield s[:i] + (BB,) + s[i + 2 :]
             else:
-                yield s[:i] + (B,) + s[i + 1:]
+                yield s[:i] + (B,) + s[i + 1 :]
     if s[-1] == N:
         yield s[:-1] + (B,)
 
@@ -136,9 +136,12 @@ def lattice_of_sashes(n: int) -> LatticePoset:
     if n <= 0:
         raise ValueError("n must be positive")
     cat = FiniteLatticePosets().CongruenceUniform()
-    return LatticePoset({s: list(cover_relations(s)) for s in sashes(n)},
-                        cover_relations=True, check=False,
-                        category=cat)
+    return LatticePoset(
+        {s: list(cover_relations(s)) for s in sashes(n)},
+        cover_relations=True,
+        check=False,
+        category=cat,
+    )
 
 
 @cached_function
@@ -218,6 +221,7 @@ def pellytope(n: int) -> Polyhedron:
     - [BTTM2024]_
     """
     from sage.geometry.polyhedron.library import Polytopes
+
     if n <= 0:
         raise ValueError("n must be positive")
     M = FreeModule(ZZ, n)
@@ -226,5 +230,6 @@ def pellytope(n: int) -> Polyhedron:
 
     resu = Polytopes().hypercube(n, intervals='zero_one')
 
-    return resu + sum(Polyhedron(vertices=[zero, v[i], v[i] + v[i + 1]])
-                      for i in range(n - 1))
+    return resu + sum(
+        Polyhedron(vertices=[zero, v[i], v[i] + v[i + 1]]) for i in range(n - 1)
+    )

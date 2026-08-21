@@ -182,8 +182,10 @@ class HomologyVectorSpaceWithBasis(CombinatorialFreeModule):
         sage: b.cup_product(b)
         h^{2,0}
     """
-    def __init__(self, base_ring, cell_complex, cohomology=False,
-                 category=None) -> None:
+
+    def __init__(
+        self, base_ring, cell_complex, cohomology=False, category=None
+    ) -> None:
         """
         Initialize ``self``.
 
@@ -209,14 +211,23 @@ class HomologyVectorSpaceWithBasis(CombinatorialFreeModule):
             # We only need the rank of M in each degree, and since
             # we're working over a field, we don't need to dualize M
             # if working with cohomology.
-        category = Modules(base_ring).WithBasis().Graded().FiniteDimensional().or_subcategory(category)
+        category = (
+            Modules(base_ring)
+            .WithBasis()
+            .Graded()
+            .FiniteDimensional()
+            .or_subcategory(category)
+        )
         self._contraction = phi
         self._complex = cell_complex
         self._cohomology = cohomology
-        self._graded_indices = {deg: range(M.free_module_rank(deg))
-                                for deg in range(cell_complex.dimension()+1)}
-        indices = [(deg, i) for deg in self._graded_indices
-                   for i in self._graded_indices[deg]]
+        self._graded_indices = {
+            deg: range(M.free_module_rank(deg))
+            for deg in range(cell_complex.dimension() + 1)
+        }
+        indices = [
+            (deg, i) for deg in self._graded_indices for i in self._graded_indices[deg]
+        ]
         CombinatorialFreeModule.__init__(self, base_ring, indices, category=category)
 
     def basis(self, d=None):
@@ -386,8 +397,9 @@ class HomologyVectorSpaceWithBasis(CombinatorialFreeModule):
             \chi_(5, 6, 7, 8)
         """
         vec = self.contraction().iota().in_degree(i[0]).column(i[1])
-        chains = self.complex().n_chains(i[0], self.base_ring(),
-                                         cochains=self._cohomology)
+        chains = self.complex().n_chains(
+            i[0], self.base_ring(), cochains=self._cohomology
+        )
         return chains.from_vector(vec)
 
     def dual(self):
@@ -409,13 +421,14 @@ class HomologyVectorSpaceWithBasis(CombinatorialFreeModule):
         """
         if is_GF2(self.base_ring()):
             if self._cohomology:
-                return HomologyVectorSpaceWithBasis_mod2(self.base_ring(),
-                                                         self.complex())
+                return HomologyVectorSpaceWithBasis_mod2(
+                    self.base_ring(), self.complex()
+                )
             return CohomologyRing_mod2(self.base_ring(), self.complex())
         if self._cohomology:
-            return HomologyVectorSpaceWithBasis(self.base_ring(),
-                                                self.complex(),
-                                                not self._cohomology)
+            return HomologyVectorSpaceWithBasis(
+                self.base_ring(), self.complex(), not self._cohomology
+            )
         return CohomologyRing(self.base_ring(), self.complex())
 
     def _test_duality(self, **options):
@@ -446,7 +459,9 @@ class HomologyVectorSpaceWithBasis(CombinatorialFreeModule):
         dims = [a[0] for a in self._indices]
         for dim in range(max(*dims, tester._max_runs) + 1):
             n = len(self.basis(dim))
-            m = matrix(n, n, [a.eval(b) for a in self.basis(dim) for b in dual.basis(dim)])
+            m = matrix(
+                n, n, [a.eval(b) for a in self.basis(dim) for b in dual.basis(dim)]
+            )
             tester.assertEqual(m, 1, f"error in dimension {dim}")
 
     class Element(CombinatorialFreeModule.Element):
@@ -575,6 +590,7 @@ class HomologyVectorSpaceWithBasis_mod2(HomologyVectorSpaceWithBasis):
         sage: x4 * Sq(3)
         0
     """
+
     def __init__(self, base_ring, cell_complex, category=None) -> None:
         """
         Initialize ``self``.
@@ -588,17 +604,25 @@ class HomologyVectorSpaceWithBasis_mod2(HomologyVectorSpaceWithBasis):
         """
         if not is_GF2(base_ring):
             raise ValueError
-        category = Modules(base_ring).WithBasis().Graded().FiniteDimensional().or_subcategory(category)
-        category = Category.join((category,
-                                  LeftModules(SteenrodAlgebra(2)),
-                                  RightModules(SteenrodAlgebra(2))))
-        HomologyVectorSpaceWithBasis.__init__(self, base_ring,
-                                              cell_complex,
-                                              cohomology=False,
-                                              category=category)
+        category = (
+            Modules(base_ring)
+            .WithBasis()
+            .Graded()
+            .FiniteDimensional()
+            .or_subcategory(category)
+        )
+        category = Category.join(
+            (
+                category,
+                LeftModules(SteenrodAlgebra(2)),
+                RightModules(SteenrodAlgebra(2)),
+            )
+        )
+        HomologyVectorSpaceWithBasis.__init__(
+            self, base_ring, cell_complex, cohomology=False, category=category
+        )
 
     class Element(HomologyVectorSpaceWithBasis.Element):
-
         def _acted_upon_(self, a, self_on_left):
             r"""
             Define multiplication of ``self`` by ``a``, an
@@ -692,8 +716,12 @@ class HomologyVectorSpaceWithBasis_mod2(HomologyVectorSpaceWithBasis):
             if not self_on_left:  # i.e., module element on left
                 a = a.antipode()
             P = self.parent()
-            return P._from_dict({x.support()[0]: self.eval(a * x)
-                                 for x in sorted(self.parent().dual().basis(m-n))})
+            return P._from_dict(
+                {
+                    x.support()[0]: self.eval(a * x)
+                    for x in sorted(self.parent().dual().basis(m - n))
+                }
+            )
 
 
 class CohomologyRing(HomologyVectorSpaceWithBasis):
@@ -730,6 +758,7 @@ class CohomologyRing(HomologyVectorSpaceWithBasis):
         sage: x * x
         -h^{4,0}
     """
+
     def __init__(self, base_ring, cell_complex, category=None) -> None:
         """
         Initialize ``self``.
@@ -745,7 +774,9 @@ class CohomologyRing(HomologyVectorSpaceWithBasis):
         """
         if category is None:
             category = Algebras(base_ring).WithBasis().Graded().FiniteDimensional()
-        HomologyVectorSpaceWithBasis.__init__(self, base_ring, cell_complex, True, category)
+        HomologyVectorSpaceWithBasis.__init__(
+            self, base_ring, cell_complex, True, category
+        )
 
     def _repr_(self) -> str:
         """
@@ -869,11 +900,15 @@ class CohomologyRing(HomologyVectorSpaceWithBasis):
         for gamma_index in H._graded_indices.get(deg_tot, []):
             gamma_coeff = base_ring.zero()
             for cell, coeff in H._to_cycle_on_basis((deg_tot, gamma_index)):
-                for (c, left_cell, right_cell) in scomplex.alexander_whitney(cell, deg_left):
+                for c, left_cell, right_cell in scomplex.alexander_whitney(
+                    cell, deg_left
+                ):
                     if c:
                         left = n_chains_left(left_cell)
                         right = n_chains_right(right_cell)
-                        gamma_coeff += c * coeff * left_cycle.eval(left) * right_cycle.eval(right)
+                        gamma_coeff += (
+                            c * coeff * left_cycle.eval(left) * right_cycle.eval(right)
+                        )
             if gamma_coeff != base_ring.zero():
                 result[(deg_tot, gamma_index)] = gamma_coeff
         return self._from_dict(result, remove_zeros=False)
@@ -1003,6 +1038,7 @@ class CohomologyRing_mod2(CohomologyRing):
         sage: x * Sq(3)
         h^{4,0}
     """
+
     def __init__(self, base_ring, cell_complex) -> None:
         """
         Initialize ``self``.
@@ -1016,9 +1052,13 @@ class CohomologyRing_mod2(CohomologyRing):
         if not is_GF2(base_ring):
             raise ValueError("the base ring must be GF(2)")
         category = Algebras(base_ring).WithBasis().Graded().FiniteDimensional()
-        category = Category.join((category,
-                                  LeftModules(SteenrodAlgebra(2)),
-                                  RightModules(SteenrodAlgebra(2))))
+        category = Category.join(
+            (
+                category,
+                LeftModules(SteenrodAlgebra(2)),
+                RightModules(SteenrodAlgebra(2)),
+            )
+        )
         CohomologyRing.__init__(self, base_ring, cell_complex, category=category)
 
     class Element(CohomologyRing.Element):
@@ -1104,14 +1144,17 @@ class CohomologyRing_mod2(CohomologyRing):
                 self = P.sum_of_terms(self.monomial_coefficients().items())
             if not isinstance(scomplex, (SimplicialComplex, SimplicialSet_arbitrary)):
                 print(scomplex, isinstance(scomplex, SimplicialComplex))
-                raise NotImplementedError('Steenrod squares are not implemented for '
-                                          'this type of cell complex')
+                raise NotImplementedError(
+                    'Steenrod squares are not implemented for this type of cell complex'
+                )
             scomplex = P.complex()
             base_ring = P.base_ring()
             if not is_GF2(base_ring):
                 # This should never happen: the class should only be
                 # instantiated in characteristic 2.
-                raise ValueError('Steenrod squares are only defined in characteristic 2')
+                raise ValueError(
+                    'Steenrod squares are only defined in characteristic 2'
+                )
             # We keep the same notation as in [GDR1999].
             # The trivial cases:
             if i == 0:
@@ -1141,12 +1184,15 @@ class CohomologyRing_mod2(CohomologyRing):
                 n = j - i
                 # Now assemble the indices over which the sums take place.
                 # S(n) is defined to be floor((m+1)/2) + floor(n/2).
-                S_n = (m+1) // 2 + n // 2
+                S_n = (m + 1) // 2 + n // 2
                 if n == 0:
                     sums = [[S_n]]
                 else:
-                    sums = [[i_n] + l for i_n in range(S_n, m+1)
-                            for l in sum_indices(n-1, i_n, S_n)]
+                    sums = [
+                        [i_n] + l
+                        for i_n in range(S_n, m + 1)
+                        for l in sum_indices(n - 1, i_n, S_n)
+                    ]
                 # At this point, 'sums' is a list of lists of the form
                 # [i_n, i_{n-1}, ..., i_0]. (It is reversed from the
                 # obvious order because this is closer to the order in
@@ -1171,7 +1217,9 @@ class CohomologyRing_mod2(CohomologyRing):
                                         left = scomplex.face(left, k)
                                     try:
                                         left_endpoint = indices[0] - 1
-                                        for k in range(right_endpoint, indices.pop(0), -1):
+                                        for k in range(
+                                            right_endpoint, indices.pop(0), -1
+                                        ):
                                             right = scomplex.face(right, k)
                                     except IndexError:
                                         pass
@@ -1182,7 +1230,9 @@ class CohomologyRing_mod2(CohomologyRing):
                                 while indices:
                                     left_endpoint = indices[0] - 1
                                     try:
-                                        for k in range(right_endpoint, indices.pop(0), -1):
+                                        for k in range(
+                                            right_endpoint, indices.pop(0), -1
+                                        ):
                                             right = scomplex.face(right, k)
                                         right_endpoint = indices[0] - 1
                                     except IndexError:
@@ -1192,13 +1242,16 @@ class CohomologyRing_mod2(CohomologyRing):
                                 for k in range(right_endpoint, -1, -1):
                                     right = scomplex.face(right, k)
 
-                            if ((hasattr(left, 'is_nondegenerate')
-                                 and left.is_nondegenerate()
-                                 and right.is_nondegenerate())
-                                    or not hasattr(left, 'is_nondegenerate')):
+                            if (
+                                hasattr(left, 'is_nondegenerate')
+                                and left.is_nondegenerate()
+                                and right.is_nondegenerate()
+                            ) or not hasattr(left, 'is_nondegenerate'):
                                 left = n_chains(left)
                                 right = n_chains(right)
-                                gamma_coeff += coeff * cycle.eval(left) * cycle.eval(right)
+                                gamma_coeff += (
+                                    coeff * cycle.eval(left) * cycle.eval(right)
+                                )
                     if gamma_coeff != base_ring.zero():
                         result[(m, gamma_index)] = gamma_coeff
                 ret += P._from_dict(result, remove_zeros=False)
@@ -1387,10 +1440,12 @@ class CohomologyRing_mod2(CohomologyRing):
         # We built the matrix column by column, so now we take the
         # transpose.
         if side == 'left':
-            return matrix(base_ring, len(A_basis) * len(H_basis_dom),
-                          len(H_basis_cod), entries).transpose()
-        return matrix(base_ring, len(A_basis) * len(H_basis_dom),
-                          len(H_basis_cod), entries)
+            return matrix(
+                base_ring, len(A_basis) * len(H_basis_dom), len(H_basis_cod), entries
+            ).transpose()
+        return matrix(
+            base_ring, len(A_basis) * len(H_basis_dom), len(H_basis_cod), entries
+        )
 
 
 def sum_indices(k, i_k_plus_one, S_k_plus_one):
@@ -1427,11 +1482,14 @@ def sum_indices(k, i_k_plus_one, S_k_plus_one):
         sage: sum_indices(0, 4, 2)
         [[2]]
     """
-    S_k = -S_k_plus_one + k//2 + (k+1)//2 + i_k_plus_one
+    S_k = -S_k_plus_one + k // 2 + (k + 1) // 2 + i_k_plus_one
     if k == 0:
         return [[S_k]]
-    return [[i_k] + l for i_k in range(S_k, i_k_plus_one)
-            for l in sum_indices(k-1, i_k, S_k)]
+    return [
+        [i_k] + l
+        for i_k in range(S_k, i_k_plus_one)
+        for l in sum_indices(k - 1, i_k, S_k)
+    ]
 
 
 def is_GF2(R) -> bool:

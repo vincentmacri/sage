@@ -361,6 +361,7 @@ Value restrictions::
     ...
     ValueError: no possible values found for singleton block [[1, 2]]
 """
+
 # ****************************************************************************
 #       Copyright (C) 2020 Martin Rubey <martin.rubey at tuwien.ac.at>
 #                          Stephan Pfannerer
@@ -482,10 +483,22 @@ class Bijectionist(SageObject):
         :meth:`set_constant_blocks`, etc., is irrelevant.  Calling any of these
         methods a second time overrides the previous specification.
     """
-    def __init__(self, A, B, tau=None, alpha_beta=tuple(), P=None,
-                 pi_rho=tuple(), phi_psi=tuple(), Q=None,
-                 elements_distributions=tuple(),
-                 value_restrictions=tuple(), solver=None, key=None):
+
+    def __init__(
+        self,
+        A,
+        B,
+        tau=None,
+        alpha_beta=tuple(),
+        P=None,
+        pi_rho=tuple(),
+        phi_psi=tuple(),
+        Q=None,
+        elements_distributions=tuple(),
+        value_restrictions=tuple(),
+        solver=None,
+        key=None,
+    ):
         """
         Initialize the bijectionist.
 
@@ -763,12 +776,15 @@ class Bijectionist(SageObject):
         for b in self._B:
             v = self._beta(b)
             if v not in self._statistics_fibers:
-                raise ValueError(f"statistics alpha and beta do not have the same image, {v} is not a value of alpha, but of beta")
+                raise ValueError(
+                    f"statistics alpha and beta do not have the same image, {v} is not a value of alpha, but of beta"
+                )
             self._statistics_fibers[v][1].append(b)
 
         # check compatibility
-        if not all(len(fiber[0]) == len(fiber[1])
-                   for fiber in self._statistics_fibers.values()):
+        if not all(
+            len(fiber[0]) == len(fiber[1]) for fiber in self._statistics_fibers.values()
+        ):
             raise ValueError("statistics alpha and beta are not equidistributed")
 
         self._W = list(self._statistics_fibers)
@@ -779,8 +795,9 @@ class Bijectionist(SageObject):
         for a in self._A:
             v = self._alpha(a)
             if v not in tau_beta_inverse:
-                tau_beta_inverse[v] = set(self._tau[b]
-                                          for b in self._statistics_fibers[v][1])
+                tau_beta_inverse[v] = set(
+                    self._tau[b] for b in self._statistics_fibers[v][1]
+                )
             self._statistics_possible_values[a] = tau_beta_inverse[v]
 
     def statistics_fibers(self):
@@ -939,8 +956,9 @@ class Bijectionist(SageObject):
         # table for alpha
         n_statistics = self._n_statistics
         if header:
-            output_alphas = [["a"] + ["\u03b1_" + str(i) + "(a)"
-                                      for i in range(1, n_statistics + 1)]]
+            output_alphas = [
+                ["a"] + ["\u03b1_" + str(i) + "(a)" for i in range(1, n_statistics + 1)]
+            ]
         else:
             output_alphas = []
 
@@ -952,8 +970,10 @@ class Bijectionist(SageObject):
 
         # table for beta and tau
         if header:
-            output_tau_betas = [["b", "\u03c4"] + ["\u03b2_" + str(i) + "(b)"
-                                                   for i in range(1, n_statistics + 1)]]
+            output_tau_betas = [
+                ["b", "\u03c4"]
+                + ["\u03b2_" + str(i) + "(b)" for i in range(1, n_statistics + 1)]
+            ]
         else:
             output_tau_betas = []
         for b in self._B:
@@ -1063,7 +1083,9 @@ class Bijectionist(SageObject):
         self._restrictions_possible_values = {a: set_Z for a in self._A}
         for a, values in value_restrictions:
             assert a in self._A, f"element {a} was not found in A"
-            self._restrictions_possible_values[a] = self._restrictions_possible_values[a].intersection(values)
+            self._restrictions_possible_values[a] = self._restrictions_possible_values[
+                a
+            ].intersection(values)
 
     def _compute_possible_block_values(self):
         r"""
@@ -1087,12 +1109,15 @@ class Bijectionist(SageObject):
         """
         self._possible_block_values = {}  # P -> Power(Z)
         for p, block in self._P.root_to_elements_dict().items():
-            sets = ([self._restrictions_possible_values[a] for a in block]
-                    + [self._statistics_possible_values[a] for a in block])
+            sets = [self._restrictions_possible_values[a] for a in block] + [
+                self._statistics_possible_values[a] for a in block
+            ]
             self._possible_block_values[p] = _non_copying_intersection(sets)
             if not self._possible_block_values[p]:
                 if len(block) == 1:
-                    raise ValueError(f"no possible values found for singleton block {block}")
+                    raise ValueError(
+                        f"no possible values found for singleton block {block}"
+                    )
                 raise ValueError(f"no possible values found for block {block}")
 
     def set_distributions(self, *elements_distributions):
@@ -1461,7 +1486,9 @@ class Bijectionist(SageObject):
             self._Q = None
         else:
             self._Q = SetPartition(Q)
-            assert self._Q in SetPartitions(self._A), f"{Q} must be a set partition of A"
+            assert self._Q in SetPartitions(self._A), (
+                f"{Q} must be a set partition of A"
+            )
 
     def _forced_constant_blocks(self):
         r"""
@@ -1633,9 +1660,9 @@ class Bijectionist(SageObject):
         solution = next(self._bmilp.solutions_iterator(True, []))
         # multiple_preimages[tZ] are the blocks p which have the same
         # value tZ[i] in the i-th known solution
-        multiple_preimages = {(z,): tP
-                              for z, tP in _invert_dict(solution).items()
-                              if len(tP) > 1}
+        multiple_preimages = {
+            (z,): tP for z, tP in _invert_dict(solution).items() if len(tP) > 1
+        }
 
         # _P has to be copied to not mess with the solution process
         # since we do not want to regenerate the bmilp in each step,
@@ -1645,9 +1672,11 @@ class Bijectionist(SageObject):
         # check whether blocks p1 and p2 can have different values,
         # if so return such a solution
         def different_values(p1, p2):
-            tmp_constraints = [self._bmilp._x[p1, z] + self._bmilp._x[p2, z] <= 1
-                               for z in self._possible_block_values[p1]
-                               if z in self._possible_block_values[p2]]
+            tmp_constraints = [
+                self._bmilp._x[p1, z] + self._bmilp._x[p2, z] <= 1
+                for z in self._possible_block_values[p1]
+                if z in self._possible_block_values[p2]
+            ]
             return next(self._bmilp.solutions_iterator(True, tmp_constraints))
 
         # try to find a pair of blocks having the same value on all
@@ -1674,8 +1703,7 @@ class Bijectionist(SageObject):
             if solution is None:
                 self._P = tmp_P
                 # recreate the MILP
-                self._bmilp = _BijectionistMILP(self,
-                                                self._bmilp._solution_cache)
+                self._bmilp = _BijectionistMILP(self, self._bmilp._solution_cache)
                 return
 
             updated_multiple_preimages = defaultdict(list)
@@ -1780,7 +1808,9 @@ class Bijectionist(SageObject):
                     tmp_constraints = [bmilp._x[p, z] == 0 for z in solutions[p]]
                     while True:
                         try:
-                            solution = next(bmilp.solutions_iterator(True, tmp_constraints))
+                            solution = next(
+                                bmilp.solutions_iterator(True, tmp_constraints)
+                            )
                         except StopIteration:
                             break
                         for p0, z in solution.items():
@@ -1854,7 +1884,9 @@ class Bijectionist(SageObject):
         # and
         # https://gitlab.com/mantepse/bijection-tools/-/issues/29
 
-        minimal_subdistribution = MixedIntegerLinearProgram(maximization=False, solver=self._solver)
+        minimal_subdistribution = MixedIntegerLinearProgram(
+            maximization=False, solver=self._solver
+        )
         D = minimal_subdistribution.new_variable(binary=True)  # the subset of elements
         V = minimal_subdistribution.new_variable(integer=True)  # the subdistribution
         minimal_subdistribution.set_objective(sum(D[a] for a in self._A))
@@ -1865,25 +1897,35 @@ class Bijectionist(SageObject):
         s = next(self._bmilp.solutions_iterator(False, []))
         while True:
             for v in self._Z:
-                minimal_subdistribution.add_constraint(sum(D[a] for a in self._A if s[a] == v) == V[v])
+                minimal_subdistribution.add_constraint(
+                    sum(D[a] for a in self._A if s[a] == v) == V[v]
+                )
             try:
                 minimal_subdistribution.solve()
             except MIPSolverException:
                 return
-            d = minimal_subdistribution.get_values(D, convert=bool, tolerance=0.1)  # a dict from A to {0, 1}
+            d = minimal_subdistribution.get_values(
+                D, convert=bool, tolerance=0.1
+            )  # a dict from A to {0, 1}
             new_s = self._find_counterexample(self._A, s, d, False)
             if new_s is None:
                 values = self._sorter["Z"](s[a] for a in self._A if d[a])
                 yield ([a for a in self._A if d[a]], values)
 
                 # get all variables with value 1
-                active_vars = [D[a] for a in self._A
-                               if minimal_subdistribution.get_values(D[a], convert=bool, tolerance=0.1)]
+                active_vars = [
+                    D[a]
+                    for a in self._A
+                    if minimal_subdistribution.get_values(
+                        D[a], convert=bool, tolerance=0.1
+                    )
+                ]
 
                 # add constraint that not all of these can be 1, thus vetoing
                 # the current solution
-                minimal_subdistribution.add_constraint(sum(active_vars) <= len(active_vars) - 1,
-                                                       name='veto')
+                minimal_subdistribution.add_constraint(
+                    sum(active_vars) <= len(active_vars) - 1, name='veto'
+                )
             else:
                 s = new_s
 
@@ -1930,9 +1972,11 @@ class Bijectionist(SageObject):
 
             # try to find a solution which has a different
             # subdistribution on d than s0
-            z_in_d = sum(d[p] * bmilp._x[self._P.find(p), z]
-                         for p in P
-                         if z in self._possible_block_values[self._P.find(p)])
+            z_in_d = sum(
+                d[p] * bmilp._x[self._P.find(p), z]
+                for p in P
+                if z in self._possible_block_values[self._P.find(p)]
+            )
 
             # it is sufficient to require that z occurs less often as
             # a value among {a | d[a] == 1} than it does in
@@ -2063,21 +2107,32 @@ class Bijectionist(SageObject):
         # https://gitlab.com/mantepse/bijection-tools/-/issues/29
         # see https://mathoverflow.net/q/424187 for Fedor Petrov's example
 
-        minimal_subdistribution = MixedIntegerLinearProgram(maximization=False, solver=self._solver)
-        D = minimal_subdistribution.new_variable(integer=True, nonnegative=True)  # the submultiset of elements
+        minimal_subdistribution = MixedIntegerLinearProgram(
+            maximization=False, solver=self._solver
+        )
+        D = minimal_subdistribution.new_variable(
+            integer=True, nonnegative=True
+        )  # the submultiset of elements
         X = minimal_subdistribution.new_variable(binary=True)  # the support of D
-        V = minimal_subdistribution.new_variable(integer=True, nonnegative=True)  # the subdistribution
+        V = minimal_subdistribution.new_variable(
+            integer=True, nonnegative=True
+        )  # the subdistribution
         P = _disjoint_set_roots(self._P)
         minimal_subdistribution.set_objective(sum(D[p] for p in P))
         minimal_subdistribution.add_constraint(sum(D[p] for p in P) >= 1)
         for p in P:
-            minimal_subdistribution.add_constraint(D[p] <= len(self._P.root_to_elements_dict()[p]))
-            minimal_subdistribution.add_constraint(X[p] * len(self._P.root_to_elements_dict()[p]) >= D[p] >= X[p])
+            minimal_subdistribution.add_constraint(
+                D[p] <= len(self._P.root_to_elements_dict()[p])
+            )
+            minimal_subdistribution.add_constraint(
+                X[p] * len(self._P.root_to_elements_dict()[p]) >= D[p] >= X[p]
+            )
 
         def add_counter_example_constraint(s):
             for v in self._Z:
-                minimal_subdistribution.add_constraint(sum(D[p] for p in P
-                                                           if s[p] == v) == V[v])
+                minimal_subdistribution.add_constraint(
+                    sum(D[p] for p in P if s[p] == v) == V[v]
+                )
 
         if self._bmilp is None:
             self._bmilp = _BijectionistMILP(self)
@@ -2089,18 +2144,21 @@ class Bijectionist(SageObject):
                 minimal_subdistribution.solve()
             except MIPSolverException:
                 return
-            d = minimal_subdistribution.get_values(D, convert=ZZ, tolerance=0.1)  # a dict from P to multiplicities
+            d = minimal_subdistribution.get_values(
+                D, convert=ZZ, tolerance=0.1
+            )  # a dict from P to multiplicities
             new_s = self._find_counterexample(P, s, d, True)
             if new_s is None:
-                yield ([p for p in P for _ in range(ZZ(d[p]))],
-                       self._sorter["Z"](s[p]
-                                         for p in P
-                                         for _ in range(ZZ(d[p]))))
+                yield (
+                    [p for p in P for _ in range(ZZ(d[p]))],
+                    self._sorter["Z"](s[p] for p in P for _ in range(ZZ(d[p]))),
+                )
 
                 support = [X[p] for p in P if d[p]]
                 # add constraint that the support is different
-                minimal_subdistribution.add_constraint(sum(support) <= len(support) - 1,
-                                                       name='veto')
+                minimal_subdistribution.add_constraint(
+                    sum(support) <= len(support) - 1, name='veto'
+                )
             else:
                 s = new_s
                 add_counter_example_constraint(s)
@@ -2172,7 +2230,9 @@ class Bijectionist(SageObject):
         """
         A = self._A
         P = self._P
-        images = defaultdict(set)  # A^k -> A, a_1,...,a_k +-> {pi(a_1,...,a_k) for all pi}
+        images = defaultdict(
+            set
+        )  # A^k -> A, a_1,...,a_k +-> {pi(a_1,...,a_k) for all pi}
         for pi_rho in self._pi_rho:
             for a_tuple in itertools.product(*([A] * pi_rho.numargs)):
                 if pi_rho.domain is not None and not pi_rho.domain(*a_tuple):
@@ -2460,6 +2520,7 @@ class _BijectionistMILP:
     This class is used to manage the MILP, add constraints, solve the
     problem and check for uniqueness of solution values.
     """
+
     def __init__(self, bijectionist: Bijectionist, solutions=None):
         r"""
         Initialize the mixed integer linear program.
@@ -2500,16 +2561,17 @@ class _BijectionistMILP:
 
         self.milp = MixedIntegerLinearProgram(solver=bijectionist._solver)
         self.milp.set_objective(None)
-        indices = [(p, z)
-                   for p, tZ in bijectionist._possible_block_values.items()
-                   for z in tZ]
+        indices = [
+            (p, z) for p, tZ in bijectionist._possible_block_values.items() for z in tZ
+        ]
         self._x = self.milp.new_variable(binary=True, indices=indices)
 
         tZ = bijectionist._possible_block_values
         P = bijectionist._P
         for p in _disjoint_set_roots(P):
-            self.milp.add_constraint(sum(self._x[p, z] for z in tZ[p]) == 1,
-                                     name=f"block {p}"[:50])
+            self.milp.add_constraint(
+                sum(self._x[p, z] for z in tZ[p]) == 1, name=f"block {p}"[:50]
+            )
         self.add_alpha_beta_constraints()
         self.add_distribution_constraints()
         self.add_quadratic_relation_constraints()
@@ -2521,8 +2583,9 @@ class _BijectionistMILP:
         self._solution_cache = []
         if solutions is not None:
             for solution in solutions:
-                self._add_solution({(P.find(a), z): value
-                                    for (a, z), value in solution.items()})
+                self._add_solution(
+                    {(P.find(a), z): value for (a, z), value in solution.items()}
+                )
 
     def show(self, variables=True):
         r"""
@@ -2569,12 +2632,30 @@ class _BijectionistMILP:
                 c = ZZ(c)
                 if c == 0:
                     continue
-                print((("+ " if (not first and c > 0) else "") +
-                       ("" if c == 1 else
-                        ("- " if c == -1 else
-                         (str(c) + " " if first and c < 0 else
-                          ("- " + str(abs(c)) + " " if c < 0 else str(c) + " "))))
-                       + varid_name[j]), end=" ")
+                print(
+                    (
+                        ("+ " if (not first and c > 0) else "")
+                        + (
+                            ""
+                            if c == 1
+                            else (
+                                "- "
+                                if c == -1
+                                else (
+                                    str(c) + " "
+                                    if first and c < 0
+                                    else (
+                                        "- " + str(abs(c)) + " "
+                                        if c < 0
+                                        else str(c) + " "
+                                    )
+                                )
+                            )
+                        )
+                        + varid_name[j]
+                    ),
+                    end=" ",
+                )
                 first = False
             # Upper bound
             print("<= " + str(ZZ(ub)) if ub is not None else "")
@@ -2583,8 +2664,7 @@ class _BijectionistMILP:
             print("Variables are:")
             P = self._bijectionist._P.root_to_elements_dict()
             for (p, z), v in self._x.items():
-                print(f"    {v}: " + "".join([f"s({a}) = "
-                                              for a in P[p]]) + f"{z}")
+                print(f"    {v}: " + "".join([f"s({a}) = " for a in P[p]]) + f"{z}")
 
     def _prepare_solution(self, on_blocks, solution):
         r"""
@@ -2656,20 +2736,24 @@ class _BijectionistMILP:
             while i < len(self._solution_cache):
                 solution = self._solution_cache[i]
                 i += 1
-                if all(self._is_solution(constraint, solution)
-                       for constraint in additional_constraints):
+                if all(
+                    self._is_solution(constraint, solution)
+                    for constraint in additional_constraints
+                ):
                     yield self._prepare_solution(on_blocks, solution)
                     break
             else:
                 new_indices = []
                 for constraint in additional_constraints:
-                    new_indices.extend(self.milp.add_constraint(constraint,
-                                                                return_indices=True))
+                    new_indices.extend(
+                        self.milp.add_constraint(constraint, return_indices=True)
+                    )
                 try:
                     self.milp.solve()
                     # moving this out of the try...finally block breaks SCIP
-                    solution = self.milp.get_values(self._x,
-                                                    convert=bool, tolerance=0.1)
+                    solution = self.milp.get_values(
+                        self._x, convert=bool, tolerance=0.1
+                    )
                 except MIPSolverException:
                     return
                 finally:
@@ -2718,12 +2802,13 @@ class _BijectionistMILP:
                 x_2: s(b) = b
                 x_3: s(b) = a
         """
-        active_vars = [self._x[p, z]
-                       for p in _disjoint_set_roots(self._bijectionist._P)
-                       for z in self._bijectionist._possible_block_values[p]
-                       if solution[(p, z)]]
-        self.milp.add_constraint(sum(active_vars) <= len(active_vars) - 1,
-                                 name='veto')
+        active_vars = [
+            self._x[p, z]
+            for p in _disjoint_set_roots(self._bijectionist._P)
+            for z in self._bijectionist._possible_block_values[p]
+            if solution[(p, z)]
+        ]
+        self.milp.add_constraint(sum(active_vars) <= len(active_vars) - 1, name='veto')
         self._solution_cache.append(solution)
 
     def _is_solution(self, constraint, values):
@@ -2759,9 +2844,10 @@ class _BijectionistMILP:
             index_block_value_dict[variable_index] = (p, z)
 
         def evaluate(f):
-            return sum(coeff if index == -1 else
-                       coeff * values[index_block_value_dict[index]]
-                       for index, coeff in f.dict().items())
+            return sum(
+                coeff if index == -1 else coeff * values[index_block_value_dict[index]]
+                for index, coeff in f.dict().items()
+            )
 
         if any(evaluate(lhs - rhs) for lhs, rhs in constraint.equations()):
             return False
@@ -2814,8 +2900,9 @@ class _BijectionistMILP:
 
         for w in range(len(W)):
             for z in range(len(Z)):
-                self.milp.add_constraint(AZ_matrix[z][w] == B_matrix[z][w],
-                                         name='statistics')
+                self.milp.add_constraint(
+                    AZ_matrix[z][w] == B_matrix[z][w], name='statistics'
+                )
 
     def add_distribution_constraints(self):
         r"""
@@ -2928,19 +3015,26 @@ class _BijectionistMILP:
                     if (p_tuple, p) not in pi_blocks:
                         pi_blocks.add((p_tuple, p))
                         for z_tuple in itertools.product(*[tZ[p] for p in p_tuple]):
-                            rhs = (1 - pi_rho.numargs
-                                   + sum(self._x[p_i, z_i]
-                                         for p_i, z_i in zip(p_tuple, z_tuple)))
+                            rhs = (
+                                1
+                                - pi_rho.numargs
+                                + sum(
+                                    self._x[p_i, z_i]
+                                    for p_i, z_i in zip(p_tuple, z_tuple)
+                                )
+                            )
                             z = pi_rho.rho(*z_tuple)
                             if z in tZ[p]:
                                 c = self._x[p, z] - rhs
                                 if c.is_zero():
                                     continue
-                                self.milp.add_constraint(c >= 0,
-                                                         name=f"pi/rho({composition_index})")
+                                self.milp.add_constraint(
+                                    c >= 0, name=f"pi/rho({composition_index})"
+                                )
                             else:
-                                self.milp.add_constraint(rhs <= 0,
-                                                         name=f"pi/rho({composition_index})")
+                                self.milp.add_constraint(
+                                    rhs <= 0, name=f"pi/rho({composition_index})"
+                                )
 
     def add_quadratic_relation_constraints(self):
         r"""
@@ -2988,16 +3082,22 @@ class _BijectionistMILP:
         for phi, psi in self._bijectionist._phi_psi:
             for p, block in P.root_to_elements_dict().items():
                 z0 = phi(p)
-                assert all(phi(a) == z0 for a in block), "phi must be constant on the block %s" % block
+                assert all(phi(a) == z0 for a in block), (
+                    "phi must be constant on the block %s" % block
+                )
                 for z in self._bijectionist._possible_block_values[p]:
                     p0 = P.find(psi(z))
                     if z0 in self._bijectionist._possible_block_values[p0]:
                         c = self._x[p, z] - self._x[p0, z0]
                         if c.is_zero():
                             continue
-                        self.milp.add_constraint(c == 0, name=f"i: s({p})={z}<->s(psi({z})=phi({p})")
+                        self.milp.add_constraint(
+                            c == 0, name=f"i: s({p})={z}<->s(psi({z})=phi({p})"
+                        )
                     else:
-                        self.milp.add_constraint(self._x[p, z] == 0, name=f"i: s({p})!={z}")
+                        self.milp.add_constraint(
+                            self._x[p, z] == 0, name=f"i: s({p})!={z}"
+                        )
 
     def add_homomesic_constraints(self):
         r"""
@@ -3028,13 +3128,14 @@ class _BijectionistMILP:
         tZ = self._bijectionist._possible_block_values
 
         def sum_q(q):
-            return sum(sum(z * self._x[P.find(a), z] for z in tZ[P.find(a)])
-                       for a in q)
+            return sum(sum(z * self._x[P.find(a), z] for z in tZ[P.find(a)]) for a in q)
+
         q0 = Q[0]
         v0 = sum_q(q0)
         for q in Q[1:]:
-            self.milp.add_constraint(len(q0) * sum_q(q) == len(q) * v0,
-                                     name=f"h: ({q})~({q0})")
+            self.milp.add_constraint(
+                len(q0) * sum_q(q) == len(q) * v0, name=f"h: ({q})~({q0})"
+            )
 
 
 def _invert_dict(d):

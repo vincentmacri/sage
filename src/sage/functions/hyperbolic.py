@@ -289,7 +289,11 @@ class Function_sech(GinacFunction):
             sage: sech(x)._sympy_()                                                     # needs sympy
             sech(x)
         """
-        GinacFunction.__init__(self, "sech", latex_name=r"\operatorname{sech}",)
+        GinacFunction.__init__(
+            self,
+            "sech",
+            latex_name=r"\operatorname{sech}",
+        )
 
     def _eval_numpy_(self, x):
         """
@@ -420,10 +424,18 @@ class Function_arcsinh(GinacFunction):
             sage: asinh(x)._sympy_()                                                    # needs sympy sage.symbolic
             asinh(x)
         """
-        GinacFunction.__init__(self, "arcsinh",
-                latex_name=r"\operatorname{arsinh}",
-                conversions=dict(maxima='asinh', sympy='asinh', fricas='asinh',
-                                 giac='asinh', mathematica='ArcSinh'))
+        GinacFunction.__init__(
+            self,
+            "arcsinh",
+            latex_name=r"\operatorname{arsinh}",
+            conversions=dict(
+                maxima='asinh',
+                sympy='asinh',
+                fricas='asinh',
+                giac='asinh',
+                mathematica='ArcSinh',
+            ),
+        )
 
 
 arcsinh = asinh = Function_arcsinh()
@@ -511,10 +523,18 @@ class Function_arccosh(GinacFunction):
             sage: acosh(x)._sympy_()                                                    # needs sympy sage.symbolic
             acosh(x)
         """
-        GinacFunction.__init__(self, "arccosh",
-                latex_name=r"\operatorname{arcosh}",
-                conversions=dict(maxima='acosh', sympy='acosh', fricas='acosh',
-                                 giac='acosh', mathematica='ArcCosh'))
+        GinacFunction.__init__(
+            self,
+            "arccosh",
+            latex_name=r"\operatorname{arcosh}",
+            conversions=dict(
+                maxima='acosh',
+                sympy='acosh',
+                fricas='acosh',
+                giac='acosh',
+                mathematica='ArcCosh',
+            ),
+        )
 
 
 arccosh = acosh = Function_arccosh()
@@ -572,10 +592,18 @@ class Function_arctanh(GinacFunction):
             sage: atanh(x)._sympy_()                                                    # needs sympy sage.symbolic
             atanh(x)
         """
-        GinacFunction.__init__(self, "arctanh",
-                latex_name=r"\operatorname{artanh}",
-                conversions=dict(maxima='atanh', sympy='atanh', fricas='atanh',
-                                 giac='atanh', mathematica='ArcTanh'))
+        GinacFunction.__init__(
+            self,
+            "arctanh",
+            latex_name=r"\operatorname{artanh}",
+            conversions=dict(
+                maxima='atanh',
+                sympy='atanh',
+                fricas='atanh',
+                giac='atanh',
+                mathematica='ArcTanh',
+            ),
+        )
 
 
 arctanh = atanh = Function_arctanh()
@@ -622,11 +650,18 @@ class Function_arccoth(GinacFunction):
             sage: acoth(float(1.1))                                                     # needs sage.symbolic
             1.5222612188617113
         """
-        GinacFunction.__init__(self, "arccoth",
-                latex_name=r"\operatorname{arcoth}",
-                conversions=dict(maxima='acoth', sympy='acoth',
-                                 mathematica='ArcCoth',
-                                 giac='acoth', fricas='acoth'))
+        GinacFunction.__init__(
+            self,
+            "arccoth",
+            latex_name=r"\operatorname{arcoth}",
+            conversions=dict(
+                maxima='acoth',
+                sympy='acoth',
+                mathematica='ArcCoth',
+                giac='acoth',
+                fricas='acoth',
+            ),
+        )
 
     def _eval_numpy_(self, x):
         """
@@ -669,11 +704,14 @@ class Function_arcsech(GinacFunction):
             sage: asech(x)._sympy_()                                                    # needs sympy sage.symbolic
             asech(x)
         """
-        GinacFunction.__init__(self, "arcsech",
-                latex_name=r"\operatorname{arsech}",
-                conversions=dict(maxima='asech', sympy='asech',
-                                 mathematica='ArcSech',
-                                 fricas='asech'))
+        GinacFunction.__init__(
+            self,
+            "arcsech",
+            latex_name=r"\operatorname{arsech}",
+            conversions=dict(
+                maxima='asech', sympy='asech', mathematica='ArcSech', fricas='asech'
+            ),
+        )
 
     def _eval_numpy_(self, x):
         """
@@ -724,11 +762,14 @@ class Function_arccsch(GinacFunction):
             sage: acsch(x)._sympy_()                                                    # needs sympy sage.symbolic
             acsch(x)
         """
-        GinacFunction.__init__(self, "arccsch",
-                latex_name=r"\operatorname{arcsch}",
-                conversions=dict(maxima='acsch',
-                                 mathematica='ArcCsch',
-                                 sympy='acsch', fricas='acsch'))
+        GinacFunction.__init__(
+            self,
+            "arccsch",
+            latex_name=r"\operatorname{arcsch}",
+            conversions=dict(
+                maxima='acsch', mathematica='ArcCsch', sympy='acsch', fricas='acsch'
+            ),
+        )
 
     def _eval_numpy_(self, x):
         """

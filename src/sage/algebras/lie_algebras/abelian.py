@@ -6,7 +6,7 @@ AUTHORS:
 - Travis Scrimshaw (2016-06-07): Initial version
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2013-2017 Travis Scrimshaw <tcscrims at gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -14,14 +14,18 @@ AUTHORS:
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
-from sage.structure.indexed_generators import (IndexedGenerators,
-                                               standardize_names_index_set)
+from sage.structure.indexed_generators import (
+    IndexedGenerators,
+    standardize_names_index_set,
+)
 from sage.categories.lie_algebras import LieAlgebras
 from sage.algebras.lie_algebras.lie_algebra_element import LieAlgebraElement
 from sage.algebras.lie_algebras.lie_algebra import InfinitelyGeneratedLieAlgebra
-from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
+from sage.algebras.lie_algebras.structure_coefficients import (
+    LieAlgebraWithStructureCoefficients,
+)
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.infinity import infinity
 from sage.sets.family import Family
@@ -40,8 +44,11 @@ class AbelianLieAlgebra(LieAlgebraWithStructureCoefficients):
         sage: L.bracket(x, y)
         0
     """
+
     @staticmethod
-    def __classcall_private__(cls, R, names=None, index_set=None, category=None, **kwds):
+    def __classcall_private__(
+        cls, R, names=None, index_set=None, category=None, **kwds
+    ):
         """
         Normalize input to ensure a unique representation.
 
@@ -55,7 +62,9 @@ class AbelianLieAlgebra(LieAlgebraWithStructureCoefficients):
         names, index_set = standardize_names_index_set(names, index_set)
         if index_set.cardinality() == infinity:
             return InfiniteDimensionalAbelianLieAlgebra(R, index_set, **kwds)
-        return super().__classcall__(cls, R, names, index_set, category=category, **kwds)
+        return super().__classcall__(
+            cls, R, names, index_set, category=category, **kwds
+        )
 
     def __init__(self, R, names, index_set, category, **kwds):
         """
@@ -68,8 +77,9 @@ class AbelianLieAlgebra(LieAlgebraWithStructureCoefficients):
         """
         cat = LieAlgebras(R).FiniteDimensional().WithBasis().Nilpotent()
         category = cat.or_subcategory(category)
-        LieAlgebraWithStructureCoefficients.__init__(self, R, Family({}), names,
-                                                     index_set, category, **kwds)
+        LieAlgebraWithStructureCoefficients.__init__(
+            self, R, Family({}), names, index_set, category, **kwds
+        )
 
     def _repr_(self):
         """
@@ -82,9 +92,12 @@ class AbelianLieAlgebra(LieAlgebraWithStructureCoefficients):
         """
         gens = self.lie_algebra_generators()
         if gens.cardinality() == 1:
-            return "Abelian Lie algebra on generator {} over {}".format(tuple(gens)[0], self.base_ring())
+            return "Abelian Lie algebra on generator {} over {}".format(
+                tuple(gens)[0], self.base_ring()
+            )
         return "Abelian Lie algebra on {} generators {} over {}".format(
-            gens.cardinality(), tuple(gens), self.base_ring())
+            gens.cardinality(), tuple(gens), self.base_ring()
+        )
 
     def _construct_UEA(self):
         """
@@ -127,13 +140,16 @@ class AbelianLieAlgebra(LieAlgebraWithStructureCoefficients):
             return self.parent().zero()
 
 
-class InfiniteDimensionalAbelianLieAlgebra(InfinitelyGeneratedLieAlgebra, IndexedGenerators):
+class InfiniteDimensionalAbelianLieAlgebra(
+    InfinitelyGeneratedLieAlgebra, IndexedGenerators
+):
     r"""
     An infinite dimensional abelian Lie algebra.
 
     A Lie algebra `\mathfrak{g}` is abelian if `[x, y] = 0` for all
     `x, y \in \mathfrak{g}`.
     """
+
     def __init__(self, R, index_set, prefix='L', **kwds):
         """
         Initialize ``self``.

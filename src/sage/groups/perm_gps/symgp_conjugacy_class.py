@@ -20,6 +20,7 @@ class SymmetricGroupConjugacyClassMixin:
     Mixin class which contains methods for conjugacy classes of
     the symmetric group.
     """
+
     def __init__(self, domain, part):
         """
         Initialize ``self``.
@@ -96,7 +97,9 @@ class SymmetricGroupConjugacyClassMixin:
         return self._part
 
 
-class SymmetricGroupConjugacyClass(SymmetricGroupConjugacyClassMixin, ConjugacyClassGAP):
+class SymmetricGroupConjugacyClass(
+    SymmetricGroupConjugacyClassMixin, ConjugacyClassGAP
+):
     """
     A conjugacy class of the symmetric group.
 
@@ -105,6 +108,7 @@ class SymmetricGroupConjugacyClass(SymmetricGroupConjugacyClassMixin, ConjugacyC
     - ``group`` -- the symmetric group
     - ``part`` -- a partition or an element of ``group``
     """
+
     def __init__(self, group, part):
         """
         Initialize ``self``.
@@ -167,8 +171,10 @@ class SymmetricGroupConjugacyClass(SymmetricGroupConjugacyClassMixin, ConjugacyC
             True
         """
         if not self._set:
-            self._set = Set(self._parent.element_class(x, self._parent, check=False)
-                            for x in conjugacy_class_iterator(self._part, self._domain))
+            self._set = Set(
+                self._parent.element_class(x, self._parent, check=False)
+                for x in conjugacy_class_iterator(self._part, self._domain)
+            )
         return self._set
 
 
@@ -181,6 +187,7 @@ class PermutationsConjugacyClass(SymmetricGroupConjugacyClassMixin, ConjugacyCla
     - ``P`` -- the permutations of `n`
     - ``part`` -- a partition or an element of ``P``
     """
+
     def __init__(self, P, part):
         """
         Initialize ``self``.
@@ -243,13 +250,16 @@ class PermutationsConjugacyClass(SymmetricGroupConjugacyClassMixin, ConjugacyCla
             True
         """
         if not self._set:
-            self._set = Set(from_cycles(self._parent.n, x, self._parent)
-                            for x in conjugacy_class_iterator(self._part, self._domain))
+            self._set = Set(
+                from_cycles(self._parent.n, x, self._parent)
+                for x in conjugacy_class_iterator(self._part, self._domain)
+            )
         return self._set
 
 
 #####################################################################
 # Helper functions
+
 
 def default_representative(part, G):
     r"""
@@ -288,7 +298,7 @@ def default_representative(part, G):
     total = 0
     cycles = []
     for p in part:
-        cycles.append(tuple(D[total:total + p]))
+        cycles.append(tuple(D[total : total + p]))
         total += p
     return G.element_class(cycles, G, check=False)
 
@@ -353,7 +363,9 @@ def conjugacy_class_iterator(part, S=None):
     else:
         S = list(S)
         if n != len(S):
-            raise ValueError("the sum of the partition %s does not match the size of %s" % (part, S))
+            raise ValueError(
+                "the sum of the partition %s does not match the size of %s" % (part, S)
+            )
 
     m = len(part)
     for s in SetPartitions(S, part):

@@ -126,6 +126,7 @@ class LyndonWords_class(UniqueRepresentation, Parent):
     r"""
     The set of all Lyndon words.
     """
+
     def __init__(self, alphabet=None):
         r"""
         INPUT:
@@ -138,6 +139,7 @@ class LyndonWords_class(UniqueRepresentation, Parent):
             True
         """
         from sage.categories.sets_cat import Sets
+
         self._words = FiniteWords()
         Parent.__init__(self, category=Sets().Infinite(), facade=(self._words))
 
@@ -194,6 +196,7 @@ class LyndonWords_evaluation(UniqueRepresentation, Parent):
         sage: L.list()
         [word: 1223, word: 1232, word: 1322]
     """
+
     def __init__(self, e):
         """
         TESTS::
@@ -207,10 +210,8 @@ class LyndonWords_evaluation(UniqueRepresentation, Parent):
         self._words = FiniteWords(len(e))
 
         from sage.categories.enumerated_sets import EnumeratedSets
-        Parent.__init__(self,
-                        category=EnumeratedSets().Finite(),
-                        facade=(self._words,)
-                        )
+
+        Parent.__init__(self, category=EnumeratedSets().Finite(), facade=(self._words,))
 
     def __repr__(self):
         """
@@ -257,7 +258,9 @@ class LyndonWords_evaluation(UniqueRepresentation, Parent):
         """
         if isinstance(w, list):
             w = self._words(w, check=False)
-        if isinstance(w, FiniteWord_class) and all(x in self._words.alphabet() for x in w):
+        if isinstance(w, FiniteWord_class) and all(
+            x in self._words.alphabet() for x in w
+        ):
             ev_dict = w.evaluation_dict()
             evaluation = [ev_dict.get(x, 0) for x in self._words.alphabet()]
             return evaluation == self._e and w.is_lyndon()
@@ -289,8 +292,13 @@ class LyndonWords_evaluation(UniqueRepresentation, Parent):
         if not evaluation:
             return Integer(0)
         n = sum(evaluation)
-        return sum(moebius(j) * multinomial([ni // j for ni in evaluation])
-                   for j in divisors(gcd(le))) // n
+        return (
+            sum(
+                moebius(j) * multinomial([ni // j for ni in evaluation])
+                for j in divisors(gcd(le))
+            )
+            // n
+        )
 
     def __iter__(self):
         """
@@ -358,6 +366,7 @@ class LyndonWords_nk(UniqueRepresentation, Parent):
          word: 2233,
          word: 2333]
     """
+
     def __init__(self, n, k):
         """
         Initialize ``self``.
@@ -374,10 +383,8 @@ class LyndonWords_nk(UniqueRepresentation, Parent):
         self._words = FiniteWords(self._n)
 
         from sage.categories.enumerated_sets import EnumeratedSets
-        Parent.__init__(self,
-                        category=EnumeratedSets().Finite(),
-                        facade=(self._words,)
-                        )
+
+        Parent.__init__(self, category=EnumeratedSets().Finite(), facade=(self._words,))
 
     def __repr__(self):
         """
@@ -386,7 +393,10 @@ class LyndonWords_nk(UniqueRepresentation, Parent):
             sage: repr(LyndonWords(2, 3))
             'Lyndon words from an alphabet of size 2 of length 3'
         """
-        return "Lyndon words from an alphabet of size %s of length %s" % (self._n, self._k)
+        return "Lyndon words from an alphabet of size %s of length %s" % (
+            self._n,
+            self._k,
+        )
 
     def __call__(self, *args, **kwds):
         r"""
@@ -430,8 +440,12 @@ class LyndonWords_nk(UniqueRepresentation, Parent):
         """
         if isinstance(w, list):
             w = self._words(w, check=False)
-        return isinstance(w, FiniteWord_class) and w.length() == self._k \
-            and all(x in self._words.alphabet() for x in w) and w.is_lyndon()
+        return (
+            isinstance(w, FiniteWord_class)
+            and w.length() == self._k
+            and all(x in self._words.alphabet() for x in w)
+            and w.is_lyndon()
+        )
 
     def cardinality(self):
         """
@@ -444,7 +458,7 @@ class LyndonWords_nk(UniqueRepresentation, Parent):
             return Integer(1)
         s = Integer(0)
         for d in divisors(self._k):
-            s += moebius(d) * self._n**(self._k // d)
+            s += moebius(d) * self._n ** (self._k // d)
         return s // self._k
 
     def __iter__(self):
@@ -510,6 +524,7 @@ class StandardBracketedLyndonWords_nk(UniqueRepresentation, Parent):
         self._lyndon = LyndonWords(self._n, self._k)
 
         from sage.categories.enumerated_sets import EnumeratedSets
+
         Parent.__init__(self, category=EnumeratedSets().Finite())
 
     def __repr__(self):
@@ -519,7 +534,10 @@ class StandardBracketedLyndonWords_nk(UniqueRepresentation, Parent):
             sage: repr(StandardBracketedLyndonWords(3, 3))
             'Standard bracketed Lyndon words from an alphabet of size 3 of length 3'
         """
-        return "Standard bracketed Lyndon words from an alphabet of size %s of length %s" % (self._n, self._k)
+        return (
+            "Standard bracketed Lyndon words from an alphabet of size %s of length %s"
+            % (self._n, self._k)
+        )
 
     def cardinality(self):
         """
@@ -560,7 +578,9 @@ class StandardBracketedLyndonWords_nk(UniqueRepresentation, Parent):
             lw = standard_unbracketing(sblw)
         except ValueError:
             return False
-        return len(lw) == self._k and all(a in self._lyndon._words.alphabet() for a in lw.parent().alphabet())
+        return len(lw) == self._k and all(
+            a in self._lyndon._words.alphabet() for a in lw.parent().alphabet()
+        )
 
     def __iter__(self):
         """
@@ -629,6 +649,7 @@ def standard_unbracketing(sblw):
         ...
         ValueError: not a standard bracketing of a Lyndon word
     """
+
     # Nested helper function that not only returns (flattened) w, but also its
     # right factor in the standard Lyndon factorization.
     def standard_unbracketing_rec(w):
@@ -644,5 +665,6 @@ def standard_unbracketing(sblw):
             x += y
             return x, y
         raise ValueError("not a standard bracketing of a Lyndon word")
+
     lw, _ = standard_unbracketing_rec(sblw)
     return FiniteWords(list(set(lw)))(lw, datatype='list', check=False)

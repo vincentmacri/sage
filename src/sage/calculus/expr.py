@@ -185,13 +185,17 @@ def symbolic_expression(x):
         return matrix(rows)
     if callable(x):
         from inspect import signature, Parameter
+
         try:
             s = signature(x)
         except ValueError:
             pass
         else:
-            if all(param.kind in (Parameter.POSITIONAL_ONLY, Parameter.POSITIONAL_OR_KEYWORD)
-                   for param in s.parameters.values()):
+            if all(
+                param.kind
+                in (Parameter.POSITIONAL_ONLY, Parameter.POSITIONAL_OR_KEYWORD)
+                for param in s.parameters.values()
+            ):
                 vars = [SR.var(name) for name in s.parameters.keys()]
                 result = x(*vars)
                 if isinstance(result, (tuple, list)):

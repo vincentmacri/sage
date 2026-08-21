@@ -79,10 +79,8 @@ class NumberFieldHomomorphism_im_gens(RingHomomorphism_im_gens):
             raise TypeError("Can only invert isomorphisms")
         V, V_into_K, _ = K.vector_space()
         _, _, L_into_W = L.vector_space()
-        linear_inverse = ~V.hom([(L_into_W * self * V_into_K)(b)
-                                 for b in V.basis()])
-        return L.hom([(V_into_K * linear_inverse * L_into_W)(b)
-                      for b in [L.gen()]])
+        linear_inverse = ~V.hom([(L_into_W * self * V_into_K)(b) for b in V.basis()])
+        return L.hom([(V_into_K * linear_inverse * L_into_W)(b) for b in [L.gen()]])
 
     def preimage(self, y):
         r"""
@@ -124,24 +122,31 @@ class NumberFieldHomomorphism_im_gens(RingHomomorphism_im_gens):
 
         # try to get the cached transformation matrix and vector space isomorphisms if they exist
         try:
-            M,LtoV,VtoK = self._transformation_data
+            M, LtoV, VtoK = self._transformation_data
         except Exception:
             # get the identifications of K and L with vector spaces over Q
-            V,VtoL,LtoV = self.codomain().absolute_vector_space()
-            V,VtoK,KtoV = self.domain().absolute_vector_space()
+            V, VtoL, LtoV = self.codomain().absolute_vector_space()
+            V, VtoK, KtoV = self.domain().absolute_vector_space()
             # construct the transformation matrix from K to L by making the columns be the image of the basis of V_K in V_L using the homomorphism
             from sage.matrix.constructor import matrix
             from sage.rings.rational_field import QQ
+
             M = matrix(QQ, [LtoV(self(VtoK(e))) for e in V.basis()]).transpose()
-            self._transformation_data = (M,LtoV,VtoK)
+            self._transformation_data = (M, LtoV, VtoK)
 
         # get the coordinate vector of y, solve the linear system, pass to domain
-        yvec = LtoV(y)                  # pass from a point in L to its vector space representation
+        yvec = LtoV(y)  # pass from a point in L to its vector space representation
         try:
-            xvec = M.solve_right(yvec)      # solve the linear system, throws an exception if there is no solution
+            xvec = M.solve_right(
+                yvec
+            )  # solve the linear system, throws an exception if there is no solution
         except ValueError:
-            raise ValueError("Element '{}' is not in the image of this homomorphism.".format(y))
-        return VtoK(xvec)               # pass from the vector space representation of K back to a point in K
+            raise ValueError(
+                "Element '{}' is not in the image of this homomorphism.".format(y)
+            )
+        return VtoK(
+            xvec
+        )  # pass from the vector space representation of K back to a point in K
 
 
 class RelativeNumberFieldHomomorphism_from_abs(RingHomomorphism):
@@ -215,7 +220,9 @@ class RelativeNumberFieldHomomorphism_from_abs(RingHomomorphism):
         """
         D = self.domain()
         C = self.codomain()
-        return Sequence([self(x) for x in D.gens()], universe=C, check=False, immutable=True)
+        return Sequence(
+            [self(x) for x in D.gens()], universe=C, check=False, immutable=True
+        )
 
     def _richcmp_(self, other, op):
         """
@@ -244,8 +251,7 @@ class RelativeNumberFieldHomomorphism_from_abs(RingHomomorphism):
         """
         D = self.domain()
         ig = self.im_gens()
-        return '\n'.join('%s |--> %s' % (D.gen(i), ig[i])
-                         for i in range(D.ngens()))
+        return '\n'.join('%s |--> %s' % (D.gen(i), ig[i]) for i in range(D.ngens()))
 
     def _call_(self, x):
         r"""

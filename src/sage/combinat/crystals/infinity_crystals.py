@@ -41,8 +41,10 @@ from sage.combinat.crystals.letters import CrystalOfLetters
 from sage.combinat.crystals.tensor_product import CrystalOfWords
 from sage.combinat.crystals.tensor_product_element import (
     CrystalOfTableauxElement,
-    InfinityCrystalOfTableauxElement, InfinityCrystalOfTableauxElementTypeD,
-    InfinityQueerCrystalOfTableauxElement)
+    InfinityCrystalOfTableauxElement,
+    InfinityCrystalOfTableauxElementTypeD,
+    InfinityQueerCrystalOfTableauxElement,
+)
 
 
 class InfinityCrystalOfTableaux(CrystalOfWords):
@@ -189,6 +191,7 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
         sage: crystal_test(B, C)
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type):
         """
@@ -217,8 +220,9 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
             sage: B = crystals.infinity.Tableaux(['A',2])
             sage: TestSuite(B).run() # long time
         """
-        Parent.__init__(self, category=(HighestWeightCrystals(),
-                                        InfiniteEnumeratedSets()))
+        Parent.__init__(
+            self, category=(HighestWeightCrystals(), InfiniteEnumeratedSets())
+        )
         self._cartan_type = cartan_type
         self.letters = CrystalOfLetters(cartan_type)
         self.module_generators = (self.module_generator(),)
@@ -251,7 +255,7 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
         n = self._cartan_type.rank()
         p = Partition(list(reversed(range(1, n + 1))))
         # The column canonical tableau, read by columns
-        module_generator = flatten([[p[j]-i for i in range(p[j])] for j in range(n)])
+        module_generator = flatten([[p[j] - i for i in range(p[j])] for j in range(n)])
         return self(list=[self.letters(x) for x in module_generator])
 
     def _element_constructor_(self, *args, **options):
@@ -281,12 +285,19 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
               From: The infinity crystal of rigged configurations of type ['A', 3]
               To:   The infinity crystal of tableaux of type ['A', 3]
         """
-        from sage.combinat.rigged_configurations.rc_infinity import (InfinityCrystalOfRiggedConfigurations,
-                                                                     InfinityCrystalOfNonSimplyLacedRC)
-        if (isinstance(P, InfinityCrystalOfRiggedConfigurations)
-            and (self.cartan_type().is_simply_laced()
-                 or isinstance(P, InfinityCrystalOfNonSimplyLacedRC))):
-            from sage.combinat.rigged_configurations.bij_infinity import FromRCIsomorphism
+        from sage.combinat.rigged_configurations.rc_infinity import (
+            InfinityCrystalOfRiggedConfigurations,
+            InfinityCrystalOfNonSimplyLacedRC,
+        )
+
+        if isinstance(P, InfinityCrystalOfRiggedConfigurations) and (
+            self.cartan_type().is_simply_laced()
+            or isinstance(P, InfinityCrystalOfNonSimplyLacedRC)
+        ):
+            from sage.combinat.rigged_configurations.bij_infinity import (
+                FromRCIsomorphism,
+            )
+
             return FromRCIsomorphism(Hom(P, self))
         return super()._coerce_map_from_(P)
 
@@ -395,9 +406,12 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
             n = self.cartan_type().rank()
             ty = self.cartan_type().type()
             for i in range(1, len(self)):
-                if self[i-1] < self[i] or (self[i-1].value != 0 and self[i-1] == self[i]):
-                    if (cur_col_len == n - 1 and ty == 'D') or \
-                            (cur_col_len == n and ty == 'B'):
+                if self[i - 1] < self[i] or (
+                    self[i - 1].value != 0 and self[i - 1] == self[i]
+                ):
+                    if (cur_col_len == n - 1 and ty == 'D') or (
+                        cur_col_len == n and ty == 'B'
+                    ):
                         shape_wt += La[n]
                     shape_wt += La[cur_col_len]
                     cur_col_len = 1
@@ -434,7 +448,7 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
                 j = 0
                 row = list(row)
                 while j < len(row):
-                    if row[j] == i+1:
+                    if row[j] == i + 1:
                         row.pop(j)
                         if not row:
                             row.append('*')
@@ -442,6 +456,7 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
                         j += 1
                 newtab.append(row)
             from sage.misc.stopgap import stopgap
+
             stopgap("Return value is no longer a Tableau.", 17997)
             return newtab
 
@@ -501,19 +516,19 @@ class InfinityCrystalOfTableaux(CrystalOfWords):
             segments = []
             for r in range(len(tab)):
                 for c in range(len(tab[r])):
-                    if tab[r][c] != r+1:
+                    if tab[r][c] != r + 1:
                         if [r, tab[r][c]] not in segments:
                             segments.append([r, tab[r][c]])
             if self.parent().cartan_type().type() == 'B':
                 for r in range(len(tab)):
                     for c in range(len(tab[r])):
-                        if tab[r][c] == 0 and tab[r][-1] == -r-1:
+                        if tab[r][c] == 0 and tab[r][-1] == -r - 1:
                             segments.remove([r, tab[r][c]])
             if self.parent().cartan_type().type() == 'D':
                 n = self.parent().cartan_type().rank()
                 add = []
                 for r in range(len(tab)):
-                    if tab[r][-1] == -1*(r+1):
+                    if tab[r][-1] == -1 * (r + 1):
                         for c in range(len(tab[r])):
                             if tab[r][c] != n and tab[r][c] != -n:
                                 if [r, n] not in add:
@@ -594,6 +609,7 @@ class InfinityCrystalOfTableauxTypeD(InfinityCrystalOfTableaux):
         sage: b.weight()
         (-1, 0, -2, -1)
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type):
         """
@@ -625,18 +641,24 @@ class InfinityCrystalOfTableauxTypeD(InfinityCrystalOfTableaux):
         n = self._cartan_type.rank()
         p = Partition(list(reversed(range(1, n))))
         # The column canonical tableau, read by columns
-        module_generator = flatten([[p[j]-i for i in range(p[j])] for j in range(n-1)])
+        module_generator = flatten(
+            [[p[j] - i for i in range(p[j])] for j in range(n - 1)]
+        )
         return self(list=[self.letters(x) for x in module_generator])
 
-    class Element(InfinityCrystalOfTableauxElementTypeD, InfinityCrystalOfTableaux.Element):
+    class Element(
+        InfinityCrystalOfTableauxElementTypeD, InfinityCrystalOfTableaux.Element
+    ):
         r"""
         Elements in `\mathcal{B}(\infty)` crystal of tableaux for type `D_n`.
         """
+
         pass
 
 
 #########################################################
 #  Queer superalgebra
+
 
 class DualInfinityQueerCrystalOfTableaux(CrystalOfWords):
     @staticmethod
@@ -694,9 +716,11 @@ class DualInfinityQueerCrystalOfTableaux(CrystalOfWords):
             [[5, 5, 5, 5, 5], [4, 4, 4, 4], [3, 3, 3], [2, 2], [1]]
         """
         n = self._cartan_type.rank() + 1
-        row_lens = list(reversed(range(1, n+1)))
-        module_generator = flatten([[val]*val for val in row_lens])
-        return self.element_class(self, [self.letters(x) for x in module_generator], row_lens)
+        row_lens = list(reversed(range(1, n + 1)))
+        module_generator = flatten([[val] * val for val in row_lens])
+        return self.element_class(
+            self, [self.letters(x) for x in module_generator], row_lens
+        )
 
     @cached_method
     def index_set(self):
@@ -710,7 +734,7 @@ class DualInfinityQueerCrystalOfTableaux(CrystalOfWords):
             (1, 2, -1)
         """
         n = self._cartan_type.rank()
-        return tuple(range(1, n+1)) + (-1,)
+        return tuple(range(1, n + 1)) + (-1,)
 
     def _element_constructor_(self, *args, **options):
         """

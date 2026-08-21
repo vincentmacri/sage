@@ -22,7 +22,9 @@ from sage.misc.cachefunc import cached_method
 from . import multiplicative
 
 
-class SymmetricFunctionAlgebra_AbreuNigro(multiplicative.SymmetricFunctionAlgebra_multiplicative):
+class SymmetricFunctionAlgebra_AbreuNigro(
+    multiplicative.SymmetricFunctionAlgebra_multiplicative
+):
     r"""
     The Abreu-Nigro (symmetric function) basis.
 
@@ -169,6 +171,7 @@ class SymmetricFunctionAlgebra_AbreuNigro(multiplicative.SymmetricFunctionAlgebr
         sage: all(P(an[n].antipode()) == -P[n] for n in range(1, 6))
         True
     """
+
     @staticmethod
     def __classcall_private__(cls, Sym, q='q'):
         """
@@ -199,12 +202,18 @@ class SymmetricFunctionAlgebra_AbreuNigro(multiplicative.SymmetricFunctionAlgebr
             \rho_{2,1}
         """
         self._q = q
-        multiplicative.SymmetricFunctionAlgebra_multiplicative.__init__(self, Sym, "Abreu-Nigro", 'an')
+        multiplicative.SymmetricFunctionAlgebra_multiplicative.__init__(
+            self, Sym, "Abreu-Nigro", 'an'
+        )
         self._print_options['latex_prefix'] = "\\rho"
 
         self._h = Sym.h()
-        self.register_coercion(self._h._module_morphism(self._h_to_an_on_basis, codomain=self))
-        self._h.register_coercion(self._module_morphism(self._an_to_h_on_basis, codomain=self._h))
+        self.register_coercion(
+            self._h._module_morphism(self._h_to_an_on_basis, codomain=self)
+        )
+        self._h.register_coercion(
+            self._module_morphism(self._an_to_h_on_basis, codomain=self._h)
+        )
 
     @cached_method
     def _h_to_an_on_basis(self, lam):
@@ -244,10 +253,13 @@ class SymmetricFunctionAlgebra_AbreuNigro(multiplicative.SymmetricFunctionAlgebr
             q = self._q
             B = self.basis()
             n = lam[0]
-            return (self.sum(self._h_to_an_on_basis(P([n-i])) * B[P([i])]
-                             for i in range(1, n+1)) / R.sum(q**k for k in range(n)))
+            return self.sum(
+                self._h_to_an_on_basis(P([n - i])) * B[P([i])] for i in range(1, n + 1)
+            ) / R.sum(q**k for k in range(n))
         # Multiply by the smallest part to minimize the number of products
-        return self._h_to_an_on_basis(P(lam[:-1])) * self._h_to_an_on_basis(P([lam[-1]]))
+        return self._h_to_an_on_basis(P(lam[:-1])) * self._h_to_an_on_basis(
+            P([lam[-1]])
+        )
 
     @cached_method
     def _an_to_h_on_basis(self, lam):
@@ -286,10 +298,13 @@ class SymmetricFunctionAlgebra_AbreuNigro(multiplicative.SymmetricFunctionAlgebr
             q = self._q
             B = self._h.basis()
             n = lam[0]
-            return (R.sum(q**k for k in range(n)) * self._h[n]
-                    - self._h.sum(B[P([n-i])] * self._an_to_h_on_basis(P([i])) for i in range(1, n)))
+            return R.sum(q**k for k in range(n)) * self._h[n] - self._h.sum(
+                B[P([n - i])] * self._an_to_h_on_basis(P([i])) for i in range(1, n)
+            )
         # Multiply by the smallest part to minimize the number of products
-        return self._an_to_h_on_basis(P(lam[:-1])) * self._an_to_h_on_basis(P([lam[-1]]))
+        return self._an_to_h_on_basis(P(lam[:-1])) * self._an_to_h_on_basis(
+            P([lam[-1]])
+        )
 
     def coproduct_on_generators(self, n):
         r"""
@@ -341,5 +356,5 @@ class SymmetricFunctionAlgebra_AbreuNigro(multiplicative.SymmetricFunctionAlgebr
         coeff = self._q - one
         if coeff:
             for k in range(1, n):
-                d[P([k]), P([n-k])] = coeff
+                d[P([k]), P([n - k])] = coeff
         return TS.element_class(TS, d)

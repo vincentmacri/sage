@@ -5,21 +5,21 @@ AUTHORS::
 
 - Joris Vankerschaver (2012-06-16)
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2010  Joris Vankerschaver <joris.vankerschaver@gmail.com>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
-
+# *****************************************************************************
 
 from sage.symbolic.constants import pi
 from sage.functions.log import log
 from sage.functions.trig import sin, cos, tan
 from sage.functions.hyperbolic import cosh, tanh
 from sage.symbolic.ring import var
-from sage.geometry.riemannian_manifolds.parametrized_surface3d import \
-    ParametrizedSurface3D
+from sage.geometry.riemannian_manifolds.parametrized_surface3d import (
+    ParametrizedSurface3D,
+)
 
 
 class SurfaceGenerators:
@@ -27,6 +27,7 @@ class SurfaceGenerators:
     A class consisting of generators for several common parametrized surfaces
     in 3D.
     """
+
     @staticmethod
     def Catenoid(c=1, name='Catenoid'):
         r"""
@@ -56,7 +57,7 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        catenoid_eq = [c*cosh(v/c)*cos(u), c*cosh(v/c)*sin(u), v]
+        catenoid_eq = [c * cosh(v / c) * cos(u), c * cosh(v / c) * sin(u), v]
         coords = ((u, 0, 2 * pi), (v, -1, 1))
         return ParametrizedSurface3D(catenoid_eq, coords, name)
 
@@ -89,8 +90,11 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        crosscap_eq = [r*(1+cos(v))*cos(u), r*(1+cos(v))*sin(u),
-                       -tanh(u-pi)*r*sin(v)]
+        crosscap_eq = [
+            r * (1 + cos(v)) * cos(u),
+            r * (1 + cos(v)) * sin(u),
+            -tanh(u - pi) * r * sin(v),
+        ]
         coords = ((u, 0, 2 * pi), (v, 0, 2 * pi))
         return ParametrizedSurface3D(crosscap_eq, coords, name)
 
@@ -123,8 +127,11 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        dini_eq = [a*cos(u)*sin(v), a*sin(u)*sin(v),
-                   a*(cos(v) + log(tan(v/2))) + b*u]
+        dini_eq = [
+            a * cos(u) * sin(v),
+            a * sin(u) * sin(v),
+            a * (cos(v) + log(tan(v / 2))) + b * u,
+        ]
         coords = ((u, 0, 2 * pi), (v, 0, 2 * pi))
         return ParametrizedSurface3D(dini_eq, coords, name)
 
@@ -163,9 +170,11 @@ class SurfaceGenerators:
         u, v = var('u, v')
         x, y, z = center
         a, b, c = axes
-        ellipsoid_parametric_eq = [x + a*cos(u)*cos(v),
-                                   y + b*sin(u)*cos(v),
-                                   z + c*sin(v)]
+        ellipsoid_parametric_eq = [
+            x + a * cos(u) * cos(v),
+            y + b * sin(u) * cos(v),
+            z + c * sin(v),
+        ]
         coords = ((u, 0, 2 * pi), (v, -pi / 2, pi / 2))
         return ParametrizedSurface3D(ellipsoid_parametric_eq, coords, name)
 
@@ -196,7 +205,11 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        enneper_eq = [u*(1-u**2/3+v**2)/3, -v*(1-v**2/3+u**2)/3, (u**2-v**2)/3]
+        enneper_eq = [
+            u * (1 - u**2 / 3 + v**2) / 3,
+            -v * (1 - v**2 / 3 + u**2) / 3,
+            (u**2 - v**2) / 3,
+        ]
         coords = ((u, -3, 3), (v, -3, 3))
         return ParametrizedSurface3D(enneper_eq, coords, name)
 
@@ -230,7 +243,7 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         rho, theta = var('rho, theta')
-        helicoid_eq = [rho*cos(theta), rho*sin(theta), h*theta/(2*pi)]
+        helicoid_eq = [rho * cos(theta), rho * sin(theta), h * theta / (2 * pi)]
         coords = ((rho, -2, 2), (theta, 0, 2 * pi))
         return ParametrizedSurface3D(helicoid_eq, coords, name)
 
@@ -263,9 +276,9 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        x = (r + cos(u/2)*sin(v) - sin(u/2)*sin(2*v))*cos(u)
-        y = (r + cos(u/2)*sin(v) - sin(u/2)*sin(2*v))*sin(u)
-        z = sin(u/2)*sin(v) + cos(u/2)*sin(2*v)
+        x = (r + cos(u / 2) * sin(v) - sin(u / 2) * sin(2 * v)) * cos(u)
+        y = (r + cos(u / 2) * sin(v) - sin(u / 2) * sin(2 * v)) * sin(u)
+        z = sin(u / 2) * sin(v) + cos(u / 2) * sin(2 * v)
         klein_eq = [x, y, z]
         coords = ((u, 0, 2 * pi), (v, 0, 2 * pi))
 
@@ -294,7 +307,7 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        monkey_eq = [u, v, u**3 - 3*u*v**2]
+        monkey_eq = [u, v, u**3 - 3 * u * v**2]
         coords = ((u, -2, 2), (v, -2, 2))
 
         return ParametrizedSurface3D(monkey_eq, coords, name)
@@ -338,9 +351,9 @@ class SurfaceGenerators:
         x = u
         y = v
         if elliptic:
-            z = c*(v**2/b**2 + u**2/a**2)
+            z = c * (v**2 / b**2 + u**2 / a**2)
         else:
-            z = c*(v**2/b**2 - u**2/a**2)
+            z = c * (v**2 / b**2 - u**2 / a**2)
         paraboloid_eq = [x, y, z]
         coords = ((u, -3, 3), (v, -3, 3))
 
@@ -424,7 +437,7 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        torus_eq = [(R+r*cos(v))*cos(u), (R+r*cos(v))*sin(u), r*sin(v)]
+        torus_eq = [(R + r * cos(v)) * cos(u), (R + r * cos(v)) * sin(u), r * sin(v)]
         coords = ((u, 0, 2 * pi), (v, 0, 2 * pi))
         return ParametrizedSurface3D(torus_eq, coords, name)
 
@@ -451,7 +464,7 @@ class SurfaceGenerators:
             Graphics3d Object
         """
         u, v = var('u, v')
-        whitney_eq = [u*v, u, v**2]
+        whitney_eq = [u * v, u, v**2]
         coords = ((u, -1, 1), (v, -1, 1))
         return ParametrizedSurface3D(whitney_eq, coords, name)
 

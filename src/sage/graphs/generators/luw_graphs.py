@@ -91,8 +91,9 @@ class LUWGraphDescriptor:
     - [LW2026]_
     """
 
-    def __init__(self, ring, equations, name,
-                 point_coordinate_sets, line_coordinate_sets):
+    def __init__(
+        self, ring, equations, name, point_coordinate_sets, line_coordinate_sets
+    ):
         r"""
         Initialize ``self``.
 
@@ -283,13 +284,9 @@ class LUWGraphDescriptor:
         if vertices is None:
             vertices = tuple(sorted(all_vertices))
         else:
-            vertices = tuple(_normalize_vertex(self, vertex)
-                             for vertex in vertices)
-            if (len(vertices) != len(all_vertices)
-                    or set(vertices) != set(all_vertices)):
-                raise ValueError(
-                    "vertices must contain each graph vertex exactly once"
-                )
+            vertices = tuple(_normalize_vertex(self, vertex) for vertex in vertices)
+            if len(vertices) != len(all_vertices) or set(vertices) != set(all_vertices):
+                raise ValueError("vertices must contain each graph vertex exactly once")
 
         # Record where each vertex appears in the chosen matrix order.
         # For example, if ``vertices`` begins ``[v0, v1, v2]``, then this
@@ -339,16 +336,17 @@ class LUWGraphDescriptor:
             sage: define_WengerGraph(2, 3).graph(immutable=True).is_immutable()
             True
         """
+
         def edges():
             for point in _point_tuples(self):
                 point_vertex = ("P", point)
                 for first_line_value in self.line_first_coordinates():
-                    yield (point_vertex,
-                           _complete_line_from_point(self, point,
-                                                     first_line_value))
+                    yield (
+                        point_vertex,
+                        _complete_line_from_point(self, point, first_line_value),
+                    )
 
-        G = Graph(edges(), format="list_of_edges",
-                  name=self.name, immutable=immutable)
+        G = Graph(edges(), format="list_of_edges", name=self.name, immutable=immutable)
         G._luw_graph_metadata = {
             "definition": self,
             "ring": self.ring,
@@ -418,9 +416,12 @@ class LUWGraphDescriptor:
                 break
             frontier = next_frontier
 
-        G = Graph([distances, edges], format="vertices_and_edges",
-                  name=f"Ball of radius {depth} in {self.name}",
-                  immutable=immutable)
+        G = Graph(
+            [distances, edges],
+            format="vertices_and_edges",
+            name=f"Ball of radius {depth} in {self.name}",
+            immutable=immutable,
+        )
         G._luw_graph_ball_metadata = {
             "definition": self,
             "ring": self.ring,
@@ -613,7 +614,9 @@ def _canonicalize_defining_polynomial(base_ring, polynomial, canonical_ring):
             name = source_names[source_index]
             if name not in target_indices:
                 expected = ", ".join(canonical_ring.variable_names())
-                raise ValueError(f"unknown variable {name}; expected variables named {expected}")
+                raise ValueError(
+                    f"unknown variable {name}; expected variables named {expected}"
+                )
             used_source_indices.add(source_index)
             target_exponents[target_indices[name]] += exponent
 
@@ -651,7 +654,9 @@ def _validate_defining_polynomial(polynomial, available_values):
     ring = polynomial.parent()
     used_indices = [ring.gens().index(variable) for variable in polynomial.variables()]
     if used_indices and max(used_indices) >= available_values:
-        raise ValueError("a defining polynomial uses a variable that is not available yet")
+        raise ValueError(
+            "a defining polynomial uses a variable that is not available yet"
+        )
 
 
 def _normalize_coordinate_subset(base_ring, values):
@@ -682,8 +687,9 @@ def _normalize_coordinate_subset(base_ring, values):
     return tuple(normalized)
 
 
-def _normalize_coordinate_sets(base_ring, dimension, first_values=None,
-                               coordinate_sets=None):
+def _normalize_coordinate_sets(
+    base_ring, dimension, first_values=None, coordinate_sets=None
+):
     r"""
     Normalize the allowed first coordinates on one side of the graph.
 
@@ -718,18 +724,29 @@ def _normalize_vertex(luw_graph, vertex):
     side, coords = vertex
     coords = tuple(luw_graph.ring(value) for value in coords)
     if side not in ("P", "L") or len(coords) != luw_graph.dimension():
-        raise ValueError('the vertex must have side "P" or "L" and the right number of '
-                         "coordinates")
+        raise ValueError(
+            'the vertex must have side "P" or "L" and the right number of coordinates'
+        )
 
-    first_coordinates = (luw_graph.point_first_coordinates() if side == "P"
-                         else luw_graph.line_first_coordinates())
+    first_coordinates = (
+        luw_graph.point_first_coordinates()
+        if side == "P"
+        else luw_graph.line_first_coordinates()
+    )
     if coords[0] not in first_coordinates:
         raise ValueError("the first coordinate is not in the allowed set for this side")
     return side, coords
 
 
-def define_luw_graph(ring, equations, name=None, A=None, B=None,
-                     point_coordinate_sets=None, line_coordinate_sets=None):
+def define_luw_graph(
+    ring,
+    equations,
+    name=None,
+    A=None,
+    B=None,
+    point_coordinate_sets=None,
+    line_coordinate_sets=None,
+):
     r"""
     Return a validated algebraic descriptor for an LUW graph.
 
@@ -811,8 +828,10 @@ def define_luw_graph(ring, equations, name=None, A=None, B=None,
 
     dimension = len(equations) + 1
     canonical_ring = _canonical_polynomial_ring(ring, dimension)
-    equations = tuple(_canonicalize_defining_polynomial(ring, polynomial, canonical_ring)
-                      for polynomial in equations)
+    equations = tuple(
+        _canonicalize_defining_polynomial(ring, polynomial, canonical_ring)
+        for polynomial in equations
+    )
 
     for index, polynomial in enumerate(equations, start=2):
         _validate_defining_polynomial(polynomial, available_values=2 * (index - 1))
@@ -833,9 +852,16 @@ def define_luw_graph(ring, equations, name=None, A=None, B=None,
     )
 
 
-def LUWGraph(ring, equations, name=None, A=None, B=None,
-             point_coordinate_sets=None, line_coordinate_sets=None,
-             immutable=False):
+def LUWGraph(
+    ring,
+    equations,
+    name=None,
+    A=None,
+    B=None,
+    point_coordinate_sets=None,
+    line_coordinate_sets=None,
+    immutable=False,
+):
     r"""
     Build a graph directly from a given set of equations.
 
@@ -1256,8 +1282,7 @@ def define_Akq(k, q, A=None, B=None):
         else point_vars[1] * line_vars[i - 1]
         for i in range(2, k + 1)
     ]
-    return define_luw_graph(field, equations, name=f"A{k}{field.order()}",
-                            A=A, B=B)
+    return define_luw_graph(field, equations, name=f"A{k}{field.order()}", A=A, B=B)
 
 
 def define_Dkq(k, q, A=None, B=None):
@@ -1330,8 +1355,7 @@ def define_Dkq(k, q, A=None, B=None):
             equations.append(point_vars[i - 2] * line_vars[1])
         else:
             equations.append(point_vars[1] * line_vars[i - 2])
-    return define_luw_graph(field, equations, name=f"D{k}{field.order()}",
-                            A=A, B=B)
+    return define_luw_graph(field, equations, name=f"D{k}{field.order()}", A=A, B=B)
 
 
 def define_WengerGraph(m, q, A=None, B=None):

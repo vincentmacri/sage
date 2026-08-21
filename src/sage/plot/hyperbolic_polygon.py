@@ -54,6 +54,7 @@ class HyperbolicPolygon(HyperbolicArcCore):
          sage: print(HyperbolicPolygon([0, 1/2, I], "UHP", {}))
          Hyperbolic polygon (0.000000000000000, 0.500000000000000, 1.00000000000000*I)
     """
+
     def __init__(self, pts, model, options):
         """
         Initialize HyperbolicPolygon.
@@ -69,6 +70,7 @@ class HyperbolicPolygon(HyperbolicArcCore):
         if not pts:
             raise ValueError("cannot plot the empty polygon")
         from sage.geometry.hyperbolic_space.hyperbolic_interface import HyperbolicPlane
+
         HP = HyperbolicPlane()
         M = getattr(HP, model)()
 
@@ -85,7 +87,7 @@ class HyperbolicPolygon(HyperbolicArcCore):
                 # If any Infinity vertex exist it must be the first
                 for i, p in enumerate(pts):
                     if p.is_infinity():
-                        if any(pt.is_infinity() for pt in pts[i+1:]):
+                        if any(pt.is_infinity() for pt in pts[i + 1 :]):
                             raise ValueError("no more than one infinite vertex allowed")
                         pts = pts[i:] + pts[:i]
                         break
@@ -122,6 +124,7 @@ def _winding_number(vertices, point):
         sage: _winding_number([(0,0,4),(1,0,3),(1,1,2),(0,1,1)],(10,10,10))
         0
     """
+
     # Helper functions
     def _intersects(start, end, y0):
         if end[1] < start[1]:
@@ -132,13 +135,18 @@ def _winding_number(vertices, point):
         start, end = edge[0], edge[1]
         if end[1] == start[1]:
             return False
-        x_in = start[0] + (point[1] - start[1]) * (end[0] - start[0]) / (end[1] - start[1])
+        x_in = start[0] + (point[1] - start[1]) * (end[0] - start[0]) / (
+            end[1] - start[1]
+        )
         return x_in > point[0]
 
     sides = []
     wn = 0
-    sides = [[vertices[i], vertices[i + 1]] for i in range(len(vertices) - 1)
-             if _intersects(vertices[i], vertices[i + 1], point[1])]
+    sides = [
+        [vertices[i], vertices[i + 1]]
+        for i in range(len(vertices) - 1)
+        if _intersects(vertices[i], vertices[i + 1], point[1])
+    ]
 
     if _intersects(vertices[-1], vertices[0], point[1]):
         sides.append([vertices[-1], vertices[0]])
@@ -288,6 +296,7 @@ def hyperbolic_polygon(pts, model='UHP', resolution=200, **options):
         sphinx_plot(P)
     """
     from sage.plot.graphics import Graphics
+
     g = Graphics()
     g._set_extra_kwds(g._extract_kwds_for_show(options))
 
@@ -295,6 +304,7 @@ def hyperbolic_polygon(pts, model='UHP', resolution=200, **options):
         from sage.geometry.hyperbolic_space.hyperbolic_interface import HyperbolicPlane
         from sage.plot.plot3d.implicit_plot3d import implicit_plot3d
         from sage.symbolic.ring import SR
+
         HM = HyperbolicPlane().HM()
         x, y, z = SR.var('x,y,z')
         arc_points = []
@@ -312,13 +322,16 @@ def hyperbolic_polygon(pts, model='UHP', resolution=200, **options):
 
             def region(x, y, z):
                 return _winding_number(arc_points, (x, y, z)) != 0
-            g = g + implicit_plot3d(x**2 + y**2 - z**2 == -1,
-                                    (x, min(xlist), max(xlist)),
-                                    (y, min(ylist), max(ylist)),
-                                    (z, 0, max(zlist)),
-                                    region=region,
-                                    plot_points=resolution,
-                                    color=options['rgbcolor'])  # the less points the more jaggy the picture
+
+            g = g + implicit_plot3d(
+                x**2 + y**2 - z**2 == -1,
+                (x, min(xlist), max(xlist)),
+                (y, min(ylist), max(ylist)),
+                (z, 0, max(zlist)),
+                region=region,
+                plot_points=resolution,
+                color=options['rgbcolor'],
+            )  # the less points the more jaggy the picture
     else:
         g.add_primitive(HyperbolicPolygon(pts, model, options))
         if model == "PD" or model == "KM":

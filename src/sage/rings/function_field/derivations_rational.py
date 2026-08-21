@@ -31,6 +31,7 @@ class FunctionFieldDerivation_rational(FunctionFieldDerivation):
         sage: K.derivation()
         d/dx
     """
+
     def __init__(self, parent, u=None) -> None:
         """
         Initialize a derivation.
@@ -69,7 +70,9 @@ class FunctionFieldDerivation_rational(FunctionFieldDerivation):
             else:
                 raise ValueError("the length does not match")
         else:
-            raise ValueError("you must pass in either a name of a variable or a list of coefficients")
+            raise ValueError(
+                "you must pass in either a name of a variable or a list of coefficients"
+            )
 
     def _call_(self, x):
         """

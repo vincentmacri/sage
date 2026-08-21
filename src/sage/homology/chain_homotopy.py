@@ -109,6 +109,7 @@ class ChainHomotopy(Morphism):
         ...
         ValueError: the data do not define a valid chain homotopy
     """
+
     def __init__(self, matrices, f, g=None) -> None:
         r"""
         Create a chain homotopy between the given chain maps
@@ -155,30 +156,53 @@ class ChainHomotopy(Morphism):
             raise ValueError('the chain complexes are not compatible')
         if g is not None:
             # Check that the chain maps are compatible.
-            if not (domain == g.domain() and codomain ==
-                    g.codomain()):
+            if not (domain == g.domain() and codomain == g.codomain()):
                 raise ValueError('the chain maps are not compatible')
             # Check that the data define a chain homotopy.
             for i in domain.differential():
-                if i in matrices and i+deg in matrices:
-                    if not (codomain.differential(i-deg) * matrices[i] + matrices[i+deg] * domain.differential(i) == f.in_degree(i) - g.in_degree(i)):
-                        raise ValueError('the data do not define a valid chain homotopy')
+                if i in matrices and i + deg in matrices:
+                    if not (
+                        codomain.differential(i - deg) * matrices[i]
+                        + matrices[i + deg] * domain.differential(i)
+                        == f.in_degree(i) - g.in_degree(i)
+                    ):
+                        raise ValueError(
+                            'the data do not define a valid chain homotopy'
+                        )
                 elif i in matrices:
-                    if not (codomain.differential(i-deg) * matrices[i] == f.in_degree(i) - g.in_degree(i)):
-                        raise ValueError('the data do not define a valid chain homotopy')
-                elif i+deg in matrices:
-                    if not (matrices[i+deg] * domain.differential(i) == f.in_degree(i) - g.in_degree(i)):
-                        raise ValueError('the data do not define a valid chain homotopy')
+                    if not (
+                        codomain.differential(i - deg) * matrices[i]
+                        == f.in_degree(i) - g.in_degree(i)
+                    ):
+                        raise ValueError(
+                            'the data do not define a valid chain homotopy'
+                        )
+                elif i + deg in matrices:
+                    if not (
+                        matrices[i + deg] * domain.differential(i)
+                        == f.in_degree(i) - g.in_degree(i)
+                    ):
+                        raise ValueError(
+                            'the data do not define a valid chain homotopy'
+                        )
         else:
             # Define g.
             g_data = {}
             for i in domain.differential():
-                if i in matrices and i+deg in matrices:
-                    g_data[i] = f.in_degree(i) - matrices[i+deg] * domain.differential(i) - codomain.differential(i-deg) * matrices[i]
+                if i in matrices and i + deg in matrices:
+                    g_data[i] = (
+                        f.in_degree(i)
+                        - matrices[i + deg] * domain.differential(i)
+                        - codomain.differential(i - deg) * matrices[i]
+                    )
                 elif i in matrices:
-                    g_data[i] = f.in_degree(i) - codomain.differential(i-deg) * matrices[i]
-                elif i+deg in matrices:
-                    g_data[i] = f.in_degree(i) - matrices[i+deg] * domain.differential(i)
+                    g_data[i] = (
+                        f.in_degree(i) - codomain.differential(i - deg) * matrices[i]
+                    )
+                elif i + deg in matrices:
+                    g_data[i] = f.in_degree(i) - matrices[
+                        i + deg
+                    ] * domain.differential(i)
             g = ChainComplexMorphism(g_data, domain, codomain)
         self._matrix_dictionary = {}
         for i in matrices:
@@ -237,8 +261,8 @@ class ChainHomotopy(Morphism):
         deg = self.domain().degree_of_differential()
         matrices = self._matrix_dictionary
         for i in matrices:
-            if i-deg in matrices:
-                if matrices[i-deg] * matrices[i] != 0:
+            if i - deg in matrices:
+                if matrices[i - deg] * matrices[i] != 0:
                     return False
         return True
 
@@ -276,11 +300,14 @@ class ChainHomotopy(Morphism):
         deg = self.domain().degree_of_differential()
         matrices = self._matrix_dictionary
         for i in matrices:
-            if i+deg in matrices:
+            if i + deg in matrices:
                 diff_i = self.domain().differential(i)
-                if diff_i * matrices[i+deg] * diff_i != diff_i:
+                if diff_i * matrices[i + deg] * diff_i != diff_i:
                     return False
-            if matrices[i] * self.domain().differential(i-deg) * matrices[i] != matrices[i]:
+            if (
+                matrices[i] * self.domain().differential(i - deg) * matrices[i]
+                != matrices[i]
+            ):
                 return False
         return True
 
@@ -312,8 +339,9 @@ class ChainHomotopy(Morphism):
             return self._matrix_dictionary[n]
         except KeyError:
             from sage.matrix.constructor import zero_matrix
+
             deg = self.domain().degree_of_differential()
-            rows = self.codomain().free_module_rank(n-deg)
+            rows = self.codomain().free_module_rank(n - deg)
             cols = self.domain().free_module_rank(n)
             return zero_matrix(self.domain().base_ring(), rows, cols)
 
@@ -342,7 +370,7 @@ class ChainHomotopy(Morphism):
         """
         matrix_dict = self._matrix_dictionary
         deg = self.domain().degree_of_differential()
-        matrices = {i-deg: matrix_dict[i].transpose() for i in matrix_dict}
+        matrices = {i - deg: matrix_dict[i].transpose() for i in matrix_dict}
         return ChainHomotopy(matrices, self._f.dual(), self._g.dual())
 
     def __hash__(self) -> int:
@@ -357,7 +385,9 @@ class ChainHomotopy(Morphism):
             sage: hash(H)  # random
             314159265358979
         """
-        return hash(self._f) ^ hash(self._g) ^ hash(tuple(self._matrix_dictionary.items()))
+        return (
+            hash(self._f) ^ hash(self._g) ^ hash(tuple(self._matrix_dictionary.items()))
+        )
 
     def _repr_(self) -> str:
         """
@@ -422,6 +452,7 @@ class ChainContraction(ChainHomotopy):
         ....:                       1: zero_matrix(ZZ, 1),
         ....:                       2: identity_matrix(ZZ, 1)}, pi, iota)
     """
+
     def __init__(self, matrices, pi, iota) -> None:
         r"""
         Create a chain contraction from the given data.
@@ -462,8 +493,7 @@ class ChainContraction(ChainHomotopy):
         from sage.homology.chain_complex_morphism import ChainComplexMorphism
         from sage.matrix.constructor import identity_matrix
 
-        if not (pi.domain() == iota.codomain()
-                and pi.codomain() == iota.domain()):
+        if not (pi.domain() == iota.codomain() and pi.codomain() == iota.domain()):
             raise ValueError('the chain maps are not composable')
         C = pi.domain()
         D = pi.codomain()
@@ -471,7 +501,9 @@ class ChainContraction(ChainHomotopy):
 
         # Check that the composite 'pi iota' is 1.
         for i in D.nonzero_degrees():
-            if pi.in_degree(i) * iota.in_degree(i) != identity_matrix(base_ring, D.free_module_rank(i)):
+            if pi.in_degree(i) * iota.in_degree(i) != identity_matrix(
+                base_ring, D.free_module_rank(i)
+            ):
                 raise ValueError("the composite 'pi iota' is not the identity")
 
         # Construct the chain map 'id_C'.
@@ -489,13 +521,17 @@ class ChainContraction(ChainHomotopy):
         # Check that `\pi H = 0`:
         deg = C.degree_of_differential()
         for i in matrices:
-            if pi.in_degree(i-deg) * matrices[i] != 0:
-                raise ValueError('the data do not define a valid chain contraction: pi H != 0')
+            if pi.in_degree(i - deg) * matrices[i] != 0:
+                raise ValueError(
+                    'the data do not define a valid chain contraction: pi H != 0'
+                )
         # Check that `H \iota = 0`:
         for i in iota._matrix_dictionary:
             if i in matrices:
                 if matrices[i] * iota.in_degree(i) != 0:
-                    raise ValueError('the data do not define a valid chain contraction: H iota != 0')
+                    raise ValueError(
+                        'the data do not define a valid chain contraction: H iota != 0'
+                    )
         self._pi = pi
         self._iota = iota
 
@@ -599,5 +635,5 @@ class ChainContraction(ChainHomotopy):
         """
         matrix_dict = self._matrix_dictionary
         deg = self.domain().degree_of_differential()
-        matrices = {i-deg: matrix_dict[i].transpose() for i in matrix_dict}
+        matrices = {i - deg: matrix_dict[i].transpose() for i in matrix_dict}
         return ChainContraction(matrices, self.iota().dual(), self.pi().dual())

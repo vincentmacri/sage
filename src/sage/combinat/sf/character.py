@@ -32,7 +32,6 @@ from sage.rings.integer import Integer
 
 
 class Character_generic(SFA_generic):
-
     def _my_key(self, la):
         r"""
         A rank function for partitions.
@@ -67,7 +66,7 @@ class Character_generic(SFA_generic):
             17
         """
         if la:
-            return la.size()**2 + la[0]
+            return la.size() ** 2 + la[0]
         return 0
 
     def _other_to_self(self, sexpr):
@@ -99,8 +98,9 @@ class Character_generic(SFA_generic):
         if sexpr == 0:
             return self(0)
         if list(sexpr.support()) == [[]]:
-            return self._from_dict({self.one_basis(): sexpr.coefficient([])},
-                                   remove_zeros=False)
+            return self._from_dict(
+                {self.one_basis(): sexpr.coefficient([])}, remove_zeros=False
+            )
         out = self.zero()
         while sexpr:
             mup = max(sexpr.support(), key=self._my_key)
@@ -137,14 +137,16 @@ class Character_generic(SFA_generic):
         if k == 1:
             return self._p([1])
         if k > 0:
-            return ~k * self._p.linear_combination((self._p([d]), moebius(k//d))
-                                                   for d in divisors(k))
+            return ~k * self._p.linear_combination(
+                (self._p([d]), moebius(k // d)) for d in divisors(k)
+            )
 
 
 class InducedCharacterBases(Character_generic):
     r"""
     Character basis with Frobenius image of other times complete.
     """
+
     def __init__(self, Sym, other_basis, **kwds):
         r"""
         Initialize the basis and register coercions.
@@ -157,10 +159,10 @@ class InducedCharacterBases(Character_generic):
         SFA_generic.__init__(self, Sym, **kwds)
         self._other = other_basis
         self._p = Sym.powersum()
-        self.module_morphism(self._self_to_power_on_basis,
-                             codomain=Sym.powersum()).register_as_coercion()
-        self.register_coercion(SetMorphism(Hom(self._other, self),
-                                           self._other_to_self))
+        self.module_morphism(
+            self._self_to_power_on_basis, codomain=Sym.powersum()
+        ).register_as_coercion()
+        self.register_coercion(SetMorphism(Hom(self._other, self), self._other_to_self))
 
     def _b_bar_power_k_r(self, k, r):
         r"""
@@ -189,7 +191,7 @@ class InducedCharacterBases(Character_generic):
             sage: ht._b_bar_power_k_r(3,2)
             3*p[1] + p[1, 1] - 3*p[3] - 2*p[3, 1] + p[3, 3]
         """
-        return k**r * self._p.prod( self._b_power_k(k)-j for j in range(r) )
+        return k**r * self._p.prod(self._b_power_k(k) - j for j in range(r))
 
     def _b_bar_power_gamma(self, gamma):
         r"""
@@ -225,8 +227,10 @@ class InducedCharacterBases(Character_generic):
             sage: ht._b_bar_power_gamma(Partition([3,3,1]))
             3*p[1, 1] + p[1, 1, 1] - 3*p[3, 1] - 2*p[3, 1, 1] + p[3, 3, 1]
         """
-        return self._p.prod(self._b_bar_power_k_r(Integer(k), Integer(r))
-                            for k, r in gamma.to_exp_dict().items())
+        return self._p.prod(
+            self._b_bar_power_k_r(Integer(k), Integer(r))
+            for k, r in gamma.to_exp_dict().items()
+        )
 
     def _self_to_power_on_basis(self, lam):
         r"""
@@ -276,8 +280,9 @@ class InducedCharacterBases(Character_generic):
             sage: xt._self_to_power_on_basis([1,1,1])
             1/6*p[1, 1, 1] - 1/2*p[2, 1] + 1/3*p[3]
         """
-        return self._p.sum( c*self._b_bar_power_gamma(ga)
-                            for (ga, c) in self._p(self._other(lam)) )
+        return self._p.sum(
+            c * self._b_bar_power_gamma(ga) for (ga, c) in self._p(self._other(lam))
+        )
 
     @cached_method
     def _self_to_other_on_basis(self, lam):
@@ -371,6 +376,7 @@ class InducedTrivialCharacterBasis(InducedCharacterBases):
         sage: s[4,2].kronecker_product(s[5,1])
         s[3, 2, 1] + s[3, 3] + s[4, 1, 1] + s[4, 2] + s[5, 1]
     """
+
     def __init__(self, Sym):
         r"""
         Initialize the basis and register coercions.
@@ -386,9 +392,14 @@ class InducedTrivialCharacterBasis(InducedCharacterBases):
             sage: ht = SymmetricFunctions(QQ).ht()
             sage: TestSuite(ht).run()
         """
-        InducedCharacterBases.__init__(self, Sym, Sym.complete(),
+        InducedCharacterBases.__init__(
+            self,
+            Sym,
+            Sym.complete(),
             basis_name="induced trivial symmetric group character",
-            prefix='ht', graded=False)
+            prefix='ht',
+            graded=False,
+        )
 
 
 class RookIrreducibleCharacterBasis(InducedCharacterBases):
@@ -442,6 +453,7 @@ class RookIrreducibleCharacterBasis(InducedCharacterBases):
         sage: s(xt[2,1].character_to_frobenius_image(9)) == s[6] * s[2,1]
         True
     """
+
     def __init__(self, Sym):
         r"""
         Initialize the basis and register coercions.
@@ -461,9 +473,14 @@ class RookIrreducibleCharacterBasis(InducedCharacterBases):
             sage: xt = SymmetricFunctions(QQ).xt()
             sage: TestSuite(xt).run()
         """
-        InducedCharacterBases.__init__(self, Sym, Sym.Schur(),
+        InducedCharacterBases.__init__(
+            self,
+            Sym,
+            Sym.Schur(),
             basis_name="irreducible rook monoid character",
-            prefix='xt', graded=False)
+            prefix='xt',
+            graded=False,
+        )
 
 
 class IrreducibleCharacterBasis(Character_generic):
@@ -533,16 +550,20 @@ class IrreducibleCharacterBasis(Character_generic):
             Symmetric Functions over Rational Field in the irreducible
              symmetric group character basis
         """
-        SFA_generic.__init__(self, Sym,
-                             basis_name="irreducible symmetric group character",
-                             prefix='st', graded=False)
+        SFA_generic.__init__(
+            self,
+            Sym,
+            basis_name="irreducible symmetric group character",
+            prefix='st',
+            graded=False,
+        )
         self._other = Sym.Schur()
         self._p = Sym.powersum()
 
-        self.module_morphism(self._self_to_power_on_basis,
-                             codomain=Sym.powersum()).register_as_coercion()
-        self.register_coercion(SetMorphism(Hom(self._other, self),
-                                           self._other_to_self))
+        self.module_morphism(
+            self._self_to_power_on_basis, codomain=Sym.powersum()
+        ).register_as_coercion()
+        self.register_coercion(SetMorphism(Hom(self._other, self), self._other_to_self))
 
     def _b_power_k_r(self, k, r):
         r"""
@@ -572,9 +593,13 @@ class IrreducibleCharacterBasis(Character_generic):
             p[] + 5*p[1] + p[1, 1] - 5*p[3] - 2*p[3, 1] + p[3, 3]
         """
         p = self._p
-        return p.sum((-1)**(r - j) * k**j * binomial(r, j)
-                     * p.prod(self._b_power_k(k) - i*p.one() for i in range(j))
-                     for j in range(r + 1))
+        return p.sum(
+            (-1) ** (r - j)
+            * k**j
+            * binomial(r, j)
+            * p.prod(self._b_power_k(k) - i * p.one() for i in range(j))
+            for j in range(r + 1)
+        )
 
     def _b_power_gamma(self, gamma):
         r"""
@@ -610,8 +635,10 @@ class IrreducibleCharacterBasis(Character_generic):
             sage: st._b_power_gamma(Partition([3,1]))
             p[] - p[1, 1] - p[3] + p[3, 1]
         """
-        return self._p.prod(self._b_power_k_r(Integer(k), Integer(r))
-                            for k, r in gamma.to_exp_dict().items())
+        return self._p.prod(
+            self._b_power_k_r(Integer(k), Integer(r))
+            for k, r in gamma.to_exp_dict().items()
+        )
 
     def _self_to_power_on_basis(self, lam):
         r"""
@@ -645,8 +672,9 @@ class IrreducibleCharacterBasis(Character_generic):
             sage: st._self_to_power_on_basis([1,1])
             p[] - p[1] + 1/2*p[1, 1] - 1/2*p[2]
         """
-        return self._p.sum( c*self._b_power_gamma(ga)
-                            for (ga, c) in self._p(self._other(lam)) )
+        return self._p.sum(
+            c * self._b_power_gamma(ga) for (ga, c) in self._p(self._other(lam))
+        )
 
     @cached_method
     def _self_to_other_on_basis(self, lam):

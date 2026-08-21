@@ -23,7 +23,9 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.power_series_ring import PowerSeriesRing
 from sage.rings.rational_field import QQ
 
-lazy_import('sage.modular.modform.eis_series_cython', ['eisenstein_series_poly', 'Ek_ZZ'])
+lazy_import(
+    'sage.modular.modform.eis_series_cython', ['eisenstein_series_poly', 'Ek_ZZ']
+)
 lazy_import('sage.rings.number_field.number_field', 'CyclotomicField')
 
 
@@ -130,24 +132,33 @@ def eisenstein_series_qexp(k, prec=10, K=QQ, var='q', normalization='linear'):
     if k <= 0 or k % 2 == 1:
         raise ValueError("k must be positive and even")
 
-    a0 = - bernoulli(k) / (2*k)
+    a0 = -bernoulli(k) / (2 * k)
 
     if normalization == 'linear':
         a0den = a0.denominator()
         try:
-            a0fac = K(1/a0den)
+            a0fac = K(1 / a0den)
         except ZeroDivisionError:
-            raise ValueError("The denominator of -B_k/(2*k) (=%s) must be invertible in the ring %s" % (a0den, K))
+            raise ValueError(
+                "The denominator of -B_k/(2*k) (=%s) must be invertible in the ring %s"
+                % (a0den, K)
+            )
     elif normalization == 'constant':
         a0num = a0.numerator()
         try:
-            a0fac = K(1/a0num)
+            a0fac = K(1 / a0num)
         except ZeroDivisionError:
-            raise ValueError("The numerator of -B_k/(2*k) (=%s) must be invertible in the ring %s" % (a0num, K))
+            raise ValueError(
+                "The numerator of -B_k/(2*k) (=%s) must be invertible in the ring %s"
+                % (a0num, K)
+            )
     elif normalization == 'integral':
         a0fac = None
     else:
-        raise ValueError("Normalization (=%s) must be one of 'linear', 'constant', 'integral'" % normalization)
+        raise ValueError(
+            "Normalization (=%s) must be one of 'linear', 'constant', 'integral'"
+            % normalization
+        )
 
     R = PowerSeriesRing(K, var)
     if K == QQ and normalization == 'linear':
@@ -165,7 +176,7 @@ def eisenstein_series_qexp(k, prec=10, K=QQ, var='q', normalization='linear'):
     # regression; the morally right fix would be to expose FLINT's
     # fmpz_poly_to_nmod_poly command (at least for word-sized N).
     if a0fac is not None:
-        return a0fac*R(eisenstein_series_poly(k, prec).list(), prec=prec, check=True)
+        return a0fac * R(eisenstein_series_poly(k, prec).list(), prec=prec, check=True)
     return R(eisenstein_series_poly(k, prec).list(), prec=prec, check=True)
 
 
@@ -189,8 +200,10 @@ def __common_minimal_basering(chi, psi):
     """
     chi = chi.minimize_base_ring()
     psi = psi.minimize_base_ring()
-    n = lcm(chi.base_ring().zeta().multiplicative_order(),
-                  psi.base_ring().zeta().multiplicative_order())
+    n = lcm(
+        chi.base_ring().zeta().multiplicative_order(),
+        psi.base_ring().zeta().multiplicative_order(),
+    )
     if n <= 2:
         K = QQ
     else:
@@ -241,12 +254,12 @@ def __find_eisen_chars(character, k):
                 if N % (f**2) == 0:
                     chi = chi.minimize_base_ring()
                     chi_inv = ~chi
-                    for t in divisors(N//(f**2)):
+                    for t in divisors(N // (f**2)):
                         V.insert(0, (chi, chi_inv, t))
         return V
 
     eps = character
-    if eps(-1) != (-1)**k:
+    if eps(-1) != (-1) ** k:
         return []
     eps = eps.maximize_base_ring()
     G = eps.parent()
@@ -284,9 +297,9 @@ def __find_eisen_chars(character, k):
             GR = C[R]
             for chi in GL:
                 for psi in GR:
-                    if chi*psi == eps:
+                    if chi * psi == eps:
                         chi0, psi0 = __common_minimal_basering(chi, psi)
-                        for t in divisors(N//(R*L)):
+                        for t in divisors(N // (R * L)):
                             if k != 1 or (psi0, chi0, t) not in params:
                                 params.append((chi0, psi0, t))
     return params
@@ -344,13 +357,16 @@ def __find_eisen_chars_gamma1(N, k):
         ((1, -1), (1, 1), 4)]
     """
     pairs = []
-    s = (-1)**k
+    s = (-1) ** k
     G = DirichletGroup(N)
     E = list(G)
     parity = [c(-1) for c in E]
     for i in range(len(E)):
         for j in range(i, len(E)):
-            if parity[i] * parity[j] == s and N % (E[i].conductor() * E[j].conductor()) == 0:
+            if (
+                parity[i] * parity[j] == s
+                and N % (E[i].conductor() * E[j].conductor()) == 0
+            ):
                 chi, psi = __common_minimal_basering(E[i], E[j])
                 if k != 1:
                     pairs.append((chi, psi))
@@ -420,10 +436,9 @@ def eisenstein_series_lseries(weight, prec=53, max_imaginary_part=0):
     """
     # ref : https://arxiv.org/pdf/1904.00190 Example 5.3
     from sage.lfunctions.pari import lfun_eisenstein, LFunction
-    L = LFunction(lfun_eisenstein(weight), prec=prec,
-                  max_im=max_imaginary_part)
-    L.rename(f'L-series associated to the Eisenstein series E{weight} '
-             'on SL_2(Z)')
+
+    L = LFunction(lfun_eisenstein(weight), prec=prec, max_im=max_imaginary_part)
+    L.rename(f'L-series associated to the Eisenstein series E{weight} on SL_2(Z)')
     return L
 
 
@@ -479,5 +494,7 @@ def compute_eisenstein_params(character, k):
     if isinstance(character, (int, Integer)):
         return __find_eisen_chars_gamma1(character, k)
     if isinstance(character, GammaH_class):
-        return __find_eisen_chars_gammaH(character.level(), character._generators_for_H(), k)
+        return __find_eisen_chars_gammaH(
+            character.level(), character._generators_for_H(), k
+        )
     return __find_eisen_chars(character, k)

@@ -192,9 +192,11 @@ class Yangian(CombinatorialFreeModule):
     - [MNO1994]_
     - [Mol2007]_
     """
+
     @staticmethod
-    def __classcall_private__(cls, base_ring, n, level=None,
-                              variable_name='t', filtration='loop'):
+    def __classcall_private__(
+        cls, base_ring, n, level=None, variable_name='t', filtration='loop'
+    ):
         """
         Return the correct parent based upon input.
 
@@ -216,9 +218,9 @@ class Yangian(CombinatorialFreeModule):
             return YangianLevel(base_ring, n, level, variable_name, filtration)
         # We need to specify the parameter name for pickling, so it doesn't pass
         #   ``variable_name`` as ``level``
-        return super().__classcall__(cls, base_ring, n,
-                                     variable_name=variable_name,
-                                     filtration=filtration)
+        return super().__classcall__(
+            cls, base_ring, n, variable_name=variable_name, filtration=filtration
+        )
 
     def __init__(self, base_ring, n, variable_name, filtration):
         r"""
@@ -240,14 +242,22 @@ class Yangian(CombinatorialFreeModule):
             category = category.Connected()
         self._index_set = tuple(range(1, n + 1))
         # The keys for the basis are tuples (l, i, j)
-        indices = cartesian_product([PositiveIntegers(), self._index_set, self._index_set])
+        indices = cartesian_product(
+            [PositiveIntegers(), self._index_set, self._index_set]
+        )
         # We note that the generators are non-commutative, but we always sort
         #   them, so they are, in effect, indexed by the free abelian monoid
-        basis_keys = IndexedFreeAbelianMonoid(indices, bracket=False,
-                                              prefix=variable_name)
-        CombinatorialFreeModule.__init__(self, base_ring, basis_keys,
-                                         sorting_key=Yangian._term_key,
-                                         prefix=variable_name, category=category)
+        basis_keys = IndexedFreeAbelianMonoid(
+            indices, bracket=False, prefix=variable_name
+        )
+        CombinatorialFreeModule.__init__(
+            self,
+            base_ring,
+            basis_keys,
+            sorting_key=Yangian._term_key,
+            prefix=variable_name,
+            category=category,
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -260,7 +270,9 @@ class Yangian(CombinatorialFreeModule):
             sage: Yangian(QQ, 4, filtration='natural')
             Yangian of gl(4) in the natural filtration over Rational Field
         """
-        return "Yangian of gl({}) in the {} filtration over {}".format(self._n, self._filtration, self.base_ring())
+        return "Yangian of gl({}) in the {} filtration over {}".format(
+            self._n, self._filtration, self.base_ring()
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -272,6 +284,7 @@ class Yangian(CombinatorialFreeModule):
             Y(\mathfrak{gl}_{4}, \Bold{Q})
         """
         from sage.misc.latex import latex
+
         return "Y(\\mathfrak{{gl}}_{{{}}}, {})".format(self._n, latex(self.base_ring()))
 
     @staticmethod
@@ -304,9 +317,12 @@ class Yangian(CombinatorialFreeModule):
         if len(m) == 0:
             return '1'
         prefix = self.prefix()
-        return '*'.join(prefix + '({})[{},{}]'.format(r, i, j)
-                        + ('^{}'.format(exp) if exp > 1 else '')
-                        for (r, i, j), exp in m._sorted_items())
+        return '*'.join(
+            prefix
+            + '({})[{},{}]'.format(r, i, j)
+            + ('^{}'.format(exp) if exp > 1 else '')
+            for (r, i, j), exp in m._sorted_items()
+        )
 
     def _latex_term(self, m) -> str:
         r"""
@@ -332,8 +348,8 @@ class Yangian(CombinatorialFreeModule):
             if exp == 1:
                 return s
             return '\\left({}\\right)^{{{}}}'.format(s, exp)
-        return ' '.join(term(r, i, j, exp)
-                        for (r, i, j), exp in m._sorted_items())
+
+        return ' '.join(term(r, i, j, exp) for (r, i, j), exp in m._sorted_items())
 
     def _element_constructor_(self, x):
         """
@@ -574,14 +590,23 @@ class Yangian(CombinatorialFreeModule):
         # This is the special term of x = 1
         x1 = self.zero()
         if b[1] == a[2]:
-            x1 += self.monomial(I.gen((a[0]+b[0]-1, a[1], b[2])))
+            x1 += self.monomial(I.gen((a[0] + b[0] - 1, a[1], b[2])))
         if a[1] == b[2]:
-            x1 -= self.monomial(I.gen((a[0]+b[0]-1, b[1], a[2])))
+            x1 -= self.monomial(I.gen((a[0] + b[0] - 1, b[1], a[2])))
 
-        return self.monomial(I.gen(b) * I.gen(a)) + x1 + self.sum(
-                self.monomial(I.gen((x-1, b[1], a[2])) * I.gen((a[0]+b[0]-x, a[1], b[2])))
-                - self.product_on_gens((a[0]+b[0]-x, b[1], a[2]), (x-1, a[1], b[2]))
-                for x in range(2, b[0]+1))
+        return (
+            self.monomial(I.gen(b) * I.gen(a))
+            + x1
+            + self.sum(
+                self.monomial(
+                    I.gen((x - 1, b[1], a[2])) * I.gen((a[0] + b[0] - x, a[1], b[2]))
+                )
+                - self.product_on_gens(
+                    (a[0] + b[0] - x, b[1], a[2]), (x - 1, a[1], b[2])
+                )
+                for x in range(2, b[0] + 1)
+            )
+        )
 
     def coproduct_on_basis(self, m):
         r"""
@@ -609,12 +634,19 @@ class Yangian(CombinatorialFreeModule):
         """
         T = self.tensor_square()
         I = self._indices
-        return T.prod(T.monomial((I.one(), I.gen((a[0],a[1],a[2]))))
-                      + T.monomial((I.gen((a[0],a[1],a[2])), I.one()))
-                      + T.sum_of_terms([((I.gen((s,a[1],k)), I.gen((a[0]-s,k,a[2]))), 1)
-                                        for k in range(1, self._n+1)
-                                        for s in range(1, a[0])])
-                      for a,exp in m._sorted_items() for p in range(exp))
+        return T.prod(
+            T.monomial((I.one(), I.gen((a[0], a[1], a[2]))))
+            + T.monomial((I.gen((a[0], a[1], a[2])), I.one()))
+            + T.sum_of_terms(
+                [
+                    ((I.gen((s, a[1], k)), I.gen((a[0] - s, k, a[2]))), 1)
+                    for k in range(1, self._n + 1)
+                    for s in range(1, a[0])
+                ]
+            )
+            for a, exp in m._sorted_items()
+            for p in range(exp)
+        )
 
     def counit_on_basis(self, m):
         """
@@ -649,6 +681,7 @@ class YangianLevel(Yangian):
         t(1)[1,2]*t(1)[1,3]*t(3)[2,1] + t(1)[1,2]*t(3)[2,3]
          - t(1)[1,3]*t(3)[1,1] + t(1)[1,3]*t(3)[2,2] - t(3)[1,3]
     """
+
     def __init__(self, base_ring, n, level, variable_name, filtration):
         """
         Initialize ``self``.
@@ -662,15 +695,18 @@ class YangianLevel(Yangian):
         self._n = n
         self._filtration = filtration
         category = HopfAlgebrasWithBasis(base_ring).Filtered()
-        self._index_set = tuple(range(1,n+1))
+        self._index_set = tuple(range(1, n + 1))
         # The keys for the basis are tuples (l, i, j)
         L = range(1, self._level + 1)
         indices = cartesian_product([L, self._index_set, self._index_set])
         # We note that the generators are non-commutative, but we always sort
         #   them, so they are, in effect, indexed by the free abelian monoid
-        basis_keys = IndexedFreeAbelianMonoid(indices, bracket=False, prefix=variable_name)
-        CombinatorialFreeModule.__init__(self, base_ring, basis_keys,
-                                         prefix=variable_name, category=category)
+        basis_keys = IndexedFreeAbelianMonoid(
+            indices, bracket=False, prefix=variable_name
+        )
+        CombinatorialFreeModule.__init__(
+            self, base_ring, basis_keys, prefix=variable_name, category=category
+        )
 
     def _repr_(self) -> str:
         r"""
@@ -682,7 +718,8 @@ class YangianLevel(Yangian):
             Yangian of level 3 of gl(4) in the loop filtration over Rational Field
         """
         return "Yangian of level {} of gl({}) in the {} filtration over {}".format(
-                        self._level, self._n, self._filtration, self.base_ring())
+            self._level, self._n, self._filtration, self.base_ring()
+        )
 
     def _latex_(self) -> str:
         r"""
@@ -694,8 +731,10 @@ class YangianLevel(Yangian):
             Y_{5}(\mathfrak{gl}_{4}, \Bold{Q})
         """
         from sage.misc.latex import latex
+
         return "Y_{{{}}}(\\mathfrak{{gl}}_{{{}}}, {})".format(
-            self._level, self._n, latex(self.base_ring()))
+            self._level, self._n, latex(self.base_ring())
+        )
 
     def _coerce_map_from_(self, R):
         """
@@ -738,10 +777,16 @@ class YangianLevel(Yangian):
             sage: Y5.has_coerce_map_from(Y)
             False
         """
-        if isinstance(R, Yangian) and R._n <= self._n and R._filtration == self._filtration:
+        if (
+            isinstance(R, Yangian)
+            and R._n <= self._n
+            and R._filtration == self._filtration
+        ):
             if isinstance(R, YangianLevel) and self._level > R._level:
                 return False
-            on_gens = lambda m: self.prod(self.gen(*a)**exp for a,exp in m._sorted_items())
+            on_gens = lambda m: self.prod(
+                self.gen(*a) ** exp for a, exp in m._sorted_items()
+            )
             return R.module_morphism(on_gens, codomain=self)
         return super()._coerce_map_from_(R)
 
@@ -779,7 +824,7 @@ class YangianLevel(Yangian):
         if u is None:
             u = PolynomialRing(self.base_ring(), 'u').gen(0)
         ell = self._level
-        return sum(self.gen(k, i, j) * u**(ell-k) for k in range(ell+1))
+        return sum(self.gen(k, i, j) * u ** (ell - k) for k in range(ell + 1))
 
     def quantum_determinant(self, u=None):
         r"""
@@ -809,10 +854,13 @@ class YangianLevel(Yangian):
         if u is None:
             u = PolynomialRing(self.base_ring(), 'u').gen(0)
         from sage.combinat.permutation import Permutations
+
         n = self._n
-        return sum(p.sign() * prod(self.defining_polynomial(p[k], k+1, u - k)
-                                   for k in range(n))
-                   for p in Permutations(n))
+        return sum(
+            p.sign()
+            * prod(self.defining_polynomial(p[k], k + 1, u - k) for k in range(n))
+            for p in Permutations(n)
+        )
 
     def gen(self, r, i=None, j=None):
         """
@@ -848,10 +896,12 @@ class YangianLevel(Yangian):
             (t(1)[1,1], t(2)[1,1], t(1)[1,2], t(2)[1,2], t(1)[2,1],
              t(2)[2,1], t(1)[2,2], t(2)[2,2])
         """
-        return tuple(self.gen(r, i, j)
-                     for i in range(1, self._n+1)
-                     for j in range(1, self._n+1)
-                     for r in range(1, self._level+1))
+        return tuple(
+            self.gen(r, i, j)
+            for i in range(1, self._n + 1)
+            for j in range(1, self._n + 1)
+            for r in range(1, self._level + 1)
+        )
 
     @cached_method
     def product_on_gens(self, a, b):
@@ -878,16 +928,27 @@ class YangianLevel(Yangian):
 
         # This is the special term of x = 1
         x1 = self.zero()
-        if a[0]+b[0]-1 <= self._level:
+        if a[0] + b[0] - 1 <= self._level:
             if b[1] == a[2]:
-                x1 += self.monomial(I.gen((a[0]+b[0]-1, a[1], b[2])))
+                x1 += self.monomial(I.gen((a[0] + b[0] - 1, a[1], b[2])))
             if a[1] == b[2]:
-                x1 -= self.monomial(I.gen((a[0]+b[0]-1, b[1], a[2])))
+                x1 -= self.monomial(I.gen((a[0] + b[0] - 1, b[1], a[2])))
 
-        return self.monomial(I.gen(b) * I.gen(a)) + x1 + self.sum(
-                self.monomial(I.gen((x-1, b[1], a[2])) * I.gen((a[0]+b[0]-x, a[1], b[2])))
-                - self.product_on_gens((a[0]+b[0]-x, b[1], a[2]), (x-1, a[1], b[2]))
-                for x in range(2, b[0]+1) if a[0]+b[0]-x <= self._level)
+        return (
+            self.monomial(I.gen(b) * I.gen(a))
+            + x1
+            + self.sum(
+                self.monomial(
+                    I.gen((x - 1, b[1], a[2])) * I.gen((a[0] + b[0] - x, a[1], b[2]))
+                )
+                - self.product_on_gens(
+                    (a[0] + b[0] - x, b[1], a[2]), (x - 1, a[1], b[2])
+                )
+                for x in range(2, b[0] + 1)
+                if a[0] + b[0] - x <= self._level
+            )
+        )
+
 
 #####################################################################
 # Graded algebras
@@ -897,6 +958,7 @@ class GradedYangianBase(AssociatedGradedAlgebra):
     """
     Base class for graded algebras associated to a Yangian.
     """
+
     def _repr_term(self, m) -> str:
         """
         Return a string representation of the monomial indexed by ``m``.
@@ -911,9 +973,12 @@ class GradedYangianBase(AssociatedGradedAlgebra):
         if len(m) == 0:
             return '1'
         prefix = self.prefix()
-        return '*'.join(prefix + '({})[{},{}]'.format(r, i, j)
-                        + ('^{}'.format(exp) if exp > 1 else '')
-                        for (r, i, j), exp in m._sorted_items())
+        return '*'.join(
+            prefix
+            + '({})[{},{}]'.format(r, i, j)
+            + ('^{}'.format(exp) if exp > 1 else '')
+            for (r, i, j), exp in m._sorted_items()
+        )
 
     def _latex_term(self, m) -> str:
         r"""
@@ -936,8 +1001,8 @@ class GradedYangianBase(AssociatedGradedAlgebra):
             if exp == 1:
                 return s
             return '\\left({}\\right)^{{{}}}'.format(s, exp)
-        return ' '.join(term(r, i, j, exp)
-                        for (r, i, j), exp in m._sorted_items())
+
+        return ' '.join(term(r, i, j, exp) for (r, i, j), exp in m._sorted_items())
 
 
 class GradedYangianNatural(GradedYangianBase):
@@ -950,6 +1015,7 @@ class GradedYangianNatural(GradedYangianBase):
 
     - ``Y`` -- a Yangian with the natural filtration
     """
+
     def __init__(self, Y):
         """
         Initialize ``self``.
@@ -995,6 +1061,7 @@ class GradedYangianLoop(GradedYangianBase):
 
     - ``Y`` -- a Yangian with the loop filtration
     """
+
     def __init__(self, Y):
         """
         Initialize ``self``.
@@ -1043,8 +1110,9 @@ class GradedYangianLoop(GradedYangianBase):
              + 10*tbar(1)[1,2]*tbar(1)[1,3]^3*tbar(3)[1,2]
              + 15*tbar(1)[1,2]^2*tbar(1)[1,3]^2*tbar(3)[1,3]
         """
-        return self.prod((-1)**exp * self.monomial(a**exp)
-                          for a,exp in reversed(list(m)))
+        return self.prod(
+            (-1) ** exp * self.monomial(a**exp) for a, exp in reversed(list(m))
+        )
 
     def coproduct_on_basis(self, m):
         """
@@ -1061,8 +1129,9 @@ class GradedYangianLoop(GradedYangianBase):
         T = self.tensor_square()
         I = self._indices
         one = I.one()
-        return T.prod(T.sum_of_monomials([(one, a), (a, one)])
-                      for a, exp in m for p in range(exp))
+        return T.prod(
+            T.sum_of_monomials([(one, a), (a, one)]) for a, exp in m for p in range(exp)
+        )
 
     def counit_on_basis(self, m):
         """

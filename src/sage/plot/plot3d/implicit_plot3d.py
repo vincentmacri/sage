@@ -2,6 +2,7 @@
 """
 Implicit plots
 """
+
 from sage.plot.plot3d.implicit_surface import ImplicitSurface
 
 

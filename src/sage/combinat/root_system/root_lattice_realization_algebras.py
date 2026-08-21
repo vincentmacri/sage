@@ -1,6 +1,7 @@
 r"""
 Group algebras of root lattice realizations
 """
+
 # ****************************************************************************
 #       Copyright (C) 2013 Nicolas M. Thiery <nthiery at users.sf.net>
 #                          Anne Schilling <anne at math.ucdavis.edu>
@@ -16,9 +17,12 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import lazy_import
 from sage.misc.misc_c import prod
 from sage.categories.algebra_functor import AlgebrasCategory
+
 lazy_import('sage.rings.integer_ring', 'ZZ')
 from sage.modules.free_module_element import vector
-from sage.combinat.root_system.hecke_algebra_representation import HeckeAlgebraRepresentation
+from sage.combinat.root_system.hecke_algebra_representation import (
+    HeckeAlgebraRepresentation,
+)
 
 
 class Algebras(AlgebrasCategory):
@@ -34,7 +38,6 @@ class Algebras(AlgebrasCategory):
     """
 
     class ParentMethods:
-
         def _repr_(self):
             r"""
             EXAMPLES::
@@ -72,7 +75,9 @@ class Algebras(AlgebrasCategory):
                  B[Lambda[1]],
                  B[Lambda[2]]]
             """
-            return [self.monomial(weight) for weight in self.basis().keys().some_elements()]
+            return [
+                self.monomial(weight) for weight in self.basis().keys().some_elements()
+            ]
 
         @cached_method
         def cartan_type(self):
@@ -120,8 +125,10 @@ class Algebras(AlgebrasCategory):
             .. TODO:: make this work for Laurent polynomials too
             """
             L = self.basis().keys()
-            return self.sum_of_terms((L.from_vector(vector(t)), c)
-                                     for t, c in p.monomial_coefficients().items())
+            return self.sum_of_terms(
+                (L.from_vector(vector(t)), c)
+                for t, c in p.monomial_coefficients().items()
+            )
 
         @cached_method
         def divided_difference_on_basis(self, weight, i):
@@ -203,11 +210,13 @@ class Algebras(AlgebrasCategory):
             P = self.basis().keys()  # the root lattice realization
             n = weight.scalar(P.simple_coroot(i))
             if n not in ZZ:
-                raise ValueError("the weight does not have an integral scalar product with the coroot")
+                raise ValueError(
+                    "the weight does not have an integral scalar product with the coroot"
+                )
             alphai = P.simple_root(i)
             if n >= 0:
-                return self.sum_of_monomials(weight-j*alphai for j in range(n + 1))
-            return -self.sum_of_monomials(weight-j*alphai for j in range(n + 1, 0))
+                return self.sum_of_monomials(weight - j * alphai for j in range(n + 1))
+            return -self.sum_of_monomials(weight - j * alphai for j in range(n + 1, 0))
 
         def demazure_operators(self):
             r"""
@@ -295,7 +304,14 @@ class Algebras(AlgebrasCategory):
                     ...
                     ValueError: the weight does not have an integral scalar product with the coroot
             """
-            return HeckeAlgebraRepresentation(self, self.isobaric_divided_difference_on_basis, self.cartan_type(), 0, 1, side='left')
+            return HeckeAlgebraRepresentation(
+                self,
+                self.isobaric_divided_difference_on_basis,
+                self.cartan_type(),
+                0,
+                1,
+                side='left',
+            )
 
         def _test_demazure_operators(self, **options):
             """
@@ -320,12 +336,16 @@ class Algebras(AlgebrasCategory):
                             continue
                         x = self.monomial(weight)
                         result = pi[i](x)
-                        tester.assertEqual(result * (self.one() - emalphai),
-                                           x - emalphai * x.map_support(s[i]))
+                        tester.assertEqual(
+                            result * (self.one() - emalphai),
+                            x - emalphai * x.map_support(s[i]),
+                        )
             except ImportError:
                 pass
 
-        def demazure_lusztig_operator_on_basis(self, weight, i, q1, q2, convention='antidominant'):
+        def demazure_lusztig_operator_on_basis(
+            self, weight, i, q1, q2, convention='antidominant'
+        ):
             r"""
             Return the result of applying the `i`-th Demazure-Lusztig operator on ``weight``.
 
@@ -385,7 +405,9 @@ class Algebras(AlgebrasCategory):
             pi_on_weight = self.isobaric_divided_difference_on_basis(weight, i)
             if convention == "bar":
                 pi_on_weight = self.monomial(weight) - pi_on_weight
-            result = (q1+q2) * pi_on_weight - self.term(weight.simple_reflection(i), q2)
+            result = (q1 + q2) * pi_on_weight - self.term(
+                weight.simple_reflection(i), q2
+            )
             if convention == "dominant":
                 return result.map_support(operator.neg)
             return result
@@ -592,11 +614,19 @@ class Algebras(AlgebrasCategory):
                 ....:    T = KL.demazure_lusztig_operators(q1,q2)
                 ....:    T._test_relations(elements=elements)
             """
-            T_on_basis = functools.partial(self.demazure_lusztig_operator_on_basis,
-                                           q1=q1, q2=q2, convention=convention)
-            return HeckeAlgebraRepresentation(self, T_on_basis, self.cartan_type(), q1, q2, side='left')
+            T_on_basis = functools.partial(
+                self.demazure_lusztig_operator_on_basis,
+                q1=q1,
+                q2=q2,
+                convention=convention,
+            )
+            return HeckeAlgebraRepresentation(
+                self, T_on_basis, self.cartan_type(), q1, q2, side='left'
+            )
 
-        def demazure_lusztig_operator_on_classical_on_basis(self, weight, i, q, q1, q2, convention='antidominant'):
+        def demazure_lusztig_operator_on_classical_on_basis(
+            self, weight, i, q, q1, q2, convention='antidominant'
+        ):
             r"""
             Return the result of applying the `i`-th Demazure-Lusztig operator on the classical weight ``weight`` embedded at level 0.
 
@@ -652,9 +682,16 @@ class Algebras(AlgebrasCategory):
             """
             L = self.basis().keys()
             weight = L.embed_at_level(weight, 0)
-            return self.q_project(self.demazure_lusztig_operator_on_basis(weight, i, q1, q2, convention=convention), q)
+            return self.q_project(
+                self.demazure_lusztig_operator_on_basis(
+                    weight, i, q1, q2, convention=convention
+                ),
+                q,
+            )
 
-        def demazure_lusztig_operators_on_classical(self, q, q1, q2, convention='antidominant'):
+        def demazure_lusztig_operators_on_classical(
+            self, q, q1, q2, convention='antidominant'
+        ):
             r"""
             Return the Demazure-Lusztig operators acting at level 1 on ``self.classical()``.
 
@@ -759,9 +796,22 @@ class Algebras(AlgebrasCategory):
             # Should this go in q_project instead?
             ct = self.cartan_type()
             a0check = ct.acheck()[ct.special_node()]
-            T_on_basis = functools.partial(self.demazure_lusztig_operator_on_classical_on_basis,
-                                           q1=q1, q2=q2, q=q**a0check, convention=convention)
-            return HeckeAlgebraRepresentation(self.classical(), T_on_basis, self.cartan_type(), q1=q1, q2=q2, q=q, side='left')
+            T_on_basis = functools.partial(
+                self.demazure_lusztig_operator_on_classical_on_basis,
+                q1=q1,
+                q2=q2,
+                q=q**a0check,
+                convention=convention,
+            )
+            return HeckeAlgebraRepresentation(
+                self.classical(),
+                T_on_basis,
+                self.cartan_type(),
+                q1=q1,
+                q2=q2,
+                q=q,
+                side='left',
+            )
 
         @cached_method
         def T0_check_on_basis(self, q1, q2, convention='antidominant'):
@@ -853,22 +903,25 @@ class Algebras(AlgebrasCategory):
                 # CHECKME: this is not exactly phi, but phi rescaled
                 # appropriately so that it's in the orbit of the
                 # simple classical roots
-                phi = -a0*L0(L.simple_roots()[0])
+                phi = -a0 * L0(L.simple_roots()[0])
             else:
-                phi = L0(L0.root_system.coroot_lattice().highest_root().associated_coroot())
+                phi = L0(
+                    L0.root_system.coroot_lattice().highest_root().associated_coroot()
+                )
             # Variant: try to fetch it from the other affinization; something like:
             # The a0 only has an influence in type BC; it handles the fact that alpha_0
             # is not in the orbit of the classical roots
-            #phi1 = - L0(L'.other_affinization().simple_roots()[special_node]) * a0
-            #assert phi == phi1
+            # phi1 = - L0(L'.other_affinization().simple_roots()[special_node]) * a0
+            # assert phi == phi1
 
             j, v = phi.to_simple_root(reduced_word=True)
-            translation = A0.monomial(-L0.simple_root(j)/a0)
+            translation = A0.monomial(-L0.simple_root(j) / a0)
             Tv = T[v]
-            Tinv = T.Tw_inverse(v+(j,))
+            Tinv = T.Tw_inverse(v + (j,))
 
             def T0_check(weight):
-                return -q1*q2*Tinv( translation * Tv(A0.monomial(weight)))
+                return -q1 * q2 * Tinv(translation * Tv(A0.monomial(weight)))
+
             # For debugging purposes
             T0_check.phi = phi
             T0_check.j = j
@@ -915,7 +968,7 @@ class Algebras(AlgebrasCategory):
             """
             KL0 = self.classical()
             L0 = KL0.basis().keys()
-            return KL0.term(L0(l), q**l["delta"])
+            return KL0.term(L0(l), q ** l["delta"])
 
         def q_project(self, x, q):
             r"""
@@ -969,9 +1022,13 @@ class Algebras(AlgebrasCategory):
                     q^2*B[(0, 0, 0)]
             """
             L0 = self.classical()
-            return L0.linear_combination( (self.q_project_on_basis(l, q), c) for l,c in x )
+            return L0.linear_combination(
+                (self.q_project_on_basis(l, q), c) for l, c in x
+            )
 
-        def twisted_demazure_lusztig_operator_on_basis(self, weight, i, q1, q2, convention='antidominant'):
+        def twisted_demazure_lusztig_operator_on_basis(
+            self, weight, i, q1, q2, convention='antidominant'
+        ):
             r"""
             Return the twisted Demazure-Lusztig operator acting on the basis.
 
@@ -1010,12 +1067,16 @@ class Algebras(AlgebrasCategory):
                  + ((q1^2+2*q1*q2+q2^2)/q1)*B[(2, 2, 1, 0)]
                  + ((q1*q2+q2^2)/q1)*B[(2, 2, 0, 1)]
             """
-            if i == 0: # should use the special node
+            if i == 0:  # should use the special node
                 if convention != "dominant":
-                    raise NotImplementedError("The twisted Demazure-Lusztig operator T_0 is only implemented in the dominant convention")
+                    raise NotImplementedError(
+                        "The twisted Demazure-Lusztig operator T_0 is only implemented in the dominant convention"
+                    )
                 return self.T0_check_on_basis(q1, q2, convention=convention)(weight)
             L = self.classical()
-            return L.demazure_lusztig_operators(q1, q2, convention=convention)[i](L.monomial(weight))
+            return L.demazure_lusztig_operators(q1, q2, convention=convention)[i](
+                L.monomial(weight)
+            )
 
         def twisted_demazure_lusztig_operators(self, q1, q2, convention='antidominant'):
             r"""
@@ -1146,16 +1207,22 @@ class Algebras(AlgebrasCategory):
                 sage: T0c(0,0,1)                                                        # needs sage.graphs
                 (t^2-t)*B[(1, 0, 0)] + (t^2-t)*B[(1, 1, -1)] + t^2*B[(2, 0, -1)] + (t-1)*B[(0, 0, 1)]
             """
-            T_on_basis = functools.partial(self.twisted_demazure_lusztig_operator_on_basis,
-                                           q1=q1, q2=q2, convention=convention)
-            return HeckeAlgebraRepresentation(self.classical(),
-                                              T_on_basis,
-                                              self.cartan_type().classical().dual().affine().dual(),
-                                              q1, q2,
-                                              side='left')
+            T_on_basis = functools.partial(
+                self.twisted_demazure_lusztig_operator_on_basis,
+                q1=q1,
+                q2=q2,
+                convention=convention,
+            )
+            return HeckeAlgebraRepresentation(
+                self.classical(),
+                T_on_basis,
+                self.cartan_type().classical().dual().affine().dual(),
+                q1,
+                q2,
+                side='left',
+            )
 
     class ElementMethods:
-
         def acted_upon(self, w):
             """
             Implement the action of ``w`` on ``self``.
@@ -1210,6 +1277,7 @@ class Algebras(AlgebrasCategory):
                 <class 'sage.rings.polynomial.laurent_polynomial_mpair.LaurentPolynomial_mpair'>
             """
             codomain = alphabet[0].parent()
-            return codomain.sum(c * prod(X**int(n)
-                                         for X, n in zip(alphabet, vector(m)))
-                                for m, c in self)
+            return codomain.sum(
+                c * prod(X ** int(n) for X, n in zip(alphabet, vector(m)))
+                for m, c in self
+            )

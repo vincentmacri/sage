@@ -85,8 +85,11 @@ class FreeGradedModuleMorphism(FPModuleMorphism):
             sage: TestSuite(g).run()
         """
         from .free_homspace import FreeGradedModuleHomspace
+
         if not isinstance(parent, FreeGradedModuleHomspace):
-            raise TypeError('the parent (%s) must be a f.p. free module homset' % parent)
+            raise TypeError(
+                'the parent (%s) must be a f.p. free module homset' % parent
+            )
 
         self._free_morphism = self
         FPModuleMorphism.__init__(self, parent, values, check=False)
@@ -170,8 +173,9 @@ class FreeGradedModuleMorphism(FPModuleMorphism):
         """
         if x.parent() != self.domain():
             raise ValueError('cannot evaluate morphism on element not in the domain')
-        value = self.codomain().linear_combination(zip(self._values,
-                                                       x.dense_coefficient_list()))
+        value = self.codomain().linear_combination(
+            zip(self._values, x.dense_coefficient_list())
+        )
         return value
 
     def fp_module(self):

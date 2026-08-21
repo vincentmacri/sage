@@ -143,19 +143,42 @@ class Polyhedron_base(Polyhedron_base7):
         if tester is None:
             tester = self._tester(**options)
 
-        tester.assertEqual(self.n_vertices() + self.n_rays() + self.n_lines(), self.n_Vrepresentation())
-        tester.assertEqual(self.n_inequalities() + self.n_equations(), self.n_Hrepresentation())
+        tester.assertEqual(
+            self.n_vertices() + self.n_rays() + self.n_lines(), self.n_Vrepresentation()
+        )
+        tester.assertEqual(
+            self.n_inequalities() + self.n_equations(), self.n_Hrepresentation()
+        )
         if self.n_vertices():
             # Depending on the backend, this does not hold for the empty polyhedron.
             tester.assertEqual(self.dim() + self.n_equations(), self.ambient_dim())
 
-        tester.assertTrue(all(len(v[::]) == self.ambient_dim() for v in self.Vrep_generator()))
-        tester.assertTrue(all(len(h[::]) == self.ambient_dim() + 1 for h in self.Hrep_generator()))
+        tester.assertTrue(
+            all(len(v[::]) == self.ambient_dim() for v in self.Vrep_generator())
+        )
+        tester.assertTrue(
+            all(len(h[::]) == self.ambient_dim() + 1 for h in self.Hrep_generator())
+        )
 
         if self.n_vertices() + self.n_rays() < 40:
-            tester.assertEqual(self, Polyhedron(vertices=self.vertices(), rays=self.rays(), lines=self.lines(), ambient_dim=self.ambient_dim()))
+            tester.assertEqual(
+                self,
+                Polyhedron(
+                    vertices=self.vertices(),
+                    rays=self.rays(),
+                    lines=self.lines(),
+                    ambient_dim=self.ambient_dim(),
+                ),
+            )
         if self.n_inequalities() < 40:
-            tester.assertEqual(self, Polyhedron(ieqs=self.inequalities(), eqns=self.equations(), ambient_dim=self.ambient_dim()))
+            tester.assertEqual(
+                self,
+                Polyhedron(
+                    ieqs=self.inequalities(),
+                    eqns=self.equations(),
+                    ambient_dim=self.ambient_dim(),
+                ),
+            )
 
     def to_linear_program(self, solver=None, return_variable=False, base_ring=None):
         r"""
@@ -262,6 +285,7 @@ class Polyhedron_base(Polyhedron_base7):
             base_ring = self.base_ring()
         base_ring = base_ring.fraction_field()
         from sage.numerical.mip import MixedIntegerLinearProgram
+
         p = MixedIntegerLinearProgram(solver=solver, base_ring=base_ring)
         x = p.new_variable(real=True, nonnegative=False)
 
@@ -324,12 +348,17 @@ class Polyhedron_base(Polyhedron_base7):
 
         if self.is_simplicial():
             from sage.topology.simplicial_complex import SimplicialComplex
+
             inc_mat_cols = self.incidence_matrix().columns()
-            ineq_indices = [inc_mat_cols[i].nonzero_positions()
-                            for i in range(self.n_Hrepresentation())
-                            if self.Hrepresentation()[i].is_inequality()]
+            ineq_indices = [
+                inc_mat_cols[i].nonzero_positions()
+                for i in range(self.n_Hrepresentation())
+                if self.Hrepresentation()[i].is_inequality()
+            ]
             return SimplicialComplex(ineq_indices, maximality_check=False)
-        raise NotImplementedError("this function is only implemented for simplicial polytopes")
+        raise NotImplementedError(
+            "this function is only implemented for simplicial polytopes"
+        )
 
     @cached_method
     def center(self):
@@ -532,10 +561,14 @@ class Polyhedron_base(Polyhedron_base7):
         """
 
         if not self.is_compact():
-            raise NotImplementedError("this function is not implemented for unbounded polyhedra")
+            raise NotImplementedError(
+                "this function is not implemented for unbounded polyhedra"
+            )
 
         if not self.is_full_dimensional():
-            raise NotImplementedError("this function is implemented for full-dimensional polyhedra only")
+            raise NotImplementedError(
+                "this function is implemented for full-dimensional polyhedra only"
+            )
 
         dimension = self.dimension()
         vertices = self.vertices()
@@ -545,28 +578,40 @@ class Polyhedron_base(Polyhedron_base7):
         raw_data = []
         for vertex in affine_basis:
             vertex_vector = vertex.vector()
-            raw_data += [[sum(i**2 for i in vertex_vector)] +
-                         list(vertex_vector) + [1]]
+            raw_data += [[sum(i**2 for i in vertex_vector)] + list(vertex_vector) + [1]]
         matrix_data = matrix(raw_data)
 
         # The determinant "a" should not be zero because
         # the vertices in ``affine_basis`` are an affine basis.
-        a = matrix_data.matrix_from_columns(range(1, dimension+2)).determinant()
+        a = matrix_data.matrix_from_columns(range(1, dimension + 2)).determinant()
 
-        minors = [(-1)**(i)*matrix_data.matrix_from_columns([j for j in range(dimension+2) if j != i]).determinant()
-                  for i in range(1, dimension+1)]
-        c = (-1)**(dimension+1)*matrix_data.matrix_from_columns(range(dimension+1)).determinant()
+        minors = [
+            (-1) ** (i)
+            * matrix_data.matrix_from_columns(
+                [j for j in range(dimension + 2) if j != i]
+            ).determinant()
+            for i in range(1, dimension + 1)
+        ]
+        c = (-1) ** (dimension + 1) * matrix_data.matrix_from_columns(
+            range(dimension + 1)
+        ).determinant()
 
-        circumcenter = vector([minors[i]/(2*a) for i in range(dimension)])
-        squared_circumradius = (sum(m**2 for m in minors) - 4 * a * c) / (4*a**2)
+        circumcenter = vector([minors[i] / (2 * a) for i in range(dimension)])
+        squared_circumradius = (sum(m**2 for m in minors) - 4 * a * c) / (4 * a**2)
 
         # Checking if the circumcenter has the correct sign
-        if not all(sum(i**2 for i in v.vector() - circumcenter) == squared_circumradius
-                   for v in vertices if v in affine_basis):
-            circumcenter = - circumcenter
+        if not all(
+            sum(i**2 for i in v.vector() - circumcenter) == squared_circumradius
+            for v in vertices
+            if v in affine_basis
+        ):
+            circumcenter = -circumcenter
 
-        is_inscribed = all(sum(i**2 for i in v.vector() - circumcenter) == squared_circumradius
-                           for v in vertices if v not in affine_basis)
+        is_inscribed = all(
+            sum(i**2 for i in v.vector() - circumcenter) == squared_circumradius
+            for v in vertices
+            if v not in affine_basis
+        )
 
         if certificate:
             if is_inscribed:
@@ -595,7 +640,10 @@ class Polyhedron_base(Polyhedron_base7):
             Arrangement <-t0 + 1 | -t1 + 1 | t1 + 1 | t0 + 1>
         """
         names = tuple('t' + str(i) for i in range(self.ambient_dim()))
-        from sage.geometry.hyperplane_arrangement.arrangement import HyperplaneArrangements
+        from sage.geometry.hyperplane_arrangement.arrangement import (
+            HyperplaneArrangements,
+        )
+
         field = self.base_ring().fraction_field()
         H = HyperplaneArrangements(field, names)
         return H(self)
@@ -686,7 +734,9 @@ class Polyhedron_base(Polyhedron_base7):
         from sage.geometry.fan import NormalFan
 
         if not QQ.has_coerce_map_from(self.base_ring()):
-            raise NotImplementedError('normal fan handles only polytopes over the rationals')
+            raise NotImplementedError(
+                'normal fan handles only polytopes over the rationals'
+            )
         if direction == 'inner':
             return NormalFan(self)
         if direction == 'outer':
@@ -743,7 +793,9 @@ class Polyhedron_base(Polyhedron_base7):
         from sage.geometry.fan import FaceFan
 
         if not QQ.has_coerce_map_from(self.base_ring()):
-            raise NotImplementedError('face fan handles only polytopes over the rationals')
+            raise NotImplementedError(
+                'face fan handles only polytopes over the rationals'
+            )
 
         return FaceFan(self)
 
@@ -849,8 +901,7 @@ class Polyhedron_base(Polyhedron_base7):
         if not self.is_compact():
             raise ValueError("the polytope has to be compact")
         if not (0 < subdivision_frac < ZZ.one() / 2):
-            raise ValueError("the subdivision fraction should be "
-                             "between 0 and 1/2")
+            raise ValueError("the subdivision fraction should be between 0 and 1/2")
 
         barycenter = self.center()
         parent = self.parent().base_extend(subdivision_frac)
@@ -859,33 +910,36 @@ class Polyhedron_base(Polyhedron_base7):
         polar = (self - barycenter).polar(in_affine_span=True)
 
         for i in range(self.dimension() - 1):
-
             new_ineq = []
             subdivided_faces = list(start_polar.faces(i))
             Hrep = polar.Hrepresentation()
 
             for face in subdivided_faces:
-
                 face_vertices = face.vertices()
                 normal_vectors = []
 
                 for facet in Hrep:
-                    if all(facet.contains(v) and not facet.interior_contains(v)
-                           for v in face_vertices):
+                    if all(
+                        facet.contains(v) and not facet.interior_contains(v)
+                        for v in face_vertices
+                    ):
                         # The facet contains the face
                         normal_vectors.append(facet.A())
 
                 normal_vector = sum(normal_vectors)
-                B = - normal_vector * (face_vertices[0].vector())
-                linear_evaluation = {-normal_vector * v.vector()
-                                     for v in polar.vertices()}
+                B = -normal_vector * (face_vertices[0].vector())
+                linear_evaluation = {
+                    -normal_vector * v.vector() for v in polar.vertices()
+                }
 
                 if B == max(linear_evaluation):
                     C = max(linear_evaluation.difference(set([B])))
                 else:
                     C = min(linear_evaluation.difference(set([B])))
 
-                ineq_vector = [(1 - subdivision_frac) * B + subdivision_frac * C] + list(normal_vector)
+                ineq_vector = [
+                    (1 - subdivision_frac) * B + subdivision_frac * C
+                ] + list(normal_vector)
                 new_ineq += [ineq_vector]
 
             new_ieqs = polar.inequalities_list() + new_ineq
@@ -895,7 +949,9 @@ class Polyhedron_base(Polyhedron_base7):
 
         return (polar.polar(in_affine_span=True)) + barycenter
 
-    def permutations_to_matrices(self, conj_class_reps, acting_group=None, additional_elts=None):
+    def permutations_to_matrices(
+        self, conj_class_reps, acting_group=None, additional_elts=None
+    ):
         r"""
         Return a dictionary between different representations of elements in
         the ``acting_group``, with group elements represented as permutations
@@ -980,8 +1036,7 @@ class Polyhedron_base(Polyhedron_base7):
         group_dict = {}
 
         def permutation_to_matrix(permutation, V, Vplus, W):
-            A = sum(V[permutation(i)].column() * Vplus[i].row()
-                    for i in range(len(V)))
+            A = sum(V[permutation(i)].column() * Vplus[i].row() for i in range(len(V)))
             return A + W
 
         for perm in G.gens():
@@ -1039,6 +1094,7 @@ class Polyhedron_base(Polyhedron_base7):
         """
         from sage.arith.misc import integer_ceil as ceil
         from sage.arith.misc import integer_floor as floor
+
         box_min = []
         box_max = []
         if not self.is_compact():
@@ -1143,6 +1199,7 @@ class Polyhedron_base(Polyhedron_base7):
             1 -0.472135955 0 -1.236067978
         """
         from sage.interfaces.polymake import polymake
+
         polymake_field = polymake(self.base_ring().fraction_field())
         polymake_class = "Polytope<{}>".format(polymake_field)
         if self.is_empty():
@@ -1150,14 +1207,18 @@ class Polyhedron_base(Polyhedron_base7):
             # FACETS and AFFINE_HULL.
             # Use corresponding input properties instead.
             # https://forum.polymake.org/viewtopic.php?f=8&t=545
-            return polymake.new_object(polymake_class,
-                                       INEQUALITIES=self.inequalities_list(),
-                                       EQUATIONS=self.equations_list())
+            return polymake.new_object(
+                polymake_class,
+                INEQUALITIES=self.inequalities_list(),
+                EQUATIONS=self.equations_list(),
+            )
 
         verts_and_rays = [[1] + v for v in self.vertices_list()]
         verts_and_rays += [[0] + r for r in self.rays_list()]
-        return polymake.new_object(polymake_class,
-                                   FACETS=self.inequalities_list(),
-                                   AFFINE_HULL=self.equations_list(),
-                                   VERTICES=verts_and_rays,
-                                   LINEALITY_SPACE=[[0] + l for l in self.lines_list()])
+        return polymake.new_object(
+            polymake_class,
+            FACETS=self.inequalities_list(),
+            AFFINE_HULL=self.equations_list(),
+            VERTICES=verts_and_rays,
+            LINEALITY_SPACE=[[0] + l for l in self.lines_list()],
+        )

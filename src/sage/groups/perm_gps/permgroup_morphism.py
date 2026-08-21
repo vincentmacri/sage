@@ -46,6 +46,7 @@ class PermutationGroupMorphism(Morphism):
     r"""
     A set-theoretic map between PermutationGroups.
     """
+
     def _repr_type(self):
         r"""
         Return the type of this morphism.
@@ -306,4 +307,10 @@ class PermutationGroupMorphism_im_gens(PermutationGroupMorphism):
             sage: phi._libgap_()
             [ (1,2,3,4) ] -> [ (1,2,3,4) ]
         """
-        return self.domain()._libgap_().GroupHomomorphismByImages(self.codomain(), self.domain().gens(), self._images)
+        return (
+            self.domain()
+            ._libgap_()
+            .GroupHomomorphismByImages(
+                self.codomain(), self.domain().gens(), self._images
+            )
+        )

@@ -50,6 +50,7 @@ class Fields(CategoryWithAxiom):
 
         sage: TestSuite(Fields()).run()
     """
+
     _base_category_class_and_axiom = (DivisionRings, "Commutative")
 
     def extra_super_categories(self):
@@ -126,6 +127,7 @@ class Fields(CategoryWithAxiom):
             0
         """
         from sage.rings.ring import _is_Field
+
         try:
             return self._contains_helper(x) or _is_Field(x)
         except Exception:
@@ -189,7 +191,9 @@ class Fields(CategoryWithAxiom):
         except AttributeError:
             raise TypeError("unable to associate a field to %s" % x)
 
-    Finite = LazyImport('sage.categories.finite_fields', 'FiniteFields', at_startup=True)
+    Finite = LazyImport(
+        'sage.categories.finite_fields', 'FiniteFields', at_startup=True
+    )
 
     class ParentMethods:
         def krull_dimension(self):
@@ -275,7 +279,9 @@ class Fields(CategoryWithAxiom):
                 ...
                 NotImplementedError: algebraic closures of general fields not implemented
             """
-            raise NotImplementedError("algebraic closures of general fields not implemented")
+            raise NotImplementedError(
+                "algebraic closures of general fields not implemented"
+            )
 
         def an_embedding(self, K):
             r"""
@@ -316,7 +322,9 @@ class Fields(CategoryWithAxiom):
                   Defn: zeta3 -> zeta6 - 1
             """
             if self.characteristic() != K.characteristic():
-                raise ValueError(f'no embedding from {self} to {K}: incompatible characteristics')
+                raise ValueError(
+                    f'no embedding from {self} to {K}: incompatible characteristics'
+                )
 
             H = self.Hom(K)
             try:
@@ -324,6 +332,7 @@ class Fields(CategoryWithAxiom):
             except TypeError:
                 pass
             from sage.categories.sets_cat import EmptySetError
+
             try:
                 return H.an_element()
             except EmptySetError:
@@ -341,9 +350,11 @@ class Fields(CategoryWithAxiom):
             """
             if self.characteristic() == 0:
                 import sage.rings.rational_field
+
                 return sage.rings.rational_field.RationalField()
 
             from sage.rings.finite_rings.finite_field_constructor import GF
+
             return GF(self.characteristic())
 
         def divides(self, x, y, coerce=True):
@@ -700,10 +711,13 @@ class Fields(CategoryWithAxiom):
                 here.
             """
             from sage.structure.factorization import Factorization
+
             if f.degree() == 0:
                 return Factorization([], unit=f[0])
             if self.characteristic() != 0:
-                raise NotImplementedError("square-free decomposition not implemented for this polynomial")
+                raise NotImplementedError(
+                    "square-free decomposition not implemented for this polynomial"
+                )
 
             factors = []
             cur = f
@@ -774,6 +788,7 @@ class Fields(CategoryWithAxiom):
             if self.is_zero():
                 raise ValueError("euclidean degree not defined for the zero element")
             from sage.rings.integer_ring import ZZ
+
             return ZZ.zero()
 
         def quo_rem(self, other):
@@ -865,6 +880,7 @@ class Fields(CategoryWithAxiom):
                 has_zero_char = False
             if has_zero_char:
                 from sage.rings.integer_ring import ZZ
+
                 try:
                     return P(ZZ(self).gcd(ZZ(other)))
                 except (TypeError, ValueError):
@@ -919,6 +935,7 @@ class Fields(CategoryWithAxiom):
                 has_zero_char = False
             if has_zero_char:
                 from sage.rings.integer_ring import ZZ
+
                 try:
                     return P(ZZ(self).lcm(ZZ(other)))
                 except TypeError:
@@ -982,6 +999,7 @@ class Fields(CategoryWithAxiom):
                 has_zero_char = False
             if has_zero_char:
                 from sage.rings.integer_ring import ZZ
+
                 try:
                     return tuple(P(x) for x in ZZ(self).xgcd(ZZ(other)))
                 except TypeError:
@@ -1011,8 +1029,11 @@ class Fields(CategoryWithAxiom):
                 ArithmeticError: factorization of 0.000000000000000 is not defined
             """
             if not self:
-                raise ArithmeticError("factorization of {!r} is not defined".format(self))
+                raise ArithmeticError(
+                    "factorization of {!r} is not defined".format(self)
+                )
             from sage.structure.factorization import Factorization
+
             return Factorization([], self)  # No factor; "self" as unit
 
         def inverse_of_unit(self):

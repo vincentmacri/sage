@@ -182,7 +182,7 @@ def algebraic_topological_model(K, base_ring=None):
     # its image in C, as an element in the free module of n-chains.
     iota_dict = {}
 
-    for n in range(K.dimension()+1):
+    for n in range(K.dimension() + 1):
         gens[n] = []
         phi_dict[n] = {}
         pi_dict[n] = {}
@@ -192,7 +192,7 @@ def algebraic_topological_model(K, base_ring=None):
     # old_cells: cells one dimension lower.
     old_cells = []
 
-    for dim in range(K.dimension()+1):
+    for dim in range(K.dimension() + 1):
         n_cells = K._n_cells_sorted(dim)
         diff = C.differential(dim)
         # diff is sparse and low density. Dense matrices are faster
@@ -220,9 +220,9 @@ def algebraic_topological_model(K, base_ring=None):
             c_bar = c_vec
             bdry_c = diff * c_vec
             # Apply phi to bdry_c and subtract from c_bar.
-            for (idx, coord) in bdry_c.items():
+            for idx, coord in bdry_c.items():
                 try:
-                    c_bar -= coord * phi_dict[dim-1][idx]
+                    c_bar -= coord * phi_dict[dim - 1][idx]
                 except KeyError:
                     pass
 
@@ -231,9 +231,9 @@ def algebraic_topological_model(K, base_ring=None):
             # Evaluate pi(bdry(c_bar)).
             pi_bdry_c_bar = zero
 
-            for (idx, coeff) in bdry_c_bar.items():
+            for idx, coeff in bdry_c_bar.items():
                 try:
-                    pi_bdry_c_bar += coeff * pi_dict[dim-1][idx]
+                    pi_bdry_c_bar += coeff * pi_dict[dim - 1][idx]
                 except KeyError:
                     pass
 
@@ -254,30 +254,38 @@ def algebraic_topological_model(K, base_ring=None):
                     lambda_i = pi_bdry_c_bar[u_idx]
                     # Now find the actual cell.
                     u = old_cells[u_idx]
-                    if u in gens[dim-1]:
+                    if u in gens[dim - 1]:
                         break
 
                 # pi(c) = 0: no need to do anything about this.
                 for c_j_idx in range(old_rank):
                     # eta_ij = <u, pi(c_j)>.
                     try:
-                        eta_ij = pi_dict[dim-1][c_j_idx][u_idx]
+                        eta_ij = pi_dict[dim - 1][c_j_idx][u_idx]
                     except (KeyError, IndexError):
                         eta_ij = 0
                     if eta_ij:
                         # Adjust phi(c_j).
                         try:
-                            phi_dict[dim-1][c_j_idx] += eta_ij * lambda_i**(-1) * c_bar
+                            phi_dict[dim - 1][c_j_idx] += (
+                                eta_ij * lambda_i ** (-1) * c_bar
+                            )
                         except KeyError:
-                            phi_dict[dim-1][c_j_idx] = eta_ij * lambda_i**(-1) * c_bar
+                            phi_dict[dim - 1][c_j_idx] = (
+                                eta_ij * lambda_i ** (-1) * c_bar
+                            )
                         # Adjust pi(c_j).
                         try:
-                            pi_dict[dim-1][c_j_idx] += -eta_ij * lambda_i**(-1) * pi_bdry_c_bar
+                            pi_dict[dim - 1][c_j_idx] += (
+                                -eta_ij * lambda_i ** (-1) * pi_bdry_c_bar
+                            )
                         except KeyError:
-                            pi_dict[dim-1][c_j_idx] = -eta_ij * lambda_i**(-1) * pi_bdry_c_bar
+                            pi_dict[dim - 1][c_j_idx] = (
+                                -eta_ij * lambda_i ** (-1) * pi_bdry_c_bar
+                            )
 
-                gens[dim-1].remove(u)
-                del iota_dict[dim-1][u]
+                gens[dim - 1].remove(u)
+                del iota_dict[dim - 1][u]
         old_cells = n_cells
 
     # Now we have constructed the raw data for M, pi, iota, phi, so we
@@ -293,7 +301,7 @@ def algebraic_topological_model(K, base_ring=None):
     pi_data = {}
     iota_data = {}
     phi_data = {}
-    for n in range(K.dimension()+1):
+    for n in range(K.dimension() + 1):
         n_cells = K._n_cells_sorted(n)
         # Remove zero entries from pi_dict and phi_dict.
         pi_dict[n] = {i: pi_dict[n][i] for i in pi_dict[n] if pi_dict[n][i]}
@@ -307,11 +315,11 @@ def algebraic_topological_model(K, base_ring=None):
         # will define chain maps and chain homotopies.
         pi_cols = []
         phi_cols = []
-        for (idx, c) in enumerate(n_cells):
+        for idx, c in enumerate(n_cells):
             # First pi:
             if idx in pi_dict[n]:
                 column = vector(base_ring, M_rows)
-                for (entry, coeff) in pi_dict[n][idx].items():
+                for entry, coeff in pi_dict[n][idx].items():
                     # Translate from cells in n_cells to cells in gens[n].
                     column[gens[n].index(n_cells[entry])] = coeff
             else:
@@ -322,13 +330,15 @@ def algebraic_topological_model(K, base_ring=None):
             try:
                 column = phi_dict[n][idx]
             except KeyError:
-                column = vector(base_ring, len(K.n_cells(n+1)))
+                column = vector(base_ring, len(K.n_cells(n + 1)))
             phi_cols.append(column)
         # Now iota:
         iota_cols = [iota_dict[n][c] for c in gens[n]]
 
         pi_data[n] = matrix(base_ring, pi_cols).transpose()
-        iota_data[n] = matrix(base_ring, len(gens[n]), len(n_cells), iota_cols).transpose()
+        iota_data[n] = matrix(
+            base_ring, len(gens[n]), len(n_cells), iota_cols
+        ).transpose()
         phi_data[n] = matrix(base_ring, phi_cols).transpose()
 
     M = ChainComplex(M_data, base_ring=base_ring, degree=-1)
@@ -433,6 +443,7 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
         sage: coC.differential(1) * H.dual().iota().in_degree(1).column(1) == 0
         True
     """
+
     def conditionally_sparse(m):
         """
         Return a sparse matrix if the characteristic is zero.
@@ -456,7 +467,7 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
     phi_data = {}
     iota_data = {}
 
-    for n in range(-1, K.dimension()+1):
+    for n in range(-1, K.dimension() + 1):
         gens[n] = []
 
     C = K.chain_complex(base_ring=base_ring)
@@ -464,7 +475,7 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
     pi_cols = []
     iota_cols = {}
 
-    for dim in range(K.dimension()+1):
+    for dim in range(K.dimension() + 1):
         # old_cells: cells one dimension lower.
         old_cells = n_cells
         # n_cells: the standard basis for the vector space C.free_module(dim).
@@ -480,14 +491,16 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
         old_rank = len(old_cells)
 
         # Create some matrix spaces to try to speed up matrix creation.
-        MS_pi_t = MatrixSpace(base_ring, old_rank, len(gens[dim-1]))
+        MS_pi_t = MatrixSpace(base_ring, old_rank, len(gens[dim - 1]))
 
         pi_old = MS_pi_t.matrix(pi_cols).transpose()
         iota_cols_old = iota_cols
         iota_cols = {}
         pi_cols_old = pi_cols
         pi_cols = []
-        phi_old = MatrixSpace(base_ring, rank, old_rank, sparse=(base_ring == QQ)).zero()
+        phi_old = MatrixSpace(
+            base_ring, rank, old_rank, sparse=(base_ring == QQ)
+        ).zero()
         phi_old_cols = phi_old.columns()
         phi_old = conditionally_sparse(phi_old)
         to_be_deleted = []
@@ -522,7 +535,7 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
                 # Take any u in gens so that lambda_i = <u, pi(bdry(c_bar))> != 0.
                 # u_idx will be the index of the corresponding cell.
                 (u_idx, lambda_i) = pi_bdry_c_bar.leading_item()
-                for (u_idx, lambda_i) in pi_bdry_c_bar.items():
+                for u_idx, lambda_i in pi_bdry_c_bar.items():
                     if u_idx not in to_be_deleted:
                         break
                 # This element/column needs to be deleted from gens and
@@ -536,16 +549,23 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
                     eta_ij = c_j.dot_product(pi_old.row(u_idx))
                     if eta_ij:
                         # Adjust phi(c_j).
-                        phi_old_cols[c_j_idx] += eta_ij * lambda_i**(-1) * c_bar
+                        phi_old_cols[c_j_idx] += eta_ij * lambda_i ** (-1) * c_bar
                         # Adjust pi(c_j).
-                        pi_cols_old[c_j_idx] -= eta_ij * lambda_i**(-1) * pi_bdry_c_bar
+                        pi_cols_old[c_j_idx] -= (
+                            eta_ij * lambda_i ** (-1) * pi_bdry_c_bar
+                        )
 
                 # The matrices involved have many zero entries. For
                 # such matrices, using sparse matrices is faster over
                 # the rationals, slower over finite fields.
-                phi_old = matrix(base_ring, phi_old_cols, sparse=(base_ring == QQ)).transpose()
-                keep = vector(base_ring, pi_nrows, {i: 1 for i in range(pi_nrows)
-                                                    if i not in to_be_deleted})
+                phi_old = matrix(
+                    base_ring, phi_old_cols, sparse=(base_ring == QQ)
+                ).transpose()
+                keep = vector(
+                    base_ring,
+                    pi_nrows,
+                    {i: 1 for i in range(pi_nrows) if i not in to_be_deleted},
+                )
                 cols = [v.pairwise_product(keep) for v in pi_cols_old]
                 pi_old = MS_pi_t.matrix(cols).transpose()
 
@@ -553,15 +573,19 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
         cols = [iota_cols_old[i] for i in sorted(iota_cols_old.keys())]
         for r in sorted(to_be_deleted, reverse=True):
             del cols[r]
-            del gens[dim-1][r]
-        iota_data[dim-1] = matrix(base_ring, len(gens[dim-1]), old_rank, cols).transpose()
+            del gens[dim - 1][r]
+        iota_data[dim - 1] = matrix(
+            base_ring, len(gens[dim - 1]), old_rank, cols
+        ).transpose()
         # keep: rows to keep in pi_cols_old. Start with all
         # columns, then delete those in to_be_deleted.
         keep = sorted(set(range(pi_nrows)).difference(to_be_deleted))
         # Now cols is a temporary storage for columns of pi.
         cols = [v.list_from_positions(keep) for v in pi_cols_old]
-        pi_data[dim-1] = matrix(base_ring, old_rank, len(gens[dim-1]), cols).transpose()
-        phi_data[dim-1] = phi_old
+        pi_data[dim - 1] = matrix(
+            base_ring, old_rank, len(gens[dim - 1]), cols
+        ).transpose()
+        phi_data[dim - 1] = phi_old
 
         V_gens = VectorSpace(base_ring, len(gens[dim]))
         if pi_cols:
@@ -579,7 +603,7 @@ def algebraic_topological_model_delta_complex(K, base_ring=None):
     # just the ranks of consecutive graded pieces of M.
     M_data = {}
     M_rows = 0
-    for n in range(K.dimension()+1):
+    for n in range(K.dimension() + 1):
         M_cols = len(gens[n])
         M_data[n] = zero_matrix(base_ring, M_rows, M_cols)
         M_rows = M_cols

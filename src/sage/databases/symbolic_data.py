@@ -84,6 +84,7 @@ class SymbolicData:
     This class needs the optional ``database_symbolic_data`` package to be
     installed.
     """
+
     def __init__(self):
         """
         EXAMPLES::
@@ -92,6 +93,7 @@ class SymbolicData:
             SymbolicData with 372 ideals
         """
         from sage.env import sage_data_paths
+
         self.__intpath = self.__genpath = None
         for path in sage_data_paths('symbolic_data'):
             intpath = path + "/Data/XMLResources/INTPS/"
@@ -157,11 +159,16 @@ class SymbolicData:
                 name = self.__genpath + name + ".xml"
                 open(name)
             except OSError:
-                raise AttributeError(f"no ideal matching '{orig_name}' found in database")
+                raise AttributeError(
+                    f"no ideal matching '{orig_name}' found in database"
+                )
 
         dom = parse(name)
         res = _dom2ideal(dom)
-        variables, polys = res[0].replace("_", ""), [p.replace("_", "") for p in res[1:]]
+        variables, polys = (
+            res[0].replace("_", ""),
+            [p.replace("_", "") for p in res[1:]],
+        )
 
         P = PolynomialRing(base_ring, len(variables.split(",")), variables)
         I = P.ideal([P(f) for f in polys])

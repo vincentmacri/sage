@@ -35,9 +35,12 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.schemes.affine.affine_space import AffineSpace_generic
-from sage.schemes.berkovich.berkovich_space import (Berkovich_Cp_Affine,
-                                Berkovich_Cp_Projective, Berkovich_Cp,
-                                Berkovich_Element_Cp_Affine)
+from sage.schemes.berkovich.berkovich_space import (
+    Berkovich_Cp_Affine,
+    Berkovich_Cp_Projective,
+    Berkovich_Cp,
+    Berkovich_Element_Cp_Affine,
+)
 from sage.schemes.projective.projective_space import ProjectiveSpace_ring
 from sage.structure.element import Element
 
@@ -249,21 +252,27 @@ class DynamicalSystem_Berkovich(Element, metaclass=InheritComparisonClasscallMet
                 try:
                     dynamical_system = DynamicalSystem_affine(dynamical_system)
                 except (TypeError, ValueError):
-                    raise TypeError('domain was affine Berkovich space, but dynamical_system did not '
-                        'convert to an affine dynamical system')
+                    raise TypeError(
+                        'domain was affine Berkovich space, but dynamical_system did not '
+                        'convert to an affine dynamical system'
+                    )
         if isinstance(domain, Berkovich_Cp_Projective):
             if not isinstance(dynamical_system, DynamicalSystem_projective):
                 try:
                     dynamical_system = DynamicalSystem_projective(dynamical_system)
                 except (TypeError, ValueError):
-                    raise TypeError('domain was projective Berkovich space, but dynamical_system did not convert '
-                        'to a projective dynamical system')
+                    raise TypeError(
+                        'domain was projective Berkovich space, but dynamical_system did not convert '
+                        'to a projective dynamical system'
+                    )
 
         if not isinstance(dynamical_system, DynamicalSystem):
             try:
                 dynamical_system = DynamicalSystem(dynamical_system)
             except (TypeError, ValueError):
-                raise TypeError('dynamical_system did not convert to a dynamical system')
+                raise TypeError(
+                    'dynamical_system did not convert to a dynamical system'
+                )
         morphism_domain = dynamical_system.domain()
 
         if not isinstance(morphism_domain.base_ring(), pAdicBaseGeneric):
@@ -278,8 +287,10 @@ class DynamicalSystem_Berkovich(Element, metaclass=InheritComparisonClasscallMet
                         if ideal != domain.ideal():
                             raise ValueError('conflicting inputs for ideal and domain')
             else:
-                raise ValueError('base ring of domain of dynamical_system must be p-adic or a number field '
-                    'not %s' % morphism_domain.base_ring())
+                raise ValueError(
+                    'base ring of domain of dynamical_system must be p-adic or a number field '
+                    'not %s' % morphism_domain.base_ring()
+                )
 
         if isinstance(morphism_domain, AffineSpace_generic):
             return DynamicalSystem_Berkovich_affine(dynamical_system, domain)
@@ -454,8 +465,13 @@ class DynamicalSystem_Berkovich(Element, metaclass=InheritComparisonClasscallMet
               Defn: Defined on coordinates by sending (x : y) to\n        ((3 + O(3^21))*x^2 : (2 + O(3^20))*y^2)'
         """
         domain_str = self._domain._repr_()
-        return "Dynamical system of " + domain_str + " induced by the map" + \
-            "\n  Defn: %s" % ('\n        '.join(self._system._repr_defn().split('\n')))
+        return (
+            "Dynamical system of "
+            + domain_str
+            + " induced by the map"
+            + "\n  Defn: %s"
+            % ('\n        '.join(self._system._repr_defn().split('\n')))
+        )
 
 
 class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
@@ -511,6 +527,7 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
          induced by the map
           Defn: Defined on coordinates by sending (x : y) to (x^2 + y^2 : y^2)
     """
+
     @staticmethod
     def __classcall_private__(cls, dynamical_system, domain=None):
         """
@@ -529,23 +546,36 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
             if not isinstance(dynamical_system, DynamicalSystem_projective):
                 dynamical_system = DynamicalSystem_projective(dynamical_system)
             else:
-                raise TypeError('affine dynamical system passed to projective constructor')
+                raise TypeError(
+                    'affine dynamical system passed to projective constructor'
+                )
         R = dynamical_system.base_ring()
         morphism_domain = dynamical_system.domain()
         if not isinstance(morphism_domain, ProjectiveSpace_ring):
-            raise TypeError('the domain of dynamical_system must be projective space, not %s' % morphism_domain)
+            raise TypeError(
+                'the domain of dynamical_system must be projective space, not %s'
+                % morphism_domain
+            )
         if morphism_domain.dimension_relative() != 1:
             raise ValueError('domain was not relative dimension 1')
         if not isinstance(R, pAdicBaseGeneric):
             if domain is None:
-                raise TypeError('dynamical system defined over %s, not p-adic, ' % morphism_domain.base_ring() +
-                    'and domain is None')
+                raise TypeError(
+                    'dynamical system defined over %s, not p-adic, '
+                    % morphism_domain.base_ring()
+                    + 'and domain is None'
+                )
             if not isinstance(domain, Berkovich_Cp_Projective):
-                raise TypeError('domain was %s, not a projective Berkovich space over Cp' % domain)
+                raise TypeError(
+                    'domain was %s, not a projective Berkovich space over Cp' % domain
+                )
             if domain.base() != morphism_domain:
-                raise ValueError('base of domain was %s, with coordinate ring %s ' % (domain.base(),
-                    domain.base().coordinate_ring()) + 'while dynamical_system acts on %s, ' % morphism_domain +
-                        'with coordinate ring %s' % morphism_domain.coordinate_ring())
+                raise ValueError(
+                    'base of domain was %s, with coordinate ring %s '
+                    % (domain.base(), domain.base().coordinate_ring())
+                    + 'while dynamical_system acts on %s, ' % morphism_domain
+                    + 'with coordinate ring %s' % morphism_domain.coordinate_ring()
+                )
         else:
             domain = Berkovich_Cp_Projective(morphism_domain)
         return typecall(cls, dynamical_system, domain)
@@ -698,10 +728,21 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
             Fractional ideal (-2*a - 1)
         """
         if self.domain().is_padic_base():
-            return DynamicalSystem_Berkovich(self._system.conjugate(M, adjugate=adjugate))
-        from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdeal
-        if not (isinstance(new_ideal, NumberFieldFractionalIdeal) or new_ideal is None or new_ideal in ZZ):
-            raise TypeError('new_ideal must be an ideal of a number field, not %s' % new_ideal)
+            return DynamicalSystem_Berkovich(
+                self._system.conjugate(M, adjugate=adjugate)
+            )
+        from sage.rings.number_field.number_field_ideal import (
+            NumberFieldFractionalIdeal,
+        )
+
+        if not (
+            isinstance(new_ideal, NumberFieldFractionalIdeal)
+            or new_ideal is None
+            or new_ideal in ZZ
+        ):
+            raise TypeError(
+                'new_ideal must be an ideal of a number field, not %s' % new_ideal
+            )
         new_system = self._system.conjugate(M, adjugate=adjugate)
         system_domain = new_system.domain()
         if new_ideal is None:
@@ -822,11 +863,15 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
             try:
                 x = self.domain()(x)
             except (TypeError, ValueError):
-                raise TypeError('action of dynamical system not defined on %s' % x.parent())
+                raise TypeError(
+                    'action of dynamical system not defined on %s' % x.parent()
+                )
         if x.parent().is_padic_base() != self.domain().is_padic_base():
             raise ValueError('x was not backed by the same type of field as f')
         if x.prime() != self.domain().prime():
-            raise ValueError('x and f are defined over Berkovich spaces over Cp for different p')
+            raise ValueError(
+                'x and f are defined over Berkovich spaces over Cp for different p'
+            )
         if x.type_of_point() == 1:
             return self.domain()(self._system(x.center()))
         if x.type_of_point() == 4:
@@ -837,8 +882,13 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
                 ideal = self.domain().ideal()
                 ring_of_integers = self.domain().base_ring().ring_of_integers()
             field = f.domain().base_ring()
-            M = Matrix([[field(x.prime()**(-1 * x.power())), x.center()[0]], [field(0), field(1)]])
-            F = list(f*M)
+            M = Matrix(
+                [
+                    [field(x.prime() ** (-1 * x.power())), x.center()[0]],
+                    [field(0), field(1)],
+                ]
+            )
+            F = list(f * M)
             R = field['z']
             S = f.domain().coordinate_ring()
             z = R.gen(0)
@@ -884,24 +934,32 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
             if not (num.is_constant() and dem.is_constant()):
                 return self.domain()(QQ(0), QQ(1))
             if self.domain().is_padic_base():
-                reduced_value = field(num * dem.inverse_of_unit()).lift_to_precision(field.precision_cap())
+                reduced_value = field(num * dem.inverse_of_unit()).lift_to_precision(
+                    field.precision_cap()
+                )
             else:
                 reduced_value = field(num * dem.inverse_of_unit())
-            new_num = F[0]-reduced_value*F[1]
+            new_num = F[0] - reduced_value * F[1]
             if self.domain().is_padic_base():
                 power_of_p = min([i.valuation() for i in new_num])
             else:
                 power_of_p = min([i.valuation(ideal) for i in new_num])
-            inverse_map = field(x.prime()**power_of_p) * z + reduced_value
+            inverse_map = field(x.prime() ** power_of_p) * z + reduced_value
             if self.domain().is_padic_base():
-                return self.domain()(inverse_map(0), (inverse_map(1) - inverse_map(0)).abs())
+                return self.domain()(
+                    inverse_map(0), (inverse_map(1) - inverse_map(0)).abs()
+                )
             val = (inverse_map(1) - inverse_map(0)).valuation(ideal)
             if val == Infinity:
                 return self.domain()(inverse_map(0), 0)
-            return self.domain()(inverse_map(0), x.prime()**(-1 * val))
+            return self.domain()(inverse_map(0), x.prime() ** (-1 * val))
         # point is now type III, so we compute using Proposition 7.6 [of Benedetto]
         affine_system = f.dehomogenize(1)
-        dem = affine_system.defining_polynomials()[0].denominator().univariate_polynomial()
+        dem = (
+            affine_system.defining_polynomials()[0]
+            .denominator()
+            .univariate_polynomial()
+        )
         if type_3_pole_check:
             if self.domain().is_padic_base():
                 factorization = [i[0] for i in dem.factor()]
@@ -911,13 +969,17 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
                             factor_root_field = factor.root_field('a')
                             factor = factor.change_ring(factor_root_field)
                         except (TypeError, ValueError):
-                            raise NotImplementedError('cannot check if poles lie in type III disk')
+                            raise NotImplementedError(
+                                'cannot check if poles lie in type III disk'
+                            )
                     else:
                         factor_root_field = factor.base_ring()
                     center = factor_root_field(x.center()[0])
                     for pole in [i[0] for i in factor.roots()]:
                         if (center - pole).abs() <= x.radius():
-                            raise NotImplementedError('image of type III point not implemented when poles in disk')
+                            raise NotImplementedError(
+                                'image of type III point not implemented when poles in disk'
+                            )
             else:
                 dem_splitting_field, embedding = dem.splitting_field('a', True)
                 poles = [i[0] for i in dem.roots(dem_splitting_field)]
@@ -931,25 +993,37 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
                         if valuation == Infinity:
                             no_poles = False
                             break
-                        elif x.prime()**(-1 * valuation/prime.absolute_ramification_index()) <= x.radius():
+                        elif (
+                            x.prime()
+                            ** (-1 * valuation / prime.absolute_ramification_index())
+                            <= x.radius()
+                        ):
                             no_poles = False
                             break
                     if not no_poles:
                         break
                 if not no_poles:
-                    raise NotImplementedError('image of type III not implemented when poles in disk')
+                    raise NotImplementedError(
+                        'image of type III not implemented when poles in disk'
+                    )
         nth_derivative = f.dehomogenize(1).defining_polynomials()[0]
         variable = nth_derivative.parent().gens()[0]
         a = x.center()[0]
         Taylor_expansion = []
         from sage.arith.misc import factorial
+
         for i in range(f.degree() + 1):
-            Taylor_expansion.append(nth_derivative(a) * 1/factorial(i))
+            Taylor_expansion.append(nth_derivative(a) * 1 / factorial(i))
             nth_derivative = nth_derivative.derivative(variable)
         r = x.radius()
         new_center = f(a)
         if self.domain().is_padic_base():
-            new_radius = max([Taylor_expansion[i].abs()*r**i for i in range(1, len(Taylor_expansion))])
+            new_radius = max(
+                [
+                    Taylor_expansion[i].abs() * r**i
+                    for i in range(1, len(Taylor_expansion))
+                ]
+            )
         else:
             if prime is None:
                 prime = x.parent().ideal()
@@ -958,7 +1032,10 @@ class DynamicalSystem_Berkovich_projective(DynamicalSystem_Berkovich):
             new_radius = 0
             for i in range(1, len(Taylor_expansion)):
                 valuation = dem_splitting_field(Taylor_expansion[i]).valuation(prime)
-                new_radius = max(new_radius, p**(-valuation/prime.absolute_ramification_index())*r**i)
+                new_radius = max(
+                    new_radius,
+                    p ** (-valuation / prime.absolute_ramification_index()) * r**i,
+                )
         return self.domain()(new_center, new_radius)
 
 
@@ -997,6 +1074,7 @@ class DynamicalSystem_Berkovich_affine(DynamicalSystem_Berkovich):
         Dynamical system of Affine Berkovich line over Cp(5) of precision 20 induced by the map
           Defn: Defined on coordinates by sending (x) to (x + 3 + O(5^20))
     """
+
     @staticmethod
     def __classcall_private__(cls, dynamical_system, domain=None):
         """
@@ -1015,19 +1093,29 @@ class DynamicalSystem_Berkovich_affine(DynamicalSystem_Berkovich):
             if not isinstance(dynamical_system, DynamicalSystem_affine):
                 dynamical_system = DynamicalSystem_projective(dynamical_system)
             else:
-                raise TypeError('projective dynamical system passed to affine constructor')
+                raise TypeError(
+                    'projective dynamical system passed to affine constructor'
+                )
         R = dynamical_system.base_ring()
         morphism_domain = dynamical_system.domain()
         if not isinstance(morphism_domain, AffineSpace_generic):
-            raise TypeError('the domain of dynamical_system must be affine space, not %s' % morphism_domain)
+            raise TypeError(
+                'the domain of dynamical_system must be affine space, not %s'
+                % morphism_domain
+            )
         if morphism_domain.dimension_relative() != 1:
             raise ValueError('domain not relative dimension 1')
         if not isinstance(R, pAdicBaseGeneric):
             if domain is None:
-                raise TypeError('dynamical system defined over %s, not padic, ' % morphism_domain.base_ring() +
-                    'and domain was not specified')
+                raise TypeError(
+                    'dynamical system defined over %s, not padic, '
+                    % morphism_domain.base_ring()
+                    + 'and domain was not specified'
+                )
             if not isinstance(domain, Berkovich_Cp_Affine):
-                raise TypeError('domain was %s, not an affine Berkovich space over Cp' % domain)
+                raise TypeError(
+                    'domain was %s, not an affine Berkovich space over Cp' % domain
+                )
         else:
             domain = Berkovich_Cp_Affine(morphism_domain.base_ring())
         return typecall(cls, dynamical_system, domain)

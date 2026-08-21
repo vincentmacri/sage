@@ -18,7 +18,7 @@ REFERENCES:
 - [Lee1997]_
 - [ONe1983]_
 """
-#******************************************************************************
+# ******************************************************************************
 #       Copyright (C) 2015 Eric Gourgoulhon <eric.gourgoulhon@obspm.fr>
 #       Copyright (C) 2015 Michal Bejger <bejger@camk.edu.pl>
 #       Copyright (C) 2015 Marco Mancini <marco.mancini@obspm.fr>
@@ -27,7 +27,7 @@ REFERENCES:
 #  as published by the Free Software Foundation; either version 2 of
 #  the License, or (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#******************************************************************************
+# ******************************************************************************
 
 from sage.manifolds.differentiable.affine_connection import AffineConnection
 from sage.manifolds.differentiable.vectorframe import CoordFrame
@@ -200,6 +200,7 @@ class LeviCivitaConnection(AffineConnection):
         Gam^ph_r,ph = 1/r
         Gam^ph_th,ph = cos(th)/sin(th)
     """
+
     def __init__(self, metric, name, latex_name=None, init_coef=True):
         r"""
         Construct a Levi-Civita connection.
@@ -322,12 +323,16 @@ class LeviCivitaConnection(AffineConnection):
             return self
         if subdomain not in self._restrictions:
             if not subdomain.is_subset(self._domain):
-                raise ValueError("the provided domain is not a subdomain of " +
-                                 "the current connection's domain")
-            resu = LeviCivitaConnection(self._metric.restrict(subdomain),
-                                        name=self._name,
-                                        latex_name=self._latex_name,
-                                        init_coef=False)
+                raise ValueError(
+                    "the provided domain is not a subdomain of "
+                    + "the current connection's domain"
+                )
+            resu = LeviCivitaConnection(
+                self._metric.restrict(subdomain),
+                name=self._name,
+                latex_name=self._latex_name,
+                init_coef=False,
+            )
             for frame in self._coefficients:
                 for sframe in subdomain._top_frames:
                     if sframe in frame._subframes:
@@ -367,16 +372,25 @@ class LeviCivitaConnection(AffineConnection):
         from sage.manifolds.differentiable.scalarfield import DiffScalarField
         from sage.manifolds.differentiable.vectorframe import CoordFrame
         from sage.tensor.modules.comp import Components, CompWithSym
+
         if isinstance(frame, CoordFrame):
             # the Christoffel symbols are symmetric:
-            return CompWithSym(frame._domain.scalar_field_algebra(), frame, 3,
-                               start_index=self._domain._sindex,
-                               output_formatter=DiffScalarField.coord_function,
-                               sym=(1,2))
+            return CompWithSym(
+                frame._domain.scalar_field_algebra(),
+                frame,
+                3,
+                start_index=self._domain._sindex,
+                output_formatter=DiffScalarField.coord_function,
+                sym=(1, 2),
+            )
         # a priori no symmetry in a generic frame:
-        return Components(frame._domain.scalar_field_algebra(), frame, 3,
-                          start_index=self._domain._sindex,
-                          output_formatter=DiffScalarField.coord_function)
+        return Components(
+            frame._domain.scalar_field_algebra(),
+            frame,
+            3,
+            start_index=self._domain._sindex,
+            output_formatter=DiffScalarField.coord_function,
+        )
 
     def coef(self, frame=None):
         r"""
@@ -461,6 +475,7 @@ class LeviCivitaConnection(AffineConnection):
             (-cos(th)/(r*sin(th)), cos(th)/(r*sin(th)))
         """
         from sage.manifolds.differentiable.vectorframe import CoordFrame
+
         if frame is None:
             frame = self._domain._def_frame
         if frame not in self._coefficients:
@@ -489,40 +504,42 @@ class LeviCivitaConnection(AffineConnection):
                     if Parallelism().get('tensor') != 1:
                         # parallel computation
                         nproc = Parallelism().get('tensor')
-                        lol = lambda lst, sz: [lst[i:i+sz] for i in
-                                                        range(0, len(lst), sz)]
+                        lol = lambda lst, sz: [
+                            lst[i : i + sz] for i in range(0, len(lst), sz)
+                        ]
 
                         ind_list = []
                         for ind in gam.non_redundant_index_generator():
                             i, j, k = ind
-                            ind_list.append((i,j,k))
-                        ind_step = max(1,int(len(ind_list)/nproc/2))
-                        local_list = lol(ind_list,ind_step)
+                            ind_list.append((i, j, k))
+                        ind_step = max(1, int(len(ind_list) / nproc / 2))
+                        local_list = lol(ind_list, ind_step)
 
                         # definition of the list of input parameters
                         listParalInput = []
                         for ind_part in local_list:
-                            listParalInput.append((ind_part,chart,ginv,gg,manif))
+                            listParalInput.append((ind_part, chart, ginv, gg, manif))
 
                         # definition of the parallel function
-                        @parallel(p_iter='multiprocessing',ncpus=nproc)
+                        @parallel(p_iter='multiprocessing', ncpus=nproc)
                         def make_Connect(local_list_ijk, chart, ginv, gg, manif):
                             partial = []
-                            for i,j,k in local_list_ijk:
+                            for i, j, k in local_list_ijk:
                                 rsum = 0
                                 for s in manif.irange():
-                                    if ginv[i,s, chart] != 0:
-                                        rsum += ginv[i,s, chart] * (
-                                                        gg[s,k, chart].diff(j)
-                                                      + gg[j,s, chart].diff(k)
-                                                      - gg[j,k, chart].diff(s) )
-                                partial.append([i,j,k,rsum / 2])
+                                    if ginv[i, s, chart] != 0:
+                                        rsum += ginv[i, s, chart] * (
+                                            gg[s, k, chart].diff(j)
+                                            + gg[j, s, chart].diff(k)
+                                            - gg[j, k, chart].diff(s)
+                                        )
+                                partial.append([i, j, k, rsum / 2])
                             return partial
 
                         # Computation and Assignation of values
                         for ii, val in make_Connect(listParalInput):
                             for jj in val:
-                                gam[jj[0],jj[1],jj[2],ii[0][1]] = jj[3]
+                                gam[jj[0], jj[1], jj[2], ii[0][1]] = jj[3]
 
                     else:
                         # sequential
@@ -531,11 +548,12 @@ class LeviCivitaConnection(AffineConnection):
                             # The computation is performed at the ChartFunction level:
                             rsum = 0
                             for s in manif.irange():
-                                rsum += ginv[i,s, chart] * (
-                                                    gg[s,k, chart].diff(j)
-                                                  + gg[j,s, chart].diff(k)
-                                                  - gg[j,k, chart].diff(s) )
-                            gam[i,j,k, chart] = rsum / 2
+                                rsum += ginv[i, s, chart] * (
+                                    gg[s, k, chart].diff(j)
+                                    + gg[j, s, chart].diff(k)
+                                    - gg[j, k, chart].diff(s)
+                                )
+                            gam[i, j, k, chart] = rsum / 2
 
                     # Assignation of results
                     self._coefficients[frame] = gam
@@ -576,7 +594,7 @@ class LeviCivitaConnection(AffineConnection):
             0
         """
         if self._torsion is None:
-            resu = self._domain.tensor_field(1, 2, antisym=(1,2))
+            resu = self._domain.tensor_field(1, 2, antisym=(1, 2))
             for frame in self._coefficients:
                 # Initialization of the frame components to zero:
                 resu.add_comp(frame)
@@ -653,11 +671,13 @@ class LeviCivitaConnection(AffineConnection):
             if name is None:
                 name = "Riem(" + self._metric._name + ")"
             if latex_name is None:
-                latex_name = (r"\mathrm{Riem}\left(" + self._metric._latex_name
-                              + r"\right)")
+                latex_name = (
+                    r"\mathrm{Riem}\left(" + self._metric._latex_name + r"\right)"
+                )
             manif = self._domain
-            resu = manif.tensor_field(1, 3, antisym=(2,3), name=name,
-                                      latex_name=latex_name)
+            resu = manif.tensor_field(
+                1, 3, antisym=(2, 3), name=name, latex_name=latex_name
+            )
             for frame, gam in self._coefficients.items():
                 # The computation is performed only on the top frames:
                 for oframe in self._coefficients:
@@ -669,51 +689,92 @@ class LeviCivitaConnection(AffineConnection):
                     gam_gam = gam.contract(1, gam, 0)
                     gam_sc = gam.contract(2, sc, 0)
                     res = resu.add_comp(frame)
-                    use_Bianchi = isinstance(frame,CoordFrame)
+                    use_Bianchi = isinstance(frame, CoordFrame)
                     if Parallelism().get('tensor') != 1:
                         # parallel computation
                         nproc = Parallelism().get('tensor')
-                        lol = lambda lst, sz: [lst[i:i+sz] for i in range(0,
-                                                                 len(lst), sz)]
+                        lol = lambda lst, sz: [
+                            lst[i : i + sz] for i in range(0, len(lst), sz)
+                        ]
                         ind_list = []
                         for i in manif.irange():
                             for j in manif.irange():
                                 for k in manif.irange(start=j):
-                                    for l in manif.irange(start=k+1):
-                                        ind_list.append((i,j,k,l))
-                        ind_step = max(1, int(len(ind_list)/nproc/2))
+                                    for l in manif.irange(start=k + 1):
+                                        ind_list.append((i, j, k, l))
+                        ind_step = max(1, int(len(ind_list) / nproc / 2))
                         local_list = lol(ind_list, ind_step)
                         # definition of the list of input parameters
                         listParalInput = []
                         for ind_part in local_list:
-                            listParalInput.append((frame, gam, gam_gam, gam_sc,
-                                                    use_Bianchi, ind_part))
+                            listParalInput.append(
+                                (frame, gam, gam_gam, gam_sc, use_Bianchi, ind_part)
+                            )
 
                         # definition of the parallel function
                         @parallel(p_iter='multiprocessing', ncpus=nproc)
-                        def make_Riem(frame, gam, gam_gam, gam_sc, use_Bianchi,
-                                      local_list_ijkl):
-                            def compute_component(i,j,k,l, frame, gam, gam_gam, gam_sc):
-                                return frame[k](gam[[i,j,l]]) - frame[l](gam[[i,j,k]]) + \
-                                       gam_gam[[i,k,j,l]] - gam_gam[[i,l,j,k]] - gam_sc[[i,j,k,l]]
+                        def make_Riem(
+                            frame, gam, gam_gam, gam_sc, use_Bianchi, local_list_ijkl
+                        ):
+                            def compute_component(
+                                i, j, k, l, frame, gam, gam_gam, gam_sc
+                            ):
+                                return (
+                                    frame[k](gam[[i, j, l]])
+                                    - frame[l](gam[[i, j, k]])
+                                    + gam_gam[[i, k, j, l]]
+                                    - gam_gam[[i, l, j, k]]
+                                    - gam_sc[[i, j, k, l]]
+                                )
+
                             partial = []
-                            for i,j,k,l in local_list_ijkl:
-                                R_ijkl = compute_component(i,j,k,l, frame, gam, gam_gam, gam_sc)
-                                partial.append([i,j,k,l, R_ijkl])
+                            for i, j, k, l in local_list_ijkl:
+                                R_ijkl = compute_component(
+                                    i, j, k, l, frame, gam, gam_gam, gam_sc
+                                )
+                                partial.append([i, j, k, l, R_ijkl])
                                 if j == k:
-                                    partial.append([i,l,k,l, compute_component(i,l,k,l, frame,
-                                                                               gam, gam_gam, gam_sc)])
+                                    partial.append(
+                                        [
+                                            i,
+                                            l,
+                                            k,
+                                            l,
+                                            compute_component(
+                                                i, l, k, l, frame, gam, gam_gam, gam_sc
+                                            ),
+                                        ]
+                                    )
                                 else:
-                                    R_ikjl = compute_component(i,k,j,l, frame, gam, gam_gam, gam_sc)
-                                    partial.append([i,k,j,l, R_ikjl])
+                                    R_ikjl = compute_component(
+                                        i, k, j, l, frame, gam, gam_gam, gam_sc
+                                    )
+                                    partial.append([i, k, j, l, R_ikjl])
                                     if use_Bianchi:
-                                        partial.append([i,l,j,k, R_ikjl - R_ijkl])
+                                        partial.append([i, l, j, k, R_ikjl - R_ijkl])
                                     else:
-                                        partial.append([i,l,j,k, compute_component(i,l,j,k, frame,
-                                                                                   gam, gam_gam, gam_sc)])
+                                        partial.append(
+                                            [
+                                                i,
+                                                l,
+                                                j,
+                                                k,
+                                                compute_component(
+                                                    i,
+                                                    l,
+                                                    j,
+                                                    k,
+                                                    frame,
+                                                    gam,
+                                                    gam_gam,
+                                                    gam_sc,
+                                                ),
+                                            ]
+                                        )
                             return partial
+
                         # Computation and assignation of values
-                        for ii,val in make_Riem(listParalInput):
+                        for ii, val in make_Riem(listParalInput):
                             for jj in val:
                                 res[jj[0], jj[1], jj[2], jj[3]] = jj[4]
 
@@ -724,20 +785,24 @@ class LeviCivitaConnection(AffineConnection):
                                 for k in manif.irange():
                                     # antisymmetry of the Riemann tensor taken
                                     # into account by l>k:
-                                    for l in manif.irange(start=k+1):
+                                    for l in manif.irange(start=k + 1):
                                         if not use_Bianchi or (j <= k or j <= l):
-                                            res[i,j,k,l] = frame[k](gam[[i,j,l]]) - \
-                                                           frame[l](gam[[i,j,k]]) + \
-                                                           gam_gam[[i,k,j,l]] - \
-                                                           gam_gam[[i,l,j,k]] - \
-                                                           gam_sc[[i,j,k,l]]
+                                            res[i, j, k, l] = (
+                                                frame[k](gam[[i, j, l]])
+                                                - frame[l](gam[[i, j, k]])
+                                                + gam_gam[[i, k, j, l]]
+                                                - gam_gam[[i, l, j, k]]
+                                                - gam_sc[[i, j, k, l]]
+                                            )
                             if use_Bianchi:
                                 # first Bianchi identity
                                 for j in manif.irange():
-                                    for k in manif.irange(end=j-1):
-                                        for l in manif.irange(start=k+1,end=j-1):
+                                    for k in manif.irange(end=j - 1):
+                                        for l in manif.irange(start=k + 1, end=j - 1):
                                             # j > k and j > l:
-                                            res[i,j,k,l] = res[i,l,k,j] - res[i,k,l,j]
+                                            res[i, j, k, l] = (
+                                                res[i, l, k, j] - res[i, k, l, j]
+                                            )
             self._riemann = resu
         return self._riemann
 
@@ -819,12 +884,14 @@ class LeviCivitaConnection(AffineConnection):
             if name is None:
                 name = "Ric(" + self._metric._name + ")"
             if latex_name is None:
-                latex_name = r"\mathrm{Ric}\left(" + \
-                    self._metric._latex_name + r"\right)"
+                latex_name = (
+                    r"\mathrm{Ric}\left(" + self._metric._latex_name + r"\right)"
+                )
             manif = self._domain
             riem = self.riemann()
-            resu = manif.tensor_field(0, 2, sym=(0,1), name=name,
-                                      latex_name=latex_name)
+            resu = manif.tensor_field(
+                0, 2, sym=(0, 1), name=name, latex_name=latex_name
+            )
             for frame in self._coefficients:
                 cric = resu.add_comp(frame)
                 criem = riem.comp(frame)
@@ -833,7 +900,7 @@ class LeviCivitaConnection(AffineConnection):
                     for j in manif.irange(start=i):
                         rsum = 0
                         for k in manif.irange():
-                            rsum += criem[[k,i,k,j]]
-                        cric[i,j] = rsum
+                            rsum += criem[[k, i, k, j]]
+                        cric[i, j] = rsum
             self._ricci = resu
         return self._ricci

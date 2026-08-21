@@ -122,11 +122,21 @@ import copyreg
 
 from sage.misc.cachefunc import weak_cached_function
 from sage.misc.classcall_metaclass import ClasscallMetaclass
-from sage.misc.inherit_comparison import InheritComparisonMetaclass, InheritComparisonClasscallMetaclass
+from sage.misc.inherit_comparison import (
+    InheritComparisonMetaclass,
+    InheritComparisonClasscallMetaclass,
+)
 
 
-def dynamic_class(name, bases, cls=None, reduction=None, doccls=None,
-                  prepend_cls_bases=True, cache=True):
+def dynamic_class(
+    name,
+    bases,
+    cls=None,
+    reduction=None,
+    doccls=None,
+    prepend_cls_bases=True,
+    cache=True,
+):
     r"""
     INPUT:
 
@@ -324,10 +334,14 @@ def dynamic_class(name, bases, cls=None, reduction=None, doccls=None,
     assert isinstance(name, str)
     #    assert(cls is None or issubtype(type(cls), type) or type(cls) is classobj)
     if cache is True:
-        return dynamic_class_internal(name, bases, cls, reduction, doccls, prepend_cls_bases)
+        return dynamic_class_internal(
+            name, bases, cls, reduction, doccls, prepend_cls_bases
+        )
     if cache is False:
         # bypass the cached method
-        return dynamic_class_internal.f(name, bases, cls, reduction, doccls, prepend_cls_bases)
+        return dynamic_class_internal.f(
+            name, bases, cls, reduction, doccls, prepend_cls_bases
+        )
     # cache = "ignore_reduction"
     result = dynamic_class_internal(name, bases, cls, False, doccls, prepend_cls_bases)
     if result._reduction is False:
@@ -336,7 +350,9 @@ def dynamic_class(name, bases, cls=None, reduction=None, doccls=None,
 
 
 @weak_cached_function
-def dynamic_class_internal(name, bases, cls=None, reduction=None, doccls=None, prepend_cls_bases=True):
+def dynamic_class_internal(
+    name, bases, cls=None, reduction=None, doccls=None, prepend_cls_bases=True
+):
     r"""
     See sage.structure.dynamic_class.dynamic_class? for indirect doctests.
 
@@ -450,7 +466,10 @@ def dynamic_class_internal(name, bases, cls=None, reduction=None, doccls=None, p
                 elif metaclass is DynamicInheritComparisonMetaclass:
                     metaclass = DynamicInheritComparisonClasscallMetaclass
                 else:
-                    raise NotImplementedError("No subclass of %r known that inherits from ClasscallMetaclass" % (metaclass,))
+                    raise NotImplementedError(
+                        "No subclass of %r known that inherits from ClasscallMetaclass"
+                        % (metaclass,)
+                    )
         if isinstance(base, InheritComparisonMetaclass):
             if not issubclass(metaclass, InheritComparisonMetaclass):
                 if metaclass is DynamicMetaclass:
@@ -458,7 +477,10 @@ def dynamic_class_internal(name, bases, cls=None, reduction=None, doccls=None, p
                 elif metaclass is DynamicClasscallMetaclass:
                     metaclass = DynamicInheritComparisonClasscallMetaclass
                 else:
-                    raise NotImplementedError("No subclass of %r known that inherits from InheritComparisonMetaclass" % (metaclass,))
+                    raise NotImplementedError(
+                        "No subclass of %r known that inherits from InheritComparisonMetaclass"
+                        % (metaclass,)
+                    )
     return metaclass(name, bases, methods)
 
 
@@ -466,6 +488,7 @@ class DynamicMetaclass(type):
     """
     A metaclass implementing an appropriate reduce-by-construction method
     """
+
     def _sage_src_lines_(self):
         r"""
         Get the source lines of the dynamic class. This defers to the
@@ -487,6 +510,7 @@ class DynamicMetaclass(type):
         except AttributeError:
             raise NotImplementedError("no _doccls found")
         from sage.misc.sageinspect import sage_getsourcelines
+
         return sage_getsourcelines(doccls)
 
     def __reduce__(self):
@@ -517,15 +541,19 @@ class DynamicInheritComparisonMetaclass(DynamicMetaclass, InheritComparisonMetac
     pass
 
 
-class DynamicInheritComparisonClasscallMetaclass(DynamicMetaclass, InheritComparisonClasscallMetaclass):
+class DynamicInheritComparisonClasscallMetaclass(
+    DynamicMetaclass, InheritComparisonClasscallMetaclass
+):
     pass
 
 
 # This registers the appropriate reduction methods (see Issue #5985)
-for M in [DynamicMetaclass,
-          DynamicClasscallMetaclass,
-          DynamicInheritComparisonMetaclass,
-          DynamicInheritComparisonClasscallMetaclass]:
+for M in [
+    DynamicMetaclass,
+    DynamicClasscallMetaclass,
+    DynamicInheritComparisonMetaclass,
+    DynamicInheritComparisonClasscallMetaclass,
+]:
     copyreg.pickle(M, M.__reduce__)
 
 
@@ -533,6 +561,7 @@ class TestClass:
     """
     A class used for checking that introspection works
     """
+
     def bla():
         """
         bla ...

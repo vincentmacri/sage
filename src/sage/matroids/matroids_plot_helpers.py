@@ -79,8 +79,9 @@ from sage.matroids.advanced import newlabel
 from sage.misc.lazy_import import lazy_import
 from sage.sets.set import Set
 
-lazy_import("sage.plot.all", ["Graphics", "line", "text",
-                              "polygon2d", "point", "points"])
+lazy_import(
+    "sage.plot.all", ["Graphics", "line", "text", "polygon2d", "point", "points"]
+)
 lazy_import("sage.plot.colors", "Color")
 
 
@@ -158,24 +159,29 @@ def it(M, B1, nB1, lps) -> tuple[dict, list, list, list]:
             L3.append(i)
     L = [L1, L2, L3]  # megalist
     lines = []  # the list of lines
-    for i in range(1, len(L)+1):
-        lines.append([B1[pairs[i-1][0]]])
-        lines[i-1].extend(L[i-1])
-        lines[i-1].extend([B1[pairs[i-1][1]]])
+    for i in range(1, len(L) + 1):
+        lines.append([B1[pairs[i - 1][0]]])
+        lines[i - 1].extend(L[i - 1])
+        lines[i - 1].extend([B1[pairs[i - 1][1]]])
     # place triangle and L1,L2,L3
     for i in L:  # loop over megalist
-        interval = 1/float(len(i)+1)
+        interval = 1 / float(len(i) + 1)
         pt1 = list(tripts[pairs[L.index(i)][0]])
         pt2 = list(tripts[pairs[L.index(i)][1]])
-        for j in range(1, len(i)+1):
+        for j in range(1, len(i) + 1):
             # loop over L1,L2,L3
-            cc = interval*j
-            pts[i[j-1]] = (cc*pt1[0]+(1-cc)*pt2[0], cc*pt1[1]+(1-cc)*pt2[1])
+            cc = interval * j
+            pts[i[j - 1]] = (
+                cc * pt1[0] + (1 - cc) * pt2[0],
+                cc * pt1[1] + (1 - cc) * pt2[1],
+            )
     trilines = [set(x) for x in lines if len(x) >= 3]
     set_lps = set(lps)
-    curvedlines = [list(sx.difference(set_lps))
-                   for x in M.flats(2) if (sx := set(x)) not in trilines
-                   and len(list(x)) >= 3]
+    curvedlines = [
+        list(sx.difference(set_lps))
+        for x in M.flats(2)
+        if (sx := set(x)) not in trilines and len(list(x)) >= 3
+    ]
     nontripts = [i for i in nB1 if i not in pts]
     trilines = [list(s) for s in trilines]
     return pts, trilines, nontripts, curvedlines
@@ -211,12 +217,16 @@ def trigrid(tripts) -> list[list]:
         This method does NOT do any checks.
     """
     pairs = [[0, 1], [1, 2], [0, 2]]
-    cpt = [float(tripts[0][0] + tripts[1][0] + tripts[2][0]) / 3,
-           float(tripts[0][1] + tripts[1][1] + tripts[2][1]) / 3]
+    cpt = [
+        float(tripts[0][0] + tripts[1][0] + tripts[2][0]) / 3,
+        float(tripts[0][1] + tripts[1][1] + tripts[2][1]) / 3,
+    ]
     grid = [cpt]
     for p, q in pairs:
-        pt = [float(tripts[p][0] + tripts[q][0] + cpt[0]) / 3,
-              float(tripts[p][1] + tripts[q][1] + cpt[1]) / 3]
+        pt = [
+            float(tripts[p][0] + tripts[q][0] + cpt[0]) / 3,
+            float(tripts[p][1] + tripts[q][1] + cpt[1]) / 3,
+        ]
         grid.append(pt)
     return grid
 
@@ -269,14 +279,22 @@ def addnontripts(tripts_labels, nontripts_labels, ptsdict) -> dict:
     pairs = [[0, 1], [1, 2], [0, 2]]
     q = [tripts]
     num = len(nontripts_labels)
-    gridpts = [[float((tripts[0][0] + tripts[1][0] + tripts[2][0]) / 3),
-               float(tripts[0][1] + tripts[1][1] + tripts[2][1]) / 3]]
+    gridpts = [
+        [
+            float((tripts[0][0] + tripts[1][0] + tripts[2][0]) / 3),
+            float(tripts[0][1] + tripts[1][1] + tripts[2][1]) / 3,
+        ]
+    ]
     n = 0
     while n < num + 1:
         g = trigrid(q[0])
-        q.extend([[g[0], q[0][pairs[0][0]], q[0][pairs[0][1]]],
-                  [g[0], q[0][pairs[1][0]], q[0][pairs[1][1]]],
-                  [g[0], q[0][pairs[2][0]], q[0][pairs[2][1]]]])
+        q.extend(
+            [
+                [g[0], q[0][pairs[0][0]], q[0][pairs[0][1]]],
+                [g[0], q[0][pairs[1][0]], q[0][pairs[1][1]]],
+                [g[0], q[0][pairs[2][0]], q[0][pairs[2][1]]],
+            ]
+        )
         q.remove(q[0])
         gridpts.extend(g[1:])
         if n == 0:
@@ -346,8 +364,8 @@ def createline(ptsdict, ll, lineorders2=None) -> tuple[list, list, list, list]:
         linepts = [list(ptsdict[i]) for i in ll]
         xpts = [xx[0] for xx in linepts]
         ypts = [yy[1] for yy in linepts]
-        xdim = (float(max(xpts))-float(min(xpts)))
-        ydim = (float(max(ypts))-float(min(ypts)))
+        xdim = float(max(xpts)) - float(min(xpts))
+        ydim = float(max(ypts)) - float(min(ypts))
         if xdim > ydim:
             sortedind = sorted(range(len(xpts)), key=lambda k: float(xpts[k]))
         else:
@@ -423,16 +441,14 @@ def slp(M1, pos_dict=None, B=None) -> tuple:
     P = set(M1.groundset()) - nP
     if P:
         if pos_dict is not None:
-            pcls = list({frozenset(set(M1.closure([p])) - L)
-                         for p in list(P)})
+            pcls = list({frozenset(set(M1.closure([p])) - L) for p in list(P)})
             newP = []
             for pcl in pcls:
                 pcl_in_dict = [p for p in list(pcl) if p in pos_dict.keys()]
                 newP.extend(list(pcl - set([pcl_in_dict[0]])))
             return [M1.delete(L | set(newP)), L, set(newP)]
         if B is not None:
-            pcls = list({frozenset(set(M1.closure([p])) - L)
-                         for p in list(P)})
+            pcls = list({frozenset(set(M1.closure([p])) - L) for p in list(P)})
             newP = []
             for pcl in pcls:
                 pcl_list = list(pcl)
@@ -496,19 +512,31 @@ def addlp(M, M1, L, P, ptsdict, G=None, limits=None) -> tuple:
             recty = -1
         else:
             rectx = limits[0]
-            recty = limits[2]-1
-        rectw = 0.5 + 0.4*len(loops) + 0.5  # controlled based on len(loops)
+            recty = limits[2] - 1
+        rectw = 0.5 + 0.4 * len(loops) + 0.5  # controlled based on len(loops)
         recth = 0.6
-        G += polygon2d([[rectx, recty], [rectx, recty+recth],
-                        [rectx+rectw, recty+recth], [rectx+rectw, recty]],
-                       color='black', fill=False, thickness=4)
-        G += text(looptext, (rectx+0.5, recty+0.3), color='black',
-                  fontsize=13)
-        G += point((rectx+0.2, recty+0.3), color=Color('#BDBDBD'), size=300,
-                   zorder=2)
-        G += text('Loop(s)', (rectx+0.5+0.4*len(loops)+0.1, recty+0.3),
-                  fontsize=13, color='black')
-        limits = tracklims(limits, [rectx, rectx+rectw], [recty, recty+recth])
+        G += polygon2d(
+            [
+                [rectx, recty],
+                [rectx, recty + recth],
+                [rectx + rectw, recty + recth],
+                [rectx + rectw, recty],
+            ],
+            color='black',
+            fill=False,
+            thickness=4,
+        )
+        G += text(looptext, (rectx + 0.5, recty + 0.3), color='black', fontsize=13)
+        G += point(
+            (rectx + 0.2, recty + 0.3), color=Color('#BDBDBD'), size=300, zorder=2
+        )
+        G += text(
+            'Loop(s)',
+            (rectx + 0.5 + 0.4 * len(loops) + 0.1, recty + 0.3),
+            fontsize=13,
+            color='black',
+        )
+        limits = tracklims(limits, [rectx, rectx + rectw], [recty, recty + recth])
     # deal with parallel elements
     if P:
         # create list of lists where inner lists are parallel classes
@@ -526,29 +554,44 @@ def addlp(M, M1, L, P, ptsdict, G=None, limits=None) -> tuple:
                 basept = list(ptsdict[pcl[0]])
                 if len(pcl) <= 2:
                     # add side by side
-                    ptsdict[pcl[1]] = (basept[0], basept[1]-0.13)
-                    G += points(zip([basept[0]], [basept[1]-0.13]),
-                                color=Color('#BDBDBD'), size=300, zorder=2)
-                    G += text(pcl[0], (float(basept[0]),
-                              float(basept[1])), color='black',
-                              fontsize=13)
-                    G += text(pcl[1], (float(basept[0]),
-                              float(basept[1])-0.13), color='black',
-                              fontsize=13)
-                    limits = tracklims(limits, [basept[0]], [basept[1]-0.13])
+                    ptsdict[pcl[1]] = (basept[0], basept[1] - 0.13)
+                    G += points(
+                        zip([basept[0]], [basept[1] - 0.13]),
+                        color=Color('#BDBDBD'),
+                        size=300,
+                        zorder=2,
+                    )
+                    G += text(
+                        pcl[0],
+                        (float(basept[0]), float(basept[1])),
+                        color='black',
+                        fontsize=13,
+                    )
+                    G += text(
+                        pcl[1],
+                        (float(basept[0]), float(basept[1]) - 0.13),
+                        color='black',
+                        fontsize=13,
+                    )
+                    limits = tracklims(limits, [basept[0]], [basept[1] - 0.13])
                 else:
                     # add in a bracket
                     pce = sorted([str(kk) for kk in pcl])
                     l = newlabel(set(ext_gnd))
                     ext_gnd.append(l)
-                    G += text(l+'={ '+", ".join(pce)+' }', (float(basept[0]),
-                              float(basept[1]-0.2)-0.034), color='black',
-                              fontsize=13)
-                    G += text(l, (float(basept[0]),
-                              float(basept[1])), color='black',
-                              fontsize=13)
-                    limits = tracklims(limits, [basept[0]],
-                                       [(basept[1]-0.2)-0.034])
+                    G += text(
+                        l + '={ ' + ", ".join(pce) + ' }',
+                        (float(basept[0]), float(basept[1] - 0.2) - 0.034),
+                        color='black',
+                        fontsize=13,
+                    )
+                    G += text(
+                        l,
+                        (float(basept[0]), float(basept[1])),
+                        color='black',
+                        fontsize=13,
+                    )
+                    limits = tracklims(limits, [basept[0]], [(basept[1] - 0.2) - 0.034])
     return G, limits
 
 
@@ -678,8 +721,7 @@ def posdict_is_sane(M1, pos_dict) -> bool:
     allP = []
     for pcl in pcls:
         allP.extend(pcl)
-    return all(x in pos_dict
-               for x in list(set(M1.groundset()) - (L | set(allP))))
+    return all(x in pos_dict for x in list(set(M1.groundset()) - (L | set(allP))))
 
 
 def tracklims(lims, x_i=[], y_i=[]) -> list:
@@ -705,10 +747,19 @@ def tracklims(lims, x_i=[], y_i=[]) -> list:
 
         This method does NOT do any checks.
     """
-    if lims is not None and lims[0] is not None and lims[1] is not None and \
-       lims[2] is not None and lims[3] is not None:
-        lims = [min(*x_i, lims[0]), max(*x_i, lims[1]),
-                min(*y_i, lims[2]), max(*y_i, lims[3])]
+    if (
+        lims is not None
+        and lims[0] is not None
+        and lims[1] is not None
+        and lims[2] is not None
+        and lims[3] is not None
+    ):
+        lims = [
+            min(*x_i, lims[0]),
+            max(*x_i, lims[1]),
+            min(*y_i, lims[2]),
+            max(*y_i, lims[3]),
+        ]
     else:
         lims = [min(x_i), max(x_i), min(y_i), max(y_i)]
     return lims
@@ -768,46 +819,66 @@ def geomrep(M1, B1=None, lineorders1=None, pd=None, sp=False):
         recty = -1
         rectw = 0.5 + 0.4 * len(loops) + 0.5  # controlled based on len(loops)
         recth = 0.6
-        G += polygon2d([[rectx, recty], [rectx, recty+recth],
-                        [rectx+rectw, recty+recth], [rectx+rectw, recty]],
-                       color='black', fill=False, thickness=4)
-        G += text(looptext, (rectx+0.5, recty+0.3), color='black',
-                  fontsize=13)
-        G += point((rectx+0.2, recty+0.3), color=Color('#BDBDBD'), size=300,
-                   zorder=2)
-        G += text('Loop(s)', (rectx+0.5+0.4*len(loops)+0.1, recty+0.3),
-                  fontsize=13, color='black')
-        limits = tracklims(limits, [rectx, rectx+rectw], [recty, recty+recth])
+        G += polygon2d(
+            [
+                [rectx, recty],
+                [rectx, recty + recth],
+                [rectx + rectw, recty + recth],
+                [rectx + rectw, recty],
+            ],
+            color='black',
+            fill=False,
+            thickness=4,
+        )
+        G += text(looptext, (rectx + 0.5, recty + 0.3), color='black', fontsize=13)
+        G += point(
+            (rectx + 0.2, recty + 0.3), color=Color('#BDBDBD'), size=300, zorder=2
+        )
+        G += text(
+            'Loop(s)',
+            (rectx + 0.5 + 0.4 * len(loops) + 0.1, recty + 0.3),
+            fontsize=13,
+            color='black',
+        )
+        limits = tracklims(limits, [rectx, rectx + rectw], [recty, recty + recth])
         G.axes(False)
-        G.axes_range(xmin=limits[0]-0.5, xmax=limits[1]+0.5,
-                     ymin=limits[2]-0.5, ymax=limits[3]+0.5)
+        G.axes_range(
+            xmin=limits[0] - 0.5,
+            xmax=limits[1] + 0.5,
+            ymin=limits[2] - 0.5,
+            ymax=limits[3] + 0.5,
+        )
         return G
     if M.rank() == 1:
-        if M._cached_info is not None and \
-           'plot_positions' in M._cached_info.keys() and \
-           M._cached_info['plot_positions'] is not None:
+        if (
+            M._cached_info is not None
+            and 'plot_positions' in M._cached_info.keys()
+            and M._cached_info['plot_positions'] is not None
+        ):
             pts = M._cached_info['plot_positions']
         else:
             pts = {}
             gnd = sorted(M.groundset())
-        pts[gnd[0]] = (1, float(2)/3)
-        G += point((1, float(2)/3), size=300, color=Color('#BDBDBD'), zorder=2)
-        pt = [1, float(2)/3]
+        pts[gnd[0]] = (1, float(2) / 3)
+        G += point((1, float(2) / 3), size=300, color=Color('#BDBDBD'), zorder=2)
+        pt = [1, float(2) / 3]
         if not P:
-            G += text(gnd[0], (float(pt[0]), float(pt[1])), color='black',
-                      fontsize=13)
+            G += text(gnd[0], (float(pt[0]), float(pt[1])), color='black', fontsize=13)
         pts2 = pts
         # track limits [xmin,xmax,ymin,ymax]
         pl = [list(x) for x in pts2.values()]
-        lims = tracklims([None, None, None, None], [pnt[0] for pnt in pl],
-                         [pnt[1] for pnt in pl])
+        lims = tracklims(
+            [None, None, None, None], [pnt[0] for pnt in pl], [pnt[1] for pnt in pl]
+        )
     elif M.rank() == 2:
         nB1 = set(M.groundset()) - set(B1)
         bline = [j for j in nB1 if M.is_dependent([j, B1[0], B1[1]])]
-        interval = len(bline)+1
-        if M._cached_info is not None and \
-           'plot_positions' in M._cached_info.keys() and \
-           M._cached_info['plot_positions'] is not None:
+        interval = len(bline) + 1
+        if (
+            M._cached_info is not None
+            and 'plot_positions' in M._cached_info.keys()
+            and M._cached_info['plot_positions'] is not None
+        ):
             pts2 = M._cached_info['plot_positions']
         else:
             pts2 = {}
@@ -816,71 +887,72 @@ def geomrep(M1, B1=None, lineorders1=None, pd=None, sp=False):
             lpt = list(pts2[B1[0]])
             rpt = list(pts2[B1[1]])
             for k in range(len(bline)):
-                cc = (float(1)/interval)*(k+1)
-                pts2[bline[k]] = (cc*lpt[0]+(1-cc)*rpt[0],
-                                  cc*lpt[1]+(1-cc)*rpt[1])
+                cc = (float(1) / interval) * (k + 1)
+                pts2[bline[k]] = (
+                    cc * lpt[0] + (1 - cc) * rpt[0],
+                    cc * lpt[1] + (1 - cc) * rpt[1],
+                )
             if sp:
                 M._cached_info['plot_positions'] = pts2
         # track limits [xmin,xmax,ymin,ymax]
         pl = [list(x) for x in pts2.values()]
-        lims = tracklims([None, None, None, None], [pt[0] for pt in pl],
-                         [pt[1] for pt in pl])
+        lims = tracklims(
+            [None, None, None, None], [pt[0] for pt in pl], [pt[1] for pt in pl]
+        )
         bline.extend(B1)
         ptsx, ptsy, x_i, y_i = createline(pts2, bline, lineorders1)
         lims = tracklims(lims, x_i, y_i)
         G += line(zip(x_i, y_i), color='black', thickness=3, zorder=1)
-        pels = [p for p in pts2
-                if any(M1.rank([p, q]) == 1 for q in P)]
+        pels = [p for p in pts2 if any(M1.rank([p, q]) == 1 for q in P)]
         allpts = [list(pts2[i]) for i in M.groundset()]
         xpts = [float(k[0]) for k in allpts]
         ypts = [float(k[1]) for k in allpts]
-        G += points(zip(xpts, ypts), color=Color('#BDBDBD'), size=300,
-                    zorder=2)
+        G += points(zip(xpts, ypts), color=Color('#BDBDBD'), size=300, zorder=2)
         for i in pts2:
             if i not in pels:
                 pt = list(pts2[i])
-                G += text(i, (float(pt[0]), float(pt[1])), color='black',
-                          fontsize=13)
+                G += text(i, (float(pt[0]), float(pt[1])), color='black', fontsize=13)
     else:
-        if M._cached_info is None or \
-           'plot_positions' not in M._cached_info.keys() or \
-           M._cached_info['plot_positions'] is None:
-            (pts, trilines,
-             nontripts, curvedlines) = it(M1, B1,
-                                          list(set(M.groundset())-set(B1)),
-                                          list(set(L) | set(P)))
+        if (
+            M._cached_info is None
+            or 'plot_positions' not in M._cached_info.keys()
+            or M._cached_info['plot_positions'] is None
+        ):
+            (pts, trilines, nontripts, curvedlines) = it(
+                M1, B1, list(set(M.groundset()) - set(B1)), list(set(L) | set(P))
+            )
             pts2 = addnontripts([B1[0], B1[1], B1[2]], nontripts, pts)
             trilines.extend(curvedlines)
         else:
             pts2 = M._cached_info['plot_positions']
-            trilines = [list(set(x).difference(L | P))
-                        for x in M1.flats(2) if len(list(x)) >= 3]
+            trilines = [
+                list(set(x).difference(L | P)) for x in M1.flats(2) if len(list(x)) >= 3
+            ]
         pl = [list(x) for x in pts2.values()]
-        lims = tracklims([None, None, None, None], [pt[0] for pt in pl],
-                         [pt[1] for pt in pl])
+        lims = tracklims(
+            [None, None, None, None], [pt[0] for pt in pl], [pt[1] for pt in pl]
+        )
         for ll in trilines:
             if len(ll) >= 3:
                 ptsx, ptsy, x_i, y_i = createline(pts2, ll, lineorders1)
                 lims = tracklims(lims, x_i, y_i)
                 G += line(zip(x_i, y_i), color='black', thickness=3, zorder=1)
-        pels = [p for p in pts2
-                if any(M1.rank([p, q]) == 1 for q in P)]
+        pels = [p for p in pts2 if any(M1.rank([p, q]) == 1 for q in P)]
         allpts = [list(pts2[i]) for i in M.groundset()]
         xpts = [float(k[0]) for k in allpts]
         ypts = [float(k[1]) for k in allpts]
-        G += points(zip(xpts, ypts), color=Color('#BDBDBD'), size=300,
-                    zorder=2)
+        G += points(zip(xpts, ypts), color=Color('#BDBDBD'), size=300, zorder=2)
         for i in pts2:
             if i not in pels:
                 pt = list(pts2[i])
-                G += text(i, (float(pt[0]), float(pt[1])), color='black',
-                          fontsize=13)
+                G += text(i, (float(pt[0]), float(pt[1])), color='black', fontsize=13)
         if sp:
             M1._cached_info['plot_positions'] = pts2
             M1._cached_info['plot_lineorders'] = lineorders1
     # deal with loops and parallel elements
     G, lims = addlp(M1, M, L, P, pts2, G, lims)
     G.axes(False)
-    G.axes_range(xmin=lims[0]-0.5, xmax=lims[1]+0.5, ymin=lims[2]-0.5,
-                 ymax=lims[3]+0.5)
+    G.axes_range(
+        xmin=lims[0] - 0.5, xmax=lims[1] + 0.5, ymin=lims[2] - 0.5, ymax=lims[3] + 0.5
+    )
     return G

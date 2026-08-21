@@ -28,6 +28,7 @@ class cu2(Executable):
         sage: cu2().is_present()  # optional - rubiks
         FeatureTestResult('cu2', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -36,8 +37,9 @@ class cu2(Executable):
             sage: isinstance(cu2(), cu2)
             True
         """
-        Executable.__init__(self, "cu2", executable=RUBIKS_BINS_PREFIX + "cu2",
-                            spkg='rubiks')
+        Executable.__init__(
+            self, "cu2", executable=RUBIKS_BINS_PREFIX + "cu2", spkg='rubiks'
+        )
 
 
 class size222(Executable):
@@ -50,6 +52,7 @@ class size222(Executable):
         sage: size222().is_present()  # optional - rubiks
         FeatureTestResult('size222', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -58,8 +61,9 @@ class size222(Executable):
             sage: isinstance(size222(), size222)
             True
         """
-        Executable.__init__(self, "size222", executable=RUBIKS_BINS_PREFIX + "size222",
-                            spkg='rubiks')
+        Executable.__init__(
+            self, "size222", executable=RUBIKS_BINS_PREFIX + "size222", spkg='rubiks'
+        )
 
 
 class optimal(Executable):
@@ -72,6 +76,7 @@ class optimal(Executable):
         sage: optimal().is_present()  # optional - rubiks
         FeatureTestResult('optimal', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -80,8 +85,9 @@ class optimal(Executable):
             sage: isinstance(optimal(), optimal)
             True
         """
-        Executable.__init__(self, "optimal", executable=RUBIKS_BINS_PREFIX + "optimal",
-                            spkg='rubiks')
+        Executable.__init__(
+            self, "optimal", executable=RUBIKS_BINS_PREFIX + "optimal", spkg='rubiks'
+        )
 
 
 class mcube(Executable):
@@ -94,6 +100,7 @@ class mcube(Executable):
         sage: mcube().is_present()  # optional - rubiks
         FeatureTestResult('mcube', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -102,8 +109,9 @@ class mcube(Executable):
             sage: isinstance(mcube(), mcube)
             True
         """
-        Executable.__init__(self, "mcube", executable=RUBIKS_BINS_PREFIX + "mcube",
-                            spkg='rubiks')
+        Executable.__init__(
+            self, "mcube", executable=RUBIKS_BINS_PREFIX + "mcube", spkg='rubiks'
+        )
 
 
 class dikcube(Executable):
@@ -116,6 +124,7 @@ class dikcube(Executable):
         sage: dikcube().is_present()  # optional - rubiks
         FeatureTestResult('dikcube', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -124,8 +133,9 @@ class dikcube(Executable):
             sage: isinstance(dikcube(), dikcube)
             True
         """
-        Executable.__init__(self, "dikcube", executable=RUBIKS_BINS_PREFIX + "dikcube",
-                            spkg='rubiks')
+        Executable.__init__(
+            self, "dikcube", executable=RUBIKS_BINS_PREFIX + "dikcube", spkg='rubiks'
+        )
 
 
 class cubex(Executable):
@@ -138,6 +148,7 @@ class cubex(Executable):
         sage: cubex().is_present()  # optional - rubiks
         FeatureTestResult('cubex', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -146,8 +157,9 @@ class cubex(Executable):
             sage: isinstance(cubex(), cubex)
             True
         """
-        Executable.__init__(self, "cubex", executable=RUBIKS_BINS_PREFIX + "cubex",
-                            spkg='rubiks')
+        Executable.__init__(
+            self, "cubex", executable=RUBIKS_BINS_PREFIX + "cubex", spkg='rubiks'
+        )
 
 
 class Rubiks(JoinFeature):
@@ -162,6 +174,7 @@ class Rubiks(JoinFeature):
         sage: Rubiks().is_present()  # optional - rubiks
         FeatureTestResult('rubiks', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -170,9 +183,12 @@ class Rubiks(JoinFeature):
             sage: isinstance(Rubiks(), Rubiks)
             True
         """
-        JoinFeature.__init__(self, "rubiks",
-                             [cu2(), size222(), optimal(), mcube(), dikcube(), cubex()],
-                             spkg='rubiks')
+        JoinFeature.__init__(
+            self,
+            "rubiks",
+            [cu2(), size222(), optimal(), mcube(), dikcube(), cubex()],
+            spkg='rubiks',
+        )
 
 
 def all_features():

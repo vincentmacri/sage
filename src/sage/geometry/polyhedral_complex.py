@@ -270,10 +270,17 @@ class PolyhedralComplex(GenericCellComplex):
         sage: Q.backend()
         'cdd'
     """
+
     @rename_keyword(deprecation=41756, is_immutable='immutable')
-    def __init__(self, maximal_cells=None, backend=None, maximality_check=True,
-                 face_to_face_check=False, immutable=False,
-                 ambient_dim=None) -> None:
+    def __init__(
+        self,
+        maximal_cells=None,
+        backend=None,
+        maximality_check=True,
+        face_to_face_check=False,
+        immutable=False,
+        ambient_dim=None,
+    ) -> None:
         r"""
         Define a PolyhedralComplex.
 
@@ -291,15 +298,15 @@ class PolyhedralComplex(GenericCellComplex):
             cells_dict = {}
         elif isinstance(maximal_cells, (list, tuple)):
             if backend:
-                maximal_cells = [p.base_extend(p.base_ring(), backend)
-                                 for p in maximal_cells]
+                maximal_cells = [
+                    p.base_extend(p.base_ring(), backend) for p in maximal_cells
+                ]
             cells_dict = cells_list_to_cells_dict(maximal_cells)
         elif isinstance(maximal_cells, dict):
             cells_dict = {}
             for k, l in maximal_cells.items():
                 if backend:
-                    cells_dict[k] = {p.base_extend(p.base_ring(), backend)
-                                     for p in l}
+                    cells_dict[k] = {p.base_extend(p.base_ring(), backend) for p in l}
                 else:
                     cells_dict[k] = set(l)
         else:
@@ -314,32 +321,42 @@ class PolyhedralComplex(GenericCellComplex):
                 ambient_dim = next(iter(cells_dict[self._dim])).ambient_dim()
         self._ambient_dim = ambient_dim
         self._maximal_cells = cells_dict
-        if not all((isinstance(cell, sage.geometry.abc.Polyhedron) and
-                   cell.ambient_dim() == self._ambient_dim)
-                   for cell in self.maximal_cell_iterator()):
-            raise ValueError("the given cells are not polyhedra " +
-                             "in the same ambient space")
+        if not all(
+            (
+                isinstance(cell, sage.geometry.abc.Polyhedron)
+                and cell.ambient_dim() == self._ambient_dim
+            )
+            for cell in self.maximal_cell_iterator()
+        ):
+            raise ValueError(
+                "the given cells are not polyhedra " + "in the same ambient space"
+            )
         # initialize the attributes
         self._is_convex = None
         self._polyhedron = None
-        self._maximal_cells_sorted = None    # needed for hash
+        self._maximal_cells_sorted = None  # needed for hash
         self._cells = None
         self._face_poset = None
 
         if maximality_check:
-            self.cells()    # compute self._cells and self._face_poset
+            self.cells()  # compute self._cells and self._face_poset
             self._maximal_cells = cells_list_to_cells_dict(
-                                      self._face_poset.maximal_elements())
+                self._face_poset.maximal_elements()
+            )
         if face_to_face_check:
             poset = self.face_poset()
-            maximal_cells = poset.maximal_elements()    # a list
+            maximal_cells = poset.maximal_elements()  # a list
             for i in range(len(maximal_cells)):
                 p = maximal_cells[i]
                 for j in range(i, len(maximal_cells)):
                     q = maximal_cells[j]
                     r = p.intersection(q)
-                    if not (r.is_empty() or (r in poset) and
-                            poset.is_gequal(p, r) and poset.is_gequal(q, r)):
+                    if not (
+                        r.is_empty()
+                        or (r in poset)
+                        and poset.is_gequal(p, r)
+                        and poset.is_gequal(q, r)
+                    ):
                         raise ValueError("the given cells are not face-to-face")
         self._is_immutable = False
         if immutable:
@@ -385,9 +402,9 @@ class PolyhedralComplex(GenericCellComplex):
                         if p not in covers:
                             covers[p] = []
                         covers[p].append(cell)
-                        if (k-1) not in cells:
-                            cells[k-1] = set()
-                        cells[k-1].add(p)
+                        if (k - 1) not in cells:
+                            cells[k - 1] = set()
+                        cells[k - 1].add(p)
         self._face_poset = Poset(covers)
         self._cells = cells
         return self._cells
@@ -448,8 +465,7 @@ class PolyhedralComplex(GenericCellComplex):
             []
         """
         n_cells = self.n_cells(n, subcomplex)
-        return sorted(n_cells,
-                      key=lambda p: (p.vertices(), p.rays(), p.lines()))
+        return sorted(n_cells, key=lambda p: (p.vertices(), p.rays(), p.lines()))
 
     def cells_sorted(self, subcomplex=None) -> list:
         """
@@ -613,8 +629,9 @@ class PolyhedralComplex(GenericCellComplex):
             [[0, 0], [0, 2], [1, 2]]
         """
         n_maximal_cells = self.n_maximal_cells(n)
-        return sorted(n_maximal_cells,
-                      key=lambda p: (p.vertices(), p.rays(), p.lines()))
+        return sorted(
+            n_maximal_cells, key=lambda p: (p.vertices(), p.rays(), p.lines())
+        )
 
     def maximal_cells_sorted(self) -> list:
         """
@@ -791,8 +808,7 @@ class PolyhedralComplex(GenericCellComplex):
         polyhedra = self.maximal_cell_iterator()
         if color == 'rainbow':
             polyhedra = list(polyhedra)
-            cell_colors_dict = dict(zip(polyhedra,
-                                        rainbow(len(polyhedra))))
+            cell_colors_dict = dict(zip(polyhedra, rainbow(len(polyhedra))))
         g = Graphics()
         for cell in polyhedra:
             options = copy(kwds)
@@ -871,8 +887,9 @@ class PolyhedralComplex(GenericCellComplex):
             ValueError: this polyhedral complex must be immutable; call set_immutable()
         """
         if not self._is_immutable:
-            raise ValueError("this polyhedral complex must be immutable; " +
-                             "call set_immutable()")
+            raise ValueError(
+                "this polyhedral complex must be immutable; " + "call set_immutable()"
+            )
         return hash(tuple(self.maximal_cells_sorted()))
 
     def __eq__(self, right) -> bool:
@@ -891,7 +908,8 @@ class PolyhedralComplex(GenericCellComplex):
             True
         """
         return isinstance(right, PolyhedralComplex) and (
-               self.maximal_cells_sorted() == right.maximal_cells_sorted())
+            self.maximal_cells_sorted() == right.maximal_cells_sorted()
+        )
 
     def __ne__(self, right) -> bool:
         """
@@ -919,8 +937,9 @@ class PolyhedralComplex(GenericCellComplex):
             sage: pc1 == pc2
             True
         """
-        return PolyhedralComplex(self._maximal_cells, maximality_check=False,
-                                 backend=self._backend)
+        return PolyhedralComplex(
+            self._maximal_cells, maximality_check=False, backend=self._backend
+        )
 
     def _an_element_(self):
         """
@@ -945,6 +964,7 @@ class PolyhedralComplex(GenericCellComplex):
             return next(self.maximal_cell_iterator(increasing=False))
         except StopIteration:
             from sage.categories.sets_cat import EmptySetError
+
             raise EmptySetError("the complex is empty")
 
     def __contains__(self, x) -> bool:
@@ -1032,7 +1052,7 @@ class PolyhedralComplex(GenericCellComplex):
             Finite poset containing 9 elements
         """
         if self._face_poset is None:
-            self.cells()    # poset is obtained and cached in cells()
+            self.cells()  # poset is obtained and cached in cells()
         return self._face_poset
 
     def is_subcomplex(self, other) -> bool:
@@ -1058,7 +1078,7 @@ class PolyhedralComplex(GenericCellComplex):
             False
         """
         other_cells = other.cells()
-        for (d, stratum) in self.maximal_cells().items():
+        for d, stratum in self.maximal_cells().items():
             if not stratum.issubset(other_cells.get(d, set())):
                 return False
         return True
@@ -1177,7 +1197,7 @@ class PolyhedralComplex(GenericCellComplex):
             True
         """
         if self.is_compact():
-            return self.graph().is_connected()    # faster than using poset?
+            return self.graph().is_connected()  # faster than using poset?
         return self.face_poset().is_connected()
 
     def connected_component(self, cell=None):
@@ -1241,34 +1261,40 @@ class PolyhedralComplex(GenericCellComplex):
             ValueError: the empty polyhedral complex has no connected components
         """
         if self.dimension() == -1:
-            raise ValueError(
-                "the empty polyhedral complex has no connected components")
+            raise ValueError("the empty polyhedral complex has no connected components")
         if cell is None:
             cell = self._an_element_()
-        if self.is_compact():    # use graph (faster than poset?)
+        if self.is_compact():  # use graph (faster than poset?)
             if not cell.is_compact():
                 raise ValueError(
-                    "the polyhedral complex does not contain the given cell")
+                    "the polyhedral complex does not contain the given cell"
+                )
             v = cell.vertices_matrix().columns()[0]
             g = self.graph()
             if v not in g:
                 raise ValueError(
-                    "the polyhedral complex does not contain the given cell")
+                    "the polyhedral complex does not contain the given cell"
+                )
             vertices = g.connected_component_containing_vertex(v, sort=False)
-            facets = [f for f in self.maximal_cell_iterator()
-                      if any(vf in f.vertices_matrix().columns()
-                             for vf in vertices)]
-        else:    # use face_poset
+            facets = [
+                f
+                for f in self.maximal_cell_iterator()
+                if any(vf in f.vertices_matrix().columns() for vf in vertices)
+            ]
+        else:  # use face_poset
             g = self.face_poset().hasse_diagram()
             if cell not in g:
                 raise ValueError(
-                    "the polyhedral complex does not contain the given cell")
+                    "the polyhedral complex does not contain the given cell"
+                )
             faces = g.connected_component_containing_vertex(cell, sort=False)
-            facets = [f for f in self.maximal_cell_iterator()
-                      if f in faces]
-        return PolyhedralComplex(facets, maximality_check=False,
-                                 immutable=self._is_immutable,
-                                 backend=self._backend)
+            facets = [f for f in self.maximal_cell_iterator() if f in faces]
+        return PolyhedralComplex(
+            facets,
+            maximality_check=False,
+            immutable=self._is_immutable,
+            backend=self._backend,
+        )
 
     def connected_components(self) -> list:
         """
@@ -1306,25 +1332,34 @@ class PolyhedralComplex(GenericCellComplex):
             ValueError: the empty polyhedral complex has no connected components
         """
         if self.dimension() == -1:
-            raise ValueError(
-                "the empty polyhedral complex has no connected components")
-        if self.is_compact():    # use graph (faster than poset)?
+            raise ValueError("the empty polyhedral complex has no connected components")
+        if self.is_compact():  # use graph (faster than poset)?
             g = self.graph()
             lists_of_vertices = g.connected_components(sort=False)
-            lists_of_facets = [[f for f in self.maximal_cell_iterator()
-                                if any(vf in f.vertices_matrix().columns()
-                                       for vf in vertices)]
-                               for vertices in lists_of_vertices]
-        else:    # use face_poset
+            lists_of_facets = [
+                [
+                    f
+                    for f in self.maximal_cell_iterator()
+                    if any(vf in f.vertices_matrix().columns() for vf in vertices)
+                ]
+                for vertices in lists_of_vertices
+            ]
+        else:  # use face_poset
             g = self.face_poset().hasse_diagram()
             lists_of_faces = g.connected_components(sort=False)
             lists_of_facets = [
                 [f for f in self.maximal_cell_iterator() if f in faces]
-                for faces in lists_of_faces]
-        return [PolyhedralComplex(facets, maximality_check=False,
-                                  immutable=self._is_immutable,
-                                  backend=self._backend)
-                for facets in lists_of_facets]
+                for faces in lists_of_faces
+            ]
+        return [
+            PolyhedralComplex(
+                facets,
+                maximality_check=False,
+                immutable=self._is_immutable,
+                backend=self._backend,
+            )
+            for facets in lists_of_facets
+        ]
 
     def n_skeleton(self, n):
         r"""
@@ -1357,9 +1392,12 @@ class PolyhedralComplex(GenericCellComplex):
             return copy(self)
         facets = [f for f in self.maximal_cell_iterator() if f.dimension() < n]
         facets.extend(self.n_cells(n))
-        return PolyhedralComplex(facets, maximality_check=False,
-                                 immutable=self._is_immutable,
-                                 backend=self._backend)
+        return PolyhedralComplex(
+            facets,
+            maximality_check=False,
+            immutable=self._is_immutable,
+            backend=self._backend,
+        )
 
     def stratify(self, n):
         r"""
@@ -1394,9 +1432,12 @@ class PolyhedralComplex(GenericCellComplex):
             Polyhedral complex with 1 maximal cell
         """
         n_faces = self.n_maximal_cells(n)
-        return PolyhedralComplex(n_faces, maximality_check=False,
-                                 immutable=self._is_immutable,
-                                 backend=self._backend)
+        return PolyhedralComplex(
+            n_faces,
+            maximality_check=False,
+            immutable=self._is_immutable,
+            backend=self._backend,
+        )
 
     def boundary_subcomplex(self):
         """
@@ -1453,9 +1494,11 @@ class PolyhedralComplex(GenericCellComplex):
             False
         """
         if self.is_full_dimensional():
-            return PolyhedralComplex(self.relative_boundary_cells(),
-                                     immutable=self._is_immutable,
-                                     backend=self._backend)
+            return PolyhedralComplex(
+                self.relative_boundary_cells(),
+                immutable=self._is_immutable,
+                backend=self._backend,
+            )
         ans = copy(self)
         if self._is_immutable:
             ans.set_immutable()
@@ -1600,6 +1643,7 @@ class PolyhedralComplex(GenericCellComplex):
         if not self.is_full_dimensional():
             # if max cells must lie in different subspaces, can't be convex.
             from sage.modules.free_module import span
+
             f = self.n_maximal_cells(d)[0]
             affine_space = span(f.equations_list(), f.base_ring())
             for f in self.n_maximal_cells(d)[1::]:
@@ -1658,8 +1702,9 @@ class PolyhedralComplex(GenericCellComplex):
                             return False
                 # lines are in the affine space of each boundary cell already
         self._is_convex = True
-        self._polyhedron = Polyhedron(vertices=vertices, rays=rays, lines=lines,
-                                      backend=self._backend)
+        self._polyhedron = Polyhedron(
+            vertices=vertices, rays=rays, lines=lines, backend=self._backend
+        )
         return True
 
     def union_as_polyhedron(self):
@@ -1705,12 +1750,17 @@ class PolyhedralComplex(GenericCellComplex):
              A vertex at (1, 0),
              A vertex at (1, 1))
         """
-        maximal_cells = [f.product(g) for f in self.maximal_cell_iterator()
-                         for g in right.maximal_cell_iterator()]
-        return PolyhedralComplex(maximal_cells, maximality_check=False,
-                                 immutable=(self._is_immutable and
-                                            right._is_immutable),
-                                 backend=self._backend)
+        maximal_cells = [
+            f.product(g)
+            for f in self.maximal_cell_iterator()
+            for g in right.maximal_cell_iterator()
+        ]
+        return PolyhedralComplex(
+            maximal_cells,
+            maximality_check=False,
+            immutable=(self._is_immutable and right._is_immutable),
+            backend=self._backend,
+        )
 
     def disjoint_union(self, right):
         """
@@ -1739,12 +1789,13 @@ class PolyhedralComplex(GenericCellComplex):
             for cell_right in maximal_cells_right:
                 if not cell.intersection(cell_right).is_empty():
                     raise ValueError("the two complexes are not disjoint")
-        return PolyhedralComplex(maximal_cells_self + maximal_cells_right,
-                                 maximality_check=False,
-                                 face_to_face_check=False,
-                                 immutable=(self._is_immutable and
-                                            right._is_immutable),
-                                 backend=self._backend)
+        return PolyhedralComplex(
+            maximal_cells_self + maximal_cells_right,
+            maximality_check=False,
+            face_to_face_check=False,
+            immutable=(self._is_immutable and right._is_immutable),
+            backend=self._backend,
+        )
 
     def union(self, right):
         """
@@ -1771,12 +1822,15 @@ class PolyhedralComplex(GenericCellComplex):
             ValueError: the given cells are not face-to-face
         """
         maximal_cells = list(self.maximal_cell_iterator()) + list(
-                        right.maximal_cell_iterator())
-        return PolyhedralComplex(maximal_cells, maximality_check=True,
-                                 face_to_face_check=True,
-                                 immutable=(self._is_immutable and
-                                            right._is_immutable),
-                                 backend=self._backend)
+            right.maximal_cell_iterator()
+        )
+        return PolyhedralComplex(
+            maximal_cells,
+            maximality_check=True,
+            face_to_face_check=True,
+            immutable=(self._is_immutable and right._is_immutable),
+            backend=self._backend,
+        )
 
     def join(self, right):
         """
@@ -1798,12 +1852,17 @@ class PolyhedralComplex(GenericCellComplex):
              A vertex at (0, 1, 1),
              A vertex at (1, 0, 0))
         """
-        maximal_cells = [f.join(g) for f in self.maximal_cell_iterator()
-                         for g in right.maximal_cell_iterator()]
-        return PolyhedralComplex(maximal_cells, maximality_check=False,
-                                 immutable=(self._is_immutable and
-                                            right._is_immutable),
-                                 backend=self._backend)
+        maximal_cells = [
+            f.join(g)
+            for f in self.maximal_cell_iterator()
+            for g in right.maximal_cell_iterator()
+        ]
+        return PolyhedralComplex(
+            maximal_cells,
+            maximality_check=False,
+            immutable=(self._is_immutable and right._is_immutable),
+            backend=self._backend,
+        )
 
     ############################################################
     # abstract methods not implemented in generic cell complex
@@ -1825,15 +1884,23 @@ class PolyhedralComplex(GenericCellComplex):
             ...
             NotImplementedError: wedge is not implemented for polyhedral complex
         """
-        raise NotImplementedError("wedge is not implemented for "
-                                  + "polyhedral complex")
+        raise NotImplementedError(
+            "wedge is not implemented for " + "polyhedral complex"
+        )
 
     ############################################################
     # chain complexes, homology
     ############################################################
-    def chain_complex(self, subcomplex=None, augmented=False,
-                      verbose=False, check=True, dimensions=None,
-                      base_ring=ZZ, cochain=False):
+    def chain_complex(
+        self,
+        subcomplex=None,
+        augmented=False,
+        verbose=False,
+        check=True,
+        dimensions=None,
+        base_ring=ZZ,
+        cochain=False,
+    ):
         """
         The chain complex associated to this polyhedral complex.
 
@@ -1849,8 +1916,9 @@ class PolyhedralComplex(GenericCellComplex):
             ...
             NotImplementedError: chain_complex is not implemented for polyhedral complex
         """
-        raise NotImplementedError("chain_complex is not implemented for "
-                                  + "polyhedral complex")
+        raise NotImplementedError(
+            "chain_complex is not implemented for " + "polyhedral complex"
+        )
 
     def alexander_whitney(self, cell, dim_left):
         """
@@ -1869,8 +1937,9 @@ class PolyhedralComplex(GenericCellComplex):
             ...
             NotImplementedError: alexander_whitney is not implemented for polyhedral complex
         """
-        raise NotImplementedError("alexander_whitney is not implemented for "
-                                  + "polyhedral complex")
+        raise NotImplementedError(
+            "alexander_whitney is not implemented for " + "polyhedral complex"
+        )
 
     ############################################################
     # end of chain complexes, homology
@@ -2045,9 +2114,13 @@ class PolyhedralComplex(GenericCellComplex):
         """
         if self._is_immutable:
             raise ValueError("this polyhedral complex is not mutable")
-        if not isinstance(cell, sage.geometry.abc.Polyhedron) or cell.ambient_dim() != self._ambient_dim:
-            raise ValueError("the given cell is not a polyhedron " +
-                             "in the same ambient space")
+        if (
+            not isinstance(cell, sage.geometry.abc.Polyhedron)
+            or cell.ambient_dim() != self._ambient_dim
+        ):
+            raise ValueError(
+                "the given cell is not a polyhedron " + "in the same ambient space"
+            )
         # if cell is already in self, do nothing.
         if self.is_cell(cell):
             return
@@ -2055,8 +2128,7 @@ class PolyhedralComplex(GenericCellComplex):
             cell = cell.base_extend(cell.base_ring(), self._backend)
         # update cells and face poset
         cells = self.cells()
-        covers = {p: self.face_poset().upper_covers(p)
-                  for p in self.cell_iterator()}
+        covers = {p: self.face_poset().upper_covers(p) for p in self.cell_iterator()}
         d = cell.dimension()
         d_cells = [cell]
         if d not in cells:
@@ -2084,19 +2156,24 @@ class PolyhedralComplex(GenericCellComplex):
         # check face-to-face between cell and previous maximal cells
         for p in self.maximal_cell_iterator():
             r = p.intersection(cell)
-            if not (r.is_empty() or (r in poset) and
-                    poset.is_gequal(p, r) and poset.is_gequal(cell, r)):
+            if not (
+                r.is_empty()
+                or (r in poset)
+                and poset.is_gequal(p, r)
+                and poset.is_gequal(cell, r)
+            ):
                 raise ValueError("the cell is not face-to-face with complex")
         # update dim and maximal cells
         d = cell.dimension()
         self._dim = max(d, self._dim)
-        maximal_cells = poset.maximal_elements()    # a list
+        maximal_cells = poset.maximal_elements()  # a list
         self._maximal_cells = cells_list_to_cells_dict(maximal_cells)
         # update convexity if self was known to be convex, reset otherwise.
         if self._is_convex:
             try:
-                new_complex = PolyhedralComplex([self._polyhedron, cell],
-                                                face_to_face_check=True)
+                new_complex = PolyhedralComplex(
+                    [self._polyhedron, cell], face_to_face_check=True
+                )
             except ValueError:
                 self._is_convex = False
                 self._polyhedron = None
@@ -2107,7 +2184,7 @@ class PolyhedralComplex(GenericCellComplex):
             self._is_convex = None
             self._polyhedron = None
         # reset cached attribute
-        self._maximal_cells_sorted = None    # needed for hash
+        self._maximal_cells_sorted = None  # needed for hash
 
     def remove_cell(self, cell, check=False):
         r"""
@@ -2207,14 +2284,20 @@ class PolyhedralComplex(GenericCellComplex):
         """
         if self._is_immutable:
             raise ValueError("this polyhedral complex is not mutable")
-        if not isinstance(cell, sage.geometry.abc.Polyhedron) or cell.ambient_dim() != self._ambient_dim:
-            raise ValueError("the given cell is not a polyhedron " +
-                             "in the same ambient space")
+        if (
+            not isinstance(cell, sage.geometry.abc.Polyhedron)
+            or cell.ambient_dim() != self._ambient_dim
+        ):
+            raise ValueError(
+                "the given cell is not a polyhedron " + "in the same ambient space"
+            )
         # if cell is not in self, delete nothing.
-        if not self.is_cell(cell):   # self.cells() is called
+        if not self.is_cell(cell):  # self.cells() is called
             if check:
-                raise ValueError("trying to remove a cell which is not " +
-                                 "in the polyhedral complex")
+                raise ValueError(
+                    "trying to remove a cell which is not "
+                    + "in the polyhedral complex"
+                )
             return
         # update cells and face poset
         poset = self._face_poset
@@ -2224,18 +2307,20 @@ class PolyhedralComplex(GenericCellComplex):
             self._cells[d].remove(c)
             if not self._cells[d]:
                 del self._cells[d]
-        covers = {p: [q for q in poset.upper_covers(p) if q not in deleting]
-                  for p in self.cell_iterator()}
+        covers = {
+            p: [q for q in poset.upper_covers(p) if q not in deleting]
+            for p in self.cell_iterator()
+        }
         self._face_poset = Poset(covers)
         # update dim and maximal cells
-        maximal_cells = self._face_poset.maximal_elements()    # a list
+        maximal_cells = self._face_poset.maximal_elements()  # a list
         self._maximal_cells = cells_list_to_cells_dict(maximal_cells)
         if not maximal_cells:
             self._dim = -1
         else:
             self._dim = max(self._maximal_cells.keys())
         # reset cached attributes
-        self._maximal_cells_sorted = None    # needed for hash
+        self._maximal_cells_sorted = None  # needed for hash
         self._is_convex = None
         self._polyhedron = None
 
@@ -2277,9 +2362,11 @@ class PolyhedralComplex(GenericCellComplex):
             sage: PolyhedralComplex([halfplane]).is_polyhedral_fan()
             True
         """
-        return all((p.n_vertices() == 1) and (
-                   vector(p.vertices_list()[0]) == p.ambient_space().zero())
-                   for p in self.maximal_cell_iterator())
+        return all(
+            (p.n_vertices() == 1)
+            and (vector(p.vertices_list()[0]) == p.ambient_space().zero())
+            for p in self.maximal_cell_iterator()
+        )
 
     def is_simplicial_fan(self) -> bool:
         """
@@ -2303,11 +2390,11 @@ class PolyhedralComplex(GenericCellComplex):
             False
         """
         return self.is_polyhedral_fan() and all(
-               (p.n_lines() == 0 and p.n_rays() == p.dimension())
-               for p in self.maximal_cell_iterator())
+            (p.n_lines() == 0 and p.n_rays() == p.dimension())
+            for p in self.maximal_cell_iterator()
+        )
 
-    def subdivide(self, make_simplicial=False,
-                  new_vertices=None, new_rays=None):
+    def subdivide(self, make_simplicial=False, new_vertices=None, new_rays=None):
         """
         Construct a new polyhedral complex by iterative stellar subdivision of
         ``self`` for each new vertex/ray given.
@@ -2383,7 +2470,7 @@ class PolyhedralComplex(GenericCellComplex):
                 for v in new_vertices:
                     vertices.add(tuple(v))
             if not vertices:
-                return self    # Nothing has to be done
+                return self  # Nothing has to be done
             # bounded version of `fan._subdivide_stellar`; not require rational.
             cells = list(self.maximal_cell_iterator())
             for v in vertices:
@@ -2399,8 +2486,9 @@ class PolyhedralComplex(GenericCellComplex):
                     else:
                         new.append(cell)
                 cells = new
-            return PolyhedralComplex(cells, maximality_check=False,
-                                     backend=self._backend)
+            return PolyhedralComplex(
+                cells, maximality_check=False, backend=self._backend
+            )
         if self.is_polyhedral_fan():
             if new_vertices and any(vi != 0 for v in new_vertices for vi in v):
                 raise ValueError("new vertices cannot be used for subdivision")
@@ -2437,10 +2525,13 @@ class PolyhedralComplex(GenericCellComplex):
                 # we rely on the canonical V-repr of Sage polyhedra.
                 num_lines = len(plines)
                 for neg_rays in powerset(range(num_lines)):
-                    lines = [vector(plines[i]) if i not in neg_rays
-                             else -vector(plines[i]) for i in range(num_lines)]
-                    cones.append(Polyhedron(rays=(prays + lines),
-                                            backend=self._backend))
+                    lines = [
+                        vector(plines[i]) if i not in neg_rays else -vector(plines[i])
+                        for i in range(num_lines)
+                    ]
+                    cones.append(
+                        Polyhedron(rays=(prays + lines), backend=self._backend)
+                    )
             rays = []
             if new_rays:
                 for r in new_rays:
@@ -2454,7 +2545,7 @@ class PolyhedralComplex(GenericCellComplex):
             if make_simplicial and not self.is_simplicial_fan():
                 rays = self_rays + rays
             if not rays:
-                return self    # Nothing has to be done
+                return self  # Nothing has to be done
             # mimic :class:`RationalPolyhedralFan`._subdivide_stellar(rays)
             # start with self maximal cells (subdivided into pointed cones)
             for ray in rays:
@@ -2470,14 +2561,18 @@ class PolyhedralComplex(GenericCellComplex):
                     else:
                         new.append(cone)
                 cones = new
-            return PolyhedralComplex(cones, maximality_check=False,
-                                     backend=self._backend)
+            return PolyhedralComplex(
+                cones, maximality_check=False, backend=self._backend
+            )
         # TODO: ``self`` is unbounded, make it projectively simplicial.
         # (1) homogenize self of dim d to fan in space of dim d+1;
         # (2) call fan.subdivide(make_simplicial=True);
         # (3) take section back to the space of dim d.
-        raise NotImplementedError('subdivision of a non-compact polyhedral ' +
-                                  'complex that is not a fan is not supported')
+        raise NotImplementedError(
+            'subdivision of a non-compact polyhedral '
+            + 'complex that is not a fan is not supported'
+        )
+
 
 ############################################################
 # Helper functions
@@ -2512,9 +2607,16 @@ def cells_list_to_cells_dict(cells_list) -> dict:
     return cells_dict
 
 
-def exploded_plot(polyhedra, *,
-                  center=None, explosion_factor=1, sticky_vertices=False,
-                  sticky_center=True, point=None, **kwds):
+def exploded_plot(
+    polyhedra,
+    *,
+    center=None,
+    explosion_factor=1,
+    sticky_vertices=False,
+    sticky_center=True,
+    point=None,
+    **kwds,
+):
     r"""
     Return a plot of several ``polyhedra`` in one figure with extra space
     between them.
@@ -2572,13 +2674,14 @@ def exploded_plot(polyhedra, *,
     dim = polyhedra[0].ambient_dimension()
     if center is None:
         from sage.rings.rational_field import QQ
+
         center = vector(QQ, dim)
     else:
         center = vector(center)
-    translations = [explosion_factor * ((p.center()
-                                         + sum(r.vector() for r in p.rays()))
-                                        - center)
-                    for p in polyhedra]
+    translations = [
+        explosion_factor * ((p.center() + sum(r.vector() for r in p.rays())) - center)
+        for p in polyhedra
+    ]
     vertex_translations_dict = {}
     for P, t in zip(polyhedra, translations):
         for v in P.vertices():
@@ -2589,8 +2692,7 @@ def exploded_plot(polyhedra, *,
 
     color = kwds.get('color')
     if color == 'rainbow':
-        cell_colors_dict = dict(zip(polyhedra,
-                                    rainbow(len(polyhedra))))
+        cell_colors_dict = dict(zip(polyhedra, rainbow(len(polyhedra))))
     for p, t in zip(polyhedra, translations):
         options = copy(kwds)
         if color == 'rainbow':
@@ -2616,8 +2718,12 @@ def exploded_plot(polyhedra, *,
         point = dict(size=10)
     if point is not False:
         if color == 'rainbow':
-            vertex_colors_dict = dict(zip(vertex_translations_dict.keys(),
-                                          rainbow(len(vertex_translations_dict.keys()))))
+            vertex_colors_dict = dict(
+                zip(
+                    vertex_translations_dict.keys(),
+                    rainbow(len(vertex_translations_dict.keys())),
+                )
+            )
         for vertex, vertex_translations in vertex_translations_dict.items():
             options = copy(point)
             if color == 'rainbow':

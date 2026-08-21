@@ -9,7 +9,7 @@ AUTHORS:
 - Travis Scrimshaw (2014-05-15): initial implementation
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2014 Travis Scrimshaw <tscrim at ucdavis.edu>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -22,7 +22,7 @@ AUTHORS:
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#****************************************************************************
+# ****************************************************************************
 
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.parent import Parent
@@ -103,6 +103,7 @@ class InducedCrystal(UniqueRepresentation, Parent):
         sage: I.digraph()
         Digraph on 16 vertices
     """
+
     @staticmethod
     def __classcall_private__(cls, X, phi, inverse=None, from_crystal=False):
         """
@@ -159,7 +160,9 @@ class InducedCrystal(UniqueRepresentation, Parent):
                     inverse = self._phi.section()
                 except AttributeError:
                     if X.cardinality() == float('inf'):
-                        raise ValueError("the inverse map must be defined for infinite sets")
+                        raise ValueError(
+                            "the inverse map must be defined for infinite sets"
+                        )
                     self._preimage = {}
                     for x in X:
                         y = phi(x)
@@ -461,7 +464,9 @@ class InducedFromCrystal(UniqueRepresentation, Parent):
                     inverse = self._phi.section()
                 except AttributeError:
                     if X.cardinality() == float('inf'):
-                        raise ValueError("the inverse map must be defined for infinite sets")
+                        raise ValueError(
+                            "the inverse map must be defined for infinite sets"
+                        )
                     self._preimage = {}
                     for x in X:
                         y = phi(x)
@@ -473,8 +478,9 @@ class InducedFromCrystal(UniqueRepresentation, Parent):
 
         self._cartan_type = X.cartan_type()
         Parent.__init__(self, category=X.category())
-        self.module_generators = tuple(self.element_class(self, phi(mg))
-                                       for mg in X.module_generators)
+        self.module_generators = tuple(
+            self.element_class(self, phi(mg)) for mg in X.module_generators
+        )
 
     def _repr_(self):
         """

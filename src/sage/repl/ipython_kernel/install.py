@@ -25,7 +25,6 @@ from sage.env import (
 
 
 class SageKernelSpec:
-
     def __init__(self, prefix=None):
         """
         Utility to manage SageMath kernels and extensions.
@@ -65,12 +64,14 @@ class SageKernelSpec:
             sage: os.path.isdir(spec.nbextensions_dir)
             True
         """
+
         def mkdir_p(path):
             try:
                 os.makedirs(path)
             except OSError:
                 if not os.path.isdir(path):
                     raise
+
         mkdir_p(self.nbextensions_dir)
         mkdir_p(self.kernel_dir)
 
@@ -129,6 +130,7 @@ class SageKernelSpec:
             True
         """
         from sage.features.threejs import Threejs
+
         if not Threejs().is_present():
             return
         src = os.path.dirname(os.path.dirname(Threejs().absolute_filename()))
@@ -154,8 +156,10 @@ class SageKernelSpec:
         """
         return [
             'python3',
-            '-m', 'sage.repl.ipython_kernel',
-            '-f', '{connection_file}',
+            '-m',
+            'sage.repl.ipython_kernel',
+            '-f',
+            '{connection_file}',
         ]
 
     def kernel_spec(self):
@@ -190,6 +194,7 @@ class SageKernelSpec:
         """
         jsonfile = os.path.join(self.kernel_dir, "kernel.json")
         import json
+
         with open(jsonfile, 'w') as f:
             json.dump(self.kernel_spec(), f)
 
@@ -211,13 +216,9 @@ class SageKernelSpec:
         path = os.path.join(SAGE_EXTCODE, 'notebook-ipython')
         for filename in os.listdir(path):
             self.symlink(
-                os.path.join(path, filename),
-                os.path.join(self.kernel_dir, filename)
+                os.path.join(path, filename), os.path.join(self.kernel_dir, filename)
             )
-        self.symlink(
-            SAGE_DOC,
-            os.path.join(self.kernel_dir, 'doc')
-        )
+        self.symlink(SAGE_DOC, os.path.join(self.kernel_dir, 'doc'))
 
     @classmethod
     def update(cls, *args, **kwds):
@@ -253,28 +254,38 @@ class SageKernelSpec:
             sage: SageKernelSpec.check()  # random
         """
         from jupyter_client.kernelspec import NoSuchKernel, get_kernel_spec
+
         ident = cls.identifier()
         try:
             spec = get_kernel_spec(ident)
         except NoSuchKernel:
-            warnings.warn(f'No kernel named {ident} is accessible; '
-                          'check your Jupyter configuration '
-                          '(see https://docs.jupyter.org/en/latest/use/jupyter-directories.html).')
+            warnings.warn(
+                f'No kernel named {ident} is accessible; '
+                'check your Jupyter configuration '
+                '(see https://docs.jupyter.org/en/latest/use/jupyter-directories.html).'
+            )
         else:
             import sys
             from pathlib import Path
             from sage.features import Executable
-            kernel_executable_feature = Executable(name=spec.argv[0], executable=spec.argv[0])
+
+            kernel_executable_feature = Executable(
+                name=spec.argv[0], executable=spec.argv[0]
+            )
             if not kernel_executable_feature.is_present():
-                warnings.warn(f'The kernel named {ident} does not seem to be runnable; '
-                              'check your Jupyter configuration '
-                              '(see https://docs.jupyter.org/en/latest/use/jupyter-directories.html).')
+                warnings.warn(
+                    f'The kernel named {ident} does not seem to be runnable; '
+                    'check your Jupyter configuration '
+                    '(see https://docs.jupyter.org/en/latest/use/jupyter-directories.html).'
+                )
                 return
             kernel_executable = kernel_executable_feature.absolute_filename()
             if Path(kernel_executable).resolve() != Path(sys.executable).resolve():
-                warnings.warn(f'The kernel named {ident} does not seem to correspond to this '
-                              'installation of SageMath; check your Jupyter configuration '
-                              '(see https://docs.jupyter.org/en/latest/use/jupyter-directories.html).')
+                warnings.warn(
+                    f'The kernel named {ident} does not seem to correspond to this '
+                    'installation of SageMath; check your Jupyter configuration '
+                    '(see https://docs.jupyter.org/en/latest/use/jupyter-directories.html).'
+                )
 
 
 def have_prerequisites(debug=True) -> bool:
@@ -299,9 +310,11 @@ def have_prerequisites(debug=True) -> bool:
     """
     try:
         from notebook.notebookapp import NotebookApp
+
         return True
     except ImportError:
         if debug:
             import traceback
+
             traceback.print_exc()
         return False

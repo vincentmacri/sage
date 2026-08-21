@@ -151,6 +151,7 @@ class SnapPy(PythonInternalInterface):
 
     More examples can be found in the module header.
     """
+
     def __init__(self, high_precision=False):
         r"""
         Python constructor.
@@ -187,9 +188,11 @@ class SnapPy(PythonInternalInterface):
         """
         if not self._interface_globals:
             from sage.features.interfaces import SnapPy
+
             SnapPy().module.require()
             import snappy
             import spherogram
+
             if self._high_precision:
                 d = snappy.SnapPyHP.__dict__
             else:
@@ -290,6 +293,7 @@ class SnapPyElement(PythonInternalElement):
         sage: As = snappy.AbelianGroup([3, 0, 7, 0])
         sage: TestSuite(As).run(skip='_test_category')
     """
+
     def _sage_(self, locals={}):
         r"""
         Attempt to return a Sage version of this object.
@@ -343,6 +347,7 @@ class SnapPyElement(PythonInternalElement):
             # if locals are given we use `_sage_repr`
             # surely this only covers simple cases
             from sage.misc.sage_eval import sage_eval
+
             return sage_eval(self._sage_repr(), locals=locals)
         return inst
 

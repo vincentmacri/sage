@@ -44,6 +44,7 @@ class FiniteDimensionalGradedLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ri
         sage: C = LieAlgebras(QQ).FiniteDimensional().WithBasis().Graded()
         sage: TestSuite(C).run()
     """
+
     class ParentMethods:
         def _test_grading(self, **options):
             r"""
@@ -73,6 +74,7 @@ class FiniteDimensionalGradedLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ri
             tester = self._tester(**options)
 
             from sage.misc.misc import some_tuples
+
             for X, Y in some_tuples(self.basis(), 2, tester._max_runs):
                 i = X.degree()
                 j = Y.degree()
@@ -80,14 +82,18 @@ class FiniteDimensionalGradedLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ri
                 if Z == 0:
                     continue
                 Zdeg = Z.degree()
-                tester.assertEqual(Zdeg, i + j,
-                    msg="Lie bracket [%s, %s] has degree %s, not degree %s " %
-                        (X, Y, Zdeg, i + j))
+                tester.assertEqual(
+                    Zdeg,
+                    i + j,
+                    msg="Lie bracket [%s, %s] has degree %s, not degree %s "
+                    % (X, Y, Zdeg, i + j),
+                )
                 tester.assertIn(
                     Z.to_vector(),
                     self.homogeneous_component_as_submodule(i + j),
                     msg="Lie bracket [%s, %s] is not in the "
-                        "homogeneous component of degree %s" % (X, Y, i + j))
+                    "homogeneous component of degree %s" % (X, Y, i + j),
+                )
 
         @cached_method
         def homogeneous_component_as_submodule(self, d):
@@ -134,6 +140,7 @@ class FiniteDimensionalGradedLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ri
             sage: C = LieAlgebras(QQ).WithBasis().Graded().FiniteDimensional().Stratified()
             sage: TestSuite(C).run()
         """
+
         class ParentMethods:
             def _test_generated_by_degree_one(self, **options):
                 r"""
@@ -177,11 +184,13 @@ class FiniteDimensionalGradedLieAlgebrasWithBasis(CategoryWithAxiom_over_base_ri
                         return
                     B = V.basis()
                     d = V.dimension()
-                    V = m.submodule(B + [self.bracket(X, Y).to_vector()
-                                         for X in B1 for Y in B])
+                    V = m.submodule(
+                        B + [self.bracket(X, Y).to_vector() for X in B1 for Y in B]
+                    )
 
-                tester.assertEqual(V, m,
-                    msg="%s does not generate %s" % ([self(X) for X in B1], self))
+                tester.assertEqual(
+                    V, m, msg="%s does not generate %s" % ([self(X) for X in B1], self)
+                )
 
             def degree_on_basis(self, m):
                 r"""

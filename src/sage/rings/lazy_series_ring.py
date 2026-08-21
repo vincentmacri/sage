@@ -65,8 +65,10 @@ from sage.categories.rings import Rings
 from sage.categories.unique_factorization_domains import UniqueFactorizationDomains
 from sage.categories.integral_domains import IntegralDomains
 from sage.categories.fields import Fields
-from sage.categories.complete_discrete_valuation import (CompleteDiscreteValuationFields,
-                                                         CompleteDiscreteValuationRings)
+from sage.categories.complete_discrete_valuation import (
+    CompleteDiscreteValuationFields,
+    CompleteDiscreteValuationRings,
+)
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
@@ -75,14 +77,16 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.infinity import infinity
 from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-from sage.rings.lazy_series import (LazyModuleElement,
-                                    LazyLaurentSeries,
-                                    LazyPowerSeries,
-                                    LazyPowerSeries_gcd_mixin,
-                                    LazyCompletionGradedAlgebraElement,
-                                    LazySymmetricFunction,
-                                    LazyDirichletSeries,
-                                    LazyPseudoDifferentialOperator)
+from sage.rings.lazy_series import (
+    LazyModuleElement,
+    LazyLaurentSeries,
+    LazyPowerSeries,
+    LazyPowerSeries_gcd_mixin,
+    LazyCompletionGradedAlgebraElement,
+    LazySymmetricFunction,
+    LazyDirichletSeries,
+    LazyPseudoDifferentialOperator,
+)
 from sage.structure.global_options import GlobalOptions
 
 from sage.data_structures.stream import (
@@ -91,7 +95,7 @@ from sage.data_structures.stream import (
     Stream_iterator,
     Stream_exact,
     Stream_uninitialized,
-    Stream_taylor
+    Stream_taylor,
 )
 
 from types import GeneratorType
@@ -101,6 +105,7 @@ class LazySeriesRing(UniqueRepresentation, Parent):
     """
     Abstract base class for lazy series.
     """
+
     _twisted_base_ring_multiplication = False
 
     # This will never be called directly (as it is an ABC), but we copy it
@@ -118,10 +123,13 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             True
         """
         from sage.structure.category_object import normalize_names
+
         names = normalize_names(-1, names)
         return super().__classcall__(cls, base_ring, names, sparse, *args, **kwds)
 
-    def _element_constructor_(self, x=None, valuation=None, degree=None, constant=None, coefficients=None):
+    def _element_constructor_(
+        self, x=None, valuation=None, degree=None, constant=None, coefficients=None
+    ):
         r"""
         Construct a lazy series from ``x``.
 
@@ -481,10 +489,14 @@ class LazySeriesRing(UniqueRepresentation, Parent):
 
         # WARNING: if x is not explicitly specified as None, it is
         # set to 0 by Parent.__call__
-        if coefficients is not None and (x is not None and (not isinstance(x, int) or x)):
+        if coefficients is not None and (
+            x is not None and (not isinstance(x, int) or x)
+        ):
             raise ValueError("coefficients must be None if x is provided")
 
-        BR = self._internal_poly_ring.base_ring()  # this is the ring containing the elements of the stream
+        BR = (
+            self._internal_poly_ring.base_ring()
+        )  # this is the ring containing the elements of the stream
         if isinstance(constant, (tuple, list)):
             constant, degree = constant
         if isinstance(degree, (tuple, list)):
@@ -509,14 +521,22 @@ class LazySeriesRing(UniqueRepresentation, Parent):
                     x = x.shift(valuation - x.valuation())
                 if degree is None and not x:
                     if valuation is None:
-                        raise ValueError("you must specify the degree for the polynomial 0")
+                        raise ValueError(
+                            "you must specify the degree for the polynomial 0"
+                        )
                     degree = valuation
                 if not x:
                     coeff_stream = Stream_exact([], order=degree, constant=constant)
                     return self.element_class(self, coeff_stream)
-                initial_coefficients = [x[i] for i in range(x.valuation(), x.degree() + 1)]
-                coeff_stream = Stream_exact(initial_coefficients,
-                                            order=x.valuation(), degree=degree, constant=constant)
+                initial_coefficients = [
+                    x[i] for i in range(x.valuation(), x.degree() + 1)
+                ]
+                coeff_stream = Stream_exact(
+                    initial_coefficients,
+                    order=x.valuation(),
+                    degree=degree,
+                    constant=constant,
+                )
                 return self.element_class(self, coeff_stream)
 
             # Handle when it is a lazy series
@@ -529,7 +549,9 @@ class LazySeriesRing(UniqueRepresentation, Parent):
                         return self.element_class(self, x._coeff_stream)
                     if degree is None:
                         if valuation is None:
-                            raise ValueError("you must specify the degree for the polynomial 0")
+                            raise ValueError(
+                                "you must specify the degree for the polynomial 0"
+                            )
                         degree = valuation
                     coeff_stream = Stream_exact([], order=degree, constant=constant)
                     return self.element_class(self, coeff_stream)
@@ -540,15 +562,21 @@ class LazySeriesRing(UniqueRepresentation, Parent):
                     x_val = x._coeff_stream.order()
                     if not valuation:
                         valuation = x_val
-                    initial_coefficients = [x[x_val+i] for i in range(degree-valuation)]
+                    initial_coefficients = [
+                        x[x_val + i] for i in range(degree - valuation)
+                    ]
                     if not any(initial_coefficients):
                         if not constant:
                             return self.zero()
                         # We learned some stuff about x; pass it along
                         x._coeff_stream._approximate_order += len(initial_coefficients)
                         initial_coefficients = []
-                    coeff_stream = Stream_exact(initial_coefficients,
-                                                order=valuation, degree=degree, constant=constant)
+                    coeff_stream = Stream_exact(
+                        initial_coefficients,
+                        order=valuation,
+                        degree=degree,
+                        constant=constant,
+                    )
                     return self.element_class(self, coeff_stream)
 
                 # We are just possibly shifting the result
@@ -578,10 +606,12 @@ class LazySeriesRing(UniqueRepresentation, Parent):
                         else:
                             valuation += len(coeffs)
                             coeffs = []
-                        return self(coeffs,
-                                    degree=stream._degree,
-                                    constant=BR(stream._constant),
-                                    valuation=valuation)
+                        return self(
+                            coeffs,
+                            degree=stream._degree,
+                            constant=BR(stream._constant),
+                            valuation=valuation,
+                        )
                 elif x.parent()._arity == 1:
                     return self.element_class(self, stream)
                 raise ValueError(f"unable to convert {x} into {self}")
@@ -603,11 +633,17 @@ class LazySeriesRing(UniqueRepresentation, Parent):
                 raise ValueError("the valuation must be specified")
             if degree is None:
                 if constant is not None:
-                    raise ValueError("constant may only be specified if the degree is specified")
+                    raise ValueError(
+                        "constant may only be specified if the degree is specified"
+                    )
                 if callable(x):
-                    coeff_stream = Stream_function(lambda i: BR(x(i)), self._sparse, valuation)
+                    coeff_stream = Stream_function(
+                        lambda i: BR(x(i)), self._sparse, valuation
+                    )
                 else:
-                    coeff_stream = Stream_iterator(map(BR, _skip_leading_zeros(x)), valuation)
+                    coeff_stream = Stream_iterator(
+                        map(BR, _skip_leading_zeros(x)), valuation
+                    )
                 return self.element_class(self, coeff_stream)
 
             # degree is not None
@@ -616,10 +652,15 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             if callable(x):
                 p = [BR(x(i)) for i in range(valuation, degree)]
             else:
-                p = [BR(c) for c, _ in zip(_skip_leading_zeros(x), range(valuation, degree))]
+                p = [
+                    BR(c)
+                    for c, _ in zip(_skip_leading_zeros(x), range(valuation, degree))
+                ]
             if not any(p) and not constant:
                 return self.zero()
-            coeff_stream = Stream_exact(p, order=valuation, constant=constant, degree=degree)
+            coeff_stream = Stream_exact(
+                p, order=valuation, constant=constant, degree=degree
+            )
             return self.element_class(self, coeff_stream)
 
         raise ValueError(f"unable to convert {x} into {self}")
@@ -1062,19 +1103,22 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             sage: A
             O(x^7)
         """
-        s = [a[0]._coeff_stream if isinstance(a, (tuple, list))
-             else a._coeff_stream
-             for a in series]
-        ics = [a[1] if isinstance(a, (tuple, list))
-               else []
-               for a in series]
+        s = [
+            a[0]._coeff_stream if isinstance(a, (tuple, list)) else a._coeff_stream
+            for a in series
+        ]
+        ics = [a[1] if isinstance(a, (tuple, list)) else [] for a in series]
         eqs = [eq._coeff_stream for eq in equations]
         for f, ic in zip(s, ics):
-            f.define_implicitly(s, ic, eqs,
-                                self.base_ring(),
-                                self._internal_poly_ring.base_ring(),
-                                self._terms_of_degree,
-                                max_lookahead=max_lookahead)
+            f.define_implicitly(
+                s,
+                ic,
+                eqs,
+                self.base_ring(),
+                self._internal_poly_ring.base_ring(),
+                self._terms_of_degree,
+                max_lookahead=max_lookahead,
+            )
 
     class options(GlobalOptions):
         r"""
@@ -1121,20 +1165,29 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             sage: LazyLaurentSeriesRing.options.display_length
             7
         """
+
         NAME = 'lazy series rings'
         module = 'sage.rings.lazy_series_ring'
-        display_length = dict(default=7,
-                              description='the number of coefficients to display from the valuation',
-                              checker=lambda x: x in ZZ and x > 0)
-        constant_length = dict(default=3,
-                               description='the number of coefficients to display for nonzero constant series',
-                               checker=lambda x: x in ZZ and x > 0)
-        halting_precision = dict(default=None,
-                                 description='the number of coefficients, beginning with the approximate valuation, to check in equality tests',
-                                 checker=lambda x: x is None or x in ZZ and x > 0)
-        secure = dict(default=False,
-                      description='whether to raise an error when a comparison is unknown',
-                      checker=lambda x: x is True or x is False)
+        display_length = dict(
+            default=7,
+            description='the number of coefficients to display from the valuation',
+            checker=lambda x: x in ZZ and x > 0,
+        )
+        constant_length = dict(
+            default=3,
+            description='the number of coefficients to display for nonzero constant series',
+            checker=lambda x: x in ZZ and x > 0,
+        )
+        halting_precision = dict(
+            default=None,
+            description='the number of coefficients, beginning with the approximate valuation, to check in equality tests',
+            checker=lambda x: x is None or x in ZZ and x > 0,
+        )
+        secure = dict(
+            default=False,
+            description='whether to raise an error when a comparison is unknown',
+            checker=lambda x: x is True or x is False,
+        )
 
     @cached_method
     def one(self):
@@ -1259,8 +1312,9 @@ class LazySeriesRing(UniqueRepresentation, Parent):
         if R.has_coerce_map_from(S):
             return True
 
-        if (isinstance(S, LazySeriesRing)
-            and self._laurent_poly_ring.has_coerce_map_from(S._laurent_poly_ring)):
+        if isinstance(
+            S, LazySeriesRing
+        ) and self._laurent_poly_ring.has_coerce_map_from(S._laurent_poly_ring):
             return True
 
         return None
@@ -1411,10 +1465,11 @@ class LazySeriesRing(UniqueRepresentation, Parent):
         elif a in ZZ:
             if b != infinity:
                 if add_one:
-                    return super().prod(self.one() + f(i) for i in range(a, b+1))
-                return super().prod(f(i) for i in range(a, b+1))
+                    return super().prod(self.one() + f(i) for i in range(a, b + 1))
+                return super().prod(f(i) for i in range(a, b + 1))
             from sage.sets.non_negative_integers import NonNegativeIntegers
-            it = (f(i+a) for i in NonNegativeIntegers())
+
+            it = (f(i + a) for i in NonNegativeIntegers())
         else:
             it = (f(i) for i in a)
 
@@ -1425,6 +1480,7 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             data = it
 
         from sage.data_structures.stream import Stream_infinite_product
+
         coeff_stream = Stream_infinite_product(data)
         return self.element_class(self, coeff_stream)
 
@@ -1505,13 +1561,15 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             it = f
         elif a in ZZ:
             if b != infinity:
-                return super().sum(f(i) for i in range(a, b+1))
+                return super().sum(f(i) for i in range(a, b + 1))
             from sage.sets.non_negative_integers import NonNegativeIntegers
-            it = (f(i+a) for i in NonNegativeIntegers())
+
+            it = (f(i + a) for i in NonNegativeIntegers())
         else:
             it = (f(i) for i in a)
 
         from sage.data_structures.stream import Stream_infinite_sum
+
         coeff_stream = Stream_infinite_sum(it)
         return self.element_class(self, coeff_stream)
 
@@ -1545,8 +1603,15 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             y = ~x
             e = y * x
             tester.assertFalse(x.is_zero(), "zero should not be invertible")
-            tester.assertTrue(e.is_one(), "an element (%s) times its inverse should be 1" % x)
-            tester.assertEqual(y.valuation(), -x.valuation(), "the valuation of the inverse should be the negative of the valuation of the element (%s)" % x)
+            tester.assertTrue(
+                e.is_one(), "an element (%s) times its inverse should be 1" % x
+            )
+            tester.assertEqual(
+                y.valuation(),
+                -x.valuation(),
+                "the valuation of the inverse should be the negative of the valuation of the element (%s)"
+                % x,
+            )
 
     def _test_div(self, **options):
         r"""
@@ -1568,6 +1633,7 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             :class:`TestSuite`
         """
         from sage.misc.misc import some_tuples
+
         tester = self._tester(**options)
 
         elements = list(tester.some_elements())
@@ -1581,12 +1647,25 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             try:
                 v_z = z.valuation()
             except Exception as error:
-                raise ValueError("could not compute the valuation of the quotient (%s)/(%s): %s" % (x, y, error))
+                raise ValueError(
+                    "could not compute the valuation of the quotient (%s)/(%s): %s"
+                    % (x, y, error)
+                )
             else:
                 v_x = x.valuation()
                 v_y = y.valuation()
-                tester.assertEqual(v_z, v_x - v_y, "the valuation of the quotient should be the difference of the valuations of the elements (%s and %s)" % (x, y))
-                tester.assertEqual(xx, x, "the element (%s) should be the quotient times the divisor (%s)" % (x, y))
+                tester.assertEqual(
+                    v_z,
+                    v_x - v_y,
+                    "the valuation of the quotient should be the difference of the valuations of the elements (%s and %s)"
+                    % (x, y),
+                )
+                tester.assertEqual(
+                    xx,
+                    x,
+                    "the element (%s) should be the quotient times the divisor (%s)"
+                    % (x, y),
+                )
 
     def _test_revert(self, **options):
         """
@@ -1618,36 +1697,57 @@ class LazySeriesRing(UniqueRepresentation, Parent):
             # of x should always succeed, except if the series is
             # 'exact' or if it has negative valuation
             vx = x.valuation()
-            if (vx != 1
-                and not (isinstance(x._coeff_stream, Stream_exact)
-                         and ((vx == 0
-                               and x._coeff_stream._degree == 2
-                               and not x._coeff_stream._constant)
-                              or (vx == -1
-                                  and x._coeff_stream._degree == 0
-                                  and not x._coeff_stream._constant)))):
+            if vx != 1 and not (
+                isinstance(x._coeff_stream, Stream_exact)
+                and (
+                    (
+                        vx == 0
+                        and x._coeff_stream._degree == 2
+                        and not x._coeff_stream._constant
+                    )
+                    or (
+                        vx == -1
+                        and x._coeff_stream._degree == 0
+                        and not x._coeff_stream._constant
+                    )
+                )
+            ):
                 continue
             try:
                 y = x.revert()
             except Exception as error:
-                raise AssertionError("compositional inverse of %s should exist: %s" % (x, error))
+                raise AssertionError(
+                    "compositional inverse of %s should exist: %s" % (x, error)
+                )
             try:
                 vy = y.valuation()
                 _ = y[vy]
             except NotImplementedError:
                 pass
             except (ValueError, TypeError):
-                tester.assertFalse(vx == 1 and x[vx].is_unit(),
-                                   ("the series %s should be reversible "
-                                    "- its valuation is one and its leading coefficient is a unit") % x)
+                tester.assertFalse(
+                    vx == 1 and x[vx].is_unit(),
+                    (
+                        "the series %s should be reversible "
+                        "- its valuation is one and its leading coefficient is a unit"
+                    )
+                    % x,
+                )
             else:
                 count += 1
                 e1 = y(x)
                 e2 = x(y)
-                tester.assertEqual(e1, e2, "y(x) and x(y) differ for x = %s and y = %s" % (x, y))
+                tester.assertEqual(
+                    e1, e2, "y(x) and x(y) differ for x = %s and y = %s" % (x, y)
+                )
                 # tester.assertEqual(e1, self.gen())
         # we want to test at least 2 elements
-        tester.assertGreater(count, 1, msg="only %s elements in %s.some_elements() have a compositional inverse" % (count, self))
+        tester.assertGreater(
+            count,
+            1,
+            msg="only %s elements in %s.some_elements() have a compositional inverse"
+            % (count, self),
+        )
 
 
 class LazyLaurentSeriesRing(LazySeriesRing):
@@ -1873,6 +1973,7 @@ class LazyLaurentSeriesRing(LazySeriesRing):
 
         sage: L.options._reset()
     """
+
     Element = LazyLaurentSeries
 
     # Follow the "generic" normalization
@@ -1968,7 +2069,9 @@ class LazyLaurentSeriesRing(LazySeriesRing):
             sage: LazyLaurentSeriesRing(GF(2), 'z')
             Lazy Laurent Series Ring in z over Finite Field of size 2
         """
-        return "Lazy Laurent Series Ring in {} over {}".format(self.variable_name(), self.base_ring())
+        return "Lazy Laurent Series Ring in {} over {}".format(
+            self.variable_name(), self.base_ring()
+        )
 
     def _latex_(self):
         r"""
@@ -1981,6 +2084,7 @@ class LazyLaurentSeriesRing(LazySeriesRing):
             \Bold{F}_{2} (\!(z)\!)
         """
         from sage.misc.latex import latex
+
         return latex(self.base_ring()) + r"(\!({})\!)".format(self.variable_name())
 
     @cached_method
@@ -2043,10 +2147,12 @@ class LazyLaurentSeriesRing(LazySeriesRing):
             sage: L.an_element()
             z^-2 + z^3 + z^4 + z^5 + O(z^6)
         """
-        return self(self._laurent_poly_ring.an_element(),
-                    valuation=-2,
-                    degree=3,
-                    constant=self.base_ring().an_element())
+        return self(
+            self._laurent_poly_ring.an_element(),
+            valuation=-2,
+            degree=3,
+            constant=self.base_ring().an_element(),
+        )
 
     def some_elements(self):
         """
@@ -2079,11 +2185,17 @@ class LazyLaurentSeriesRing(LazySeriesRing):
              z^-2 + z^-1 + z + z^2 + z^4 + O(z^5)]
         """
         z = self.gen()
-        elts = [self.zero(), self.one(), z, (z-3)*(z**-2+2+z)**2, self.an_element(),
-                (1 - 2*z**-3)/(1 - z + 3*z**2),
-                self(lambda n: n**2, valuation=-2),
-                self(lambda n: n**2, valuation=1),
-                self([3, 2, 1], valuation=1, constant=1)]
+        elts = [
+            self.zero(),
+            self.one(),
+            z,
+            (z - 3) * (z**-2 + 2 + z) ** 2,
+            self.an_element(),
+            (1 - 2 * z**-3) / (1 - z + 3 * z**2),
+            self(lambda n: n**2, valuation=-2),
+            self(lambda n: n**2, valuation=1),
+            self([3, 2, 1], valuation=1, constant=1),
+        ]
         return elts
 
     def series(self, coefficient, valuation, degree=None, constant=None):
@@ -2160,16 +2272,21 @@ class LazyLaurentSeriesRing(LazySeriesRing):
                 constant = self.base_ring().zero()
             if degree is None:
                 degree = valuation + len(coefficient)
-            coeff_stream = Stream_exact(coefficient, order=valuation,
-                                        constant=constant, degree=degree)
+            coeff_stream = Stream_exact(
+                coefficient, order=valuation, constant=constant, degree=degree
+            )
             return self.element_class(self, coeff_stream)
 
         if degree is not None and valuation > degree and constant:
             raise ValueError('inappropriate valuation')
 
         t = None
-        t = self(lambda n: coefficient(t, n), valuation=valuation,
-                 constant=constant, degree=degree)
+        t = self(
+            lambda n: coefficient(t, n),
+            valuation=valuation,
+            constant=constant,
+            degree=degree,
+        )
         return t
 
     def _monomial(self, c, n):
@@ -2335,11 +2452,17 @@ class LazyLaurentSeriesRing(LazySeriesRing):
         if q not in self.base_ring():
             raise ValueError("q must be in the base ring")
         from sage.arith.misc import binomial
+
         qP = q.parent()
         one = qP.one()
 
         def coeff(n):
-            return (-1)**n * q**binomial(n, 2) / qP.prod(one - q**i for i in range(1, n+1))
+            return (
+                (-1) ** n
+                * q ** binomial(n, 2)
+                / qP.prod(one - q**i for i in range(1, n + 1))
+            )
+
         return self(coefficients=coeff, valuation=0)
 
     def euler(self):
@@ -2378,12 +2501,14 @@ class LazyLaurentSeriesRing(LazySeriesRing):
 
         - :wikipedia:`Euler_function`
         """
+
         def coeff(n):
             k = ZZ(24 * n + 1)
             m, rem = k.sqrtrem()
             if rem:
                 return ZZ.zero()
             return (-1) ** ((m + 1) // 6)
+
         return self(coefficients=coeff, valuation=0)
 
     def jacobi_theta(self, w, a=0, b=0):
@@ -2595,32 +2720,48 @@ class LazyLaurentSeriesRing(LazySeriesRing):
         - :wikipedia:`Theta_function`
         """
         if a == 0 and b == 0:
+
             def coeff(n):
                 if n == 0:
                     return ZZ.one()
                 nrt, rem = ZZ(n).sqrtrem()
-                return (w**(2*nrt) + w**(-2*nrt)) if not rem else ZZ.zero()
+                return (w ** (2 * nrt) + w ** (-2 * nrt)) if not rem else ZZ.zero()
 
         if a == 0 and b == 1:
+
             def coeff(n):
                 if n == 0:
                     return ZZ.one()
                 nrt, rem = ZZ(n).sqrtrem()
-                return (-1)**nrt * (w**(2*nrt) + w**(-2*nrt)) if not rem else ZZ.zero()
+                return (
+                    (-1) ** nrt * (w ** (2 * nrt) + w ** (-2 * nrt))
+                    if not rem
+                    else ZZ.zero()
+                )
 
         if a == 1 and b == 0:
+
             def coeff(n):
                 if n == 0:
                     return w + ~w
                 nrt, rem = ZZ(n).sqrtrem()
-                return (w**(2*nrt+1) + w**(-2*nrt-1)) if rem == nrt else ZZ.zero()
+                return (
+                    (w ** (2 * nrt + 1) + w ** (-2 * nrt - 1))
+                    if rem == nrt
+                    else ZZ.zero()
+                )
 
         if a == 1 and b == 1:
+
             def coeff(n):
                 if n == 0:
                     return w + ~w
                 nrt, rem = ZZ(n).sqrtrem()
-                return (-1)**nrt * (w**(2*nrt+1) + w**(-2*nrt-1)) if rem == nrt else ZZ.zero()
+                return (
+                    (-1) ** nrt * (w ** (2 * nrt + 1) + w ** (-2 * nrt - 1))
+                    if rem == nrt
+                    else ZZ.zero()
+                )
 
         return self(coefficients=coeff, valuation=0)
 
@@ -2701,6 +2842,7 @@ class LazyLaurentSeriesRing(LazySeriesRing):
         """
         return self.polylog(2)
 
+
 ######################################################################
 
 
@@ -2722,6 +2864,7 @@ class LazyPowerSeriesRing(LazySeriesRing):
         sage: L.<x, y> = LazyPowerSeriesRing(QQ); L
         Multivariate Lazy Taylor Series Ring in x, y over Rational Field
     """
+
     Element = LazyPowerSeries
 
     # Follow the "generic" normalization
@@ -2796,7 +2939,9 @@ class LazyPowerSeriesRing(LazySeriesRing):
             self._internal_poly_ring = self._laurent_poly_ring
         else:
             self._laurent_poly_ring = PolynomialRing(base_ring, names)
-            self._internal_poly_ring = PolynomialRing(self._laurent_poly_ring, "DUMMY_VARIABLE", sparse=sparse)
+            self._internal_poly_ring = PolynomialRing(
+                self._laurent_poly_ring, "DUMMY_VARIABLE", sparse=sparse
+            )
         category = Algebras(base_ring.category())
         mixin_gcd = False
         if self._arity == 1:
@@ -2813,17 +2958,18 @@ class LazyPowerSeriesRing(LazySeriesRing):
 
         if mixin_gcd:
             from sage.structure.dynamic_class import dynamic_class
+
             self.Element = dynamic_class(
                 f"{self.Element.__name__}_gcd",
                 (self.Element, LazyPowerSeries_gcd_mixin),
-                doccls=self.Element)
+                doccls=self.Element,
+            )
 
         if base_ring.is_zero():
             category = category.Finite()
         else:
             category = category.Infinite()
-        Parent.__init__(self, base=base_ring, names=names,
-                        category=category)
+        Parent.__init__(self, base=base_ring, names=names, category=category)
 
     def construction(self):
         """
@@ -2839,11 +2985,13 @@ class LazyPowerSeriesRing(LazySeriesRing):
              Sparse Univariate Polynomial Ring in t over Integer Ring)
         """
         from sage.categories.pushout import CompletionFunctor
+
         if self._arity == 1:
-            return (CompletionFunctor(self._names[0], infinity),
-                    self._laurent_poly_ring)
-        return (CompletionFunctor(self._names, infinity),
-                self._laurent_poly_ring)
+            return (
+                CompletionFunctor(self._names[0], infinity),
+                self._laurent_poly_ring,
+            )
+        return (CompletionFunctor(self._names, infinity), self._laurent_poly_ring)
 
     def _repr_(self):
         """
@@ -2856,9 +3004,13 @@ class LazyPowerSeriesRing(LazySeriesRing):
         """
         BR = self.base_ring()
         if len(self.variable_names()) == 1:
-            return "Lazy Taylor Series Ring in {} over {}".format(self.variable_name(), BR)
+            return "Lazy Taylor Series Ring in {} over {}".format(
+                self.variable_name(), BR
+            )
         generators_rep = ", ".join(self.variable_names())
-        return "Multivariate Lazy Taylor Series Ring in {} over {}".format(generators_rep, BR)
+        return "Multivariate Lazy Taylor Series Ring in {} over {}".format(
+            generators_rep, BR
+        )
 
     def _latex_(self):
         r"""
@@ -2871,6 +3023,7 @@ class LazyPowerSeriesRing(LazySeriesRing):
             \Bold{F}_{2} [\![z]\!]
         """
         from sage.misc.latex import latex
+
         generators_rep = ", ".join(self.variable_names())
         return latex(self.base_ring()) + r"[\![{}]\!]".format(generators_rep)
 
@@ -2911,8 +3064,10 @@ class LazyPowerSeriesRing(LazySeriesRing):
         """
         if self._arity == 1:
             return [R.one()]
-        return [m.change_ring(R)
-                for m in self._internal_poly_ring.base_ring().monomials_of_degree(n)]
+        return [
+            m.change_ring(R)
+            for m in self._internal_poly_ring.base_ring().monomials_of_degree(n)
+        ]
 
     @cached_method
     def gen(self, n=0):
@@ -2968,7 +3123,15 @@ class LazyPowerSeriesRing(LazySeriesRing):
         """
         return tuple([self.gen(n) for n in range(self.ngens())])
 
-    def _element_constructor_(self, x=None, valuation=None, constant=None, degree=None, coefficients=None, check=True):
+    def _element_constructor_(
+        self,
+        x=None,
+        valuation=None,
+        constant=None,
+        degree=None,
+        coefficients=None,
+        check=True,
+    ):
         """
         Construct a Taylor series from ``x``.
 
@@ -3097,13 +3260,15 @@ class LazyPowerSeriesRing(LazySeriesRing):
             if valuation < 0:
                 raise ValueError("the valuation of a Taylor series must be nonnegative")
             # TODO: the following is nonsense, think of an iterator
-#            if self._arity > 1 and valuation != 0:
-#                raise ValueError(f"valuation must not be specified for multivariate Taylor series (for {x}), but was set to {valuation}")
+        #            if self._arity > 1 and valuation != 0:
+        #                raise ValueError(f"valuation must not be specified for multivariate Taylor series (for {x}), but was set to {valuation}")
         elif self._arity > 1:
             valuation = 0
 
         R = self._laurent_poly_ring
-        BR = self._internal_poly_ring.base_ring()  # this is the ring containing the elements of the stream
+        BR = (
+            self._internal_poly_ring.base_ring()
+        )  # this is the ring containing the elements of the stream
         if x is None:
             assert degree is None
             coeff_stream = Stream_uninitialized(valuation)
@@ -3126,10 +3291,9 @@ class LazyPowerSeriesRing(LazySeriesRing):
                 coeff_stream = Stream_zero()
             else:
                 if not x:
-                    coeff_stream = Stream_exact([],
-                                                order=valuation,
-                                                degree=degree,
-                                                constant=constant)
+                    coeff_stream = Stream_exact(
+                        [], order=valuation, degree=degree, constant=constant
+                    )
                     return self.element_class(self, coeff_stream)
 
                 if self._arity == 1:
@@ -3144,10 +3308,9 @@ class LazyPowerSeriesRing(LazySeriesRing):
                     d = max(p_dict.keys())
                     p_list = [p_dict.get(i, 0) for i in range(v, d + 1)]
 
-                coeff_stream = Stream_exact(p_list,
-                                            order=v,
-                                            constant=constant,
-                                            degree=degree)
+                coeff_stream = Stream_exact(
+                    p_list, order=v, constant=constant, degree=degree
+                )
             return self.element_class(self, coeff_stream)
 
         if isinstance(x, LazyPowerSeries):
@@ -3164,10 +3327,12 @@ class LazyPowerSeriesRing(LazySeriesRing):
                 else:
                     valuation += len(coeffs)
                     coeffs = []
-                return self(coeffs,
-                            degree=stream._degree,
-                            constant=constant,
-                            valuation=valuation)
+                return self(
+                    coeffs,
+                    degree=stream._degree,
+                    constant=constant,
+                    valuation=valuation,
+                )
             return self.element_class(self, stream)
 
         # Check if we can realize the input as a rational function
@@ -3188,33 +3353,52 @@ class LazyPowerSeriesRing(LazySeriesRing):
                 if callable(x):
                     p = [x(i) for i in range(valuation, degree)]
                 else:
-                    p = [c for c, _ in zip(_skip_leading_zeros(x), range(valuation, degree))]
+                    p = [
+                        c
+                        for c, _ in zip(
+                            _skip_leading_zeros(x), range(valuation, degree)
+                        )
+                    ]
                 if self._arity == 1:
                     p = [BR(c) for c in p]
                 else:
                     p = [R(c) for c in p]
-                    if not all(e.is_homogeneous() and e.degree() == i
-                               for i, e in enumerate(p, valuation)):
-                        raise ValueError("coefficients must be homogeneous polynomials of the correct degree")
-                coeff_stream = Stream_exact(p,
-                                            order=valuation,
-                                            constant=constant,
-                                            degree=degree)
+                    if not all(
+                        e.is_homogeneous() and e.degree() == i
+                        for i, e in enumerate(p, valuation)
+                    ):
+                        raise ValueError(
+                            "coefficients must be homogeneous polynomials of the correct degree"
+                        )
+                coeff_stream = Stream_exact(
+                    p, order=valuation, constant=constant, degree=degree
+                )
                 return self.element_class(self, coeff_stream)
             if check and self._arity > 1:
                 if callable(x):
+
                     def y(n):
                         e = R(x(n))
                         if not e or e.is_homogeneous() and e.degree() == n:
                             return e
-                        raise ValueError("coefficient %s at degree %s is not a homogeneous polynomial" % (e, n))
+                        raise ValueError(
+                            "coefficient %s at degree %s is not a homogeneous polynomial"
+                            % (e, n)
+                        )
+
                     coeff_stream = Stream_function(y, self._sparse, valuation)
                 else:
-                    coeff_stream = Stream_iterator(map(R, _skip_leading_zeros(x)), valuation)
+                    coeff_stream = Stream_iterator(
+                        map(R, _skip_leading_zeros(x)), valuation
+                    )
             elif callable(x):
-                coeff_stream = Stream_function(lambda i: BR(x(i)), self._sparse, valuation)
+                coeff_stream = Stream_function(
+                    lambda i: BR(x(i)), self._sparse, valuation
+                )
             else:
-                coeff_stream = Stream_iterator(map(BR, _skip_leading_zeros(x)), valuation)
+                coeff_stream = Stream_iterator(
+                    map(BR, _skip_leading_zeros(x)), valuation
+                )
             return self.element_class(self, coeff_stream)
         raise ValueError(f"unable to convert {x} into a lazy Taylor series")
 
@@ -3233,8 +3417,10 @@ class LazyPowerSeriesRing(LazySeriesRing):
             x
         """
         if self._arity == 1:
-            return self(self._laurent_poly_ring.an_element(),
-                        constant=self.base_ring().an_element())
+            return self(
+                self._laurent_poly_ring.an_element(),
+                constant=self.base_ring().an_element(),
+            )
         return self(self._laurent_poly_ring.an_element())
 
     def uniformizer(self):
@@ -3326,11 +3512,23 @@ class LazyPowerSeriesRing(LazySeriesRing):
         z = self.gen(0)
         elts = [self.zero(), self.one(), self.an_element()]
         if self._arity == 1:
-            elts.extend([(z-3)*(2+z)**2, (1 - 2*z**3)/(1 - z + 3*z**2), self(lambda n: n**2)])
+            elts.extend(
+                [
+                    (z - 3) * (2 + z) ** 2,
+                    (1 - 2 * z**3) / (1 - z + 3 * z**2),
+                    self(lambda n: n**2),
+                ]
+            )
         else:
             PR = self._laurent_poly_ring
             sum_gens = PR.sum(PR.gens())
-            elts.extend([(z-3)*(2+z)**2, (1 - 2*z**3)/(1 - z + 3*z**2), self(lambda n: sum_gens**n)])
+            elts.extend(
+                [
+                    (z - 3) * (2 + z) ** 2,
+                    (1 - 2 * z**3) / (1 - z + 3 * z**2),
+                    self(lambda n: sum_gens**n),
+                ]
+            )
         return elts
 
     def taylor(self, f):
@@ -3403,11 +3601,18 @@ class LazyPowerSeriesRing(LazySeriesRing):
             def taylor_expand(deg):
                 if deg == 0:
                     return BR(f(**subs))
-                return R.sum(BR(f.diff(*sum(([g] * e for g, e in zip(args, al)), []))(**subs)
-                                / ZZ.prod(factorial(a) for a in al))
-                             * R.monomial(*al) for al in integer_vectors_nk_fast_iter(deg, ell))
+                return R.sum(
+                    BR(
+                        f.diff(*sum(([g] * e for g, e in zip(args, al)), []))(**subs)
+                        / ZZ.prod(factorial(a) for a in al)
+                    )
+                    * R.monomial(*al)
+                    for al in integer_vectors_nk_fast_iter(deg, ell)
+                )
 
-            coeff_stream = Stream_function(taylor_expand, self._sparse, self._minimal_valuation)
+            coeff_stream = Stream_function(
+                taylor_expand, self._sparse, self._minimal_valuation
+            )
         else:
             coeff_stream = Stream_taylor(f, self._sparse)
         return self.element_class(self, coeff_stream)
@@ -3456,6 +3661,7 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
          + (S[1,1,1,2]+S[1,2,2]-S[2,1,1,1]-S[2,2,1])
          + (S[1,1,1,1,2]+S[1,1,2,2]-S[2,1,1,1,1]-S[2,2,1,1]) + O^7
     """
+
     Element = LazyCompletionGradedAlgebraElement
 
     def __init__(self, basis, sparse=True, category=None):
@@ -3531,7 +3737,9 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
         Parent.__init__(self, base=base_ring, category=category)
         self._sparse = sparse
         self._laurent_poly_ring = basis
-        self._internal_poly_ring = PolynomialRing(self._laurent_poly_ring, "DUMMY_VARIABLE", sparse=sparse)
+        self._internal_poly_ring = PolynomialRing(
+            self._laurent_poly_ring, "DUMMY_VARIABLE", sparse=sparse
+        )
 
     def _repr_(self):
         """
@@ -3557,6 +3765,7 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
             \text{\texttt{Symmetric{ }Functions{ }over{ }Finite{ }Field{ }of{ }size{ }2{ }in{ }the{ }Schur{ }basis}}
         """
         from sage.misc.latex import latex
+
         return latex(self._laurent_poly_ring)
 
     def _monomial(self, c, n):
@@ -3606,17 +3815,26 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
         from sage.combinat.integer_vector import IntegerVectors
         from sage.misc.mrange import cartesian_product_iterator
         from sage.categories.tensor import tensor
+
         B = self._internal_poly_ring.base_ring()
         B = B.change_ring(R)
         if self._arity == 1:
             return list(B.homogeneous_component_basis(n))
 
-        return [tensor(m)
-                for c in IntegerVectors(n, self._arity)
-                for m in cartesian_product_iterator([F.homogeneous_component_basis(p)
-                                                     for F, p in zip(B.tensor_factors(), c)])]
+        return [
+            tensor(m)
+            for c in IntegerVectors(n, self._arity)
+            for m in cartesian_product_iterator(
+                [
+                    F.homogeneous_component_basis(p)
+                    for F, p in zip(B.tensor_factors(), c)
+                ]
+            )
+        ]
 
-    def _element_constructor_(self, x=None, valuation=None, degree=None, constant=None, check=True):
+    def _element_constructor_(
+        self, x=None, valuation=None, degree=None, constant=None, check=True
+    ):
         r"""
         Construct a lazy element in ``self`` from ``x``.
 
@@ -3692,7 +3910,9 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
         if valuation is None:
             valuation = 0
         if valuation < 0:
-            raise ValueError("the valuation of a lazy completion element must be nonnegative")
+            raise ValueError(
+                "the valuation of a lazy completion element must be nonnegative"
+            )
 
         R = self._laurent_poly_ring
         if x is None:
@@ -3725,16 +3945,16 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
                 d = max(p_dict)
                 p_list = [p_dict.get(i, 0) for i in range(v, d + 1)]
 
-                coeff_stream = Stream_exact(p_list,
-                                            order=v,
-                                            constant=self.base_ring().zero(),
-                                            degree=degree)
+                coeff_stream = Stream_exact(
+                    p_list, order=v, constant=self.base_ring().zero(), degree=degree
+                )
             return self.element_class(self, coeff_stream)
 
         if isinstance(x, self.Element):
             return self.element_class(self, x._coeff_stream)
 
         if self._arity == 1:
+
             def check_homogeneous_of_degree(f, d):
                 if not f:
                     return
@@ -3743,9 +3963,16 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
                     if d1 == d:
                         return
                 except ValueError:
-                    raise ValueError("coefficient %s should be an element of homogeneous degree %s" % (f, d))
-                raise ValueError("coefficient %s should be an element of homogeneous degree %s but has degree %s" % (f, d, d1))
+                    raise ValueError(
+                        "coefficient %s should be an element of homogeneous degree %s"
+                        % (f, d)
+                    )
+                raise ValueError(
+                    "coefficient %s should be an element of homogeneous degree %s but has degree %s"
+                    % (f, d, d1)
+                )
         else:
+
             def check_homogeneous_of_degree(f, d):
                 if not f:
                     return
@@ -3757,11 +3984,17 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
                         for t in m.support():
                             d1 = sum(p.size() for p in t)
                             if d1 != d:
-                                raise ValueError("coefficient %s should be an element of homogeneous degree %s but has degree %s" % (f, d, d1))
+                                raise ValueError(
+                                    "coefficient %s should be an element of homogeneous degree %s but has degree %s"
+                                    % (f, d, d1)
+                                )
                     except (TypeError, ValueError):
                         raise ValueError("coefficient %s is not homogeneous")
                     if d1 != d:
-                        raise ValueError("coefficient %s should be an element of homogeneous degree %s but has degree %s" % (f, d, d1))
+                        raise ValueError(
+                            "coefficient %s should be an element of homogeneous degree %s but has degree %s"
+                            % (f, d, d1)
+                        )
 
         if isinstance(x, (tuple, list)):
             if degree is None:
@@ -3769,22 +4002,27 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
             p = [R(e) for e in x]
             for i, e in enumerate(p, valuation):
                 check_homogeneous_of_degree(e, i)
-            coeff_stream = Stream_exact(p,
-                                        order=valuation,
-                                        constant=self._laurent_poly_ring.zero(),
-                                        degree=degree)
+            coeff_stream = Stream_exact(
+                p,
+                order=valuation,
+                constant=self._laurent_poly_ring.zero(),
+                degree=degree,
+            )
             return self.element_class(self, coeff_stream)
         if callable(x):
             if degree is not None:
                 p = [R(x(i)) for i in range(valuation, degree)]
                 for i, e in enumerate(p, valuation):
                     check_homogeneous_of_degree(e, i)
-                coeff_stream = Stream_exact(p,
-                                            order=valuation,
-                                            constant=self._laurent_poly_ring.zero(),
-                                            degree=degree)
+                coeff_stream = Stream_exact(
+                    p,
+                    order=valuation,
+                    constant=self._laurent_poly_ring.zero(),
+                    degree=degree,
+                )
                 return self.element_class(self, coeff_stream)
             if check:
+
                 def y(n):
                     e = R(x(n))
                     check_homogeneous_of_degree(e, n)
@@ -3853,6 +4091,7 @@ class LazyCompletionGradedAlgebra(LazySeriesRing):
 
         return elts
 
+
 ######################################################################
 
 
@@ -3879,10 +4118,12 @@ class LazySymmetricFunctions(LazyCompletionGradedAlgebra):
          Symmetric Functions over Integer Ring in the Schur basis
           # Symmetric Functions over Integer Ring in the monomial basis
     """
+
     Element = LazySymmetricFunction
 
 
 ######################################################################
+
 
 class LazyDirichletSeriesRing(LazySeriesRing):
     r"""
@@ -3946,6 +4187,7 @@ class LazyDirichletSeriesRing(LazySeriesRing):
         sage: L in PrincipalIdealDomains
         False
     """
+
     Element = LazyDirichletSeries
 
     # Follow the "generic" normalization
@@ -3967,6 +4209,7 @@ class LazyDirichletSeriesRing(LazySeriesRing):
             True
         """
         from sage.symbolic.ring import SR
+
         return SR
 
     def __init__(self, base_ring, names, sparse=True, category=None):
@@ -3999,8 +4242,9 @@ class LazyDirichletSeriesRing(LazySeriesRing):
         elif base_ring in Rings().Commutative():
             category = category.Commutative()
         category = category.Infinite()
-        Parent.__init__(self, base=base_ring, names=names, normalize=False,
-                        category=category)
+        Parent.__init__(
+            self, base=base_ring, names=names, normalize=False, category=category
+        )
 
     def _repr_(self):
         """
@@ -4011,7 +4255,9 @@ class LazyDirichletSeriesRing(LazySeriesRing):
             sage: LazyDirichletSeriesRing(QQbar, 'z')                                   # needs sage.rings.number_field
             Lazy Dirichlet Series Ring in z over Algebraic Field
         """
-        return "Lazy Dirichlet Series Ring in {} over {}".format(self.variable_name(), self.base_ring())
+        return "Lazy Dirichlet Series Ring in {} over {}".format(
+            self.variable_name(), self.base_ring()
+        )
 
     @cached_method
     def one(self):
@@ -4044,7 +4290,9 @@ class LazyDirichletSeriesRing(LazySeriesRing):
         """
         return self.base_ring().has_coerce_map_from(S)
 
-    def _element_constructor_(self, x=None, valuation=None, degree=None, constant=None, coefficients=None):
+    def _element_constructor_(
+        self, x=None, valuation=None, degree=None, constant=None, coefficients=None
+    ):
         r"""
         Construct a Dirichlet series from ``x``.
 
@@ -4146,7 +4394,9 @@ class LazyDirichletSeriesRing(LazySeriesRing):
             if coefficients is not None:
                 if valuation is None:
                     valuation = 1
-                return super()._element_constructor_(x, valuation, degree, constant, coefficients)
+                return super()._element_constructor_(
+                    x, valuation, degree, constant, coefficients
+                )
 
             BR = self.base_ring()
             if x in BR:
@@ -4167,7 +4417,9 @@ class LazyDirichletSeriesRing(LazySeriesRing):
         if valuation is not None and (valuation not in ZZ or valuation <= 0):
             raise ValueError("the valuation must be a positive integer")
 
-        return super()._element_constructor_(x, valuation, degree, constant, coefficients)
+        return super()._element_constructor_(
+            x, valuation, degree, constant, coefficients
+        )
 
     def _an_element_(self):
         """
@@ -4209,10 +4461,14 @@ class LazyDirichletSeriesRing(LazySeriesRing):
         """
         R = self.base_ring()
         some_numbers = [c for c, _ in zip(R.some_elements(), range(9))]
-        elts = [self.zero(), self.one(), self.an_element(),
-                self(some_numbers),
-                self(some_numbers, constant=R.an_element()),
-                self(lambda n: n**2)]
+        elts = [
+            self.zero(),
+            self.one(),
+            self.an_element(),
+            self(some_numbers),
+            self(some_numbers, constant=R.an_element()),
+            self(lambda n: n**2),
+        ]
         return elts
 
     def _monomial(self, c, n):
@@ -4279,7 +4535,7 @@ class LazyDirichletSeriesRing(LazySeriesRing):
         """
         if self._arity != 1:
             raise ValueError("must has arity 1")
-        return self(coefficients=lambda n: z ** n)
+        return self(coefficients=lambda n: z**n)
 
     polylog = polylogarithm
 
@@ -4383,6 +4639,7 @@ class LazyPseudoDifferentialOperatorRing(LazySeriesRing):
         (-diff(u(x), x, x) + 2*diff(v(x), x))*Dx
          + (-2/3*u(x)*diff(u(x), x) - 2/3*diff(u(x), x, x, x) + diff(v(x), x, x))
     """
+
     _twisted_base_ring_multiplication = True
     Element = LazyPseudoDifferentialOperator
 
@@ -4435,7 +4692,9 @@ class LazyPseudoDifferentialOperatorRing(LazySeriesRing):
         self._minimal_valuation = None
 
         self._laurent_poly_ring = base_ring
-        self._internal_poly_ring = LaurentPolynomialRing(base_ring, "PARTIAL", sparse=sparse)
+        self._internal_poly_ring = LaurentPolynomialRing(
+            base_ring, "PARTIAL", sparse=sparse
+        )
         self._variable = variable
 
         category = Algebras(base_ring.category())
@@ -4449,6 +4708,7 @@ class LazyPseudoDifferentialOperatorRing(LazySeriesRing):
             category = category.Infinite()
 
         from sage.structure.category_object import normalize_names
+
         try:
             names = normalize_names(1, (str(variable),))
             names += ("d" + names[0],)
@@ -4484,6 +4744,7 @@ class LazyPseudoDifferentialOperatorRing(LazySeriesRing):
             \Bold{Q}[t] (\!(\partial_{t}^{-1})\!)
         """
         from sage.misc.latex import latex
+
         v = latex(self._variable)
         CR = latex(self.base_ring())
         return CR + r"(\!(\partial_{{{}}}^{{-1}})\!)".format(v)

@@ -1,6 +1,7 @@
 """
 Local Density Congruence
 """
+
 ##########################################################################
 #  Methods which compute the local densities for representing a number
 #  by a quadratic form at a prime (possibly subject to additional
@@ -13,7 +14,10 @@ from sage.rings.rational_field import QQ
 from sage.arith.misc import valuation
 from sage.misc.verbose import verbose
 
-from sage.quadratic_forms.count_local_2 import count_modp__by_gauss_sum, count_all_local_good_types_normal_form
+from sage.quadratic_forms.count_local_2 import (
+    count_modp__by_gauss_sum,
+    count_all_local_good_types_normal_form,
+)
 
 
 def count_modp_solutions__by_Gauss_sum(self, p, m):
@@ -118,9 +122,13 @@ def local_good_density_congruence_odd(self, p, m, Zvec, NZvec):
 
     if NZvec is None:
         if m % p:
-            total = Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(p, m) * p**len(NonUnitVec_minus_Zvec)
+            total = Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(
+                p, m
+            ) * p ** len(NonUnitVec_minus_Zvec)
         else:
-            total = (Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(p, m) - 1) * p**len(NonUnitVec_minus_Zvec)
+            total = (
+                Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(p, m) - 1
+            ) * p ** len(NonUnitVec_minus_Zvec)
 
     else:
         UnitVec_minus_ZNZvec = list(UnitVec - (Set(Zvec) + Set(NZvec)))
@@ -128,14 +136,22 @@ def local_good_density_congruence_odd(self, p, m, Zvec, NZvec):
         Q_Unit_minus_ZNZvec = self.extract_variables(UnitVec_minus_ZNZvec)
 
         if m % p:
-            total = Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(p, m) * p**len(NonUnitVec_minus_Zvec) \
-                - Q_Unit_minus_ZNZvec.count_modp_solutions__by_Gauss_sum(p, m) * p**len(NonUnitVec_minus_ZNZvec)
+            total = Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(
+                p, m
+            ) * p ** len(
+                NonUnitVec_minus_Zvec
+            ) - Q_Unit_minus_ZNZvec.count_modp_solutions__by_Gauss_sum(p, m) * p ** len(
+                NonUnitVec_minus_ZNZvec
+            )
         else:
-            total = (Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(p, m) - 1) * p**len(NonUnitVec_minus_Zvec) \
-                - (Q_Unit_minus_ZNZvec.count_modp_solutions__by_Gauss_sum(p, m) - 1) * p**len(NonUnitVec_minus_ZNZvec)
+            total = (
+                Q_Unit_minus_Zvec.count_modp_solutions__by_Gauss_sum(p, m) - 1
+            ) * p ** len(NonUnitVec_minus_Zvec) - (
+                Q_Unit_minus_ZNZvec.count_modp_solutions__by_Gauss_sum(p, m) - 1
+            ) * p ** len(NonUnitVec_minus_ZNZvec)
 
     #  Return the Good-type representation density
-    good_density = QQ(total) / p**(n - 1)
+    good_density = QQ(total) / p ** (n - 1)
     return good_density
 
 
@@ -236,7 +252,6 @@ def local_good_density_congruence_even(self, m, Zvec, NZvec):
     #  -------------------------------------------------------------------------------
     Not8vec = []
     for i in range(n):
-
         #  DIAGNOSTIC
         verbose(" i = " + str(i))
         verbose(" n = " + str(n))
@@ -250,7 +265,6 @@ def local_good_density_congruence_even(self, m, Zvec, NZvec):
 
         #  Check appropriate off-diagonal entries aren't divisible by 8
         else:
-
             #  Special check for first off-diagonal entry
             if i == 0 and self[i, i + 1] % 8:
                 nz_flag = True
@@ -261,8 +275,11 @@ def local_good_density_congruence_even(self, m, Zvec, NZvec):
 
             #  Check for the middle off-diagonal entries
             else:
-                if (i > 0) and (i < n - 1) and (self[i, i + 1] % 8 or
-                                                self[i - 1, i] % 8):
+                if (
+                    (i > 0)
+                    and (i < n - 1)
+                    and (self[i, i + 1] % 8 or self[i - 1, i] % 8)
+                ):
                     nz_flag = True
 
         #  Remember the (vector) index if it's not part of a Jordan block of norm divisible by 8
@@ -290,8 +307,13 @@ def local_good_density_congruence_even(self, m, Zvec, NZvec):
 
     # Take cases on the existence of additional nonzero congruence conditions (mod 2)
     if NZvec is None:
-        total = (4 ** len(Z_Is8)) * (8 ** len(Is8_minus_Z)) \
-            * count_all_local_good_types_normal_form(Q_Not8, 2, 3, m, list(Z_Not8), None)
+        total = (
+            (4 ** len(Z_Is8))
+            * (8 ** len(Is8_minus_Z))
+            * count_all_local_good_types_normal_form(
+                Q_Not8, 2, 3, m, list(Z_Not8), None
+            )
+        )
     else:
         ZNZ = Z + Set(NZvec)
         ZNZ_Not8 = Not8.intersection(ZNZ)
@@ -304,16 +326,21 @@ def local_good_density_congruence_even(self, m, Zvec, NZvec):
         verbose("ZNZ_Is8 = " + str(ZNZ_Is8))
         verbose("Is8_minus_ZNZ = " + str(Is8_minus_ZNZ))
 
-        total = (4 ** len(Z_Is8)) * (8 ** len(Is8_minus_Z)) \
-            * count_all_local_good_types_normal_form(Q_Not8, 2, 3, m, list(Z_Not8), None) \
-            - (4 ** len(ZNZ_Is8)) * (8 ** len(Is8_minus_ZNZ)) \
-            * count_all_local_good_types_normal_form(Q_Not8, 2, 3, m, list(ZNZ_Not8), None)
+        total = (4 ** len(Z_Is8)) * (
+            8 ** len(Is8_minus_Z)
+        ) * count_all_local_good_types_normal_form(
+            Q_Not8, 2, 3, m, list(Z_Not8), None
+        ) - (4 ** len(ZNZ_Is8)) * (
+            8 ** len(Is8_minus_ZNZ)
+        ) * count_all_local_good_types_normal_form(
+            Q_Not8, 2, 3, m, list(ZNZ_Not8), None
+        )
 
     # DIAGNOSTIC
     verbose("total = " + str(total))
 
     # Return the associated Good-type representation density
-    return QQ(total) / 8**(n - 1)
+    return QQ(total) / 8 ** (n - 1)
 
 
 def local_good_density_congruence(self, p, m, Zvec=None, NZvec=None):
@@ -388,7 +415,9 @@ def local_good_density_congruence(self, p, m, Zvec=None, NZvec=None):
     if p == 2:
         return self.local_good_density_congruence_even(m, Zvec, NZvec)
 
-    raise RuntimeError("\n Error in Local_Good_Density: The 'prime' p = " + str(p) + " is < 2. \n")
+    raise RuntimeError(
+        "\n Error in Local_Good_Density: The 'prime' p = " + str(p) + " is < 2. \n"
+    )
 
 
 def local_zero_density_congruence(self, p, m, Zvec=None, NZvec=None):
@@ -461,7 +490,7 @@ def local_zero_density_congruence(self, p, m, Zvec=None, NZvec=None):
         return 0
 
     #  Use the reduction procedure to return the result
-    return self.local_density_congruence(p, m / p2, None, None) / p**(self.dim() - 2)
+    return self.local_density_congruence(p, m / p2, None, None) / p ** (self.dim() - 2)
 
 
 def local_badI_density_congruence(self, p, m, Zvec=None, NZvec=None):
@@ -559,23 +588,24 @@ def local_badI_density_congruence(self, p, m, Zvec=None, NZvec=None):
     #  Find the valuation of each variable (which will be the same over 2x2 blocks),
     #  remembering those of valuation 0 and if an entry of valuation 1 exists.
     for i in range(n):
-
         #  Compute the valuation of each index, allowing for off-diagonal terms
         if self[i, i] == 0:
             if i == 0:
-                val = valuation(self[i, i + 1], p)    # Look at the term to the right
+                val = valuation(self[i, i + 1], p)  # Look at the term to the right
             else:
                 if i == n - 1:
-                    val = valuation(self[i - 1, i], p)    # Look at the term above
+                    val = valuation(self[i - 1, i], p)  # Look at the term above
                 else:
-                    val = valuation(self[i, i + 1] + self[i - 1, i], p)    # Finds the valuation of the off-diagonal term since only one isn't zero
+                    val = valuation(
+                        self[i, i + 1] + self[i - 1, i], p
+                    )  # Finds the valuation of the off-diagonal term since only one isn't zero
         else:
             val = valuation(self[i, i], p)
 
         if val == 0:
             S0 += [i]
         elif val == 1:
-            S1_empty_flag = False    # Need to have a non-empty S1 set to proceed with Bad-type I reduction...
+            S1_empty_flag = False  # Need to have a non-empty S1 set to proceed with Bad-type I reduction...
 
     #  Check that S1 is non-empty and p|m to proceed, otherwise return no solutions.
     if S1_empty_flag or m % p:
@@ -598,15 +628,15 @@ def local_badI_density_congruence(self, p, m, Zvec=None, NZvec=None):
 
     #  Make the form Qnew for the reduction procedure:
     #  -----------------------------------------------
-    Qnew = deepcopy(self)    # TODO:  DO THIS WITHOUT A copy()
+    Qnew = deepcopy(self)  # TODO:  DO THIS WITHOUT A copy()
     for i in range(n):
         if i in S0:
             Qnew[i, i] = p * Qnew[i, i]
-            if ((p == 2) and (i < n - 1)):
+            if (p == 2) and (i < n - 1):
                 Qnew[i, i + 1] = p * Qnew[i, i + 1]
         else:
             Qnew[i, i] = Qnew[i, i] / p
-            if ((p == 2) and (i < n - 1)):
+            if (p == 2) and (i < n - 1):
                 Qnew[i, i + 1] = Qnew[i, i + 1] / p
 
     #  DIAGNOSTIC
@@ -624,7 +654,9 @@ def local_badI_density_congruence(self, p, m, Zvec=None, NZvec=None):
     else:
         NZvec_geq_1 = list(Set([i for i in NZvec if i not in S0]))
 
-    return QQ(p**(1 - len(S0))) * Qnew.local_good_density_congruence(p, m / p, Zvec_geq_1, NZvec_geq_1)
+    return QQ(p ** (1 - len(S0))) * Qnew.local_good_density_congruence(
+        p, m / p, Zvec_geq_1, NZvec_geq_1
+    )
 
 
 def local_badII_density_congruence(self, p, m, Zvec=None, NZvec=None):
@@ -705,24 +737,25 @@ def local_badII_density_congruence(self, p, m, Zvec=None, NZvec=None):
     S2plus = []
 
     for i in range(n):
-
         #  Compute the valuation of each index, allowing for off-diagonal terms
         if self[i, i] == 0:
             if i == 0:
-                val = valuation(self[i, i + 1], p)    # Look at the term to the right
+                val = valuation(self[i, i + 1], p)  # Look at the term to the right
             elif i == n - 1:
-                val = valuation(self[i - 1, i], p)    # Look at the term above
+                val = valuation(self[i - 1, i], p)  # Look at the term above
             else:
-                val = valuation(self[i, i + 1] + self[i - 1, i], p)    # Finds the valuation of the off-diagonal term since only one isn't zero
+                val = valuation(
+                    self[i, i + 1] + self[i - 1, i], p
+                )  # Finds the valuation of the off-diagonal term since only one isn't zero
         else:
             val = valuation(self[i, i], p)
 
         #  Sort the indices into disjoint sets by their valuation
-        if (val == 0):
+        if val == 0:
             S0 += [i]
-        elif (val == 1):
+        elif val == 1:
             S1 += [i]
-        elif (val >= 2):
+        elif val >= 2:
             S2plus += [i]
 
     #  Check that S2 is non-empty and p^2 divides m to proceed, otherwise return no solutions.
@@ -749,7 +782,7 @@ def local_badII_density_congruence(self, p, m, Zvec=None, NZvec=None):
 
     #  Make the form Qnew for the reduction procedure:
     #  -----------------------------------------------
-    Qnew = deepcopy(self)    # TODO:  DO THIS WITHOUT A copy()
+    Qnew = deepcopy(self)  # TODO:  DO THIS WITHOUT A copy()
     for i in range(n):
         if i in S2plus:
             Qnew[i, i] = Qnew[i, i] / p2
@@ -770,7 +803,7 @@ def local_badII_density_congruence(self, p, m, Zvec=None, NZvec=None):
 
     diff = Qnew.local_density_congruence(p, m / p2, Zvec_geq_2, NZvec_geq_2)
     diff -= Qnew.local_density_congruence(p, m / p2, S2plus, NZvec_geq_2)
-    return QQ(p**(len(S2plus) + 2 - n)) * diff
+    return QQ(p ** (len(S2plus) + 2 - n)) * diff
 
 
 def local_bad_density_congruence(self, p, m, Zvec=None, NZvec=None):
@@ -824,7 +857,10 @@ def local_bad_density_congruence(self, p, m, Zvec=None, NZvec=None):
         sage: Q.local_bad_density_congruence(3, 27, None, None)
         8/27
     """
-    return self.local_badI_density_congruence(p, m, Zvec, NZvec) + self.local_badII_density_congruence(p, m, Zvec, NZvec)
+    return self.local_badI_density_congruence(
+        p, m, Zvec, NZvec
+    ) + self.local_badII_density_congruence(p, m, Zvec, NZvec)
+
 
 ########################################################
 #  local_density and local_density_congruence routines #
@@ -894,9 +930,11 @@ def local_density_congruence(self, p, m, Zvec=None, NZvec=None):
         sage: Q.local_density_congruence(3, 18, None, None)
         4/9
     """
-    return self.local_good_density_congruence(p, m, Zvec, NZvec) \
-        + self.local_zero_density_congruence(p, m, Zvec, NZvec) \
+    return (
+        self.local_good_density_congruence(p, m, Zvec, NZvec)
+        + self.local_zero_density_congruence(p, m, Zvec, NZvec)
         + self.local_bad_density_congruence(p, m, Zvec, NZvec)
+    )
 
 
 def local_primitive_density_congruence(self, p, m, Zvec=None, NZvec=None):
@@ -972,5 +1010,6 @@ def local_primitive_density_congruence(self, p, m, Zvec=None, NZvec=None):
         sage: Q.local_primitive_density_congruence(3, 243, None, None)
         8/27
     """
-    return self.local_good_density_congruence(p, m, Zvec, NZvec) \
-        + self.local_bad_density_congruence(p, m, Zvec, NZvec)
+    return self.local_good_density_congruence(
+        p, m, Zvec, NZvec
+    ) + self.local_bad_density_congruence(p, m, Zvec, NZvec)

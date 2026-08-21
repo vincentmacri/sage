@@ -9,17 +9,19 @@ Realizations Covariant Functorial Construction
       for an introduction to covariant functorial constructions.
     - :mod:`sage.categories.examples.with_realizations` for an example.
 """
-#*****************************************************************************
+# *****************************************************************************
 #  Copyright (C) 2010-2012 Nicolas M. Thiery <nthiery at users.sf.net>
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from sage.misc.bindable_class import BindableClass
 from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base
-from sage.categories.covariant_functorial_construction import RegressiveCovariantConstructionCategory
+from sage.categories.covariant_functorial_construction import (
+    RegressiveCovariantConstructionCategory,
+)
 
 
 class RealizationsCategory(RegressiveCovariantConstructionCategory):
@@ -133,6 +135,7 @@ class Category_realization_of_parent(Category_over_base, BindableClass):
 
     as well as the name for that category.
     """
+
     def __init__(self, parent_with_realization):
         """
         TESTS::
@@ -176,7 +179,12 @@ class Category_realization_of_parent(Category_over_base, BindableClass):
             'multiplicative bases on primitive elements'
         """
         import re
-        return re.sub(".[A-Z]", lambda s: s.group()[0]+" "+s.group()[1], self.__class__.__base__.__name__.split(".")[-1]).lower()
+
+        return re.sub(
+            ".[A-Z]",
+            lambda s: s.group()[0] + " " + s.group()[1],
+            self.__class__.__base__.__name__.split(".")[-1],
+        ).lower()
 
     def _repr_object_names(self):
         """

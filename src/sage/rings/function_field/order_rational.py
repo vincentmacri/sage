@@ -45,6 +45,7 @@ class FunctionFieldMaximalOrder_rational(FunctionFieldMaximalOrder):
         sage: R = K.maximal_order(); R
         Maximal order of Rational function field in t over Finite Field of size 19
     """
+
     def __init__(self, field) -> None:
         """
         Initialize.
@@ -55,8 +56,12 @@ class FunctionFieldMaximalOrder_rational(FunctionFieldMaximalOrder):
             sage: O = K.maximal_order()
             sage: TestSuite(O).run(skip='_test_gcd_vs_xgcd')
         """
-        FunctionFieldMaximalOrder.__init__(self, field, ideal_class=FunctionFieldIdeal_rational,
-                                           category=EuclideanDomains())
+        FunctionFieldMaximalOrder.__init__(
+            self,
+            field,
+            ideal_class=FunctionFieldIdeal_rational,
+            category=EuclideanDomains(),
+        )
 
         self._populate_coercion_lists_(coerce_list=[field._ring])
 
@@ -329,13 +334,15 @@ class FunctionFieldMaximalOrder_rational(FunctionFieldMaximalOrder):
             return sum((sigma(c) * beta_pow[i] for i, c in enumerate(coeffs)), K.zero())
 
         if r == 1:  # take care of the prime field case
+
             def fr_K(g):
                 co = W.coordinates(V(g), check=False)
                 return R([k(co[j]) for j in range(s)])
         else:
+
             def fr_K(g):
                 co = W.coordinates(V(g), check=False)
-                return R([k(co[i:i + r]) for i in range(0, r * s, r)])
+                return R([k(co[i : i + r]) for i in range(0, r * s, r)])
 
         return K, fr_K, to_K
 
@@ -447,6 +454,7 @@ class FunctionFieldMaximalOrderInfinite_rational(FunctionFieldMaximalOrderInfini
         sage: R = K.maximal_order_infinite(); R
         Maximal infinite order of Rational function field in t over Finite Field of size 19
     """
+
     def __init__(self, field, category=None) -> None:
         """
         Initialize.
@@ -461,8 +469,12 @@ class FunctionFieldMaximalOrderInfinite_rational(FunctionFieldMaximalOrderInfini
             sage: O = K.maximal_order_infinite()
             sage: TestSuite(O).run(skip='_test_gcd_vs_xgcd')
         """
-        FunctionFieldMaximalOrderInfinite.__init__(self, field, ideal_class=FunctionFieldIdealInfinite_rational,
-                                                   category=PrincipalIdealDomains().or_subcategory(category))
+        FunctionFieldMaximalOrderInfinite.__init__(
+            self,
+            field,
+            ideal_class=FunctionFieldIdealInfinite_rational,
+            category=PrincipalIdealDomains().or_subcategory(category),
+        )
         self._populate_coercion_lists_(coerce_list=[field.constant_base_field()])
 
     def _element_constructor_(self, f):
@@ -562,8 +574,11 @@ class FunctionFieldMaximalOrderInfinite_rational(FunctionFieldMaximalOrderInfini
         K = self.function_field()
         gens = [K(g) for g in gens]
         try:
-            d = max(g.numerator().degree() - g.denominator().degree()
-                    for g in gens if g != 0)
+            d = max(
+                g.numerator().degree() - g.denominator().degree()
+                for g in gens
+                if g != 0
+            )
             gen = K.gen() ** d
         except ValueError:  # all gens are zero
             gen = K.zero()

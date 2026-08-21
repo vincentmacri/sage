@@ -2,7 +2,7 @@
 """
 Permutation species
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2008 Mike Hansen <mhansen@gmail.com>,
 #
 #  Distributed under the terms of the GNU General Public License (GPL)
@@ -15,7 +15,7 @@ Permutation species
 #  The full text of the GPL is available at:
 #
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .species import GenericCombinatorialSpecies
 from .structure import GenericSpeciesStructure
@@ -44,7 +44,9 @@ class PermutationSpeciesStructure(GenericSpeciesStructure):
              ['b', 'a', 'c']]
         """
         P = self.parent()
-        return P._canonical_rep_from_partition(self.__class__, self._labels, Permutation(self._list).cycle_type())
+        return P._canonical_rep_from_partition(
+            self.__class__, self._labels, Permutation(self._list).cycle_type()
+        )
 
     def permutation_group_element(self):
         """
@@ -76,7 +78,7 @@ class PermutationSpeciesStructure(GenericSpeciesStructure):
             ['a', 'd', 'c', 'b']
         """
         p = self.permutation_group_element()
-        p = perm*p*~perm
+        p = perm * p * ~perm
         return self.__class__(self.parent(), self._labels, p.domain())
 
     def automorphism_group(self):
@@ -104,6 +106,7 @@ class PermutationSpeciesStructure(GenericSpeciesStructure):
         """
         from sage.groups.perm_gps.permgroup_named import SymmetricGroup
         from sage.groups.perm_gps.permgroup import PermutationGroup
+
         S = SymmetricGroup(len(self._labels))
         p = self.permutation_group_element()
         return PermutationGroup(S.centralizer(p).gens())
@@ -168,6 +171,7 @@ class PermutationSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [[2, 3, 1], [2, 1, 3], [1, 2, 3]]
         """
         from sage.combinat.partition import Partitions
+
         if labels == []:
             yield structure_class(self, labels, [])
             return
@@ -184,8 +188,8 @@ class PermutationSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             ['b', 'a', 'c']
         """
         indices = list(range(1, len(labels) + 1))
-        breaks = [sum(p[:i]) for i in range(len(p)+1)]
-        cycles = tuple(tuple(indices[breaks[i]:breaks[i+1]]) for i in range(len(p)))
+        breaks = [sum(p[:i]) for i in range(len(p) + 1)]
+        cycles = tuple(tuple(indices[breaks[i] : breaks[i + 1]]) for i in range(len(p)))
         perm = list(Permutation(cycles))
         return structure_class(self, labels, perm)
 
@@ -216,6 +220,7 @@ class PermutationSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [1, 1, 2, 3, 5, 7, 11, 15, 22, 30]
         """
         from sage.combinat.partition import number_of_partitions
+
         return base_ring(number_of_partitions(n))
 
     def _cis(self, series_ring, base_ring):
@@ -239,6 +244,7 @@ class PermutationSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
         """
         from sage.combinat.sf.sf import SymmetricFunctions
         from sage.combinat.partition import Partitions
+
         p = SymmetricFunctions(base_ring).p()
         CIS = series_ring
         return CIS(lambda n: sum(p(la) for la in Partitions(n)))
@@ -252,6 +258,7 @@ class PermutationSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
             [p[], 0, p[2], 0, p[2, 2], 0, p[2, 2, 2], 0, p[2, 2, 2, 2], 0]
         """
         from sage.combinat.sf.sf import SymmetricFunctions
+
         p = SymmetricFunctions(base_ring).power()
 
         pn = p([m])
@@ -261,11 +268,11 @@ class PermutationSpecies(GenericCombinatorialSpecies, UniqueRepresentation):
         if m == 1:
             if n % 2:
                 return base_ring.zero()
-            return pn**(n//2)
+            return pn ** (n // 2)
         if n % m:
             return base_ring.zero()
-        return pn**(n//m)
+        return pn ** (n // m)
 
 
-#Backward compatibility
+# Backward compatibility
 PermutationSpecies_class = PermutationSpecies

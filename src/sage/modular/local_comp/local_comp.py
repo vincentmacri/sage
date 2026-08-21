@@ -19,6 +19,7 @@ AUTHORS:
 - David Loeffler
 - Jared Weinstein
 """
+
 from typing import Self
 
 from sage.misc.abstract_method import abstract_method
@@ -179,7 +180,11 @@ class LocalComponentBase(SageObject):
             sage: LocalComponent(Newform('50a'), 5)._repr_()
             'Smooth representation of GL_2(Q_5) with conductor 5^2'
         """
-        return "Smooth representation of GL_2(Q_%s) with conductor %s^%s" % (self.prime(), self.prime(), self.conductor())
+        return "Smooth representation of GL_2(Q_%s) with conductor %s^%s" % (
+            self.prime(),
+            self.prime(),
+            self.conductor(),
+        )
 
     def newform(self):
         r"""
@@ -274,7 +279,7 @@ class LocalComponentBase(SageObject):
         """
         G = SmoothCharacterGroupQp(self.prime(), self.coefficient_field())
         eps = G.from_dirichlet(self.newform().character())
-        return eps / G.norm_character()**self.twist_factor()
+        return eps / G.norm_character() ** self.twist_factor()
 
     def __eq__(self, other):
         r"""
@@ -294,10 +299,12 @@ class LocalComponentBase(SageObject):
             sage: Pi == loads(dumps(Pi))
             True
         """
-        return (isinstance(other, LocalComponentBase)
-                and self.prime() == other.prime()
-                and self.newform() == other.newform()
-                and self.twist_factor() == other.twist_factor())
+        return (
+            isinstance(other, LocalComponentBase)
+            and self.prime() == other.prime()
+            and self.newform() == other.newform()
+            and self.twist_factor() == other.twist_factor()
+        )
 
     def __ne__(self, other):
         """
@@ -384,7 +391,7 @@ class PrincipalSeries(PrimitiveLocalComponent):
         c1, c2 = self.characters()
         K = c1.base_ring()
         p = self.prime()
-        w = QQbar(p)**((1 + self.twist_factor()) / 2)
+        w = QQbar(p) ** ((1 + self.twist_factor()) / 2)
         for sigma in K.embeddings(QQbar):
             assert sigma(c1(p)).abs() == sigma(c2(p)).abs() == w
 
@@ -440,11 +447,14 @@ class UnramifiedPrincipalSeries(PrincipalSeries):
         """
         p = self.prime()
         ring = PolynomialRing(self.coefficient_field(), 'X')
-        return ring([
-            self.central_character()(p) * p,
-            -self.newform()[p] * p**((self.twist_factor() - self.newform().weight() + 2) / 2),
-            1
-        ])
+        return ring(
+            [
+                self.central_character()(p) * p,
+                -self.newform()[p]
+                * p ** ((self.twist_factor() - self.newform().weight() + 2) / 2),
+                1,
+            ]
+        )
 
     def characters(self):
         r"""
@@ -470,7 +480,11 @@ class UnramifiedPrincipalSeries(PrincipalSeries):
         else:
             d = self.coefficient_field().extension(f, 'd').gen()
         G = SmoothCharacterGroupQp(self.prime(), d.parent())
-        return Sequence([G.character(0, [d]), G.character(0, [self.newform()[self.prime()] - d])], cr=True, universe=G)
+        return Sequence(
+            [G.character(0, [d]), G.character(0, [self.newform()[self.prime()] - d])],
+            cr=True,
+            universe=G,
+        )
 
 
 class PrimitivePrincipalSeries(PrincipalSeries):
@@ -498,7 +512,7 @@ class PrimitivePrincipalSeries(PrincipalSeries):
         """
         G = SmoothCharacterGroupQp(self.prime(), self.coefficient_field())
         t = ZZ((self.newform().weight() - 2 - self.twist_factor()) / 2)
-        chi1 = G.character(0, [self.newform()[self.prime()]]) * G.norm_character()**t
+        chi1 = G.character(0, [self.newform()[self.prime()]]) * G.norm_character() ** t
         chi2 = G.character(0, [self.prime()]) * self.central_character() / chi1
         return Sequence([chi1, chi2], cr=True, universe=G)
 
@@ -568,7 +582,16 @@ class PrimitiveSpecial(PrimitiveLocalComponent):
             True
         """
 
-        return [SmoothCharacterGroupQp(self.prime(), self.coefficient_field()).character(0, [self.newform()[self.prime()] * self.prime() ** ((self.twist_factor() - self.newform().weight() + 2) / 2)])]
+        return [
+            SmoothCharacterGroupQp(self.prime(), self.coefficient_field()).character(
+                0,
+                [
+                    self.newform()[self.prime()]
+                    * self.prime()
+                    ** ((self.twist_factor() - self.newform().weight() + 2) / 2)
+                ],
+            )
+        ]
 
     def check_tempered(self):
         r"""
@@ -585,7 +608,7 @@ class PrimitiveSpecial(PrimitiveLocalComponent):
         c1 = self.characters()[0]
         K = c1.base_ring()
         p = self.prime()
-        w = QQbar(p)**(self.twist_factor() / ZZ(2))
+        w = QQbar(p) ** (self.twist_factor() / ZZ(2))
         for sigma in K.embeddings(QQbar):
             assert sigma(c1(p)).abs() == w
 
@@ -718,8 +741,9 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
         T = self.type_space()
         p = self.prime()
         if self.conductor() % 2 == 0:
-
-            G = SmoothCharacterGroupUnramifiedQuadratic(self.prime(), self.coefficient_field())
+            G = SmoothCharacterGroupUnramifiedQuadratic(
+                self.prime(), self.coefficient_field()
+            )
             n = self.conductor() // 2
 
             gs = G.quotient_gens(n)
@@ -733,19 +757,20 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
             # which is dual to the cohomological one that defines the local component.
 
             X = polygen(self.coefficient_field())
-            theta_poly = X**2 - (-1)**n * tr * X + self.central_character()(g.norm())
+            theta_poly = X**2 - (-1) ** n * tr * X + self.central_character()(g.norm())
             verbose("theta_poly for %s is %s" % (g, theta_poly), level=1)
             if theta_poly.is_irreducible():
                 F = self.coefficient_field().extension(theta_poly, "d")
                 G = G.base_extend(F)
 
             # roots with repetitions allowed
-            gvals = flatten([[y[0]] * y[1]
-                             for y in theta_poly.roots(G.base_ring())])
+            gvals = flatten([[y[0]] * y[1] for y in theta_poly.roots(G.base_ring())])
 
             if len(gs) == 1:
                 # This is always the case if p != 2
-                chi1, chi2 = (G.extend_character(n, self.central_character(), [x]) for x in gvals)
+                chi1, chi2 = (
+                    G.extend_character(n, self.central_character(), [x]) for x in gvals
+                )
             else:
                 # 2-adic cases, conductor >= 64. Here life is complicated
                 # because the quotient (O_K* / p^n)^* / (image of Z_2^*) is not
@@ -759,13 +784,16 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
 
                 tr = (~T.rho(g0.matrix().list())).trace()
                 X = polygen(G.base_ring())
-                theta0_poly = X**2 - (-1)**n * tr * X + self.central_character()(g0.norm())
+                theta0_poly = (
+                    X**2 - (-1) ** n * tr * X + self.central_character()(g0.norm())
+                )
                 verbose("theta_poly for %s is %s" % (g0, theta_poly), level=1)
                 if theta0_poly.is_irreducible():
                     F = theta0_poly.base_ring().extension(theta_poly, "e")
                     G = G.base_extend(F)
-                g0vals = flatten([[y[0]] * y[1]
-                                  for y in theta0_poly.roots(G.base_ring())])
+                g0vals = flatten(
+                    [[y[0]] * y[1] for y in theta0_poly.roots(G.base_ring())]
+                )
 
                 pairA = [[g0vals[0], gvals[0]], [g0vals[1], gvals[1]]]
                 pairB = [[g0vals[0], gvals[1]], [g0vals[1], gvals[0]]]
@@ -773,11 +801,17 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
                 A_fail = 0
                 B_fail = 0
                 try:
-                    chisA = [G.extend_character(n, self.central_character(), [y, x]) for (y, x) in pairA]
+                    chisA = [
+                        G.extend_character(n, self.central_character(), [y, x])
+                        for (y, x) in pairA
+                    ]
                 except ValueError:
                     A_fail = 1
                 try:
-                    chisB = [G.extend_character(n, self.central_character(), [y, x]) for (y, x) in pairB]
+                    chisB = [
+                        G.extend_character(n, self.central_character(), [y, x])
+                        for (y, x) in pairB
+                    ]
                 except ValueError:
                     B_fail = 1
 
@@ -786,7 +820,7 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
                     B_fail = 1
 
                 # check the character relation from LW12
-                if (not A_fail and not B_fail):
+                if not A_fail and not B_fail:
                     for x in G.ideal(n).invertible_residues():
                         try:
                             # test if G mod p is in Fp
@@ -794,11 +828,13 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
                         except ValueError:
                             flag = None
                         if flag is not None:
-                            verbose("skipping x=%s as congruent to %s mod p" % (x, flag))
+                            verbose(
+                                "skipping x=%s as congruent to %s mod p" % (x, flag)
+                            )
                             continue
 
                         verbose("testing x = %s" % x, level=1)
-                        ti = (-1)**n * (~T.rho(x.matrix().list())).trace()
+                        ti = (-1) ** n * (~T.rho(x.matrix().list())).trace()
                         verbose("  trace of matrix is %s" % ti, level=1)
                         if ti != chisA[0](x) + chisA[1](x):
                             verbose("  chisA FAILED", level=1)
@@ -815,11 +851,19 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
                 elif A_fail and not B_fail:
                     chi1, chi2 = chisB
                 else:
-                    raise ValueError("Something went wrong: can't identify the characters")
+                    raise ValueError(
+                        "Something went wrong: can't identify the characters"
+                    )
 
             # Consistency checks
-            assert chi1.restrict_to_Qp() == chi2.restrict_to_Qp() == self.central_character()
-            assert chi1 * chi2 == chi1.parent().compose_with_norm(self.central_character())
+            assert (
+                chi1.restrict_to_Qp()
+                == chi2.restrict_to_Qp()
+                == self.central_character()
+            )
+            assert chi1 * chi2 == chi1.parent().compose_with_norm(
+                self.central_character()
+            )
 
             return Sequence([chi1, chi2], check=False, cr=True)
 
@@ -828,7 +872,9 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
         n = self.conductor() - 1
         if p == 2:
             # The ramified 2-adic representations aren't classified by admissible pairs. Die.
-            raise ValueError("Totally ramified 2-adic representations are not classified by characters")
+            raise ValueError(
+                "Totally ramified 2-adic representations are not classified by characters"
+            )
 
         G0 = SmoothCharacterGroupRamifiedQuadratic(p, 0, self.coefficient_field())
         G1 = SmoothCharacterGroupRamifiedQuadratic(p, 1, self.coefficient_field())
@@ -842,7 +888,9 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
 
         if all(x == 0 for x in t0 + t1):
             # Can't happen?
-            raise NotImplementedError("Can't identify ramified quadratic extension -- all traces zero")
+            raise NotImplementedError(
+                "Can't identify ramified quadratic extension -- all traces zero"
+            )
         elif all(x == 0 for x in t1):
             G, qs, ts = G0, q0, t0
         elif all(x == 0 for x in t0):
@@ -857,7 +905,7 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
         q = qs[0]
         t = ts[0]
         k = self.newform().weight()
-        t *= p**ZZ((k - 2 + self.twist_factor()) / 2)
+        t *= p ** ZZ((k - 2 + self.twist_factor()) / 2)
 
         X = polygen(self.coefficient_field())
         theta_poly = X**2 - X * t + self.central_character()(q.norm())
@@ -868,13 +916,15 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
         c1q, c2q = flatten([[x] * e for x, e in theta_poly.roots(G.base_ring())])
 
         if len(qs) == 1:
-            chi1, chi2 = (G.extend_character(n, self.central_character(), [x]) for x in [c1q, c2q])
+            chi1, chi2 = (
+                G.extend_character(n, self.central_character(), [x]) for x in [c1q, c2q]
+            )
 
         else:
             assert p == 3
             q = qs[1]
             t = ts[1]
-            t *= p**ZZ((k - 2 + self.twist_factor()) / 2)
+            t *= p ** ZZ((k - 2 + self.twist_factor()) / 2)
 
             X = polygen(G.base_ring())
             theta_poly = X**2 - X * t + self.central_character()(q.norm())
@@ -890,12 +940,18 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
             A_fail = 0
             B_fail = 0
             try:
-                chisA = [G.extend_character(n, self.central_character(), [x, y]) for (x, y) in pairA]
+                chisA = [
+                    G.extend_character(n, self.central_character(), [x, y])
+                    for (x, y) in pairA
+                ]
             except ValueError:
                 verbose('A failed to create', level=1)
                 A_fail = 1
             try:
-                chisB = [G.extend_character(n, self.central_character(), [x, y]) for (x, y) in pairB]
+                chisB = [
+                    G.extend_character(n, self.central_character(), [x, y])
+                    for (x, y) in pairB
+                ]
             except ValueError:
                 verbose('A failed to create', level=1)
                 B_fail = 1
@@ -908,7 +964,9 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
                     break
                 x = q * u
                 verbose("testing x = %s" % x, level=1)
-                ti = (~T.rho(x.matrix().list())).trace() * p**ZZ((k - 2 + self.twist_factor()) / 2)
+                ti = (~T.rho(x.matrix().list())).trace() * p ** ZZ(
+                    (k - 2 + self.twist_factor()) / 2
+                )
                 verbose("trace of matrix is %s" % ti, level=1)
                 if chisA[0](x) + chisA[1](x) != ti:
                     A_fail = 1
@@ -923,7 +981,9 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
                 raise ValueError("Something went wrong: can't identify the characters")
 
         # Consistency checks
-        assert chi1.restrict_to_Qp() == chi2.restrict_to_Qp() == self.central_character()
+        assert (
+            chi1.restrict_to_Qp() == chi2.restrict_to_Qp() == self.central_character()
+        )
         assert chi1 * chi2 == chi1.parent().compose_with_norm(self.central_character())
 
         return Sequence([chi1, chi2], check=False, cr=True)
@@ -947,7 +1007,7 @@ class PrimitiveSupercuspidal(PrimitiveLocalComponent):
         c1, c2 = self.characters()
         K = c1.base_ring()
         p = self.prime()
-        w = QQbar(p)**self.twist_factor()
+        w = QQbar(p) ** self.twist_factor()
         for sigma in K.embeddings(QQbar):
             assert sigma(c1(p)).abs() == sigma(c2(p)).abs() == w
 
@@ -1028,7 +1088,12 @@ class ImprimitiveLocalComponent(LocalComponentBase):
             sage: Pi # indirect doctest
             Smooth representation of GL_2(Q_3) with conductor 3^2, twist of representation of conductor 3^1
         """
-        return LocalComponentBase._repr_(self) + ', twist of representation of conductor %s^%s' % (self.prime(), self._min_twist.conductor())
+        return LocalComponentBase._repr_(
+            self
+        ) + ', twist of representation of conductor %s^%s' % (
+            self.prime(),
+            self._min_twist.conductor(),
+        )
 
     def characters(self):
         r"""

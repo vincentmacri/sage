@@ -42,11 +42,14 @@ class DistributiveMagmasAndAdditiveMagmas(CategoryWithAxiom):
         class AdditiveCommutative(CategoryWithAxiom):
             class AdditiveUnital(CategoryWithAxiom):
                 class Associative(CategoryWithAxiom):
-                    AdditiveInverse = LazyImport('sage.categories.rngs', 'Rngs', at_startup=True)
-                    Unital = LazyImport('sage.categories.semirings', 'Semirings', at_startup=True)
+                    AdditiveInverse = LazyImport(
+                        'sage.categories.rngs', 'Rngs', at_startup=True
+                    )
+                    Unital = LazyImport(
+                        'sage.categories.semirings', 'Semirings', at_startup=True
+                    )
 
     class ParentMethods:
-
         def _test_distributivity(self, **options):
             r"""
             Test the distributivity of `*` on `+` on (not necessarily
@@ -75,6 +78,7 @@ class DistributiveMagmasAndAdditiveMagmas(CategoryWithAxiom):
             tester = self._tester(**options)
             tester.some_elements()
             from sage.misc.misc import some_tuples
+
             for x, y, z in some_tuples(tester.some_elements(), 3, tester._max_runs):
                 # left distributivity
                 tester.assertEqual(x * (y + z), (x * y) + (x * z))

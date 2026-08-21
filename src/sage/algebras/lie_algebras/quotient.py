@@ -16,8 +16,12 @@ AUTHORS:
 #                 https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from sage.algebras.lie_algebras.structure_coefficients import LieAlgebraWithStructureCoefficients
-from sage.algebras.lie_algebras.subalgebra import LieSubalgebra_finite_dimensional_with_basis
+from sage.algebras.lie_algebras.structure_coefficients import (
+    LieAlgebraWithStructureCoefficients,
+)
+from sage.algebras.lie_algebras.subalgebra import (
+    LieSubalgebra_finite_dimensional_with_basis,
+)
 from sage.categories.homset import Hom
 from sage.categories.lie_algebras import LieAlgebras
 from sage.categories.morphism import SetMorphism
@@ -172,9 +176,17 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
         2
         sage: TestSuite(K).run()
     """
+
     @staticmethod
-    def __classcall_private__(cls, ambient, I, names=None, index_set=None,
-                              index_set_mapping=None, category=None):
+    def __classcall_private__(
+        cls,
+        ambient,
+        I,
+        names=None,
+        index_set=None,
+        index_set_mapping=None,
+        category=None,
+    ):
         r"""
         Normalize input to ensure a unique representation.
 
@@ -212,21 +224,24 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
             I = ambient.ideal(I)
 
         if not ambient.base_ring().is_field():
-            raise NotImplementedError("quotients over non-fields "
-                                      "not implemented")
+            raise NotImplementedError("quotients over non-fields not implemented")
 
         # extract an index set from a complementary basis to the ideal
         I_supp = [X.leading_support() for X in I.leading_monomials()]
         IA = I.ambient()
         B = ambient.basis()
         if index_set_mapping is None:
-            index_set_mapping = [(IA(B[k]).leading_support(key=I._order), k) for k in B.keys()]
+            index_set_mapping = [
+                (IA(B[k]).leading_support(key=I._order), k) for k in B.keys()
+            ]
         if index_set is None:
             index_set = [i[0] for i in index_set_mapping if i[0] not in I_supp]
 
         if names is None:
             try:
-                amb_names = dict(zip([i[1] for i in index_set_mapping], ambient.variable_names()))
+                amb_names = dict(
+                    zip([i[1] for i in index_set_mapping], ambient.variable_names())
+                )
                 names = [amb_names[i] for i in index_set]
             except (ValueError, KeyError):
                 # ambient has not assigned variable names
@@ -236,8 +251,7 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
             if len(index_set) == 1:
                 names = [names]
             else:
-                names = ['%s_%d' % (names, k + 1)
-                         for k in range(len(index_set))]
+                names = ['%s_%d' % (names, k + 1) for k in range(len(index_set))]
         names, index_set = standardize_names_index_set(names, index_set)
         index_set_mapping = tuple([i for i in index_set_mapping if i[0] not in I_supp])
 
@@ -245,8 +259,9 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
         if ambient in LieAlgebras(ambient.base_ring()).Nilpotent():
             cat = cat.Nilpotent()
         category = cat.Subquotients().or_subcategory(category)
-        return super().__classcall__(cls, ambient, I, names, index_set,
-                                     index_set_mapping, category=category)
+        return super().__classcall__(
+            cls, ambient, I, names, index_set, index_set_mapping, category=category
+        )
 
     def __init__(self, L, I, names, index_set, index_set_mapping, category=None):
         r"""
@@ -262,8 +277,9 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
         """
         B = L.basis()
         self._index_set_mapping = dict(index_set_mapping)
-        sm = L.module().submodule_with_basis([I.reduce(B[k]).to_vector()
-                                              for k in self._index_set_mapping.values()])
+        sm = L.module().submodule_with_basis(
+            [I.reduce(B[k]).to_vector() for k in self._index_set_mapping.values()]
+        )
         SB = [L.from_vector(b) for b in sm.basis()]
 
         # compute and normalize structural coefficients for the quotient
@@ -276,7 +292,8 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
                 brktvec = sm.coordinate_vector(brkt.to_vector())
                 s_coeff[(ind_i, ind_j)] = dict(zip(index_set, brktvec))
         s_coeff = LieAlgebraWithStructureCoefficients._standardize_s_coeff(
-            s_coeff, index_set)
+            s_coeff, index_set
+        )
 
         self._ambient = L
         self._I = I
@@ -284,7 +301,8 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
         self._triv_ideal = bool(I.dimension() == 0)
 
         LieAlgebraWithStructureCoefficients.__init__(
-            self, L.base_ring(), s_coeff, names, index_set, category=category)
+            self, L.base_ring(), s_coeff, names, index_set, category=category
+        )
 
         # register the quotient morphism as a conversion
         H = Hom(L, self)
@@ -320,10 +338,11 @@ class LieQuotient_finite_dimensional_with_basis(LieAlgebraWithStructureCoefficie
         except AttributeError:
             ideal_repr = repr(tuple(self._I.gens()))
 
-        return ("Lie algebra quotient L/I of dimension %s"
-                " over %s where\nL: %s\nI: Ideal %s" % (
-                    self.dimension(), self.base_ring(),
-                    self.ambient(), ideal_repr))
+        return (
+            "Lie algebra quotient L/I of dimension %s"
+            " over %s where\nL: %s\nI: Ideal %s"
+            % (self.dimension(), self.base_ring(), self.ambient(), ideal_repr)
+        )
 
     def _repr_generator(self, i):
         r"""

@@ -30,12 +30,25 @@ min = misc.min
 ZZ = sage.rings.integer_ring.ZZ
 PrecisionError = precision_error.PrecisionError
 Integer = sage.rings.integer.Integer
-Polynomial_integer_dense = sage.rings.polynomial.polynomial_integer_dense_ntl.Polynomial_integer_dense_ntl
-Polynomial_generic_cdv = sage.rings.polynomial.polynomial_element_generic.Polynomial_generic_cdv
+Polynomial_integer_dense = (
+    sage.rings.polynomial.polynomial_integer_dense_ntl.Polynomial_integer_dense_ntl
+)
+Polynomial_generic_cdv = (
+    sage.rings.polynomial.polynomial_element_generic.Polynomial_generic_cdv
+)
 
 
 class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_padic):
-    def __init__(self, parent, x=None, check=True, is_gen=False, construct=False, absprec=infinity, relprec=infinity):
+    def __init__(
+        self,
+        parent,
+        x=None,
+        check=True,
+        is_gen=False,
+        construct=False,
+        absprec=infinity,
+        relprec=infinity,
+    ):
         """
         TESTS::
 
@@ -66,8 +79,16 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         self._polygon = None
         parentbr = parent.base_ring()
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         if construct:
-            (self._poly, self._valbase, self._relprecs, self._normalized, self._valaddeds, self._list) = x  # the last two of these may be None
+            (
+                self._poly,
+                self._valbase,
+                self._relprecs,
+                self._normalized,
+                self._valaddeds,
+                self._list,
+            ) = x  # the last two of these may be None
             return
         if is_gen:
             self._poly = PolynomialRing(ZZ, parent.variable_name()).gen()
@@ -82,7 +103,9 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
 
         # First we list the types that are turned into Polynomials
         if isinstance(x, ZZX):
-            x = Polynomial_integer_dense(PolynomialRing(ZZ, parent.variable_name()), x, construct=True)
+            x = Polynomial_integer_dense(
+                PolynomialRing(ZZ, parent.variable_name()), x, construct=True
+            )
         elif isinstance(x, FractionFieldElement) and x.denominator() == 1:
             # Currently we ignore precision information in the denominator.  This should be changed eventually
             x = x.numerator()
@@ -105,7 +128,9 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
                 self._poly = PolynomialRing(ZZ, parent.variable_name())(x)
                 self._valbase = Integer(0)
                 p = parentbr.prime()
-                self._relprecs = [c.valuation(p) + parentbr.precision_cap() for c in x.list()]
+                self._relprecs = [
+                    c.valuation(p) + parentbr.precision_cap() for c in x.list()
+                ]
                 self._comp_valaddeds()
                 self._normalized = not self._valaddeds or min(self._valaddeds) == 0
                 self._list = None
@@ -154,7 +179,9 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         else:
             self._valaddeds = [c - self._valbase for c in self._valaddeds]
             self._relprecs = [a.precision_absolute() - self._valbase for a in x]
-            self._poly = PolynomialRing(ZZ, parent.variable_name())([a >> self._valbase for a in x])
+            self._poly = PolynomialRing(ZZ, parent.variable_name())(
+                [a >> self._valbase for a in x]
+            )
             self._normalized = True
             if absprec is not infinity or relprec is not infinity:
                 self._adjust_prec_info(absprec, relprec)
@@ -188,24 +215,52 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
                 pass
             elif val != 0:
                 self._relprecs = [max(prec - val, 0) for prec in self._relprecs]
-                v = [Integer(0) if (e is infinity) else ((c // prime_pow(val)) % prime_pow(e)) for c, e in zip(selflist, self._relprecs)]
+                v = [
+                    Integer(0)
+                    if (e is infinity)
+                    else ((c // prime_pow(val)) % prime_pow(e))
+                    for c, e in zip(selflist, self._relprecs)
+                ]
                 self._poly = self._poly.parent()(v, check=False)
                 self._valbase += val
                 self._valaddeds = [c - val for c in self._valaddeds]
             else:
-                self._poly = self._poly.parent()([Integer(0) if (e is infinity) else (c % prime_pow(e)) for c, e in zip(selflist, self._relprecs)], check=False)
+                self._poly = self._poly.parent()(
+                    [
+                        Integer(0) if (e is infinity) else (c % prime_pow(e))
+                        for c, e in zip(selflist, self._relprecs)
+                    ],
+                    check=False,
+                )
             self._normalized = True
 
     def _reduce_poly(self):
         selflist = self._poly.list()
         prime_pow = self.base_ring().prime_pow
-        self._poly = self._poly.parent()([Integer(0) if (e is infinity) else (c % prime_pow(e)) for (c, e) in zip(selflist, self._relprecs)], check=False)
+        self._poly = self._poly.parent()(
+            [
+                Integer(0) if (e is infinity) else (c % prime_pow(e))
+                for (c, e) in zip(selflist, self._relprecs)
+            ],
+            check=False,
+        )
 
     def __reduce__(self):
         """
         For pickling.  This function is here because the relative precisions were getting screwed up for some reason.
         """
-        return make_padic_poly, (self.parent(), (self._poly, self._valbase, self._relprecs, self._normalized, self._valaddeds, self._list), 0)
+        return make_padic_poly, (
+            self.parent(),
+            (
+                self._poly,
+                self._valbase,
+                self._relprecs,
+                self._normalized,
+                self._valaddeds,
+                self._list,
+            ),
+            0,
+        )
 
     def _comp_list(self):
         """
@@ -224,8 +279,13 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             self._list = []
         polylist = self._poly.list()
         polylen = len(polylist)
-        self._list = [self.base_ring()(polylist[i], absprec=self._relprecs[i]) << self._valbase for i in range(polylen)] \
-            + [self.base_ring()(0, absprec=self._relprecs[i] + self._valbase) for i in range(polylen, len(self._relprecs))]
+        self._list = [
+            self.base_ring()(polylist[i], absprec=self._relprecs[i]) << self._valbase
+            for i in range(polylen)
+        ] + [
+            self.base_ring()(0, absprec=self._relprecs[i] + self._valbase)
+            for i in range(polylen, len(self._relprecs))
+        ]
         while self._list and self._list[-1]._is_exact_zero():
             self._list.pop()
 
@@ -247,61 +307,68 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         """
         return
 
-#         min = sage.rings.padics.misc.min
-#         slen = len(self._relprec)
-#         if isinstance(absprec, list):
-#             alen = len(absprec)
-#         elif absprec is infinity:
-#             alen = 0
-#             absprec = []
-#         else:
-#             alen = 1
-#         if isinstance(relprec, list):
-#             rlen = len(relprec)
-#         elif relprec is infinity:
-#             rlen = 0
-#             relprec = []
-#         else:
-#             rlen = 1
-#         preclen = max(slen, rlen, alen)
-#         if not isinstance(absprec, list):
-#             absprec = [absprec] * preclen
-#         if not isinstance(relprec, list):
-#             relprec = [relprec] * preclen
-#         vallist = [c.valuation(self.base_ring().prime()) + self._val for c in self._poly.list()] #######
-#         vmin = min(vallist)
-#         amin = min(absprec)
-#         if amin < vmin:
-#             vmin = amin
-#         if vmin < self._val:
-#             vadjust =
+    #         min = sage.rings.padics.misc.min
+    #         slen = len(self._relprec)
+    #         if isinstance(absprec, list):
+    #             alen = len(absprec)
+    #         elif absprec is infinity:
+    #             alen = 0
+    #             absprec = []
+    #         else:
+    #             alen = 1
+    #         if isinstance(relprec, list):
+    #             rlen = len(relprec)
+    #         elif relprec is infinity:
+    #             rlen = 0
+    #             relprec = []
+    #         else:
+    #             rlen = 1
+    #         preclen = max(slen, rlen, alen)
+    #         if not isinstance(absprec, list):
+    #             absprec = [absprec] * preclen
+    #         if not isinstance(relprec, list):
+    #             relprec = [relprec] * preclen
+    #         vallist = [c.valuation(self.base_ring().prime()) + self._val for c in self._poly.list()] #######
+    #         vmin = min(vallist)
+    #         amin = min(absprec)
+    #         if amin < vmin:
+    #             vmin = amin
+    #         if vmin < self._val:
+    #             vadjust =
 
-#         if not isinstance(absprec, list):
-#             self._val = min(vallist + [absprec])
-#             absprec = [absprec] * preclen
-#         else:
-#             self._val = padics.misc.min(vallist + absprec)
-#             absprec = absprec + [infinity] * (preclen - len(absprec))
-#         if self._val is infinity:
-#             self._relprec = []
-#             return
-#         if not isinstance(relprec, list):
-#             relprec = [relprec] * preclen
-#         else:
-#             relprec = relprec + [parent.base_ring().precision_cap()] * (preclen - len(relprec))
-#         self._relprec = [min(a, v + r) - self._val for (a, r, v) in zip(absprec, relprec, vallist)]
-# Remember to normalize at the end if self._normalized is true because you need to reduce mod p^n
+    #         if not isinstance(absprec, list):
+    #             self._val = min(vallist + [absprec])
+    #             absprec = [absprec] * preclen
+    #         else:
+    #             self._val = padics.misc.min(vallist + absprec)
+    #             absprec = absprec + [infinity] * (preclen - len(absprec))
+    #         if self._val is infinity:
+    #             self._relprec = []
+    #             return
+    #         if not isinstance(relprec, list):
+    #             relprec = [relprec] * preclen
+    #         else:
+    #             relprec = relprec + [parent.base_ring().precision_cap()] * (preclen - len(relprec))
+    #         self._relprec = [min(a, v + r) - self._val for (a, r, v) in zip(absprec, relprec, vallist)]
+    # Remember to normalize at the end if self._normalized is true because you need to reduce mod p^n
 
     def _getprecpoly(self, n):
         one = Integer(1)
-        return self._poly.parent()([(0 if (c is infinity) else (one << (n * c))) for c in self._relprecs])
+        return self._poly.parent()(
+            [(0 if (c is infinity) else (one << (n * c))) for c in self._relprecs]
+        )
 
     def _getvalpoly(self, n):
         one = Integer(1)
         if self._valaddeds is None:
             self._comp_valaddeds()
-        return self._poly.parent()([(0 if (c is infinity) else (one << (n * c))) for c in self._valaddeds] +
-                                   [(0 if (c is infinity) else (one << (n * c))) for c in self._relprecs[len(self._valaddeds):]])
+        return self._poly.parent()(
+            [(0 if (c is infinity) else (one << (n * c))) for c in self._valaddeds]
+            + [
+                (0 if (c is infinity) else (one << (n * c)))
+                for c in self._relprecs[len(self._valaddeds) :]
+            ]
+        )
 
     def list(self, copy=True):
         """
@@ -402,14 +469,18 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         try:
             n = n.__index__()
         except AttributeError:
-            raise TypeError("list indices must be integers, not {0}".format(type(n).__name__))
+            raise TypeError(
+                "list indices must be integers, not {0}".format(type(n).__name__)
+            )
 
         if n < 0 or n >= d:
             return self.base_ring().zero()
         if self._list is not None:
             return self._list[n]
-        return self.base_ring()(self.base_ring().prime_pow(self._valbase)
-            * self._poly[n], absprec=self._valbase + self._relprecs[n])
+        return self.base_ring()(
+            self.base_ring().prime_pow(self._valbase) * self._poly[n],
+            absprec=self._valbase + self._relprecs[n],
+        )
 
     def _add_(self, right):
         """
@@ -429,21 +500,42 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         selfpoly = self._poly
         rightpoly = right._poly
         if self._valbase > right._valbase:
-            selfpoly = selfpoly * self.base_ring().prime_pow(self._valbase - right._valbase)
+            selfpoly = selfpoly * self.base_ring().prime_pow(
+                self._valbase - right._valbase
+            )
             baseval = right._valbase
         elif self._valbase < right._valbase:
-            rightpoly = rightpoly * self.base_ring().prime_pow(right._valbase - self._valbase)
+            rightpoly = rightpoly * self.base_ring().prime_pow(
+                right._valbase - self._valbase
+            )
             baseval = self._valbase
         else:
             baseval = self._valbase
         # Currently we don't reduce the coefficients of the answer modulo the appropriate power of p or normalize
-        return Polynomial_padic_capped_relative_dense(self.parent(),
-            (selfpoly + rightpoly,
-             baseval,
-             [min(a + self._valbase - baseval, b + right._valbase - baseval)
-              for (a, b) in zip(_extend_by_infinity(self._relprecs, max(len(self._relprecs), len(right._relprecs))),
-                                _extend_by_infinity(right._relprecs, max(len(self._relprecs), len(right._relprecs))))],
-             False, None, None), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (
+                selfpoly + rightpoly,
+                baseval,
+                [
+                    min(a + self._valbase - baseval, b + right._valbase - baseval)
+                    for (a, b) in zip(
+                        _extend_by_infinity(
+                            self._relprecs,
+                            max(len(self._relprecs), len(right._relprecs)),
+                        ),
+                        _extend_by_infinity(
+                            right._relprecs,
+                            max(len(self._relprecs), len(right._relprecs)),
+                        ),
+                    )
+                ],
+                False,
+                None,
+                None,
+            ),
+            construct=True,
+        )
 
     def _sub_(self, right):
         """
@@ -463,21 +555,42 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         selfpoly = self._poly
         rightpoly = right._poly
         if self._valbase > right._valbase:
-            selfpoly = selfpoly * self.base_ring().prime_pow(self._valbase - right._valbase)
+            selfpoly = selfpoly * self.base_ring().prime_pow(
+                self._valbase - right._valbase
+            )
             baseval = right._valbase
         elif self._valbase < right._valbase:
-            rightpoly = rightpoly * self.base_ring().prime_pow(right._valbase - self._valbase)
+            rightpoly = rightpoly * self.base_ring().prime_pow(
+                right._valbase - self._valbase
+            )
             baseval = self._valbase
         else:
             baseval = self._valbase
         # Currently we don't reduce the coefficients of the answer modulo the appropriate power of p or normalize
-        return Polynomial_padic_capped_relative_dense(self.parent(),
-            (selfpoly - rightpoly,
-             baseval,
-             [min(a + self._valbase - baseval, b + right._valbase - baseval)
-              for (a, b) in zip(_extend_by_infinity(self._relprecs, max(len(self._relprecs), len(right._relprecs))),
-                                _extend_by_infinity(right._relprecs, max(len(self._relprecs), len(right._relprecs))))],
-             False, None, None), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (
+                selfpoly - rightpoly,
+                baseval,
+                [
+                    min(a + self._valbase - baseval, b + right._valbase - baseval)
+                    for (a, b) in zip(
+                        _extend_by_infinity(
+                            self._relprecs,
+                            max(len(self._relprecs), len(right._relprecs)),
+                        ),
+                        _extend_by_infinity(
+                            right._relprecs,
+                            max(len(self._relprecs), len(right._relprecs)),
+                        ),
+                    )
+                ],
+                False,
+                None,
+                None,
+            ),
+            construct=True,
+        )
 
     def _mul_(self, right):
         r"""
@@ -552,8 +665,15 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         precpoly2 = self._getvalpoly(n) * right._getprecpoly(n)
         # These two will be the same length
         tn = Integer(1) << n
-        preclist = [min(a.valuation(tn), b.valuation(tn)) for (a, b) in zip(precpoly1.list(), precpoly2.list())]
-        answer = Polynomial_padic_capped_relative_dense(self.parent(), (zzpoly, self._valbase + right._valbase, preclist, False, None, None), construct=True)
+        preclist = [
+            min(a.valuation(tn), b.valuation(tn))
+            for (a, b) in zip(precpoly1.list(), precpoly2.list())
+        ]
+        answer = Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (zzpoly, self._valbase + right._valbase, preclist, False, None, None),
+            construct=True,
+        )
         answer._reduce_poly()
         return answer
 
@@ -580,11 +700,36 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         if left != 0:
             val, unit = left.val_unit()
             left_rprec = left.precision_relative()
-            relprecs = [min(left_rprec + self._valaddeds[i], self._relprecs[i]) for i in range(len(self._relprecs))]
-            return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly._rmul_(unit), self._valbase + val, relprecs, False, self._valaddeds, None), construct=True)
+            relprecs = [
+                min(left_rprec + self._valaddeds[i], self._relprecs[i])
+                for i in range(len(self._relprecs))
+            ]
+            return Polynomial_padic_capped_relative_dense(
+                self.parent(),
+                (
+                    self._poly._rmul_(unit),
+                    self._valbase + val,
+                    relprecs,
+                    False,
+                    self._valaddeds,
+                    None,
+                ),
+                construct=True,
+            )
         if left._is_exact_zero():
             return Polynomial_padic_capped_relative_dense(self.parent(), [])
-        return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly.parent()(0), self._valbase + left.valuation(), self._valaddeds, False, self._valaddeds, None), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (
+                self._poly.parent()(0),
+                self._valbase + left.valuation(),
+                self._valaddeds,
+                False,
+                self._valaddeds,
+                None,
+            ),
+            construct=True,
+        )
 
     def _neg_(self):
         """
@@ -598,7 +743,11 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             sage: -a
             (12 + 12*13 + O(13^2))*t^4 + (12*13 + 12*13^2 + O(13^3))*t^2 + 9 + 12*13 + O(13^2)
         """
-        return Polynomial_padic_capped_relative_dense(self.parent(), (-self._poly, self._valbase, self._relprecs, False, self._valaddeds, None), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (-self._poly, self._valbase, self._relprecs, False, self._valaddeds, None),
+            construct=True,
+        )
 
     def lshift_coeffs(self, shift, no_list=False):
         """
@@ -615,8 +764,30 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         if shift < 0:
             return self.rshift_coeffs(-shift, no_list)
         if no_list or self._list is None:
-            return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly, self._valbase + shift, self._relprecs, False, self._valaddeds, None), construct=True)
-        return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly, self._valbase + shift, self._relprecs, False, self._valaddeds, [c.__lshift__(shift) for c in self._list]), construct=True)
+            return Polynomial_padic_capped_relative_dense(
+                self.parent(),
+                (
+                    self._poly,
+                    self._valbase + shift,
+                    self._relprecs,
+                    False,
+                    self._valaddeds,
+                    None,
+                ),
+                construct=True,
+            )
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (
+                self._poly,
+                self._valbase + shift,
+                self._relprecs,
+                False,
+                self._valaddeds,
+                [c.__lshift__(shift) for c in self._list],
+            ),
+            construct=True,
+        )
 
     def rshift_coeffs(self, shift, no_list=False):
         """
@@ -643,14 +814,49 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             [1 + O(13^4), O(13), O(13^2)]
         """
         if shift < 0:
-            return self.lshift_coeffs(-shift, no_list)  # We can't just absorb this into the next if statement because we allow rshift to preserve _normalized
+            return self.lshift_coeffs(
+                -shift, no_list
+            )  # We can't just absorb this into the next if statement because we allow rshift to preserve _normalized
         if self.base_ring().is_field() or shift <= self._valbase:
             if no_list or self._list is None:
-                return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly, self._valbase - shift, self._relprecs, self._normalized, self._valaddeds, None), construct=True)
-            return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly, self._valbase - shift, self._relprecs, self._normalized, self._valaddeds, [c.__rshift__(shift) for c in self._list]), construct=True)
+                return Polynomial_padic_capped_relative_dense(
+                    self.parent(),
+                    (
+                        self._poly,
+                        self._valbase - shift,
+                        self._relprecs,
+                        self._normalized,
+                        self._valaddeds,
+                        None,
+                    ),
+                    construct=True,
+                )
+            return Polynomial_padic_capped_relative_dense(
+                self.parent(),
+                (
+                    self._poly,
+                    self._valbase - shift,
+                    self._relprecs,
+                    self._normalized,
+                    self._valaddeds,
+                    [c.__rshift__(shift) for c in self._list],
+                ),
+                construct=True,
+            )
         shift = shift - self._valbase
         fdiv = self.base_ring().prime_pow(shift)
-        return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly // fdiv, 0, [0 if a <= shift else a - shift for a in self._relprecs], False, None, None), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (
+                self._poly // fdiv,
+                0,
+                [0 if a <= shift else a - shift for a in self._relprecs],
+                False,
+                None,
+                None,
+            ),
+            construct=True,
+        )
 
     # def __floordiv__(self, right):
     #     if isinstance(right, Polynomial) and right.is_constant() and right[0] in self.base_ring():
@@ -689,7 +895,9 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         elif value.valuation() >= self._valbase:
             # _valbase and _normalized stay the same
             if value != 0:
-                self._poly._unsafe_mutate(self, n, (value.__rshift__(self._valbase)).lift())
+                self._poly._unsafe_mutate(
+                    self, n, (value.__rshift__(self._valbase)).lift()
+                )
             else:
                 self._poly._unsafe_mutate(self, n, 0)
             if n < len(self._relprecs):
@@ -699,9 +907,15 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
                 if self._list is not None:
                     self._list[n] = value
             else:
-                self._relprecs.extend([infinity] * (n - len(self._relprecs)) + [value.precision_absolute() - self._valbase])
+                self._relprecs.extend(
+                    [infinity] * (n - len(self._relprecs))
+                    + [value.precision_absolute() - self._valbase]
+                )
                 if self._valaddeds is not None:
-                    self._valaddeds.extend([infinity] * (n - len(self._relprecs)) + [value.valuation() - self._valbase])
+                    self._valaddeds.extend(
+                        [infinity] * (n - len(self._relprecs))
+                        + [value.valuation() - self._valbase]
+                    )
                 if self._list is not None:
                     zero = self.base_ring()(0)
                     self._list.extend([zero] * (n - len(self._relprecs)) + [value])
@@ -718,7 +932,10 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             if n < len(self._relprecs):
                 self._relprecs[n] = value.precision_relative()
             else:
-                self._relprecs.extend([infinity] * (n - len(self._relprecs)) + [value.precision_relative()])
+                self._relprecs.extend(
+                    [infinity] * (n - len(self._relprecs))
+                    + [value.precision_relative()]
+                )
             self._normalized = False
             if self._list is not None:
                 if n < len(self._list):
@@ -739,7 +956,18 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         """
         Return a copy of ``self``.
         """
-        return Polynomial_padic_capped_relative_dense(self.parent(), (copy.copy(self._poly), self._valbase, copy.copy(self._relprecs), self._normalized, copy.copy(self._valaddeds), copy.copy(self._list)), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (
+                copy.copy(self._poly),
+                self._valbase,
+                copy.copy(self._relprecs),
+                self._normalized,
+                copy.copy(self._valaddeds),
+                copy.copy(self._list),
+            ),
+            construct=True,
+        )
 
     def degree(self, secure=False):
         """
@@ -787,8 +1015,7 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         self._normalize()
         deg = Integer(self._poly.degree())
         if secure and deg < self.prec_degree():
-            raise PrecisionError("the leading coefficient is "
-                                 "indistinguishable from 0")
+            raise PrecisionError("the leading coefficient is indistinguishable from 0")
         return deg
 
     def prec_degree(self):
@@ -936,7 +1163,9 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             return self._poly.valuation()
         if self._valaddeds is None:
             self._comp_valaddeds()
-        return self._valbase + min([self._valaddeds[i] + val_of_var * i for i in range(len(self._valaddeds))])
+        return self._valbase + min(
+            [self._valaddeds[i] + val_of_var * i for i in range(len(self._valaddeds))]
+        )
 
     def reverse(self, degree=None):
         """
@@ -976,21 +1205,34 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             True
         """
         n = self._poly.degree() if degree is None else degree
-        zzlist = self._poly.list()[:(n + 1)] + [0] * (n - self._poly.degree())
+        zzlist = self._poly.list()[: (n + 1)] + [0] * (n - self._poly.degree())
         zzlist.reverse()
-        relprec = self._relprecs[:(n + 1)] + [infinity] * (n - self.prec_degree())
+        relprec = self._relprecs[: (n + 1)] + [infinity] * (n - self.prec_degree())
         relprec.reverse()
         if self._valaddeds is None:
             valadded = None
         else:
-            valadded = self._valaddeds[:(n + 1)] + [infinity] * (n - self.prec_degree())
+            valadded = self._valaddeds[: (n + 1)] + [infinity] * (
+                n - self.prec_degree()
+            )
             valadded.reverse()
         if self._list is None:
             L = None
         else:
-            L = self._list[:(n + 1)] + [self.base_ring()(0)] * (n - self.prec_degree())
+            L = self._list[: (n + 1)] + [self.base_ring()(0)] * (n - self.prec_degree())
             L.reverse()
-        return Polynomial_padic_capped_relative_dense(self.parent(), (self._poly.parent()(zzlist), self._valbase, relprec, self._normalized, valadded, L), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (
+                self._poly.parent()(zzlist),
+                self._valbase,
+                relprec,
+                self._normalized,
+                valadded,
+                L,
+            ),
+            construct=True,
+        )
 
     def rescale(self, a):
         r"""
@@ -1017,7 +1259,11 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             else:
                 raise ValueError(msg)
         if negval:
-            return self.parent().base_extend(self.base_ring().fraction_field())(self).rescale(a)
+            return (
+                self.parent()
+                .base_extend(self.base_ring().fraction_field())(self)
+                .rescale(a)
+            )
         if self.base_ring().is_field() and a.valuation() < 0:
             D = self.prec_degree()
             return a**D * self.reverse(D).rescale(~a).reverse(D)
@@ -1026,13 +1272,26 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         if self._valaddeds is None:
             self._comp_valaddeds()
         valadded = [self._valaddeds[i] + aval * i for i in range(len(self._valaddeds))]
-        relprec = [infinity if (self._relprecs[i] is infinity) else (min(self._relprecs[i] - self._valaddeds[i], arprec) + aval * i + self._valaddeds[i]) for i in range(len(self._relprecs))]
+        relprec = [
+            infinity
+            if (self._relprecs[i] is infinity)
+            else (
+                min(self._relprecs[i] - self._valaddeds[i], arprec)
+                + aval * i
+                + self._valaddeds[i]
+            )
+            for i in range(len(self._relprecs))
+        ]
         relprec[0] = self._relprecs[0]
         if a == 0:
             zzpoly = self._poly.parent()(0)
         else:
             zzpoly = self._poly.rescale(Integer(a))
-        return Polynomial_padic_capped_relative_dense(self.parent(), (zzpoly, self._valbase, relprec, False, valadded, None), construct=True)
+        return Polynomial_padic_capped_relative_dense(
+            self.parent(),
+            (zzpoly, self._valbase, relprec, False, valadded, None),
+            construct=True,
+        )
 
     def quo_rem(self, right, secure=False):
         """
@@ -1069,8 +1328,9 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         f = self.base_extend(K)
         g = right.base_extend(K)
         if g == 0:
-            raise ZeroDivisionError("cannot divide by a polynomial "
-                                    "indistinguishable from 0")
+            raise ZeroDivisionError(
+                "cannot divide by a polynomial indistinguishable from 0"
+            )
         x = f.parent().gen()
         quo = f.parent()(0)
         while f.degree() >= g.degree():
@@ -1090,8 +1350,9 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         - Xavier Caruso (2013-03)
         """
         if right.is_zero():
-            raise ZeroDivisionError("cannot divide by a polynomial "
-                                    "indistinguishable from 0")
+            raise ZeroDivisionError(
+                "cannot divide by a polynomial indistinguishable from 0"
+            )
         a = self.list()
         da = len(a) - 1
         b = right.list()
@@ -1106,6 +1367,7 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         q.reverse()
         K = self.base_ring().fraction_field()
         from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
         parent = PolynomialRing(K, name=self.parent().variable_name())
         return parent(q), parent(a[:db])
 
@@ -1170,11 +1432,14 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         if self._valaddeds is None:
             self._comp_valaddeds()
         from sage.geometry.newton_polygon import NewtonPolygon
+
         valbase = self._valbase
-        polygon = NewtonPolygon([(x, val + valbase)
-                                 for x, val in enumerate(self._valaddeds)])
-        polygon_prec = NewtonPolygon([(x, val + valbase)
-                                      for x, val in enumerate(self._relprecs)])
+        polygon = NewtonPolygon(
+            [(x, val + valbase) for x, val in enumerate(self._valaddeds)]
+        )
+        polygon_prec = NewtonPolygon(
+            [(x, val + valbase) for x, val in enumerate(self._relprecs)]
+        )
         vertices = polygon.vertices(copy=False)
         vertices_prec = polygon_prec.vertices(copy=False)
 
@@ -1185,9 +1450,12 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         if vertices[-1][0] < vertices_prec[-1][0]:
             raise PrecisionError("The leading coefficient has not enough precision")
 
-        for (x, y) in vertices:
+        for x, y in vertices:
             if polygon_prec(x) <= y:
-                raise PrecisionError("The coefficient of %s^%s has not enough precision" % (self.parent().variable_name(), x))
+                raise PrecisionError(
+                    "The coefficient of %s^%s has not enough precision"
+                    % (self.parent().variable_name(), x)
+                )
         return polygon
 
     def is_eisenstein(self, secure=False):
@@ -1232,7 +1500,7 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
         compval = 1 - self._valbase
         valaddeds = self._valaddeds
         relprecs = self._relprecs
-        if relprecs[0] <= compval:   # not enough precision
+        if relprecs[0] <= compval:  # not enough precision
             if valaddeds[0] < relprecs[0]:
                 return False
             raise PrecisionError("Not enough precision on the constant coefficient")
@@ -1240,14 +1508,20 @@ class Polynomial_padic_capped_relative_dense(Polynomial_generic_cdv, Polynomial_
             if valaddeds[0] != compval:
                 return False
         for i in range(1, deg):
-            if relprecs[i] < compval:   # not enough precision
+            if relprecs[i] < compval:  # not enough precision
                 if valaddeds[i] < relprecs[i]:
                     return False
                 if secure:
                     if i == 1:
-                        raise PrecisionError("Not enough precision on the coefficient of %s" % self.variable_name())
+                        raise PrecisionError(
+                            "Not enough precision on the coefficient of %s"
+                            % self.variable_name()
+                        )
                     else:
-                        raise PrecisionError("Not enough precision on the coefficient of %s^%s" % (self.variable_name(), i))
+                        raise PrecisionError(
+                            "Not enough precision on the coefficient of %s^%s"
+                            % (self.variable_name(), i)
+                        )
             else:
                 if valaddeds[i] < compval:
                     return False

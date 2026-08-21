@@ -51,14 +51,12 @@ class func_persist:
     Put ``@func_persist`` right before your function
     definition to cache values it computes to disk.
     """
+
     def __init__(self, f, dir='func_persist'):
         self.__func = f
         self.__dir = dir
         os.makedirs(dir, exist_ok=True)
-        self.__doc__ = '%s%s%s' % (
-            f.__name__,
-            inspect.signature(f),
-            f.__doc__)
+        self.__doc__ = '%s%s%s' % (f.__name__, inspect.signature(f), f.__doc__)
 
     def __call__(self, *args, **kwds):
         key = (tuple(args), tuple(kwds.items()))

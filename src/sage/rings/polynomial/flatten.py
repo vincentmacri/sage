@@ -77,6 +77,7 @@ class FlatteningMorphism(Morphism):
         sage: f(p).parent()
         Multivariate Polynomial Ring in x, y, s, t, X over Rational Field
     """
+
     def __init__(self, domain):
         """
         The Python constructor.
@@ -396,14 +397,13 @@ class UnflatteningMorphism(Morphism):
             for l in range(len(self._intermediate_rings)):
                 R, univariate = self._intermediate_rings[-1 - l]
                 idx = index[l + 1]
-                sub_exp = (cur_exp[index[l]] if univariate
-                           else cur_exp[index[l]:idx])
+                sub_exp = cur_exp[index[l]] if univariate else cur_exp[index[l] : idx]
                 if l == 0:
                     newpol[l][sub_exp] = p[cur_exp]
                 else:
                     newpol[l][sub_exp] = newpol[l - 1]
                     newpol[l - 1] = {}
-                if (i == len(expo) - 1 or expo[i + 1][idx:] != cur_exp[idx:]):
+                if i == len(expo) - 1 or expo[i + 1][idx:] != cur_exp[idx:]:
                     newpol[l] = R(newpol[l], check=False)
                 else:
                     break
@@ -534,14 +534,15 @@ class SpecializationMorphism(Morphism):
         # Construct unflattened codomain R
         new_vars = []
         R = domain
-        while isinstance(R, (PolynomialRing_generic,
-                             MPolynomialRing_base,
-                             FractionField_generic)):
+        while isinstance(
+            R, (PolynomialRing_generic, MPolynomialRing_base, FractionField_generic)
+        ):
             if isinstance(R, FractionField_generic):
                 # We've hit base_ring, so set _sub_specialization and exit the loop
                 field_over = R.base()
-                applicable_vars = {key: val for key, val in D.items()
-                                   if key not in flat.gens()}
+                applicable_vars = {
+                    key: val for key, val in D.items() if key not in flat.gens()
+                }
                 # If there are any variables in D to set in _sub_specialization
                 if applicable_vars:
                     # Coerce the generators to be in the right ring
@@ -554,14 +555,20 @@ class SpecializationMorphism(Morphism):
                                 break
                         else:
                             # Should have been caught earlier
-                            raise NameError("argument " + str(var) + " is not a generator anywhere in the polynomial tower")
+                            raise NameError(
+                                "argument "
+                                + str(var)
+                                + " is not a generator anywhere in the polynomial tower"
+                            )
                     applicable_vars = tmp
-                    self._sub_specialization = FractionSpecializationMorphism(R, applicable_vars)
+                    self._sub_specialization = FractionSpecializationMorphism(
+                        R, applicable_vars
+                    )
                 break
             # We're still in the polynomials, so keep track of the tower
             old = R.gens()
             new = [t for t in old if t not in D]
-            force_multivariate = ((len(old) == 1) and isinstance(R, MPolynomialRing_base))
+            force_multivariate = (len(old) == 1) and isinstance(R, MPolynomialRing_base)
             new_vars.append((new, force_multivariate, old))
             R = R.base_ring()
 
@@ -660,6 +667,7 @@ class FractionSpecializationMorphism(Morphism):
     """
     A specialization morphism for fraction fields over (stacked) polynomial rings
     """
+
     def __init__(self, domain, D):
         """
         Initialize the morphism with a domain and dictionary of specializations.
@@ -681,7 +689,9 @@ class FractionSpecializationMorphism(Morphism):
             raise TypeError("domain must be a fraction field")
         self._specialization = SpecializationMorphism(domain.base(), D)
         self._repr_type_str = 'Fraction Specialization'
-        Morphism.__init__(self, domain, self._specialization.codomain().fraction_field())
+        Morphism.__init__(
+            self, domain, self._specialization.codomain().fraction_field()
+        )
 
     def _call_(self, p):
         """

@@ -22,16 +22,17 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-
 from IPython.lib.pretty import PrettyPrinter
 
-from sage.repl.display.fancy_repr import (TallListRepr, PlainPythonRepr,
-                                          LargeMatrixHelpRepr,
-                                          SomeIPythonRepr)
+from sage.repl.display.fancy_repr import (
+    TallListRepr,
+    PlainPythonRepr,
+    LargeMatrixHelpRepr,
+    SomeIPythonRepr,
+)
 
 
 class SagePrettyPrinter(PrettyPrinter):
-
     DEBUG = False
 
     # These object representers will be tried, in this order, until
@@ -62,7 +63,7 @@ class SagePrettyPrinter(PrettyPrinter):
             sage: spp.toplevel()
             True
         """
-        return len(self.stack) <= 1   # only the object currently being represented
+        return len(self.stack) <= 1  # only the object currently being represented
 
     def __init__(self, output, max_width, newline, max_seq_length=None):
         """
@@ -104,8 +105,7 @@ class SagePrettyPrinter(PrettyPrinter):
             sage: foo
             <function foo at 0x...>
         """
-        super().__init__(output, max_width, newline,
-                         max_seq_length=max_seq_length)
+        super().__init__(output, max_width, newline, max_seq_length=max_seq_length)
         self.stack = []
 
     def pretty(self, obj):

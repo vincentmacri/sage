@@ -24,6 +24,7 @@ class dvipng(Executable):
         sage: dvipng().is_present()             # optional - dvipng
         FeatureTestResult('dvipng', True)
     """
+
     def __init__(self):
         r"""
         TESTS::
@@ -32,8 +33,12 @@ class dvipng(Executable):
             sage: isinstance(dvipng(), dvipng)
             True
         """
-        Executable.__init__(self, 'dvipng', executable='dvipng',
-                            url='https://savannah.nongnu.org/projects/dvipng/')
+        Executable.__init__(
+            self,
+            'dvipng',
+            executable='dvipng',
+            url='https://savannah.nongnu.org/projects/dvipng/',
+        )
 
 
 def all_features():

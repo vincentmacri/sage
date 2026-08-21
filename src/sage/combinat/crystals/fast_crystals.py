@@ -100,6 +100,7 @@ class FastCrystal(UniqueRepresentation, Parent):
          [1, 1, 0],
          [2, 1, 0]]
     """
+
     @staticmethod
     def __classcall__(cls, cartan_type, shape, format='string'):
         """
@@ -116,7 +117,7 @@ class FastCrystal(UniqueRepresentation, Parent):
         shape = tuple(shape)
         if len(shape) > 2:
             raise ValueError("The shape must have length <=2")
-        shape = shape + (0,)*(2-len(shape))
+        shape = shape + (0,) * (2 - len(shape))
         return super().__classcall__(cls, cartan_type, shape, format)
 
     def __init__(self, ct, shape, format):
@@ -128,7 +129,7 @@ class FastCrystal(UniqueRepresentation, Parent):
             sage: TestSuite(C).run()
         """
         Parent.__init__(self, category=ClassicalCrystals())
-#        super().__init__(category = FiniteEnumeratedSets())
+        #        super().__init__(category = FiniteEnumeratedSets())
         self._cartan_type = ct
         if ct[1] != 2:
             raise NotImplementedError
@@ -156,27 +157,29 @@ class FastCrystal(UniqueRepresentation, Parent):
         for i in range(self.size):
             target = list(self.delpat[i])
 
-            target[0] = target[0]-1
+            target[0] = target[0] - 1
             e1 = None if target not in self.delpat else self.delpat.index(target)
-            target[0] = target[0]+1+1
+            target[0] = target[0] + 1 + 1
             f1 = None if target not in self.delpat else self.delpat.index(target)
 
             target = list(self.gampat[i])
-            target[0] = target[0]-1
+            target[0] = target[0] - 1
             e2 = None if target not in self.gampat else self.gampat.index(target)
-            target[0] = target[0]+1+1
+            target[0] = target[0] + 1 + 1
             f2 = None if target not in self.gampat else self.gampat.index(target)
 
-            self._rootoperators.append([e1,f1,e2,f2])
+            self._rootoperators.append([e1, f1, e2, f2])
 
-        if int(2*l1) % 2 == 0:
+        if int(2 * l1) % 2 == 0:
             l1_str = "%d" % l1
             l2_str = "%d" % l2
         else:
-            assert self._cartan_type[0] == 'B' and int(2*l2) % 2 == 1
-            l1_str = "%d/2" % int(2*l1)
-            l2_str = "%d/2" % int(2*l2)
-        self.rename("The fast crystal for %s2 with shape [%s,%s]" % (ct[0],l1_str,l2_str))
+            assert self._cartan_type[0] == 'B' and int(2 * l2) % 2 == 1
+            l1_str = "%d/2" % int(2 * l1)
+            l2_str = "%d/2" % int(2 * l2)
+        self.rename(
+            "The fast crystal for %s2 with shape [%s,%s]" % (ct[0], l1_str, l2_str)
+        )
         self.module_generators = [self(0)]
         # self._digraph = ClassicalCrystal.digraph(self)
         self._digraph = super().digraph()
@@ -192,17 +195,17 @@ class FastCrystal(UniqueRepresentation, Parent):
             sage: C.gampat
             [[0, 0, 0], [1, 0, 0], [0, 1, 1]]
         """
-        for b in range(l2,-1,-1):
-            for a in range(l1,l2-1,-1):
-                for c in range(a,b-1,-1):
-                    a3 = l1-a
-                    a2 = l1+l2-a-b
-                    a1 = a-c
-                    b1 = max(a3,a2-a1)
-                    b2 = a1+a3
-                    b3 = min(a2-a3,a1)
-                    self.delpat.append([a1,a2,a3])
-                    self.gampat.append([b1,b2,b3])
+        for b in range(l2, -1, -1):
+            for a in range(l1, l2 - 1, -1):
+                for c in range(a, b - 1, -1):
+                    a3 = l1 - a
+                    a2 = l1 + l2 - a - b
+                    a1 = a - c
+                    b1 = max(a3, a2 - a1)
+                    b2 = a1 + a3
+                    b3 = min(a2 - a3, a1)
+                    self.delpat.append([a1, a2, a3])
+                    self.gampat.append([b1, b2, b3])
 
     def _type_bc_init(self, l1, l2):
         """
@@ -223,24 +226,24 @@ class FastCrystal(UniqueRepresentation, Parent):
             m1, m2 = l1 + l2, l1 - l2
         else:
             m1, m2 = l1, l2
-        for b in range(m2,-1,-1):
-            for a in range(m1,m2-1,-1):
-                for c in range(b,a+1):
-                    for d in range(c,-1,-1):
-                        a1 = c-d
-                        a2 = m1+m2+c-a-2*b
-                        a3 = m1+m2-a-b
-                        a4 = m1-a
-                        b1 = max(a4,2*a3-a2,a2-2*a1)
-                        b2 = max(a3, a1+a4, a1+2*a3-a2)
-                        b3 = min(a2, 2*a2-2*a3+a4, 2*a1+a4)
-                        b4 = min(a1, a2-a3, a3-a4)
+        for b in range(m2, -1, -1):
+            for a in range(m1, m2 - 1, -1):
+                for c in range(b, a + 1):
+                    for d in range(c, -1, -1):
+                        a1 = c - d
+                        a2 = m1 + m2 + c - a - 2 * b
+                        a3 = m1 + m2 - a - b
+                        a4 = m1 - a
+                        b1 = max(a4, 2 * a3 - a2, a2 - 2 * a1)
+                        b2 = max(a3, a1 + a4, a1 + 2 * a3 - a2)
+                        b3 = min(a2, 2 * a2 - 2 * a3 + a4, 2 * a1 + a4)
+                        b4 = min(a1, a2 - a3, a3 - a4)
                         if self._cartan_type[0] == 'B':
-                            self.delpat.append([a1,a2,a3,a4])
-                            self.gampat.append([b1,b2,b3,b4])
+                            self.delpat.append([a1, a2, a3, a4])
+                            self.gampat.append([b1, b2, b3, b4])
                         else:
-                            self.gampat.append([a1,a2,a3,a4])
-                            self.delpat.append([b1,b2,b3,b4])
+                            self.gampat.append([a1, a2, a3, a4])
+                            self.delpat.append([b1, b2, b3, b4])
 
     def __call__(self, value):
         """
@@ -293,9 +296,9 @@ class FastCrystal(UniqueRepresentation, Parent):
             0
         """
         assert x.parent() == self and y.parent() == self
-        if self._digraph_closure.has_edge(x,y):
+        if self._digraph_closure.has_edge(x, y):
             return -1
-        if self._digraph_closure.has_edge(y,x):
+        if self._digraph_closure.has_edge(y, x):
             return 1
         return 0
 
@@ -334,10 +337,20 @@ class FastCrystal(UniqueRepresentation, Parent):
             """
             delpat = self.parent().delpat[self.value]
             if self.parent()._cartan_type[0] == 'A':
-                delpat = delpat + [0,]
+                delpat = delpat + [
+                    0,
+                ]
             alpha1, alpha2 = self.parent().weight_lattice_realization().simple_roots()
-            hwv = sum(self.parent().shape[i]*self.parent().weight_lattice_realization().monomial(i) for i in range(2))
-            return hwv - (delpat[0]+delpat[2])*alpha1 - (delpat[1]+delpat[3])*alpha2
+            hwv = sum(
+                self.parent().shape[i]
+                * self.parent().weight_lattice_realization().monomial(i)
+                for i in range(2)
+            )
+            return (
+                hwv
+                - (delpat[0] + delpat[2]) * alpha1
+                - (delpat[1] + delpat[3]) * alpha2
+            )
 
         def _repr_(self) -> str:
             """

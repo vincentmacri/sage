@@ -118,7 +118,7 @@ def CyclicCover(r, f, names=None, check_smooth=True):
             smooth = f.is_squarefree()
         except NotImplementedError as err:
             raise NotImplementedError(
-                str(err) + "Use " "check_smooth=False to skip this check."
+                str(err) + "Use check_smooth=False to skip this check."
             )
         if not smooth:
             raise ValueError(

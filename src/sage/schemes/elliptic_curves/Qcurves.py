@@ -8,6 +8,7 @@ AUTHORS:
 The code here implements the algorithm of Cremona and Najman presented
 in [CrNa2020]_.
 """
+
 ##############################################################################
 #       Copyright (C) 2020-2021 John Cremona <john.cremona@gmail.com>
 #
@@ -225,7 +226,10 @@ def is_Q_curve(E, maxp=100, certificate=False, verbose=False):
     from sage.libs.pari import pari
     from sage.rings.number_field.number_field import NumberField
     from sage.schemes.elliptic_curves.constructor import EllipticCurve
-    from sage.schemes.elliptic_curves.cm import cm_j_invariants_and_orders, is_cm_j_invariant
+    from sage.schemes.elliptic_curves.cm import (
+        cm_j_invariants_and_orders,
+        is_cm_j_invariant,
+    )
 
     # Step 1
 
@@ -240,7 +244,13 @@ def is_Q_curve(E, maxp=100, certificate=False, verbose=False):
                 if jE == j:
                     return True, {'CM': d * f**2}
             # else not CM
-            return True, {'CM': ZZ(0), 'r': ZZ(0), 'rho': ZZ(0), 'N': ZZ(1), 'core_poly': polygen(QQ)}
+            return True, {
+                'CM': ZZ(0),
+                'r': ZZ(0),
+                'rho': ZZ(0),
+                'N': ZZ(1),
+                'core_poly': polygen(QQ),
+            }
         return True
 
     # CM curves are Q-curves:
@@ -314,7 +324,9 @@ def is_Q_curve(E, maxp=100, certificate=False, verbose=False):
     centrejpols = conjugacy_test(jC, verbose=verbose)
     if centrejpols:
         if verbose:
-            print("Yes: the isogeny class contains a complete conjugacy class of j-invariants")
+            print(
+                "Yes: the isogeny class contains a complete conjugacy class of j-invariants"
+            )
         if certificate:
             for f in centrejpols:
                 rho = f.degree().valuation(2)
@@ -324,8 +336,14 @@ def is_Q_curve(E, maxp=100, certificate=False, verbose=False):
                 level = lcm(core_degs)
                 if level.is_squarefree():
                     r = len(level.prime_divisors())
-                    cert = {'CM': ZZ(0), 'core_poly': f, 'rho': rho,
-                            'r': r, 'N': level, 'core_degs': core_degs}
+                    cert = {
+                        'CM': ZZ(0),
+                        'core_poly': f,
+                        'rho': rho,
+                        'r': r,
+                        'N': level,
+                        'core_degs': core_degs,
+                    }
                     return True, cert
             print("No central curve found")
         else:
@@ -343,7 +361,11 @@ def is_Q_curve(E, maxp=100, certificate=False, verbose=False):
 
     xmaxp = 10 * maxp
     if verbose:
-        print("Undecided after first round, so we apply more local tests, up to {}".format(xmaxp))
+        print(
+            "Undecided after first round, so we apply more local tests, up to {}".format(
+                xmaxp
+            )
+        )
 
     res4, p = Step4Test(E, B=xmaxp, oldB=maxp, verbose=verbose)
     if not res4:
@@ -373,16 +395,24 @@ def is_Q_curve(E, maxp=100, certificate=False, verbose=False):
             return False, 0
         return False
     if verbose:
-        print("...and find that the class contains {} curves, not just the {} we computed originally".format(len(jCfull), len(jC)))
+        print(
+            "...and find that the class contains {} curves, not just the {} we computed originally".format(
+                len(jCfull), len(jC)
+            )
+        )
     centrejpols = conjugacy_test(jCfull, verbose=verbose)
     if cert:
         if verbose:
-            print("Yes: the isogeny class contains a complete conjugacy class of j-invariants")
+            print(
+                "Yes: the isogeny class contains a complete conjugacy class of j-invariants"
+            )
         if certificate:
             return True, centrejpols
         return True
     if verbose:
-        print("No: the isogeny class does *not* contain a complete conjugacy class of j-invariants")
+        print(
+            "No: the isogeny class does *not* contain a complete conjugacy class of j-invariants"
+        )
     if certificate:
         return False, 0
     return False
@@ -445,6 +475,7 @@ def Step4Test(E, B, oldB=0, verbose=False):
         (True, 0)
     """
     from sage.arith.misc import primes
+
     K = E.base_field()
     NN = E.conductor().norm()
     for p in primes(B):
@@ -471,10 +502,17 @@ def Step4Test(E, B, oldB=0, verbose=False):
 
         # else compare a_P^2-4*N(P) which should have the same squarefree part:
 
-        discs = [(Ei.trace_of_frobenius()**2 - 4 * P.norm()).squarefree_part() for P, Ei in zip(Plist, EmodP)]
+        discs = [
+            (Ei.trace_of_frobenius() ** 2 - 4 * P.norm()).squarefree_part()
+            for P, Ei in zip(Plist, EmodP)
+        ]
         if any(d != discs[0] for d in discs[1:]):
             if verbose:
-                print("No: inconsistency at the {} ordinary primes dividing {} ".format(len(Plist), p))
+                print(
+                    "No: inconsistency at the {} ordinary primes dividing {} ".format(
+                        len(Plist), p
+                    )
+                )
                 print("  - Frobenius discriminants mod squares: {}".format(discs))
             return False, p
     # Now we have failed to prove that E is not a Q-curve
@@ -545,7 +583,9 @@ def conjugacy_test(jlist, verbose=False):
     K = jlist[0].parent()
     if K.degree() % 2:
         if verbose:
-            print("Odd-degree case: no rational j-invariant in the class {}".format(jlist))
+            print(
+                "Odd-degree case: no rational j-invariant in the class {}".format(jlist)
+            )
         return []
 
     # If K has no quadratic subfields we can similarly conclude right
@@ -553,7 +593,11 @@ def conjugacy_test(jlist, verbose=False):
 
     if K(1).descend_mod_power(QQ, 2) == [1]:
         if verbose:
-            print("No-quadratic-subfield case: no rational j-invariant in the class {}".format(jlist))
+            print(
+                "No-quadratic-subfield case: no rational j-invariant in the class {}".format(
+                    jlist
+                )
+            )
         return []
 
     # compute the minimum polynomials of the j-invariants in the class
@@ -576,7 +620,11 @@ def conjugacy_test(jlist, verbose=False):
     centrepols = list(Set([f for f in pols if f.degree() == minpols.count(f)]))
     if centrepols:
         if verbose:
-            print("Yes: the isogeny class contains all j-invariants with min poly {}".format(centrepols))
+            print(
+                "Yes: the isogeny class contains all j-invariants with min poly {}".format(
+                    centrepols
+                )
+            )
         return centrepols
     if verbose:
         print("No complete conjugacy class of 2-power size found in {}".format(jlist))

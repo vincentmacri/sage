@@ -33,9 +33,14 @@ from sage.categories.regular_crystals import RegularCrystals
 from sage.categories.classical_crystals import ClassicalCrystals
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.combinat.root_system.cartan_type import CartanType
-from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+from sage.combinat.rigged_configurations.rigged_configurations import (
+    RiggedConfigurations,
+)
 from sage.combinat.rigged_configurations.rigged_configuration_element import (
-     RiggedConfigurationElement, RCHighestWeightElement, RCHWNonSimplyLacedElement)
+    RiggedConfigurationElement,
+    RCHighestWeightElement,
+    RCHWNonSimplyLacedElement,
+)
 from sage.combinat.rigged_configurations.rigged_partition import RiggedPartition
 
 # Note on implementation, this class is used for simply-laced types only
@@ -115,6 +120,7 @@ class CrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
     - [SS2015II]_
     - [SS2017]_
     """
+
     @staticmethod
     def __classcall_private__(cls, cartan_type, wt=None, WLR=None):
         r"""
@@ -172,16 +178,22 @@ class CrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
         self._cartan_type = WLR.cartan_type()
         self._wt = wt
         self._rc_index = self._cartan_type.index_set()
-        self._rc_index_inverse = {i: ii for ii,i in enumerate(self._rc_index)}
+        self._rc_index_inverse = {i: ii for ii, i in enumerate(self._rc_index)}
         # We store the Cartan matrix for the vacancy number calculations for speed
         self._cartan_matrix = self._cartan_type.cartan_matrix()
         if self._cartan_type.is_finite():
             category = ClassicalCrystals()
         else:
-            category = (RegularCrystals(), HighestWeightCrystals(), InfiniteEnumeratedSets())
+            category = (
+                RegularCrystals(),
+                HighestWeightCrystals(),
+                InfiniteEnumeratedSets(),
+            )
         Parent.__init__(self, category=category)
         n = self._cartan_type.rank()  # == len(self._cartan_type.index_set())
-        self.module_generators = (self.element_class(self, partition_list=[[] for _ in repeat(None, n)]),)
+        self.module_generators = (
+            self.element_class(self, partition_list=[[] for _ in repeat(None, n)]),
+        )
 
     options = RiggedConfigurations.options
 
@@ -196,7 +208,8 @@ class CrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
             Crystal of rigged configurations of type ['A', 3] and weight Lambda[1]
         """
         return "Crystal of rigged configurations of type {0} and weight {1}".format(
-                self._cartan_type, self._wt)
+            self._cartan_type, self._wt
+        )
 
     def _element_constructor_(self, *lst, **options):
         """
@@ -242,9 +255,9 @@ class CrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
             lst = lst[0]
 
         if isinstance(lst[0], RiggedPartition):
-            lst = [p._clone() for p in lst] # Make a deep copy
+            lst = [p._clone() for p in lst]  # Make a deep copy
         elif isinstance(lst[0], RiggedConfigurationElement):
-            lst = [p._clone() for p in lst[0]] # Make a deep copy
+            lst = [p._clone() for p in lst[0]]  # Make a deep copy
 
         return self.element_class(self, list(lst), **options)
 
@@ -273,8 +286,8 @@ class CrystalOfRiggedConfigurations(UniqueRepresentation, Parent):
         """
         vac_num = self._wt[self.index_set()[a]]
 
-        for b,nu in enumerate(partitions):
-            val = self._cartan_matrix[a,b]
+        for b, nu in enumerate(partitions):
+            val = self._cartan_matrix[a, b]
             if val:
                 if i == float('inf'):
                     vac_num -= val * sum(nu)
@@ -336,7 +349,7 @@ class CrystalOfNonSimplyLacedRC(CrystalOfRiggedConfigurations):
         P = self._folded_ct._folding.root_system().weight_lattice()
         gamma = self._folded_ct.scaling_factors()
         sigma = self._folded_ct.folding_orbit()
-        vwt = P.sum_of_terms((b, gamma[a]*c) for a,c in self._wt for b in sigma[a])
+        vwt = P.sum_of_terms((b, gamma[a] * c) for a, c in self._wt for b in sigma[a])
         return CrystalOfRiggedConfigurations(vwt)
 
     def _calc_vacancy_number(self, partitions, a, i, **options):
@@ -367,15 +380,16 @@ class CrystalOfNonSimplyLacedRC(CrystalOfRiggedConfigurations):
         vac_num = self._wt[ia]
 
         if i == float('inf'):
-            return vac_num - sum(self._cartan_matrix[a,b] * sum(nu)
-                                 for b,nu in enumerate(partitions))
+            return vac_num - sum(
+                self._cartan_matrix[a, b] * sum(nu) for b, nu in enumerate(partitions)
+            )
 
         gamma = self._folded_ct.scaling_factors()
         g = gamma[ia]
         for b, nu in enumerate(partitions):
             ib = I[b]
-            q = nu.get_num_cells_to_column(g*i, gamma[ib])
-            vac_num -= self._cartan_matrix[a,b] * q / gamma[ib]
+            q = nu.get_num_cells_to_column(g * i, gamma[ib])
+            vac_num -= self._cartan_matrix[a, b] * q / gamma[ib]
 
         return vac_num
 
@@ -422,10 +436,11 @@ class CrystalOfNonSimplyLacedRC(CrystalOfRiggedConfigurations):
         for a, rp in enumerate(rc):
             for i in sigma[a]:
                 k = vindex.index(i)
-                partitions[k] = [row_len*gamma[a] for row_len in rp._list]
-                riggings[k] = [rig_val*gamma[a] for rig_val in rp.rigging]
-        return self.virtual.element_class(self.virtual, partition_list=partitions,
-                                          rigging_list=riggings)
+                partitions[k] = [row_len * gamma[a] for row_len in rp._list]
+                riggings[k] = [rig_val * gamma[a] for rig_val in rp.rigging]
+        return self.virtual.element_class(
+            self.virtual, partition_list=partitions, rigging_list=riggings
+        )
 
     def from_virtual(self, vrc):
         """
@@ -445,7 +460,9 @@ class CrystalOfNonSimplyLacedRC(CrystalOfRiggedConfigurations):
             sage: elt == RC.from_virtual(RC.to_virtual(elt))
             True
         """
-        gamma = list(self._folded_ct.scaling_factors())  # map(int, self._folded_ct.scaling_factors())
+        gamma = list(
+            self._folded_ct.scaling_factors()
+        )  # map(int, self._folded_ct.scaling_factors())
         sigma = self._folded_ct._orbit
         n = self._cartan_type.rank()
         partitions = [None] * n
@@ -455,6 +472,8 @@ class CrystalOfNonSimplyLacedRC(CrystalOfRiggedConfigurations):
             index = vindex.index(sigma[a][0])
             partitions[a] = [row_len // gamma[a] for row_len in vrc[index]._list]
             riggings[a] = [rig_val / gamma[a] for rig_val in vrc[index].rigging]
-        return self.element_class(self, partition_list=partitions, rigging_list=riggings)
+        return self.element_class(
+            self, partition_list=partitions, rigging_list=riggings
+        )
 
     Element = RCHWNonSimplyLacedElement

@@ -53,8 +53,7 @@ from sage.structure.element import parent
 from sage.structure.parent import Parent
 from sage.structure.element import Element
 from sage.structure.unique_representation import UniqueRepresentation
-from sage.structure.richcmp import (op_NE, op_EQ, richcmp_not_equal,
-                                    rich_to_bool)
+from sage.structure.richcmp import op_NE, op_EQ, richcmp_not_equal, rich_to_bool
 
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -123,8 +122,7 @@ def Constellations(*data, **options):
             if len(sym.domain()) != degree:
                 raise ValueError("the size of the domain should be equal to the degree")
 
-        return Constellations_ld(Integer(length), Integer(degree),
-                                 sym, bool(connected))
+        return Constellations_ld(Integer(length), Integer(degree), sym, bool(connected))
 
     raise ValueError("you must either provide a profile or a pair (length, degree)")
 
@@ -175,9 +173,10 @@ def Constellation(g=None, mutable=False, connected=True, check=True):
     l = len(g)
     sym, _ = perms_sym_init([x for x in g if x is not None])
     d = len(sym.domain())
-    return Constellations(l, d,
-                          domain=sym.domain(),
-                          connected=connected)(g, mutable=mutable, check=check)
+    return Constellations(l, d, domain=sym.domain(), connected=connected)(
+        g, mutable=mutable, check=check
+    )
+
 
 # classes
 
@@ -299,8 +298,9 @@ class Constellation_class(Element):
             sage: c._check()
         """
         if not self._mutable:
-            raise ValueError("this constellation is immutable."
-                             " Take a mutable copy first.")
+            raise ValueError(
+                "this constellation is immutable. Take a mutable copy first."
+            )
         S = SymmetricGroup(list(range(self.degree())))
         tr = S((j0, j1))
         i = int(i)
@@ -336,9 +336,10 @@ class Constellation_class(Element):
             sage: parent(c.euler_characteristic())
             Integer Ring
         """
-        return Integer(self.degree() * 2 -
-                       sum(sum(j - 1 for j in self.profile(i))
-                           for i in range(self.length())))
+        return Integer(
+            self.degree() * 2
+            - sum(sum(j - 1 for j in self.profile(i)) for i in range(self.length()))
+        )
 
     def genus(self):
         r"""
@@ -386,7 +387,7 @@ class Constellation_class(Element):
             raise ValueError("the product is not identity")
 
         if self._connected and not perms_are_connected(self._g):
-                raise ValueError("not connected")
+            raise ValueError("not connected")
 
     def __copy__(self):
         r"""
@@ -405,9 +406,7 @@ class Constellation_class(Element):
             sage: c is copy(c)
             False
         """
-        return self.parent()(list(self._g),
-                             check=False,
-                             mutable=self._mutable)
+        return self.parent()(list(self._g), check=False, mutable=self._mutable)
 
     copy = __copy__
 
@@ -422,9 +421,7 @@ class Constellation_class(Element):
             sage: d.is_mutable()
             True
         """
-        return self.parent()(list(self._g),
-                             check=False,
-                             mutable=True)
+        return self.parent()(list(self._g), check=False, mutable=True)
 
     # GENERAL PROPERTIES
 
@@ -565,8 +562,9 @@ class Constellation_class(Element):
             True
         """
         if return_map:
-            if not (self.degree() == other.degree() and
-                   self.length() == other.length()):
+            if not (
+                self.degree() == other.degree() and self.length() == other.length()
+            ):
                 return False, None
             sn, sn_map = self.relabel(return_map=True)
             on, on_map = other.relabel(return_map=True)
@@ -574,9 +572,11 @@ class Constellation_class(Element):
                 return False, None
             return True, sn_map * ~on_map
 
-        return (self.degree() == other.degree() and
-                self.length() == other.length() and
-                self.relabel() == other.relabel())
+        return (
+            self.degree() == other.degree()
+            and self.length() == other.length()
+            and self.relabel() == other.relabel()
+        )
 
     def _repr_(self):
         r"""
@@ -588,8 +588,9 @@ class Constellation_class(Element):
             sage: c._repr_()
             'Constellation of length 4 and degree 3\ng0 (0,1)(2)\ng1 (0,2)(1)\ng2 (0)(1,2)\ng3 (0,2)(1)'
         """
-        s = "Constellation of length {} and degree {}".format(self.length(),
-                                                              self.degree())
+        s = "Constellation of length {} and degree {}".format(
+            self.length(), self.degree()
+        )
         for i in range(self.length()):
             s += "\ng{} {}".format(i, self._g[i].cycle_string(True))
         return s
@@ -689,6 +690,7 @@ class Constellation_class(Element):
             [(0,1,2)(3,4), (0,3), (0,4,3,2,1)]
         """
         from copy import copy
+
         if i is None:
             return copy(self._g)
         gi = self._g[i]
@@ -768,9 +770,7 @@ class Constellation_class(Element):
             g = [perm_inv * g_k * perm for g_k in self._g]
             P = self.parent()
             return P.element_class(P, g, self._connected, self._mutable, False)
-            return self.parent()(g,
-                                 check=False,
-                                 mutable=self._mutable)
+            return self.parent()(g, check=False, mutable=self._mutable)
 
         if return_map:
             try:
@@ -785,8 +785,9 @@ class Constellation_class(Element):
 
         # compute canonical labels
         if not self.is_connected():
-            raise ValueError("no canonical labels implemented for"
-                             " non connected constellation")
+            raise ValueError(
+                "no canonical labels implemented for non connected constellation"
+            )
 
         # get the permutations on {0, 1, ..., d-1}
         # compute the canonical labels
@@ -865,7 +866,7 @@ class Constellation_class(Element):
             txt = "i should be between 0 and {}"
             raise ValueError(txt.format(self.length() - 1))
         j = i + 1
-        if j == self.length():   # wrap around the cylinder
+        if j == self.length():  # wrap around the cylinder
             j = 0
         h = self.copy()
         si = self._g[i]
@@ -924,6 +925,7 @@ class Constellations_ld(UniqueRepresentation, Parent):
         sage: Constellations(2,3,connected=False).cardinality()
         6
     """
+
     Element = Constellation_class
 
     def __init__(self, length, degree, sym=None, connected=True):
@@ -940,6 +942,7 @@ class Constellations_ld(UniqueRepresentation, Parent):
             ....:         TestSuite(Constellations(l, d)).run()
         """
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+
         Parent.__init__(self, category=FiniteEnumeratedSets())
         self._length = length
         self._degree = degree
@@ -969,8 +972,9 @@ class Constellations_ld(UniqueRepresentation, Parent):
             sage: Constellations(2, 1).is_empty()
             False
         """
-        return self._connected and (not self._degree
-                                    or (self._degree > 1 and self._length == 1))
+        return self._connected and (
+            not self._degree or (self._degree > 1 and self._length == 1)
+        )
 
     def __contains__(self, elt) -> bool:
         r"""
@@ -1009,10 +1013,11 @@ class Constellations_ld(UniqueRepresentation, Parent):
         if not isinstance(elt, Constellation_class):
             return False
 
-        return (elt.parent() is self or
-                (elt.length() == self._length and
-                 elt.degree() == self._degree and
-                 (not self._connected or elt.is_connected())))
+        return elt.parent() is self or (
+            elt.length() == self._length
+            and elt.degree() == self._degree
+            and (not self._connected or elt.is_connected())
+        )
 
     def _repr_(self):
         """
@@ -1023,9 +1028,9 @@ class Constellations_ld(UniqueRepresentation, Parent):
             sage: Constellations(3,3,connected=False)._repr_()
             'Constellations of length 3 and degree 3 on {1, 2, 3}'
         """
-        s = "of length {} and degree {} on {}".format(self._length,
-                                                      self._degree,
-                                                      self._sym.domain())
+        s = "of length {} and degree {} on {}".format(
+            self._length, self._degree, self._sym.domain()
+        )
         if self._connected:
             return "Connected constellations " + s
         return "Constellations " + s
@@ -1084,7 +1089,7 @@ class Constellations_ld(UniqueRepresentation, Parent):
             return ZZ.zero()
 
         if not self._connected:
-            return factorial(self._degree) ** (k-1)
+            return factorial(self._degree) ** (k - 1)
 
         # recurrence from :oeis:`A220754`
         if not self._degree:
@@ -1093,10 +1098,16 @@ class Constellations_ld(UniqueRepresentation, Parent):
         a = []
         for n in range(self._degree):
             n = ZZ(n)
-            a.append(factorial(n+1) ** (k-1)
-                     - (factorial(n)
-                        * ZZ.sum(a[i] * factorial(n-i) ** (k-2) // factorial(i)
-                                 for i in range(n))))
+            a.append(
+                factorial(n + 1) ** (k - 1)
+                - (
+                    factorial(n)
+                    * ZZ.sum(
+                        a[i] * factorial(n - i) ** (k - 2) // factorial(i)
+                        for i in range(n)
+                    )
+                )
+            )
         return ZZ(a[-1])
 
     def random_element(self, mutable=False):
@@ -1119,6 +1130,7 @@ class Constellations_ld(UniqueRepresentation, Parent):
             True
         """
         from sage.categories.sets_cat import EmptySetError
+
         if self.is_empty():
             raise EmptySetError
 
@@ -1153,8 +1165,11 @@ class Constellations_ld(UniqueRepresentation, Parent):
             ...
             ValueError: not connected
         """
-        if len(data) == 1 and isinstance(data[0], (list, tuple)) and \
-           len(data[0]) == self._length:
+        if (
+            len(data) == 1
+            and isinstance(data[0], (list, tuple))
+            and len(data[0]) == self._length
+        ):
             g = list(data[0])
         else:
             g = list(data)
@@ -1221,6 +1236,7 @@ class Constellations_ld(UniqueRepresentation, Parent):
             EmptySetError
         """
         from sage.categories.sets_cat import EmptySetError
+
         if self.is_empty():
             raise EmptySetError
 
@@ -1231,7 +1247,7 @@ class Constellations_ld(UniqueRepresentation, Parent):
         domain = list(Sd.domain())
         if self._connected:
             d = self._degree
-            g = [[domain[d - 1]] + domain[:d - 1], domain[1:] + [domain[0]]]
+            g = [[domain[d - 1]] + domain[: d - 1], domain[1:] + [domain[0]]]
             g += [domain] * (self._length - 2)
         else:
             g = [domain] * self._length
@@ -1346,8 +1362,9 @@ class Constellations_p(UniqueRepresentation, Parent):
         d = Integer(sum(profile[0]))
         for p in profile:
             if sum(p) != d:
-                raise ValueError("all partition in the passport should "
-                                 "have the same sum.")
+                raise ValueError(
+                    "all partition in the passport should have the same sum."
+                )
         if domain is None:
             sym = SymmetricGroup(d)
         else:
@@ -1358,6 +1375,7 @@ class Constellations_p(UniqueRepresentation, Parent):
         self._cd = Constellations_ld(l, d, sym, connected)
         self._profile = profile
         from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
+
         Parent.__init__(self, category=FiniteEnumeratedSets())
 
     def _repr_(self):
@@ -1367,8 +1385,7 @@ class Constellations_p(UniqueRepresentation, Parent):
             sage: Constellations(profile=[[3,2,1],[3,3],[3,3]])
             Connected constellations with profile ([3, 2, 1], [3, 3], [3, 3]) on {1, 2, 3, 4, 5, 6}
         """
-        s = "with profile {} on {}".format(self._profile,
-                                           self._cd._sym.domain())
+        s = "with profile {} on {}".format(self._profile, self._cd._sym.domain())
         if self._cd._connected:
             return "Connected constellations " + s
         return "Constellations " + s
@@ -1477,6 +1494,7 @@ class Constellations_p(UniqueRepresentation, Parent):
             if c.profile() == self._profile:
                 yield c
 
+
 # *************************************************************************
 #                          auxiliary functions
 # *************************************************************************
@@ -1502,8 +1520,9 @@ def perm_sym_domain(g):
         return set(g)
     if isinstance(g, str):  # perms given as strings of cycles
         assert g.startswith('(') and g.endswith(')')
-        domain = set().union(*[a for cyc in g[1:-1].split(')(')
-                               for a in cyc.split(',')])
+        domain = set().union(
+            *[a for cyc in g[1:-1].split(')(') for a in cyc.split(',')]
+        )
         if all(s.isdigit() for s in domain):
             return [int(x) for x in domain]
         return domain
@@ -1556,8 +1575,7 @@ def perms_sym_init(g, sym=None):
 
     if sym is None:
         domain = set().union(*[perm_sym_domain(gg) for gg in g])
-        if all(isinstance(s, (int, Integer)) and s > 0
-               for s in domain):
+        if all(isinstance(s, (int, Integer)) and s > 0 for s in domain):
             domain = max(domain)
         else:
             domain = sorted(domain)
@@ -1691,8 +1709,8 @@ def perms_canonical_labels_from(x, y, j0, verbose=False):
             else:  # found: complete cycle from new guy
                 j0 = y[l][j1]
                 if l < len(waiting) - 1:
-                    waiting[l + 1].extend(waiting[l][:i + 1])
-                del waiting[l][:i + 1]
+                    waiting[l + 1].extend(waiting[l][: i + 1])
+                del waiting[l][: i + 1]
                 break
 
     return mapping

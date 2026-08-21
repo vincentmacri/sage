@@ -31,6 +31,7 @@ class RandomVariable_generic(Parent):
     """
     A random variable.
     """
+
     def __init__(self, X, RR):
         if not isinstance(X, ProbabilitySpace_generic):
             raise TypeError("Argument X (= %s) must be a probability space" % X)
@@ -54,6 +55,7 @@ class DiscreteRandomVariable(RandomVariable_generic):
     """
     A random variable on a discrete probability space.
     """
+
     def __init__(self, X, f, codomain=None, check=False):
         r"""
         Create free binary string monoid on `n` generators.
@@ -65,11 +67,14 @@ class DiscreteRandomVariable(RandomVariable_generic):
           is the discrete function on X
         """
         if not isinstance(X, DiscreteProbabilitySpace):
-            raise TypeError("Argument X (= %s) must be a discrete probability space" % X)
+            raise TypeError(
+                "Argument X (= %s) must be a discrete probability space" % X
+            )
         if check:
             raise NotImplementedError("Not implemented")
         if codomain is None:
             from sage.rings.real_mpfr import RealField
+
             RR = RealField()
         else:
             RR = codomain
@@ -139,7 +144,7 @@ class DiscreteRandomVariable(RandomVariable_generic):
         mu = self.expectation()
         var = 0
         for x in self._function:
-            var += Omega(x) * (self(x) - mu)**2
+            var += Omega(x) * (self(x) - mu) ** 2
         return var
 
     def translation_variance(self, map):
@@ -159,7 +164,7 @@ class DiscreteRandomVariable(RandomVariable_generic):
         mu = self.translation_expectation(map)
         var = 0
         for x in Omega._function:
-            var += Omega(x) * (self(map(x)) - mu)**2
+            var += Omega(x) * (self(map(x)) - mu) ** 2
         return var
 
     def covariance(self, other):
@@ -177,12 +182,15 @@ class DiscreteRandomVariable(RandomVariable_generic):
         """
         Omega = self.probability_space()
         if Omega != other.probability_space():
-            raise ValueError("Argument other (= %s) must be defined on the same probability space." % other)
+            raise ValueError(
+                "Argument other (= %s) must be defined on the same probability space."
+                % other
+            )
         muX = self.expectation()
         muY = other.expectation()
         cov = 0
         for x in self._function:
-            cov += Omega(x)*(self(x) - muX)*(other(x) - muY)
+            cov += Omega(x) * (self(x) - muX) * (other(x) - muY)
         return cov
 
     def translation_covariance(self, other, map):
@@ -200,12 +208,15 @@ class DiscreteRandomVariable(RandomVariable_generic):
         """
         Omega = self.probability_space()
         if Omega != other.probability_space():
-            raise ValueError("Argument other (= %s) must be defined on the same probability space." % other)
+            raise ValueError(
+                "Argument other (= %s) must be defined on the same probability space."
+                % other
+            )
         muX = self.expectation()
         muY = other.translation_expectation(map)
         cov = 0
         for x in Omega._function:
-            cov += Omega(x)*(self(x) - muX)*(other(map(x)) - muY)
+            cov += Omega(x) * (self(x) - muX) * (other(map(x)) - muY)
         return cov
 
     def standard_deviation(self):
@@ -248,8 +259,10 @@ class DiscreteRandomVariable(RandomVariable_generic):
         sigX = self.standard_deviation()
         sigY = other.standard_deviation()
         if sigX == 0 or sigY == 0:
-            raise ValueError("Correlation not defined if standard deviations are not both nonzero.")
-        return cov/(sigX*sigY)
+            raise ValueError(
+                "Correlation not defined if standard deviations are not both nonzero."
+            )
+        return cov / (sigX * sigY)
 
     def translation_correlation(self, other, map):
         """
@@ -260,8 +273,11 @@ class DiscreteRandomVariable(RandomVariable_generic):
         sigX = self.standard_deviation()
         sigY = other.translation_standard_deviation(map)
         if sigX == 0 or sigY == 0:
-            raise ValueError("Correlation not defined if standard deviations are not both nonzero.")
-        return cov/(sigX*sigY)
+            raise ValueError(
+                "Correlation not defined if standard deviations are not both nonzero."
+            )
+        return cov / (sigX * sigY)
+
 
 ################################################################################
 ################################################################################
@@ -271,6 +287,7 @@ class ProbabilitySpace_generic(RandomVariable_generic):
     r"""
     A probability space.
     """
+
     def __init__(self, domain, RR):
         """
         A generic probability space on given domain space and codomain
@@ -279,7 +296,10 @@ class ProbabilitySpace_generic(RandomVariable_generic):
         if isinstance(domain, list):
             domain = tuple(domain)
         if not isinstance(domain, tuple):
-            raise TypeError("Argument domain (= %s) must be a list, tuple, or set containing." % domain)
+            raise TypeError(
+                "Argument domain (= %s) must be a list, tuple, or set containing."
+                % domain
+            )
         self._domain = domain
         RandomVariable_generic.__init__(self, self, RR)
 
@@ -287,10 +307,11 @@ class ProbabilitySpace_generic(RandomVariable_generic):
         return self._domain
 
 
-class DiscreteProbabilitySpace(ProbabilitySpace_generic,DiscreteRandomVariable):
+class DiscreteProbabilitySpace(ProbabilitySpace_generic, DiscreteRandomVariable):
     r"""
     The discrete probability space
     """
+
     def __init__(self, X, P, codomain=None, check=False):
         r"""
         Create the discrete probability space with probabilities on the
@@ -326,17 +347,26 @@ class DiscreteProbabilitySpace(ProbabilitySpace_generic,DiscreteRandomVariable):
         """
         if codomain is None:
             from sage.rings.real_mpfr import RealField
+
             codomain = RealField()
-        if not isinstance(codomain, sage.rings.abc.RealField) and not isinstance(codomain, RationalField):
-            raise TypeError("Argument codomain (= %s) must be the reals or rationals" % codomain)
+        if not isinstance(codomain, sage.rings.abc.RealField) and not isinstance(
+            codomain, RationalField
+        ):
+            raise TypeError(
+                "Argument codomain (= %s) must be the reals or rationals" % codomain
+            )
         if check:
             one = sum(P.values())
             if isinstance(codomain, RationalField):
                 if not one == 1:
-                    raise TypeError("Argument P (= %s) does not define a probability function")
+                    raise TypeError(
+                        "Argument P (= %s) does not define a probability function"
+                    )
             else:
                 if not abs(one - 1) < 2 ** (-codomain.precision() + 1):
-                    raise TypeError("Argument P (= %s) does not define a probability function")
+                    raise TypeError(
+                        "Argument P (= %s) does not define a probability function"
+                    )
         ProbabilitySpace_generic.__init__(self, X, codomain)
         DiscreteRandomVariable.__init__(self, self, P, codomain, check)
 
@@ -364,9 +394,11 @@ class DiscreteProbabilitySpace(ProbabilitySpace_generic,DiscreteRandomVariable):
         """
         The entropy of the probability space.
         """
+
         def neg_xlog2x(p):
             if p == 0:
                 return 0
-            return -p*log(p,2)
+            return -p * log(p, 2)
+
         p = self.function()
         return sum([neg_xlog2x(p[x]) for x in p])

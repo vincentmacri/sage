@@ -75,6 +75,7 @@ class ConjugacyClass(Parent):
         Conjugacy class of (1,2,3,4) in Symmetric group of order 4! as a
         permutation group
     """
+
     def __init__(self, group, element):
         r"""
         Generic conjugacy classes for elements in a group.
@@ -115,8 +116,7 @@ class ConjugacyClass(Parent):
             Conjugacy class of (1,2,3,4) in Symmetric group of order 4! as a
             permutation group
         """
-        return "Conjugacy class of %s in %s" % (self._representative,
-                                                self._parent)
+        return "Conjugacy class of %s in %s" % (self._representative, self._parent)
 
     def __eq__(self, other) -> bool:
         r"""
@@ -223,11 +223,12 @@ class ConjugacyClass(Parent):
             True
         """
         from sage.sets.recursively_enumerated_set import RecursivelyEnumeratedSet
+
         g = self._representative
         gens = self._parent.monoid_generators()
-        R = RecursivelyEnumeratedSet([g],
-                                     lambda y: [c * y * c**-1 for c in gens],
-                                     structure=None)
+        R = RecursivelyEnumeratedSet(
+            [g], lambda y: [c * y * c**-1 for c in gens], structure=None
+        )
         return R.breadth_first_search_iterator()
 
     @cached_method
@@ -278,11 +279,14 @@ class ConjugacyClass(Parent):
         """
         if self._parent.is_finite():
             from sage.sets.set import Set
+
             return Set(iter(self))
             # return Set(self) creates an infinite loop in __contains__
-        raise NotImplementedError("listing the elements of conjugacy classes "
-                                  "is not implemented for infinite groups; "
-                                  "use the iter function instead")
+        raise NotImplementedError(
+            "listing the elements of conjugacy classes "
+            "is not implemented for infinite groups; "
+            "use the iter function instead"
+        )
 
     def list(self) -> list:
         r"""
@@ -304,9 +308,11 @@ class ConjugacyClass(Parent):
             # return list(self) creates an infinite loop because list calls
             # __len__ which calls list...
 
-        raise NotImplementedError("listing the elements of conjugacy classes "
-                                  "is not implemented for infinite groups; "
-                                  "use the iter function instead")
+        raise NotImplementedError(
+            "listing the elements of conjugacy classes "
+            "is not implemented for infinite groups; "
+            "use the iter function instead"
+        )
 
     def is_real(self) -> bool:
         """
@@ -320,7 +326,7 @@ class ConjugacyClass(Parent):
             sage: c.is_real()
             True
         """
-        return self._representative**(-1) in self
+        return self._representative ** (-1) in self
 
     def is_rational(self) -> bool:
         """
@@ -374,6 +380,7 @@ class ConjugacyClassGAP(ConjugacyClass):
         Conjugacy class of (1,2,3,4) in Symmetric group of order 4! as a
         permutation group
     """
+
     def __init__(self, group, element) -> None:
         r"""
         Constructor for the class.
@@ -409,7 +416,9 @@ class ConjugacyClassGAP(ConjugacyClass):
         except (AttributeError, TypeError):
             raise TypeError(f"the group {group} cannot be defined as a GAP group")
 
-        self._gap_conjugacy_class = self._gap_group.ConjugacyClass(self._gap_representative)
+        self._gap_conjugacy_class = self._gap_group.ConjugacyClass(
+            self._gap_representative
+        )
         ConjugacyClass.__init__(self, group, element)
 
     def _libgap_(self):
@@ -521,6 +530,7 @@ class ConjugacyClassGAP(ConjugacyClass):
             True
         """
         from sage.sets.set import Set
+
         try:
             cc = self._gap_conjugacy_class.AsList().sage()
             return Set([self._parent(x) for x in cc])

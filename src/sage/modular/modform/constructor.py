@@ -101,8 +101,11 @@ def canonical_parameters(group, level, weight, base_ring):
         if Integer(level) != group.level():
             raise ValueError("group.level() and level do not match.")
         # normalize the case of SL2Z
-        if isinstance(group, arithgroup.SL2Z_class) or \
-           isinstance(group, arithgroup.Gamma1_class) and group.level() == Integer(1):
+        if (
+            isinstance(group, arithgroup.SL2Z_class)
+            or isinstance(group, arithgroup.Gamma1_class)
+            and group.level() == Integer(1)
+        ):
             group = arithgroup.Gamma0(Integer(1))
 
     elif group is None:
@@ -151,12 +154,14 @@ def ModularForms_clear_cache():
     _cache = {}
 
 
-def ModularForms(group=1,
-                 weight=2,
-                 base_ring=None,
-                 eis_only=False,
-                 use_cache=True,
-                 prec=defaults.DEFAULT_PRECISION):
+def ModularForms(
+    group=1,
+    weight=2,
+    base_ring=None,
+    eis_only=False,
+    use_cache=True,
+    prec=defaults.DEFAULT_PRECISION,
+):
     r"""
     Create an ambient space of modular forms.
 
@@ -302,8 +307,9 @@ def ModularForms(group=1,
     if base_ring is None:
         base_ring = QQ
 
-    if isinstance(group, (dirichlet.DirichletCharacter,
-                          arithgroup.CongruenceSubgroupBase)):
+    if isinstance(
+        group, (dirichlet.DirichletCharacter, arithgroup.CongruenceSubgroupBase)
+    ):
         level = group.level()
     else:
         level = group
@@ -344,29 +350,33 @@ def ModularForms(group=1,
             # TODO -- implement this
             # Need to add a lift_to_char_0 function for characters,
             # and need to still remember eps.
-            raise NotImplementedError("currently the character must be over a ring of characteristic 0.")
+            raise NotImplementedError(
+                "currently the character must be over a ring of characteristic 0."
+            )
         eps = eps.minimize_base_ring()
         if eps.is_trivial():
-            return ModularForms(eps.modulus(), weight, base_ring,
-                                use_cache=use_cache,
-                                prec=prec)
+            return ModularForms(
+                eps.modulus(), weight, base_ring, use_cache=use_cache, prec=prec
+            )
         M = ModularFormsAmbient_eps(eps, weight, eis_only=eis_only)
         if base_ring != eps.base_ring():
-            M = M.base_extend(base_ring) # ambient_R.ModularFormsAmbient_R(M, base_ring)
+            M = M.base_extend(
+                base_ring
+            )  # ambient_R.ModularFormsAmbient_R(M, base_ring)
 
     if M is None:
-        raise NotImplementedError("computation of requested space of modular forms not defined or implemented")
+        raise NotImplementedError(
+            "computation of requested space of modular forms not defined or implemented"
+        )
 
     M.set_precision(prec)
     _cache[key] = weakref.ref(M)
     return M
 
 
-def CuspForms(group=1,
-              weight=2,
-              base_ring=None,
-              use_cache=True,
-              prec=defaults.DEFAULT_PRECISION):
+def CuspForms(
+    group=1, weight=2, base_ring=None, use_cache=True, prec=defaults.DEFAULT_PRECISION
+):
     """
     Create a space of cuspidal modular forms.
 
@@ -379,15 +389,14 @@ def CuspForms(group=1,
         Cuspidal subspace of dimension 1 of Modular Forms space of dimension 2
          for Congruence Subgroup Gamma0(11) of weight 2 over Rational Field
     """
-    return ModularForms(group, weight, base_ring,
-                        use_cache=use_cache, prec=prec).cuspidal_submodule()
+    return ModularForms(
+        group, weight, base_ring, use_cache=use_cache, prec=prec
+    ).cuspidal_submodule()
 
 
-def EisensteinForms(group=1,
-              weight=2,
-              base_ring=None,
-              use_cache=True,
-              prec=defaults.DEFAULT_PRECISION):
+def EisensteinForms(
+    group=1, weight=2, base_ring=None, use_cache=True, prec=defaults.DEFAULT_PRECISION
+):
     """
     Create a space of Eisenstein modular forms.
 
@@ -401,10 +410,12 @@ def EisensteinForms(group=1,
          for Congruence Subgroup Gamma0(11) of weight 2 over Rational Field
     """
     if weight == 1:
-        return ModularForms(group, weight, base_ring,
-                        use_cache=use_cache, eis_only=True, prec=prec).eisenstein_submodule()
-    return ModularForms(group, weight, base_ring,
-                    use_cache=use_cache, prec=prec).eisenstein_submodule()
+        return ModularForms(
+            group, weight, base_ring, use_cache=use_cache, eis_only=True, prec=prec
+        ).eisenstein_submodule()
+    return ModularForms(
+        group, weight, base_ring, use_cache=use_cache, prec=prec
+    ).eisenstein_submodule()
 
 
 def Newforms(group, weight=2, base_ring=None, names=None):
@@ -528,7 +539,7 @@ def parse_label(s):
     N = int(N)
     index = 0
     for c in reversed(order):
-        index = 26*index + ord(c)-ord('a')
+        index = 26 * index + ord(c) - ord('a')
     if G == '' or G == 'G0':
         G = arithgroup.Gamma0(N)
     elif G == 'G1':

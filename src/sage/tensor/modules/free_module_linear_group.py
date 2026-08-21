@@ -279,15 +279,13 @@ class FreeModuleLinearGroup(UniqueRepresentation, Parent):
             sage: TestSuite(GL).run()
         """
         if not isinstance(fmodule, FiniteRankFreeModule):
-            raise TypeError("{} is not a free module of finite rank".format(
-                            fmodule))
+            raise TypeError("{} is not a free module of finite rank".format(fmodule))
         Parent.__init__(self, category=Groups())
         self._fmodule = fmodule
 
     #### Parent methods ####
 
-    def _element_constructor_(self, comp=[], basis=None, name=None,
-                              latex_name=None):
+    def _element_constructor_(self, comp=[], basis=None, name=None, latex_name=None):
         r"""
         Construct a free module automorphism.
 
@@ -358,16 +356,19 @@ class FreeModuleLinearGroup(UniqueRepresentation, Parent):
             True
         """
         from sage.tensor.modules.free_module_tensor import FreeModuleTensor
-        from sage.tensor.modules.free_module_morphism import \
-                                                   FiniteRankFreeModuleMorphism
+        from sage.tensor.modules.free_module_morphism import (
+            FiniteRankFreeModuleMorphism,
+        )
+
         if comp == 1:
             return self.one()
         if isinstance(comp, FreeModuleTensor):
-            tens = comp # for readability
+            tens = comp  # for readability
             # Conversion of a type-(1,1) tensor to an automorphism
-            if tens.tensor_type() == (1,1):
-                resu = self.element_class(self._fmodule, name=tens._name,
-                                          latex_name=tens._latex_name)
+            if tens.tensor_type() == (1, 1):
+                resu = self.element_class(
+                    self._fmodule, name=tens._name, latex_name=tens._latex_name
+                )
                 for basis, comp in tens._components.items():
                     resu._components[basis] = comp.copy()
                 # Check whether the tensor is invertible:
@@ -376,14 +377,14 @@ class FreeModuleLinearGroup(UniqueRepresentation, Parent):
                 except (ZeroDivisionError, TypeError):
                     raise TypeError(f"the {tens} is not invertible ")
                 return resu
-            raise TypeError(f"the {tens} cannot be converted "
-                            + "to an automorphism.")
+            raise TypeError(f"the {tens} cannot be converted " + "to an automorphism.")
         if isinstance(comp, FiniteRankFreeModuleMorphism):
             # Conversion of an endomorphism to an automorphism
             endo = comp  # for readability
             if endo.is_endomorphism() and self._fmodule is endo.domain():
-                resu = self.element_class(self._fmodule, name=endo._name,
-                                          latex_name=endo._latex_name)
+                resu = self.element_class(
+                    self._fmodule, name=endo._name, latex_name=endo._latex_name
+                )
                 for basis, mat in endo._matrices.items():
                     resu.add_comp(basis[0])[:] = mat
                 # Check whether the endomorphism is invertible:
@@ -392,12 +393,13 @@ class FreeModuleLinearGroup(UniqueRepresentation, Parent):
                 except (ZeroDivisionError, TypeError):
                     raise TypeError("the {} is not invertible ".format(endo))
                 return resu
-            raise TypeError("cannot coerce the {}".format(endo) +
-                            " to an element of {}".format(self))
+            raise TypeError(
+                "cannot coerce the {}".format(endo)
+                + " to an element of {}".format(self)
+            )
 
         # standard construction
-        resu = self.element_class(self._fmodule, name=name,
-                                  latex_name=latex_name)
+        resu = self.element_class(self._fmodule, name=name, latex_name=latex_name)
         if comp:
             resu.set_comp(basis)[:] = comp
         return resu
@@ -428,9 +430,9 @@ class FreeModuleLinearGroup(UniqueRepresentation, Parent):
         comp = resu.set_comp()
         for i in self._fmodule.irange():
             if i % 2 == 0:
-                comp[[i,i]] = self._fmodule._ring.one()
+                comp[[i, i]] = self._fmodule._ring.one()
             else:
-                comp[[i,i]] = -(self._fmodule._ring.one())
+                comp[[i, i]] = -(self._fmodule._ring.one())
         return resu
 
     #### End of parent methods ####
@@ -502,11 +504,15 @@ class FreeModuleLinearGroup(UniqueRepresentation, Parent):
         resu = self._element_constructor_(name='Id', latex_name=r'\mathrm{Id}')
         # Initialization of the components (Kronecker delta) in some basis:
         from .comp import KroneckerDelta
+
         fmodule = self._fmodule
         for basis in fmodule.bases():
-            resu._components[basis] = KroneckerDelta(fmodule._ring, basis,
-                                    start_index=fmodule._sindex,
-                                    output_formatter=fmodule._output_formatter)
+            resu._components[basis] = KroneckerDelta(
+                fmodule._ring,
+                basis,
+                start_index=fmodule._sindex,
+                output_formatter=fmodule._output_formatter,
+            )
         resu._is_identity = True
         resu.set_immutable()
         return resu
@@ -538,6 +544,7 @@ class FreeModuleLinearGroup(UniqueRepresentation, Parent):
             \mathrm{GL}\left( M \right)
         """
         from sage.misc.latex import latex
+
         return r"\mathrm{GL}\left(" + latex(self._fmodule) + r"\right)"
 
     def base_module(self):

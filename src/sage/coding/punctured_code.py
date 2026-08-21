@@ -7,7 +7,7 @@ Let `C` be a linear code. Let `C_i` be the set of all words of `C` with the
 on the `i`-th position.
 """
 
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2015 David Lucas <david.lucas@inria.fr>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,7 @@ on the `i`-th position.
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #                  http://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 from .linear_code import AbstractLinearCode
 from .encoder import Encoder
@@ -118,6 +118,7 @@ class PuncturedCode(AbstractLinearCode):
         sage: Cp
         Puncturing of [11, 5] linear code over GF(7) on position(s) [3, 5]
     """
+
     _registered_encoders = {}
     _registered_decoders = {}
 
@@ -136,9 +137,15 @@ class PuncturedCode(AbstractLinearCode):
             than the length of the provided code
         """
         if not isinstance(positions, (Integer, int, set, list)):
-            raise TypeError("positions must be either a Sage Integer, a Python int, a set or a list")
-        if isinstance(positions, (list, set)) and not all(isinstance(i, (int, Integer)) for i in positions):
-            raise TypeError("if positions is a list or a set, it has to contain only Python ints or Sage Integers")
+            raise TypeError(
+                "positions must be either a Sage Integer, a Python int, a set or a list"
+            )
+        if isinstance(positions, (list, set)) and not all(
+            isinstance(i, (int, Integer)) for i in positions
+        ):
+            raise TypeError(
+                "if positions is a list or a set, it has to contain only Python ints or Sage Integers"
+            )
         if isinstance(positions, (Integer, int)):
             positions = {positions}
         if isinstance(positions, list):
@@ -146,9 +153,15 @@ class PuncturedCode(AbstractLinearCode):
         if not isinstance(C, AbstractLinearCode):
             raise ValueError("Provided code must be a linear code")
         if not all(i in range(C.length()) for i in positions):
-            raise ValueError("Positions to puncture must be positive integers smaller than the length of the provided code")
-        super().__init__(C.base_ring(), C.length() - len(positions),
-                         "PuncturedMatrix", "OriginalCode")
+            raise ValueError(
+                "Positions to puncture must be positive integers smaller than the length of the provided code"
+            )
+        super().__init__(
+            C.base_ring(),
+            C.length() - len(positions),
+            "PuncturedMatrix",
+            "OriginalCode",
+        )
         self._original_code = C
         self._positions = positions
 
@@ -164,9 +177,11 @@ class PuncturedCode(AbstractLinearCode):
             sage: Cp1 == Cp2
             True
         """
-        return isinstance(other, PuncturedCode) \
-                and self.punctured_positions() == other.punctured_positions() \
-                and self.original_code() == other.original_code()
+        return (
+            isinstance(other, PuncturedCode)
+            and self.punctured_positions() == other.punctured_positions()
+            and self.original_code() == other.original_code()
+        )
 
     def _repr_(self):
         r"""
@@ -179,8 +194,10 @@ class PuncturedCode(AbstractLinearCode):
             sage: Cp
             Puncturing of [11, 5] linear code over GF(7) on position(s) [3]
         """
-        return "Puncturing of %s on position(s) %s"\
-                % (self.original_code(), list(self.punctured_positions()))
+        return "Puncturing of %s on position(s) %s" % (
+            self.original_code(),
+            list(self.punctured_positions()),
+        )
 
     def _latex_(self):
         r"""
@@ -193,8 +210,10 @@ class PuncturedCode(AbstractLinearCode):
             sage: latex(Cp)
             \textnormal{Puncturing of [11, 5] linear code over GF(7) on position(s) } [3]
         """
-        return "\\textnormal{Puncturing of %s on position(s) } %s"\
-                % (self.original_code(), list(self.punctured_positions()))
+        return "\\textnormal{Puncturing of %s on position(s) } %s" % (
+            self.original_code(),
+            list(self.punctured_positions()),
+        )
 
     def punctured_positions(self):
         r"""
@@ -336,7 +355,7 @@ class PuncturedCode(AbstractLinearCode):
             list_len = len(list_pts)
             for p in cur_pts:
                 for i in range(list_len):
-                    if (p <= list_pts[i]):
+                    if p <= list_pts[i]:
                         list_pts[i] += 1
             list_pts += cur_pts
             C = C.original_code()
@@ -403,7 +422,10 @@ class PuncturedCodePuncturedMatrixEncoder(Encoder):
             sage: latex(E)
             \textnormal{Punctured matrix-based encoder for the }\textnormal{Puncturing of [11, 5] linear code over GF(7) on position(s) } [3]
         """
-        return "\\textnormal{Punctured matrix-based encoder for the }%s" % self.code()._latex_()
+        return (
+            "\\textnormal{Punctured matrix-based encoder for the }%s"
+            % self.code()._latex_()
+        )
 
     @cached_method
     def generator_matrix(self):
@@ -544,7 +566,9 @@ class PuncturedCodeOriginalCodeDecoder(Decoder):
             if not isinstance(original_decoder, Decoder):
                 raise TypeError("original_decoder must be a decoder object")
             if not original_decoder.code() == original_code:
-                raise ValueError("Original decoder must have the original code of its associated punctured code as associated code")
+                raise ValueError(
+                    "Original decoder must have the original code of its associated punctured code as associated code"
+                )
             if 'error-erasure' in original_decoder.decoder_type():
                 strategy = 'error-erasure'
             self._original_decoder = original_decoder
@@ -572,8 +596,9 @@ class PuncturedCodeOriginalCodeDecoder(Decoder):
         self._decoder_type = copy(self._decoder_type)
         self._decoder_type.remove("dynamic")
         self._decoder_type = self._original_decoder.decoder_type()
-        super().__init__(code, code.ambient_space(),
-                         self._original_decoder.connected_encoder())
+        super().__init__(
+            code, code.ambient_space(), self._original_decoder.connected_encoder()
+        )
 
     def _repr_(self):
         r"""
@@ -601,7 +626,10 @@ class PuncturedCodeOriginalCodeDecoder(Decoder):
             sage: latex(D)
             \textnormal{Decoder of } Puncturing of [15, 7, 9] Reed-Solomon Code over GF(16) on position(s) [3] \textnormal{ through } Error-Erasure decoder for [15, 7, 9] Reed-Solomon Code over GF(16)
         """
-        return "\\textnormal{Decoder of } %s \\textnormal{ through } %s" % (self.code(), self.original_decoder())
+        return "\\textnormal{Decoder of } %s \\textnormal{ through } %s" % (
+            self.code(),
+            self.original_decoder(),
+        )
 
     def original_decoder(self):
         r"""
@@ -648,8 +676,7 @@ class PuncturedCodeOriginalCodeDecoder(Decoder):
                 e_list = e.list()
                 e_list = _insert_punctured_positions(e_list, pts, one)
             else:
-                e_list = [one if i in pts else zero
-                          for i in range(Cor.length())]
+                e_list = [one if i in pts else zero for i in range(Cor.length())]
             e = vector(GF(2), e_list)
             yl = y.list()
             yl = _insert_punctured_positions(yl, pts, zero)
@@ -706,7 +733,12 @@ class PuncturedCodeOriginalCodeDecoder(Decoder):
                 return D.decoding_radius() - punctured
             return 0
         if "error-erasure" in D.decoder_type() and number_erasures is not None:
-            diff = self.code().original_code().minimum_distance() - number_erasures - punctured - 1
+            diff = (
+                self.code().original_code().minimum_distance()
+                - number_erasures
+                - punctured
+                - 1
+            )
             if diff <= 0:
                 raise ValueError("The number of erasures exceeds decoding capability")
             return diff // 2
@@ -716,6 +748,8 @@ class PuncturedCodeOriginalCodeDecoder(Decoder):
 
 ####################### registration ###############################
 
-PuncturedCode._registered_encoders["PuncturedMatrix"] = PuncturedCodePuncturedMatrixEncoder
+PuncturedCode._registered_encoders["PuncturedMatrix"] = (
+    PuncturedCodePuncturedMatrixEncoder
+)
 PuncturedCode._registered_decoders["OriginalCode"] = PuncturedCodeOriginalCodeDecoder
 PuncturedCodeOriginalCodeDecoder._decoder_type = {"dynamic"}

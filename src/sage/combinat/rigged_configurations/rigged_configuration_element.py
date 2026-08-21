@@ -30,12 +30,16 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.list_clone import ClonableArray
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
-from sage.combinat.rigged_configurations.rigged_partition import RiggedPartition, RiggedPartitionTypeB
+from sage.combinat.rigged_configurations.rigged_partition import (
+    RiggedPartition,
+    RiggedPartitionTypeB,
+)
 
 
 ####################################################
 #  Base classes for rigged configuration elements  #
 ####################################################
+
 
 class RiggedConfigurationElement(ClonableArray):
     """
@@ -201,7 +205,9 @@ class RiggedConfigurationElement(ClonableArray):
                 #   were given
                 nu = [RiggedPartition() for _ in range(n)]
             else:
-                if len(data) != n:  # otherwise n should be equal to the number of tableaux
+                if (
+                    len(data) != n
+                ):  # otherwise n should be equal to the number of tableaux
                     raise ValueError("incorrect number of partitions")
 
                 nu = []
@@ -212,12 +218,15 @@ class RiggedConfigurationElement(ClonableArray):
                         raise ValueError("incorrect number of riggings")
 
                     for i in range(n):
-                        nu.append(RiggedPartition(tuple(data[i]),
-                                                  list(rigging_data[i])))
+                        nu.append(
+                            RiggedPartition(tuple(data[i]), list(rigging_data[i]))
+                        )
                 else:
                     for partition_data in data:
                         nu.append(RiggedPartition(tuple(partition_data)))
-        elif n == len(rigged_partitions) and isinstance(rigged_partitions[0], RiggedPartition):
+        elif n == len(rigged_partitions) and isinstance(
+            rigged_partitions[0], RiggedPartition
+        ):
             # The isinstance check is to make sure we are not in the n == 1 special case because
             #   Parent's __call__ always passes at least 1 argument to the element constructor
 
@@ -351,11 +360,11 @@ class RiggedConfigurationElement(ClonableArray):
         for i in range(height):
             if i != 0:
                 ret_str += '\n'
-            for j,t in enumerate(tab_str):
+            for j, t in enumerate(tab_str):
                 if j != 0:
                     ret_str += '   '
                 if i < len(t):
-                    ret_str += t[i] + ' ' * (widths[j]-len(t[i]))
+                    ret_str += t[i] + ' ' * (widths[j] - len(t[i]))
                 else:
                     ret_str += ' ' * widths[j]
         return ret_str
@@ -445,16 +454,20 @@ class RiggedConfigurationElement(ClonableArray):
             sage: Partitions.options._reset()
         """
         from sage.combinat.partition import Partitions
+
         if Partitions.options.convention == "French":
             baseline = lambda s: 0
         else:
             baseline = len
         from sage.typeset.ascii_art import AsciiArt
+
         s = repr(self[0]).splitlines()
         ret = AsciiArt(s, baseline=baseline(s))
         for tableau in self[1:]:
             s = repr(tableau).splitlines()
-            ret += AsciiArt(["  "], baseline=baseline(s)) + AsciiArt(s, baseline=baseline(s))
+            ret += AsciiArt(["  "], baseline=baseline(s)) + AsciiArt(
+                s, baseline=baseline(s)
+            )
         return ret
 
     def nu(self):
@@ -537,10 +550,10 @@ class RiggedConfigurationElement(ClonableArray):
         new_rigging = self[a].rigging[:]
 
         # Separate out one of the Borcherds cases
-        if M[a,a] != 2:
+        if M[a, a] != 2:
             k = None
             set_vac_num = True
-            if new_rigging[-1] != -M[a,a] // 2:
+            if new_rigging[-1] != -M[a, a] // 2:
                 return None
             new_list.pop()
             new_vac_nums.pop()
@@ -570,18 +583,21 @@ class RiggedConfigurationElement(ClonableArray):
                 new_rigging.pop()
             else:
                 new_list[rigging_index] -= 1
-                cur_rigging += M[a,a] // 2
+                cur_rigging += M[a, a] // 2
                 # Properly sort the riggings
                 j = rigging_index + 1
                 # Update the vacancy number if the row lengths are the same
                 if j < num_rows and new_list[j] == new_list[rigging_index]:
                     new_vac_nums[rigging_index] = new_vac_nums[j]
                     set_vac_num = True
-                while j < num_rows and new_list[j] == new_list[rigging_index] \
-                  and new_rigging[j] > cur_rigging:
-                    new_rigging[j-1] = new_rigging[j] # Shuffle it along
+                while (
+                    j < num_rows
+                    and new_list[j] == new_list[rigging_index]
+                    and new_rigging[j] > cur_rigging
+                ):
+                    new_rigging[j - 1] = new_rigging[j]  # Shuffle it along
                     j += 1
-                new_rigging[j-1] = cur_rigging
+                new_rigging[j - 1] = cur_rigging
 
         new_partitions = []
         for b in range(len(self)):
@@ -593,20 +609,27 @@ class RiggedConfigurationElement(ClonableArray):
                     if k is not None and new_list[i] < k:
                         break
 
-                    new_vac_nums[i] += M[a,b]
-                    new_rigging[i] += M[a,b]
+                    new_vac_nums[i] += M[a, b]
+                    new_rigging[i] += M[a, b]
 
-                if k != 1 and not set_vac_num: # If we did not remove a row nor found another row of length k-1
+                if (
+                    k != 1 and not set_vac_num
+                ):  # If we did not remove a row nor found another row of length k-1
                     new_vac_nums[rigging_index] += 2
 
-                new_partitions.append(RiggedPartition(new_list, new_rigging, new_vac_nums))
+                new_partitions.append(
+                    RiggedPartition(new_list, new_rigging, new_vac_nums)
+                )
 
         ret_RC = self.__class__(self.parent(), new_partitions, use_vacancy_numbers=True)
         nu = ret_RC.nu()
-        if k != 1 and not set_vac_num: # If we did not remove a row nor found another row of length k-1
+        if (
+            k != 1 and not set_vac_num
+        ):  # If we did not remove a row nor found another row of length k-1
             # Update that row's vacancy number
-            ret_RC[a].vacancy_numbers[rigging_index] = \
-              self.parent()._calc_vacancy_number(nu, a, nu[a][rigging_index])
+            ret_RC[a].vacancy_numbers[rigging_index] = (
+                self.parent()._calc_vacancy_number(nu, a, nu[a][rigging_index])
+            )
         return ret_RC
 
     def _generate_partition_e(self, a, b, k):
@@ -631,7 +654,7 @@ class RiggedConfigurationElement(ClonableArray):
             <BLANKLINE>
         """
         # Check to make sure we will do something
-        if not self.parent()._cartan_matrix[a,b]:
+        if not self.parent()._cartan_matrix[a, b]:
             return self[b]
 
         new_list = self[b]._list
@@ -639,7 +662,7 @@ class RiggedConfigurationElement(ClonableArray):
         new_rigging = self[b].rigging[:]
 
         # Update the vacancy numbers and the rigging
-        value = self.parent()._cartan_matrix[b,a]
+        value = self.parent()._cartan_matrix[b, a]
         for i in range(len(new_vac_nums)):
             if k is not None and new_list[i] < k:
                 break
@@ -707,15 +730,15 @@ class RiggedConfigurationElement(ClonableArray):
 
         # Find k and perform f_a
         k = None
-        add_index = -1 # Index where we will add our row too
-        rigging_index = None # Index which we will pull the rigging from
+        add_index = -1  # Index where we will add our row too
+        rigging_index = None  # Index which we will pull the rigging from
         cur_rigging = ZZ.zero()
         num_rows = len(new_list)
         for i in reversed(range(num_rows)):
             # If we need to increment a row, look for when we change rows for
             #   the correct index.
             if add_index is None and new_list[i] != new_list[rigging_index]:
-                add_index = i+1
+                add_index = i + 1
 
             if new_rigging[i] <= cur_rigging:
                 cur_rigging = new_rigging[i]
@@ -726,18 +749,18 @@ class RiggedConfigurationElement(ClonableArray):
         # If we've not found a valid k
         if k is None:
             new_list.append(1)
-            new_rigging.append(-M[a,a] // 2)
+            new_rigging.append(-M[a, a] // 2)
             new_vac_nums.append(None)
             k = 0
             add_index = num_rows
-            num_rows += 1 # We've added a row
+            num_rows += 1  # We've added a row
         else:
-            if add_index is None: # We are adding to the first row in the list
+            if add_index is None:  # We are adding to the first row in the list
                 add_index = 0
             new_list[add_index] += 1
-            new_rigging.insert(add_index, new_rigging[rigging_index] - M[a,a] // 2)
+            new_rigging.insert(add_index, new_rigging[rigging_index] - M[a, a] // 2)
             new_vac_nums.insert(add_index, None)
-            new_rigging.pop(rigging_index + 1) # add 1 for the insertion
+            new_rigging.pop(rigging_index + 1)  # add 1 for the insertion
             new_vac_nums.pop(rigging_index + 1)
 
         new_partitions = []
@@ -751,14 +774,18 @@ class RiggedConfigurationElement(ClonableArray):
                         break
 
                     if i != add_index:
-                        new_vac_nums[i] -= M[a,b]
-                        new_rigging[i] -= M[a,b]
+                        new_vac_nums[i] -= M[a, b]
+                        new_rigging[i] -= M[a, b]
 
-                new_partitions.append(RiggedPartition(new_list, new_rigging, new_vac_nums))
+                new_partitions.append(
+                    RiggedPartition(new_list, new_rigging, new_vac_nums)
+                )
 
-        new_partitions[a].vacancy_numbers[add_index] = \
-          self.parent()._calc_vacancy_number(new_partitions, a,
-                                             new_partitions[a][add_index])
+        new_partitions[a].vacancy_numbers[add_index] = (
+            self.parent()._calc_vacancy_number(
+                new_partitions, a, new_partitions[a][add_index]
+            )
+        )
 
         # Note that we do not need to sort the rigging since if there was a
         #   smaller rigging in a larger row, then `k` would be larger.
@@ -786,7 +813,7 @@ class RiggedConfigurationElement(ClonableArray):
             <BLANKLINE>
         """
         # Check to make sure we will do something
-        if not self.parent()._cartan_matrix[a,b]:
+        if not self.parent()._cartan_matrix[a, b]:
             return self[b]
 
         new_list = self[b]._list
@@ -794,7 +821,7 @@ class RiggedConfigurationElement(ClonableArray):
         new_rigging = self[b].rigging[:]
 
         # Update the vacancy numbers and the rigging
-        value = self.parent()._cartan_matrix[b,a]
+        value = self.parent()._cartan_matrix[b, a]
         for i in range(len(new_vac_nums)):
             if new_list[i] <= k:
                 break
@@ -984,7 +1011,7 @@ class RCNonSimplyLacedElement(RiggedConfigurationElement):
         L = []
         gamma = vct.scaling_factors()
         for i in vct.folding_orbit()[a]:
-            L.extend([i]*gamma[a])
+            L.extend([i] * gamma[a])
         virtual_rc = self.parent().to_virtual(self).e_string(L)
         if virtual_rc is None:
             return None
@@ -1021,11 +1048,12 @@ class RCNonSimplyLacedElement(RiggedConfigurationElement):
         L = []
         gamma = vct.scaling_factors()
         for i in vct.folding_orbit()[a]:
-            L.extend([i]*gamma[a])
+            L.extend([i] * gamma[a])
         virtual_rc = self.parent().to_virtual(self).f_string(L)
         if virtual_rc is None:
             return None
         return self.parent().from_virtual(virtual_rc)
+
 
 ##########################################################
 #  Highest weight crystal rigged configuration elements  #
@@ -1133,7 +1161,7 @@ class RCHighestWeightElement(RiggedConfigurationElement):
         """
         P = self.parent().weight_lattice_realization()
         alpha = list(P.simple_roots())
-        return self.parent()._wt - sum(sum(x) * alpha[i] for i,x in enumerate(self))
+        return self.parent()._wt - sum(sum(x) * alpha[i] for i, x in enumerate(self))
 
 
 class RCHWNonSimplyLacedElement(RCNonSimplyLacedElement):
@@ -1213,7 +1241,8 @@ class RCHWNonSimplyLacedElement(RCNonSimplyLacedElement):
         """
         P = self.parent().weight_lattice_realization()
         alpha = list(P.simple_roots())
-        return self.parent()._wt - sum(sum(x) * alpha[i] for i,x in enumerate(self))
+        return self.parent()._wt - sum(sum(x) * alpha[i] for i, x in enumerate(self))
+
 
 ##############################################
 #  KR crystal rigged configuration elements  #
@@ -1294,14 +1323,18 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
             shape_data = data[0]
             rigging_data = data[1]
             vac_data = data[2]
-            nu = [RiggedPartition(a, b, c)
-                  for a, b, c in zip(shape_data, rigging_data, vac_data)]
+            nu = [
+                RiggedPartition(a, b, c)
+                for a, b, c in zip(shape_data, rigging_data, vac_data)
+            ]
             # Special display case
             if parent.cartan_type().type() == 'B':
                 nu[-1] = RiggedPartitionTypeB(nu[-1])
             ClonableArray.__init__(self, parent, nu)
             return
-        RiggedConfigurationElement.__init__(self, parent, rigged_partitions, n=n, **options)
+        RiggedConfigurationElement.__init__(
+            self, parent, rigged_partitions, n=n, **options
+        )
         # Special display case
         if parent.cartan_type().type() == 'B':
             self._set_mutable()
@@ -1534,7 +1567,7 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
         else:
             WLR = F.ambient_space()
         La = WLR.fundamental_weights()
-        wt = WLR.sum(La[r] * s for r,s in self.parent().dims)
+        wt = WLR.sum(La[r] * s for r, s in self.parent().dims)
 
         alpha = WLR.simple_roots()
         rc_index = self.parent()._rc_index
@@ -1542,7 +1575,9 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
             wt -= sum(nu) * alpha[rc_index[a]]
         return wt
 
-    def to_tensor_product_of_kirillov_reshetikhin_tableaux(self, display_steps=False, build_graph=False):
+    def to_tensor_product_of_kirillov_reshetikhin_tableaux(
+        self, display_steps=False, build_graph=False
+    ):
         r"""
         Perform the bijection from this rigged configuration to a tensor
         product of Kirillov-Reshetikhin tableaux given in [RigConBijection]_
@@ -1627,13 +1662,16 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
             sage: view(G) # not tested
         """
         from sage.combinat.rigged_configurations.bijection import RCToKRTBijection
+
         bij = RCToKRTBijection(self)
         ret = bij.run(display_steps, build_graph)
         if build_graph:
             return (ret, bij._graph)
         return ret
 
-    def to_tensor_product_of_kirillov_reshetikhin_crystals(self, display_steps=False, build_graph=False):
+    def to_tensor_product_of_kirillov_reshetikhin_crystals(
+        self, display_steps=False, build_graph=False
+    ):
         r"""
         Return the corresponding tensor product of Kirillov-Reshetikhin
         crystals.
@@ -1681,7 +1719,9 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
             sage: view(G) # not tested
         """
         if build_graph:
-            kr_tab, G = self.to_tensor_product_of_kirillov_reshetikhin_tableaux(display_steps, build_graph)
+            kr_tab, G = self.to_tensor_product_of_kirillov_reshetikhin_tableaux(
+                display_steps, build_graph
+            )
             return (kr_tab.to_tensor_product_of_kirillov_reshetikhin_crystals(), G)
         kr_tab = self.to_tensor_product_of_kirillov_reshetikhin_tableaux(display_steps)
         return kr_tab.to_tensor_product_of_kirillov_reshetikhin_crystals()
@@ -1714,12 +1754,15 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
         P = self.parent()
         if P.dims[0][1] == 1:
             raise ValueError("cannot split a single column")
-        r,s = P.dims[0]
-        B = [[r,1], [r,s-1]]
+        r, s = P.dims[0]
+        B = [[r, 1], [r, s - 1]]
         B.extend(P.dims[1:])
-        from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+        from sage.combinat.rigged_configurations.rigged_configurations import (
+            RiggedConfigurations,
+        )
+
         RC = RiggedConfigurations(P._cartan_type, B)
-        return RC(*[x._clone() for x in self]) # Make a deep copy
+        return RC(*[x._clone() for x in self])  # Make a deep copy
 
     def right_split(self):
         r"""
@@ -1822,6 +1865,7 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
                 raise ValueError("only for non-spinor cases")
 
         from sage.combinat.rigged_configurations.bijection import RCToKRTBijection
+
         rc = self
         if P.dims[0][1] != 1:
             rc = self.left_split()
@@ -1831,11 +1875,15 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
         b = bij.next_state(ht)
         if bij.cur_dims[0][0] == 0:
             bij.cur_dims.pop(0)
-        from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+        from sage.combinat.rigged_configurations.rigged_configurations import (
+            RiggedConfigurations,
+        )
+
         RC = RiggedConfigurations(ct, bij.cur_dims)
         rc = RC(*bij.cur_partitions)
         if return_b:
             from sage.combinat.crystals.letters import CrystalOfLetters
+
             L = CrystalOfLetters(self.parent()._cartan_type.classical())
             return (rc, L(b))
         return rc
@@ -1891,14 +1939,17 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
         if P.dims[0][1] > 1:
             return self.left_split().left_column_box()
 
-        B = [[1,1], [r-1,1]]
+        B = [[1, 1], [r - 1, 1]]
         B.extend(P.dims[1:])
-        from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+        from sage.combinat.rigged_configurations.rigged_configurations import (
+            RiggedConfigurations,
+        )
+
         RC = RiggedConfigurations(P._cartan_type, B)
-        parts = [x._clone() for x in self] # Make a deep copy
-        for nu in parts[:r-1]:
+        parts = [x._clone() for x in self]  # Make a deep copy
+        for nu in parts[: r - 1]:
             nu._list.append(1)
-        for a, nu in enumerate(parts[:r-1]):
+        for a, nu in enumerate(parts[: r - 1]):
             vac_num = RC._calc_vacancy_number(parts, a, 1)
             i = nu._list.index(1)
             nu.vacancy_numbers.insert(i, vac_num)
@@ -1949,13 +2000,16 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
 
         rc, e_string = self.to_highest_weight(P._rc_index)
 
-        B = P.dims[:-1] + ([r-1,1], [1,1])
-        from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+        B = P.dims[:-1] + ([r - 1, 1], [1, 1])
+        from sage.combinat.rigged_configurations.rigged_configurations import (
+            RiggedConfigurations,
+        )
+
         RC = RiggedConfigurations(P._cartan_type, B)
-        parts = [x._clone() for x in rc] # Make a deep copy
-        for nu in parts[:r-1]:
+        parts = [x._clone() for x in rc]  # Make a deep copy
+        for nu in parts[: r - 1]:
             nu._list.append(1)
-        for a, nu in enumerate(parts[:r-1]):
+        for a, nu in enumerate(parts[: r - 1]):
             vac_num = RC._calc_vacancy_number(parts, a, -1)
             nu.vacancy_numbers.append(vac_num)
             nu.rigging.append(0)
@@ -2032,18 +2086,21 @@ class KRRiggedConfigurationElement(RiggedConfigurationElement):
         """
         P = self.parent()
         if reverse_factors:
-            from sage.combinat.rigged_configurations.rigged_configurations import RiggedConfigurations
+            from sage.combinat.rigged_configurations.rigged_configurations import (
+                RiggedConfigurations,
+            )
+
             P = RiggedConfigurations(P._cartan_type, reversed(P.dims))
 
         mg, e_str = self.to_highest_weight(P._rc_index)
         nu = []
         rig = []
-        for a,p in enumerate(mg):
+        for a, p in enumerate(mg):
             nu.append(list(p))
             vac_nums = p.vacancy_numbers
-            riggings = [vac - p.rigging[i] for i,vac in enumerate(vac_nums)]
+            riggings = [vac - p.rigging[i] for i, vac in enumerate(vac_nums)]
             block = 0
-            for j,i in enumerate(p):
+            for j, i in enumerate(p):
                 if p[block] != i:
                     riggings[block:j] = sorted(riggings[block:j], reverse=True)
                     block = j
@@ -2071,6 +2128,7 @@ class KRRCSimplyLacedElement(KRRiggedConfigurationElement):
         <BLANKLINE>
         sage: TestSuite(elt).run()
     """
+
     @cached_method
     def cocharge(self):
         r"""
@@ -2267,7 +2325,7 @@ class KRRCNonSimplyLacedElement(KRRiggedConfigurationElement, RCNonSimplyLacedEl
         sigma = vct.folding_orbit()
         gamma = vct.scaling_factors()
         for a, p in enumerate(self):
-            t_check = len(sigma[a + 1]) * gamma[a+1] // gamma[0]
+            t_check = len(sigma[a + 1]) * gamma[a + 1] // gamma[0]
             for pos, i in enumerate(p._list):
                 # Add the rigging
                 rigging_sum += t_check * p.rigging[pos]
@@ -2317,7 +2375,7 @@ class KRRCTypeA2DualElement(KRRCNonSimplyLacedElement):
         else:
             epsilon = -min(0, *self[a].rigging)
         n = len(self.parent()._rc_index)
-        if a == n-1: # -1 for indexing
+        if a == n - 1:  # -1 for indexing
             epsilon *= 2
         return Integer(epsilon)
 
@@ -2351,7 +2409,7 @@ class KRRCTypeA2DualElement(KRRCNonSimplyLacedElement):
         else:
             phi = p_inf - min(0, *self[a].rigging)
         n = len(self.parent()._rc_index)
-        if a == n-1: # -1 for indexing
+        if a == n - 1:  # -1 for indexing
             phi *= 2
         return Integer(phi)
 

@@ -102,8 +102,9 @@ def find_root(f, a, b, xtol=10e-13, rtol=2.0**-50, maxiter=100, full_output=Fals
         RuntimeError: f appears to have no zero on the interval
     """
     try:
-        return f.find_root(a=a, b=b, xtol=xtol, rtol=rtol,
-                           maxiter=maxiter, full_output=full_output)
+        return f.find_root(
+            a=a, b=b, xtol=xtol, rtol=rtol, maxiter=maxiter, full_output=full_output
+        )
     except AttributeError:
         pass
     a = float(a)
@@ -125,7 +126,7 @@ def find_root(f, a, b, xtol=10e-13, rtol=2.0**-50, maxiter=100, full_output=Fals
             raise RuntimeError("f appears to have no zero on the interval")
         # If we found such an s, then we just instead find
         # a root between left and s or s and right.
-        a = s   # arbitrary choice -- maybe should try both and take one that works?
+        a = s  # arbitrary choice -- maybe should try both and take one that works?
 
     elif left < 0 and right < 0:
         # Refine further
@@ -153,13 +154,14 @@ def find_root(f, a, b, xtol=10e-13, rtol=2.0**-50, maxiter=100, full_output=Fals
 
     import scipy.optimize
     import numpy
+
     if int(numpy.version.short_version[0]) > 1:
         numpy.set_printoptions(legacy="1.25")
 
     g = lambda x: float(f(x))
-    brentqRes = scipy.optimize.brentq(g, a, b,
-                                      full_output=full_output, xtol=xtol,
-                                      rtol=rtol, maxiter=maxiter)
+    brentqRes = scipy.optimize.brentq(
+        g, a, b, full_output=full_output, xtol=xtol, rtol=rtol, maxiter=maxiter
+    )
     # A check following :issue:`4942`, to ensure we actually found a root
     # Maybe should use a different tolerance here?
     # The idea is to take roughly the derivative and multiply by estimated
@@ -170,7 +172,9 @@ def find_root(f, a, b, xtol=10e-13, rtol=2.0**-50, maxiter=100, full_output=Fals
     else:
         root = brentqRes
     if abs(f(root)) > max(abs(root * rtol * (right - left) / (b - a)), 1e-6):
-        raise NotImplementedError("Brent's method failed to find a zero for f on the interval")
+        raise NotImplementedError(
+            "Brent's method failed to find a zero for f on the interval"
+        )
     return brentqRes
 
 
@@ -289,15 +293,19 @@ def find_local_minimum(f, a, b, tol=1.48e-08, maxfun=500):
     b = float(b)
     import scipy.optimize
     import numpy
+
     if int(numpy.version.short_version[0]) > 1:
         numpy.set_printoptions(legacy="1.25")
 
-    xmin, fval, iter, funcalls = scipy.optimize.fminbound(f, a, b, full_output=1, xtol=tol, maxfun=maxfun)
+    xmin, fval, iter, funcalls = scipy.optimize.fminbound(
+        f, a, b, full_output=1, xtol=tol, maxfun=maxfun
+    )
     return fval, xmin
 
 
-def minimize(func, x0, gradient=None, hessian=None, algorithm='default',
-             verbose=False, **args):
+def minimize(
+    func, x0, gradient=None, hessian=None, algorithm='default', verbose=False, **args
+):
     r"""
     This function is an interface to a variety of algorithms for computing
     the minimum of a function of several variables.
@@ -399,21 +407,23 @@ def minimize(func, x0, gradient=None, hessian=None, algorithm='default',
     from sage.structure.element import Expression
     from sage.ext.fast_callable import fast_callable
     import numpy
+
     if int(numpy.version.short_version[0]) > 1:
         numpy.set_printoptions(legacy="1.25")
 
     from scipy import optimize
+
     if isinstance(func, Expression):
         var_list = func.variables()
         var_names = [str(_) for _ in var_list]
         fast_f = fast_callable(func, vars=var_names, domain=float)
         f = lambda p: fast_f(*p)
         gradient_list = func.gradient()
-        fast_gradient_functions = [fast_callable(gradient_list[i],
-                                                 vars=var_names, domain=float)
-                                   for i in range(len(gradient_list))]
-        gradient = lambda p: numpy.array([a(*p)
-                                          for a in fast_gradient_functions])
+        fast_gradient_functions = [
+            fast_callable(gradient_list[i], vars=var_names, domain=float)
+            for i in range(len(gradient_list))
+        ]
+        gradient = lambda p: numpy.array([a(*p) for a in fast_gradient_functions])
     else:
         f = func
 
@@ -421,28 +431,42 @@ def minimize(func, x0, gradient=None, hessian=None, algorithm='default',
         if gradient is None:
             min = optimize.fmin(f, [float(_) for _ in x0], disp=verbose, **args)
         else:
-            min = optimize.fmin_bfgs(f, [float(_) for _ in x0], fprime=gradient, disp=verbose, **args)
+            min = optimize.fmin_bfgs(
+                f, [float(_) for _ in x0], fprime=gradient, disp=verbose, **args
+            )
     else:
         if algorithm == "simplex":
             min = optimize.fmin(f, [float(_) for _ in x0], disp=verbose, **args)
         elif algorithm == "bfgs":
-            min = optimize.fmin_bfgs(f, [float(_) for _ in x0], fprime=gradient, disp=verbose, **args)
+            min = optimize.fmin_bfgs(
+                f, [float(_) for _ in x0], fprime=gradient, disp=verbose, **args
+            )
         elif algorithm == "cg":
-            min = optimize.fmin_cg(f, [float(_) for _ in x0], fprime=gradient, disp=verbose, **args)
+            min = optimize.fmin_cg(
+                f, [float(_) for _ in x0], fprime=gradient, disp=verbose, **args
+            )
         elif algorithm == "powell":
             min = optimize.fmin_powell(f, [float(_) for _ in x0], disp=verbose, **args)
         elif algorithm == "ncg":
             if isinstance(func, Expression):
                 hess = func.hessian()
-                hess_fast = [[fast_callable(a, vars=var_names, domain=float)
-                              for a in row] for row in hess]
+                hess_fast = [
+                    [fast_callable(a, vars=var_names, domain=float) for a in row]
+                    for row in hess
+                ]
                 hessian = lambda p: [[a(*p) for a in row] for row in hess_fast]
                 from numpy import dot
+
                 hessian_p = lambda p, v: dot(numpy.array(hessian(p)), v)
-                min = optimize.fmin_ncg(f, [float(_) for _ in x0],
-                                        fprime=gradient,
-                                        fhess=hessian, fhess_p=hessian_p,
-                                        disp=verbose, **args)
+                min = optimize.fmin_ncg(
+                    f,
+                    [float(_) for _ in x0],
+                    fprime=gradient,
+                    fhess=hessian,
+                    fhess_p=hessian_p,
+                    disp=verbose,
+                    **args,
+                )
     return vector(RDF, min)
 
 
@@ -542,28 +566,27 @@ def minimize_constrained(func, cons, x0, gradient=None, algorithm='default', **a
     from sage.structure.element import Expression
     from sage.ext.fast_callable import fast_callable
     import numpy
+
     if int(numpy.version.short_version[0]) > 1:
         numpy.set_printoptions(legacy="1.25")
     from scipy import optimize
-    function_type = type(lambda x, y: x+y)
+
+    function_type = type(lambda x, y: x + y)
 
     if isinstance(func, Expression):
         var_list = func.arguments()
         fast_f = fast_callable(func, vars=var_list, domain=float)
         f = lambda p: fast_f(*p)
         gradient_list = func.gradient()
-        fast_gradient_functions = [fast_callable(gi,
-                                                 vars=var_list,
-                                                 domain=float)
-                                   for gi in gradient_list]
-        gradient = lambda p: numpy.array([a(*p)
-                                          for a in fast_gradient_functions])
+        fast_gradient_functions = [
+            fast_callable(gi, vars=var_list, domain=float) for gi in gradient_list
+        ]
+        gradient = lambda p: numpy.array([a(*p) for a in fast_gradient_functions])
         if isinstance(cons, Expression):
             fast_cons = fast_callable(cons, vars=var_list, domain=float)
             cons = lambda p: numpy.array([fast_cons(*p)])
         elif isinstance(cons, list) and isinstance(cons[0], Expression):
-            fast_cons = [fast_callable(ci, vars=var_list, domain=float)
-                         for ci in cons]
+            fast_cons = [fast_callable(ci, vars=var_list, domain=float) for ci in cons]
             cons = lambda p: numpy.array([a(*p) for a in fast_cons])
     else:
         f = func
@@ -572,14 +595,22 @@ def minimize_constrained(func, cons, x0, gradient=None, algorithm='default', **a
         if isinstance(cons[0], (tuple, list)) or cons[0] is None:
             if gradient is not None:
                 if algorithm == 'l-bfgs-b':
-                    min = optimize.fmin_l_bfgs_b(f, x0, gradient, bounds=cons, **args)[0]
+                    min = optimize.fmin_l_bfgs_b(f, x0, gradient, bounds=cons, **args)[
+                        0
+                    ]
                 else:
-                    min = optimize.fmin_tnc(f, x0, gradient, bounds=cons, messages=0, **args)[0]
+                    min = optimize.fmin_tnc(
+                        f, x0, gradient, bounds=cons, messages=0, **args
+                    )[0]
             else:
                 if algorithm == 'l-bfgs-b':
-                    min = optimize.fmin_l_bfgs_b(f, x0, approx_grad=True, bounds=cons, **args)[0]
+                    min = optimize.fmin_l_bfgs_b(
+                        f, x0, approx_grad=True, bounds=cons, **args
+                    )[0]
                 else:
-                    min = optimize.fmin_tnc(f, x0, approx_grad=True, bounds=cons, messages=0, **args)[0]
+                    min = optimize.fmin_tnc(
+                        f, x0, approx_grad=True, bounds=cons, messages=0, **args
+                    )[0]
         elif isinstance(cons[0], (function_type, Expression)):
             min = optimize.fmin_cobyla(f, x0, cons, **args)
     elif isinstance(cons, (function_type, Expression)):
@@ -587,7 +618,14 @@ def minimize_constrained(func, cons, x0, gradient=None, algorithm='default', **a
     return vector(RDF, min)
 
 
-def find_fit(data, model, initial_guess=None, parameters=None, variables=None, solution_dict=False):
+def find_fit(
+    data,
+    model,
+    initial_guess=None,
+    parameters=None,
+    variables=None,
+    solution_dict=False,
+):
     r"""
     Finds numerical estimates for the parameters of the function model to
     give a best fit to data.
@@ -666,6 +704,7 @@ def find_fit(data, model, initial_guess=None, parameters=None, variables=None, s
     ``lmdif`` and ``lmder`` algorithms.
     """
     import numpy
+
     if int(numpy.version.short_version[0]) > 1:
         numpy.set_printoptions(legacy="1.25")
 
@@ -673,12 +712,16 @@ def find_fit(data, model, initial_guess=None, parameters=None, variables=None, s
         try:
             data = numpy.array(data, dtype=float)
         except (ValueError, TypeError):
-            raise TypeError("data has to be a list of lists, a matrix, or a numpy array")
+            raise TypeError(
+                "data has to be a list of lists, a matrix, or a numpy array"
+            )
     elif data.dtype == object:
         raise ValueError("the entries of data have to be of type float")
 
     if data.ndim != 2:
-        raise ValueError("data has to be a two dimensional table of floating point numbers")
+        raise ValueError(
+            "data has to be a two dimensional table of floating point numbers"
+        )
 
     from sage.structure.element import Expression
 
@@ -691,10 +734,17 @@ def find_fit(data, model, initial_guess=None, parameters=None, variables=None, s
                 parameters.remove(v)
 
     if data.shape[1] != len(variables) + 1:
-        raise ValueError("each row of data needs %d entries, only %d entries given" % (len(variables) + 1, data.shape[1]))
+        raise ValueError(
+            "each row of data needs %d entries, only %d entries given"
+            % (len(variables) + 1, data.shape[1])
+        )
 
-    if parameters is None or len(parameters) == 0 or \
-       variables is None or len(variables) == 0:
+    if (
+        parameters is None
+        or len(parameters) == 0
+        or variables is None
+        or len(variables) == 0
+    ):
         raise ValueError("no variables given")
 
     if initial_guess is None:
@@ -709,10 +759,13 @@ def find_fit(data, model, initial_guess=None, parameters=None, variables=None, s
         raise ValueError("the entries of initial_guess have to be of type float")
 
     if len(initial_guess) != len(parameters):
-        raise ValueError("length of initial_guess does not coincide with the number of parameters")
+        raise ValueError(
+            "length of initial_guess does not coincide with the number of parameters"
+        )
 
     if isinstance(model, Expression):
         from sage.ext.fast_callable import fast_callable
+
         var_list = variables + parameters
         func = fast_callable(model, vars=var_list, domain=float)
     else:
@@ -732,12 +785,12 @@ def find_fit(data, model, initial_guess=None, parameters=None, variables=None, s
             result[row] = func(*fparams)
         return result - y_data
 
-    x_data = data[:, 0:len(variables)]
+    x_data = data[:, 0 : len(variables)]
     y_data = data[:, -1]
 
     from scipy.optimize import leastsq
-    estimated_params, d = leastsq(error_function, initial_guess,
-                                  args=(x_data, y_data))
+
+    estimated_params, d = leastsq(error_function, initial_guess, args=(x_data, y_data))
 
     if isinstance(estimated_params, float):
         estimated_params = [estimated_params]
@@ -750,8 +803,9 @@ def find_fit(data, model, initial_guess=None, parameters=None, variables=None, s
     return [item[0] == item[1] for item in zip(parameters, estimated_params)]
 
 
-def binpacking(items, maximum=1, k=None, solver=None, verbose=0,
-               *, integrality_tolerance=1e-3):
+def binpacking(
+    items, maximum=1, k=None, solver=None, verbose=0, *, integrality_tolerance=1e-3
+):
     r"""
     Solve the bin packing problem.
 
@@ -875,16 +929,25 @@ def binpacking(items, maximum=1, k=None, solver=None, verbose=0,
 
     if k is None:
         from sage.functions.other import ceil
-        k = ceil(sum(weight.values())/maximum)
+
+        k = ceil(sum(weight.values()) / maximum)
         while True:
             from sage.numerical.mip import MIPSolverException
+
             try:
-                return binpacking(items, k=k, maximum=maximum, solver=solver, verbose=verbose,
-                                  integrality_tolerance=integrality_tolerance)
+                return binpacking(
+                    items,
+                    k=k,
+                    maximum=maximum,
+                    solver=solver,
+                    verbose=verbose,
+                    integrality_tolerance=integrality_tolerance,
+                )
             except MIPSolverException:
                 k += 1
 
     from sage.numerical.mip import MixedIntegerLinearProgram, MIPSolverException
+
     p = MixedIntegerLinearProgram(solver=solver)
 
     # Boolean variable indicating whether the ith element belongs to box b
@@ -892,7 +955,7 @@ def binpacking(items, maximum=1, k=None, solver=None, verbose=0,
 
     # Capacity constraint of each bin
     for b in range(k):
-        p.add_constraint(p.sum(weight[i]*box[i, b] for i in weight) <= maximum)
+        p.add_constraint(p.sum(weight[i] * box[i, b] for i in weight) <= maximum)
 
     # Each item is assigned exactly one bin
     for i in weight:
@@ -907,7 +970,7 @@ def binpacking(items, maximum=1, k=None, solver=None, verbose=0,
 
     boxes = [[] for i in range(k)]
 
-    for i,b in box:
+    for i, b in box:
         if box[i, b]:
             boxes[b].append(weight[i] if isinstance(items, list) else i)
 

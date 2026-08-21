@@ -67,6 +67,7 @@ class Polygon(GraphicPrimitive_xydata):
         sage: polygon2d([(1, 1), (0, 1), (1, 0)], fill=False, linestyle='dashed')
         Graphics object consisting of 1 graphics primitive
     """
+
     def __init__(self, xdata, ydata, options):
         """
         Initialize base class Polygon.
@@ -155,16 +156,18 @@ class Polygon(GraphicPrimitive_xydata):
             sage: P[0]._allowed_options()['alpha']
             'How transparent the figure is.'
         """
-        return {'alpha': 'How transparent the figure is.',
-                'thickness': 'How thick the border line is.',
-                'edgecolor': 'The color for the border of filled polygons.',
-                'fill': 'Whether or not to fill the polygon.',
-                'legend_label': 'The label for this item in the legend.',
-                'legend_color': 'The color of the legend text.',
-                'linestyle': 'The style of the enclosing line.',
-                'rgbcolor': 'The color as an RGB tuple.',
-                'hue': 'The color given as a hue.',
-                'zorder': 'The layer level in which to draw'}
+        return {
+            'alpha': 'How transparent the figure is.',
+            'thickness': 'How thick the border line is.',
+            'edgecolor': 'The color for the border of filled polygons.',
+            'fill': 'Whether or not to fill the polygon.',
+            'legend_label': 'The label for this item in the legend.',
+            'legend_color': 'The color of the legend text.',
+            'linestyle': 'The style of the enclosing line.',
+            'rgbcolor': 'The color as an RGB tuple.',
+            'hue': 'The color given as a hue.',
+            'zorder': 'The layer level in which to draw',
+        }
 
     def _plot3d_options(self, options=None):
         """
@@ -235,6 +238,7 @@ class Polygon(GraphicPrimitive_xydata):
             ValueError: Incorrect number of heights given
         """
         from sage.plot.plot3d.index_face_set import IndexFaceSet
+
         options = self._plot3d_options()
         options.update(kwds)
         zdata = []
@@ -243,8 +247,7 @@ class Polygon(GraphicPrimitive_xydata):
         else:
             zdata = [z] * len(self.xdata)
         if len(zdata) == len(self.xdata):
-            return IndexFaceSet([list(zip(self.xdata, self.ydata, zdata))],
-                                **options)
+            return IndexFaceSet([list(zip(self.xdata, self.ydata, zdata))], **options)
         raise ValueError('Incorrect number of heights given')
 
     def _render_on_subplot(self, subplot):
@@ -254,9 +257,11 @@ class Polygon(GraphicPrimitive_xydata):
             sage: P = polygon([(0,0), (1,2), (0,1), (-1,2)])
         """
         from matplotlib import patches
+
         options = self.options()
-        p = patches.Polygon([(self.xdata[i], self.ydata[i])
-                             for i in range(len(self.xdata))])
+        p = patches.Polygon(
+            [(self.xdata[i], self.ydata[i]) for i in range(len(self.xdata))]
+        )
         p.set_linewidth(float(options['thickness']))
         if 'linestyle' in options:
             p.set_linestyle(options['linestyle'])
@@ -314,13 +319,21 @@ def polygon(points, **options):
         return polygon2d(points, **options)
     except ValueError:
         from sage.plot.plot3d.shapes2 import polygon3d
+
         return polygon3d(points, **options)
 
 
 @rename_keyword(color='rgbcolor')
-@options(alpha=1, rgbcolor=(0, 0, 1), edgecolor=None, thickness=None,
-         legend_label=None, legend_color=None,
-         aspect_ratio=1.0, fill=True)
+@options(
+    alpha=1,
+    rgbcolor=(0, 0, 1),
+    edgecolor=None,
+    thickness=None,
+    legend_label=None,
+    legend_color=None,
+    aspect_ratio=1.0,
+    fill=True,
+)
 def polygon2d(points, **options):
     r"""
     Return a 2-dimensional polygon defined by ``points``.
@@ -535,7 +548,8 @@ def polygon2d(points, **options):
     """
     from sage.plot.plot import xydata_from_point_list
     from sage.plot.graphics import Graphics
-    if options["thickness"] is None:   # If the user did not specify thickness
+
+    if options["thickness"] is None:  # If the user did not specify thickness
         if options["fill"] and options["edgecolor"] is None:
             # If the user chose fill
             options["thickness"] = 0

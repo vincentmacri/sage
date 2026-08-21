@@ -203,7 +203,6 @@ import sage.modules.free_module_homspace
 
 
 class VectorSpaceHomspace(sage.modules.free_module_homspace.FreeModuleHomspace):
-
     def __call__(self, A, check=True, **kwds):
         r"""
         INPUT:
@@ -329,10 +328,12 @@ class VectorSpaceHomspace(sage.modules.free_module_homspace.FreeModuleHomspace):
         dimensions of the matrix were incorrect.
         """
         from .vector_space_morphism import VectorSpaceMorphism
+
         D = self.domain()
         C = self.codomain()
         side = kwds.get("side", "left")
         from sage.structure.element import Matrix
+
         if isinstance(A, Matrix):
             pass
         elif isinstance(A, VectorSpaceMorphism):
@@ -341,12 +342,20 @@ class VectorSpaceHomspace(sage.modules.free_module_homspace.FreeModuleHomspace):
             try:
                 images = [A(g) for g in D.basis()]
             except (ValueError, TypeError, IndexError) as e:
-                msg = 'function cannot be applied properly to some basis element because\n' + e.args[0]
+                msg = (
+                    'function cannot be applied properly to some basis element because\n'
+                    + e.args[0]
+                )
                 raise ValueError(msg)
             try:
-                A = matrix(D.dimension(), C.dimension(), [C.coordinates(C(a)) for a in images])
+                A = matrix(
+                    D.dimension(), C.dimension(), [C.coordinates(C(a)) for a in images]
+                )
             except (ArithmeticError, TypeError) as e:
-                msg = 'some image of the function is not in the codomain, because\n' + e.args[0]
+                msg = (
+                    'some image of the function is not in the codomain, because\n'
+                    + e.args[0]
+                )
                 raise ArithmeticError(msg)
             if side == "right":
                 A = A.transpose()
@@ -358,7 +367,9 @@ class VectorSpaceHomspace(sage.modules.free_module_homspace.FreeModuleHomspace):
                 v = [C(a) for a in A]
                 A = matrix(D.dimension(), C.dimension(), [C.coordinates(a) for a in v])
             except (ArithmeticError, TypeError) as e:
-                msg = 'some proposed image is not in the codomain, because\n' + e.args[0]
+                msg = (
+                    'some proposed image is not in the codomain, because\n' + e.args[0]
+                )
                 raise ArithmeticError(msg)
             if side == "right":
                 A = A.transpose()

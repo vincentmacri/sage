@@ -73,9 +73,11 @@ Authors:
 Functions
 ---------
 """
+
 from pathlib import Path
 from sage.misc.temporary_file import tmp_filename
 from sage.misc.lazy_import import lazy_import
+
 lazy_import("sage.plot.colors", "rainbow")
 
 # ****************************************************************************
@@ -89,19 +91,21 @@ lazy_import("sage.plot.colors", "rainbow")
 # ****************************************************************************
 
 
-def gen_html_code(G,
-                  vertex_labels=True,
-                  edge_labels=False,
-                  vertex_partition=[],
-                  vertex_colors=None,
-                  edge_partition=[],
-                  force_spring_layout=False,
-                  charge=-120,
-                  link_distance=30,
-                  link_strength=2,
-                  gravity=.04,
-                  vertex_size=7,
-                  edge_thickness=4):
+def gen_html_code(
+    G,
+    vertex_labels=True,
+    edge_labels=False,
+    vertex_partition=[],
+    vertex_colors=None,
+    edge_partition=[],
+    force_spring_layout=False,
+    charge=-120,
+    link_distance=30,
+    link_strength=2,
+    gravity=0.04,
+    vertex_size=7,
+    edge_thickness=4,
+):
     r"""
     Create a .html file showing the graph using `d3.js <https://d3js.org/>`_.
 
@@ -234,7 +238,7 @@ def gen_html_code(G,
     edge_color = {}
     for i, l in enumerate(edge_partition):
         for e in l:
-            u, v, label = e if len(e) == 3 else e+(None,)
+            u, v, label = e if len(e) == 3 else e + (None,)
             edge_color[u, v, label] = color_list[i]
             if not directed:
                 edge_color[v, u, label] = color_list[i]
@@ -244,7 +248,6 @@ def gen_html_code(G,
     seen = {}  # How many times has this edge been seen ?
 
     for u, v, l in G.edge_iterator():
-
         # Edge color
         color = edge_color.get((u, v, l), edge_color_default)
 
@@ -277,12 +280,16 @@ def gen_html_code(G,
 
         # Adding the edge to the list
         # The source (resp. target) is the index of u (resp. v) in list nodes
-        edges.append({"source": v_to_id[u],
-                      "target": v_to_id[v],
-                      "strength": 0,
-                      "color": color,
-                      "curve": curve,
-                      "name": str(l) if edge_labels else ""})
+        edges.append(
+            {
+                "source": v_to_id[u],
+                "target": v_to_id[v],
+                "strength": 0,
+                "color": color,
+                "curve": curve,
+                "name": str(l) if edge_labels else "",
+            }
+        )
 
     loops = [e for e in edges if e["source"] == e["target"]]
     edges = [e for e in edges if e["source"] != e["target"]]
@@ -301,21 +308,27 @@ def gen_html_code(G,
 
     # Encodes the data as a JSON string
     from json import JSONEncoder
-    string = JSONEncoder().encode({"nodes": nodes,
-                                   "links": edges,
-                                   "loops": loops,
-                                   "pos": pos,
-                                   "directed": G.is_directed(),
-                                   "charge": int(charge),
-                                   "link_distance": int(link_distance),
-                                   "link_strength": int(link_strength),
-                                   "gravity": float(gravity),
-                                   "vertex_labels": bool(vertex_labels),
-                                   "edge_labels": bool(edge_labels),
-                                   "vertex_size": int(vertex_size),
-                                   "edge_thickness": int(edge_thickness)})
+
+    string = JSONEncoder().encode(
+        {
+            "nodes": nodes,
+            "links": edges,
+            "loops": loops,
+            "pos": pos,
+            "directed": G.is_directed(),
+            "charge": int(charge),
+            "link_distance": int(link_distance),
+            "link_strength": int(link_strength),
+            "gravity": float(gravity),
+            "vertex_labels": bool(vertex_labels),
+            "edge_labels": bool(edge_labels),
+            "vertex_size": int(vertex_size),
+            "edge_thickness": int(edge_thickness),
+        }
+    )
 
     from sage.env import SAGE_EXTCODE, sage_data_paths
+
     with open(Path(SAGE_EXTCODE) / "graphs" / "graph_plot_js.html") as f:
         js_code = f.read().replace("// GRAPH_DATA_HEREEEEEEEEEEE", string)
 

@@ -57,6 +57,7 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
 
         sage: Conic([2, 1, -1])._test_pickling()
     """
+
     def __init__(self, A, f):
         r"""
         See ``Conic`` for full documentation.
@@ -68,8 +69,9 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
         """
         ProjectiveConic_number_field.__init__(self, A, f)
 
-    def has_rational_point(self, point=False, obstruction=False,
-                           algorithm='default', read_cache=True) -> bool:
+    def has_rational_point(
+        self, point=False, obstruction=False, algorithm='default', read_cache=True
+    ) -> bool:
         r"""
         Return ``True`` if and only if ``self`` has a point defined over `\QQ`.
 
@@ -163,8 +165,11 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
                 if point or obstruction:
                     return False, self._local_obstruction
                 return False
-            if (not point) and self._finite_obstructions == [] and \
-               self._infinite_obstructions == []:
+            if (
+                (not point)
+                and self._finite_obstructions == []
+                and self._infinite_obstructions == []
+            ):
                 if obstruction:
                     return True, None
                 return True
@@ -189,14 +194,19 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
                 return True, pt
             return True
         ret = ProjectiveConic_number_field.has_rational_point(
-            self, point=point,
+            self,
+            point=point,
             obstruction=obstruction,
             algorithm=algorithm,
-            read_cache=read_cache)
+            read_cache=read_cache,
+        )
         if point or obstruction:
             from sage.categories.map import Map
             from sage.categories.rings import Rings
-            if isinstance(ret[1], Map) and ret[1].category_for().is_subcategory(Rings()):
+
+            if isinstance(ret[1], Map) and ret[1].category_for().is_subcategory(
+                Rings()
+            ):
                 # ret[1] is a morphism of Rings
                 ret[1] = -1
         return ret
@@ -243,8 +253,10 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
             if p.domain() is QQ and isinstance(p.codomain(), sage.rings.abc.RealField):
                 p = -1
             else:
-                raise TypeError("p (=%s) needs to be a prime of base field "
-                                "B ( =`QQ`) in is_locally_solvable" % p)
+                raise TypeError(
+                    "p (=%s) needs to be a prime of base field "
+                    "B ( =`QQ`) in is_locally_solvable" % p
+                )
         if hilbert_symbol(a, b, p) == -1:
             if self._local_obstruction is None:
                 self._local_obstruction = p
@@ -379,7 +391,10 @@ class ProjectiveConic_rational_field(ProjectiveConic_number_field):
             par = self._parametrization
         else:
             if not self.is_smooth():
-                raise ValueError("The conic self (=%s) is not smooth, hence does not have a parametrization." % self)
+                raise ValueError(
+                    "The conic self (=%s) is not smooth, hence does not have a parametrization."
+                    % self
+                )
             if point is None:
                 point = self.rational_point()
             point = Sequence(point)

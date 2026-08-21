@@ -14,6 +14,7 @@ Features for testing the presence of ``mcqd``
 from sage.config import mcqd_enabled
 from sage.features.build_feature import BuildModule
 
+
 class Mcqd(BuildModule):
     r"""
     A :class:`~sage.features.Feature` describing the presence of
@@ -38,6 +39,7 @@ class Mcqd(BuildModule):
         FeatureTestResult('mcqd', True)
 
     """
+
     _enabled_in_build = mcqd_enabled
 
     def __init__(self):

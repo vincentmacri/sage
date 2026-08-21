@@ -17,7 +17,9 @@ groups.
 ########################################################################
 
 from sage.modules.free_module import VectorSpace
-from sage.groups.additive_abelian.additive_abelian_group import AdditiveAbelianGroup_fixed_gens
+from sage.groups.additive_abelian.additive_abelian_group import (
+    AdditiveAbelianGroup_fixed_gens,
+)
 from sage.rings.integer_ring import ZZ
 
 
@@ -45,6 +47,7 @@ class HomologyGroup_class(AdditiveAbelianGroup_fixed_gens):
         sage: HomologyGroup(100, ZZ)
         Z^100
     """
+
     def __init__(self, n, invfac) -> None:
         """
         See :func:`HomologyGroup` for full documentation.
@@ -56,7 +59,7 @@ class HomologyGroup_class(AdditiveAbelianGroup_fixed_gens):
             C5 x C5 x C7 x C8 x C9
         """
         n = len(invfac)
-        A = ZZ ** n
+        A = ZZ**n
         B = A.span([A.gen(i) * invfac[i] for i in range(n)])
 
         AdditiveAbelianGroup_fixed_gens.__init__(self, A, B, A.gens())
@@ -88,7 +91,7 @@ class HomologyGroup_class(AdditiveAbelianGroup_fixed_gens):
             printed = []
             for t in torsion:
                 numfac = torsion.count(t)
-                too_many = (numfac > 4)
+                too_many = numfac > 4
                 if too_many:
                     if t not in printed:
                         g.append("C{}^{}".format(t, numfac))
@@ -124,7 +127,7 @@ class HomologyGroup_class(AdditiveAbelianGroup_fixed_gens):
             printed = []
             for t in torsion:
                 numfac = torsion.count(t)
-                too_many = (numfac > 4)
+                too_many = numfac > 4
                 if too_many:
                     if t not in printed:
                         g.append("C_{{{}}}^{{{}}}".format(t, numfac))

@@ -86,15 +86,15 @@ def Fricke_polynomial(l):
     """
     t = polygen(ZZ, 't')
     if l == 2:
-        return (t+16)**3
+        return (t + 16) ** 3
     if l == 3:
-        return (t+3)**3*(t+27)
+        return (t + 3) ** 3 * (t + 27)
     if l == 5:
-        return (t**2+10*t+5)**3
+        return (t**2 + 10 * t + 5) ** 3
     if l == 7:
-        return (t**2+5*t+1)**3 * (t**2+13*t+49)
+        return (t**2 + 5 * t + 1) ** 3 * (t**2 + 13 * t + 49)
     if l == 13:
-        return (t**2+5*t+13)*(t**4+7*t**3+20*t**2+19*t+1)**3
+        return (t**2 + 5 * t + 13) * (t**4 + 7 * t**3 + 20 * t**2 + 19 * t + 1) ** 3
     raise ValueError(f"{l} is not a genus 0 prime")
 
 
@@ -195,7 +195,7 @@ def Psi(l, use_stored=True):
     if l not in [2, 3, 5, 7, 13]:
         raise ValueError(f"{l} is not a genus 0 prime")
 
-    R, (X, t) = PolynomialRing(ZZ, ['X','t']).objgens()
+    R, (X, t) = PolynomialRing(ZZ, ['X', 't']).objgens()
 
     if use_stored:
         if l == 2:
@@ -203,29 +203,129 @@ def Psi(l, use_stored=True):
         if l == 3:
             return X + t + 27
         if l == 5:
-            return X**2 + 2*X*(t**2 + 22*t + 125) + (t**2 + 22*t + 89) * (t**2 + 22*t + 125)
+            return (
+                X**2
+                + 2 * X * (t**2 + 22 * t + 125)
+                + (t**2 + 22 * t + 89) * (t**2 + 22 * t + 125)
+            )
         if l == 7:
-            return (X**3 + 3*(t**2 + 13*t + 49)*X**2
-                    + 3*(t**2 + 13*t + 33)*(t**2 + 13*t + 49)*X
-                    + (t**2 + 13*t + 49)*(t**4 + 26*t**3 + 219*t**2 + 778*t + 881))
+            return (
+                X**3
+                + 3 * (t**2 + 13 * t + 49) * X**2
+                + 3 * (t**2 + 13 * t + 33) * (t**2 + 13 * t + 49) * X
+                + (t**2 + 13 * t + 49) * (t**4 + 26 * t**3 + 219 * t**2 + 778 * t + 881)
+            )
         if l == 13:
-            return (t**24 + 66*t**23 + 2091*t**22 + 6*X*t**20 + 42582*t**21 + 330*X*t**19 + 627603*t**20 + 8700*X*t**18 + 7134744*t**19 + 15*X**2*t**16 + 146886*X*t**17 + 65042724*t**18 + 660*X**2*t**15 + 1784532*X*t**16 + 487778988*t**17 + 13890*X**2*t**14 + 16594230*X*t**15 + 3061861065*t**16 + 20*X**3*t**12 + 186024*X**2*t**13 + 122552328*X*t**14 + 16280123754*t**15 + 660*X**3*t**11 + 1774887*X**2*t**12 + 735836862*X*t**13 + 73911331425*t**14 + 10380*X**3*t**10 + 12787272*X**2*t**11 + 3646188342*X*t**12 + 287938949178*t**13 + 15*X**4*t**8 + 102576*X**3*t**9 + 71909658*X**2*t**10 + 15047141292*X*t**11 + 964903805434*t**12 + 330*X**4*t**7 + 707604*X**3*t**8 + 321704316*X**2*t**9 + 51955096824*X*t**10 + 2781843718722*t**11 + 3435*X**4*t**6 + 3582876*X**3*t**7 + 1155971196*X**2*t**8 + 150205315932*X*t**9 + 6885805359741*t**10 + 6*X**5*t**4 + 21714*X**4*t**5 + 13632168*X**3*t**6 + 3343499244*X**2*t**7 + 362526695094*X*t**8 + 14569390179114*t**9 + 66*X**5*t**3 + 90660*X**4*t**4 + 39215388*X**3*t**5 + 7747596090*X**2*t**6 + 725403501318*X*t**7 + 26165223178293*t**8 + 336*X**5*t**2 + 255090*X**4*t**3 + 84525732*X**3*t**4 + 14206132008*X**2*t**5 + 1189398495432*X*t**6 + 39474479008356*t**7 + X**6 + 858*X**5*t + 472143*X**4*t**2 + 132886992*X**3*t**3 + 20157510639*X**2*t**4 + 1569568001646*X*t**5 + 49303015587132*t**6 + 1014*X**5 + 525954*X**4*t + 144222780*X**3*t**2 + 21320908440*X**2*t**3 + 1622460290100*X*t**4 + 49941619724976*t**5 + 272259*X**4 + 96482100*X**3*t + 15765293778*X**2*t**2 + 1260038295438*X*t**3 + 39836631701295*t**4 + 29641924*X**3 + 7210949460*X**2*t + 686651250012*X*t**2 + 23947528862166*t**3 + 1506392823*X**2 + 231462513906*X*t + 10114876838391*t**2 + 35655266790*X + 2644809206442*t + 317295487717)
-# The coefficients for l=13 are:
-# X**6: 1
-# X**5: (6) * (t**2 + 5*t + 13) * (t**2 + 6*t + 13)
-# X**4: (3) * (t**2 + 5*t + 13) * (t**2 + 6*t + 13) * (5*t**4 + 55*t**3 + 260*t**2 + 583*t + 537)
-# X**3: (4) * (t**2 + 5*t + 13) * (t**2 + 6*t + 13)**2 * (5*t**6 + 80*t**5 + 560*t**4 + 2214*t**3 + 5128*t**2 + 6568*t + 3373)
-# X**2: (3) * (t**2 + 5*t + 13)**2 * (t**2 + 6*t + 13)**2 * (5*t**8 + 110*t**7 + 1045*t**6 + 5798*t**5 + 20508*t**4 + 47134*t**3 + 67685*t**2 + 54406*t + 17581)
-# X**1: (6) * (t**2 + 5*t + 13)**2 * (t**2 + 6*t + 13)**3 * (t**10 + 27*t**9 + 316*t**8 + 2225*t**7 + 10463*t**6 + 34232*t**5 + 78299*t**4 + 122305*t**3 + 122892*t**2 + 69427*t + 16005)
-# X**0: (t**2 + 5*t + 13)**2 * (t**2 + 6*t + 13)**3 * (t**14 + 38*t**13 + 649*t**12 + 6844*t**11 + 50216*t**10 + 271612*t**9 + 1115174*t**8 + 3520132*t**7 + 8549270*t**6 + 15812476*t**5 + 21764840*t**4 + 21384124*t**3 + 13952929*t**2 + 5282630*t + 854569)
+            return (
+                t**24
+                + 66 * t**23
+                + 2091 * t**22
+                + 6 * X * t**20
+                + 42582 * t**21
+                + 330 * X * t**19
+                + 627603 * t**20
+                + 8700 * X * t**18
+                + 7134744 * t**19
+                + 15 * X**2 * t**16
+                + 146886 * X * t**17
+                + 65042724 * t**18
+                + 660 * X**2 * t**15
+                + 1784532 * X * t**16
+                + 487778988 * t**17
+                + 13890 * X**2 * t**14
+                + 16594230 * X * t**15
+                + 3061861065 * t**16
+                + 20 * X**3 * t**12
+                + 186024 * X**2 * t**13
+                + 122552328 * X * t**14
+                + 16280123754 * t**15
+                + 660 * X**3 * t**11
+                + 1774887 * X**2 * t**12
+                + 735836862 * X * t**13
+                + 73911331425 * t**14
+                + 10380 * X**3 * t**10
+                + 12787272 * X**2 * t**11
+                + 3646188342 * X * t**12
+                + 287938949178 * t**13
+                + 15 * X**4 * t**8
+                + 102576 * X**3 * t**9
+                + 71909658 * X**2 * t**10
+                + 15047141292 * X * t**11
+                + 964903805434 * t**12
+                + 330 * X**4 * t**7
+                + 707604 * X**3 * t**8
+                + 321704316 * X**2 * t**9
+                + 51955096824 * X * t**10
+                + 2781843718722 * t**11
+                + 3435 * X**4 * t**6
+                + 3582876 * X**3 * t**7
+                + 1155971196 * X**2 * t**8
+                + 150205315932 * X * t**9
+                + 6885805359741 * t**10
+                + 6 * X**5 * t**4
+                + 21714 * X**4 * t**5
+                + 13632168 * X**3 * t**6
+                + 3343499244 * X**2 * t**7
+                + 362526695094 * X * t**8
+                + 14569390179114 * t**9
+                + 66 * X**5 * t**3
+                + 90660 * X**4 * t**4
+                + 39215388 * X**3 * t**5
+                + 7747596090 * X**2 * t**6
+                + 725403501318 * X * t**7
+                + 26165223178293 * t**8
+                + 336 * X**5 * t**2
+                + 255090 * X**4 * t**3
+                + 84525732 * X**3 * t**4
+                + 14206132008 * X**2 * t**5
+                + 1189398495432 * X * t**6
+                + 39474479008356 * t**7
+                + X**6
+                + 858 * X**5 * t
+                + 472143 * X**4 * t**2
+                + 132886992 * X**3 * t**3
+                + 20157510639 * X**2 * t**4
+                + 1569568001646 * X * t**5
+                + 49303015587132 * t**6
+                + 1014 * X**5
+                + 525954 * X**4 * t
+                + 144222780 * X**3 * t**2
+                + 21320908440 * X**2 * t**3
+                + 1622460290100 * X * t**4
+                + 49941619724976 * t**5
+                + 272259 * X**4
+                + 96482100 * X**3 * t
+                + 15765293778 * X**2 * t**2
+                + 1260038295438 * X * t**3
+                + 39836631701295 * t**4
+                + 29641924 * X**3
+                + 7210949460 * X**2 * t
+                + 686651250012 * X * t**2
+                + 23947528862166 * t**3
+                + 1506392823 * X**2
+                + 231462513906 * X * t
+                + 10114876838391 * t**2
+                + 35655266790 * X
+                + 2644809206442 * t
+                + 317295487717
+            )
+    # The coefficients for l=13 are:
+    # X**6: 1
+    # X**5: (6) * (t**2 + 5*t + 13) * (t**2 + 6*t + 13)
+    # X**4: (3) * (t**2 + 5*t + 13) * (t**2 + 6*t + 13) * (5*t**4 + 55*t**3 + 260*t**2 + 583*t + 537)
+    # X**3: (4) * (t**2 + 5*t + 13) * (t**2 + 6*t + 13)**2 * (5*t**6 + 80*t**5 + 560*t**4 + 2214*t**3 + 5128*t**2 + 6568*t + 3373)
+    # X**2: (3) * (t**2 + 5*t + 13)**2 * (t**2 + 6*t + 13)**2 * (5*t**8 + 110*t**7 + 1045*t**6 + 5798*t**5 + 20508*t**4 + 47134*t**3 + 67685*t**2 + 54406*t + 17581)
+    # X**1: (6) * (t**2 + 5*t + 13)**2 * (t**2 + 6*t + 13)**3 * (t**10 + 27*t**9 + 316*t**8 + 2225*t**7 + 10463*t**6 + 34232*t**5 + 78299*t**4 + 122305*t**3 + 122892*t**2 + 69427*t + 16005)
+    # X**0: (t**2 + 5*t + 13)**2 * (t**2 + 6*t + 13)**3 * (t**14 + 38*t**13 + 649*t**12 + 6844*t**11 + 50216*t**10 + 271612*t**9 + 1115174*t**8 + 3520132*t**7 + 8549270*t**6 + 15812476*t**5 + 21764840*t**4 + 21384124*t**3 + 13952929*t**2 + 5282630*t + 854569)
 
     # Here the generic kernel polynomials are actually calculated:
     j = Fricke_module(l)
     k = j - 1728
-    f = prod([p for p,e in j.factor() if e == 3]
-           + [p for p,e in k.factor() if e == 2])
-    A4 = -3*t**2*j*k // f**2
-    A6 = -2*t**3*j*k**2 // f**3
+    f = prod(
+        [p for p, e in j.factor() if e == 3] + [p for p, e in k.factor() if e == 2]
+    )
+    A4 = -3 * t**2 * j * k // f**2
+    A6 = -2 * t**3 * j * k**2 // f**3
     E = EllipticCurve([A4, A6])
     assert E.j_invariant() == j
     return E.division_polynomial(l, X).factor()[0][0]
@@ -290,7 +390,9 @@ def isogenies_prime_degree_genus_0(E, l=None, minimal_models=True):
     F = E.base_ring()
     j = E.j_invariant()
     if F.characteristic() in [2, 3, l]:
-        raise NotImplementedError("2, 3, 5, 7 and 13-isogenies are not yet implemented in characteristic 2 and 3, and when the characteristic is the same as the degree of the isogeny")
+        raise NotImplementedError(
+            "2, 3, 5, 7 and 13-isogenies are not yet implemented in characteristic 2 and 3, and when the characteristic is the same as the degree of the isogeny"
+        )
     if l == 2:
         return isogenies_2(E, minimal_models=minimal_models)
     if l == 3:
@@ -311,26 +413,36 @@ def isogenies_prime_degree_genus_0(E, l=None, minimal_models=True):
             return isogenies_13_1728(E, minimal_models=minimal_models)
 
     if l is None:
-        return [isog for ell in [2, 3, 5, 7, 13]
-                     for isog in isogenies_prime_degree_genus_0(E, ell, minimal_models=minimal_models)]
+        return [
+            isog
+            for ell in [2, 3, 5, 7, 13]
+            for isog in isogenies_prime_degree_genus_0(
+                E, ell, minimal_models=minimal_models
+            )
+        ]
 
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     R, t = PolynomialRing(F, 't').objgen()
     f = R(Fricke_polynomial(l))
-    t_list = sorted((f-j*t).roots(multiplicities=False))
+    t_list = sorted((f - j * t).roots(multiplicities=False))
     # The generic kernel polynomial applies to a standard curve
     # E_t with the correct j-invariant; we must compute the
     # appropriate twisting factor to scale X by:
     c4, c6 = E.c_invariants()
-    T = c4/(3*c6)
+    T = c4 / (3 * c6)
     jt = Fricke_module(l)
     kt = jt - 1728
     psi = Psi(l)
-    f = R(prod([p for p,e in jt.factor() if e == 3]
-             + [p for p,e in kt.factor() if e == 2]))
-    E1 = EllipticCurve([-27*c4, -54*c6])
+    f = R(
+        prod(
+            [p for p, e in jt.factor() if e == 3]
+            + [p for p, e in kt.factor() if e == 2]
+        )
+    )
+    E1 = EllipticCurve([-27 * c4, -54 * c6])
 
     kernels = [R(psi(t * T * (j - 1728) * t0 / f(t0), t0)) for t0 in t_list]
 
@@ -348,18 +460,18 @@ def isogenies_prime_degree_genus_0(E, l=None, minimal_models=True):
 # sporadic_j is a dictionary holding for each possible sporadic
 # j-invariant, the unique l such that an l-isogeny exists.
 sporadic_j = {
-    QQ(-121)                : 11,
-    QQ(-32768)              : 11,
-    QQ(-24729001)           : 11,
-    QQ(-297756989)/2        : 17,
-    QQ(-882216989)/131072   : 17,
-    QQ(-884736)             : 19,
-    QQ(-9317)               : 37,
-    QQ(-162677523113838677) : 37,
-    QQ(-884736000)          : 43,
-    QQ(-147197952000)       : 67,
-    QQ(-262537412640768000) : 163
-    }
+    QQ(-121): 11,
+    QQ(-32768): 11,
+    QQ(-24729001): 11,
+    QQ(-297756989) / 2: 17,
+    QQ(-882216989) / 131072: 17,
+    QQ(-884736): 19,
+    QQ(-9317): 37,
+    QQ(-162677523113838677): 37,
+    QQ(-884736000): 43,
+    QQ(-147197952000): 67,
+    QQ(-262537412640768000): 163,
+}
 
 
 @cached_function
@@ -544,6 +656,7 @@ def _sporadic_Q_data(j):
         ....:     assert g % f == 0
     """
     from sage.rings.real_mpfr import RealField
+
     ell = sporadic_j[j]
     E = EllipticCurve(j=j).short_weierstrass_model()
     a4a6 = [E.a4(), E.a6()]
@@ -556,9 +669,11 @@ def _sporadic_Q_data(j):
     w1, w2 = L.basis(prec=pr)
     X = polygen(RealField(pr), 'X')
     w = w1  # real period
-    if j in [-121, -24729001, -162677523113838677, QQ(-882216989)/131072]:
-        w = 2*w2 - w1  # imaginary period
-    kerpol = prod(X - L.elliptic_exponential(n*w/ell)[0] for n in range(1, (ell+1)//2))
+    if j in [-121, -24729001, -162677523113838677, QQ(-882216989) / 131072]:
+        w = 2 * w2 - w1  # imaginary period
+    kerpol = prod(
+        X - L.elliptic_exponential(n * w / ell)[0] for n in range(1, (ell + 1) // 2)
+    )
     if j == -162677523113838677:
         kerpolcoeffs = [(37 * c.real()).round() / 37 for c in kerpol]
     else:
@@ -699,16 +814,17 @@ def isogenies_sporadic_Q(E, l=None, minimal_models=True):
 
     F = E.base_field()
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     data = _sporadic_Q_data(j)
     Ew = E.short_weierstrass_model()
     c4, c6 = Ew.c_invariants()
     (a4, a6), f = data
-    d = (c6*a4) / (18*c4*a6)  # twisting factor
+    d = (c6 * a4) / (18 * c4 * a6)  # twisting factor
     R = PolynomialRing(F, 'x')
     n = len(f)
-    ker = R([d**(n-i-1) * f[i] for i in range(n)])
+    ker = R([d ** (n - i - 1) * f[i] for i in range(n)])
     w = E.isomorphism_to(Ew).x_rational_map().numerator()
     isog = E.isogeny(ker(w).monic(), degree=l, model=model, check=False)
     return [isog]
@@ -750,12 +866,17 @@ def isogenies_2(E, minimal_models=True):
         sage: isogenies_2(E)                    # not implemented                       # needs sage.rings.number_field
     """
     from sage.rings.number_field.number_field_base import NumberField
-    model = "minimal" if minimal_models and isinstance(E.base_field(), NumberField) else None
+
+    model = (
+        "minimal"
+        if minimal_models and isinstance(E.base_field(), NumberField)
+        else None
+    )
 
     f2 = E.division_polynomial(2)
     x2 = sorted(f2.roots(multiplicities=False))
     x = f2.parent().gen()
-    ff = [x-x2i for x2i in x2]
+    ff = [x - x2i for x2i in x2]
     isogs = [E.isogeny(f, model=model) for f in ff]
     return isogs
 
@@ -799,7 +920,12 @@ def isogenies_3(E, minimal_models=True):
         []
     """
     from sage.rings.number_field.number_field_base import NumberField
-    model = "minimal" if minimal_models and isinstance(E.base_field(), NumberField) else None
+
+    model = (
+        "minimal"
+        if minimal_models and isinstance(E.base_field(), NumberField)
+        else None
+    )
 
     f3 = E.division_polynomial(3)
     x3 = sorted(f3.roots(multiplicities=False))
@@ -807,6 +933,7 @@ def isogenies_3(E, minimal_models=True):
     ff = [x - x3i for x3i in x3]
     isogs = [E.isogeny(f, model=model) for f in ff]
     return isogs
+
 
 # 6 special cases: `l` = 5, 7, 13 and `j` = 0, 1728.
 
@@ -901,18 +1028,19 @@ def isogenies_5_0(E, minimal_models=True):
     if not F(5).is_square():
         return []
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     Ew = E.short_weierstrass_model()
     b = Ew.a6()
     x = polygen(F)
-    betas = sorted((x**6-160*b*x**3-80*b**2).roots(multiplicities=False))
+    betas = sorted((x**6 - 160 * b * x**3 - 80 * b**2).roots(multiplicities=False))
     if not betas:
         return []
 
-    gammas = [(beta**2 * (beta**3-140*b)) / (120*b) for beta in betas]
+    gammas = [(beta**2 * (beta**3 - 140 * b)) / (120 * b) for beta in betas]
 
-    kernels = [x**2 + beta*x + gamma for beta, gamma in zip(betas, gammas)]
+    kernels = [x**2 + beta * x + gamma for beta, gamma in zip(betas, gammas)]
 
     w = E.isomorphism_to(Ew).x_rational_map().numerator()
     isogs = [E.isogeny(ker(w).monic(), model=model) for ker in kernels]
@@ -1029,6 +1157,7 @@ def isogenies_5_1728(E, minimal_models=True):
     if F.characteristic() in [2, 3, 5]:
         raise NotImplementedError("not implemented in characteristic 2, 3 or 5")
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     # quick test for a negative answer (from Fricke module)
@@ -1048,14 +1177,14 @@ def isogenies_5_1728(E, minimal_models=True):
     # Type 1: if -1 is a square we have 2 endomorphisms
     if square1:
         i = F(-1).sqrt()
-        kernels = [x**2 + a / (1+2*i), x**2 + a / (1-2*i)]
+        kernels = [x**2 + a / (1 + 2 * i), x**2 + a / (1 - 2 * i)]
         isogs.extend(E.isogeny(ker(w).monic(), codomain=E) for ker in kernels)
 
     # Type 2: if 5 is a square we have up to 4 (non-endomorphism) isogenies
     if square5:
-        betas = sorted((x**4 + 20*a*x**2 - 80*a**2).roots(multiplicities=False))
-        gammas = [(beta**2 - 2*a) / 6 for beta in betas]
-        kernels = [x**2 + beta*x + gamma for beta, gamma in zip(betas, gammas)]
+        betas = sorted((x**4 + 20 * a * x**2 - 80 * a**2).roots(multiplicities=False))
+        gammas = [(beta**2 - 2 * a) / 6 for beta in betas]
+        kernels = [x**2 + beta * x + gamma for beta, gamma in zip(betas, gammas)]
         isogs.extend(E.isogeny(ker(w).monic(), model=model) for ker in kernels)
 
     return isogs
@@ -1173,8 +1302,11 @@ def isogenies_7_0(E, minimal_models=True):
         raise ValueError("j-invariant must be 0")
     F = E.base_field()
     if F.characteristic() in [2, 3, 7]:
-        raise NotImplementedError("not implemented when the characteristic of the base field is 2, 3 or 7")
+        raise NotImplementedError(
+            "not implemented when the characteristic of the base field is 2, 3 or 7"
+        )
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     x = polygen(F)
@@ -1185,17 +1317,17 @@ def isogenies_7_0(E, minimal_models=True):
 
     # there will be 2 endomorphisms if -3 is a square:
     ts = sorted(F(-3).sqrt(all=True, extend=False))
-    kernels = [7*x - (2 + 6*t) for t in ts]
-    kernels = [ker(x**3/b).monic() for ker in kernels]
+    kernels = [7 * x - (2 + 6 * t) for t in ts]
+    kernels = [ker(x**3 / b).monic() for ker in kernels]
     isogs = [E.isogeny(ker(w).monic(), codomain=E) for ker in kernels]
 
     # we may have up to 6 other isogenies:
     ts = sorted(F(21).sqrt(all=True, extend=False))
     for t0 in ts:
-        s3 = b / (28 + 6*t0)
+        s3 = b / (28 + 6 * t0)
         ss = sorted((x**3 - s3).roots(multiplicities=False))
-        ker = x**3 - 2*t0*x**2 - 4*t0*x + 4*t0 + 28
-        kernels = [ker(x/s).monic() for s in ss]
+        ker = x**3 - 2 * t0 * x**2 - 4 * t0 * x + 4 * t0 + 28
+        kernels = [ker(x / s).monic() for s in ss]
         isogs.extend(E.isogeny(ker(w).monic(), model=model) for ker in kernels)
 
     return isogs
@@ -1277,8 +1409,11 @@ def isogenies_7_1728(E, minimal_models=True):
         raise ValueError("j-invariant must be 1728 (in base field)")
     F = E.base_field()
     if F.characteristic() in [2, 3, 7]:
-        raise NotImplementedError("not implemented when the characteristic of the base field is 2, 3 or 7")
+        raise NotImplementedError(
+            "not implemented when the characteristic of the base field is 2, 3 or 7"
+        )
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     ts = sorted((Fricke_module(7) - 1728).numerator().roots(F, multiplicities=False))
@@ -1293,10 +1428,18 @@ def isogenies_7_1728(E, minimal_models=True):
 
     isogs = []
     for t0 in ts:
-        s2 = a/t0
+        s2 = a / t0
         ss = sorted(s2.sqrt(all=True, extend=False))
-        ker = 9*x**3 + (-3*t0**3 - 36*t0**2 - 123*t0)*x**2 + (-8*t0**3 - 101*t0**2 - 346*t0 + 35)*x - 7*t0**3 - 88*t0**2 - 296*t0 + 28
-        kernels = [ker(x/s).monic() for s in ss]
+        ker = (
+            9 * x**3
+            + (-3 * t0**3 - 36 * t0**2 - 123 * t0) * x**2
+            + (-8 * t0**3 - 101 * t0**2 - 346 * t0 + 35) * x
+            - 7 * t0**3
+            - 88 * t0**2
+            - 296 * t0
+            + 28
+        )
+        kernels = [ker(x / s).monic() for s in ss]
         isogs.extend(E.isogeny(ker(w).monic(), model=model) for ker in kernels)
 
     return isogs
@@ -1419,8 +1562,11 @@ def isogenies_13_0(E, minimal_models=True):
         raise ValueError("j-invariant must be 0")
     F = E.base_field()
     if F.characteristic() in [2, 3, 13]:
-        raise NotImplementedError("not implemented when the characteristic of the base field is 2, 3 or 13")
+        raise NotImplementedError(
+            "not implemented when the characteristic of the base field is 2, 3 or 13"
+        )
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     x = polygen(F)
@@ -1431,22 +1577,28 @@ def isogenies_13_0(E, minimal_models=True):
 
     # there will be 2 endomorphisms if -3 is a square:
     ts = sorted(F(-3).sqrt(all=True, extend=False))
-    kernels = [13*x**2 + (78*t + 26)*x + 24*t + 40 for t in ts]
-    kernels = [ker(x**3/b).monic() for ker in kernels]
+    kernels = [13 * x**2 + (78 * t + 26) * x + 24 * t + 40 for t in ts]
+    kernels = [ker(x**3 / b).monic() for ker in kernels]
     isogs = [E.isogeny(ker(w).monic(), codomain=E) for ker in kernels]
 
     # we may have up to 12 other isogenies:
-    ts = sorted((x**4 + 7*x**3 + 20*x**2 + 19*x + 1).roots(multiplicities=False))
+    ts = sorted((x**4 + 7 * x**3 + 20 * x**2 + 19 * x + 1).roots(multiplicities=False))
     for t0 in ts:
-        s3 = b / (6*t0**3 + 32*t0**2 + 68*t0 + 4)
-        ss = sorted((x**3-s3).roots(multiplicities=False))
-        ker = (x**6 + (20*t0**3 + 106*t0**2 + 218*t0 + 4)*x**5
-            + (-826*t0**3 - 4424*t0**2 - 9244*t0 - 494)*x**4
-            + (13514*t0**3 + 72416*t0**2 + 151416*t0 + 8238)*x**3
-            + (-101948*t0**3 - 546304*t0**2 - 1142288*t0 - 62116)*x**2
-            + (354472*t0**3 + 1899488*t0**2 + 3971680*t0 + 215960)*x
-            - 459424*t0**3 - 2461888*t0**2 - 5147648*t0 - 279904)
-        kernels = [ker(x/s).monic() for s in ss]
+        s3 = b / (6 * t0**3 + 32 * t0**2 + 68 * t0 + 4)
+        ss = sorted((x**3 - s3).roots(multiplicities=False))
+        ker = (
+            x**6
+            + (20 * t0**3 + 106 * t0**2 + 218 * t0 + 4) * x**5
+            + (-826 * t0**3 - 4424 * t0**2 - 9244 * t0 - 494) * x**4
+            + (13514 * t0**3 + 72416 * t0**2 + 151416 * t0 + 8238) * x**3
+            + (-101948 * t0**3 - 546304 * t0**2 - 1142288 * t0 - 62116) * x**2
+            + (354472 * t0**3 + 1899488 * t0**2 + 3971680 * t0 + 215960) * x
+            - 459424 * t0**3
+            - 2461888 * t0**2
+            - 5147648 * t0
+            - 279904
+        )
+        kernels = [ker(x / s).monic() for s in ss]
         isogs.extend(E.isogeny(ker(w).monic(), model=model) for ker in kernels)
 
     return isogs
@@ -1584,8 +1736,11 @@ def isogenies_13_1728(E, minimal_models=True):
         raise ValueError("j-invariant must be 1728")
     F = E.base_field()
     if F.characteristic() in [2, 3, 13]:
-        raise NotImplementedError("not implemented when the characteristic of the base field is 2, 3 or 13")
+        raise NotImplementedError(
+            "not implemented when the characteristic of the base field is 2, 3 or 13"
+        )
     from sage.rings.number_field.number_field_base import NumberField
+
     model = "minimal" if minimal_models and isinstance(F, NumberField) else None
 
     x = polygen(F)
@@ -1596,31 +1751,82 @@ def isogenies_13_1728(E, minimal_models=True):
 
     # we will have two endomorphisms if -1 is a square:
     ts = sorted(F(-1).sqrt(all=True, extend=False))
-    kernels = [13*x**3 + (-26*i - 13)*x**2 + (-52*i - 13)*x - 2*i - 3 for i in ts]
-    kernels = [ker(x**2/a).monic() for ker in kernels]
+    kernels = [
+        13 * x**3 + (-26 * i - 13) * x**2 + (-52 * i - 13) * x - 2 * i - 3 for i in ts
+    ]
+    kernels = [ker(x**2 / a).monic() for ker in kernels]
     isogs = [E.isogeny(ker(w).monic(), codomain=E) for ker in kernels]
 
     # we may have up to 12 other isogenies:
-    ts = sorted((x**6 + 10*x**5 + 46*x**4 + 108*x**3 + 122*x**2 + 38*x - 1).roots(multiplicities=False))
+    ts = sorted(
+        (x**6 + 10 * x**5 + 46 * x**4 + 108 * x**3 + 122 * x**2 + 38 * x - 1).roots(
+            multiplicities=False
+        )
+    )
     for t0 in ts:
-        s2 = a / (66*t0**5 + 630*t0**4 + 2750*t0**3 + 5882*t0**2 + 5414*t0 + 162)
+        s2 = a / (
+            66 * t0**5 + 630 * t0**4 + 2750 * t0**3 + 5882 * t0**2 + 5414 * t0 + 162
+        )
         ss = sorted(s2.sqrt(all=True, extend=False))
-        ker = (x**6 + (-66*t0**5 - 630*t0**4 - 2750*t0**3 - 5882*t0**2
-              - 5414*t0 - 162)*x**5 + (-21722*t0**5 - 205718*t0**4 -
-              890146*t0**3 - 1873338*t0**2 - 1652478*t0 + 61610)*x**4
-              + (-3391376*t0**5 - 32162416*t0**4 - 139397232*t0**3 -
-              294310576*t0**2 - 261885968*t0 + 6105552)*x**3 +
-              (-241695080*t0**5 - 2291695976*t0**4 - 9930313256*t0**3
-              - 20956609720*t0**2 - 18625380856*t0 + 469971320)*x**2 +
-              (-8085170432*t0**5 - 76663232384*t0**4 -
-              332202985024*t0**3 - 701103233152*t0**2 -
-              623190845440*t0 + 15598973056)*x - 101980510208*t0**5 -
-              966973468160*t0**4 - 4190156868352*t0**3 -
-              8843158270336*t0**2 - 7860368751232*t0 + 196854655936)
-        kernels = [ker(x/s).monic() for s in ss]
+        ker = (
+            x**6
+            + (
+                -66 * t0**5
+                - 630 * t0**4
+                - 2750 * t0**3
+                - 5882 * t0**2
+                - 5414 * t0
+                - 162
+            )
+            * x**5
+            + (
+                -21722 * t0**5
+                - 205718 * t0**4
+                - 890146 * t0**3
+                - 1873338 * t0**2
+                - 1652478 * t0
+                + 61610
+            )
+            * x**4
+            + (
+                -3391376 * t0**5
+                - 32162416 * t0**4
+                - 139397232 * t0**3
+                - 294310576 * t0**2
+                - 261885968 * t0
+                + 6105552
+            )
+            * x**3
+            + (
+                -241695080 * t0**5
+                - 2291695976 * t0**4
+                - 9930313256 * t0**3
+                - 20956609720 * t0**2
+                - 18625380856 * t0
+                + 469971320
+            )
+            * x**2
+            + (
+                -8085170432 * t0**5
+                - 76663232384 * t0**4
+                - 332202985024 * t0**3
+                - 701103233152 * t0**2
+                - 623190845440 * t0
+                + 15598973056
+            )
+            * x
+            - 101980510208 * t0**5
+            - 966973468160 * t0**4
+            - 4190156868352 * t0**3
+            - 8843158270336 * t0**2
+            - 7860368751232 * t0
+            + 196854655936
+        )
+        kernels = [ker(x / s).monic() for s in ss]
         isogs.extend(E.isogeny(ker(w).monic(), model=model) for ker in kernels)
 
     return isogs
+
 
 # List of primes l for which X_0(l) is (hyper)elliptic and X_0^+(l) has genus 0
 
@@ -1666,107 +1872,1079 @@ def _hyperelliptic_isogeny_data(l):
         raise ValueError(f"{l} must be one of {hyperelliptic_primes}")
     data = {}
     Zu = PolynomialRing(ZZ, 'u')
-    Zuv = PolynomialRing(ZZ, ['u','v'])
-    Zxuv, (x, u, v) = PolynomialRing(ZZ, ['x','u','v']).objgens()
+    Zuv = PolynomialRing(ZZ, ['u', 'v'])
+    Zxuv, (x, u, v) = PolynomialRing(ZZ, ['x', 'u', 'v']).objgens()
     if l == 11:
         data['hyper_poly'] = Zu([-7, 12, 2, -16, 1])
         data['A2'] = Zu([-33, 55])
-        data['A4'] = Zuv(Zu([-135, 738, -183])+v*Zu([-180]))
-        data['A6'] = Zuv(Zu([1890, 2646, -11466, 1330]) + v*Zu([-1836, 1332]))
-        data['alpha'] = Zu([-6750, 24300, 40095, -187407, 132066, 133056, -177408, 69630, -12716, 1188, -55, 1])
+        data['A4'] = Zuv(Zu([-135, 738, -183]) + v * Zu([-180]))
+        data['A6'] = Zuv(Zu([1890, 2646, -11466, 1330]) + v * Zu([-1836, 1332]))
+        data['alpha'] = Zu(
+            [
+                -6750,
+                24300,
+                40095,
+                -187407,
+                132066,
+                133056,
+                -177408,
+                69630,
+                -12716,
+                1188,
+                -55,
+                1,
+            ]
+        )
         data['beta'] = Zu([0, -12150, 27135, 10665, -48573, 29313, -7187, 843, -47, 1])
-        #beta factors as (u - 15) * (u - 6) * (u - 3) * (u - 1) * u * (u**2 - 12*u - 9) * (u**2 - 10*u + 5)
+        # beta factors as (u - 15) * (u - 6) * (u - 3) * (u - 1) * u * (u**2 - 12*u - 9) * (u**2 - 10*u + 5)
         return data
     if l == 17:
         data['hyper_poly'] = Zu([-8, 4, -3, -10, 1])
         data['A2'] = Zu([68, -204, 136])
-        data['A4'] = Zuv(Zu([60, 720, -2595, 2250, -435]) + v*Zu([-360, 792, -432]))
-        data['A6'] = Zuv(Zu([-8512, 22608, -5064, -57528, 87288, -43704, 4912] ) + v*Zu( [2520, -15372, 28098, -20160, 4914]))
-        data['alpha'] = Zu([16000, -67200, 2720, 557600, -1392232, 1073992, 1104830, -3131026, 2450210, 73746, -1454945, 1110355, -424065, 95659, -13243, 1105, -51, 1])
-        data['beta'] = Zu([0, 22400, -105920, 146208, 111616, -593800, 680948, -102282, -457950, 468035, -219274, 58549, -9374, 889, -46, 1])
-        #beta factors as (u - 10) * (u - 5) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 10*u + 7) * (u**2 - 6*u - 4) * (u**2 - 4*u + 2) * (u**3 - 9*u**2 + 8*u - 4)
-        data['endo'] = 17*x**8 + 17*(-4*u + 4)*v*x**6 + 17*(4*u + 6)*v**2*x**4 + 17*(4*u + 4)*v**3*x**2 + (-4*u + 1)*v**4
+        data['A4'] = Zuv(Zu([60, 720, -2595, 2250, -435]) + v * Zu([-360, 792, -432]))
+        data['A6'] = Zuv(
+            Zu([-8512, 22608, -5064, -57528, 87288, -43704, 4912])
+            + v * Zu([2520, -15372, 28098, -20160, 4914])
+        )
+        data['alpha'] = Zu(
+            [
+                16000,
+                -67200,
+                2720,
+                557600,
+                -1392232,
+                1073992,
+                1104830,
+                -3131026,
+                2450210,
+                73746,
+                -1454945,
+                1110355,
+                -424065,
+                95659,
+                -13243,
+                1105,
+                -51,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                22400,
+                -105920,
+                146208,
+                111616,
+                -593800,
+                680948,
+                -102282,
+                -457950,
+                468035,
+                -219274,
+                58549,
+                -9374,
+                889,
+                -46,
+                1,
+            ]
+        )
+        # beta factors as (u - 10) * (u - 5) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 10*u + 7) * (u**2 - 6*u - 4) * (u**2 - 4*u + 2) * (u**3 - 9*u**2 + 8*u - 4)
+        data['endo'] = (
+            17 * x**8
+            + 17 * (-4 * u + 4) * v * x**6
+            + 17 * (4 * u + 6) * v**2 * x**4
+            + 17 * (4 * u + 4) * v**3 * x**2
+            + (-4 * u + 1) * v**4
+        )
         data['endo_u'] = 1
         return data
     if l == 19:
         data['hyper_poly'] = Zu([-8, 20, -8, -8, 1])
         data['A2'] = Zu([-114, 57, 171])
-        data['A4'] = Zuv(Zu([-1020, 444, 2733, 726, -543]) + v*Zu([-180, -720, -540]))
-        data['A6'] = Zuv(Zu([-10080, 21816, 54324, -37386, -86742, -20070, 6858]) + v*Zu([-2968, -13748, -11284, 6356, 6860]))
-        data['alpha'] = Zu([16000, -22400, -337440, 475456, 1562104, -1988616, -3025294, 3245960, 2833014, -2420087, -1140950, 932406, 129580, -180443, 21090, 11153, -4066, 570, -38, 1])
-        data['beta'] = Zu([0, 33600, -8160, -292400, 23472, 791244, 39282, -847909, -47024, 392654, -24046, -82469, 19162, 4833, -2652, 446, -34, 1])
-        #beta factors as (u - 7) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 8*u - 4) * (u**2 - 6*u - 15) * (u**2 - 5*u - 5) * (u**2 - 5*u + 2) * (u**2 - 2*u - 4) * (u**2 + u - 1)
-        data['endo'] = 19*x**9 + 19*(-12*u - 24)*v*x**6 + 19*(-24*u - 24)*v**2*x**3 + (96*u - 224)*v**3
+        data['A4'] = Zuv(Zu([-1020, 444, 2733, 726, -543]) + v * Zu([-180, -720, -540]))
+        data['A6'] = Zuv(
+            Zu([-10080, 21816, 54324, -37386, -86742, -20070, 6858])
+            + v * Zu([-2968, -13748, -11284, 6356, 6860])
+        )
+        data['alpha'] = Zu(
+            [
+                16000,
+                -22400,
+                -337440,
+                475456,
+                1562104,
+                -1988616,
+                -3025294,
+                3245960,
+                2833014,
+                -2420087,
+                -1140950,
+                932406,
+                129580,
+                -180443,
+                21090,
+                11153,
+                -4066,
+                570,
+                -38,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                33600,
+                -8160,
+                -292400,
+                23472,
+                791244,
+                39282,
+                -847909,
+                -47024,
+                392654,
+                -24046,
+                -82469,
+                19162,
+                4833,
+                -2652,
+                446,
+                -34,
+                1,
+            ]
+        )
+        # beta factors as (u - 7) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 8*u - 4) * (u**2 - 6*u - 15) * (u**2 - 5*u - 5) * (u**2 - 5*u + 2) * (u**2 - 2*u - 4) * (u**2 + u - 1)
+        data['endo'] = (
+            19 * x**9
+            + 19 * (-12 * u - 24) * v * x**6
+            + 19 * (-24 * u - 24) * v**2 * x**3
+            + (96 * u - 224) * v**3
+        )
         data['endo_u'] = -1
         return data
     if l == 23:
         data['hyper_poly'] = Zu([-7, 10, -11, 2, 2, -8, 1])
         data['A2'] = Zu([69, -230, 253])
-        data['A4'] = Zuv(Zu([405, 180, -930, 2820, -795]) + v*Zu([360, -792]))
-        data['A6'] = Zuv(Zu([-15498, 34020, -36918, -8120, 51114, -72492, 12166]) + v*Zu([-1080, 7704, -24840, 12168]))
-        data['alpha'] = Zu([-6750, 48600, -83835, -170775, 1115109, -2492280, 2732814, -116403, -4877702, 8362616, -6612454, 302266, 5423124, -6447728, 3209696, 336674, -1470068, 953856, -336927, 74221, -10465, 920, -46, 1])
-        data['beta'] = Zu( [0, 12150, -72495, 168588, -144045, -254034, 930982, -1256170, 604358, 693650, -1563176, 1271974, -225188, -444070, 421050, -184350, 47754, -7696, 759, -42, 1])
-        #beta factors as (u - 5) * (u - 3) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 8*u + 3) * (u**2 - 6*u - 9) * (u**3 - 7*u**2 + 3*u - 5) * (u**3 - 7*u**2 + 7*u - 3) * (u**4 - 4*u**3 - 1)
+        data['A4'] = Zuv(Zu([405, 180, -930, 2820, -795]) + v * Zu([360, -792]))
+        data['A6'] = Zuv(
+            Zu([-15498, 34020, -36918, -8120, 51114, -72492, 12166])
+            + v * Zu([-1080, 7704, -24840, 12168])
+        )
+        data['alpha'] = Zu(
+            [
+                -6750,
+                48600,
+                -83835,
+                -170775,
+                1115109,
+                -2492280,
+                2732814,
+                -116403,
+                -4877702,
+                8362616,
+                -6612454,
+                302266,
+                5423124,
+                -6447728,
+                3209696,
+                336674,
+                -1470068,
+                953856,
+                -336927,
+                74221,
+                -10465,
+                920,
+                -46,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                12150,
+                -72495,
+                168588,
+                -144045,
+                -254034,
+                930982,
+                -1256170,
+                604358,
+                693650,
+                -1563176,
+                1271974,
+                -225188,
+                -444070,
+                421050,
+                -184350,
+                47754,
+                -7696,
+                759,
+                -42,
+                1,
+            ]
+        )
+        # beta factors as (u - 5) * (u - 3) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 8*u + 3) * (u**2 - 6*u - 9) * (u**3 - 7*u**2 + 3*u - 5) * (u**3 - 7*u**2 + 7*u - 3) * (u**4 - 4*u**3 - 1)
         return data
     if l == 29:
         data['hyper_poly'] = Zu([-7, 8, 8, 2, -12, -4, 1])
         data['A2'] = Zu([-174, -232, 348, 406])
-        data['A4'] = Zuv(Zu([-1215, -3096, 132, 7614, 6504, -360, -1263] ) + v*Zu( [180, -720, -2160, -1260]))
-        data['A6'] = Zuv(Zu([-18900, -63504, 24696, 285068, 285264, -185136, -506268, -275520, 504, 24388] ) + v*Zu( [4482, -2448, -59868, -94968, -18144, 48276, 24390]))
-        data['alpha'] = Zu([-6750, -12150, 281880, 570024, -1754181, -5229135, 2357613, 19103721, 9708910, -31795426, -38397537, 19207947, 54103270, 9216142, -37142939, -18871083, 14041394, 10954634, -3592085, -3427365, 853818, 622398, -189399, -53679, 26680, -580, -1421, 319, -29, 1])
-        data['beta'] = Zu([0, -24300, -57510, 257850, 839187, -373185, -3602119, -2371192, 5865017, 8434433, -2363779, -10263744, -2746015, 5976011, 3151075, -2093854, -1356433, 569525, 299477, -129484, -28279, 19043, -895, -1076, 273, -27, 1])
-        #beta factors as (u - 3) * (u - 1) * u * (u + 1) * (u + 2) * (u**2 - 6*u + 2) * (u**2 - 5*u - 5) * (u**2 - 5*u + 3) * (u**2 - 3*u - 9) * (u**2 - u - 3) * (u**2 - u - 1) * (u**2 + u - 1) * (u**3 - 4*u**2 - 6*u - 5) * (u**4 - 2*u**3 - 5*u**2 - 4*u - 1)
-        data['endo'] = 29*x**14 + 29*(-14*u + 3)*v*x**12 + 29*(-20*u + 73)*v**2*x**10 + 29*(-58*u + 115)*v**3*x**8 + 29*(-56*u + 59)*v**4*x**6 + 29*(30*u + 1)*v**5*x**4 + 29*(12*u - 5)*v**6*x**2 + (2*u + 5)*v**7
+        data['A4'] = Zuv(
+            Zu([-1215, -3096, 132, 7614, 6504, -360, -1263])
+            + v * Zu([180, -720, -2160, -1260])
+        )
+        data['A6'] = Zuv(
+            Zu(
+                [
+                    -18900,
+                    -63504,
+                    24696,
+                    285068,
+                    285264,
+                    -185136,
+                    -506268,
+                    -275520,
+                    504,
+                    24388,
+                ]
+            )
+            + v * Zu([4482, -2448, -59868, -94968, -18144, 48276, 24390])
+        )
+        data['alpha'] = Zu(
+            [
+                -6750,
+                -12150,
+                281880,
+                570024,
+                -1754181,
+                -5229135,
+                2357613,
+                19103721,
+                9708910,
+                -31795426,
+                -38397537,
+                19207947,
+                54103270,
+                9216142,
+                -37142939,
+                -18871083,
+                14041394,
+                10954634,
+                -3592085,
+                -3427365,
+                853818,
+                622398,
+                -189399,
+                -53679,
+                26680,
+                -580,
+                -1421,
+                319,
+                -29,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                -24300,
+                -57510,
+                257850,
+                839187,
+                -373185,
+                -3602119,
+                -2371192,
+                5865017,
+                8434433,
+                -2363779,
+                -10263744,
+                -2746015,
+                5976011,
+                3151075,
+                -2093854,
+                -1356433,
+                569525,
+                299477,
+                -129484,
+                -28279,
+                19043,
+                -895,
+                -1076,
+                273,
+                -27,
+                1,
+            ]
+        )
+        # beta factors as (u - 3) * (u - 1) * u * (u + 1) * (u + 2) * (u**2 - 6*u + 2) * (u**2 - 5*u - 5) * (u**2 - 5*u + 3) * (u**2 - 3*u - 9) * (u**2 - u - 3) * (u**2 - u - 1) * (u**2 + u - 1) * (u**3 - 4*u**2 - 6*u - 5) * (u**4 - 2*u**3 - 5*u**2 - 4*u - 1)
+        data['endo'] = (
+            29 * x**14
+            + 29 * (-14 * u + 3) * v * x**12
+            + 29 * (-20 * u + 73) * v**2 * x**10
+            + 29 * (-58 * u + 115) * v**3 * x**8
+            + 29 * (-56 * u + 59) * v**4 * x**6
+            + 29 * (30 * u + 1) * v**5 * x**4
+            + 29 * (12 * u - 5) * v**6 * x**2
+            + (2 * u + 5) * v**7
+        )
         data['endo_u'] = -1
         return data
     if l == 31:
         data['hyper_poly'] = Zu([-3, -14, -11, 18, 6, -8, 1])
         data['A2'] = Zu([558, 837, -1488, 465])
-        data['A4'] = Zuv(Zu([-4140, -12468, 15189, 16956, -27054, 11184, -1443]) + v*Zu([2160, -7560, 6120, -1440]))
-        data['A6'] = Zuv(Zu([71280, 592056, -108324, -2609730, 2373048, 1282266, -2793204, 1530882, -356976, 29790]) + v*Zu([-81312, 181664, 294728, -868392, 701400, -238840, 29792]))
-        data['alpha'] = Zu([108000, 475200, -7053120, -27353408, 90884374, 303670296, -665806437, -1361301729, 3259359840, 2249261823, -9368721606, 2279583264, 13054272515, -12759480061, -4169029296, 14390047139, -7803693550, -2988803682, 6239473912, -3296588360, 134066754, 908915598, -685615437, 294482733, -87483178, 18983315, -3052818, 361336, -30659, 1767, -62, 1])
-        data['beta'] = Zu([0, 712800, 1216080, -18430560, -15262464, 168899202, -12931221, -720077416, 624871714, 1239052988, -2259335558, 68648452, 2679085427, -2318039014, -229246628, 1710545918, -1243026758, 211524870, 296674626, -291810274, 145889932, -48916468, 11793961, -2085662, 269348, -24778, 1540, -58, 1])
-        #beta factors as (u - 3) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 8*u + 11) * (u**2 - 7*u + 2) * (u**2 - 5*u - 2) * (u**2 - 5*u + 5) * (u**2 - 4*u - 4) * (u**2 - 4*u - 1) * (u**2 - 2*u - 1) * (u**2 - u - 1) * (u**3 - 9*u**2 + 21*u - 15) * (u**4 - 8*u**3 + 8*u**2 + 12*u - 9)
-        data['endo'] = 31*x**15 + 31*(-66*u + 86)*v*x**12 + 31*(168*u + 280)*v**2*x**9 + 31*(576*u + 1792)*v**3*x**6 + 31*(384*u + 896)*v**4*x**3 + (-3072*u - 2048)*v**5
+        data['A4'] = Zuv(
+            Zu([-4140, -12468, 15189, 16956, -27054, 11184, -1443])
+            + v * Zu([2160, -7560, 6120, -1440])
+        )
+        data['A6'] = Zuv(
+            Zu(
+                [
+                    71280,
+                    592056,
+                    -108324,
+                    -2609730,
+                    2373048,
+                    1282266,
+                    -2793204,
+                    1530882,
+                    -356976,
+                    29790,
+                ]
+            )
+            + v * Zu([-81312, 181664, 294728, -868392, 701400, -238840, 29792])
+        )
+        data['alpha'] = Zu(
+            [
+                108000,
+                475200,
+                -7053120,
+                -27353408,
+                90884374,
+                303670296,
+                -665806437,
+                -1361301729,
+                3259359840,
+                2249261823,
+                -9368721606,
+                2279583264,
+                13054272515,
+                -12759480061,
+                -4169029296,
+                14390047139,
+                -7803693550,
+                -2988803682,
+                6239473912,
+                -3296588360,
+                134066754,
+                908915598,
+                -685615437,
+                294482733,
+                -87483178,
+                18983315,
+                -3052818,
+                361336,
+                -30659,
+                1767,
+                -62,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                712800,
+                1216080,
+                -18430560,
+                -15262464,
+                168899202,
+                -12931221,
+                -720077416,
+                624871714,
+                1239052988,
+                -2259335558,
+                68648452,
+                2679085427,
+                -2318039014,
+                -229246628,
+                1710545918,
+                -1243026758,
+                211524870,
+                296674626,
+                -291810274,
+                145889932,
+                -48916468,
+                11793961,
+                -2085662,
+                269348,
+                -24778,
+                1540,
+                -58,
+                1,
+            ]
+        )
+        # beta factors as (u - 3) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 8*u + 11) * (u**2 - 7*u + 2) * (u**2 - 5*u - 2) * (u**2 - 5*u + 5) * (u**2 - 4*u - 4) * (u**2 - 4*u - 1) * (u**2 - 2*u - 1) * (u**2 - u - 1) * (u**3 - 9*u**2 + 21*u - 15) * (u**4 - 8*u**3 + 8*u**2 + 12*u - 9)
+        data['endo'] = (
+            31 * x**15
+            + 31 * (-66 * u + 86) * v * x**12
+            + 31 * (168 * u + 280) * v**2 * x**9
+            + 31 * (576 * u + 1792) * v**3 * x**6
+            + 31 * (384 * u + 896) * v**4 * x**3
+            + (-3072 * u - 2048) * v**5
+        )
         data['endo_u'] = 2
         return data
     if l == 41:
         data['hyper_poly'] = Zu([-8, -20, -15, 8, 20, 10, -8, -4, 1])
         data['A2'] = Zu([328, 656, -656, -1148, 820])
-        data['A4'] = Zuv(Zu([-1380, -4008, 1701, 10872, 6144, -18378, -2160, 9732, -2523]) + v*Zu([720, -1440, -2160, 5400, -2520]))
-        data['A6'] = Zuv(Zu([4480, 155616, 16080, -550720, -343968, 832680, 938632, -621648, -1468608, 953920, 427632, -413016, 68920]) + v*Zu([-14616, 6804, 96390, -2016, -324324, 184464, 260568, -276192, 68922]))
-        data['alpha'] = Zu([16000, 67200, -465760, -2966432, -1742664, 20985112, 46140990, -31732934, -217030548, -147139488, 436080674, 745775322, -271341362, -1542677562, -605560447, 1832223375, 1772593672, -1270633050, -2400692229, 343522723, 2179745361, 282422801, -1503727029, -421357697, 879637411, 261059095, -462271351, -61715127, 193718727, -24135265, -49355103, 20512341, 3613289, -4706595, 1099661, 163057, -162483, 46617, -7544, 738, -41, 1])
-        data['beta'] = Zu([0, 44800, 167040, -447040, -2734272, -1104272, 13488360, 21067652, -24681704, -83929974, -8986886, 169059382, 127641266, -196479899, -283039783, 124573790, 366614063, -12946368, -332987597, -58867672, 241909907, 60568430, -155045647, -17919564, 79114945, -12025938, -24060781, 11190142, 1979597, -2931764, 750233, 110144, -122263, 37484, -6439, 666, -39, 1])
-        #beta factors as (u - 5) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 5*u + 5) * (u**2 - 3*u - 7) * (u**2 - 2*u - 4) * (u**2 - 2*u - 1) * (u**2 - u - 1) * (u**2 - 2) * (u**2 + u - 1) * (u**3 - 3*u**2 - 5*u - 2) * (u**3 - 2*u**2 - 2*u - 1) * (u**4 - 6*u**3 + 5*u**2 + 2*u - 1) * (u**4 - 5*u**3 + u**2 + 4) * (u**4 - 4*u**3 + 2)
-        data['endo'] = 41*x**20 + 41*(-12*u - 22)*v*x**18 + 41*(-252*u - 247)*v**2*x**16 + 41*(-176*u - 424)*v**3*x**14 + 41*(464*u - 254)*v**4*x**12 + 41*(1688*u - 868)*v**5*x**10 + 41*(1720*u - 1190)*v**6*x**8 + 41*(528*u - 232)*v**7*x**6 + 41*(16*u + 29)*v**8*x**4 + 41*(20*u + 10)*v**9*x**2 + (4*u + 5)*v**10
+        data['A4'] = Zuv(
+            Zu([-1380, -4008, 1701, 10872, 6144, -18378, -2160, 9732, -2523])
+            + v * Zu([720, -1440, -2160, 5400, -2520])
+        )
+        data['A6'] = Zuv(
+            Zu(
+                [
+                    4480,
+                    155616,
+                    16080,
+                    -550720,
+                    -343968,
+                    832680,
+                    938632,
+                    -621648,
+                    -1468608,
+                    953920,
+                    427632,
+                    -413016,
+                    68920,
+                ]
+            )
+            + v
+            * Zu([-14616, 6804, 96390, -2016, -324324, 184464, 260568, -276192, 68922])
+        )
+        data['alpha'] = Zu(
+            [
+                16000,
+                67200,
+                -465760,
+                -2966432,
+                -1742664,
+                20985112,
+                46140990,
+                -31732934,
+                -217030548,
+                -147139488,
+                436080674,
+                745775322,
+                -271341362,
+                -1542677562,
+                -605560447,
+                1832223375,
+                1772593672,
+                -1270633050,
+                -2400692229,
+                343522723,
+                2179745361,
+                282422801,
+                -1503727029,
+                -421357697,
+                879637411,
+                261059095,
+                -462271351,
+                -61715127,
+                193718727,
+                -24135265,
+                -49355103,
+                20512341,
+                3613289,
+                -4706595,
+                1099661,
+                163057,
+                -162483,
+                46617,
+                -7544,
+                738,
+                -41,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                44800,
+                167040,
+                -447040,
+                -2734272,
+                -1104272,
+                13488360,
+                21067652,
+                -24681704,
+                -83929974,
+                -8986886,
+                169059382,
+                127641266,
+                -196479899,
+                -283039783,
+                124573790,
+                366614063,
+                -12946368,
+                -332987597,
+                -58867672,
+                241909907,
+                60568430,
+                -155045647,
+                -17919564,
+                79114945,
+                -12025938,
+                -24060781,
+                11190142,
+                1979597,
+                -2931764,
+                750233,
+                110144,
+                -122263,
+                37484,
+                -6439,
+                666,
+                -39,
+                1,
+            ]
+        )
+        # beta factors as (u - 5) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 5*u + 5) * (u**2 - 3*u - 7) * (u**2 - 2*u - 4) * (u**2 - 2*u - 1) * (u**2 - u - 1) * (u**2 - 2) * (u**2 + u - 1) * (u**3 - 3*u**2 - 5*u - 2) * (u**3 - 2*u**2 - 2*u - 1) * (u**4 - 6*u**3 + 5*u**2 + 2*u - 1) * (u**4 - 5*u**3 + u**2 + 4) * (u**4 - 4*u**3 + 2)
+        data['endo'] = (
+            41 * x**20
+            + 41 * (-12 * u - 22) * v * x**18
+            + 41 * (-252 * u - 247) * v**2 * x**16
+            + 41 * (-176 * u - 424) * v**3 * x**14
+            + 41 * (464 * u - 254) * v**4 * x**12
+            + 41 * (1688 * u - 868) * v**5 * x**10
+            + 41 * (1720 * u - 1190) * v**6 * x**8
+            + 41 * (528 * u - 232) * v**7 * x**6
+            + 41 * (16 * u + 29) * v**8 * x**4
+            + 41 * (20 * u + 10) * v**9 * x**2
+            + (4 * u + 5) * v**10
+        )
         data['endo_u'] = 1
         return data
     if l == 47:
         data['hyper_poly'] = Zu([-11, 28, -38, 30, -13, -16, 19, -24, 11, -6, 1])
         data['A2'] = Zu([376, -1504, 2209, -1598, 1081])
-        data['A4'] = Zuv(Zu([2400, -4080, -1440, 18000, -26355, 34740, -22050, 12900, -3315]) + v*Zu([1152, -3384, 3672, -3312]))
-        data['A6'] = Zuv(Zu([-119504, 606336, -1505280, 2109392, -1509360, -515808, 2920702, -4614012, 4334322, -3260312, 1571442, -622428, 103822]) + v*Zu([2016, 48384, -235872, 438984, -627480, 503496, -311976, 103824]))
-        data['alpha'] = Zu([-65536, 688128, -2502656, -96256, 38598656, -187217920, 508021120, -845669120, 552981696, 1469334304, -5945275904, 11705275552, -14673798654, 9100068184, 8421580132, -34288012648, 56657584158, -60426283952, 36612252089, 9942017442, -60791892299, 93046207239, -92028642340, 59196883097, -10454018992, -33364599371, 57280402355, -57873890484, 41879296232, -20241250112, 2065827049, 8435506655, -11611941072, 10182603298, -7040645261, 4071881378, -2013138357, 856757031, -313468474, 97893151, -25770006, 5617769, -990431, 136864, -14194, 1034, -47, 1])
-        data['beta'] = Zu([0, 114688, -1114112, 4854784, -11205632, 7426048, 42663936, -182555136, 394092544, -508851472, 213245648, 743315936, -2203729384, 3409478688, -3280008936, 1139839970, 2576264698, -6272528962, 8005203155, -6671665088, 2744569094, 1996771588, -5520074039, 6637395180, -5455622885, 3028415830, -601645255, -1012737914, 1632999370, -1525982346, 1093778952, -644352392, 319489974, -134176208, 47566499, -14083902, 3424200, -667810, 101271, -11438, 901, -44, 1])
-        #beta factors as (u - 4) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 5*u + 2) * (u**2 - 2*u - 1) * (u**3 - 5*u**2 + 5*u - 7) * (u**3 - 4*u**2 + 3*u - 4) * (u**3 - 4*u**2 + 3*u - 1) * (u**3 - 3*u**2 + 2*u - 4) * (u**3 - 2*u**2 + 2*u - 2) * (u**3 + u + 1) * (u**4 - 4*u**3 - 2*u**2 - 4) * (u**5 - 5*u**4 + 5*u**3 - 11*u**2 + 6*u - 4) * (u**6 - 4*u**5 + 2*u**4 - 4*u**3 - u**2 + 4*u - 2)
+        data['A4'] = Zuv(
+            Zu([2400, -4080, -1440, 18000, -26355, 34740, -22050, 12900, -3315])
+            + v * Zu([1152, -3384, 3672, -3312])
+        )
+        data['A6'] = Zuv(
+            Zu(
+                [
+                    -119504,
+                    606336,
+                    -1505280,
+                    2109392,
+                    -1509360,
+                    -515808,
+                    2920702,
+                    -4614012,
+                    4334322,
+                    -3260312,
+                    1571442,
+                    -622428,
+                    103822,
+                ]
+            )
+            + v * Zu([2016, 48384, -235872, 438984, -627480, 503496, -311976, 103824])
+        )
+        data['alpha'] = Zu(
+            [
+                -65536,
+                688128,
+                -2502656,
+                -96256,
+                38598656,
+                -187217920,
+                508021120,
+                -845669120,
+                552981696,
+                1469334304,
+                -5945275904,
+                11705275552,
+                -14673798654,
+                9100068184,
+                8421580132,
+                -34288012648,
+                56657584158,
+                -60426283952,
+                36612252089,
+                9942017442,
+                -60791892299,
+                93046207239,
+                -92028642340,
+                59196883097,
+                -10454018992,
+                -33364599371,
+                57280402355,
+                -57873890484,
+                41879296232,
+                -20241250112,
+                2065827049,
+                8435506655,
+                -11611941072,
+                10182603298,
+                -7040645261,
+                4071881378,
+                -2013138357,
+                856757031,
+                -313468474,
+                97893151,
+                -25770006,
+                5617769,
+                -990431,
+                136864,
+                -14194,
+                1034,
+                -47,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                114688,
+                -1114112,
+                4854784,
+                -11205632,
+                7426048,
+                42663936,
+                -182555136,
+                394092544,
+                -508851472,
+                213245648,
+                743315936,
+                -2203729384,
+                3409478688,
+                -3280008936,
+                1139839970,
+                2576264698,
+                -6272528962,
+                8005203155,
+                -6671665088,
+                2744569094,
+                1996771588,
+                -5520074039,
+                6637395180,
+                -5455622885,
+                3028415830,
+                -601645255,
+                -1012737914,
+                1632999370,
+                -1525982346,
+                1093778952,
+                -644352392,
+                319489974,
+                -134176208,
+                47566499,
+                -14083902,
+                3424200,
+                -667810,
+                101271,
+                -11438,
+                901,
+                -44,
+                1,
+            ]
+        )
+        # beta factors as (u - 4) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 5*u + 2) * (u**2 - 2*u - 1) * (u**3 - 5*u**2 + 5*u - 7) * (u**3 - 4*u**2 + 3*u - 4) * (u**3 - 4*u**2 + 3*u - 1) * (u**3 - 3*u**2 + 2*u - 4) * (u**3 - 2*u**2 + 2*u - 2) * (u**3 + u + 1) * (u**4 - 4*u**3 - 2*u**2 - 4) * (u**5 - 5*u**4 + 5*u**3 - 11*u**2 + 6*u - 4) * (u**6 - 4*u**5 + 2*u**4 - 4*u**3 - u**2 + 4*u - 2)
         return data
     if l == 59:
         data['hyper_poly'] = Zu([-8, -4, 20, -24, -3, 40, -62, 40, 3, -28, 22, -8, 1])
         data['A2'] = Zu([590, -1475, -295, 4130, -4425, 1711])
-        data['A4'] = Zuv(Zu([-2460, 8844, -3843, -20718, 57153, -50418, -12600, 72762, -69339, 30978, -5223]) + v*Zu([900, 360, -7560, 10800, -5220]))
-        data['A6'] = Zuv(Zu([25760, -373560, 568020, 1147870, -4634370, 5318070, 1631996, -14270202, 21535998, -14119408, -2820102, 14275410, -13535292, 6790074, -1847898, 205378]) + v*Zu([-23688, 27972, 183708, -696024, 721980, 453600, -1925028, 2039184, -1027404, 205380]))
-        data['alpha'] = Zu([16000, -67200, -783520, 5573376, -5127336, -60792184, 241324042, -170978932, -1262437160, 4310971231, -3953349811, -10887235780, 41679530185, -51342089572, -33068562195, 230682514316, -372641172307, 121615007703, 682044179678, -1549365239197, 1373184591667, 614906882627, -3566756201696, 4920423266916, -2342393877496, -3589340274442, 8772457933356, -8488557160148, 1742977715620, 7131088674129, -11643540780203, 8512399456274, -315658868113, -6917286294515, 8713332734648, -5190227733987, -54249978263, 3397583328372, -3658171840037, 1987950394792, -179519591637, -748989116551, 800595050760, -459184355769, 134398080099, 28871590941, -64236756338, 46651654354, -23352309386, 9059054346, -2830320860, 721829600, -150487052, 25475079, -3452149, 365800, -29205, 1652, -59, 1])
-        data['beta'] = Zu([0, -56000, 320800, 391440, -7693120, 21125500, 11515130, -204780145, 486681785, -102547033, -2147060784, 5552726794, -4419031758, -9431888681, 33728080307, -42367773552, -2994127157, 105330637610, -188172973931, 127559513693, 123083802224, -421097252069, 490425751691, -161944881372, -408669953969, 799965143719, -668167261718, 69589638764, 563644022562, -787681290965, 505670881115, 2900924856, -364669742737, 407962360532, -223582547975, 9985786664, 102435489491, -105519055992, 58212400117, -14331637533, -6742538722, 10205452686, -6853903214, 3244679736, -1188153136, 347102566, -81626216, 15409226, -2307408, 268126, -23322, 1429, -55, 1])
-        #beta factors as (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 4*u - 1) * (u**2 - 3*u - 5) * (u**2 - 3*u - 2) * (u**2 - 3*u + 1) * (u**2 - u - 1) * (u**3 - 6*u**2 + 10*u - 7) * (u**3 - 5*u**2 + 7*u - 5) * (u**3 - 3*u**2 + 2*u - 1) * (u**3 - u**2 + 1) * (u**4 - 5*u**3 + 4*u**2 - 1) * (u**4 - 4*u**3 + 3*u**2 + 2*u - 4) * (u**4 - 3*u**3 - u - 1) * (u**4 - u**3 + 2*u - 1) * (u**5 - 6*u**4 + 10*u**3 - 11*u**2 + 8*u - 4) * (u**6 - 5*u**5 + 5*u**4 - 5*u**2 + 5*u - 5)
+        data['A4'] = Zuv(
+            Zu(
+                [
+                    -2460,
+                    8844,
+                    -3843,
+                    -20718,
+                    57153,
+                    -50418,
+                    -12600,
+                    72762,
+                    -69339,
+                    30978,
+                    -5223,
+                ]
+            )
+            + v * Zu([900, 360, -7560, 10800, -5220])
+        )
+        data['A6'] = Zuv(
+            Zu(
+                [
+                    25760,
+                    -373560,
+                    568020,
+                    1147870,
+                    -4634370,
+                    5318070,
+                    1631996,
+                    -14270202,
+                    21535998,
+                    -14119408,
+                    -2820102,
+                    14275410,
+                    -13535292,
+                    6790074,
+                    -1847898,
+                    205378,
+                ]
+            )
+            + v
+            * Zu(
+                [
+                    -23688,
+                    27972,
+                    183708,
+                    -696024,
+                    721980,
+                    453600,
+                    -1925028,
+                    2039184,
+                    -1027404,
+                    205380,
+                ]
+            )
+        )
+        data['alpha'] = Zu(
+            [
+                16000,
+                -67200,
+                -783520,
+                5573376,
+                -5127336,
+                -60792184,
+                241324042,
+                -170978932,
+                -1262437160,
+                4310971231,
+                -3953349811,
+                -10887235780,
+                41679530185,
+                -51342089572,
+                -33068562195,
+                230682514316,
+                -372641172307,
+                121615007703,
+                682044179678,
+                -1549365239197,
+                1373184591667,
+                614906882627,
+                -3566756201696,
+                4920423266916,
+                -2342393877496,
+                -3589340274442,
+                8772457933356,
+                -8488557160148,
+                1742977715620,
+                7131088674129,
+                -11643540780203,
+                8512399456274,
+                -315658868113,
+                -6917286294515,
+                8713332734648,
+                -5190227733987,
+                -54249978263,
+                3397583328372,
+                -3658171840037,
+                1987950394792,
+                -179519591637,
+                -748989116551,
+                800595050760,
+                -459184355769,
+                134398080099,
+                28871590941,
+                -64236756338,
+                46651654354,
+                -23352309386,
+                9059054346,
+                -2830320860,
+                721829600,
+                -150487052,
+                25475079,
+                -3452149,
+                365800,
+                -29205,
+                1652,
+                -59,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                -56000,
+                320800,
+                391440,
+                -7693120,
+                21125500,
+                11515130,
+                -204780145,
+                486681785,
+                -102547033,
+                -2147060784,
+                5552726794,
+                -4419031758,
+                -9431888681,
+                33728080307,
+                -42367773552,
+                -2994127157,
+                105330637610,
+                -188172973931,
+                127559513693,
+                123083802224,
+                -421097252069,
+                490425751691,
+                -161944881372,
+                -408669953969,
+                799965143719,
+                -668167261718,
+                69589638764,
+                563644022562,
+                -787681290965,
+                505670881115,
+                2900924856,
+                -364669742737,
+                407962360532,
+                -223582547975,
+                9985786664,
+                102435489491,
+                -105519055992,
+                58212400117,
+                -14331637533,
+                -6742538722,
+                10205452686,
+                -6853903214,
+                3244679736,
+                -1188153136,
+                347102566,
+                -81626216,
+                15409226,
+                -2307408,
+                268126,
+                -23322,
+                1429,
+                -55,
+                1,
+            ]
+        )
+        # beta factors as (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 4*u - 1) * (u**2 - 3*u - 5) * (u**2 - 3*u - 2) * (u**2 - 3*u + 1) * (u**2 - u - 1) * (u**3 - 6*u**2 + 10*u - 7) * (u**3 - 5*u**2 + 7*u - 5) * (u**3 - 3*u**2 + 2*u - 1) * (u**3 - u**2 + 1) * (u**4 - 5*u**3 + 4*u**2 - 1) * (u**4 - 4*u**3 + 3*u**2 + 2*u - 4) * (u**4 - 3*u**3 - u - 1) * (u**4 - u**3 + 2*u - 1) * (u**5 - 6*u**4 + 10*u**3 - 11*u**2 + 8*u - 4) * (u**6 - 5*u**5 + 5*u**4 - 5*u**2 + 5*u - 5)
         return data
     if l == 71:
-        data['hyper_poly'] = Zu([-7, 6, -27, 40, -58, 66, -66, 40, 15, -48, 66, -66, 37, -10, 1])
+        data['hyper_poly'] = Zu(
+            [-7, 6, -27, 40, -58, 66, -66, 40, 15, -48, 66, -66, 37, -10, 1]
+        )
         data['A2'] = Zu([213, -1420, 4260, -4970, 9940, -9088, 2485])
-        data['A4'] = Zuv(Zu([2565, -10008, 18024, -26532, 23208, 7584, -104418, 189432, -251736, 275148, -182232, 60144, -7563]) + v*Zu([720, -4320, 7560, -20160, 23040, -7560]))
-        data['A6'] = Zuv(Zu([-69930, 382536, -1898568, 5206124, -11813256, 23115792, -35705670, 44318064, -41531952, 20674360, 23881872, -77986944, 114989770, -124612152, 103122936, -59431204, 21485688, -4294416, 357910]) + v*Zu([18576, -53856, 57672, 161856, -961920, 3199176, -5706288, 8032896, -9352584, 6786720, -2505888, 357912]))
-        data['alpha'] = Zu([-6750, 97200, -603855, 2263977, -4854483, -2486349, 75190491, -399596520, 1441975423, -4089818964, 9450153463, -17516526653, 23635982289, -11859874932, -53385529273, 230566737711, -585283867605, 1136695427037, -1753961304140, 2020891913264, -1147488305875, -1930304898882, 8102336330029, -17218530732347, 27006964902986, -32365758791872, 25902000374138, -468390635342, -46332664858222, 107139839089502, -162234735929274, 182582147217312, -140033523896938, 22513210292184, 152367877270246, -334009986053250, 451855980915164, -443144048889720, 284518400252142, -11142427766850, -289840331821002, 512373447321402, -576967281819172, 466024421705696, -230395084854230, -36287337331916, 241209603962570, -330646545417814, 304702155703516, -205131886553392, 87504290135653, 5131997859077, -54867900326127, 66216047255551, -54817285755105, 36239054778472, -20052219750661, 9464634765852, -3841191816845, 1343947848527, -405138280373, 104923131180, -23228729413, 4364552115, -689157169, 90223321, -9613968, 812240, -52327, 2414, -71, 1])
-        data['beta'] = Zu([0, 12150, -163215, 1115640, -5311143, 18820224, -50700172, 99823812, -102454041, -183909134, 1354660714, -4462311942, 10695310224, -20015395554, 28262441676, -23240987282, -17879387475, 124501604946, -315187724212, 564766450688, -765154573538, 705985549104, -115433273216, -1206098873334, 3175185881748, -5228317292044, 6292310032120, -5077451367560, 719644756530, 6451571564682, -14460150103020, 19999710623352, -19681838601268, 11819712227412, 2180981559572, -17790742756618, 29025463386612, -31179247603548, 23207078145510, -8345354986332, -7468523752270, 18486966963350, -21719818051100, 17831212433536, -10100011266030, 2336962513536, 2906983627184, -4989755986066, 4711466210012, -3361479243242, 1952316811463, -948555371584, 389878900245, -136099552242, 40341734984, -10121407164, 2136756509, -376218102, 54551634, -6399080, 591884, -41538, 2078, -66, 1])
-        #beta factors as (u - 3) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 5*u + 5) * (u**2 - 3*u + 1) * (u**2 - 2*u - 1) * (u**2 - u - 1) * (u**3 - 5*u**2 + 5*u - 3) * (u**3 - 4*u**2 - 1) * (u**3 - 2*u**2 - 1) * (u**4 - 6*u**3 + 7*u**2 + 6*u - 9) * (u**4 - 5*u**3 + 4*u**2 + u + 3) * (u**4 - 5*u**3 + 6*u**2 - 3*u + 5) * (u**4 - 4*u**3 + u**2 - 4*u + 1) * (u**4 - 4*u**3 + 2*u**2 - u + 1) * (u**4 - 2*u**3 - 3*u**2 - 2*u - 1) * (u**4 - 2*u**3 + u - 1) * (u**6 - 5*u**5 + 8*u**4 - 7*u**3 + 6*u**2 - 3*u + 1) * (u**8 - 6*u**7 + 9*u**6 - 2*u**5 + 2*u**3 - 9*u**2 + 2*u - 1)
+        data['A4'] = Zuv(
+            Zu(
+                [
+                    2565,
+                    -10008,
+                    18024,
+                    -26532,
+                    23208,
+                    7584,
+                    -104418,
+                    189432,
+                    -251736,
+                    275148,
+                    -182232,
+                    60144,
+                    -7563,
+                ]
+            )
+            + v * Zu([720, -4320, 7560, -20160, 23040, -7560])
+        )
+        data['A6'] = Zuv(
+            Zu(
+                [
+                    -69930,
+                    382536,
+                    -1898568,
+                    5206124,
+                    -11813256,
+                    23115792,
+                    -35705670,
+                    44318064,
+                    -41531952,
+                    20674360,
+                    23881872,
+                    -77986944,
+                    114989770,
+                    -124612152,
+                    103122936,
+                    -59431204,
+                    21485688,
+                    -4294416,
+                    357910,
+                ]
+            )
+            + v
+            * Zu(
+                [
+                    18576,
+                    -53856,
+                    57672,
+                    161856,
+                    -961920,
+                    3199176,
+                    -5706288,
+                    8032896,
+                    -9352584,
+                    6786720,
+                    -2505888,
+                    357912,
+                ]
+            )
+        )
+        data['alpha'] = Zu(
+            [
+                -6750,
+                97200,
+                -603855,
+                2263977,
+                -4854483,
+                -2486349,
+                75190491,
+                -399596520,
+                1441975423,
+                -4089818964,
+                9450153463,
+                -17516526653,
+                23635982289,
+                -11859874932,
+                -53385529273,
+                230566737711,
+                -585283867605,
+                1136695427037,
+                -1753961304140,
+                2020891913264,
+                -1147488305875,
+                -1930304898882,
+                8102336330029,
+                -17218530732347,
+                27006964902986,
+                -32365758791872,
+                25902000374138,
+                -468390635342,
+                -46332664858222,
+                107139839089502,
+                -162234735929274,
+                182582147217312,
+                -140033523896938,
+                22513210292184,
+                152367877270246,
+                -334009986053250,
+                451855980915164,
+                -443144048889720,
+                284518400252142,
+                -11142427766850,
+                -289840331821002,
+                512373447321402,
+                -576967281819172,
+                466024421705696,
+                -230395084854230,
+                -36287337331916,
+                241209603962570,
+                -330646545417814,
+                304702155703516,
+                -205131886553392,
+                87504290135653,
+                5131997859077,
+                -54867900326127,
+                66216047255551,
+                -54817285755105,
+                36239054778472,
+                -20052219750661,
+                9464634765852,
+                -3841191816845,
+                1343947848527,
+                -405138280373,
+                104923131180,
+                -23228729413,
+                4364552115,
+                -689157169,
+                90223321,
+                -9613968,
+                812240,
+                -52327,
+                2414,
+                -71,
+                1,
+            ]
+        )
+        data['beta'] = Zu(
+            [
+                0,
+                12150,
+                -163215,
+                1115640,
+                -5311143,
+                18820224,
+                -50700172,
+                99823812,
+                -102454041,
+                -183909134,
+                1354660714,
+                -4462311942,
+                10695310224,
+                -20015395554,
+                28262441676,
+                -23240987282,
+                -17879387475,
+                124501604946,
+                -315187724212,
+                564766450688,
+                -765154573538,
+                705985549104,
+                -115433273216,
+                -1206098873334,
+                3175185881748,
+                -5228317292044,
+                6292310032120,
+                -5077451367560,
+                719644756530,
+                6451571564682,
+                -14460150103020,
+                19999710623352,
+                -19681838601268,
+                11819712227412,
+                2180981559572,
+                -17790742756618,
+                29025463386612,
+                -31179247603548,
+                23207078145510,
+                -8345354986332,
+                -7468523752270,
+                18486966963350,
+                -21719818051100,
+                17831212433536,
+                -10100011266030,
+                2336962513536,
+                2906983627184,
+                -4989755986066,
+                4711466210012,
+                -3361479243242,
+                1952316811463,
+                -948555371584,
+                389878900245,
+                -136099552242,
+                40341734984,
+                -10121407164,
+                2136756509,
+                -376218102,
+                54551634,
+                -6399080,
+                591884,
+                -41538,
+                2078,
+                -66,
+                1,
+            ]
+        )
+        # beta factors as (u - 3) * (u - 2) * (u - 1) * u * (u + 1) * (u**2 - 5*u + 5) * (u**2 - 3*u + 1) * (u**2 - 2*u - 1) * (u**2 - u - 1) * (u**3 - 5*u**2 + 5*u - 3) * (u**3 - 4*u**2 - 1) * (u**3 - 2*u**2 - 1) * (u**4 - 6*u**3 + 7*u**2 + 6*u - 9) * (u**4 - 5*u**3 + 4*u**2 + u + 3) * (u**4 - 5*u**3 + 6*u**2 - 3*u + 5) * (u**4 - 4*u**3 + u**2 - 4*u + 1) * (u**4 - 4*u**3 + 2*u**2 - u + 1) * (u**4 - 2*u**3 - 3*u**2 - 2*u - 1) * (u**4 - 2*u**3 + u - 1) * (u**6 - 5*u**5 + 8*u**4 - 7*u**3 + 6*u**2 - 3*u + 1) * (u**8 - 6*u**7 + 9*u**6 - 2*u**5 + 2*u**3 - 9*u**2 + 2*u - 1)
         return data
 
 
@@ -1809,34 +2987,45 @@ def Psi2(l):
 
     R = PolynomialRing(QQ, 'u')
     L, v = PolynomialRing(R, 'v').objgen()
-    K = R.extension(v*v - R(data['hyper_poly']), 'v')
+    K = R.extension(v * v - R(data['hyper_poly']), 'v')
     v = K.gen()
 
     from sage.categories.homset import Hom
-    h = Hom(K,K)(-v)
+
+    h = Hom(K, K)(-v)
 
     A = K(data['A4'])
     B = K(data['A6'])
-    Abar = h(A)*l**2
-    Bbar = -h(B)*l**3
+    Abar = h(A) * l**2
+    Bbar = -h(B) * l**3
     s1 = K(data['A2'])
 
-    d = (l-1)//2
+    d = (l - 1) // 2
     s = [K(1)]
-    t = [d, s1, ((1-10*d)*A - Abar) / 30]
-    t.append(((1-28*d)*B - 42*t[1]*A - Bbar) / 70)
-    c = [0, 6*t[2] + 2*A*t[0], 10*t[3] + 6*A*t[1] + 4*B*t[0]]
+    t = [d, s1, ((1 - 10 * d) * A - Abar) / 30]
+    t.append(((1 - 28 * d) * B - 42 * t[1] * A - Bbar) / 70)
+    c = [0, 6 * t[2] + 2 * A * t[0], 10 * t[3] + 6 * A * t[1] + 4 * B * t[0]]
     for n in range(2, d):
-        k = sum(c[i]*c[n-i] for i in range(1, n))
-        c.append((3*k - (2*n-1)*(n-1)*A*c[n-1] - (2*n-2)*(n-2)*B*c[n-2]) / ((2*n+5)*(n-1)))
+        k = sum(c[i] * c[n - i] for i in range(1, n))
+        c.append(
+            (
+                3 * k
+                - (2 * n - 1) * (n - 1) * A * c[n - 1]
+                - (2 * n - 2) * (n - 2) * B * c[n - 2]
+            )
+            / ((2 * n + 5) * (n - 1))
+        )
     for n in range(3, d):
-        t.append((c[n] - (4*n-2)*A*t[n-1] - (4*n-4)*B*t[n-2]) / (4*n+2))
-    for n in range(1, d+1):
-        s.append(sum((-1)**i*t[i]*s[n-i] for i in range(1, n+1)) / -n)
+        t.append(
+            (c[n] - (4 * n - 2) * A * t[n - 1] - (4 * n - 4) * B * t[n - 2])
+            / (4 * n + 2)
+        )
+    for n in range(1, d + 1):
+        s.append(sum((-1) ** i * t[i] * s[n - i] for i in range(1, n + 1)) / -n)
 
-    R = PolynomialRing(QQ, ['x','u','v'])
+    R = PolynomialRing(QQ, ['x', 'u', 'v'])
     x = R.gen(0)
-    return sum((-1)**i * x**(d-i) * s[i].lift() for i in range(d+1))
+    return sum((-1) ** i * x ** (d - i) * s[i].lift() for i in range(d + 1))
 
 
 def isogenies_prime_degree_genus_plus_0(E, l=None, minimal_models=True):
@@ -2021,8 +3210,15 @@ def isogenies_prime_degree_genus_plus_0(E, l=None, minimal_models=True):
             to Elliptic Curve defined by y^2 + y = x^3 + x^2 + 5*x + 6 over Finite Field of size 13]
     """
     if l is None:
-        return sum([isogenies_prime_degree_genus_plus_0(E, ell, minimal_models=minimal_models)
-                    for ell in hyperelliptic_primes],[])
+        return sum(
+            [
+                isogenies_prime_degree_genus_plus_0(
+                    E, ell, minimal_models=minimal_models
+                )
+                for ell in hyperelliptic_primes
+            ],
+            [],
+        )
 
     if l not in hyperelliptic_primes:
         raise ValueError(f"{l} must be one of {hyperelliptic_primes}")
@@ -2030,29 +3226,35 @@ def isogenies_prime_degree_genus_plus_0(E, l=None, minimal_models=True):
     F = E.base_ring()
     j = E.j_invariant()
     if F.characteristic() in [2, 3, l]:
-        raise NotImplementedError("11, 17, 19, 23, 29, 31, 41, 47, 59, and 71-isogenies are not yet implemented in characteristic 2 and 3, and when the characteristic is the same as the degree of the isogeny")
+        raise NotImplementedError(
+            "11, 17, 19, 23, 29, 31, 41, 47, 59, and 71-isogenies are not yet implemented in characteristic 2 and 3, and when the characteristic is the same as the degree of the isogeny"
+        )
 
     if not j:
-        return isogenies_prime_degree_genus_plus_0_j0(E, l, minimal_models=minimal_models)
+        return isogenies_prime_degree_genus_plus_0_j0(
+            E, l, minimal_models=minimal_models
+        )
     if j == 1728:
-        return isogenies_prime_degree_genus_plus_0_j1728(E, l, minimal_models=minimal_models)
+        return isogenies_prime_degree_genus_plus_0_j1728(
+            E, l, minimal_models=minimal_models
+        )
 
     Fu, u = PolynomialRing(F, 'u').objgen()
-    Fuv = PolynomialRing(F, ['u','v'])
-    Fxuv = PolynomialRing(F, ['x','u','v'])
+    Fuv = PolynomialRing(F, ['u', 'v'])
+    Fxuv = PolynomialRing(F, ['x', 'u', 'v'])
     data = _hyperelliptic_isogeny_data(l)
     a = Fu(data['alpha'])
     b = Fu(data['beta'])
     f = Fu(data['hyper_poly'])
-    Q = Fu((a**2 - f*b**2) / 4)
-    u_list = (j**2 - a*j + Q).roots(multiplicities=False)
+    Q = Fu((a**2 - f * b**2) / 4)
+    u_list = (j**2 - a * j + Q).roots(multiplicities=False)
 
     S = []
     for u0 in u_list:
         if b(u0) == 0:
             S.extend([u0, v0] for v0 in f(u0).sqrt(all=True, extend=False))
         else:
-            S.append([u0, (2*j - a(u0)) / b(u0)])
+            S.append([u0, (2 * j - a(u0)) / b(u0)])
     if not S:
         return []
     S.sort()
@@ -2065,8 +3267,8 @@ def isogenies_prime_degree_genus_plus_0(E, l=None, minimal_models=True):
     for u0, v0 in S:
         A4 = Fuv(data['A4'])(u0, v0)  # nonzero since j!=0
         A6 = Fuv(data['A6'])(u0, v0)  # nonzero since j!=1728
-        T = (c4*A6) / (2*c6*A4)
-        kernels.append(psi((36*u + 3*b2) * T, u0, v0).monic())
+        T = (c4 * A6) / (2 * c6 * A4)
+        kernels.append(psi((36 * u + 3 * b2) * T, u0, v0).monic())
 
     return [E.isogeny(ker) for ker in kernels]
 
@@ -2136,13 +3338,13 @@ def isogenies_prime_degree_genus_plus_0_j0(E, l, minimal_models=True):
         raise NotImplementedError("not implemented in characteristic 2, 3 or l")
 
     Fu, u = PolynomialRing(F, 'u').objgen()
-    Fuv = PolynomialRing(F, ['u','v'])
-    Fxuv = PolynomialRing(F, ['x','u','v'])
+    Fuv = PolynomialRing(F, ['u', 'v'])
+    Fxuv = PolynomialRing(F, ['x', 'u', 'v'])
     data = _hyperelliptic_isogeny_data(l)
     a = Fu(data['alpha'])
     b = Fu(data['beta'])
     f = Fu(data['hyper_poly'])
-    Q = Fu((a**2 - f*b**2) / 4)
+    Q = Fu((a**2 - f * b**2) / 4)
     u_list = Q.roots(multiplicities=False)
     c6, b2 = E.c6(), E.b2()
     kernels = []
@@ -2150,7 +3352,7 @@ def isogenies_prime_degree_genus_plus_0_j0(E, l, minimal_models=True):
     if l % 3 == 1 and F(-3).is_square():
         endo = Fxuv(data['endo'])
         for p in F(-3).sqrt(all=True, extend=False):
-            kernels.append(endo(36*u + 3*b2, p, -54*c6).monic())
+            kernels.append(endo(36 * u + 3 * b2, p, -54 * c6).monic())
 
     S = []
     for u0 in u_list:
@@ -2167,7 +3369,10 @@ def isogenies_prime_degree_genus_plus_0_j0(E, l, minimal_models=True):
     psi = Fxuv(Psi2(l))
     for u0, v0 in S:
         A6 = Fuv(data['A6'])(u0, v0)  # nonzero since j!=1728
-        kernels.extend(psi((36*u + 3*b2) * T, u0, v0).monic() for T in (u**3 - A6/(-54*c6)).roots(multiplicities=False))
+        kernels.extend(
+            psi((36 * u + 3 * b2) * T, u0, v0).monic()
+            for T in (u**3 - A6 / (-54 * c6)).roots(multiplicities=False)
+        )
 
     return [E.isogeny(ker) for ker in kernels]
 
@@ -2258,21 +3463,21 @@ def isogenies_prime_degree_genus_plus_0_j1728(E, l, minimal_models=True):
         raise NotImplementedError("not implemented in characteristic 2, 3 or l")
 
     Fu, u = PolynomialRing(F, 'u').objgen()
-    Fuv = PolynomialRing(F, ['u','v'])
-    Fxuv = PolynomialRing(F, ['x','u','v'])
+    Fuv = PolynomialRing(F, ['u', 'v'])
+    Fxuv = PolynomialRing(F, ['x', 'u', 'v'])
     data = _hyperelliptic_isogeny_data(l)
     a = Fu(data['alpha'])
     b = Fu(data['beta'])
     f = Fu(data['hyper_poly'])
-    Q = Fu((a**2 - f*b**2) / 4)
-    u_list = (1728**2 - a*1728 + Q).roots(multiplicities=False)
+    Q = Fu((a**2 - f * b**2) / 4)
+    u_list = (1728**2 - a * 1728 + Q).roots(multiplicities=False)
     c4, b2 = E.c4(), E.b2()
     kernels = []
 
     if l % 4 == 1 and F(-1).is_square():
         endo = Fxuv(data['endo'])
         for i in F(-1).sqrt(all=True, extend=False):
-            kernels.append(endo(36*u + 3*b2, i, -27*c4).monic())
+            kernels.append(endo(36 * u + 3 * b2, i, -27 * c4).monic())
 
     S = []
     for u0 in u_list:
@@ -2281,7 +3486,7 @@ def isogenies_prime_degree_genus_plus_0_j1728(E, l, minimal_models=True):
         if b(u0) == 0:
             S.extend([u0, v0] for v0 in f(u0).sqrt(all=True, extend=False))
         else:
-            S.append([u0, (2*1728 - a(u0)) / b(u0)])
+            S.append([u0, (2 * 1728 - a(u0)) / b(u0)])
     if not S and not kernels:
         return []
     S.sort()
@@ -2289,7 +3494,10 @@ def isogenies_prime_degree_genus_plus_0_j1728(E, l, minimal_models=True):
     psi = Fxuv(Psi2(l))
     for u0, v0 in S:
         A4 = Fuv(data['A4'])(u0, v0)  # nonzero since j!=0
-        kernels.extend(psi((36*u + 3*b2) * T, u0, v0).monic() for T in (A4 / (-27*c4)).sqrt(all=True, extend=False))
+        kernels.extend(
+            psi((36 * u + 3 * b2) * T, u0, v0).monic()
+            for T in (A4 / (-27 * c4)).sqrt(all=True, extend=False)
+        )
 
     return [E.isogeny(ker) for ker in kernels]
 
@@ -2328,11 +3536,18 @@ def _least_semi_primitive(p):
 
     from sage.arith.misc import euler_phi
     from sage.rings.finite_rings.integer_mod_ring import Integers
+
     phi_p = euler_phi(p)
     order = phi_p if p % 4 == 1 else phi_p // 2
     R = Integers(p)
-    return next((a for a in range(2, p) if p.gcd(a).is_one()
-                 and R(a).multiplicative_order() >= order), 0)
+    return next(
+        (
+            a
+            for a in range(2, p)
+            if p.gcd(a).is_one() and R(a).multiplicative_order() >= order
+        ),
+        0,
+    )
 
 
 def is_kernel_polynomial(E, m, f):
@@ -2434,9 +3649,10 @@ def is_kernel_polynomial(E, m, f):
     # only one a will be needed.
 
     if m & 1 and m.is_prime_power():
-        gens = _least_semi_primitive(m),
+        gens = (_least_semi_primitive(m),)
     else:
         from sage.rings.finite_rings.integer_mod_ring import Integers
+
         gens = Integers(m).unit_gens()
 
     for a in gens:
@@ -2618,7 +3834,7 @@ def isogenies_prime_degree_general(E, l, minimal_models=True):
 
     psi_l = E.division_polynomial(l)
 
-    factors = [h for h,_ in psi_l.factor() if h.degree().divides(l//2)]
+    factors = [h for h, _ in psi_l.factor() if h.degree().divides(l // 2)]
 
     kernels = []  # will store all kernel polynomials found
 
@@ -2628,7 +3844,7 @@ def isogenies_prime_degree_general(E, l, minimal_models=True):
             ker = E.kernel_polynomial_from_divisor(h, l, check=False)
         except ValueError:
             continue
-        assert ker.degree() == l//2 and ker.divides(psi_l)
+        assert ker.degree() == l // 2 and ker.divides(psi_l)
         kernels.append(ker)
         factors = [h for h in factors if not h.divides(ker)]
 

@@ -110,6 +110,7 @@ Chow cycles can be of mixed degrees::
     sage: sum( mixed.project_to_degree(i) for i in range(X.dimension()+1) ) == mixed
     True
 """
+
 # ****************************************************************************
 #       Copyright (C) 2010 Volker Braun  <vbraun.name@gmail.com>
 #
@@ -158,6 +159,7 @@ class ChowCycle(FGP_Element):
         sage: A( Cone([(1,0)]) )
         ( 0 | 1 | 0 )
     """
+
     def __init__(self, parent, v, check=True):
         r"""
         Construct a :class:`ChowCycle`.
@@ -404,7 +406,9 @@ class ChowCycle(FGP_Element):
              (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
              (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)]
         """
-        assert isinstance(divisor, ToricDivisor_generic), f'{divisor} is not a toric divisor'
+        assert isinstance(divisor, ToricDivisor_generic), (
+            f'{divisor} is not a toric divisor'
+        )
 
         A = self.parent()  # the Chow group
         X = A._variety  # the toric variety
@@ -423,8 +427,10 @@ class ChowCycle(FGP_Element):
                 # note: the relative quotients are of dimension one
                 n = gamma.relative_quotient(sigma).gen(0).lift()
                 perp = sigma.relative_orthogonal_quotient(gamma).gen(0).lift()
-                I_gamma = set(gamma.ambient_ray_indices()) - set(sigma.ambient_ray_indices())
-                i = I_gamma.pop()   # index of a ray in gamma but not sigma
+                I_gamma = set(gamma.ambient_ray_indices()) - set(
+                    sigma.ambient_ray_indices()
+                )
+                i = I_gamma.pop()  # index of a ray in gamma but not sigma
                 v_i = X.fan().ray(i)
                 a_i = D.coefficient(i)
                 s_i = (v_i * perp) / (n * perp)
@@ -515,8 +521,7 @@ class ChowCycle(FGP_Element):
             raise ValueError('not an orbifold')
         HH = toric_variety.cohomology_ring()
         coeff = self.lift()
-        return sum([HH(cone) * coeff[i]
-                    for i, cone in enumerate(self.parent()._cones)])
+        return sum([HH(cone) * coeff[i] for i, cone in enumerate(self.parent()._cones)])
 
 
 class ChowGroupFactory(UniqueFactory):
@@ -594,6 +599,7 @@ class ChowGroup_class(FGP_Module_class, WithEqualityById):
         sage: A.an_element()
         ( 0 | 0 | 1 )
     """
+
     Element = ChowCycle
 
     def __init__(self, toric_variety, base_ring, check):
@@ -698,8 +704,10 @@ class ChowGroup_class(FGP_Module_class, WithEqualityById):
             cone = fan.embed(x)
             return self.element_class(self, self._cone_to_V(cone), False)
         if isinstance(x, ToricDivisor_generic):
-            v = sum(x.coefficient(i) * self._cone_to_V(onecone)
-                    for i, onecone in enumerate(fan(1)))
+            v = sum(
+                x.coefficient(i) * self._cone_to_V(onecone)
+                for i, onecone in enumerate(fan(1))
+            )
             return self.element_class(self, v, False)
         return super()._element_constructor_(x, check)
 
@@ -909,8 +917,10 @@ class ChowGroup_class(FGP_Module_class, WithEqualityById):
         """
         if k is not None:
             return self.degree()[k]
-        return tuple(ChowGroup_degree_class(self, d)
-                     for d in range(self._variety.dimension() + 1))
+        return tuple(
+            ChowGroup_degree_class(self, d)
+            for d in range(self._variety.dimension() + 1)
+        )
 
     def coordinate_vector(self, chow_cycle, degree=None, reduce=True):
         r"""
@@ -1081,8 +1091,9 @@ class ChowGroup_degree_class(SageObject):
 
         # The minimal set of generators
         self._module = A.submodule(gens)
-        self._gens = tuple([A.element_class(A, a.lift(), False)
-                            for a in self._module.gens()])
+        self._gens = tuple(
+            [A.element_class(A, a.lift(), False) for a in self._module.gens()]
+        )
 
     def _repr_(self) -> str:
         """

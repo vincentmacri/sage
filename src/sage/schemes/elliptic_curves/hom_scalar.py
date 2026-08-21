@@ -146,7 +146,6 @@ from sage.schemes.elliptic_curves.hom import EllipticCurveHom
 
 
 class EllipticCurveHom_scalar(EllipticCurveHom):
-
     def __init__(self, E, m):
         """
         Construct a scalar-multiplication map on an elliptic curve.
@@ -171,7 +170,7 @@ class EllipticCurveHom_scalar(EllipticCurveHom):
         # TODO: should probably be in EllipticCurveHom?
         self._base_ring = self._domain.base_ring()
         self._poly_ring = PolynomialRing(self._base_ring, ['x'])
-        self._mpoly_ring = PolynomialRing(self._base_ring, ['x','y'])
+        self._mpoly_ring = PolynomialRing(self._base_ring, ['x', 'y'])
 
         self._rational_maps = None
 
@@ -259,7 +258,9 @@ class EllipticCurveHom_scalar(EllipticCurveHom):
             sage: phi._composition_impl(phi, E.automorphisms()[0])
             NotImplemented
         """
-        if isinstance(self, EllipticCurveHom_scalar) and isinstance(other, EllipticCurveHom_scalar):
+        if isinstance(self, EllipticCurveHom_scalar) and isinstance(
+            other, EllipticCurveHom_scalar
+        ):
             assert self._domain == other._domain
             return EllipticCurveHom_scalar(self._domain, self._m * other._m)
         return NotImplemented
@@ -374,8 +375,10 @@ class EllipticCurveHom_scalar(EllipticCurveHom):
                 raise ValueError('[0] is not expressible in (x,y) coordinates')
             h = self._domain.multiplication_by_m(self._m, x_only=True)
             self._rational_maps = (self._mpoly_ring.fraction_field()(h), None)
-        f,g = map(self._poly_ring, (self._rational_maps[0].numerator(),
-                                    self._rational_maps[0].denominator()))
+        f, g = map(
+            self._poly_ring,
+            (self._rational_maps[0].numerator(), self._rational_maps[0].denominator()),
+        )
         return f / g
 
     def scaling_factor(self):
@@ -476,9 +479,13 @@ class EllipticCurveHom_scalar(EllipticCurveHom):
               embedded in Abelian group of points on Elliptic Curve defined by y^2 = x^3 + 5*x + 5
                 over Finite Field in t of size 101^6
         """
-        ker = self.domain().torsion_subgroup(self._m, extend=extend, algorithm=algorithm)
+        ker = self.domain().torsion_subgroup(
+            self._m, extend=extend, algorithm=algorithm
+        )
         if ker.order() != self.separable_degree():
-            raise ValueError('kernel subgroup has no generating points over the base field')
+            raise ValueError(
+                'kernel subgroup has no generating points over the base field'
+            )
         return ker
 
     def dual(self, algorithm=None):
@@ -527,7 +534,7 @@ class EllipticCurveHom_scalar(EllipticCurveHom):
         if not v:
             return ZZ.one()
         rk = 1 + self._domain.is_supersingular()
-        return p**(rk*v)
+        return p ** (rk * v)
 
     def __neg__(self):
         """
@@ -556,7 +563,9 @@ class EllipticCurveHom_scalar(EllipticCurveHom):
         result = EllipticCurveHom_scalar(self._domain, -self._m)
         if self._rational_maps is not None:
             w = negation_morphism(self._domain).rational_maps()
-            result._rational_maps = tuple(f(*w) if f is not None else None for f in self._rational_maps)
+            result._rational_maps = tuple(
+                f(*w) if f is not None else None for f in self._rational_maps
+            )
         return result
 
     def xEVAL(self, xP):

@@ -20,7 +20,11 @@ from .set_species import SetSpecies
 from .partition_species import PartitionSpecies
 from .subset_species import SubsetSpecies
 from .recursive_species import CombinatorialSpecies
-from .characteristic_species import CharacteristicSpecies, SingletonSpecies, EmptySetSpecies
+from .characteristic_species import (
+    CharacteristicSpecies,
+    SingletonSpecies,
+    EmptySetSpecies,
+)
 from .cycle_species import CycleSpecies
 from .linear_order_species import LinearOrderSpecies
 from .permutation_species import PermutationSpecies

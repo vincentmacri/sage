@@ -61,14 +61,14 @@ To import these names into the global namespace, use::
 
     sage: from sage.coding.codes_catalog import *
 """
-#*****************************************************************************
+# *****************************************************************************
 #       Copyright (C) 2009 David Lucas <david.lucas@inria.fr>
 #
 #  Distributed under the terms of the GNU General Public License (GPL),
 #  version 2 or later (at your preference).
 #
 #                  https://www.gnu.org/licenses/
-#*****************************************************************************
+# *****************************************************************************
 
 # This module is imported as "codes" in all.py so that codes.<tab> is
 # available in the global namespace.
@@ -77,12 +77,21 @@ from sage.misc.lazy_import import lazy_import as _lazy_import
 
 from .linear_code import LinearCode
 
-_lazy_import('sage.coding.code_constructions',
-        ['DuadicCodeEvenPair', 'DuadicCodeOddPair',
-         'ExtendedQuadraticResidueCode', 'from_parity_check_matrix',
-         'QuadraticResidueCode', 'QuadraticResidueCodeEvenPair',
-         'QuadraticResidueCodeOddPair', 'random_linear_code',
-         'ToricCode', 'WalshCode'])
+_lazy_import(
+    'sage.coding.code_constructions',
+    [
+        'DuadicCodeEvenPair',
+        'DuadicCodeOddPair',
+        'ExtendedQuadraticResidueCode',
+        'from_parity_check_matrix',
+        'QuadraticResidueCode',
+        'QuadraticResidueCodeEvenPair',
+        'QuadraticResidueCodeOddPair',
+        'random_linear_code',
+        'ToricCode',
+        'WalshCode',
+    ],
+)
 
 _lazy_import('sage.coding.subfield_subcode', 'SubfieldSubcode')
 _lazy_import('sage.coding.extended_code', 'ExtendedCode')
@@ -99,12 +108,16 @@ _lazy_import('sage.coding.goppa_code', 'GoppaCode')
 _lazy_import('sage.coding.kasami_codes', 'KasamiCode')
 _lazy_import('sage.coding.linear_rank_metric', 'LinearRankMetricCode')
 _lazy_import('sage.coding.gabidulin_code', 'GabidulinCode')
-_lazy_import('sage.coding.ag_code', ['EvaluationAGCode', 'DifferentialAGCode', 'CartierCode'])
+_lazy_import(
+    'sage.coding.ag_code', ['EvaluationAGCode', 'DifferentialAGCode', 'CartierCode']
+)
 
-_lazy_import('sage.coding.guava', ['QuasiQuadraticResidueCode', 'RandomLinearCodeGuava'])
+_lazy_import(
+    'sage.coding.guava', ['QuasiQuadraticResidueCode', 'RandomLinearCodeGuava']
+)
 
 from . import decoders_catalog as decoders
 from . import encoders_catalog as encoders
 from . import bounds_catalog as bounds
 
-_lazy_import('sage.coding','databases')
+_lazy_import('sage.coding', 'databases')
