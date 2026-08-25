@@ -850,7 +850,7 @@ class help_message_short(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         if not hasattr(namespace, 'printed_help'):
             parser.print_help()
-            setattr(namespace, 'printed_help', 1)
+            namespace.printed_help = 1
         sys.exit(0)
 
 
@@ -867,7 +867,7 @@ class help_wrapper(argparse.Action):
             print(help_formats(), end="")
         if self.dest == 'commands':
             print(help_commands(values), end="")
-        setattr(namespace, 'printed_list', 1)
+        namespace.printed_list = 1
         sys.exit(0)
 
 
