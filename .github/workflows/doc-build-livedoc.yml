@@ -69,9 +69,8 @@ jobs:
       - name: Build Sage
         shell: bash -l {0}
         run: |
+          # Let Meson discover the compiler through the ccache wrappers.
           export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
-          export CC="ccache $CC"
-          export CXX="ccache $CXX"
           pip install --no-build-isolation --config-settings=builddir=builddir . -v
 
       - name: Build live doc
@@ -102,7 +101,7 @@ jobs:
           path: livedoc.zip
 
       - name: Upload docs to release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.1
         with:
           files: livedoc.zip
           token: ${{ secrets.RELEASE_CREATION_TOKEN }}

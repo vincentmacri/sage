@@ -144,6 +144,14 @@ cdef class Matrix(Matrix1):
         [1]  [1]
         [x], [0]
         )
+
+    .. automethod:: _solve_right_nonsingular_square
+    .. automethod:: _permanent_ryser
+    .. automethod:: _right_kernel_matrix_over_number_field
+    .. automethod:: _right_kernel_matrix_over_field
+    .. automethod:: _right_kernel_matrix_over_domain
+    .. automethod:: _right_kernel_matrix_over_integer_mod_ring
+    .. automethod:: _zigzag_form
     """
     def subs(self, *args, **kwds):
         """
@@ -1574,7 +1582,8 @@ cdef class Matrix(Matrix1):
         ALGORITHM:
 
         The Ryser algorithm is implemented in the method
-        :meth:`_permanent_ryser`. It is a modification of theorem 7.1.1. from
+        :meth:`~sage.matrix.matrix2.Matrix._permanent_ryser`. It is a
+        modification of theorem 7.1.1. from
         Brualdi and Ryser: Combinatorial Matrix Theory. Instead of deleting
         columns from `A`, we choose columns from `A` and calculate the product
         of the row sums of the selected submatrix.
@@ -2266,7 +2275,7 @@ cdef class Matrix(Matrix1):
 
         ALGORITHM:
 
-        If the base ring has a method :meth:`_matrix_determinant`, we call it.
+        If the base ring has a method ``_matrix_determinant``, we call it.
 
         Otherwise, for small matrices (n less than 4), this is computed using the
         naive formula. In the specific case of matrices over the integers modulo a
@@ -8167,7 +8176,8 @@ cdef class Matrix(Matrix1):
         If the matrix is over a ring, then an equivalent matrix is
         constructed over the fraction field, and then row reduced.
 
-        All arguments are passed on to :meth:`echelon_form`.
+        All arguments are passed on to
+        :meth:`~sage.matrix.matrix2.Matrix.echelon_form`.
 
         .. NOTE::
 
@@ -8188,7 +8198,8 @@ cdef class Matrix(Matrix1):
 
 
         Note that there is a difference between :meth:`rref` and
-        :meth:`echelon_form` when the matrix is not over a field (in
+        :meth:`~sage.matrix.matrix2.Matrix.echelon_form` when the matrix is
+        not over a field (in
         this case, the integers instead of the rational numbers)::
 
             sage: A.base_ring()
@@ -8207,7 +8218,8 @@ cdef class Matrix(Matrix1):
             [0 0 1]
 
         In this case, since ``B`` is a matrix over a field (the
-        rational numbers), :meth:`rref` and :meth:`echelon_form` are
+        rational numbers), :meth:`rref` and
+        :meth:`~sage.matrix.matrix2.Matrix.echelon_form` are
         exactly the same::
 
             sage: B.echelon_form()
@@ -8217,7 +8229,8 @@ cdef class Matrix(Matrix1):
             sage: B.echelon_form() is B.rref()
             True
 
-        Since :meth:`echelon_form` is not implemented for every ring,
+        Since :meth:`~sage.matrix.matrix2.Matrix.echelon_form` is not
+        implemented for every ring,
         sometimes behavior varies, as here::
 
             sage: R.<x> = ZZ[]
@@ -9510,23 +9523,10 @@ cdef class Matrix(Matrix1):
         if cutoff == 0:
             cutoff = self._strassen_default_cutoff(right)
 
-        if cutoff <= 0:
-            raise ValueError("cutoff must be at least 1")
-
-        output = self.new_matrix(self._nrows, right._ncols)
-        # The following used to be a little faster, but meanwhile
-        # the previous line is faster.
-        # if self.is_sparse():
-        #    output = self.matrix_space(self._nrows, right._ncols, sparse = True)(0)
-        # else:
-        #    output = self.matrix_space(self._nrows, right._ncols, sparse = False).zero_matrix().__copy__()
-
-        self_window = self.matrix_window()
-        right_window = right.matrix_window()
-        output_window = output.matrix_window()
-
-        from sage.matrix import strassen
-        strassen.strassen_window_multiply(output_window, self_window, right_window, cutoff)
+        # ``_set_to_product_strassen`` validates the resolved cutoff, so do
+        # not duplicate that check here.
+        cdef Matrix output = self.new_matrix(self._nrows, right._ncols)
+        output._set_to_product_strassen(self, right, cutoff)
         return output
 
     def _echelon_strassen(self, int cutoff=0):
@@ -15199,15 +15199,17 @@ cdef class Matrix(Matrix1):
 
             # Continuing the "else" branch of Higham's Step (1), and
             # onto B&K's Step (3) where we find the largest
-            # off-diagonal entry (in magnitude) in column "r". Since
-            # the matrix is Hermitian, we need only look at the
-            # above-diagonal entries to find the off-diagonal of
-            # maximal magnitude.
+            # off-diagonal entry (in magnitude) in column "r" of the
+            # active submatrix. Since the matrix is Hermitian, we search
+            # row "r", whose corresponding entries have the same
+            # magnitudes.
             #
             # Note: omega_r is defined as a C double, but the abs()
             # below would make a complex number approximate anyway.
             omega_r = 0
-            for j in range(k, r):
+            for j in range(k, n):
+                if j == r:
+                    continue
                 a_rj_abs = A.get_unsafe(r, j).abs()
                 if a_rj_abs > omega_r:
                     omega_r = a_rj_abs
@@ -15375,20 +15377,32 @@ cdef class Matrix(Matrix1):
             ....:                  [0, 2, 0]])
             sage: P,L,D = A.block_ldlt()
             sage: P
-            [0 0 1]
             [1 0 0]
             [0 1 0]
+            [0 0 1]
             sage: L
-            [  1   0   0]
-            [  2   1   0]
-            [  1 1/2   1]
+            [1 0 0]
+            [0 1 0]
+            [2 0 1]
             sage: D
-            [ 1| 0| 0]
-            [--+--+--]
-            [ 0|-4| 0]
-            [--+--+--]
-            [ 0| 0| 0]
+            [0 1|0]
+            [1 1|0]
+            [---+-]
+            [0 0|0]
             sage: P.transpose()*A*P == L*D*L.transpose()
+            True
+
+        The complete pivot row must be searched.  Ignoring entries after
+        its diagonal can select an unstable one-by-one pivot and overflow
+        the following Schur-complement update::
+
+            sage: # needs scipy
+            sage: H = RDF(1e200)
+            sage: A = matrix(RDF, [[0, 1, 0], [1, 1, H], [0, H, 1]])
+            sage: P, L, D = A.block_ldlt()
+            sage: any(x.is_infinity() or x.is_NaN() for x in L.list() + D.list())
+            False
+            sage: P.T * A * P == L * D * L.T
             True
 
         This two-by-two matrix has no classical factorization, but it
@@ -16539,8 +16553,8 @@ cdef class Matrix(Matrix1):
 
             sage: a = matrix([[1,2], [3,4]])
             sage: a.exp()
-            [-1/22*((sqrt(33) - 11)*e^sqrt(33) - sqrt(33) - 11)*e^(-1/2*sqrt(33) + 5/2)              2/33*(sqrt(33)*e^sqrt(33) - sqrt(33))*e^(-1/2*sqrt(33) + 5/2)]
-            [             1/11*(sqrt(33)*e^sqrt(33) - sqrt(33))*e^(-1/2*sqrt(33) + 5/2)  1/22*((sqrt(33) + 11)*e^sqrt(33) - sqrt(33) + 11)*e^(-1/2*sqrt(33) + 5/2)]
+            [ 1/22*((sqrt(33) + 11)*e^2 - (sqrt(33) - 11)*e^(sqrt(33) + 2))*e^(-1/2*sqrt(33) + 1/2)               -2/33*(sqrt(33)*e^2 - sqrt(33)*e^(sqrt(33) + 2))*e^(-1/2*sqrt(33) + 1/2)]
+            [              -1/11*(sqrt(33)*e^2 - sqrt(33)*e^(sqrt(33) + 2))*e^(-1/2*sqrt(33) + 1/2) -1/22*((sqrt(33) - 11)*e^2 - (sqrt(33) + 11)*e^(sqrt(33) + 2))*e^(-1/2*sqrt(33) + 1/2)]
 
             sage: type(a.exp())                                                         # needs sage.symbolic
             <class 'sage.matrix.matrix_symbolic_dense.Matrix_symbolic_dense'>
@@ -17586,7 +17600,8 @@ cdef class Matrix(Matrix1):
         manipulated by several different matrix methods.
 
         For output that may be more useful as input to other routines,
-        see the helper method :meth:`_zigzag_form`.
+        see the helper method
+        :meth:`~sage.matrix.matrix2.Matrix._zigzag_form`.
 
         .. NOTE::
 
@@ -17849,7 +17864,7 @@ cdef class Matrix(Matrix1):
         Companion matrices may be written in one of four styles, and any
         such style may be selected with the ``format`` keyword.  See the
         companion matrix constructor,
-        :meth:`sage.matrix.constructor.companion_matrix`,
+        :func:`~sage.matrix.special.companion_matrix`,
         for more information about companion matrices.
 
         If the 'invariants' value is used for the ``format`` keyword,
@@ -18105,7 +18120,7 @@ cdef class Matrix(Matrix1):
 
         Companion matrices may be selected as any one of four different types.
         See the documentation for the companion matrix constructor,
-        :meth:`sage.matrix.constructor.companion_matrix`, for more information. ::
+        :func:`~sage.matrix.special.companion_matrix`, for more information. ::
 
             sage: A = matrix(QQ, [[35, -18, -2, -45],
             ....:                 [22, -22, 12, -16],
@@ -20854,7 +20869,8 @@ class NotFullRankError(ValueError):
     The fact that a square system is rank-deficient sometimes only becomes
     apparent while attempting to solve it. The methods
     :meth:`.Matrix.solve_left` and :meth:`.Matrix.solve_right` defer to
-    :meth:`.Matrix._solve_right_nonsingular_square` for square systems, and
+    :meth:`~sage.matrix.matrix2.Matrix._solve_right_nonsingular_square`
+    for square systems, and
     that method raises this error if the system turns out to be singular.
     """
     pass

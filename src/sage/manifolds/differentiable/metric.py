@@ -97,6 +97,8 @@ class PseudoRiemannianMetric(TensorField):
     - ``latex_name`` -- (default: ``None``) LaTeX symbol to denote the metric;
       if ``None``, it is formed from ``name``
 
+    .. automethod:: _del_derived
+
     EXAMPLES:
 
     Let us construct the standard metric on the sphere `S^2`, described in
@@ -669,7 +671,8 @@ class PseudoRiemannianMetric(TensorField):
         If ``expansion_symbol`` is set, then the zeroth order metric must be
         invertible. Moreover, subsequent calls to this method will return
         a cached value, even when called with the default value (to enable
-        computation of derived quantities). To reset, use :meth:`_del_derived`.
+        computation of derived quantities). To reset, use
+        :meth:`_del_derived <sage.manifolds.differentiable.metric.PseudoRiemannianMetric._del_derived>`.
 
         OUTPUT:
 
@@ -1556,9 +1559,9 @@ class PseudoRiemannianMetric(TensorField):
             [ 1/8*u^2 - 1/8*v^2 + 1/4*v + 1/2                            1/4*u]
             [                           1/4*u -1/8*u^2 + 1/8*v^2 + 1/4*v + 1/2]
             sage: g.sqrt_abs_det(Y.frame()).expr()
-            1/2*sqrt(-x^2*y^2 - (x + 1)*y + x + 1)
+            1/2*sqrt(abs(x^2*y^2 + (x + 1)*y - x - 1))
             sage: g.sqrt_abs_det(Y.frame()).expr(Y)
-            1/8*sqrt(-u^4 - v^4 + 2*(u^2 + 2)*v^2 - 4*u^2 + 16*v + 16)
+            1/8*sqrt(abs(u^4 + v^4 - 2*(u^2 + 2)*v^2 + 4*u^2 - 16*v - 16))
 
         A chart can be passed instead of a frame::
 
@@ -1578,9 +1581,9 @@ class PseudoRiemannianMetric(TensorField):
             sage: g.sqrt_abs_det().expr()
             sqrt(-x**2*y**2 - x*y + x - y + 1)
             sage: g.sqrt_abs_det(Y.frame()).expr()
-            sqrt(-x**2*y**2 - x*y + x - y + 1)/2
+            sqrt(Abs(x**2*y**2 + x*y - x + y - 1))/2
             sage: g.sqrt_abs_det(Y.frame()).expr(Y)
-            sqrt(-u**4 + 2*u**2*v**2 - 4*u**2 - v**4 + 4*v**2 + 16*v + 16)/8
+            sqrt(Abs(-u**4 + 2*u**2*v**2 - 4*u**2 - v**4 + 4*v**2 + 16*v + 16))/8
         """
         dom = self._domain
         if frame is None:
@@ -1998,6 +2001,8 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
     - ``latex_name`` -- (default: ``None``) LaTeX symbol to denote the metric;
       if ``None``, it is formed from ``name``
 
+    .. automethod:: _del_derived
+
     EXAMPLES:
 
     Metric on a 2-dimensional manifold::
@@ -2295,7 +2300,8 @@ class PseudoRiemannianMetricParal(PseudoRiemannianMetric, TensorFieldParal):
         If ``expansion_symbol`` is set, then the zeroth order metric must be
         invertible. Moreover, subsequent calls to this method will return
         a cached value, even when called with the default value (to enable
-        computation of derived quantities). To reset, use :meth:`_del_derived`.
+        computation of derived quantities). To reset, use
+        :meth:`_del_derived <sage.manifolds.differentiable.metric.PseudoRiemannianMetricParal._del_derived>`.
 
         OUTPUT:
 

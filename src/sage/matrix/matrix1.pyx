@@ -85,6 +85,16 @@ cdef class Matrix(Matrix0):
             [3.0 1.0]
             sage: b = pari(a); b                                                        # needs sage.libs.pari
             [1.000000000..., 2.000000000...; 3.000000000..., 1.000000000...]
+
+        A PARI ``t_MAT`` is a vector of columns, so a matrix with no columns
+        has nowhere to record its number of rows.  The row count is therefore
+        lost for such a matrix, while the number of columns is preserved when
+        there are no rows::
+
+            sage: matrix(GF(5), 2, 0).__pari__()                                        # needs sage.libs.pari
+            [;]
+            sage: matrix(GF(5), 0, 3).__pari__()                                        # needs sage.libs.pari
+            matrix(0,3)
         """
         from sage.libs.pari import pari
         return pari.matrix(self._nrows, self._ncols, self._list())
@@ -717,7 +727,7 @@ cdef class Matrix(Matrix0):
             'efdg'
 
         Alternatively, numpy automatically calls this function (via
-        the magic :meth:`__array__` method) to convert Sage matrices
+        the magic ``__array__`` method) to convert Sage matrices
         to numpy arrays::
 
             sage: # needs numpy
@@ -1518,9 +1528,9 @@ cdef class Matrix(Matrix0):
             :meth:`~sage.matrix.matrix2.Matrix.subdivisions`
             and
             :meth:`~sage.matrix.matrix2.Matrix.subdivide`.
-            You might also find :func:`~sage.matrix.constructor.block_matrix`
+            You might also find :func:`~sage.matrix.special.block_matrix`
             or
-            :func:`~sage.matrix.constructor.block_diagonal_matrix`
+            :func:`~sage.matrix.special.block_diagonal_matrix`
             useful and simpler in some instances.
 
         EXAMPLES:
@@ -1832,8 +1842,8 @@ cdef class Matrix(Matrix0):
             need, you can manage subdivisions yourself with methods like
             :meth:`~sage.matrix.matrix2.Matrix.get_subdivisions` and
             :meth:`~sage.matrix.matrix2.Matrix.subdivide`.  You might
-            also find :func:`~sage.matrix.constructor.block_matrix` or
-            :func:`~sage.matrix.constructor.block_diagonal_matrix`
+            also find :func:`~sage.matrix.special.block_matrix` or
+            :func:`~sage.matrix.special.block_diagonal_matrix`
             useful and simpler in some instances.
 
         EXAMPLES:
@@ -2567,7 +2577,7 @@ cdef class Matrix(Matrix0):
         .. NOTE::
 
             This method can be optimized by improving
-            :meth:`get_is_zero_unsafe` for derived matrix classes.
+            ``get_is_zero_unsafe`` for derived matrix classes.
         """
         if ring is None:
             from sage.rings.integer_ring import ZZ

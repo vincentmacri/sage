@@ -693,7 +693,7 @@ def integral(x, *args, **kwds):
     integrate it using Maxima, maple, etc, as specified by algorithm.
 
     For symbolic expression calls
-    :func:`sage.calculus.calculus.integral` - see this function for
+    :func:`sage.calculus.functional.integral` - see this function for
     available options.
 
     EXAMPLES::
@@ -760,9 +760,7 @@ def integral(x, *args, **kwds):
         real
         sage: f = exp(-x) * sinh(sqrt(x))
         sage: t = integrate(f, x, 0, Infinity); t           # long time
-        1/4*sqrt(pi)*(erf(1) - 1)*e^(1/4)
-         - 1/4*(sqrt(pi)*(erf(1) - 1) - sqrt(pi) + 2*e^(-1) - 2)*e^(1/4)
-         + 1/4*sqrt(pi)*e^(1/4) - 1/2*e^(1/4) + 1/2*e^(-3/4)
+        1/2*sqrt(pi)*e^(1/4)
         sage: t.canonicalize_radical()                      # long time
         1/2*sqrt(pi)*e^(1/4)
         sage: sage.calculus.calculus.maxima('domain: complex')
@@ -970,7 +968,7 @@ def krull_dimension(x):
         0
         sage: ZZ.krull_dimension()
         1
-        sage: ZZ[sqrt(5)].krull_dimension()                                              # needs sage.rings.number_field sage.symbolic
+        sage: ZZ[sqrt(5)].krull_dimension()                                             # needs sage.rings.number_field sage.symbolic
         1
         sage: U.<x,y,z> = PolynomialRing(ZZ, 3); U
         Multivariate Polynomial Ring in x, y, z over Integer Ring
@@ -1048,7 +1046,7 @@ def log(*args, **kwds):
 
     You can use
     :class:`RDF<sage.rings.real_double.RealDoubleField_class>`,
-    :class:`~sage.rings.real_mpfr.RealField` or ``n`` to get a
+    :func:`RealField <sage.rings.real_mpfr.RealField>` or ``n`` to get a
     numerical real approximation::
 
         sage: log(1024, 2)
