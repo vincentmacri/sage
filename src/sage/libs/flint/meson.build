@@ -154,6 +154,8 @@ py.install_sources(
   'partitions.pxd',
   'perm.pxd',
   'profiler.pxd',
+  'pylong.pxd',
+  'pylong.pyx',
   'qadic.pxd',
   'qfb.pxd',
   'qqbar.pxd',
@@ -181,6 +183,7 @@ extension_data = {
   'qsieve_sage': files('qsieve_sage.pyx'),
   'ulong_extras': files('ulong_extras.pyx'),
   'ulong_extras_sage': files('ulong_extras_sage.pyx'),
+  'pylong': files('pylong.pyx'),
 }
 
 foreach name, pyx : extension_data
