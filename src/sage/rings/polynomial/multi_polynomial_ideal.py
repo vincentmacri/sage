@@ -2710,7 +2710,7 @@ class MPolynomialIdeal_singular_repr(
         if algorithm == "triangular_decomposition":
             return self._variety_triangular_decomposition(ring)
         if algorithm == "msolve":
-            from . import msolve
+            from sage.rings.polynomial import msolve
             return msolve.variety(self, ring, proof=proof)
         raise ValueError(f"unknown algorithm {algorithm!r}")
 
@@ -4826,7 +4826,7 @@ class MPolynomialIdeal(MPolynomialIdeal_singular_repr,
                                           "(use transformed_basis())")
             if not (deg_bound is mult_bound is None) or prot:
                 raise NotImplementedError("unsupported options for msolve")
-            from . import msolve
+            from sage.rings.polynomial import msolve
             return msolve.groebner_basis_degrevlex(self, *args, **kwds)
         else:
             raise NameError("Algorithm '%s' unknown." % algorithm)

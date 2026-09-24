@@ -22,8 +22,8 @@ AUTHORS:
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
-from .padic_generic import pAdicGeneric
-from .misc import precprint
+from sage.rings.padics.padic_generic import pAdicGeneric
+from sage.rings.padics.misc import precprint
 from sage.rings.padics.pow_computer import PowComputer
 from sage.rings.padics.padic_capped_relative_element import pAdicCoercion_ZZ_CR, pAdicCoercion_QQ_CR, pAdicConvert_QQ_CR
 from sage.rings.padics.padic_capped_absolute_element import pAdicCoercion_ZZ_CA, pAdicConvert_QQ_CA

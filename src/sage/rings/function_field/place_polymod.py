@@ -20,7 +20,7 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.number_field_base import NumberField
 
-from .place import FunctionFieldPlace
+from sage.rings.function_field.place import FunctionFieldPlace
 
 
 class FunctionFieldPlace_polymod(FunctionFieldPlace):
@@ -660,6 +660,6 @@ class FunctionFieldPlace_polymod(FunctionFieldPlace):
             sage: p.valuation_ring()
             Valuation ring at Place (x, x*y)
         """
-        from .valuation_ring import FunctionFieldValuationRing
+        from sage.rings.function_field.valuation_ring import FunctionFieldValuationRing
 
         return FunctionFieldValuationRing(self.function_field(), self)

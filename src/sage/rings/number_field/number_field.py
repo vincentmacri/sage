@@ -4637,7 +4637,7 @@ class NumberField_generic(WithEqualityById, number_field_base.NumberField):
             ``proof.number_field(False)``. It can easily take 1000s of times
             longer to do computations with ``proof=True`` (the default).
         """
-        from .class_group import ClassGroup
+        from sage.rings.number_field.class_group import ClassGroup
 
         proof = proof_flag(proof)
         try:
@@ -4726,7 +4726,7 @@ class NumberField_generic(WithEqualityById, number_field_base.NumberField):
             Class group of order 4 with structure C4 of Number Field in a
              with defining polynomial x^2 + 14 with a = 3.741657386773942?*I
         """
-        from .class_group import SClassGroup
+        from sage.rings.number_field.class_group import SClassGroup
 
         proof = proof_flag(proof)
         if all(P.is_principal() for P in S):
@@ -6306,7 +6306,7 @@ class NumberField_generic(WithEqualityById, number_field_base.NumberField):
             See https://github.com/sagemath/sage/issues/28782 for details.
             Galois group 10T22 (S(5)[x]2) with order 240 of t^5 - t + a
         """
-        from .galois_group import GaloisGroup_v2
+        from sage.rings.number_field.galois_group import GaloisGroup_v2
         return GaloisGroup_v2(self, algorithm=algorithm, names=names, gc_numbering=gc_numbering)
 
     def _normalize_prime_list(self, v):
@@ -7451,7 +7451,7 @@ class NumberField_generic(WithEqualityById, number_field_base.NumberField):
             sage: bound
             6
         """
-        from .S_unit_solver import solve_S_unit_equation
+        from sage.rings.number_field.S_unit_solver import solve_S_unit_equation
         return solve_S_unit_equation(self, S, prec, include_exponents, include_bound, proof)
 
     def zeta(self, n=2, all=False):

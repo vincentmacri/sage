@@ -675,7 +675,7 @@ class ComplexIntervalField_class(sage.rings.abc.ComplexIntervalField):
             sage: CIF.zeta(5)
             0.309016994374948? + 0.9510565162951536?*I
         """
-        from .integer import Integer
+        from sage.rings.integer import Integer
 
         n = Integer(n)
         if n == 1:

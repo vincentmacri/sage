@@ -227,7 +227,7 @@ from sage.structure.factory import UniqueFactory
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.richcmp import richcmp_by_eq_and_lt
-from .misc import WithLocals
+from sage.rings.asymptotic.misc import WithLocals
 
 
 class ZeroCoefficientError(ValueError):
@@ -559,7 +559,7 @@ class GenericTerm(MultiplicativeGroupElement):
         try:
             zero ** exponent
         except (TypeError, ValueError, ZeroDivisionError) as e:
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             raise combine_exceptions(
                 ZeroDivisionError('Cannot take %s to exponent %s.' %
                                   (self, exponent)), e)
@@ -606,7 +606,7 @@ class GenericTerm(MultiplicativeGroupElement):
         try:
             g = self.growth ** exponent
         except (ValueError, TypeError, ZeroDivisionError) as e:
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             raise combine_exceptions(
                 ValueError('Cannot take %s to the exponent %s.' % (self, exponent)), e)
 
@@ -1223,7 +1223,7 @@ class GenericTerm(MultiplicativeGroupElement):
             > *previous* TypeError: Cannot substitute in the abstract base class
             GenericTerm Monoid x^ZZ with (implicit) coefficients in Integer Ring.
         """
-        from .misc import substitute_raise_exception
+        from sage.rings.asymptotic.misc import substitute_raise_exception
         substitute_raise_exception(self, TypeError(
             'Cannot substitute in the abstract '
             'base class %s.' % (self.parent(),)))
@@ -1780,7 +1780,7 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             raise ValueError('No input specified. Cannot continue '
                              'creating an element of %s.' % (self,))
 
-        from .misc import combine_exceptions
+        from sage.rings.asymptotic.misc import combine_exceptions
         coefficient = kwds.pop('coefficient', None)
         if coefficient is not None:
             growth = data
@@ -1860,7 +1860,7 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             growth = self.growth_group(growth)
         except (ValueError, TypeError) as e:
             growth = kwds_construction['growth']
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             raise combine_exceptions(
                 ValueError(f'Growth {growth} is not valid in {self}.'), e)
         kwds_construction['growth'] = growth
@@ -1922,7 +1922,7 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
         except (TypeError, ValueError) as e:
             element_name = self.Element.__name__
             growth = kwds_construction['growth']
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             raise combine_exceptions(
                 ValueError(f'Cannot create {element_name}({growth}) '
                            f'since given coefficient {coefficient} '
@@ -2210,7 +2210,7 @@ class GenericTermMonoid(UniqueRepresentation, Parent, WithLocals):
             (x^2, log(x))
         """
         if isinstance(data, str):
-            from .misc import split_str_by_op
+            from sage.rings.asymptotic.misc import split_str_by_op
             return split_str_by_op(data, '*')
 
         try:
@@ -2441,7 +2441,7 @@ class OTerm(GenericTerm):
             ZeroDivisionError: Cannot take O(z) to exponent -1.
             > *previous* ZeroDivisionError: rational division by zero
         """
-        from .misc import strip_symbolic
+        from sage.rings.asymptotic.misc import strip_symbolic
         return self._calculate_pow_test_zero_(strip_symbolic(exponent))
 
     def can_absorb(self, other):
@@ -2702,7 +2702,7 @@ class OTerm(GenericTerm):
         try:
             g = self.growth._substitute_(rules)
         except (ArithmeticError, TypeError, ValueError) as e:
-            from .misc import substitute_raise_exception
+            from sage.rings.asymptotic.misc import substitute_raise_exception
             substitute_raise_exception(self, e)
 
         try:
@@ -2715,7 +2715,7 @@ class OTerm(GenericTerm):
         except AttributeError:
             pass
         else:
-            from .asymptotic_ring import AsymptoticRing
+            from sage.rings.asymptotic.asymptotic_ring import AsymptoticRing
             from sage.symbolic.ring import SymbolicRing
 
             if isinstance(P, AsymptoticRing):
@@ -2727,7 +2727,7 @@ class OTerm(GenericTerm):
         try:
             return O(g)
         except (ArithmeticError, TypeError, ValueError) as e:
-            from .misc import substitute_raise_exception
+            from sage.rings.asymptotic.misc import substitute_raise_exception
             substitute_raise_exception(self, e)
 
     def _factorial_(self):
@@ -3233,7 +3233,7 @@ class TermWithCoefficient(GenericTerm):
         try:
             c = self.coefficient ** exponent
         except (TypeError, ValueError, ZeroDivisionError) as e:
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             raise combine_exceptions(
                 ArithmeticError('Cannot take %s to the exponent %s in %s since its '
                                 'coefficient %s cannot be taken to this exponent.' %
@@ -3752,7 +3752,7 @@ class ExactTerm(TermWithCoefficient):
             sage: t^(1/2)  # indirect doctest
             sqrt(2)*z^(1/2)
         """
-        from .misc import strip_symbolic
+        from sage.rings.asymptotic.misc import strip_symbolic
         return self._calculate_pow_(strip_symbolic(exponent))
 
     def can_absorb(self, other):
@@ -4072,7 +4072,7 @@ class ExactTerm(TermWithCoefficient):
         try:
             g = self.growth._substitute_(rules)
         except (ArithmeticError, TypeError, ValueError) as e:
-            from .misc import substitute_raise_exception
+            from sage.rings.asymptotic.misc import substitute_raise_exception
             substitute_raise_exception(self, e)
 
         c = self.coefficient
@@ -4080,7 +4080,7 @@ class ExactTerm(TermWithCoefficient):
         try:
             return c * g
         except (ArithmeticError, TypeError, ValueError) as e:
-            from .misc import substitute_raise_exception
+            from sage.rings.asymptotic.misc import substitute_raise_exception
             substitute_raise_exception(self, e)
 
     def _factorial_(self):
@@ -5112,10 +5112,10 @@ class TermMonoidFactory(UniqueRepresentation, UniqueFactory):
             growth_group = asymptotic_ring.growth_group
             coefficient_ring = asymptotic_ring.coefficient_ring
 
-        from .growth_group import GenericGrowthGroup
+        from sage.rings.asymptotic.growth_group import GenericGrowthGroup
         if not isinstance(growth_group, GenericGrowthGroup):
             if isinstance(growth_group, str):
-                from .growth_group import GrowthGroup
+                from sage.rings.asymptotic.growth_group import GrowthGroup
                 growth_group = GrowthGroup(growth_group)
             else:
                 raise ValueError('{} has to be an asymptotic growth '

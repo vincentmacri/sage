@@ -43,13 +43,13 @@ from sage.rings.integer import Integer
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.qqbar_decorators import handle_AA_and_QQbar
 
-from .function_field import FunctionField
-from .function_field_rational import RationalFunctionField
+from sage.rings.function_field.function_field import FunctionField
+from sage.rings.function_field.function_field_rational import RationalFunctionField
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from .place_polymod import FunctionFieldPlace_polymod
+    from sage.rings.function_field.place_polymod import FunctionFieldPlace_polymod
 
 
 class FunctionField_polymod(FunctionField):
@@ -173,7 +173,7 @@ class FunctionField_polymod(FunctionField):
         FunctionField.__init__(self, base_field, names=names,
                                category=FunctionFields().or_subcategory(category))
 
-        from .place_polymod import FunctionFieldPlace_polymod
+        from sage.rings.function_field.place_polymod import FunctionFieldPlace_polymod
         self._place_class = FunctionFieldPlace_polymod
 
         self._hash = hash(polynomial)
@@ -802,7 +802,7 @@ class FunctionField_polymod(FunctionField):
         """
         if basis is not None:
             raise NotImplementedError
-        from .maps import MapFunctionFieldToVectorSpace, MapVectorSpaceToFunctionField
+        from sage.rings.function_field.maps import MapFunctionFieldToVectorSpace, MapVectorSpaceToFunctionField
         if base is None:
             base = self.base_field()
         degree = self.degree(base)
@@ -824,7 +824,7 @@ class FunctionField_polymod(FunctionField):
             sage: L.maximal_order()
             Maximal order of Function field in y defined by y^5 - 2*x*y + (-x^4 - 1)/x
         """
-        from .order_polymod import FunctionFieldMaximalOrder_polymod
+        from sage.rings.function_field.order_polymod import FunctionFieldMaximalOrder_polymod
         return FunctionFieldMaximalOrder_polymod(self)
 
     def maximal_order_infinite(self):
@@ -848,7 +848,7 @@ class FunctionField_polymod(FunctionField):
             sage: L.maximal_order_infinite()                                            # needs sage.rings.finite_rings
             Maximal infinite order of Function field in y defined by y^2 + y + (x^2 + 1)/x
         """
-        from .order_polymod import FunctionFieldMaximalOrderInfinite_polymod
+        from sage.rings.function_field.order_polymod import FunctionFieldMaximalOrderInfinite_polymod
         return FunctionFieldMaximalOrderInfinite_polymod(self)
 
     def different(self):
@@ -1014,7 +1014,7 @@ class FunctionField_polymod(FunctionField):
             from sage.categories.pushout import pushout
             codomain = pushout(codomain, base_morphism.codomain())
 
-        from .maps import FunctionFieldMorphism_polymod
+        from sage.rings.function_field.maps import FunctionFieldMorphism_polymod
         return FunctionFieldMorphism_polymod(self.Hom(codomain), im_gens[0], base_morphism)
 
     @cached_method
@@ -1546,7 +1546,7 @@ class FunctionField_polymod(FunctionField):
             t = self.hom([L_to_ret(to_L(self.gen())), L_to_ret(to_L(self.base_field().gen()))])
             return ret, f, t
         # otherwise, the polynomial of L must be separable in the other variable
-        from .constructor import FunctionField
+        from sage.rings.function_field.constructor import FunctionField
         K = FunctionField(self.constant_base_field(), names=(names[1],))
         # construct a field isomorphic to L on top of K
 
@@ -2017,7 +2017,7 @@ class FunctionField_char_zero(FunctionField_simple):
               From: Function field in y defined by y^3 + (-x^3 + 1)/(x^3 - 2)
               To:   Function field in y defined by y^3 + (-x^3 + 1)/(x^3 - 2)
         """
-        from .derivations_polymod import FunctionFieldHigherDerivation_char_zero
+        from sage.rings.function_field.derivations_polymod import FunctionFieldHigherDerivation_char_zero
         return FunctionFieldHigherDerivation_char_zero(self)
 
 
@@ -2079,7 +2079,7 @@ class FunctionField_global(FunctionField_simple):
             sage: O.basis()
             (1, 1/x^4*y, 1/x^11*y^2 + 1/x^2, 1/x^15*y^3 + 1/x^6*y)
         """
-        from .order_polymod import FunctionFieldMaximalOrder_global
+        from sage.rings.function_field.order_polymod import FunctionFieldMaximalOrder_global
         return FunctionFieldMaximalOrder_global(self)
 
     @cached_method
@@ -2101,7 +2101,7 @@ class FunctionField_global(FunctionField_simple):
               From: Function field in y defined by y^3 + (4*x^3 + 1)/(x^3 + 3)
               To:   Function field in y defined by y^3 + (4*x^3 + 1)/(x^3 + 3)
         """
-        from .derivations_polymod import FunctionFieldHigherDerivation_global
+        from sage.rings.function_field.derivations_polymod import FunctionFieldHigherDerivation_global
         return FunctionFieldHigherDerivation_global(self)
 
     def places(self, degree=1) -> list[FunctionFieldPlace_polymod]:
@@ -2455,7 +2455,7 @@ class FunctionField_integral(FunctionField_simple):
 
         from sage.matrix.constructor import matrix
 
-        from .hermite_form_polynomial import reversed_hermite_form
+        from sage.rings.function_field.hermite_form_polynomial import reversed_hermite_form
 
         # reconstruct the polynomials in the function field
         x = K.gen()
@@ -2513,7 +2513,7 @@ class FunctionField_integral(FunctionField_simple):
             sage: F.equation_order()
             Order in Function field in y defined by y^3 - x^6 - 2*x^5 - 3*x^4 - 2*x^3 - x^2
         """
-        from .order_basis import FunctionFieldOrder_basis
+        from sage.rings.function_field.order_basis import FunctionFieldOrder_basis
         a = self.gen()
         basis = [a**i for i in range(self.degree())]
         return FunctionFieldOrder_basis(tuple(basis))
@@ -2566,7 +2566,7 @@ class FunctionField_integral(FunctionField_simple):
             sage: F.equation_order_infinite()
             Infinite order in Function field in y defined by y^3 - x^6 - 2*x^5 - 3*x^4 - 2*x^3 - x^2
         """
-        from .order_basis import FunctionFieldOrderInfinite_basis
+        from sage.rings.function_field.order_basis import FunctionFieldOrderInfinite_basis
         b = self.primitive_integal_element_infinite()
         basis = [b**i for i in range(self.degree())]
         return FunctionFieldOrderInfinite_basis(tuple(basis))

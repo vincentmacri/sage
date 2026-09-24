@@ -636,7 +636,7 @@ class QuotientRing_nc(Parent):
         try:
             return self.__cover
         except AttributeError:
-            from . import morphism
+            from sage.rings import morphism
             pi = morphism.RingHomomorphism_cover(self.__R.Hom(self))
             lift = self.lifting_map()
             pi._set_lift(lift)
@@ -704,7 +704,7 @@ class QuotientRing_nc(Parent):
             return self.__lift
         except AttributeError:
             pass
-        from .morphism import RingMap_lift
+        from sage.rings.morphism import RingMap_lift
         m = RingMap_lift(self, self.__R)
         self.__lift = m
         return m

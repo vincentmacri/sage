@@ -18,7 +18,7 @@ AUTHORS:
 #                   http://www.gnu.org/licenses/
 # *****************************************************************************
 
-from .drinfeld_module import DrinfeldModule
+from sage.rings.function_field.drinfeld_modules.drinfeld_module import DrinfeldModule
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.infinity import Infinity

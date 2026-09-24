@@ -192,7 +192,7 @@ class LaurentSeriesRing(UniqueRepresentation, Parent):
             sage: L.variable_name()
             'q'
         """
-        from .power_series_ring import PowerSeriesRing
+        from sage.rings.power_series_ring import PowerSeriesRing
 
         if not kwds and len(args) == 1 and isinstance(args[0], (PowerSeriesRing_generic, LazyPowerSeriesRing)):
             power_series = args[0]

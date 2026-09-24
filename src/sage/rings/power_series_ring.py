@@ -167,8 +167,8 @@ from sage.categories.complete_discrete_valuation import CompleteDiscreteValuatio
 lazy_import('sage.misc.sage_eval', 'sage_eval')
 
 try:
-    from .laurent_series_ring import LaurentSeriesRing
-    from .laurent_series_ring_element import LaurentSeries
+    from sage.rings.laurent_series_ring import LaurentSeriesRing
+    from sage.rings.laurent_series_ring_element import LaurentSeries
 except ImportError:
     LaurentSeriesRing = ()
     LaurentSeries = ()
@@ -554,7 +554,7 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
             assert isinstance(self.__mpoly_ring, MPolynomialRing_base)
             self.Element = power_series_mpoly.PowerSeries_mpoly
         elif implementation == 'pari':
-            from .power_series_pari import PowerSeries_pari
+            from sage.rings.power_series_pari import PowerSeries_pari
             self.Element = PowerSeries_pari
         else:
             raise ValueError('unknown power series implementation: %r' % implementation)
@@ -1287,7 +1287,7 @@ class PowerSeriesRing_generic(UniqueRepresentation, Parent, Nonexact):
         try:
             return self.__laurent_series_ring
         except AttributeError:
-            from .laurent_series_ring import LaurentSeriesRing
+            from sage.rings.laurent_series_ring import LaurentSeriesRing
 
             self.__laurent_series_ring = LaurentSeriesRing(
                 self.base_ring(), self.variable_name(), default_prec=self.default_prec(), sparse=self.is_sparse())

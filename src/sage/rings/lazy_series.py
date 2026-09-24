@@ -2263,7 +2263,7 @@ class LazyModuleElement(Element):
             sage: exp(Z)                                                                # needs sage.symbolic
             1 + 1/(2^s) + 1/(3^s) + 3/2/4^s + 1/(5^s) + 2/6^s + 1/(7^s) + O(1/(8^s))
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         f = P(coefficients=lambda n: 1/factorial(ZZ(n)), valuation=0)
         return f(self)
@@ -2279,7 +2279,7 @@ class LazyModuleElement(Element):
             sage: log(Z)                                                                # needs sage.symbolic
             1/(2^s) + 1/(3^s) + 1/2/4^s + 1/(5^s) + 1/(7^s) + 1/3/8^s + O(1/(9^s))
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         f = P(coefficients=lambda n: ((-1) ** (n + 1))/ZZ(n), valuation=1)
         return f(self-1)
@@ -2311,7 +2311,7 @@ class LazyModuleElement(Element):
             sage: sin(z)[0:6] == sin(x).series(x, 6).coefficients(sparse=False)
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         c = lambda n: (n % 2)/factorial(ZZ(n)) if n % 4 == 1 else -(n % 2)/factorial(ZZ(n))
         f = P(coefficients=c, valuation=1)
@@ -2337,7 +2337,7 @@ class LazyModuleElement(Element):
             sage: cos(z)[0:6] == cos(x).series(x, 6).coefficients(sparse=False)         # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         c = lambda n: 1/factorial(ZZ(n)) if n % 4 == 0 else (n % 2 - 1)/factorial(ZZ(n))
         f = P(coefficients=c, valuation=0)
@@ -2455,7 +2455,7 @@ class LazyModuleElement(Element):
             sage: asin(z)[0:6] == asin(x).series(x, 6).coefficients(sparse=False)       # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         def f(n):
@@ -2516,7 +2516,7 @@ class LazyModuleElement(Element):
             sage: atan(z)[0:6] == atan(x).series(x, 6).coefficients(sparse=False)       # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         def f(n):
@@ -2582,7 +2582,7 @@ class LazyModuleElement(Element):
             sage: sinh(z)[0:6] == sinh(x).series(x, 6).coefficients(sparse=False)       # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         f = P(coefficients=lambda n: 1/factorial(ZZ(n)) if n % 2 else ZZ.zero(),
               valuation=1)
@@ -2609,7 +2609,7 @@ class LazyModuleElement(Element):
             sage: cosh(z)[0:6] == cosh(x).series(x, 6).coefficients(sparse=False)       # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         f = P(coefficients=lambda n: ZZ.zero() if n % 2 else 1/factorial(ZZ(n)),
               valuation=0)
@@ -2637,7 +2637,7 @@ class LazyModuleElement(Element):
             True
         """
         from sage.arith.misc import bernoulli
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         def f(n):
@@ -2668,7 +2668,7 @@ class LazyModuleElement(Element):
             True
         """
         from sage.arith.misc import bernoulli
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         def f(n):
@@ -2700,7 +2700,7 @@ class LazyModuleElement(Element):
             True
         """
         from sage.combinat.combinat import euler_number
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         def f(n):
@@ -2731,7 +2731,7 @@ class LazyModuleElement(Element):
             True
         """
         from sage.arith.misc import bernoulli
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         def f(n):
@@ -2769,7 +2769,7 @@ class LazyModuleElement(Element):
             sage: asinh(z)[0:6] == asinh(x).series(x, 6).coefficients(sparse=False)     # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         def f(n):
@@ -2806,7 +2806,7 @@ class LazyModuleElement(Element):
             sage: atanh(z)[0:6] == atanh(x).series(x, 6).coefficients(sparse=False)     # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         f = P(coefficients=lambda n: 1/ZZ(n) if n % 2 else ZZ.zero(), valuation=1)
         return f(self)
@@ -2840,7 +2840,7 @@ class LazyModuleElement(Element):
             sage: z.hypergeometric([1,1],[1])[0:6] == hypergeometric([1,1],[1], x).series(x, 6).coefficients(sparse=False)                                      # needs sage.symbolic
             True
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         from sage.arith.misc import rising_factorial
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
@@ -2879,7 +2879,7 @@ class LazyModuleElement(Element):
             sage: (z + z^2).q_pochhammer(q) - qp(z + z^2)
             O(z^7)
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         f = P.q_pochhammer(q)
         return f(self)
@@ -2906,7 +2906,7 @@ class LazyModuleElement(Element):
             sage: (q + q^2).euler() - phi(q + q^2)
             O(q^7)
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         phi = P.euler()
         return phi(self)
@@ -2928,7 +2928,7 @@ class LazyModuleElement(Element):
             sage: (q + q^2).jacobi_theta(w) - theta(q + q^2)
             O(q^7)
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "q", sparse=self.parent()._sparse)
         phi = P.jacobi_theta(w=w, a=a, b=b)
         return phi(self)
@@ -2969,7 +2969,7 @@ class LazyModuleElement(Element):
 
         - :wikipedia:`Polylogarithm`
         """
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
         phi = P.polylog(s=s)
         return phi(self)
@@ -3050,7 +3050,7 @@ class LazyModuleElement(Element):
         if n in ZZ:
             return generic_power(self, n)
 
-        from .lazy_series_ring import LazyLaurentSeriesRing
+        from sage.rings.lazy_series_ring import LazyLaurentSeriesRing
         P = LazyLaurentSeriesRing(self.base_ring(), "z", sparse=self.parent()._sparse)
 
         if n in QQ or n in self.base_ring():

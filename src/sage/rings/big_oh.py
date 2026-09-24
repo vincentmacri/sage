@@ -15,7 +15,7 @@ lazy_import('sage.rings.padics.factory', ['Qp', 'Zp'])
 from sage.rings.polynomial.polynomial_element import Polynomial
 
 try:
-    from .puiseux_series_ring_element import PuiseuxSeries
+    from sage.rings.puiseux_series_ring_element import PuiseuxSeries
 except ImportError:
     PuiseuxSeries = ()
 

@@ -22,12 +22,9 @@ from sage.categories.euclidean_domains import EuclideanDomains
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains
 from sage.rings.number_field.number_field_base import NumberField
 
-from .ideal import FunctionFieldIdeal
-from .ideal_rational import (
-    FunctionFieldIdeal_rational,
-    FunctionFieldIdealInfinite_rational,
-)
-from .order import FunctionFieldMaximalOrder, FunctionFieldMaximalOrderInfinite
+from sage.rings.function_field.ideal import FunctionFieldIdeal
+from sage.rings.function_field.ideal_rational import FunctionFieldIdeal_rational, FunctionFieldIdealInfinite_rational
+from sage.rings.function_field.order import FunctionFieldMaximalOrder, FunctionFieldMaximalOrderInfinite
 
 
 class FunctionFieldMaximalOrder_rational(FunctionFieldMaximalOrder):
