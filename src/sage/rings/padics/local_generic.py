@@ -408,7 +408,7 @@ class LocalGeneric(Parent):
             return GF(q, res_name).modulus().change_ring(ZZ)
         n = None
         q = None
-        from .padic_base_generic import pAdicBaseGeneric
+        from sage.rings.padics.padic_base_generic import pAdicBaseGeneric
         if 'q' in kwds and isinstance(self.base_ring(), pAdicBaseGeneric):
             q = kwds.pop('q')
             if not isinstance(q, Integer):
@@ -426,7 +426,7 @@ class LocalGeneric(Parent):
             cur_type = self._prec_type()
             cur_mode = self._printer._print_mode()
             cur_show_prec = self._printer._show_prec()
-            from .factory import _canonicalize_show_prec
+            from sage.rings.padics.factory import _canonicalize_show_prec
             if cur_show_prec == _canonicalize_show_prec(cur_type, cur_mode):
                 kwds['show_prec'] = _canonicalize_show_prec(new_type, kwds['mode'])
             else:
@@ -437,7 +437,7 @@ class LocalGeneric(Parent):
         # If we are switching to 'digits', or changing p, need to ensure a large enough alphabet.
         if 'alphabet' not in kwds and (kwds.get('mode') == 'digits' or
            (functor_dict['print_mode'].get('mode') == 'digits' and p > getattr(functor, "p", p))):
-            from .padic_printing import _printer_defaults
+            from sage.rings.padics.padic_printing import _printer_defaults
             kwds['alphabet'] = _printer_defaults.alphabet()[:p]
         # For fraction fields of fixed-mod rings, we need to explicitly set show_prec = False
         if 'field' in kwds and 'type' not in kwds:
@@ -499,7 +499,7 @@ class LocalGeneric(Parent):
             if q is not None:
                 # Create an unramified extension
                 base = functor(ring)
-                from .factory import ExtensionFactory
+                from sage.rings.padics.factory import ExtensionFactory
                 modulus = modulus.change_ring(base)
                 return ExtensionFactory(base=base, premodulus=modulus, names=names, res_name=res_name, unram=True, implementation=implementation)
         else:
@@ -1112,7 +1112,7 @@ class LocalGeneric(Parent):
         for x in tester.some_elements():
             errors = []
             if x.precision_absolute() <= 0:
-                from .precision_error import PrecisionError
+                from sage.rings.padics.precision_error import PrecisionError
                 errors.append(PrecisionError)
             if x.valuation() < 0:
                 errors.append(ValueError)
@@ -1296,7 +1296,7 @@ class LocalGeneric(Parent):
             [1 + O(5^20)     O(5^20)]
         """
         from sage.rings.infinity import infinity
-        from .precision_error import PrecisionError
+        from sage.rings.padics.precision_error import PrecisionError
         from copy import copy
         n = M.nrows()
         m = M.ncols()
@@ -1475,7 +1475,7 @@ class LocalGeneric(Parent):
 
         from itertools import chain
         from sage.matrix.matrix_space import MatrixSpace
-        from .precision_error import PrecisionError
+        from sage.rings.padics.precision_error import PrecisionError
         matrices = chain(*[MatrixSpace(self, n, m).some_elements() for n in (1,3,7) for m in (1,4,7)])
         for M in tester.some_elements(matrices):
             bases = [self]

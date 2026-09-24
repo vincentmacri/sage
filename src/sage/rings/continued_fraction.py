@@ -1224,7 +1224,7 @@ class ContinuedFraction_base(SageObject):
         - [Knu1998]_ Exercise 4.5.3.15
         - [LS1998]_
         """
-        from .continued_fraction_gosper import gosper_iterator
+        from sage.rings.continued_fraction_gosper import gosper_iterator
 
         if not all(isinstance(x, numbers.Integral) for x in (a, b, c, d)):
             raise TypeError("a, b, c and d must be integral")
@@ -1817,7 +1817,7 @@ class ContinuedFraction_real(ContinuedFraction_base):
         ContinuedFraction_base.__init__(self)
         self._x0 = x
 
-        from .real_mpfi import RealIntervalField
+        from sage.rings.real_mpfi import RealIntervalField
         self._xa = RealIntervalField(53)(self._x0)
         # an approximation of the last element of the orbit under the
         # Gauss map
@@ -1972,7 +1972,7 @@ class ContinuedFraction_real(ContinuedFraction_base):
                 # approximation with the expected number of digits (see the
                 # examples). In that case, we augment the precision.
                 while x.lower().is_infinity() or x.upper().is_infinity() or x.lower().floor() != x.upper().floor():
-                    from .real_mpfi import RealIntervalField
+                    from sage.rings.real_mpfi import RealIntervalField
                     self._prec = x.parent().prec() + 100
                     x = RealIntervalField(self._prec)(orbit(self._x0))
 
@@ -2438,7 +2438,7 @@ def continued_fraction_list(x, type='std', partial_convergents=False,
         sage: continued_fraction(RBF(e))                                                # needs sage.symbolic
         [2; 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8, 1, 1, 10, 1, 1, 12]
     """
-    from .rational_field import QQ
+    from sage.rings.rational_field import QQ
 
     try:
         return x.continued_fraction_list(type=type)
@@ -2446,7 +2446,7 @@ def continued_fraction_list(x, type='std', partial_convergents=False,
         pass
 
     if bits is not None:
-        from .real_mpfi import RealIntervalField
+        from sage.rings.real_mpfi import RealIntervalField
         x = RealIntervalField(bits)(x)
 
     if type == "hj":
@@ -2676,7 +2676,7 @@ def continued_fraction(x, value=None):
     #     sage: a = 1.575709393346379
     #     sage: a in QQ
     #     False
-    from .rational_field import QQ
+    from sage.rings.rational_field import QQ
     if x in QQ:
         return QQ(x).continued_fraction()
 
@@ -2687,7 +2687,7 @@ def continued_fraction(x, value=None):
         pass
 
     if is_real is False:
-        from .real_mpfi import RealIntervalField
+        from sage.rings.real_mpfi import RealIntervalField
         # we cannot rely on the answer of .is_real() for elements of the
         # symbolic ring. The thing below is a dirty temporary hack.
         RIF = RealIntervalField(53)

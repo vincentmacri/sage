@@ -64,8 +64,8 @@ from collections.abc import Iterator
 
 from sage.structure.sage_object import SageObject
 from sage.interfaces.gfan import gfan
-from .multi_polynomial_ideal import MPolynomialIdeal
-from .polynomial_ring_constructor import PolynomialRing
+from sage.rings.polynomial.multi_polynomial_ideal import MPolynomialIdeal
+from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.rational_field import QQ
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ

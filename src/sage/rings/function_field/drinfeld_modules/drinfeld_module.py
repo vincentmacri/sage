@@ -646,10 +646,10 @@ class DrinfeldModule(Parent, UniqueRepresentation):
             if (isinstance(ring, PolynomialRing_generic)
             and ring.base_ring() is function_ring_base
             and base_morphism(T) == ring.gen()):
-                from .drinfeld_module_charzero import DrinfeldModule_rational
+                from sage.rings.function_field.drinfeld_modules.drinfeld_module_charzero import DrinfeldModule_rational
                 return DrinfeldModule_rational(gen, category)
         if not category._characteristic:
-            from .drinfeld_module_charzero import DrinfeldModule_charzero
+            from sage.rings.function_field.drinfeld_modules.drinfeld_module_charzero import DrinfeldModule_charzero
             return DrinfeldModule_charzero(gen, category)
         return cls.__classcall__(cls, gen, category)
 

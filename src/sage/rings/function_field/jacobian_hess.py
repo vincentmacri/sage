@@ -73,15 +73,9 @@ from sage.rings.integer import Integer
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .divisor import FunctionFieldDivisor
-from .jacobian_base import (
-    Jacobian_base,
-    JacobianGroup_base,
-    JacobianGroup_finite_field_base,
-    JacobianPoint_base,
-    JacobianPoint_finite_field_base,
-)
-from .place import FunctionFieldPlace
+from sage.rings.function_field.divisor import FunctionFieldDivisor
+from sage.rings.function_field.jacobian_base import Jacobian_base, JacobianGroup_base, JacobianGroup_finite_field_base, JacobianPoint_base, JacobianPoint_finite_field_base
+from sage.rings.function_field.place import FunctionFieldPlace
 
 
 class JacobianPoint(JacobianPoint_base):

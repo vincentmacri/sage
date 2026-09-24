@@ -24,7 +24,7 @@ from sage.categories.map import Map
 from sage.categories.sets_cat import Sets
 from sage.rings.derivation import RingDerivationWithoutTwist
 
-from .derivations import FunctionFieldDerivation
+from sage.rings.function_field.derivations import FunctionFieldDerivation
 
 
 class FunctionFieldDerivation_separable(FunctionFieldDerivation):

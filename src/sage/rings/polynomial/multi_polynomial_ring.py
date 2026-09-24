@@ -423,7 +423,7 @@ class MPolynomialRing_polydict(MPolynomialRing_macaulay2_repr, PolynomialRing_si
         except TypeError:
             pass
 
-        from .multi_polynomial import MPolynomial_libsingular
+        from sage.rings.polynomial.multi_polynomial import MPolynomial_libsingular
 
         if isinstance(x, MPolynomial_polydict):
             P = x.parent()

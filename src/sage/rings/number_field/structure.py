@@ -178,7 +178,7 @@ class NameChange(NumberFieldStructure):
               From: Cyclotomic Field of order 5 and degree 4
               To:   Number Field in a with defining polynomial x^4 + x^3 + x^2 + x + 1)
         """
-        from . import maps
+        from sage.rings.number_field import maps
         return maps.NameChangeMap(field, self.other), maps.NameChangeMap(self.other, field)
 
 
@@ -218,7 +218,7 @@ class AbsoluteFromRelative(NumberFieldStructure):
               From: Number Field in b with defining polynomial x^2 - 3 over its base field
               To:   Number Field in c with defining polynomial x^4 - 10*x^2 + 1)
         """
-        from . import maps
+        from sage.rings.number_field import maps
         return maps.MapAbsoluteToRelativeNumberField(field, self.other), maps.MapRelativeToAbsoluteNumberField(self.other, field)
 
 

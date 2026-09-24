@@ -45,7 +45,7 @@ def block_scheme_names(blocks):
     Helper for Singular interface.
     """
     context = {}
-    from .blocks import declare_block_scheme
+    from sage.rings.polynomial.pbori.blocks import declare_block_scheme
     declare_block_scheme(blocks, context)
 
     return list(context.keys())

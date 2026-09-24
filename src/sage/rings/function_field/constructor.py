@@ -102,12 +102,12 @@ class FunctionFieldFactory(UniqueFactory):
             True
         """
         if key[0].is_finite():
-            from .function_field_rational import RationalFunctionField_global
+            from sage.rings.function_field.function_field_rational import RationalFunctionField_global
             return RationalFunctionField_global(key[0], names=key[1])
         if key[0].characteristic() == 0:
-            from .function_field_rational import RationalFunctionField_char_zero
+            from sage.rings.function_field.function_field_rational import RationalFunctionField_char_zero
             return RationalFunctionField_char_zero(key[0], names=key[1])
-        from .function_field_rational import RationalFunctionField
+        from sage.rings.function_field.function_field_rational import RationalFunctionField
         return RationalFunctionField(key[0], names=key[1])
 
 
@@ -188,7 +188,7 @@ class FunctionFieldExtensionFactory(UniqueFactory):
             sage: L is M                                                                # needs sage.rings.function_field
             True
         """
-        from . import function_field_polymod, function_field_rational
+        from sage.rings.function_field import function_field_polymod, function_field_rational
 
         f = key[0]
         names = key[1]

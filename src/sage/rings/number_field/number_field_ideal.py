@@ -113,7 +113,7 @@ class NumberFieldIdeal(Ideal_generic):
             sage: I == loads(dumps(I))
             True
         """
-        from .number_field import NumberField_generic
+        from sage.rings.number_field.number_field import NumberField_generic
         if not isinstance(field, NumberField_generic):
             raise TypeError("field (=%s) must be a number field." % field)
 
@@ -1818,7 +1818,7 @@ class NumberFieldFractionalIdeal(MultiplicativeGroupElement, NumberFieldIdeal,
             sage: NumberField(x^2 + 1, 'a').ideal(7)
             Fractional ideal (7)
         """
-        from .number_field import NumberField_generic
+        from sage.rings.number_field.number_field import NumberField_generic
         if not isinstance(field, NumberField_generic):
             raise TypeError("field (=%s) must be a number field." % field)
 
