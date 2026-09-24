@@ -101,7 +101,7 @@ def Realizations(self):
     """
     if isinstance(self, Category):
         return RealizationsCategory.category_of(self)
-    return getattr(self.__class__, "Realizations")(self)
+    return self.__class__.Realizations(self)
 
 
 Category.Realizations = Realizations

@@ -366,7 +366,7 @@ def doc_index(name):
         'Wouhouuuuu'
     """
     def hey(f):
-        setattr(f, "doc_index", name)
+        f.doc_index = name
         return f
     return hey
 
