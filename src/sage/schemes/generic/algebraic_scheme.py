@@ -131,8 +131,8 @@ from sage.arith.functions import lcm
 from sage.arith.misc import gcd
 
 import sage.schemes.affine
-from . import ambient_space
-from . import scheme
+from sage.schemes.generic import ambient_space
+from sage.schemes.generic import scheme
 
 
 # ****************************************************************************

@@ -30,9 +30,9 @@ from sage.rings.infinity import Infinity as oo
 from sage.schemes.elliptic_curves.ell_point import EllipticCurvePoint_field
 from sage.schemes.curves.projective_curve import ProjectivePlaneCurve_field
 
-from .constructor import EllipticCurve
-from .ell_curve_isogeny import EllipticCurveIsogeny, _construct_isogeny, isogeny_codomain_from_kernel
-from . import ell_generic
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from sage.schemes.elliptic_curves.ell_curve_isogeny import EllipticCurveIsogeny, _construct_isogeny, isogeny_codomain_from_kernel
+from sage.schemes.elliptic_curves import ell_generic
 
 
 class EllipticCurve_field(ell_generic.EllipticCurve_generic, ProjectivePlaneCurve_field):
@@ -1585,7 +1585,7 @@ class EllipticCurve_field(ell_generic.EllipticCurve_generic, ProjectivePlaneCurv
             <class 'sage.schemes.elliptic_curves.homset.EllipticCurveHomset_with_category'>
         """
         if isinstance(other, ell_generic.EllipticCurve_generic) and self.base_ring() == other.base_ring():
-            from . import homset
+            from sage.schemes.elliptic_curves import homset
             return homset.EllipticCurveHomset(self, other, category=category)
         from sage.schemes.generic.homset import SchemeHomset_generic
         return SchemeHomset_generic(self, other, category=category)
@@ -2565,7 +2565,7 @@ class EllipticCurve_field(ell_generic.EllipticCurve_generic, ProjectivePlaneCurv
             else:
                 L = [ZZ(d) for d in l]
 
-        from .isogeny_small_degree import isogenies_prime_degree
+        from sage.schemes.elliptic_curves.isogeny_small_degree import isogenies_prime_degree
         return sum([isogenies_prime_degree(self, d) for d in L], [])
 
     def isogenies_degree(self, n, *, _intermediate=False):
@@ -2786,7 +2786,7 @@ class EllipticCurve_field(ell_generic.EllipticCurve_generic, ProjectivePlaneCurv
             ...
             NotImplementedError: Only implemented for isomorphic curves over general fields.
         """
-        from .ell_generic import EllipticCurve_generic
+        from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
         if not isinstance(other, EllipticCurve_generic):
             raise ValueError("Second argument is not an Elliptic Curve.")
         if self.is_isomorphic(other):
@@ -2835,7 +2835,7 @@ class EllipticCurve_field(ell_generic.EllipticCurve_generic, ProjectivePlaneCurv
             + 1202285717/928746000*z^10 + 2403461/2806650*z^12 + 30211462703/43418875500*z^14
             + 3539374016033/7723451736000*z^16 + 413306031683977/1289540602350000*z^18 + O(z^20)
         """
-        from .ell_wp import weierstrass_p
+        from sage.schemes.elliptic_curves.ell_wp import weierstrass_p
         return weierstrass_p(self, prec=prec, algorithm=algorithm)
 
     def hasse_invariant(self):

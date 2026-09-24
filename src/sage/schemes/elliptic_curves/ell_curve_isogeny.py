@@ -2636,7 +2636,7 @@ class EllipticCurveIsogeny(EllipticCurveHom):
 
         # check if the polynomial really divides the torsion polynomial :
         if self.__check:
-            from .isogeny_small_degree import is_kernel_polynomial
+            from sage.schemes.elliptic_curves.isogeny_small_degree import is_kernel_polynomial
             if not is_kernel_polynomial(E, d, psi):
                 raise ValueError(f"the polynomial {psi} does not define a finite subgroup of {E}")
 

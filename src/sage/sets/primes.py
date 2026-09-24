@@ -22,7 +22,7 @@ AUTHORS:
 from sage.rings.semirings.non_negative_integer_semiring import NN
 from sage.rings.integer_ring import ZZ
 from sage.rings.infinity import infinity
-from .set import Set_generic
+from sage.sets.set import Set_generic
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.arith.misc import euler_phi

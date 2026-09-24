@@ -131,9 +131,9 @@ from sage.structure.all import coercion_model as cm
 from sage.structure.richcmp import op_EQ
 from sage.structure.sequence import Sequence
 
-from .constructor import EllipticCurve
-from .ell_finite_field import EllipticCurve_finite_field
-from .hom import EllipticCurveHom, compare_via_evaluation
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from sage.schemes.elliptic_curves.ell_finite_field import EllipticCurve_finite_field
+from sage.schemes.elliptic_curves.hom import EllipticCurveHom, compare_via_evaluation
 
 
 class _VeluBoundObj:

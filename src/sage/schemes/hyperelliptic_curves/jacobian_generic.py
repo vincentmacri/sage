@@ -412,7 +412,7 @@ class HyperellipticJacobian_generic(Jacobian_generic):
         """
         from sage.interfaces.genus2reduction import genus2reduction
 
-        from .jacobian_endomorphism_utils import get_is_geom_field
+        from sage.schemes.hyperelliptic_curves.jacobian_endomorphism_utils import get_is_geom_field
 
         if self._have_established_geometrically_field:
             return True
@@ -546,7 +546,7 @@ class HyperellipticJacobian_generic(Jacobian_generic):
             sage: J.geometric_endomorphism_ring_is_ZZ()
             False
         """
-        from .jacobian_endomorphism_utils import is_geom_trivial_when_field
+        from sage.schemes.hyperelliptic_curves.jacobian_endomorphism_utils import is_geom_trivial_when_field
 
         if self._have_established_geometrically_trivial:
             return True

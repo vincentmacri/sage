@@ -30,7 +30,7 @@ from sage.structure.element import get_coercion_model
 from sage.structure.richcmp import op_EQ, op_NE, richcmp, richcmp_not_equal
 from sage.structure.sequence import Sequence
 
-from .constructor import EllipticCurve
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
 
 
 class baseWI:
@@ -294,7 +294,7 @@ def _isomorphisms(E, F):
         sage: all({iso2*iso1 for iso1 in Iso} == set(Aut) for iso2 in F.isomorphisms(E))
         True
     """
-    from .ell_generic import EllipticCurve_generic
+    from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
     if not isinstance(E, EllipticCurve_generic) or not isinstance(F, EllipticCurve_generic):
         raise ValueError("arguments are not elliptic curves")
 
@@ -460,7 +460,7 @@ class WeierstrassIsomorphism(EllipticCurveHom, baseWI):
             sage: type(iso.degree())                                                    # needs sage.rings.finite_rings
             <class 'sage.rings.integer.Integer'>
         """
-        from .ell_generic import EllipticCurve_generic
+        from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
 
         if E is not None:
             if not isinstance(E, EllipticCurve_generic):

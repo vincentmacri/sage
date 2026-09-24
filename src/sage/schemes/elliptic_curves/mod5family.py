@@ -17,7 +17,7 @@ AUTHORS:
 
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.rings.rational_field import QQ
-from .constructor import EllipticCurve
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
 
 
 def mod5family(a, b):

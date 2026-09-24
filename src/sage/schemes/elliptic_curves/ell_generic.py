@@ -78,11 +78,11 @@ from sage.schemes.projective import projective_space
 from sage.schemes.projective.projective_homset import SchemeHomset_points_abelian_variety_field
 import sage.schemes.curves.projective_curve as plane_curve
 
-from . import ell_point
-from . import ell_torsion
-from . import constructor
-from . import formal_group
-from . import weierstrass_morphism as wm
+from sage.schemes.elliptic_curves import ell_point
+from sage.schemes.elliptic_curves import ell_torsion
+from sage.schemes.elliptic_curves import constructor
+from sage.schemes.elliptic_curves import formal_group
+from sage.schemes.elliptic_curves import weierstrass_morphism as wm
 
 sqrt = math.sqrt
 exp = math.exp
@@ -2993,7 +2993,7 @@ class EllipticCurve_generic(WithEqualityById, plane_curve.ProjectivePlaneCurve):
             sage: E.short_weierstrass_model(complete_cube=False).is_isomorphic(E)
             True
         """
-        from . import constructor
+        from sage.schemes.elliptic_curves import constructor
         K = self.base_ring()
 
         # any curve of the form y^2 = x^3 +.. is singular in characteristic 2

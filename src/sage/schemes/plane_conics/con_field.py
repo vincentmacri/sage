@@ -117,7 +117,7 @@ class ProjectiveConic_field(ProjectivePlaneCurve_field):
             if not S.has_coerce_map_from(B):
                 raise ValueError("No natural map from the base ring of self "
                                  "(= %s) to S (= %s)" % (self, S))
-            from .constructor import Conic
+            from sage.schemes.plane_conics.constructor import Conic
             con = Conic([S(c) for c in self.coefficients()],
                         self.variable_names())
             if self._rational_point is not None:
@@ -372,7 +372,7 @@ class ProjectiveConic_field(ProjectivePlaneCurve_field):
         """
         if names is None:
             names = self.defining_polynomial().parent().variable_names()
-        from .constructor import Conic
+        from sage.schemes.plane_conics.constructor import Conic
         D, T = self.diagonal_matrix()
         con = Conic(D, names=names)
         return con, con.hom(T, self), self.hom(T.inverse(), con)
@@ -712,7 +712,7 @@ class ProjectiveConic_field(ProjectivePlaneCurve_field):
               Defn: Defined on coordinates by sending (x : y : z) to (t*x + z : y : z)
         """
         if isinstance(x, Matrix):
-            from .constructor import Conic
+            from sage.schemes.plane_conics.constructor import Conic
             y = x.inverse()
             A = y.transpose()*self.matrix()*y
             im = Conic(A)

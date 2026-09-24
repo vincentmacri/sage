@@ -43,7 +43,7 @@ import sage.schemes.hyperelliptic_curves.monsky_washnitzer
 lazy_import('sage.rings.padics.factory', ['Qp', 'Zp'])
 
 
-from . import padic_lseries as plseries
+from sage.schemes.elliptic_curves import padic_lseries as plseries
 
 sqrt = math.sqrt
 

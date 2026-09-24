@@ -122,7 +122,7 @@ class CyclicCover_generic(AffinePlaneCurve):
             sage: C.change_ring(GF(17))
             Cyclic Cover of P^1 over Finite Field of size 17 defined by y^5 = x^5 + x + 1
         """
-        from .constructor import CyclicCover
+        from sage.schemes.cyclic_covers.constructor import CyclicCover
 
         return CyclicCover(self._r, self._f.change_ring(R), self._names)
 
