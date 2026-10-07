@@ -349,7 +349,7 @@ def CaiFurerImmermanGraph(G, twisted=False, immutable=None):
     isConnected = G.is_connected()
     newG = Graph()
     total_partition = []
-    edge_index = {v: 0 for v in G}
+    edge_index = dict.fromkeys(G, 0)
     for v in G:
         Fk, p = FurerGadget(G.degree(v), v)
         total_partition += p
