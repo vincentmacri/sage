@@ -37,6 +37,7 @@ from sage.categories.homset import Hom
 from sage.categories.number_fields import NumberFields
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_import import LazyImport
+from sage.misc.misc_c import prod
 from sage.rings.function_field.element import FunctionFieldElement
 from sage.rings.function_field.element_polymod import FunctionFieldElement_polymod
 from sage.rings.integer import Integer
@@ -2404,97 +2405,169 @@ class FunctionField_integral(FunctionField_simple):
             sage: F.maximal_order_infinite().basis()
             (1, 1/x*y, 1/x^2*y^2, 1/x^3*y^3, 1/x^4*y^4)
         """
-        from sage.libs.singular.function import lib, singular_function
 
-        k = self.constant_base_field()
-        K = self.base_field()  # rational function field
+        def expand_basis(M):
+            # Cohen Algorithm 2.3.6 (Supplement a basis)
+            n = M.nrows()
+            k = M.ncols()
+            assert k <= n
 
-        # Construct the defining polynomial of the function field as a
-        # two-variate polynomial g in the ring k[y,x] where k is the constant
-        # base field.
-        S, (y, x) = PolynomialRing(k, names='y, x', order='degrevlex').objgens()
-        v = self.polynomial().list()
-        g = sum([v[i].numerator().subs(x) * y**i for i in range(len(v))])
+            # Step 1: Initialize
+            s = 0
+            B = matrix(M.base_ring().fraction_field(), n, n, 1)
 
-        if self.is_global():
-            # If the constant base field is a prime field then we can use
-            # Singular's integralBasis function, which is much faster.
-            if k.is_prime_field():
-                lib('integralbasis.lib')
-                integral_basis = singular_function('integralBasis')
+            while True:
+                # Step 2: Finished?
+                if s == k - 1:
+                    return B
 
-                singular_basis, s = integral_basis(g, 1, 'normal')
-                hom = S.hom([self.gen(), self(K.gen())])
-                return tuple(self(hom(b) / hom(s)) for b in singular_basis)
+                # Step 3: Search for non-zero
+                s += 1
+                t = None
+                for j in range(s, n):
+                    if M[j, s] != 0:
+                        t = j
+                        d = ~M[t, s]
+                if t is None:
+                    raise ValueError('M is of rank less than k')
 
-            from sage.env import SAGE_EXTCODE
-            lib(SAGE_EXTCODE + '/singular/function_field/core.lib')
-            normalize = singular_function('core_normalize')
-
-            # Singular "normalP" algorithm assumes affine domain over
-            # a prime field. So we construct gflat lifting g as in
-            # k_prime[yy,xx,zz]/(k_poly) where k = k_prime[zz]/(k_poly)
-            R = PolynomialRing(k.prime_subfield(), names='yy,xx,zz')
-            gflat = R.zero()
-            for m in g.monomials():
-                c = g.monomial_coefficient(m).polynomial('zz')
-                gflat += R(c) * R(m)  # R(m) is a monomial in yy and xx
-
-            k_poly = R(k.polynomial('zz'))
-
-            # invoke Singular
-            pols_in_R = normalize(R.ideal([k_poly, gflat]))
-
-            # reconstruct polynomials in S
-            h = R.hom([y, x, k.gen()], S)
-            pols_in_S = [h(f) for f in pols_in_R]
-        else:
-            # Call Singular. Singular's "normal" function returns a basis
-            # of the integral closure of k(x,y)/(g) as a k[x,y]-module.
-            pols_in_S = _singular_normal(S.ideal(g))[0]
+                # Step 4: Modify basis and eliminate
+                B.set_column(t, B.column(s))
+                B.set_column(s, M.column(s))
+                for j in range(s + 1, k):
+                    M[s, j] = d * M[t, j]
+                    M[t, j] = M[s, j]
+                    for i in range(n):
+                        if i == s or i == t:
+                            continue
+                        M[i, j] = M[i, j] - M[i, s] * M[t, j]
 
         from sage.matrix.constructor import matrix
+        from sage.modules.free_module_element import vector
+        Fq = self.constant_base_field()
+        Fqx = Fq.polynomial_ring()
+        T = self._polynomial.change_ring(Fqx)
+        n = T.degree()
+        D = T.discriminant()
+        theta = self.gen()
 
-        from .hermite_form_polynomial import reversed_hermite_form
+        # Step 1: Factor discriminant of polynomial
+        one = D.parent().one()
+        D0 = one
+        F = one
+        F_factors = []
+        for p, m in D.factor():
+            if m % 2 == 0:
+                pm = p ** (m // 2)
+                F *= pm
+                F_factors.append((p, pm))
+            else:
+                D0 *= p
+                if m > 1:
+                    pm = p ** ((m - 1) // 2)
+                    F *= pm
+                    F_factors.append((p, pm))
+        #assert D == D0 * F**2
+        assert (D0 * F**2).divides(D) and (D // (D0 * F**2)).degree() == 0
 
-        # reconstruct the polynomials in the function field
-        x = K.gen()
-        y = self.gen()
-        pols = []
-        for f in pols_in_S:
-            p = f.polynomial(S.gen(0))
-            s = 0
-            for i in range(p.degree() + 1):
-                s += p[i].subs(x) * y**i
-            pols.append(s)
+        # Step 2: Initialize
+        omega = [theta**i for i in range(n)]
+        power_basis = vector(omega)
 
-        # Now if pols = [g1,g2,...gn,g0], then the g1/g0,g2/g0,...,gn/g0,
-        # and g0/g0=1 are the module generators of the integral closure
-        # of the equation order Sb = k[xb,yb] in its fraction field,
-        # that is, the function field. The integral closure of k[x]
-        # is then obtained by multiplying these generators with powers of y
-        # as the equation order itself is an integral extension of k[x].
-        d = ~ pols[-1]
-        _basis = []
-        for f in pols:
-            b = d * f
-            for i in range(self.degree()):
-                _basis.append(b)
-                b *= y
+        print(F_factors)
 
-        # Finally we reduce _basis to get a basis over k[x]. This is done of
-        # course by Hermite normal form computation. Here we apply a trick to
-        # get a basis that starts with 1 and is ordered in increasing
-        # y-degrees. The trick is to use the reversed Hermite normal form.
-        # Note that it is important that the overall denominator l lies in k[x].
-        V, fr_V, to_V = self.free_module()
-        basis_V = [to_V(bvec) for bvec in _basis]
-        l = lcm([vvec.denominator() for vvec in basis_V])
+        ## Step 3: Loop on factors of F
+        #if F.is_one():
+        while F_factors:
+            p, pm = F_factors.pop()
+            print('Step 3:', F_factors, p, pm)
 
-        _mat = matrix([[coeff.numerator() for coeff in l * v] for v in basis_V])
-        reversed_hermite_form(_mat)
+            # Step 4: Factor modulo p
+            Fqx_mod_p = Fqx.quotient(p)
+            T_bar = T.change_ring(Fqx_mod_p)
 
-        return tuple(fr_V(v) / l for v in _mat if not v.is_zero())
+            t_bar = []
+            e = []
+            for ti_bar, ei in T_bar.factor():
+                t_bar.append(ti_bar)
+                e.append(ei)
+                assert ti_bar.base_ring() == Fqx_mod_p
+
+            lift = Fqx_mod_p.lifting_map()
+            g_bar = prod(t_bar)
+            #g = g_bar.change_ring(lift)
+            #print('g1', g)
+            #print('g2', prod(ti_bar.change_ring(lift) for ti_bar in t_bar))
+            g = prod(ti_bar.change_ring(lift) for ti_bar in t_bar)
+            h_bar = T_bar // g_bar
+            h = h_bar.change_ring(lift)
+            f = (g * h - T) // p
+            f_bar = f.change_ring(Fqx_mod_p)
+            Z_bar = f_bar.gcd(g_bar).gcd(h_bar)
+            U_bar = T_bar // Z_bar
+            U = U_bar.change_ring(lift)
+            Z = Z_bar.change_ring(lift)
+            m = Z.degree()
+            print(f'Step 4: {Z=}')
+
+            # Step 5: Apply Dedekind
+            if m.is_zero():
+                # 𝒪 is p-maximal
+                F = F // pm
+                continue
+
+            v = [(omega[i] * U(theta)).list() for i in range(m)]
+            print(f'{U=}')
+            print(f'{v=}')
+            v.extend((p * omega[j]).list() for j in range(n))
+            M = matrix(Fqx, v)
+            assert M.nrows() == n + m
+            assert M.ncols() == n
+            H = M.hermite_form(include_zero_rows=False)
+
+            assert H.det().divides(D)
+
+            for i in range(n):
+                omega[i] = (H.row(i) / p).dot_product(power_basis)
+
+            # Step 6: Is the new order p-maximal?
+            if not (p**(m + 1)).divides(F):
+                # 𝒪 is p-maximal
+                F = F // pm
+                continue
+
+            # Step 7: Compute radical
+            Mp = matrix(Fqx_mod_p, n, n, lambda i, j: (omega[i] * omega[j]).trace())
+            ker = Mp.right_kernel_matrix().transpose()
+            ker = matrix([lift(a) for a in r] for r in ker)
+
+            # Step 8: Compute new basis mod p
+            l = ker.ncols()
+            beta_matrix = expand_basis(ker)
+            beta_matrix_lift = matrix([lift(a) for a in r] for r in beta_matrix)
+            #beta = [c.dot_product(vector(omega)) for c in beta_matrix_lift.columns()]  # TODO: Should this be power basis?
+            beta = [vector(c.dot_product(vector(omega)).list()) for c in beta_matrix_lift.columns()]  # TODO: Should this be power basis?
+
+            # Step 9: Compute big matrix
+            alpha = [beta[i] for i in range(l)]
+            alpha.extend(p * beta[i] for i in range(l, n))
+
+            print(f'{alpha=}')
+            print(f'{beta=}')
+
+            B = matrix([o * a for a in alpha for o in omega]).transpose()
+            print(f'{B=}')
+            A = matrix(alpha).transpose()
+            print(f'{A=}')
+
+            return A, B, omega, alpha, Fqx_mod_p
+            #C = A.solve_left(B)
+
+            return omega, alpha, Fqx_mod_p, C
+
+
+
+        return tuple(omega)
 
     @cached_method
     def equation_order(self):
