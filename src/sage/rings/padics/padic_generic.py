@@ -32,7 +32,7 @@ from sage.categories.principal_ideal_domains import PrincipalIdealDomains
 from sage.categories.morphism import Morphism
 from sage.categories.fields import Fields
 from sage.rings.infinity import infinity
-from .local_generic import LocalGeneric
+from sage.rings.padics.local_generic import LocalGeneric
 from sage.rings.integer import Integer
 from sage.rings.infinity import Infinity
 from sage.rings.padics.precision_error import PrecisionError
@@ -1125,7 +1125,7 @@ class pAdicGeneric(LocalGeneric):
             sage: K.frobenius_endomorphism(6) == Frob
             True
         """
-        from .morphism import FrobeniusEndomorphism_padics
+        from sage.rings.padics.morphism import FrobeniusEndomorphism_padics
         return FrobeniusEndomorphism_padics(self, n)
 
     def _test_elements_eq_transitive(self, **options):

@@ -241,7 +241,7 @@ from sage.structure.unique_representation import (CachedRepresentation,
                                                   UniqueRepresentation)
 from sage.structure.richcmp import richcmp_by_eq_and_lt
 import sage.rings.abc
-from .misc import WithLocals
+from sage.rings.asymptotic.misc import WithLocals
 
 lazy_import('sage.symbolic.ring', 'SymbolicRing')
 
@@ -347,7 +347,7 @@ class Variable(CachedRepresentation, SageObject):
             w^(Number Field in i with defining polynomial x^2 + 1) * log(w)^ZZ
         """
         from sage.symbolic.ring import isidentifier
-        from .misc import split_str_by_op
+        from sage.rings.asymptotic.misc import split_str_by_op
 
         if not isinstance(var, (list, tuple)):
             var = (var,)
@@ -621,7 +621,7 @@ class Variable(CachedRepresentation, SageObject):
         try:
             return sage_eval(self.var_repr, locals=rules)
         except (ArithmeticError, TypeError, ValueError) as e:
-            from .misc import substitute_raise_exception
+            from sage.rings.asymptotic.misc import substitute_raise_exception
             substitute_raise_exception(self, e)
 
 
@@ -734,7 +734,7 @@ class PartialConversionElement(SageObject):
         try:
             here = self.growth_group.element_class(self.growth_group, raw_here)
         except PartialConversionValueError as e:
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             raise combine_exceptions(
                 ValueError('cannot split {}'.format(self)), e)
 
@@ -872,7 +872,7 @@ def _log_(self, base=None):
         which is not contained in
         Growth Group QQ^x * x^ZZ * log(x)^ZZ * y^ZZ * log(y)^ZZ.
     """
-    from .misc import log_string
+    from sage.rings.asymptotic.misc import log_string
 
     log_factor = self.log_factor(base=base)
     if not log_factor:
@@ -962,7 +962,7 @@ def _log_factor_(self, base=None, locals=None):
         if hasattr(g, 'parent') and \
            isinstance(g.parent(), GenericGrowthGroup):
             continue
-        from .misc import log_string
+        from sage.rings.asymptotic.misc import log_string
         raise ArithmeticError('Cannot build %s since %s '
                               'is not in %s.' % (log_string(self, base),
                                                  g, self.parent()))
@@ -1059,7 +1059,7 @@ def _rpow_(self, base):
     except ValueError:
         if base == 'e':
             from sage.rings.integer_ring import ZZ
-            from .misc import repr_op
+            from sage.rings.asymptotic.misc import repr_op
             MM = MonomialGrowthGroup(ZZ, repr_op('e', '^', var),
                                      ignore_variables=('e',))
             element = MM(raw_element=ZZ(1))
@@ -1082,7 +1082,7 @@ def _rpow_(self, base):
     try:
         return self.parent().one() * element
     except (TypeError, ValueError) as e:
-        from .misc import combine_exceptions, repr_op
+        from sage.rings.asymptotic.misc import combine_exceptions, repr_op
         raise combine_exceptions(
             ArithmeticError('Cannot construct %s in %s' %
                             (repr_op(base, '^', var), self.parent())), e)
@@ -1152,7 +1152,7 @@ class GenericGrowthElement(MultiplicativeGroupElement):
         try:
             self._raw_element_ = parent.base()(raw_element)
         except (TypeError, ValueError) as e:
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             from sage.structure.element import parent as parent_function
             raise combine_exceptions(
                 PartialConversionValueError(
@@ -1482,7 +1482,7 @@ class GenericGrowthElement(MultiplicativeGroupElement):
             > *previous* TypeError: Cannot substitute in the abstract base class
             Growth Group Generic(ZZ).
         """
-        from .misc import substitute_raise_exception
+        from sage.rings.asymptotic.misc import substitute_raise_exception
         substitute_raise_exception(self, TypeError(
             'Cannot substitute in the abstract '
             'base class %s.' % (self.parent(),)))
@@ -1702,7 +1702,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             ...
             TypeError: Asymptotic Ring <z^ZZ> over Rational Field is not a valid base.
         """
-        from .asymptotic_ring import AsymptoticRing
+        from sage.rings.asymptotic.asymptotic_ring import AsymptoticRing
         if not isinstance(base, Parent) or \
            isinstance(base, AsymptoticRing):
             raise TypeError('%s is not a valid base.' % (base,))
@@ -1713,7 +1713,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             var = Variable(var, ignore=ignore_variables)
 
         if category is None:
-            from .misc import transform_category
+            from sage.rings.asymptotic.misc import transform_category
             category = transform_category(
                 base.category(),
                 cls._determine_category_subcategory_mapping_,
@@ -1844,7 +1844,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             sage: GenericGrowthGroup(QQ, ('a', 'b'))
             Growth Group Generic(QQ, a, b)
         """
-        from .misc import parent_to_repr_short
+        from sage.rings.asymptotic.misc import parent_to_repr_short
         vars = ', '.join(self._var_.variable_names())
         if vars:
             vars = ', ' + vars
@@ -2106,7 +2106,7 @@ class GenericGrowthGroup(UniqueRepresentation, Parent, WithLocals):
             sage: G(b), UU(c)
             ((1/42)^n, (-1)^n)
         """
-        from .misc import combine_exceptions
+        from sage.rings.asymptotic.misc import combine_exceptions
 
         if raw_element is None:
             if isinstance(data, int) and data == 0:
@@ -2799,7 +2799,7 @@ class MonomialGrowthElement(GenericGrowthElement):
 
         from sage.symbolic.ring import isidentifier
         from sage.rings.integer_ring import ZZ
-        from .misc import repr_op
+        from sage.rings.asymptotic.misc import repr_op
 
         var = f(self.parent()._var_)
         if self.exponent.is_zero():
@@ -2927,7 +2927,7 @@ class MonomialGrowthElement(GenericGrowthElement):
             sage: b^12
             x^42
         """
-        from .misc import strip_symbolic
+        from sage.rings.asymptotic.misc import strip_symbolic
         return self.parent()._create_element_in_extension_(
             self.exponent * strip_symbolic(exponent))
 
@@ -2989,7 +2989,7 @@ class MonomialGrowthElement(GenericGrowthElement):
 
         var = str(self.parent()._var_)
 
-        from .misc import split_str_by_op
+        from sage.rings.asymptotic.misc import split_str_by_op
         split = split_str_by_op(var, '^')
         if len(split) == 2:
             b, e = split
@@ -3140,7 +3140,7 @@ class MonomialGrowthElement(GenericGrowthElement):
         try:
             return self.parent()._var_._substitute_(rules) ** self.exponent
         except (ArithmeticError, TypeError, ValueError) as e:
-            from .misc import substitute_raise_exception
+            from sage.rings.asymptotic.misc import substitute_raise_exception
             substitute_raise_exception(self, e)
 
     def _singularity_analysis_(self, var, zeta, precision):
@@ -3351,7 +3351,7 @@ class MonomialGrowthGroup(GenericGrowthGroup):
             sage: MonomialGrowthGroup(PolynomialRing(QQ, 'x'), 'a')._repr_short_()
             'a^QQ[x]'
         """
-        from .misc import parent_to_repr_short, repr_op
+        from sage.rings.asymptotic.misc import parent_to_repr_short, repr_op
         return repr_op(self._var_, '^', parent_to_repr_short(self.base()))
 
     def _convert_(self, data):
@@ -3855,7 +3855,7 @@ class ExponentialGrowthElement(GenericGrowthElement):
         else:
             f = repr
 
-        from .misc import repr_op
+        from sage.rings.asymptotic.misc import repr_op
 
         var = f(self.parent()._var_)
         if self.base.is_one():
@@ -4003,7 +4003,7 @@ class ExponentialGrowthElement(GenericGrowthElement):
              sage: _.parent()
              Growth Group QQ^x * x^ZZ * Signs^x
         """
-        from .misc import strip_symbolic
+        from sage.rings.asymptotic.misc import strip_symbolic
         return self.parent()._create_element_in_extension_(
             self.base ** strip_symbolic(exponent))
 
@@ -4128,7 +4128,7 @@ class ExponentialGrowthElement(GenericGrowthElement):
         try:
             return self.base ** self.parent()._var_._substitute_(rules)
         except (ArithmeticError, TypeError, ValueError) as e:
-            from .misc import substitute_raise_exception
+            from sage.rings.asymptotic.misc import substitute_raise_exception
             substitute_raise_exception(self, e)
 
 
@@ -4245,7 +4245,7 @@ class ExponentialGrowthGroup(GenericGrowthGroup):
             sage: ExponentialGrowthGroup(PolynomialRing(QQ, 'x'), 'a')._repr_short_()
             'QQ[x]^a'
         """
-        from .misc import parent_to_repr_short, repr_op
+        from sage.rings.asymptotic.misc import parent_to_repr_short, repr_op
         return repr_op(parent_to_repr_short(self.base()), '^', self._var_)
 
     def _convert_(self, data):
@@ -5232,7 +5232,7 @@ class GrowthGroupFactory(UniqueFactory):
             sage: GrowthGroup('n^(I  *   ZZ)')
             Growth Group n^(ZZ*I)
         """
-        from .misc import repr_short_to_parent, split_str_by_op
+        from sage.rings.asymptotic.misc import repr_short_to_parent, split_str_by_op
         from sage.groups.misc_gps.imaginary_groups import ImaginaryGroup
 
         kwds.setdefault('ignore_variables', ('e',))
@@ -5299,7 +5299,7 @@ class GrowthGroupFactory(UniqueFactory):
                 E = None
 
             if B is None and E is None:
-                from .misc import combine_exceptions
+                from sage.rings.asymptotic.misc import combine_exceptions
                 raise combine_exceptions(
                     ValueError("'{}' is not a valid substring of {} describing "
                                "a growth group.".format(factor, ' * '.join(sfactors))),

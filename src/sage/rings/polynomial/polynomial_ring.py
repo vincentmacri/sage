@@ -614,10 +614,10 @@ class PolynomialRing_generic(Ring):
             sage: QQ['x'].flattening_morphism()
             Identity endomorphism of Univariate Polynomial Ring in x over Rational Field
         """
-        from .multi_polynomial_ring import MPolynomialRing_base
+        from sage.rings.polynomial.multi_polynomial_ring import MPolynomialRing_base
         base = self.base_ring()
         if isinstance(base, (PolynomialRing_generic, MPolynomialRing_base)):
-            from .flatten import FlatteningMorphism
+            from sage.rings.polynomial.flatten import FlatteningMorphism
             return FlatteningMorphism(self)
         return IdentityMorphism(self)
 
@@ -823,9 +823,7 @@ class PolynomialRing_generic(Ring):
                     # Over ZZ, only allow coercion from any ZZ['x']
                     # implementation to the default FLINT implementation
                     try:
-                        from .polynomial_integer_dense_flint import (
-                            Polynomial_integer_dense_flint,
-                        )
+                        from sage.rings.polynomial.polynomial_integer_dense_flint import Polynomial_integer_dense_flint
                     except ImportError:
                         return None
                     if self.element_class is not Polynomial_integer_dense_flint:
@@ -1198,7 +1196,7 @@ class PolynomialRing_generic(Ring):
         elif n == 1:
             return self.gen() - 1
         else:
-            from .cyclotomic import cyclotomic_coeffs
+            from sage.rings.polynomial.cyclotomic import cyclotomic_coeffs
             return self(cyclotomic_coeffs(n), check=True)
 
     @cached_method
@@ -1936,9 +1934,7 @@ class PolynomialRing_integral_domain(PolynomialRing_commutative, PolynomialRing_
                         self._implementation_repr = ' (using NTL)'
                     elif implementation == 'FLINT':
                         try:
-                            from .polynomial_integer_dense_flint import (
-                                Polynomial_integer_dense_flint as element_class,
-                            )
+                            from sage.rings.polynomial.polynomial_integer_dense_flint import Polynomial_integer_dense_flint as element_class
                         except ImportError:
                             if given_implementation:
                                 raise
@@ -2188,7 +2184,7 @@ class PolynomialRing_field(PolynomialRing_integral_domain):
                 return Polynomial_relative_number_field_dense
             elif isinstance(base_ring, sage.rings.abc.RealField):
                 try:
-                    from .polynomial_real_mpfr_dense import PolynomialRealDense
+                    from sage.rings.polynomial.polynomial_real_mpfr_dense import PolynomialRealDense
                     return PolynomialRealDense
                 except ImportError:
                     pass
@@ -3243,9 +3239,7 @@ class PolynomialRing_dense_mod_n(PolynomialRing_commutative):
             for implementation in self._implementation_names(implementation, base_ring):
                 if implementation == "FLINT":
                     try:
-                        from .polynomial_zmod_flint import (
-                            Polynomial_zmod_flint as element_class,
-                        )
+                        from sage.rings.polynomial.polynomial_zmod_flint import Polynomial_zmod_flint as element_class
                     except ImportError:
                         if given_implementation:
                             raise
@@ -3254,7 +3248,7 @@ class PolynomialRing_dense_mod_n(PolynomialRing_commutative):
                 elif implementation == "NTL":
                     modulus = base_ring.order()
                     try:
-                        from . import polynomial_modn_dense_ntl as modn_dense_ntl
+                        from sage.rings.polynomial import polynomial_modn_dense_ntl as modn_dense_ntl
                     except ImportError:
                         if given_implementation:
                             raise
@@ -3425,9 +3419,7 @@ class PolynomialRing_dense_mod_p(PolynomialRing_dense_finite_field,
             for implementation in self._implementation_names(implementation, base_ring):
                 if implementation == "FLINT":
                     try:
-                        from .polynomial_zmod_flint import (
-                            Polynomial_zmod_flint as element_class,
-                        )
+                        from sage.rings.polynomial.polynomial_zmod_flint import Polynomial_zmod_flint as element_class
                     except ImportError:
                         if given_implementation:
                             raise
@@ -3435,9 +3427,7 @@ class PolynomialRing_dense_mod_p(PolynomialRing_dense_finite_field,
                     self._implementation_repr = ''
                 elif implementation == "NTL":
                     try:
-                        from .polynomial_modn_dense_ntl import (
-                            Polynomial_dense_mod_p as element_class,
-                        )
+                        from sage.rings.polynomial.polynomial_modn_dense_ntl import Polynomial_dense_mod_p as element_class
                     except ImportError:
                         if given_implementation:
                             raise
@@ -3445,7 +3435,7 @@ class PolynomialRing_dense_mod_p(PolynomialRing_dense_finite_field,
                     self._implementation_repr = ' (using NTL)'
                 elif implementation == "GF2X":
                     try:
-                        from .polynomial_gf2x import Polynomial_GF2X as element_class
+                        from sage.rings.polynomial.polynomial_gf2x import Polynomial_GF2X as element_class
                     except ImportError:
                         if given_implementation:
                             raise
@@ -3605,7 +3595,7 @@ class PolynomialRing_dense_mod_p(PolynomialRing_dense_finite_field,
                 algorithm = "conway"
             elif p == 2:
                 try:
-                    from .polynomial_gf2x import GF2X_BuildSparseIrred_list
+                    from sage.rings.polynomial.polynomial_gf2x import GF2X_BuildSparseIrred_list
                 except ImportError:
                     algorithm = "adleman-lenstra"
                 else:
@@ -3625,7 +3615,7 @@ class PolynomialRing_dense_mod_p(PolynomialRing_dense_finite_field,
         if algorithm == "first_lexicographic":
             if p == 2:
                 try:
-                    from .polynomial_gf2x import GF2X_BuildIrred_list
+                    from sage.rings.polynomial.polynomial_gf2x import GF2X_BuildIrred_list
                 except ImportError:
                     pass
                 else:
@@ -3637,13 +3627,13 @@ class PolynomialRing_dense_mod_p(PolynomialRing_dense_finite_field,
             return self(pari(p).ffinit(n).ffgen().ffprimroot().charpoly())
         elif algorithm == "minimal_weight":
             if p == 2:
-                from .polynomial_gf2x import GF2X_BuildSparseIrred_list
+                from sage.rings.polynomial.polynomial_gf2x import GF2X_BuildSparseIrred_list
                 return self(GF2X_BuildSparseIrred_list(n))
             raise NotImplementedError("'minimal_weight' option only implemented for p = 2")
         elif algorithm == "random":
             if p == 2:
                 try:
-                    from .polynomial_gf2x import GF2X_BuildRandomIrred_list
+                    from sage.rings.polynomial.polynomial_gf2x import GF2X_BuildRandomIrred_list
                 except ImportError:
                     pass
                 else:

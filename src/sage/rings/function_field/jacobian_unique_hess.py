@@ -45,15 +45,9 @@ from sage.rings.function_field import riemann_roch
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .divisor import FunctionFieldDivisor
-from .jacobian_base import (
-    Jacobian_base,
-    JacobianGroup_base,
-    JacobianGroup_finite_field_base,
-    JacobianPoint_base,
-    JacobianPoint_finite_field_base,
-)
-from .place import FunctionFieldPlace
+from sage.rings.function_field.divisor import FunctionFieldDivisor
+from sage.rings.function_field.jacobian_base import Jacobian_base, JacobianGroup_base, JacobianGroup_finite_field_base, JacobianPoint_base, JacobianPoint_finite_field_base
+from sage.rings.function_field.place import FunctionFieldPlace
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -61,8 +55,8 @@ if TYPE_CHECKING:
 
     from sage.rings.integer import Integer
 
-    from .function_field import FunctionField
-    from .ideal import FunctionFieldIdeal, FunctionFieldIdealInfinite
+    from sage.rings.function_field.function_field import FunctionField
+    from sage.rings.function_field.ideal import FunctionFieldIdeal, FunctionFieldIdealInfinite
 
 
 class JacobianPoint(JacobianPoint_base):

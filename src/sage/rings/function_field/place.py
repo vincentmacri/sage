@@ -68,9 +68,9 @@ from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
 if TYPE_CHECKING:
-    from .divisor import FunctionFieldDivisor
-    from .function_field import FunctionField
-    from .ideal import FunctionFieldIdeal
+    from sage.rings.function_field.divisor import FunctionFieldDivisor
+    from sage.rings.function_field.function_field import FunctionField
+    from sage.rings.function_field.ideal import FunctionFieldIdeal
 
 
 class FunctionFieldPlace(Element):
@@ -209,7 +209,7 @@ class FunctionFieldPlace(Element):
             - Place (1/x, 1/x^3*y^2 + 1/x)
              + Place (1/x, 1/x^3*y^2 + 1/x^2*y + 1)
         """
-        from .divisor import divisor
+        from sage.rings.function_field.divisor import divisor
         return divisor(self.function_field(), {self: -1})
 
     def _add_(self, other) -> FunctionFieldDivisor:
@@ -314,7 +314,7 @@ class FunctionFieldPlace(Element):
             sage: P.divisor()
             Place (x + 1, y)
         """
-        from .divisor import divisor
+        from sage.rings.function_field.divisor import divisor
         return divisor(self.function_field(), {self: multiplicity})
 
 
@@ -377,7 +377,7 @@ class PlaceSet(UniqueRepresentation, Parent):
             sage: places(O.ideal(x, y))
             Place (x, y)
         """
-        from .ideal import FunctionFieldIdeal
+        from sage.rings.function_field.ideal import FunctionFieldIdeal
 
         if isinstance(x, FunctionFieldIdeal) and x.is_prime():
             return self.element_class(self, x)

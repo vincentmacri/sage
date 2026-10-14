@@ -28,16 +28,11 @@ lazy_import('sage.rings.padics.pow_computer_ext', 'PowComputer_ext_maker')
 lazy_import('sage.rings.padics.pow_computer_flint', 'PowComputer_flint_maker')
 lazy_import('sage.libs.ntl.ntl_ZZ_pX', 'ntl_ZZ_pX')
 
-from .unramified_extension_generic import UnramifiedExtensionGeneric
-from .eisenstein_extension_generic import EisensteinExtensionGeneric
+from sage.rings.padics.unramified_extension_generic import UnramifiedExtensionGeneric
+from sage.rings.padics.eisenstein_extension_generic import EisensteinExtensionGeneric
 #from padic_general_extension_generic import pAdicGeneralExtensionGeneric
 
-from .generic_nodes import pAdicCappedRelativeRingGeneric, \
-                          pAdicCappedRelativeFieldGeneric, \
-                          pAdicCappedAbsoluteRingGeneric, \
-                          pAdicFixedModRingGeneric, \
-                          pAdicFloatingPointRingGeneric, \
-                          pAdicFloatingPointFieldGeneric
+from sage.rings.padics.generic_nodes import pAdicCappedRelativeRingGeneric, pAdicCappedRelativeFieldGeneric, pAdicCappedAbsoluteRingGeneric, pAdicFixedModRingGeneric, pAdicFloatingPointRingGeneric, pAdicFloatingPointFieldGeneric
 
 #from unramified_extension_absolute_element import UnramifiedExtensionAbsoluteElement
 #from unramified_extension_capped_relative_element import UnramifiedExtensionCappedRelativeElement
@@ -50,17 +45,17 @@ from .generic_nodes import pAdicCappedRelativeRingGeneric, \
 #from padic_general_extension_lazy_element import pAdicGeneralExtensionRelaxedElement
 
 try:
-    from .padic_ZZ_pX_FM_element import pAdicZZpXFMElement
-    from .padic_ZZ_pX_CR_element import pAdicZZpXCRElement
-    from .padic_ZZ_pX_CA_element import pAdicZZpXCAElement
+    from sage.rings.padics.padic_ZZ_pX_FM_element import pAdicZZpXFMElement
+    from sage.rings.padics.padic_ZZ_pX_CR_element import pAdicZZpXCRElement
+    from sage.rings.padics.padic_ZZ_pX_CA_element import pAdicZZpXCAElement
 except ImportError:
     pass
 
 try:
-    from .qadic_flint_CR import qAdicCappedRelativeElement
-    from .qadic_flint_CA import qAdicCappedAbsoluteElement
-    from .qadic_flint_FM import qAdicFixedModElement
-    from .qadic_flint_FP import qAdicFloatingPointElement
+    from sage.rings.padics.qadic_flint_CR import qAdicCappedRelativeElement
+    from sage.rings.padics.qadic_flint_CA import qAdicCappedAbsoluteElement
+    from sage.rings.padics.qadic_flint_FM import qAdicFixedModElement
+    from sage.rings.padics.qadic_flint_FP import qAdicFloatingPointElement
 except ImportError:
     pass
 
@@ -150,7 +145,7 @@ class UnramifiedExtensionRingCappedRelative(UnramifiedExtensionGeneric, pAdicCap
             element_class = qAdicCappedRelativeElement
         UnramifiedExtensionGeneric.__init__(self, poly, prec, print_mode, names, element_class)
         if implementation != 'NTL':
-            from .qadic_flint_CR import pAdicCoercion_ZZ_CR, pAdicConvert_QQ_CR
+            from sage.rings.padics.qadic_flint_CR import pAdicCoercion_ZZ_CR, pAdicConvert_QQ_CR
             self.register_coercion(pAdicCoercion_ZZ_CR(self))
             self.register_conversion(pAdicConvert_QQ_CR(self))
 
@@ -210,7 +205,7 @@ class UnramifiedExtensionFieldCappedRelative(UnramifiedExtensionGeneric, pAdicCa
             element_class = qAdicCappedRelativeElement
         UnramifiedExtensionGeneric.__init__(self, poly, prec, print_mode, names, element_class)
         if implementation != 'NTL':
-            from .qadic_flint_CR import pAdicCoercion_ZZ_CR, pAdicCoercion_QQ_CR
+            from sage.rings.padics.qadic_flint_CR import pAdicCoercion_ZZ_CR, pAdicCoercion_QQ_CR
             self.register_coercion(pAdicCoercion_ZZ_CR(self))
             self.register_coercion(pAdicCoercion_QQ_CR(self))
 
@@ -296,7 +291,7 @@ class UnramifiedExtensionRingCappedAbsolute(UnramifiedExtensionGeneric, pAdicCap
             element_class = qAdicCappedAbsoluteElement
         UnramifiedExtensionGeneric.__init__(self, poly, prec, print_mode, names, element_class)
         if implementation != 'NTL':
-            from .qadic_flint_CA import pAdicCoercion_ZZ_CA, pAdicConvert_QQ_CA
+            from sage.rings.padics.qadic_flint_CA import pAdicCoercion_ZZ_CA, pAdicConvert_QQ_CA
             self.register_coercion(pAdicCoercion_ZZ_CA(self))
             self.register_conversion(pAdicConvert_QQ_CA(self))
 
@@ -351,7 +346,7 @@ class UnramifiedExtensionRingFixedMod(UnramifiedExtensionGeneric, pAdicFixedModR
             element_class = qAdicFixedModElement
         UnramifiedExtensionGeneric.__init__(self, poly, prec, print_mode, names, element_class)
         if implementation != 'NTL':
-            from .qadic_flint_FM import pAdicCoercion_ZZ_FM, pAdicConvert_QQ_FM
+            from sage.rings.padics.qadic_flint_FM import pAdicCoercion_ZZ_FM, pAdicConvert_QQ_FM
             self.register_coercion(pAdicCoercion_ZZ_FM(self))
             self.register_conversion(pAdicConvert_QQ_FM(self))
 
@@ -415,7 +410,7 @@ class UnramifiedExtensionRingFloatingPoint(UnramifiedExtensionGeneric, pAdicFloa
         cache_limit = min(prec, 30)
         self.prime_pow = PowComputer_flint_maker(poly.base_ring().prime(), cache_limit, prec, prec, False, Zpoly, prec_type='floating-point')
         UnramifiedExtensionGeneric.__init__(self, poly, prec, print_mode, names, qAdicFloatingPointElement)
-        from .qadic_flint_FP import pAdicCoercion_ZZ_FP, pAdicConvert_QQ_FP
+        from sage.rings.padics.qadic_flint_FP import pAdicCoercion_ZZ_FP, pAdicConvert_QQ_FP
         self.register_coercion(pAdicCoercion_ZZ_FP(self))
         self.register_conversion(pAdicConvert_QQ_FP(self))
 
@@ -465,7 +460,7 @@ class UnramifiedExtensionFieldFloatingPoint(UnramifiedExtensionGeneric, pAdicFlo
         cache_limit = min(prec, 30)
         self.prime_pow = PowComputer_flint_maker(poly.base_ring().prime(), cache_limit, prec, prec, True, Zpoly, prec_type='floating-point')
         UnramifiedExtensionGeneric.__init__(self, poly, prec, print_mode, names, qAdicFloatingPointElement)
-        from .qadic_flint_FP import pAdicCoercion_ZZ_FP, pAdicCoercion_QQ_FP
+        from sage.rings.padics.qadic_flint_FP import pAdicCoercion_ZZ_FP, pAdicCoercion_QQ_FP
         self.register_coercion(pAdicCoercion_ZZ_FP(self))
         self.register_coercion(pAdicCoercion_QQ_FP(self))
 

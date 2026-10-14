@@ -315,7 +315,7 @@ def _find_pow_of_frobenius(p, n, x, y):
         sage: _find_pow_of_frobenius(3, 14, x, y)
         11
     """
-    from .integer_mod import mod
+    from sage.rings.finite_rings.integer_mod import mod
     for i in range(n):
         if x == y:
             break
@@ -409,7 +409,7 @@ def _frobenius_shift(K, generators, check_only=False):
     p = K.characteristic()
     n = K.degree()
     compatible = {}
-    from .integer_mod import mod
+    from sage.rings.finite_rings.integer_mod import mod
     for m in n.divisors():
         compatible[m] = {}
     for q, x in generators.items():

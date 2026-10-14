@@ -48,7 +48,7 @@ Here, the expansion lists the remainders of repeated division by `x^2 + x + 1`::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .valuation import DiscretePseudoValuation
+from sage.rings.valuation.valuation import DiscretePseudoValuation
 from sage.misc.abstract_method import abstract_method
 
 from sage.misc.cachefunc import cached_method

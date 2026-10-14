@@ -21,7 +21,7 @@ AUTHORS:
 
 from sage.structure.factory import UniqueFactory
 
-from .valuation import DiscreteValuation
+from sage.rings.valuation.valuation import DiscreteValuation
 
 
 class ScaledValuationFactory(UniqueFactory):
@@ -76,7 +76,7 @@ class ScaledValuationFactory(UniqueFactory):
 
         assert not isinstance(base, ScaledValuation_generic)
 
-        from .valuation_space import DiscretePseudoValuationSpace
+        from sage.rings.valuation.valuation_space import DiscretePseudoValuationSpace
         parent = DiscretePseudoValuationSpace(base.domain())
         return parent.__make_element_class__(ScaledValuation_generic)(parent, base, s)
 

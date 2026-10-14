@@ -129,9 +129,9 @@ if TYPE_CHECKING:
     from sage.categories.map import Map
     from sage.rings.ring import Field
 
-    from .divisor import FunctionFieldDivisor
-    from .function_field import FunctionField
-    from .place import FunctionFieldPlace
+    from sage.rings.function_field.divisor import FunctionFieldDivisor
+    from sage.rings.function_field.function_field import FunctionField
+    from sage.rings.function_field.place import FunctionFieldPlace
 
 
 class JacobianPoint_base(AdditiveGroupElement):

@@ -27,7 +27,7 @@ from sage.misc.misc_c import prod
 from sage.rings.infinity import infinity
 from sage.structure.richcmp import richcmp
 
-from .ideal import FunctionFieldIdeal, FunctionFieldIdealInfinite
+from sage.rings.function_field.ideal import FunctionFieldIdeal, FunctionFieldIdealInfinite
 
 
 class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
@@ -454,7 +454,7 @@ class FunctionFieldIdeal_polymod(FunctionFieldIdeal):
         """
         from sage.matrix.special import block_matrix
 
-        from .hermite_form_polynomial import reversed_hermite_form
+        from sage.rings.function_field.hermite_form_polynomial import reversed_hermite_form
 
         A = self._hnf
         B = other._hnf
