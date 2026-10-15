@@ -44,7 +44,7 @@ def write_env_file(env_file: Path, dependencies: list[str]) -> None:
         """name: sage
 channels:
   - conda-forge
-nodefaults: true
+  - nodefaults
 dependencies:
 """
         + "".join(f"  - {req}" + "\n" for req in dependencies)
