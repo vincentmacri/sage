@@ -4769,6 +4769,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             sage: E.is_isogenous(EE)
             False
         """
+        print("test1")
         if not isinstance(other, EllipticCurve_generic):
             raise ValueError("Second argument is not an Elliptic Curve.")
         if other.base_field() is not QQ:
