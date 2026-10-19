@@ -94,7 +94,7 @@ dependencies:
   - cxx-compiler=2.0.0=h94bea0c_0
   - cycler=0.12.1=pyhcf101f3_2
   - cypari2=2.2.4=py314hb482800_2
-  - cysignals=1.12.6=py314h8b73c47_3
+  - cysignals=1.13.1=py314h8b73c47_0
   - cython=3.3.0=py314h56d56b3_0
   - debugpy=1.8.22=py314hb0342c8_0
   - defusedxml=0.7.1=pyhd8ed1ab_0
@@ -321,7 +321,7 @@ dependencies:
   - pkgconfig=1.6.0=pyhd8ed1ab_0
   - pkginfo=1.13.3=pyhd8ed1ab_0
   - planarity=4.0.1.0=h8616949_0
-  - platformdirs=4.13.4=pyh5ded981_0
+  - platformdirs=4.13.5=pyh5ded981_0
   - pluggy=1.7.0=pyh5ded981_0
   - ppl=1.2=ha60d53e_1006
   - pplpy=0.9.0=py314h3337c5f_1

@@ -81,7 +81,7 @@ dependencies:
   - cycler=0.12.1=pyhcf101f3_2
   - cypari2=2.2.4=py314hde48b0c_2
   - cyrus-sasl=2.1.28=h6c5dea3_0
-  - cysignals=1.12.6=py314h0b174d3_3
+  - cysignals=1.13.1=py314h0b174d3_0
   - cython=3.3.0=py314h1eee2f1_0
   - dbus=1.16.2=h71d469a_2
   - debugpy=1.8.22=py314h8ac86d4_0
@@ -326,7 +326,7 @@ dependencies:
   - pkgconfig=1.6.0=pyhd8ed1ab_0
   - pkginfo=1.13.3=pyhd8ed1ab_0
   - planarity=4.0.1.0=he30d5cf_0
-  - platformdirs=4.13.4=pyh5ded981_0
+  - platformdirs=4.13.5=pyh5ded981_0
   - pluggy=1.7.0=pyh5ded981_0
   - ppl=1.2=h984aac9_1006
   - pplpy=0.9.0=py314h0409f54_1

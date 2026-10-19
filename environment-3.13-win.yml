@@ -73,7 +73,7 @@ dependencies:
   - cryptography=50.0.2=py311h67a9792_0
   - curl=8.23.0=hdb0ef4a_0
   - cycler=0.12.1=pyhcf101f3_2
-  - cysignals=1.12.6=py313hfe59770_3
+  - cysignals=1.13.1=py313hfe59770_0
   - cython=3.3.0=py313h560b0a0_0
   - debugpy=1.8.22=py313h927ade5_0
   - defusedxml=0.7.1=pyhd8ed1ab_0
@@ -277,7 +277,7 @@ dependencies:
   - pkgconfig=1.6.0=pyhd8ed1ab_0
   - pkginfo=1.13.3=pyhd8ed1ab_0
   - planarity=4.0.1.0=hfd05255_0
-  - platformdirs=4.13.4=pyh5ded981_0
+  - platformdirs=4.13.5=pyh5ded981_0
   - pluggy=1.7.0=pyh5ded981_0
   - primecount=8.4=hac47afa_0
   - primesieve=12.15=h5112557_0
