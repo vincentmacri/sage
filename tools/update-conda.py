@@ -35,7 +35,7 @@ parser.add_argument(
     choices=platforms.keys(),
 )
 options = parser.parse_args()
-pythons = ["3.13", "3.14", "3.15"]
+pythons = ["3.13", "3.14"]#, "3.15"]
 tags = [""]
 
 
@@ -117,6 +117,8 @@ def update_conda(source_dir: Path, systems: list[str] | None) -> None:
                 [
                     "conda-lock",
                     "--mamba",
+                    "--channel",
+                    "conda-forge",
                     "--kind",
                     "env",
                     "--platform",
