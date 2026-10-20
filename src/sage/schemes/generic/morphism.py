@@ -626,7 +626,7 @@ class SchemeMorphism(Element):
                             Rational Field by the ideal (x*y - 1)
                       Defn: y |--> ybar
         """
-        from . import glue
+        from sage.schemes.generic import glue
         return glue.GluedScheme(self, other)
 
 

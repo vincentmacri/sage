@@ -14,7 +14,7 @@ Places of function fields: rational
 #                  http://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .place import FunctionFieldPlace
+from sage.rings.function_field.place import FunctionFieldPlace
 
 
 class FunctionFieldPlace_rational(FunctionFieldPlace):
@@ -171,6 +171,6 @@ class FunctionFieldPlace_rational(FunctionFieldPlace):
             sage: p.valuation_ring()                                                    # needs sage.rings.function_field
             Valuation ring at Place (x, x*y)
         """
-        from .valuation_ring import FunctionFieldValuationRing
+        from sage.rings.function_field.valuation_ring import FunctionFieldValuationRing
 
         return FunctionFieldValuationRing(self.function_field(), self)

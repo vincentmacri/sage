@@ -32,7 +32,7 @@ AUTHORS:
 # ***************************************************************************
 
 
-from .number_field_ideal import NumberFieldFractionalIdeal
+from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdeal
 from sage.misc.cachefunc import cached_method
 from sage.structure.factorization import Factorization
 from sage.structure.proof.proof import get_flag

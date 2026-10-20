@@ -23,7 +23,7 @@ AUTHORS:
 
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.schemes.curves.projective_curve import ProjectivePlaneCurve_finite_field
-from .con_field import ProjectiveConic_field
+from sage.schemes.plane_conics.con_field import ProjectiveConic_field
 
 
 class ProjectiveConic_finite_field(ProjectiveConic_field, ProjectivePlaneCurve_finite_field):

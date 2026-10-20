@@ -20,7 +20,7 @@ AUTHORS:
 # ****************************************************************************
 
 
-from .padic_extension_generic import pAdicExtensionGeneric
+from sage.rings.padics.padic_extension_generic import pAdicExtensionGeneric
 from sage.rings.finite_rings.finite_field_constructor import GF
 from sage.misc.cachefunc import cached_method
 

@@ -90,7 +90,7 @@ AUTHORS:
 
 from sage.misc.mrange import xmrange
 from sage.rings.rational_field import QQ
-from .constructor import EllipticCurve, EllipticCurve_from_j
+from sage.schemes.elliptic_curves.constructor import EllipticCurve, EllipticCurve_from_j
 
 
 def is_possible_j(j, S=[]):

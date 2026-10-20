@@ -83,18 +83,18 @@ lazy_import('sage.libs.pari', 'pari')
 lazy_import("sage.functions.gamma", "gamma_inc")
 lazy_import('sage.interfaces.gp', 'gp')
 
-from . import constructor
-from . import BSD
-from .ell_generic import EllipticCurve_generic
-from . import ell_modular_symbols
-from .ell_number_field import EllipticCurve_number_field
-from . import ell_point
-from . import ell_tate_curve
-from . import ell_torsion
-from . import heegner
-from . import mod5family
-from .modular_parametrization import ModularParameterization
-from . import padics
+from sage.schemes.elliptic_curves import constructor
+from sage.schemes.elliptic_curves import BSD
+from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
+from sage.schemes.elliptic_curves import ell_modular_symbols
+from sage.schemes.elliptic_curves.ell_number_field import EllipticCurve_number_field
+from sage.schemes.elliptic_curves import ell_point
+from sage.schemes.elliptic_curves import ell_tate_curve
+from sage.schemes.elliptic_curves import ell_torsion
+from sage.schemes.elliptic_curves import heegner
+from sage.schemes.elliptic_curves import mod5family
+from sage.schemes.elliptic_curves.modular_parametrization import ModularParameterization
+from sage.schemes.elliptic_curves import padics
 
 Q = RationalField()
 C = ComplexField()
@@ -3115,7 +3115,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             self.__tamagawa_number = {}
         if p not in self.__kodaira_type:
             v = self.pari_mincurve().elllocalred(p)
-            from .kodaira_symbol import KodairaSymbol
+            from sage.schemes.elliptic_curves.kodaira_symbol import KodairaSymbol
             self.__kodaira_type[p] = KodairaSymbol(v[1])
             self.__tamagawa_number[p] = Integer(v[3])
         return self.__kodaira_type[p]
@@ -3397,7 +3397,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         try:
             return self.__lseries
         except AttributeError:
-            from .lseries_ell import Lseries_ell
+            from sage.schemes.elliptic_curves.lseries_ell import Lseries_ell
             self.__lseries = Lseries_ell(self)
             return self.__lseries
 
@@ -4691,7 +4691,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             ...
             ValueError: 4 is not prime.
         """
-        from .isogeny_small_degree import isogenies_prime_degree_genus_0, isogenies_sporadic_Q
+        from sage.schemes.elliptic_curves.isogeny_small_degree import isogenies_prime_degree_genus_0, isogenies_sporadic_Q
 
         if l in [2, 3, 5, 7, 13]:
             return isogenies_prime_degree_genus_0(self, l)
@@ -5210,7 +5210,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         try:
             return self.__rho
         except AttributeError:
-            from .gal_reps import GaloisRepresentation
+            from sage.schemes.elliptic_curves.gal_reps import GaloisRepresentation
             self.__rho = GaloisRepresentation(self)
         return self.__rho
 
@@ -5452,7 +5452,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         try:
             return self.__sha
         except AttributeError:
-            from .sha_tate import Sha
+            from sage.schemes.elliptic_curves.sha_tate import Sha
             self.__sha = Sha(self)
             return self.__sha
 

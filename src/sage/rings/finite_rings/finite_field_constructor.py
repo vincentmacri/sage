@@ -183,12 +183,12 @@ try:
     # We don't late import this because this means trouble with the Givaro library
     # On a Macbook Pro OSX 10.5.8, this manifests as a Bus Error on exiting Sage.
     # TODO: figure out why
-    from .finite_field_givaro import FiniteField_givaro
+    from sage.rings.finite_rings.finite_field_givaro import FiniteField_givaro
 except ImportError:
     FiniteField_givaro = None
 
 try:
-    from .finite_field_ntl_gf2e import FiniteField_ntl_gf2e
+    from sage.rings.finite_rings.finite_field_ntl_gf2e import FiniteField_ntl_gf2e
 except ImportError:
     FiniteField_ntl_gf2e = None
 
@@ -885,7 +885,7 @@ class FiniteFieldFactory(UniqueFactory):
         if implementation == 'modn':
             if n != 1:
                 raise ValueError("the 'modn' implementation requires a prime order")
-            from .finite_field_prime_modn import FiniteField_prime_modn
+            from sage.rings.finite_rings.finite_field_prime_modn import FiniteField_prime_modn
             # Using a check option here is probably a worthwhile
             # compromise since this constructor is simple and used a
             # huge amount.
@@ -900,10 +900,10 @@ class FiniteFieldFactory(UniqueFactory):
                 if implementation == 'givaro':
                     K = FiniteField_givaro(order, name, modulus, repr, elem_cache)
                 elif implementation == 'ntl':
-                    from .finite_field_ntl_gf2e import FiniteField_ntl_gf2e
+                    from sage.rings.finite_rings.finite_field_ntl_gf2e import FiniteField_ntl_gf2e
                     K = FiniteField_ntl_gf2e(order, name, modulus)
                 elif implementation == 'pari_ffelt' or implementation == 'pari':
-                    from .finite_field_pari_ffelt import FiniteField_pari_ffelt
+                    from sage.rings.finite_rings.finite_field_pari_ffelt import FiniteField_pari_ffelt
                     K = FiniteField_pari_ffelt(p, modulus, name)
                 else:
                     raise ValueError("no such finite field implementation: %r" % implementation)

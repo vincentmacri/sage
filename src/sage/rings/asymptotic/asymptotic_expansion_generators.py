@@ -281,7 +281,7 @@ class AsymptoticExpansionGenerators(SageObject):
             from sage.rings.rational_field import QQ
             coefficient_ring = QQ
 
-        from .asymptotic_ring import AsymptoticRing
+        from sage.rings.asymptotic.asymptotic_ring import AsymptoticRing
         A = AsymptoticRing(growth_group='{n}^ZZ * log({n})^ZZ'.format(n=var),
                            coefficient_ring=coefficient_ring)
         n = A.gen()
@@ -344,7 +344,7 @@ class AsymptoticExpansionGenerators(SageObject):
             sage: _.parent()
             Asymptotic Ring <m^ZZ> over Rational Field
         """
-        from .asymptotic_ring import AsymptoticRing
+        from sage.rings.asymptotic.asymptotic_ring import AsymptoticRing
         from sage.rings.rational_field import QQ
 
         A = AsymptoticRing(growth_group='{n}^ZZ'.format(n=var),
@@ -430,7 +430,7 @@ class AsymptoticExpansionGenerators(SageObject):
             from sage.rings.rational_field import QQ
             coefficient_ring = QQ
 
-        from .asymptotic_ring import AsymptoticRing
+        from sage.rings.asymptotic.asymptotic_ring import AsymptoticRing
         A = AsymptoticRing(growth_group='{n}^ZZ * log({n})^ZZ'.format(n=var),
                            coefficient_ring=coefficient_ring)
         n = A.gen()
@@ -557,7 +557,7 @@ class AsymptoticExpansionGenerators(SageObject):
         try:
             SCR.coerce(k)
         except TypeError as e:
-            from .misc import combine_exceptions
+            from sage.rings.asymptotic.misc import combine_exceptions
             raise combine_exceptions(
                 TypeError('Cannot use k={}.'.format(k)), e)
 
@@ -889,9 +889,8 @@ class AsymptoticExpansionGenerators(SageObject):
             Asymptotic Ring <n^ZZ * log(n)^ZZ * Signs^n> over Symbolic Constants Subring
         """
         from itertools import islice, count
-        from .asymptotic_ring import AsymptoticRing
-        from .growth_group import ExponentialGrowthGroup, \
-                MonomialGrowthGroup, GenericNonGrowthGroup
+        from sage.rings.asymptotic.asymptotic_ring import AsymptoticRing
+        from sage.rings.asymptotic.growth_group import ExponentialGrowthGroup, MonomialGrowthGroup, GenericNonGrowthGroup
         from sage.arith.misc import falling_factorial
         from sage.categories.cartesian_product import cartesian_product
         from sage.functions.other import binomial
@@ -1004,7 +1003,7 @@ class AsymptoticExpansionGenerators(SageObject):
             if alpha > 0 and alpha <= precision:
                 result = A(0)
             elif alpha <= 0 and precision > 0:
-                from .misc import NotImplementedOZero
+                from sage.rings.asymptotic.misc import NotImplementedOZero
                 raise NotImplementedOZero(A, exact_part=A.zero())
 
         for k, r in it:

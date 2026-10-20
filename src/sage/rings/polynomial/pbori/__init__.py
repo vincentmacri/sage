@@ -32,14 +32,14 @@ M. Brickenstein, A. Dreyer, PolyBoRi:
 Electronic Proceedings of the MEGA 2007 - Effective Methods in Algebraic Geometry, Strobl, Austria, June 2007.
 http://www.ricam.oeaw.ac.at/mega2007/electronic/electronic.html
 """
-from .PyPolyBoRi import Ring, Polynomial, Monomial, Variable
+from sage.rings.polynomial.pbori.PyPolyBoRi import Ring, Polynomial, Monomial, Variable
 
 # Get all-inclusive groebner routine
-from .gbcore import groebner_basis
-from .nf import normal_form
+from sage.rings.polynomial.pbori.gbcore import groebner_basis
+from sage.rings.polynomial.pbori.nf import normal_form
 
 # Import some high-level modelling functionality
-from .blocks import declare_ring
-from .blocks import HigherOrderBlock, AlternatingBlock, Block
-from .gbrefs import load_file
-from .specialsets import all_monomials_of_degree_d, power_set
+from sage.rings.polynomial.pbori.blocks import declare_ring
+from sage.rings.polynomial.pbori.blocks import HigherOrderBlock, AlternatingBlock, Block
+from sage.rings.polynomial.pbori.gbrefs import load_file
+from sage.rings.polynomial.pbori.specialsets import all_monomials_of_degree_d, power_set

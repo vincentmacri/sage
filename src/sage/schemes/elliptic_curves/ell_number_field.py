@@ -91,10 +91,10 @@ REFERENCE:
 # ****************************************************************************
 
 import sage.rings.abc
-from .ell_field import EllipticCurve_field
-from .ell_generic import EllipticCurve_generic
-from .ell_point import EllipticCurvePoint_number_field
-from .constructor import EllipticCurve
+from sage.schemes.elliptic_curves.ell_field import EllipticCurve_field
+from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
+from sage.schemes.elliptic_curves.ell_point import EllipticCurvePoint_number_field
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.real_mpfr import RealField
@@ -299,7 +299,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
         except KeyError:
             pass
 
-        from .gp_simon import simon_two_descent
+        from sage.schemes.elliptic_curves.gp_simon import simon_two_descent
         t = simon_two_descent(self, verbose=verbose,
                               lim1=lim1, lim3=lim3, limtriv=limtriv,
                               maxprob=maxprob, limbigprime=limbigprime,
@@ -1895,7 +1895,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
                 for P in E.base_ring()(E.discriminant()).support():
                     E = E.local_data(P,proof, globally=True).minimal_model()
             else:
-                from .kraus import semi_global_minimal_model
+                from sage.schemes.elliptic_curves.kraus import semi_global_minimal_model
                 E, P = semi_global_minimal_model(self)
             return E._scale_by_units()._reduce_model()
 
@@ -2049,7 +2049,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
         """
         if n is None:
             if not hasattr(self, '_cached_torsion_subgroup'):
-                from .ell_torsion import EllipticCurveTorsionSubgroup
+                from sage.schemes.elliptic_curves.ell_torsion import EllipticCurveTorsionSubgroup
                 self._cached_torsion_subgroup = EllipticCurveTorsionSubgroup(self)
             return self._cached_torsion_subgroup
 
@@ -3046,7 +3046,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             ...
             ValueError: 4 is not prime.
         """
-        from .isogeny_small_degree import isogenies_prime_degree
+        from sage.schemes.elliptic_curves.isogeny_small_degree import isogenies_prime_degree
 
         if l is not None and not isinstance(l, list):
             try:
@@ -3061,7 +3061,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
                 raise ValueError("%s is not prime." % l)
 
         if l is None:
-            from .isogeny_class import possible_isogeny_degrees
+            from sage.schemes.elliptic_curves.isogeny_class import possible_isogeny_degrees
             L = possible_isogeny_degrees(self)
             return self.isogenies_prime_degree(L, minimal_models=minimal_models)
 
@@ -3231,7 +3231,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
         #  Next we try the primes for which X_0^+(l) has genus 0 for
         #  which isogeny-finding is faster than in general:
 
-        from .isogeny_small_degree import hyperelliptic_primes
+        from sage.schemes.elliptic_curves.isogeny_small_degree import hyperelliptic_primes
         for l in hyperelliptic_primes:
             if any(E2.is_isomorphic(f.codomain())
                    for f in E1.isogenies_prime_degree(l)):
@@ -3537,7 +3537,7 @@ class EllipticCurve_number_field(EllipticCurve_field):
             sage: rho.non_surjective()
             [5]
         """
-        from .gal_reps_number_field import GaloisRepresentation
+        from sage.schemes.elliptic_curves.gal_reps_number_field import GaloisRepresentation
         return GaloisRepresentation(self)
 
     @cached_method

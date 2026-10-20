@@ -265,7 +265,7 @@ class Curve_generic(AlgebraicScheme_subscheme):
             sage: C1.union(C2).defining_polynomial()
             x^2 - x*y - x*z + y*z
         """
-        from .constructor import Curve
+        from sage.schemes.curves.constructor import Curve
         return Curve(AlgebraicScheme_subscheme.union(self, other))
 
     __add__ = union

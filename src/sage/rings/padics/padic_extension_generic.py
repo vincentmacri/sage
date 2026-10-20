@@ -22,8 +22,8 @@ AUTHORS:
 
 import sage.rings.abc
 
-from .padic_generic import pAdicGeneric, ResidueLiftingMap
-from .padic_base_generic import pAdicBaseGeneric
+from sage.rings.padics.padic_generic import pAdicGeneric, ResidueLiftingMap
+from sage.rings.padics.padic_base_generic import pAdicBaseGeneric
 from sage.rings.number_field.number_field_base import NumberField
 from sage.rings.rational_field import QQ
 from sage.rings.infinity import Infinity

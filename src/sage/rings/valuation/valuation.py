@@ -243,7 +243,7 @@ class DiscretePseudoValuation(Morphism):
         """
         if self == other:
             return True
-        from .scaled_valuation import ScaledValuation_generic
+        from sage.rings.valuation.scaled_valuation import ScaledValuation_generic
         if isinstance(other, ScaledValuation_generic):
             return other <= self
         raise NotImplementedError("Operator not implemented for this valuation")

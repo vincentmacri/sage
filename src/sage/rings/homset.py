@@ -29,7 +29,7 @@ def RingHomset(R, S, category=None):
         Set of Homomorphisms from Integer Ring to Rational Field
     """
     if isinstance(R, quotient_ring.QuotientRing_nc):
-        from .polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
+        from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
         if not isinstance(R, PolynomialQuotientRing_generic):  # backwards compatibility
             return RingHomset_quo_ring(R, S, category=category)
     return RingHomset_generic(R, S, category=category)

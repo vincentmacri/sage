@@ -473,7 +473,7 @@ class FunctionFieldIdeal(Element):
             sage: I.divisor()
             - Place (1/x, 1/x*y)
         """
-        from .divisor import divisor
+        from sage.rings.function_field.divisor import divisor
 
         if self.is_zero():
             raise ValueError("not defined for zero ideal")
@@ -507,7 +507,7 @@ class FunctionFieldIdeal(Element):
             sage: I.divisor_of_zeros()
             2*Place (x + 1, x*y)
         """
-        from .divisor import divisor
+        from sage.rings.function_field.divisor import divisor
 
         if self.is_zero():
             raise ValueError("not defined for zero ideal")
@@ -541,7 +541,7 @@ class FunctionFieldIdeal(Element):
             sage: I.divisor_of_poles()
             Place (x, x*y)
         """
-        from .divisor import divisor
+        from sage.rings.function_field.divisor import divisor
 
         if self.is_zero():
             raise ValueError("not defined for zero ideal")

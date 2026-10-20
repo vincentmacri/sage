@@ -572,32 +572,32 @@ class EllipticCurveFactory(UniqueFactory):
         R, x = key
 
         if R is QQ:
-            from .ell_rational_field import EllipticCurve_rational_field
+            from sage.schemes.elliptic_curves.ell_rational_field import EllipticCurve_rational_field
 
             return EllipticCurve_rational_field(x, **kwds)
         if kwds:
             raise TypeError(f"unexpected keyword arguments: {kwds}")
 
         if isinstance(R, NumberField):
-            from .ell_number_field import EllipticCurve_number_field
+            from sage.schemes.elliptic_curves.ell_number_field import EllipticCurve_number_field
 
             return EllipticCurve_number_field(R, x)
         if isinstance(R, sage.rings.abc.pAdicField):
-            from .ell_padic_field import EllipticCurve_padic_field
+            from sage.schemes.elliptic_curves.ell_padic_field import EllipticCurve_padic_field
 
             return EllipticCurve_padic_field(R, x)
         if isinstance(R, FiniteField) or (
             isinstance(R, sage.rings.abc.IntegerModRing)
             and R.characteristic().is_prime()
         ):
-            from .ell_finite_field import EllipticCurve_finite_field
+            from sage.schemes.elliptic_curves.ell_finite_field import EllipticCurve_finite_field
 
             return EllipticCurve_finite_field(R, x)
         if R in _Fields:
-            from .ell_field import EllipticCurve_field
+            from sage.schemes.elliptic_curves.ell_field import EllipticCurve_field
 
             return EllipticCurve_field(R, x)
-        from .ell_generic import EllipticCurve_generic
+        from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
 
         return EllipticCurve_generic(R, x)
 
@@ -1727,6 +1727,6 @@ def EllipticCurves_with_good_reduction_outside_S(S=[], proof=None, verbose=False
          2^7 * 3^5,
          2^8 * 3^5]
     """
-    from .ell_egros import egros_from_jlist, egros_get_j
+    from sage.schemes.elliptic_curves.ell_egros import egros_from_jlist, egros_get_j
 
     return egros_from_jlist(egros_get_j(S, proof=proof, verbose=verbose), S)

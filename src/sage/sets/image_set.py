@@ -28,7 +28,7 @@ from sage.rings.integer import Integer
 from sage.structure.element import Expression
 from sage.structure.parent import Parent
 
-from .set import Set_base, Set_add_sub_operators, Set_boolean_operators
+from sage.sets.set import Set_base, Set_add_sub_operators, Set_boolean_operators
 
 
 class ImageSubobject(Parent):

@@ -41,11 +41,11 @@ from sage.schemes.projective.projective_space import ProjectiveSpace
 from sage.structure.sequence import Sequence
 from sage.structure.element import Matrix
 
-from .con_field import ProjectiveConic_field
-from .con_finite_field import ProjectiveConic_finite_field
-from .con_number_field import ProjectiveConic_number_field
-from .con_rational_field import ProjectiveConic_rational_field
-from .con_rational_function_field import ProjectiveConic_rational_function_field
+from sage.schemes.plane_conics.con_field import ProjectiveConic_field
+from sage.schemes.plane_conics.con_finite_field import ProjectiveConic_finite_field
+from sage.schemes.plane_conics.con_number_field import ProjectiveConic_number_field
+from sage.schemes.plane_conics.con_rational_field import ProjectiveConic_rational_field
+from sage.schemes.plane_conics.con_rational_function_field import ProjectiveConic_rational_function_field
 
 
 def Conic(base_field, F=None, names=None, unique=True):

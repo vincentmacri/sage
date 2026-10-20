@@ -43,7 +43,7 @@ polynomial rings::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .inductive_valuation import NonFinalInductiveValuation
+from sage.rings.valuation.inductive_valuation import NonFinalInductiveValuation
 
 from sage.misc.cachefunc import cached_method
 from sage.structure.factory import UniqueFactory
@@ -644,7 +644,7 @@ class GaussValuation_generic(NonFinalInductiveValuation):
         """
         if isinstance(other, GaussValuation_generic):
             return self._base_valuation >= other._base_valuation
-        from .augmented_valuation import AugmentedValuation_base
+        from sage.rings.valuation.augmented_valuation import AugmentedValuation_base
         if isinstance(other, AugmentedValuation_base):
             return False
         if other.is_trivial():

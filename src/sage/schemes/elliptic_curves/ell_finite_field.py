@@ -46,9 +46,9 @@ from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.schemes.curves.projective_curve import Hasse_bounds, ProjectivePlaneCurve_finite_field
 from sage.structure.element import Element
 
-from . import ell_point
-from .constructor import EllipticCurve
-from .ell_field import EllipticCurve_field
+from sage.schemes.elliptic_curves import ell_point
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from sage.schemes.elliptic_curves.ell_field import EllipticCurve_field
 
 
 class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finite_field):
@@ -508,8 +508,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
         self._order = N
         return N
 
-    from .cardinality import (cardinality_bsgs,
-                              cardinality_exhaustive, _cardinality_subfield)
+    from sage.schemes.elliptic_curves.cardinality import cardinality_bsgs, cardinality_exhaustive, _cardinality_subfield
 
     order = cardinality  # alias
 
@@ -1508,7 +1507,7 @@ class EllipticCurve_finite_field(EllipticCurve_field, ProjectivePlaneCurve_finit
             sage: E1.is_isogenous(E7,GF(13^30,'j'))
             False
         """
-        from .ell_generic import EllipticCurve_generic
+        from sage.schemes.elliptic_curves.ell_generic import EllipticCurve_generic
         if not isinstance(other, EllipticCurve_generic):
             raise ValueError("Second argument is not an Elliptic Curve.")
         if self.is_isomorphic(other):
