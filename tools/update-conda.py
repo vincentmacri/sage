@@ -141,9 +141,6 @@ def update_conda(source_dir: Path, systems: list[str] | None) -> None:
                 # conda-forge does not yet provide Sage's cysignals release.
                 f.write(
                     f"name: sage{tag or '-dev'}\n{content}"
-                    "  # Use Sage's cysignals release while conda-forge catches up.\n"
-                    "  - pip:\n"
-                    f"    - cysignals=={cysignals_version}\n"
                 )
 
     with ThreadPoolExecutor(max_workers=3) as executor:
