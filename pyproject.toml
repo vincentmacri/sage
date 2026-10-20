@@ -64,7 +64,7 @@ dependencies = [
   'platformdirs',
   # Issue #30922: pplpy 0.8.4 and earlier do not declare dependencies correctly
   'pplpy >=0.8.6; sys_platform != "win32"',
-  'primecountpy; sys_platform != "win32"',
+  'primecountpy >= 0.2.1; sys_platform != "win32"',
   'ptyprocess > 0.5',
   'requests >=2.13.0',
   'scipy >=1.11',

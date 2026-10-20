@@ -15,10 +15,10 @@ from packaging.requirements import Requirement
 
 platforms = {
     "linux-64": "linux",
-    "linux-aarch64": "linux-aarch64",
-    "osx-64": "macos-x86_64",
-    "osx-arm64": "macos",
-    "win-64": "win",
+    #    "linux-aarch64": "linux-aarch64",
+    #    "osx-64": "macos-x86_64",
+    #    "osx-arm64": "macos",
+    #    "win-64": "win",
 }
 
 # Get source directory from command line arguments
@@ -89,10 +89,6 @@ def update_conda(source_dir: Path, systems: list[str] | None) -> None:
     if not pyproject_toml.exists():
         print(f"pyproject.toml not found in {pyproject_toml}")
         return
-
-    cysignals_version = (
-        source_dir / "build/pkgs/cysignals/package-version.txt"
-    ).read_text().strip()
 
     def process_platform_python(platform_key, platform_value, python):
         dependencies = get_dependencies(pyproject_toml, python, platform_key)
