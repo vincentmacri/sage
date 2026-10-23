@@ -15,10 +15,10 @@ from packaging.requirements import Requirement
 
 platforms = {
     "linux-64": "linux",
-    "linux-aarch64": "linux-aarch64",
-    "osx-64": "macos-x86_64",
-    "osx-arm64": "macos",
-    "win-64": "win",
+    #    "linux-aarch64": "linux-aarch64",
+    #    "osx-64": "macos-x86_64",
+    #    "osx-arm64": "macos",
+    #    "win-64": "win",
 }
 
 # Get source directory from command line arguments
@@ -35,7 +35,7 @@ parser.add_argument(
     choices=platforms.keys(),
 )
 options = parser.parse_args()
-pythons = ["3.13", "3.14"]
+pythons = ["3.15"]
 tags = [""]
 
 
@@ -113,8 +113,6 @@ def update_conda(source_dir: Path, systems: list[str] | None) -> None:
                 [
                     "conda-lock",
                     "--mamba",
-                    "--channel",
-                    "conda-forge",
                     "--kind",
                     "env",
                     "--platform",
