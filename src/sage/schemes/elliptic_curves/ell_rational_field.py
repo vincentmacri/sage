@@ -4727,7 +4727,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             raise ValueError("If first argument is an elliptic curve over QQ then the second argument must be also.")
         
         N = self.conductor()._lcm(other.conductor())
-        q = N.prime_divisors()
+        
         return (N/6)*prod(1+1/q for q in N.prime_divisors())
 
     def is_isogenous(self, other, proof=True, maxp=200):
