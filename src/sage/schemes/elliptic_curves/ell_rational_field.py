@@ -4719,15 +4719,27 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
 
     def sturm_bound(self, other):
         r"""
-        
+        Return the sturm bound of two elliptic curves.
+
+        INPUT:
+
+        -``other`` -- another elliptic curve
+
+        OUTPUT:
+        Sage integer?
+
+        EXAMPLES::
+
+            sage: E1 = EllipticCurve('14a1')
+            sage: E2 = EllipticCurve('14a6')
+            sage: E1.sturm_bound(E2)
+            4
         """
         if not isinstance(other, EllipticCurve_generic):
             raise ValueError("Second argument is not an Elliptic Curve.")
-        if other.base_field() is not QQ:
-            raise ValueError("If first argument is an elliptic curve over QQ then the second argument must be also.")
         
         N = self.conductor()._lcm(other.conductor())
-        
+
         return (N/6)*prod(1+1/q for q in N.prime_divisors())
 
     def is_isogenous(self, other, proof=True, maxp=200):
