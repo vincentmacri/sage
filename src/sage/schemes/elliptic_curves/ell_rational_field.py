@@ -4737,6 +4737,8 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         """
         if not isinstance(other, EllipticCurve_generic):
             raise ValueError("Second argument is not an Elliptic Curve.")
+        if other.base_field() is not QQ:
+            raise ValueError("If first argument is an elliptic curve over QQ then the second argument must be also.")
         
         N = self.conductor()._lcm(other.conductor())
 
