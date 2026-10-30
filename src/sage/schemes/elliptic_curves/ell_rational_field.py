@@ -4719,7 +4719,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
 
     def sturm_bound(self, other):
         r"""
-        Return the sturm bound of two elliptic curves.
+        Return the Sturm bound of two elliptic curves.
 
         INPUT:
 
