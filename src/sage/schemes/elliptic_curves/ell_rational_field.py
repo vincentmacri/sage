@@ -50,7 +50,7 @@ AUTHORS:
 
 from copy import copy
 from itertools import product
-from math import lcm, sqrt
+from math import sqrt
 
 import sage.arith.all as arith
 import sage.databases.cremona
@@ -4717,16 +4717,13 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
                 i += 1
             return isogs
 
-    def sturm_bound(self, other):
+    def sturm_bound(self, other: EllipticCurve_generic) -> Integer:
         r"""
         Return the Sturm bound of two elliptic curves.
 
         INPUT:
 
-        -``other`` -- another elliptic curve
-
-        OUTPUT:
-        Sage integer?
+        -``other`` -- an elliptic curve over `\QQ`
 
         EXAMPLES::
 
@@ -4736,10 +4733,9 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             4
         """
         if not isinstance(other, EllipticCurve_generic):
-            raise ValueError("Second argument is not an Elliptic Curve.")
+            raise ValueError("second argument is not an elliptic curve")
         if other.base_field() is not QQ:
-            raise ValueError("If first argument is an elliptic curve over QQ then the second argument must be also.")
-        
+            raise ValueError("the base field of the second elliptic curve must be the rationals")
         N = self.conductor()._lcm(other.conductor())
 
         return (N/6)*prod(1+1/q for q in N.prime_divisors())
@@ -4808,7 +4804,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
         E2 = other.minimal_model()
         maxp = E1.sturm_bound(E2)
 
-        if any(E1.ap(p) != E2.ap(p) for p in prime_range(2, maxp)):
+        if any(E1.ap(p) != E2.ap(p) for p in prime_range(2, 20)):
             return False
 
         if E1.conductor() != E2.conductor():
@@ -4846,7 +4842,7 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
             sage: E3 = EllipticCurve('14a3')
             sage: E4 = EllipticCurve('14a4')
             sage: E5 = EllipticCurve('14a5')
-            # sage: E6 = EllipticCurve('14a6')
+            sage: E6 = EllipticCurve('14a6')
             sage: E3.isogeny_degree(E1)
             3
             sage: E3.isogeny_degree(E2)
