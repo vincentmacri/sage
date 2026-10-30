@@ -4717,7 +4717,30 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
                 i += 1
             return isogs
 
-    def is_isogenous(self, other, proof=True, maxp=200):
+    def sturm_bound(self, other: EllipticCurve_generic) -> Integer:
+        r"""
+        Return the Sturm bound of two elliptic curves.
+
+        INPUT:
+
+        -``other`` -- an elliptic curve over `\QQ`
+
+        EXAMPLES::
+
+            sage: E1 = EllipticCurve('14a1')
+            sage: E2 = EllipticCurve('14a6')
+            sage: E1.sturm_bound(E2)
+            4
+        """
+        if not isinstance(other, EllipticCurve_generic):
+            raise ValueError("second argument is not an elliptic curve")
+        if other.base_field() is not QQ:
+            raise ValueError("the base field of the second elliptic curve must be the rationals")
+        N = self.conductor()._lcm(other.conductor())
+
+        return (N/6)*prod(1+1/q for q in N.prime_divisors())
+
+    def is_isogenous(self, other, proof=True):
         r"""
         Return whether or not ``self`` is isogenous to other.
 
@@ -4779,12 +4802,9 @@ class EllipticCurve_rational_field(EllipticCurve_number_field):
 
         E1 = self.minimal_model()
         E2 = other.minimal_model()
-        D1 = E1.discriminant()
-        D2 = E2.discriminant()
+        maxp = E1.sturm_bound(E2)
 
-        if any(E1.change_ring(GF(p)).cardinality() != E2.change_ring(GF(p)).cardinality()
-               for p in prime_range(2, maxp)
-               if D1.valuation(p) == 0 and D2.valuation(p) == 0):
+        if any(E1.ap(p) != E2.ap(p) for p in prime_range(2, 20)):
             return False
 
         if E1.conductor() != E2.conductor():
