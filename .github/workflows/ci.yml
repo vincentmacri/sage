@@ -141,7 +141,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.13'
+          python-version: '3.15'
 
       - name: Install dependencies
         run: |
@@ -165,7 +165,7 @@ jobs:
         run: |
           source ./.homebrew-build-env
           # Reuse Homebrew's PARI-compatible binding instead of building the PyPI version.
-          uv venv --python 3.13 --allow-existing
+          uv venv --python 3.15 --allow-existing
           python_version=$(.venv/bin/python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
           cypari2_site="$(brew --prefix dimpase/tap/cypari2)/lib/python${python_version}/site-packages"
           test -d "$cypari2_site/cypari2"
