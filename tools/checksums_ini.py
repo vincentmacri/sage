@@ -28,12 +28,11 @@ if __name__ == '__main__':
     urls = response['urls']
     vulnerabilities = response['vulnerabilities']
 
+    entries = []
     for url in urls:
         tarball = url['filename']
         sha256 = url['digests']['sha256']
         upstream_url = url['url']
 
-        print(f'tarball={tarball}')
-        print(f'sha256={sha256}')
-        print(f'upstream_url={upstream_url}')
-        print()
+        entries.append(f'tarball={tarball}\nsha256={sha256}\nupstream_url={upstream_url}')
+    print('\n\n'.join(entries))
