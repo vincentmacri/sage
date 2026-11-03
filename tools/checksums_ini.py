@@ -22,11 +22,7 @@ if __name__ == '__main__':
 
     r = requests.get(f'https://pypi.org/pypi/{name}/{version}/json')
     response = r.json()
-    info = response['info']
-    last_serial = response['last_serial']
-    ownership = response['ownership']
     urls = response['urls']
-    vulnerabilities = response['vulnerabilities']
 
     entries = []
     for url in urls:
