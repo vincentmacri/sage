@@ -22,9 +22,9 @@ jobs:
       fail-fast: false
       matrix:
         container:
-          - fedora:41
-          - fedora:42
           - fedora:43
+          - fedora:44
+          - fedora:45
           - debian:forky
           - ghcr.io/void-linux/void-glibc-full
           - archlinux
@@ -117,8 +117,8 @@ jobs:
         with:
           name: ${{ steps.clear-container-name.outputs.CONTAINER_NAME }}-log
           path: |
-            build/cp313/meson-logs/
-            build/cp313/meson-info/
+            build/cp315/meson-logs/
+            build/cp315/meson-info/
 
   macos:
     name: Build and Test (${{ matrix.runner }})
@@ -186,5 +186,5 @@ jobs:
         with:
           name: ${{ matrix.runner }}-log
           path: |
-            build/cp312/meson-logs/
-            build/cp312/meson-info/
+            build/cp315/meson-logs/
+            build/cp315/meson-info/
