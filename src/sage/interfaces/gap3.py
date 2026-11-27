@@ -802,7 +802,7 @@ class GAP3Record(GAP3Element):
             s = str(gap3_session.eval("RecFields(%s)" % self._name))
             s = s.strip('[] ').replace('\n', '')
             self._gap_recfields = [ss.strip('" ') for ss in s.split(',')]
-        return getattr(self, "_gap_recfields")
+        return self._gap_recfields
 
     def operations(self):
         r"""
@@ -827,7 +827,7 @@ class GAP3Record(GAP3Element):
             s = str(gap3_session.eval("RecFields(%s.operations)" % self._name))
             s = s.strip('[] ').replace('\n', '')
             self._gap_operations = [ss.strip('" ') for ss in s.split(',')]
-        return getattr(self, "_gap_operations")
+        return self._gap_operations
 
     def __getattr__(self, attrname):
         r"""
