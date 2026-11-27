@@ -20,7 +20,7 @@ AUTHORS:
 # (at your option) any later version.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
-from .constructor import EllipticCurve, EllipticCurve_from_j
+from sage.schemes.elliptic_curves.constructor import EllipticCurve, EllipticCurve_from_j
 from sage.schemes.curves.projective_curve import Hasse_bounds
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ

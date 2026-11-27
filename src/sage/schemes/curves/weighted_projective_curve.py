@@ -141,7 +141,7 @@ class WeightedProjectiveCurve(Curve_generic):
             sage: C.affine_patch(1)
             Affine Plane Curve over Rational Field defined by x^3 - x^2*z - x^2 + 1
         """
-        from .constructor import Curve
+        from sage.schemes.curves.constructor import Curve
 
         projective_curve = self.projective_curve()
         return Curve(

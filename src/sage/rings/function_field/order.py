@@ -115,7 +115,7 @@ from sage.structure.unique_representation import (
     UniqueRepresentation,
 )
 
-from .ideal import FunctionFieldIdeal, IdealMonoid
+from sage.rings.function_field.ideal import FunctionFieldIdeal, IdealMonoid
 
 
 class FunctionFieldOrder_base(CachedRepresentation, Parent):

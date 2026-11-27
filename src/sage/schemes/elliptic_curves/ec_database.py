@@ -70,7 +70,7 @@ which enable easy looping through the Cremona elliptic curve database.
 from pathlib import Path
 from ast import literal_eval
 
-from .constructor import EllipticCurve
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
 
 
 class EllipticCurves:

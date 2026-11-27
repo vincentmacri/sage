@@ -21,8 +21,8 @@ EXAMPLES::
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .valuation import DiscretePseudoValuation, DiscreteValuation, InfiniteDiscretePseudoValuation
-from .valuation_space import DiscretePseudoValuationSpace
+from sage.rings.valuation.valuation import DiscretePseudoValuation, DiscreteValuation, InfiniteDiscretePseudoValuation
+from sage.rings.valuation.valuation_space import DiscretePseudoValuationSpace
 from sage.structure.factory import UniqueFactory
 
 
@@ -309,7 +309,7 @@ class TrivialDiscreteValuation(TrivialDiscretePseudoValuation_base, DiscreteValu
             sage: v.value_group()
             Trivial Additive Abelian Group
         """
-        from .value_group import DiscreteValueGroup
+        from sage.rings.valuation.value_group import DiscreteValueGroup
         return DiscreteValueGroup(0)
 
     def residue_ring(self):

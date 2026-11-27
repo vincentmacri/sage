@@ -28,9 +28,9 @@ from sage.rings.padics.padic_base_generic import pAdicBaseGeneric
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.infinity import infinity, SignError
-from .lattice_precision import PrecisionLattice, PrecisionModule
+from sage.rings.padics.lattice_precision import PrecisionLattice, PrecisionModule
 from sage.rings.padics.precision_error import PrecisionError
-from .padic_lattice_element import pAdicLatticeElement, pAdicLatticeCapElement, pAdicLatticeFloatElement
+from sage.rings.padics.padic_lattice_element import pAdicLatticeElement, pAdicLatticeCapElement, pAdicLatticeFloatElement
 
 
 class CappedAbsoluteGeneric(LocalGeneric):

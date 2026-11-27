@@ -43,7 +43,7 @@ AUTHORS:
 #                  http://www.gnu.org/licenses/
 ######################################################################
 
-from . import heegner
+from sage.schemes.elliptic_curves import heegner
 
 from sage.rings.laurent_series_ring import LaurentSeriesRing
 from sage.rings.rational_field import RationalField

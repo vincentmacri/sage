@@ -70,7 +70,7 @@ from sage.structure.formal_sum import _compare_formal_sums
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
-from .place import FunctionFieldPlace, PlaceSet
+from sage.rings.function_field.place import FunctionFieldPlace, PlaceSet
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

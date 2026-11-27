@@ -33,9 +33,9 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ***************************************************************************
 
-from .ell_field import EllipticCurve_field
-from .constructor import EllipticCurve
-from . import ell_point
+from sage.schemes.elliptic_curves.ell_field import EllipticCurve_field
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from sage.schemes.elliptic_curves import ell_point
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 from sage.misc.lazy_import import lazy_import
 from sage.rings.power_series_ring import PowerSeriesRing

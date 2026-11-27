@@ -78,7 +78,7 @@ overview can also be found in Section 4.6 of [Rüt2014]_.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 from sage.misc.abstract_method import abstract_method
-from .valuation import DiscretePseudoValuation, InfiniteDiscretePseudoValuation
+from sage.rings.valuation.valuation import DiscretePseudoValuation, InfiniteDiscretePseudoValuation
 from sage.structure.factory import UniqueFactory
 
 
@@ -140,7 +140,7 @@ class LimitValuationFactory(UniqueFactory):
             sage: w = valuations.LimitValuation(v, x^2 + 1)  # indirect doctest
         """
         base_valuation, G = key
-        from .valuation_space import DiscretePseudoValuationSpace
+        from sage.rings.valuation.valuation_space import DiscretePseudoValuationSpace
         parent = DiscretePseudoValuationSpace(base_valuation.domain())
         return parent.__make_element_class__(MacLaneLimitValuation)(parent, base_valuation, G)
 
@@ -333,7 +333,7 @@ class LimitValuation_generic(DiscretePseudoValuation):
             [ Gauss valuation induced by 2-adic valuation, v(t + 1) = 1/2 , … ]
         """
         from sage.rings.infinity import infinity
-        from .augmented_valuation import AugmentedValuation_base
+        from sage.rings.valuation.augmented_valuation import AugmentedValuation_base
         if self._initial_approximation(self._G) is not infinity:
             if isinstance(self._initial_approximation, AugmentedValuation_base):
                 return repr(self._initial_approximation)[:-1] + ", … ]"
@@ -739,7 +739,7 @@ class MacLaneLimitValuation(LimitValuation_generic, InfiniteDiscretePseudoValuat
 
             sage: u.separating_element([ww,w,v,uu])  # not tested, takes forever
         """
-        from .scaled_valuation import ScaledValuation_generic
+        from sage.rings.valuation.scaled_valuation import ScaledValuation_generic
         v = self.restriction(self.domain().base())
         if isinstance(v, ScaledValuation_generic):
             v = v._base_valuation

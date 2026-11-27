@@ -172,17 +172,9 @@ from sage.schemes.projective.projective_subscheme import (
 lazy_import('sage.interfaces.singular', 'singular')
 lazy_import('sage.rings.number_field.number_field', 'NumberField')
 
-from .closed_point import IntegralProjectiveCurveClosedPoint
-from .curve import Curve_generic
-from .point import (
-    IntegralProjectiveCurvePoint,
-    IntegralProjectiveCurvePoint_finite_field,
-    IntegralProjectivePlaneCurvePoint,
-    IntegralProjectivePlaneCurvePoint_finite_field,
-    ProjectiveCurvePoint_field,
-    ProjectivePlaneCurvePoint_field,
-    ProjectivePlaneCurvePoint_finite_field,
-)
+from sage.schemes.curves.closed_point import IntegralProjectiveCurveClosedPoint
+from sage.schemes.curves.curve import Curve_generic
+from sage.schemes.curves.point import IntegralProjectiveCurvePoint, IntegralProjectiveCurvePoint_finite_field, IntegralProjectivePlaneCurvePoint, IntegralProjectivePlaneCurvePoint_finite_field, ProjectiveCurvePoint_field, ProjectivePlaneCurvePoint_field, ProjectivePlaneCurvePoint_finite_field
 
 
 class ProjectiveCurve(Curve_generic, AlgebraicScheme_subscheme_projective):
@@ -278,7 +270,7 @@ class ProjectiveCurve(Curve_generic, AlgebraicScheme_subscheme_projective):
             sage: C.affine_patch(1, A).ambient_space() == A
             True
         """
-        from .constructor import Curve
+        from sage.schemes.curves.constructor import Curve
         return Curve(AlgebraicScheme_subscheme_projective.affine_patch(self, i, AA))
 
     def projection(self, P=None, PS=None):
@@ -812,7 +804,7 @@ class ProjectivePlaneCurve(ProjectiveCurve):
         # one avoiding "infinity", i.e. the one corresponding to the
         # last projective coordinate being nonzero
         patch = kwds.pop('patch', self.ngens() - 1)
-        from .constructor import Curve
+        from sage.schemes.curves.constructor import Curve
         C = Curve(self.affine_patch(patch))
         return C.plot(*args, **kwds)
 

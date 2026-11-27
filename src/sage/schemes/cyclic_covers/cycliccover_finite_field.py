@@ -81,8 +81,8 @@ lazy_import("sage.functions.other", ["ceil", "binomial", "floor"])
 lazy_import('sage.rings.padics.factory', ['Zp', 'Zq', 'Qq'])
 lazy_import('sage.schemes.hyperelliptic_curves.hypellfrob', 'interval_products')
 
-from .charpoly_frobenius import charpoly_frobenius
-from . import cycliccover_generic
+from sage.schemes.cyclic_covers.charpoly_frobenius import charpoly_frobenius
+from sage.schemes.cyclic_covers import cycliccover_generic
 
 
 def _N0_nodenominators(p, g, n):

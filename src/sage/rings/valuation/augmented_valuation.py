@@ -145,8 +145,8 @@ overview can also be found in Chapter 4 of [Rüt2014]_.
 # ****************************************************************************
 from itertools import islice
 
-from .inductive_valuation import _lift_to_maximal_precision
-from .inductive_valuation import FinalInductiveValuation, NonFinalInductiveValuation, FiniteInductiveValuation, InfiniteInductiveValuation, InductiveValuation
+from sage.rings.valuation.inductive_valuation import _lift_to_maximal_precision
+from sage.rings.valuation.inductive_valuation import FinalInductiveValuation, NonFinalInductiveValuation, FiniteInductiveValuation, InfiniteInductiveValuation, InductiveValuation
 
 from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import infinity
@@ -230,7 +230,7 @@ class AugmentedValuationFactory(UniqueFactory):
         """
         base_valuation, phi, mu = key
 
-        from .valuation_space import DiscretePseudoValuationSpace
+        from sage.rings.valuation.valuation_space import DiscretePseudoValuationSpace
         parent = DiscretePseudoValuationSpace(base_valuation.domain())
         if mu is not infinity:
             if base_valuation.is_trivial():
@@ -642,7 +642,7 @@ class AugmentedValuation_base(InductiveValuation):
             sage: www >= ww
             False
         """
-        from .gauss_valuation import GaussValuation_generic
+        from sage.rings.valuation.gauss_valuation import GaussValuation_generic
         if other.is_trivial():
             return other.is_discrete_valuation()
         if isinstance(other, GaussValuation_generic):

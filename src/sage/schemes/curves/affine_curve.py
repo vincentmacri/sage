@@ -150,17 +150,11 @@ lazy_import('sage.interfaces.singular', 'singular')
 lazy_import('sage.rings.number_field.number_field', 'NumberField')
 lazy_import('sage.rings.qqbar', 'number_field_elements_from_algebraics')
 
-from .curve import Curve_generic
+from sage.schemes.curves.curve import Curve_generic
 
-from .point import (AffineCurvePoint_field,
-                    AffinePlaneCurvePoint_field,
-                    AffinePlaneCurvePoint_finite_field,
-                    IntegralAffineCurvePoint,
-                    IntegralAffineCurvePoint_finite_field,
-                    IntegralAffinePlaneCurvePoint,
-                    IntegralAffinePlaneCurvePoint_finite_field)
+from sage.schemes.curves.point import AffineCurvePoint_field, AffinePlaneCurvePoint_field, AffinePlaneCurvePoint_finite_field, IntegralAffineCurvePoint, IntegralAffineCurvePoint_finite_field, IntegralAffinePlaneCurvePoint, IntegralAffinePlaneCurvePoint_finite_field
 
-from .closed_point import IntegralAffineCurveClosedPoint
+from sage.schemes.curves.closed_point import IntegralAffineCurveClosedPoint
 
 
 class AffineCurve(Curve_generic, AlgebraicScheme_subscheme_affine):
@@ -268,7 +262,7 @@ class AffineCurve(Curve_generic, AlgebraicScheme_subscheme_affine):
             sage: C.projective_closure(1, P).ambient_space() == P
             True
         """
-        from .constructor import Curve
+        from sage.schemes.curves.constructor import Curve
         return Curve(AlgebraicScheme_subscheme_affine.projective_closure(self, i, PP))
 
 

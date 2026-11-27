@@ -316,7 +316,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         """
         from sage.categories.pushout import FractionField
 
-        from . import integer_ring
+        from sage.rings import integer_ring
         return FractionField(), integer_ring.ZZ
 
     def completion(self, p, prec, extras={}):
@@ -367,9 +367,9 @@ class RationalField(Singleton, number_field_base.NumberField):
             False
         """
         global ZZ
-        from . import rational
+        from sage.rings import rational
         if ZZ is None:
-            from . import integer_ring
+            from sage.rings import integer_ring
             ZZ = integer_ring.ZZ
         if S is ZZ:
             return rational.Z_to_Q()
@@ -710,7 +710,7 @@ class RationalField(Singleton, number_field_base.NumberField):
               To:   Complex Field with 20 bits of precision
               Defn: 1 |--> 1.0000
         """
-        from . import complex_mpfr
+        from sage.rings import complex_mpfr
         CC = complex_mpfr.ComplexField(prec)
         return self.hom([CC(1)])
 
@@ -1016,7 +1016,7 @@ class RationalField(Singleton, number_field_base.NumberField):
             sage: QQ.ring_of_integers ()
             Integer Ring
         """
-        from .integer_ring import ZZ
+        from sage.rings.integer_ring import ZZ
         return ZZ
 
     def number_field(self):
@@ -1216,7 +1216,7 @@ class RationalField(Singleton, number_field_base.NumberField):
         """
         global ZZ
         if ZZ is None:
-            from . import integer_ring
+            from sage.rings import integer_ring
             ZZ = integer_ring.ZZ
         if num_bound is None:
             num = ZZ.random_element(*args, **kwds)

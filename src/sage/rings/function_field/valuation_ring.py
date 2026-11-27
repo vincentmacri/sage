@@ -202,7 +202,7 @@ class FunctionFieldValuationRing(UniqueRepresentation, Parent):
             sage: to_k(y/(1+y))
             1
         """
-        from .maps import FunctionFieldRingMorphism as morphism
+        from sage.rings.function_field.maps import FunctionFieldRingMorphism as morphism
 
         k, from_k, to_k = self._place._residue_field(name=name)
         mor_from_k = morphism(Hom(k, self), from_k)

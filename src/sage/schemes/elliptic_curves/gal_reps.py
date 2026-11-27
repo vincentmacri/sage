@@ -348,7 +348,7 @@ class GaloisRepresentation(SageObject):
 
         E = self._E
         j = E.j_invariant()
-        from .isogeny_small_degree import sporadic_j
+        from sage.schemes.elliptic_curves.isogeny_small_degree import sporadic_j
         if j in sporadic_j: # includes all CM j-invariants
             R = [sporadic_j[j]]
         else:

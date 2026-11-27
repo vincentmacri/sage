@@ -23,7 +23,7 @@ AUTHORS:
 
 from sage.rings.rational_field import RationalField
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
-from .con_field import ProjectiveConic_field
+from sage.schemes.plane_conics.con_field import ProjectiveConic_field
 
 
 class ProjectiveConic_number_field(ProjectiveConic_field):

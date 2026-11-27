@@ -1325,7 +1325,7 @@ def isogeny_degrees_cm(E, verbose=False):
         print("Set of primes before filtering: %s" % L)
 
     # This filter will quickly eliminate most false entries in the set
-    from .gal_reps_number_field import Frobenius_filter
+    from sage.schemes.elliptic_curves.gal_reps_number_field import Frobenius_filter
     L = Frobenius_filter(E, sorted(L))
     if verbose:
         print("List of primes after filtering: %s" % L)

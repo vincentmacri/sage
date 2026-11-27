@@ -39,12 +39,12 @@ from sage.rings.function_field.element_rational import FunctionFieldElement_rati
 from sage.rings.integer import Integer
 from sage.structure.category_object import CategoryObject
 
-from .function_field import FunctionField
+from sage.rings.function_field.function_field import FunctionField
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from .place_rational import FunctionFieldPlace_rational
+    from sage.rings.function_field.place_rational import FunctionFieldPlace_rational
 
 
 class RationalFunctionField(FunctionField):
@@ -166,7 +166,7 @@ class RationalFunctionField(FunctionField):
 
         FunctionField.__init__(self, self, names=names, category=FunctionFields().or_subcategory(category))
 
-        from .place_rational import FunctionFieldPlace_rational
+        from sage.rings.function_field.place_rational import FunctionFieldPlace_rational
         self._place_class = FunctionFieldPlace_rational
 
         R = constant_field[names[0]]
@@ -175,7 +175,7 @@ class RationalFunctionField(FunctionField):
         self._field = R.fraction_field()
 
         hom = Hom(self._field, self)
-        from .maps import FractionFieldToFunctionField
+        from sage.rings.function_field.maps import FractionFieldToFunctionField
         self.register_coercion(hom.__make_element_class__(FractionFieldToFunctionField)(hom.domain(), hom.codomain()))
 
         from sage.categories.morphism import SetMorphism
@@ -197,7 +197,7 @@ class RationalFunctionField(FunctionField):
             sage: clazz(*args)
             Rational function field in x over Rational Field
         """
-        from .constructor import FunctionField
+        from sage.rings.function_field.constructor import FunctionField
         return FunctionField, (self._constant_field, self._names)
 
     def __hash__(self) -> int:
@@ -508,7 +508,7 @@ class RationalFunctionField(FunctionField):
         """
         if basis is not None:
             raise NotImplementedError
-        from .maps import MapFunctionFieldToVectorSpace, MapVectorSpaceToFunctionField
+        from sage.rings.function_field.maps import MapFunctionFieldToVectorSpace, MapVectorSpaceToFunctionField
         if base is None:
             base = self
         elif base is not self:
@@ -652,7 +652,7 @@ class RationalFunctionField(FunctionField):
         R = x.parent()
         if base_morphism is None and not R.has_coerce_map_from(self.constant_field()):
             raise ValueError("you must specify a morphism on the base field")
-        from .maps import FunctionFieldMorphism_rational
+        from sage.rings.function_field.maps import FunctionFieldMorphism_rational
         return FunctionFieldMorphism_rational(self.Hom(R), x, base_morphism)
 
     def field(self):
@@ -688,7 +688,7 @@ class RationalFunctionField(FunctionField):
             sage: K.equation_order()
             Maximal order of Rational function field in t over Rational Field
         """
-        from .order_rational import FunctionFieldMaximalOrder_rational
+        from sage.rings.function_field.order_rational import FunctionFieldMaximalOrder_rational
         return FunctionFieldMaximalOrder_rational(self)
 
     equation_order = maximal_order
@@ -709,7 +709,7 @@ class RationalFunctionField(FunctionField):
             sage: K.equation_order_infinite()
             Maximal infinite order of Rational function field in t over Rational Field
         """
-        from .order_rational import FunctionFieldMaximalOrderInfinite_rational
+        from sage.rings.function_field.order_rational import FunctionFieldMaximalOrderInfinite_rational
         return FunctionFieldMaximalOrderInfinite_rational(self)
 
     equation_order_infinite = maximal_order_infinite
@@ -795,7 +795,7 @@ class RationalFunctionField(FunctionField):
         if name == self.variable_name():
             id = Hom(self, self).identity()
             return self, id, id
-        from .constructor import FunctionField
+        from sage.rings.function_field.constructor import FunctionField
         ret = FunctionField(self.constant_base_field(), name)
         return ret, ret.hom(self.gen()), self.hom(ret.gen())
 
@@ -843,7 +843,7 @@ class RationalFunctionField_char_zero(RationalFunctionField):
             sage: [d(x^9,i) for i in range(10)]                                         # needs sage.libs.singular sage.modules
             [x^9, 9*x^8, 36*x^7, 84*x^6, 126*x^5, 126*x^4, 84*x^3, 36*x^2, 9*x, 1]
         """
-        from .derivations_polymod import FunctionFieldHigherDerivation_char_zero
+        from sage.rings.function_field.derivations_polymod import FunctionFieldHigherDerivation_char_zero
         return FunctionFieldHigherDerivation_char_zero(self)
 
 
@@ -973,5 +973,5 @@ class RationalFunctionField_global(RationalFunctionField):
             sage: [d(x^7,i) for i in range(10)]                                         # needs sage.rings.function_field
             [x^7, 2*x^6, x^5, 0, 0, x^2, 2*x, 1, 0, 0]
         """
-        from .derivations_polymod import RationalFunctionFieldHigherDerivation_global
+        from sage.rings.function_field.derivations_polymod import RationalFunctionFieldHigherDerivation_global
         return RationalFunctionFieldHigherDerivation_global(self)

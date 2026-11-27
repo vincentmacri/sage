@@ -804,7 +804,7 @@ def _single_variate(base_ring, name, sparse=None, implementation=None, order=Non
     if R is not None:
         return R
 
-    from . import polynomial_ring
+    from sage.rings.polynomial import polynomial_ring
 
     # Find the right constructor and **kwds for our polynomial ring
     constructor = None
@@ -920,7 +920,7 @@ def _multi_variate(base_ring, names, sparse=None, order='degrevlex', implementat
     if R is None and implementation == "generic":
         from sage.rings.semirings.tropical_semiring import TropicalSemiring
 
-        from . import multi_polynomial_ring
+        from sage.rings.polynomial import multi_polynomial_ring
         if isinstance(base_ring, TropicalSemiring):
             from sage.rings.semirings.tropical_mpolynomial import (
                 TropicalMPolynomialSemiring,

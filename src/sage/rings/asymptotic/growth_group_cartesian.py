@@ -252,7 +252,7 @@ CartesianProductGrowthGroups = CartesianProductFactory('CartesianProductGrowthGr
 
 
 from sage.combinat.posets.cartesian_product import CartesianProductPoset
-from .growth_group import GenericGrowthGroup
+from sage.rings.asymptotic.growth_group import GenericGrowthGroup
 
 
 class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
@@ -314,7 +314,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                         for factor in self.cartesian_factors()),
                    tuple())
         from itertools import groupby
-        from .growth_group import Variable
+        from sage.rings.asymptotic.growth_group import Variable
         Vars = Variable(tuple(v for v, _ in groupby(vars)), repr=self._repr_short_())
 
         GenericGrowthGroup.__init__(self, sets[0], Vars, self.category(), **kwds)
@@ -472,7 +472,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             try:
                 return self._convert_factors_(data)
             except ValueError as e:
-                from .misc import combine_exceptions
+                from sage.rings.asymptotic.misc import combine_exceptions
                 raise combine_exceptions(
                     ValueError('%s is not in %s.' % (raw_data, self)), e)
 
@@ -486,7 +486,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             return data
 
         elif isinstance(data, str):
-            from .misc import split_str_by_op
+            from sage.rings.asymptotic.misc import split_str_by_op
             return convert_factors(split_str_by_op(data, '*'), data)
 
         elif hasattr(data, 'parent'):
@@ -558,8 +558,8 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             2^n*(-1)^n
         """
         from sage.misc.misc_c import prod
-        from .growth_group import PartialConversionValueError
-        from .misc import combine_exceptions
+        from sage.rings.asymptotic.growth_group import PartialConversionValueError
+        from sage.rings.asymptotic.misc import combine_exceptions
 
         def get_factors(data):
             result = []
@@ -726,8 +726,8 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             ....:                  GrowthGroup('n^QQ * UU^n'))
             Growth Group n^QQ * log(n)^ZZ * UU^n
         """
-        from .growth_group import GenericGrowthGroup, AbstractGrowthGroupFunctor
-        from .misc import bidirectional_merge_sorted
+        from sage.rings.asymptotic.growth_group import GenericGrowthGroup, AbstractGrowthGroupFunctor
+        from sage.rings.asymptotic.misc import bidirectional_merge_sorted
         from sage.structure.element import get_coercion_model
 
         Sfactors = self.cartesian_factors()
@@ -885,7 +885,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
 
     class Element(CartesianProductPoset.Element):
 
-        from .growth_group import _is_lt_one_
+        from sage.rings.asymptotic.growth_group import _is_lt_one_
         is_lt_one = _is_lt_one_
 
         def _repr_(self, latex=False):
@@ -1007,7 +1007,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                             if not f.is_one()),
                        tuple())
 
-        from .growth_group import _log_factor_, _log_
+        from sage.rings.asymptotic.growth_group import _log_factor_, _log_
         log = _log_
         log_factor = _log_factor_
 
@@ -1059,12 +1059,12 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                                 if factor != factor.parent().one()),
                            tuple())
             except (ArithmeticError, TypeError, ValueError) as e:
-                from .misc import combine_exceptions
+                from sage.rings.asymptotic.misc import combine_exceptions
                 raise combine_exceptions(
                     ArithmeticError('Cannot build log(%s) in %s.' %
                                     (self, self.parent())), e)
 
-        from .growth_group import _rpow_
+        from sage.rings.asymptotic.growth_group import _rpow_
         rpow = _rpow_
 
         def _rpow_element_(self, base):
@@ -1099,7 +1099,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             factors = self.factors()
             if len(factors) != 1:
                 raise ValueError  # calling method has to deal with it...
-            from .growth_group import MonomialGrowthGroup
+            from sage.rings.asymptotic.growth_group import MonomialGrowthGroup
             factor = factors[0]
             if not isinstance(factor.parent(), MonomialGrowthGroup):
                 raise ValueError  # calling method has to deal with it...
@@ -1207,7 +1207,7 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
                     *tuple(x._substitute_(rules)
                            for x in self.cartesian_factors()))
             except (ArithmeticError, TypeError, ValueError) as e:
-                from .misc import substitute_raise_exception
+                from sage.rings.asymptotic.misc import substitute_raise_exception
                 substitute_raise_exception(self, e)
 
         def _singularity_analysis_(self, var, zeta, precision):
@@ -1266,14 +1266,14 @@ class GenericProduct(CartesianProductPoset, GenericGrowthGroup):
             """
             factors = self.factors()
             if len(factors) == 0:
-                from .asymptotic_expansion_generators import asymptotic_expansions
-                from .misc import NotImplementedOZero
+                from sage.rings.asymptotic.asymptotic_expansion_generators import asymptotic_expansions
+                from sage.rings.asymptotic.misc import NotImplementedOZero
                 raise NotImplementedOZero(var=var, exact_part=0)
             elif len(factors) == 1:
                 return factors[0]._singularity_analysis_(
                     var=var, zeta=zeta, precision=precision)
             elif len(factors) == 2:
-                from .growth_group import MonomialGrowthGroup
+                from sage.rings.asymptotic.growth_group import MonomialGrowthGroup
                 from sage.rings.integer_ring import ZZ
 
                 a, b = factors

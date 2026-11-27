@@ -104,8 +104,8 @@ from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdea
 from sage.rings.number_field.number_field_base import NumberField
 from sage.rings.ideal import Ideal_generic
 
-from .constructor import EllipticCurve
-from .kodaira_symbol import KodairaSymbol
+from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from sage.schemes.elliptic_curves.kodaira_symbol import KodairaSymbol
 
 
 class EllipticCurveLocalData(SageObject):

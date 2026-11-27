@@ -38,7 +38,7 @@ from sage.structure.sequence import Sequence
 
 lazy_import('sage.quadratic_forms.qfsolve', ['qfsolve', 'qfparam'])
 
-from .con_number_field import ProjectiveConic_number_field
+from sage.schemes.plane_conics.con_number_field import ProjectiveConic_number_field
 
 
 class ProjectiveConic_rational_field(ProjectiveConic_number_field):

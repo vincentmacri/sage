@@ -792,7 +792,7 @@ class IntegerModRing_generic(quotient_ring.QuotientRing_generic, sage.rings.abc.
         except AttributeError:
             if not self.is_field():
                 raise ValueError("self must be a field")
-            from . import finite_field_constructor
+            from sage.rings.finite_rings import finite_field_constructor
             k = finite_field_constructor.FiniteField(self.order())
             self.__field = k
             return k

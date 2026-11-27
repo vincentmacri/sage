@@ -1757,7 +1757,7 @@ def Cyclic(R, n=None, homog=False, singular=None):
         sage: len(B)                                                                    # needs sage.libs.singular
         45
     """
-    from .rational_field import RationalField
+    from sage.rings.rational_field import RationalField
 
     if n:
         if n > R.ngens():
@@ -1810,7 +1810,7 @@ def Katsura(R, n=None, homog=False, singular=None):
         sage: J = sage.rings.ideal.Katsura(Q,1); J                                      # needs sage.libs.singular
         Ideal (x - 1) of Multivariate Polynomial Ring in x over Rational Field
     """
-    from .rational_field import RationalField
+    from sage.rings.rational_field import RationalField
     if n:
         if n > R.ngens():
             raise ArithmeticError("n must be <= R.ngens().")

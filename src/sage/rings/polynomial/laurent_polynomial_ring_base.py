@@ -195,7 +195,7 @@ class LaurentPolynomialRing_generic(Parent):
              Univariate Laurent Polynomial Ring in x over Rational Field)
         """
         from sage.categories.pushout import LaurentPolynomialFunctor
-        from .laurent_polynomial_ring import LaurentPolynomialRing
+        from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
 
         vars = self.variable_names()
         if len(vars) == 1:
@@ -264,7 +264,7 @@ class LaurentPolynomialRing_generic(Parent):
             sage: R.remove_var('x').remove_var('y')
             Univariate Laurent Polynomial Ring in z over Rational Field
         """
-        from .laurent_polynomial_ring import LaurentPolynomialRing
+        from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing
 
         vars = list(self.variable_names())
         vars.remove(str(var))
@@ -678,7 +678,7 @@ class LaurentPolynomialRing_generic(Parent):
             Multivariate Laurent Polynomial Ring in x over
              Cyclotomic Field of order 4 and degree 2
         """
-        from .laurent_polynomial_ring import LaurentPolynomialRing, LaurentPolynomialRing_univariate
+        from sage.rings.polynomial.laurent_polynomial_ring import LaurentPolynomialRing, LaurentPolynomialRing_univariate
 
         if base_ring is None:
             base_ring = self.base_ring()

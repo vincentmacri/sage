@@ -18,7 +18,7 @@ Derivations of function fields: rational
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .derivations import FunctionFieldDerivation
+from sage.rings.function_field.derivations import FunctionFieldDerivation
 
 
 class FunctionFieldDerivation_rational(FunctionFieldDerivation):

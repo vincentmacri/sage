@@ -21,13 +21,9 @@ from sage.categories.commutative_algebras import CommutativeAlgebras
 from sage.misc.cachefunc import cached_method
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
-from .ideal import FunctionFieldIdeal
-from .ideal_polymod import (
-    FunctionFieldIdeal_global,
-    FunctionFieldIdeal_polymod,
-    FunctionFieldIdealInfinite_polymod,
-)
-from .order import FunctionFieldMaximalOrder, FunctionFieldMaximalOrderInfinite
+from sage.rings.function_field.ideal import FunctionFieldIdeal
+from sage.rings.function_field.ideal_polymod import FunctionFieldIdeal_global, FunctionFieldIdeal_polymod, FunctionFieldIdealInfinite_polymod
+from sage.rings.function_field.order import FunctionFieldMaximalOrder, FunctionFieldMaximalOrderInfinite
 
 
 class FunctionFieldMaximalOrder_polymod(FunctionFieldMaximalOrder):
@@ -50,7 +46,7 @@ class FunctionFieldMaximalOrder_polymod(FunctionFieldMaximalOrder):
 
         from sage.modules.free_module_element import vector
 
-        from .function_field_polymod import FunctionField_integral
+        from sage.rings.function_field.function_field_polymod import FunctionField_integral
 
         if isinstance(field, FunctionField_integral):
             basis = field._maximal_order_basis()
@@ -266,7 +262,7 @@ class FunctionFieldMaximalOrder_polymod(FunctionFieldMaximalOrder):
         """
         from sage.matrix.constructor import matrix
 
-        from .hermite_form_polynomial import reversed_hermite_form
+        from sage.rings.function_field.hermite_form_polynomial import reversed_hermite_form
 
         R = self._module_base_ring._ring
 
@@ -908,7 +904,7 @@ class FunctionFieldMaximalOrderInfinite_polymod(FunctionFieldMaximalOrderInfinit
             # the largest factor x^m that divides the denominator.
             from sage.matrix.special import block_matrix
 
-            from .hermite_form_polynomial import reversed_hermite_form
+            from sage.rings.function_field.hermite_form_polynomial import reversed_hermite_form
 
             d = ideal.denominator()
             h = ideal.hnf()

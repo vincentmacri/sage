@@ -12,8 +12,8 @@ from sage.rings.finite_rings.finite_field_base import FiniteField
 from sage.rings.polynomial.polynomial_element import Polynomial
 from sage.schemes.affine.affine_space import AffineSpace
 
-from .cycliccover_generic import CyclicCover_generic
-from .cycliccover_finite_field import CyclicCover_finite_field
+from sage.schemes.cyclic_covers.cycliccover_generic import CyclicCover_generic
+from sage.schemes.cyclic_covers.cycliccover_finite_field import CyclicCover_finite_field
 
 
 def CyclicCover(r, f, names=None, check_smooth=True):

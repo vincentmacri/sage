@@ -62,7 +62,7 @@ AUTHORS:
 
 from sage.rings.ring_extension import RingExtension_generic
 
-from .constructor import FunctionField
+from sage.rings.function_field.constructor import FunctionField
 
 
 class FunctionFieldExtension(RingExtension_generic):

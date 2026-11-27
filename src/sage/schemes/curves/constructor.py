@@ -58,27 +58,11 @@ from sage.schemes.projective.projective_space import ProjectiveSpace, Projective
 from sage.schemes.weighted_projective.weighted_projective_space import WeightedProjectiveSpace_ring
 from sage.schemes.plane_conics.constructor import Conic
 
-from .projective_curve import (ProjectiveCurve,
-                               ProjectivePlaneCurve,
-                               ProjectiveCurve_field,
-                               ProjectivePlaneCurve_field,
-                               ProjectivePlaneCurve_finite_field,
-                               IntegralProjectiveCurve,
-                               IntegralProjectiveCurve_finite_field,
-                               IntegralProjectivePlaneCurve,
-                               IntegralProjectivePlaneCurve_finite_field)
+from sage.schemes.curves.projective_curve import ProjectiveCurve, ProjectivePlaneCurve, ProjectiveCurve_field, ProjectivePlaneCurve_field, ProjectivePlaneCurve_finite_field, IntegralProjectiveCurve, IntegralProjectiveCurve_finite_field, IntegralProjectivePlaneCurve, IntegralProjectivePlaneCurve_finite_field
 
-from .affine_curve import (AffineCurve,
-                           AffinePlaneCurve,
-                           AffineCurve_field,
-                           AffinePlaneCurve_field,
-                           AffinePlaneCurve_finite_field,
-                           IntegralAffineCurve,
-                           IntegralAffineCurve_finite_field,
-                           IntegralAffinePlaneCurve,
-                           IntegralAffinePlaneCurve_finite_field)
+from sage.schemes.curves.affine_curve import AffineCurve, AffinePlaneCurve, AffineCurve_field, AffinePlaneCurve_field, AffinePlaneCurve_finite_field, IntegralAffineCurve, IntegralAffineCurve_finite_field, IntegralAffinePlaneCurve, IntegralAffinePlaneCurve_finite_field
 
-from .weighted_projective_curve import WeightedProjectiveCurve
+from sage.schemes.curves.weighted_projective_curve import WeightedProjectiveCurve
 
 
 def _is_irreducible_and_reduced(F) -> bool:

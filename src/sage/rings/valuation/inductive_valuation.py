@@ -36,8 +36,8 @@ An introduction is also given in Chapter 4 of [Rüt2014]_.
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .valuation import DiscreteValuation, InfiniteDiscretePseudoValuation
-from .developing_valuation import DevelopingValuation
+from sage.rings.valuation.valuation import DiscreteValuation, InfiniteDiscretePseudoValuation
+from sage.rings.valuation.developing_valuation import DevelopingValuation
 
 from sage.misc.cachefunc import cached_method
 from sage.misc.abstract_method import abstract_method
@@ -641,7 +641,7 @@ class NonFinalInductiveValuation(FiniteInductiveValuation, DiscreteValuation):
 
             :mod:`~sage.rings.valuation.augmented_valuation`
         """
-        from .augmented_valuation import AugmentedValuation
+        from sage.rings.valuation.augmented_valuation import AugmentedValuation
         return AugmentedValuation(self, phi, mu, check)
 
     def mac_lane_step(self, G, principal_part_bound=None, assume_squarefree=False, assume_equivalence_irreducible=False, report_degree_bounds_and_caches=False, coefficients=None, valuations=None, check=True, allow_equivalent_key=True):

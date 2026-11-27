@@ -20,7 +20,7 @@ from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import infinity
 from sage.structure.richcmp import richcmp
 
-from .ideal import FunctionFieldIdeal, FunctionFieldIdealInfinite
+from sage.rings.function_field.ideal import FunctionFieldIdeal, FunctionFieldIdealInfinite
 
 
 class FunctionFieldIdeal_rational(FunctionFieldIdeal):

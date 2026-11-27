@@ -30,7 +30,7 @@ AUTHORS:
 #                  https://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .valuation import DiscreteValuation, DiscretePseudoValuation
+from sage.rings.valuation.valuation import DiscreteValuation, DiscretePseudoValuation
 from sage.misc.abstract_method import abstract_method
 
 
@@ -592,7 +592,7 @@ class FiniteExtensionFromLimitValuation(FiniteExtensionFromInfiniteValuation):
         # this valuation nicely, dropping any unnecessary information
         self._approximants = approximants
 
-        from .limit_valuation import LimitValuation
+        from sage.rings.valuation.limit_valuation import LimitValuation
         limit = LimitValuation(approximant, G)
         FiniteExtensionFromInfiniteValuation.__init__(self, parent, limit)
 
@@ -605,7 +605,7 @@ class FiniteExtensionFromLimitValuation(FiniteExtensionFromInfiniteValuation):
             sage: valuations.pAdicValuation(GaussianIntegers().fraction_field(), 2)  # indirect doctest                 # needs sage.rings.number_field
             2-adic valuation
         """
-        from .limit_valuation import MacLaneLimitValuation
+        from sage.rings.valuation.limit_valuation import MacLaneLimitValuation
         if isinstance(self._base_valuation, MacLaneLimitValuation):
             # print the minimal information that singles out this valuation from all approximants
             assert (self._base_valuation._initial_approximation in self._approximants)
@@ -621,6 +621,6 @@ class FiniteExtensionFromLimitValuation(FiniteExtensionFromInfiniteValuation):
                 unique_approximant[0] = unique_approximant[0].restriction(unique_approximant[0].domain().base_ring())
             if len(unique_approximant) == 1:
                 return repr(unique_approximant[0])
-            from .augmented_valuation import AugmentedValuation_base
+            from sage.rings.valuation.augmented_valuation import AugmentedValuation_base
             return "[ %s ]-adic valuation" % (", ".join("v(%r) = %r" % (v._phi, v._mu) if (isinstance(v, AugmentedValuation_base) and v.domain() == self._base_valuation.domain()) else repr(v) for v in unique_approximant))
         return "%s-adic valuation" % (self._base_valuation)

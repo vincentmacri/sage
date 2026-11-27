@@ -229,7 +229,7 @@ class ProjectiveConic_rational_function_field(ProjectiveConic_field):
             sage: C.has_rational_point()
             True
         """
-        from .constructor import Conic
+        from sage.schemes.plane_conics.constructor import Conic
 
         if read_cache:
             if self._rational_point is not None:

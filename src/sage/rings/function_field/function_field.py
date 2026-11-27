@@ -241,14 +241,14 @@ from sage.rings.ring import Field
 from sage.structure.category_object import CategoryObject
 
 if TYPE_CHECKING:
-    from .divisor import DivisorGroup, FunctionFieldDivisor
-    from .element import FunctionFieldElement
-    from .extensions import ConstantFieldExtension
-    from .function_field_rational import RationalFunctionField
-    from .jacobian_base import Jacobian_base
-    from .maps import FunctionFieldCompletion
-    from .place import FunctionFieldPlace, PlaceSet
-    from .valuation import FunctionFieldValuation_base
+    from sage.rings.function_field.divisor import DivisorGroup, FunctionFieldDivisor
+    from sage.rings.function_field.element import FunctionFieldElement
+    from sage.rings.function_field.extensions import ConstantFieldExtension
+    from sage.rings.function_field.function_field_rational import RationalFunctionField
+    from sage.rings.function_field.jacobian_base import Jacobian_base
+    from sage.rings.function_field.maps import FunctionFieldCompletion
+    from sage.rings.function_field.place import FunctionFieldPlace, PlaceSet
+    from sage.rings.function_field.valuation import FunctionFieldValuation_base
 
 
 class FunctionField(Field):
@@ -283,7 +283,7 @@ class FunctionField(Field):
         Field.__init__(self, base_field, names=names, category=category)
 
         # allow conversion into the constant base field
-        from .maps import FunctionFieldConversionToConstantBaseField
+        from sage.rings.function_field.maps import FunctionFieldConversionToConstantBaseField
         to_constant_base_field = FunctionFieldConversionToConstantBaseField(Hom(self, self.constant_base_field()))
         # the conversion map must not keep the field alive if that is the only reference to it
         to_constant_base_field._make_weak_references()
@@ -451,7 +451,7 @@ class FunctionField(Field):
             sage: M.base_ring() is L
             True
         """
-        from . import constructor
+        from sage.rings.function_field import constructor
         return constructor.FunctionFieldExtension(f.change_ring(self), names)
 
     def order_with_basis(self, basis, check: bool = True):
@@ -499,7 +499,7 @@ class FunctionField(Field):
             ...
             ValueError: the identity element must be in the module spanned by basis (x, x*y + x^2, 2/3*y^2)
         """
-        from .order_basis import FunctionFieldOrder_basis
+        from sage.rings.function_field.order_basis import FunctionFieldOrder_basis
         return FunctionFieldOrder_basis(tuple([self(a) for a in basis]), check=check)
 
     def order(self, x, check: bool = True):
@@ -590,7 +590,7 @@ class FunctionField(Field):
             ...
             ValueError: the identity element must be in the module spanned by basis (1/x, 1/x*y, 1/x^2*y^2)
         """
-        from .order_basis import FunctionFieldOrderInfinite_basis
+        from sage.rings.function_field.order_basis import FunctionFieldOrderInfinite_basis
         return FunctionFieldOrderInfinite_basis(tuple([self(g) for g in basis]), check=check)
 
     def order_infinite(self, x, check: bool = True):
@@ -679,7 +679,7 @@ class FunctionField(Field):
             sage: L(Sequence([1, 2]))
             2*t + 1
         """
-        from .order import FunctionFieldOrder_base
+        from sage.rings.function_field.order import FunctionFieldOrder_base
         if isinstance(source, FunctionFieldOrder_base):
             K = source.fraction_field()
             if K is self:
@@ -777,7 +777,7 @@ class FunctionField(Field):
             x
         """
         try:
-            from .function_field_polymod import FunctionField_polymod
+            from sage.rings.function_field.function_field_polymod import FunctionField_polymod
         except ImportError:
             FunctionField_polymod = ()
         if isinstance(R, FunctionField_polymod):
@@ -862,7 +862,7 @@ class FunctionField(Field):
             sage: M.rational_function_field()                                           # needs sage.rings.function_field
             Rational function field in x over Rational Field
         """
-        from .function_field_rational import RationalFunctionField
+        from sage.rings.function_field.function_field_rational import RationalFunctionField
 
         return self if isinstance(self, RationalFunctionField) else self.base_field().rational_function_field()
 
@@ -1077,7 +1077,7 @@ class FunctionField(Field):
             sage: L.divisor_group()                                                     # needs sage.rings.function_field
             Divisor group of Function field in y defined by y^3 + (4*x^3 + 1)/(x^3 + 3)
         """
-        from .divisor import DivisorGroup
+        from sage.rings.function_field.divisor import DivisorGroup
         return DivisorGroup(self)
 
     def place_set(self) -> PlaceSet:
@@ -1099,7 +1099,7 @@ class FunctionField(Field):
             sage: L.place_set()                                                         # needs sage.rings.function_field
             Set of places of Function field in y defined by y^2 + y + (x^2 + 1)/x
         """
-        from .place import PlaceSet
+        from sage.rings.function_field.place import PlaceSet
         return PlaceSet(self)
 
     @cached_method
@@ -1199,7 +1199,7 @@ class FunctionField(Field):
             sage: ye^2 - xe == 0
             True
         """
-        from .maps import FunctionFieldCompletion
+        from sage.rings.function_field.maps import FunctionFieldCompletion
         return FunctionFieldCompletion(self, place, name=name, prec=prec, gen_name=gen_name)
 
     def hilbert_symbol(self, a, b, P) -> Integer:
@@ -1337,7 +1337,7 @@ class FunctionField(Field):
             sage: E.constant_base_field()
             Finite Field in z4 of size 2^4
         """
-        from .extensions import ConstantFieldExtension
+        from sage.rings.function_field.extensions import ConstantFieldExtension
         return ConstantFieldExtension(self, k)
 
     def places_finite(self, degree=1) -> list[FunctionFieldPlace]:
@@ -1474,7 +1474,7 @@ class FunctionField(Field):
             ...
             ValueError: failed to obtain a rational place; provide a base divisor
         """
-        from .place import FunctionFieldPlace
+        from sage.rings.function_field.place import FunctionFieldPlace
 
         if model != 'unique_hess':
             if base_div is None:
@@ -1492,7 +1492,7 @@ class FunctionField(Field):
         curve = kwds.get('curve')
 
         if model.startswith('km'):
-            from .jacobian_khuri_makdisi import Jacobian as JacobianKhuriMakdisi
+            from sage.rings.function_field.jacobian_khuri_makdisi import Jacobian as JacobianKhuriMakdisi
             if model == 'km' or model.endswith('large'):
                 if base_div is None:
                     base_div = (2 * g + 1) * base_place
@@ -1515,14 +1515,14 @@ class FunctionField(Field):
                                      "at least g + 1 for genus g")
                 return JacobianKhuriMakdisi(self, base_div, model='small', curve=curve)
         elif model == 'hess':
-            from .jacobian_hess import Jacobian as JacobianHess
+            from sage.rings.function_field.jacobian_hess import Jacobian as JacobianHess
             if base_div is None:
                 base_div = g * base_place
             if base_div.degree() != g:
                 raise ValueError("Hess model requires base divisor of degree g for genus g")
             return JacobianHess(self, base_div, curve=curve)
         elif model == 'unique_hess':
-            from .jacobian_unique_hess import Jacobian as JacobianUniqueHess
+            from sage.rings.function_field.jacobian_unique_hess import Jacobian as JacobianUniqueHess
             if base_div is None:
                 base_div = self.get_infinite_place(1)
             if base_div is None:

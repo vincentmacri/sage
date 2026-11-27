@@ -139,7 +139,7 @@ class FiniteField_prime_modn(FiniteField_generic, integer_mod_ring.IntegerModRin
         if S is ZZ:
             return integer_mod.Integer_to_IntegerMod(self)
         if isinstance(S, IntegerModRing_generic):
-            from .residue_field import ResidueField_generic
+            from sage.rings.finite_rings.residue_field import ResidueField_generic
             if (S.characteristic() % self.characteristic() == 0 and
                     (not isinstance(S, ResidueField_generic) or
                      S.degree() == 1)):

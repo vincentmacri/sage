@@ -16,12 +16,8 @@ Orders of function fields: basis
 #                  http://www.gnu.org/licenses/
 # ****************************************************************************
 
-from .ideal import (
-    FunctionFieldIdeal,
-    FunctionFieldIdeal_module,
-    FunctionFieldIdealInfinite_module,
-)
-from .order import FunctionFieldOrder, FunctionFieldOrderInfinite
+from sage.rings.function_field.ideal import FunctionFieldIdeal, FunctionFieldIdeal_module, FunctionFieldIdealInfinite_module
+from sage.rings.function_field.order import FunctionFieldOrder, FunctionFieldOrderInfinite
 
 
 class FunctionFieldOrder_basis(FunctionFieldOrder):

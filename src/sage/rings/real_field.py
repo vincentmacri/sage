@@ -41,16 +41,16 @@ def create_RealField(prec=53, type='MPFR', rnd='RNDN', sci_not=0):
         Real Lazy Field
     """
     if type == "RDF":
-        from .real_double import RDF
+        from sage.rings.real_double import RDF
         return RDF
     if type == "Interval":
-        from .real_mpfi import RealIntervalField
+        from sage.rings.real_mpfi import RealIntervalField
         return RealIntervalField(prec, sci_not)
     if type == "Ball":
-        from .real_arb import RealBallField
+        from sage.rings.real_arb import RealBallField
         return RealBallField(prec)
     if type == "RLF":
-        from .real_lazy import RLF
+        from sage.rings.real_lazy import RLF
         return RLF
-    from .real_mpfr import RealField
+    from sage.rings.real_mpfr import RealField
     return RealField(prec, sci_not, rnd)

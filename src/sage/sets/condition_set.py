@@ -20,7 +20,7 @@ from sage.categories.enumerated_sets import EnumeratedSets
 from sage.misc.cachefunc import cached_method
 from sage.combinat.subset import uniq
 from sage.structure.element import Expression
-from .set import Set, Set_base, Set_boolean_operators, Set_add_sub_operators
+from sage.sets.set import Set, Set_base, Set_boolean_operators, Set_add_sub_operators
 
 
 class ConditionSet(Set_generic, Set_base, Set_boolean_operators, Set_add_sub_operators,
